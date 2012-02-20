@@ -13,7 +13,7 @@ ROOTGLIBS	= `root-config --glibs`
 ######### nothing to change from here #########
 INCLUDES	= $(LOCALINC)/*.hxx
 LIBNAME 	= CLASSpkg
-OBJS		= CLASS.o Reactor.o TreatmentFactory.o Factory.o IsotopicVector.o ZAI.o EvolutionDataBase.o EvolutiveProduct.o 
+OBJS		= CLASS.o Reactor.o TreatmentFactory.o IsotopicVector.o ZAI.o EvolutionDataBase.o EvolutiveProduct.o 
 		  		  
 		  
 CXX           = g++

@@ -18,6 +18,7 @@ float random(float a, float b) //peak random numebr between a and b
     return (float)a + (float)(b-a)*rand()/range;
 }
 
+//________________________________________________________________________
 CLASS::CLASS()
 {
 	DBGL;
@@ -28,6 +29,7 @@ CLASS::CLASS()
 	DBGL;
 }
 
+//________________________________________________________________________
 CLASS::CLASS(long int abstime)
 {
 	DBGL;
@@ -37,10 +39,6 @@ CLASS::CLASS(long int abstime)
 	fReactorLastIndex = 0;
 	DBGL;
 }
-
-
-
-
 
 //________________________________________________________________________
 CLASS::~CLASS()
@@ -88,9 +86,10 @@ void CLASS::RemoveReactor()
 	DBGL;
 }
 
-
-
 //________________________________________________________________________
+//____________________________ Building Method ___________________________
+//________________________________________________________________________
+
 IsotopicVector CLASS::BuildIsotopicVector(IsotopicVector isotopicvector)
 {
 	DBGL;
@@ -207,6 +206,7 @@ IsotopicVector CLASS::BuildIsotopicVector(IsotopicVector isotopicvector)
 	return BuildIV;
 }
 
+//________________________________________________________________________
 void CLASS::BuildTimeVector(long int t)
 {
 	DBGL;
@@ -309,7 +309,12 @@ void CLASS::BuildTimeVector(long int t)
 	DBGL;	
 }
 
+
+
 //________________________________________________________________________
+//___________________________ Evolution Method ___________________________
+//________________________________________________________________________
+
 void CLASS::TreatmentEvolution()
 {
 	DBGL;
@@ -327,99 +332,6 @@ void CLASS::ReactorEvolution()
 	DBGL;
 }
 
-//________________________________________________________________________
-void CLASS::Print()
-{
-	DBGL;
-	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
-	{
-		cout << "!!!!!!!!!STEP : " << fAbsoluteTime/(int)(3600*24*365.4) << endl;
-		cout << "TreatmentFactory : " << endl;
-		cout << "Cooling ";
-		cout << fTreatmentFactory.at(i)->GetIVCooling().size()<< endl;
-		cout << "Waste " << endl;
-		fTreatmentFactory.at(i)->GetIVWaste().Print();
-		cout << "Stock :" << endl;
-		for(int j=0; j < (int)fTreatmentFactory.at(i)->GetIVStock().size(); j++)
-			{
-			cout << j << endl;
-			fTreatmentFactory.at(i)->GetIVStock().at(j).Print();
-			}
-	}
-
-	for(int i = 0; i < (int)fReactor.size(); i++)
-	{	
-		cout << "Reactor" << endl;
-		fReactor.at(i)->GetIVReactor().Print();
-	}
-	DBGL;
-}
-
-//________________________________________________________________________
-void CLASS::Write()
-{	
-	DBGL;
-	string basename = "CLASS";
-	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
-	{
-		ostringstream ostr;
-		ostr << fTreatmentFactoryIndex.at(i) ;
-		string TFbasename = basename + "_TF" + ostr.str();
-//		fTreatmentFactory.at(i)->Write(TFbasename);
-	}
-	for(int i = 0; i < (int)fReactor.size(); i++)
-	{
-		ostringstream ostr;
-		ostr << fReactorIndex.at(i) ;
-		string Rbasename = basename + "_R" + ostr.str();
-//		fReactor.at(i)->Write(Rbasename);
-	}
-	IsotopicVector TotalWaste;
-	IsotopicVector TotalStock;
-	IsotopicVector TotalCooling;
-	IsotopicVector TotalSeparating;
-	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
-	{
-		TotalWaste += fTreatmentFactory.at(i)->GetIVWaste();
-		TotalStock += fTreatmentFactory.at(i)->GetIVFullStock();
-		for(int j=0; j < (int)fTreatmentFactory.at(i)->GetIVCooling().size(); j++)
-			TotalCooling += fTreatmentFactory.at(i)->GetIVCooling().at(j);
-		
-		for(int j=0; j < (int)fTreatmentFactory.at(i)->GetIVSeparating().size(); j++)
-			TotalSeparating += fTreatmentFactory.at(i)->GetIVSeparating().at(j);
-		
-	}
-	IsotopicVector TotalInReactor;
-	for(int i = 0; i < (int)fReactor.size(); i++)
-	{	
-		TotalInReactor += fReactor.at(i)->GetIVReactor();
-	}
-	string TFStock = basename + "_TF_STOCK";
-	TotalStock.Write(TFStock, fAbsoluteTime);
-
-	string TFWaste = basename + "_TF_WASTE";
-	TotalWaste.Write(TFWaste, fAbsoluteTime);
-
-	string TFSeparating = basename + "_TF_SPERATING";
-	TotalSeparating.Write(TFSeparating, fAbsoluteTime);
-
-	string RTotal = basename + "_R_TOTAL";
-	TotalInReactor.Write(RTotal, fAbsoluteTime);
-	
-	IsotopicVector IVCycleTotal;
-	IVCycleTotal = TotalCooling + TotalInReactor + TotalSeparating + TotalStock;
-	
-	string CycleTotal = basename + "_CYCLE_TOTAL";
-	IVCycleTotal.Write(CycleTotal, fAbsoluteTime);
-	
-	IsotopicVector IVTotal;
-	IVTotal = TotalCooling + TotalInReactor + TotalSeparating + TotalStock + TotalWaste;
-	
-	string Total = basename + "_TOTAL";
-	IVTotal.Write(Total, fAbsoluteTime);
-	cout << "CLASS : " << (long int)fAbsoluteTime/3600/24/365.4 << " STEP DONE !" << endl;
-	DBGL;
-}
 //________________________________________________________________________
 void CLASS::Evolution(long int t)
 {
@@ -477,6 +389,124 @@ void CLASS::Evolution(long int t)
 		}
 			
 	}
+	DBGL;
+}
+
+//________________________________________________________________________
+//______________________________ Out Method ______________________________
+//________________________________________________________________________
+void CLASS::Print()
+{
+	DBGL;
+	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
+	{
+		cout << "!!!!!!!!!STEP : " << fAbsoluteTime/(int)(3600*24*365.4) << endl;
+		cout << "TreatmentFactory : " << endl;
+		cout << "Cooling ";
+		cout << fTreatmentFactory.at(i)->GetIVCooling().size()<< endl;
+		cout << "Waste " << endl;
+		fTreatmentFactory.at(i)->GetIVWaste().Print();
+		cout << "Stock :" << endl;
+		for(int j=0; j < (int)fTreatmentFactory.at(i)->GetIVStock().size(); j++)
+			{
+			cout << j << endl;
+			fTreatmentFactory.at(i)->GetIVStock().at(j).Print();
+			}
+	}
+
+	for(int i = 0; i < (int)fReactor.size(); i++)
+	{	
+		cout << "Reactor" << endl;
+		fReactor.at(i)->GetIVReactor().Print();
+	}
+	DBGL;
+}
+
+//________________________________________________________________________
+void CLASS::Write()
+{	
+	DBGL;
+	string basename = "CLASS";
+
+
+//--- Reactor Writing ---/
+
+	//*** Individual ***//
+//	for(int i = 0; i < (int)fReactor.size(); i++)
+//	{
+//		ostringstream ostr;
+//		ostr << fReactorIndex.at(i) ;
+//		string Rbasename = basename + "_R" + ostr.str();
+//		fReactor.at(i)->Write(Rbasename);
+//	}
+
+	//****** Total *****//
+	IsotopicVector TotalInReactor;
+	for(int i = 0; i < (int)fReactor.size(); i++)
+	{	
+		TotalInReactor += fReactor.at(i)->GetIVReactor();
+	}
+	string RTotal = basename + "_R_TOTAL";
+	TotalInReactor.Write(RTotal, fAbsoluteTime);
+
+
+
+//------ TF Writing -----/
+
+	//*** Individual ***//
+//	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
+//	{
+//		ostringstream ostr;
+//		ostr << fTreatmentFactoryIndex.at(i) ;
+//		string TFbasename = basename + "_TF" + ostr.str();
+//		fTreatmentFactory.at(i)->Write(TFbasename);
+//	}
+
+	//****** Total *****//
+	IsotopicVector TotalWaste;
+	IsotopicVector TotalGodIncome;
+	IsotopicVector TotalStock;
+	IsotopicVector TotalCooling;
+	IsotopicVector TotalSeparating;
+
+
+	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
+	{
+		TotalWaste += fTreatmentFactory.at(i)->GetIVWaste();
+		TotalStock += fTreatmentFactory.at(i)->GetIVFullStock();
+		TotalGodIncome += fTreatmentFactory.at(i)->GetIVGodIncome();
+		
+		for(int j=0; j < (int)fTreatmentFactory.at(i)->GetIVCooling().size(); j++)
+			TotalCooling += fTreatmentFactory.at(i)->GetIVCooling().at(j);
+		for(int j=0; j < (int)fTreatmentFactory.at(i)->GetIVSeparating().size(); j++)
+			TotalSeparating += fTreatmentFactory.at(i)->GetIVSeparating().at(j);
+	}
+
+	string TFWaste = basename + "_TF_WASTE";
+	string TFStock = basename + "_TF_STOCK";
+	string TFGodIncome  = basename + "_TF_GODINCOME";
+	string TFSeparating = basename + "_TF_SPERATING";
+
+	TotalWaste.Write(TFWaste, fAbsoluteTime);
+	TotalStock.Write(TFStock, fAbsoluteTime);
+	TotalGodIncome.Write(TFGodIncome, fAbsoluteTime);
+	TotalSeparating.Write(TFSeparating, fAbsoluteTime);
+
+//---- Total Writing ----/
+
+	string InCycleTotal 	= basename + "_IN_CYCLE_TOTAL";
+	string Total 		= basename + "_TOTAL";
+
+	IsotopicVector IVInCycleTotal;
+	IsotopicVector IVTotal;
+
+	IVInCycleTotal 	= TotalCooling + TotalInReactor + TotalSeparating + TotalStock;
+	IVTotal 	= IVInCycleTotal + TotalWaste;
+
+	IVInCycleTotal.Write(InCycleTotal, fAbsoluteTime);
+	IVTotal.Write(Total, fAbsoluteTime);
+
+	cout << "CLASS : " << (long int)fAbsoluteTime/3600/24/365.4 << " STEP DONE !" << endl;
 	DBGL;
 }
 
