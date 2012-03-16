@@ -17,7 +17,7 @@ OBJS		= CLASS.o Reactor.o TreatmentFactory.o IsotopicVector.o ZAI.o EvolutionDat
 		  		  
 		  
 CXX           = g++
-CXXFLAGS      = -O2 -g -Wall  -fPIC ${MCNP_VERSION} -I$(LOCALINC) $(ROOTCFLAGS) -I$(EXTERNINC)
+CXXFLAGS      = -O2 -g -Wall  -fPIC -fopenmp ${MCNP_VERSION} -I$(LOCALINC) $(ROOTCFLAGS) -I$(EXTERNINC)
 LD            = g++
 LDFLAGS       =  -g -Wall -fPIC -L$(LIBDIR) -lvalerr -lmctal -shared 
 

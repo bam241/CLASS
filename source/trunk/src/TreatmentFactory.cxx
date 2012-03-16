@@ -300,6 +300,7 @@ void TreatmentFactory::Evolution(long int t)
 	DBGL;
 	// Check if the TF has been created ...
 	if(t<fCreationTime) return;
+	if(t == fInternalTime) return;
 	
 	if(fInternalTime ==0 && IsStarted == false)
 	{
