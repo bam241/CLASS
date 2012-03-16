@@ -8,6 +8,7 @@
 #include "CLASSHeaders.hxx"
 #include "CLASS.hxx"
 #include "TreatmentFactory.hxx"
+
 using namespace std;
 
 
@@ -28,9 +29,10 @@ public :
 //********* Get Method *********//
 
 	IsotopicVector 		GetIVReactor()		{return fIVReactor;} 	//<! Return the IV contain in the Reactor
-	IsotopicVector		GetIVBeginCycle()	{return fIVBeginCycle;}
-	IsotopicVector		GetIVOutCycle()		{return fIVOutCycle;}
-	IsotopicVector		GetIVInCycle()		{return fIVInCycle;}
+	IsotopicVector		GetIVBeginCycle()	{return fIVBeginCycle;}	//<! Return the Starting Cycle IV (Note : IVBegin != IVIn, only if using charging plan)
+	IsotopicVector		GetIVOutCycle()		{return fIVOutCycle;}	//<! Return the Out Cycle IV 
+	IsotopicVector		GetIVInCycle()		{return fIVInCycle;}	//<! Return the In Cycle IV (Note : IVIn != IVBegin, only if using charging plan)
+										
 	long int 		GetCycleTime()		{return fCycleTime;} 	//!< Return the cycle time of the Reactor
 	long int 		GetCreationTime()	{return fCreationTime;}	//!< Return the creation time of the Reactor
 	long int 		GetLifeTime()		{return fLifeTime;}	//!< Return the creation time of the Reactor
@@ -50,6 +52,7 @@ public :
 //********* Modification Method *********//
 //	IsotopicVector* GetProductAt(double t); 	//!< Get IsotopicVector composition at the t time
 	void Evolution(long int t);
+	void Dump();
 	
 //********* Other Method *********//
 	void Write(string Rbasename);
@@ -57,7 +60,7 @@ public :
 	
 protected :
 	long int			fInternalTime;		//!< Internal Clock
-	long int 			fInCycleTime;		
+	long int 			fInCycleTime;		//!< Time spend since the beginning of the last Cycle
 	
 	
 //********* Internal Parameter *********//
@@ -65,19 +68,21 @@ protected :
 	long int			fLifeTime;		//!< LifeTime Of the Reactor
 	long int 			fCycleTime;		//!< Cycle Time
 
-	EvolutiveProduct*	fEvolutionDB;	//!< Pointer to the Evolution DataBase
-
-	IsotopicVector		fIVReactor;
-	IsotopicVector		fIVBeginCycle;
-	IsotopicVector		fIVInCycle;
-	IsotopicVector		fIVOutCycle;
+	IsotopicVector		fIVReactor;			//!< Fuel evoluated IV in the reactor
+	IsotopicVector		fIVBeginCycle;			//!< Fuel IV at the Beginning of a Cycle
+	IsotopicVector		fIVInCycle;			//!< IVBegin add at the Beginning of the Cycle
+	IsotopicVector		fIVOutCycle;			//!< IV wich get out at the End of a Cycle
 	
 	
-	CLASS*			fParc;
-	TreatmentFactory*	fAssociedTreatmentFactory;
+	EvolutiveProduct*	fEvolutionDB;			//!< Pointer to the Evolution DataBase
+	CLASS*			fParc;				//!< Pointer to the main Parc
+	TreatmentFactory*	fAssociedTreatmentFactory;	//!< Pointer to the TF which collect the spend fuel
  
- 	bool 			IsStarted;
-};
+ 	bool 			fIsStarted;
+ 	bool 			fShutDown;
+ 	bool			fEndOfCycle;
+ 
+ };
 
 
 #endif

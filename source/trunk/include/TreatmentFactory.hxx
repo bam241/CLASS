@@ -86,6 +86,7 @@ public :
 	void TakeFromFullStock(IsotopicVector isotopicvector ) 	{fIVFullStock.Remove(isotopicvector); }
 	void TakeFromStock(IsotopicVector isotopicvector, int index); 		//!< Take isotopicvector from the (index)st vector of the stock 
 
+//-------- GodIncome --------//
 
 	IsotopicVector		GetIVGodIncome() const		{return fIVGodIncome;}	//!< Return the God Providings IsotopicVector
 	void AddIVGodIncome(ZAI zai, double quantity)		{ fIVGodIncome.Add(zai*quantity); }

@@ -2,6 +2,7 @@
 #include "CLASS.hxx"
 #include <ctime>
 #include <cmath>
+#include <omp.h>
 //________________________________________________________________________
 //
 //		CLASS
@@ -96,8 +97,9 @@ IsotopicVector CLASS::BuildIsotopicVector(IsotopicVector isotopicvector)
 	IsotopicVector BuildIV;
 	vector< map<pair<int,int>, double> > Zcontribution;
 	
-
-	for(int k = 0; k < (int)isotopicvector.GetAtomicSpecies().size(); k++ ) // Loop on the Atomic Species
+	int k;
+//#pragma omp parallel for private(k)
+	for(k = 0; k < (int)isotopicvector.GetAtomicSpecies().size(); k++ ) // Loop on the Atomic Species
 	{
 		int z = isotopicvector.GetAtomicSpecies().at(k); 		// Get the Atomic Species Number
 
@@ -318,7 +320,9 @@ void CLASS::BuildTimeVector(long int t)
 void CLASS::TreatmentEvolution()
 {
 	DBGL;
-	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
+	int i;
+//#pragma omp parallel for private(i)
+	for(i = 0; i < (int) fTreatmentFactory.size();i++)
 		fTreatmentFactory.at(i)->Evolution(fAbsoluteTime);
 	DBGL;
 }
@@ -327,8 +331,25 @@ void CLASS::TreatmentEvolution()
 void CLASS::ReactorEvolution()
 {
 	DBGL;
-	for(int i = 0; i < (int)fReactor.size(); i++)
-		fReactor.at(i)->Evolution(fAbsoluteTime);
+	int i;
+	omp_set_dynamic(6);
+	
+#pragma omp sections
+	{
+	#pragma omp section
+	{
+		TreatmentEvolution();
+	}
+	
+	#pragma omp section
+	{
+	#pragma omp for
+		for(i = 0; i < (int)fReactor.size(); i++)
+			fReactor.at(i)->Evolution(fAbsoluteTime);
+	}
+	}
+	for(i = 0; i < (int)fReactor.size(); i++)
+		fReactor.at(i)->Dump();
 	DBGL;
 }
 
@@ -345,7 +366,6 @@ void CLASS::Evolution(long int t)
 		
 		if( (*it).second & 2 || (*it).second & 1 )
 		{
-			TreatmentEvolution();
 			ReactorEvolution();
 			if((*it).second & 2 )
 				RemoveReactor();
@@ -362,7 +382,6 @@ void CLASS::Evolution(long int t)
 		
 		if( (*it).second & 4 )
 		{
-			TreatmentEvolution();
 			ReactorEvolution();
 			if((*it).second & 4 )
 				(*it).second ^= 4;
@@ -385,9 +404,10 @@ void CLASS::Evolution(long int t)
 		{
 			
 //			Print();
-			Write();
+//			Write();
 		}
-			
+
+	cout << "CLASS : " << (long int)fAbsoluteTime/3600/24/365.4 << " STEP DONE !" << endl;
 	}
 	DBGL;
 }
@@ -506,7 +526,7 @@ void CLASS::Write()
 	IVInCycleTotal.Write(InCycleTotal, fAbsoluteTime);
 	IVTotal.Write(Total, fAbsoluteTime);
 
-	cout << "CLASS : " << (long int)fAbsoluteTime/3600/24/365.4 << " STEP DONE !" << endl;
+
 	DBGL;
 }
 
