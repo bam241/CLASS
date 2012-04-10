@@ -5,12 +5,14 @@
  \file
  \brief Header file for EvolutiveProduct classes. 
  */
-#include "CLASSHeaders.hxx"
 //ROOT library
-#include <TGraphErrors.h>
-#include <TString.h>
-#include<map>
 
+#include <string>
+#include <map>
+
+class ZAI;
+class IsotopicVector;
+class TGraphErrors;
 
 using namespace std;
 
@@ -23,7 +25,7 @@ using namespace std;
  */
 
 
-class EvolutiveProduct
+class EvolutiveProduct 
 {
 	
 public :
@@ -39,7 +41,7 @@ public :
 	
 //********* Get Method *********//
 	map<ZAI ,TGraphErrors* >	GetEvolutiveProduct() const {return fEvolutiveProduct;}
-	TGraphErrors*	GetEvolutionTGraphErrors(const ZAI& zai); 	
+	TGraphErrors*	GetEvolutionTGraphErrors(const ZAI& zai); 
 								//!< Return the A,Z product proportion evolution TGraphErrors
 	IsotopicVector	GetIsotopicVectorAt(double t); 		//!< Return the Product IsotopicVector evolution TGraphErrors
 	
@@ -51,6 +53,7 @@ protected :
 	double	Interpolate(double t, TGraphErrors& EvolutionGraph); 
 								//!< Interpolating the value of EvolutionGraph at the t time
 	void 	AddAsStable(int Z, int A, int I=0);
+
 };
 
 #endif

@@ -3,18 +3,21 @@
 
 /*!
  \file
- \brief Header file for EvolutionDataBase classes. 
+ \brief Header file for EvolutionDataBase class. 
  */
 
-#include <sstream>
-#include <iostream>
-#include <fstream>
 
+#include <map>
+#include <string>
 
-//CLASS library
-#include "CLASSHeaders.hxx"
 
 using namespace std;
+
+class IsotopicVector;
+class ZAI;
+class EvolutiveProduct;
+
+
 
 //! A ZAIIDataBase defined a database which contain the evolution of faction of all product, subproduct (or sub(sub...sub)product) for a nucleus. 
 /*!
@@ -25,10 +28,10 @@ using namespace std;
  */
 
 
-class EvolutionDataBase
+class EvolutionDataBase 
 {
 	
- public:
+public :
 //********* Constructor/Destructor Method *********//
 
 	EvolutionDataBase(string DB_index_file = "Default_Index.dat");
@@ -54,10 +57,11 @@ class EvolutionDataBase
 //********* Printing Method *********//
 	void Print() const;
 	
- protected :
+protected :
 	
 	map<ZAI ,EvolutiveProduct* >	fEvolutionDataBase;
  	string fDataBaseIndex;
+ 	
 
 };
 
