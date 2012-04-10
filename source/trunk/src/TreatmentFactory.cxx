@@ -1,7 +1,13 @@
+#include "TreatmentFactory.hxx"
+#include "EvolutionDataBase.hxx"
+#include "Defines.hxx"
+
+
 #include <sstream>
 #include <string>
-#include "CLASSHeaders.hxx"
-#include "TreatmentFactory.hxx"
+#include <iostream>
+#include <cmath>
+#include <algorithm>
 
 //________________________________________________________________________
 //
@@ -11,6 +17,8 @@
 //
 //
 //________________________________________________________________________
+ClassImp(TreatmentFactory)
+
 TreatmentFactory::TreatmentFactory()
 {
 	DBGL;
@@ -24,7 +32,7 @@ TreatmentFactory::TreatmentFactory(long int abstime,
 				   EvolutionDataBase* evolutivedb)
 {
 	DBGL;
-	fFullStockManagement = false;
+	fStockManagement = true;
 	
 	fCoolingTime = coolingtime;
 	fInternalTime = 0;
@@ -75,9 +83,11 @@ IsotopicVector TreatmentFactory::GetDecayProduct(IsotopicVector isotopicvector, 
 			it != isotopicquantity.end(); it++)
 	{
 		if((*it).second > 0)
-			IV = IV + (fDecayDataBase->DecayProduction(it->first, t) * (*it).second );
+		{
+ 			IsotopicVector ivtmp = fDecayDataBase->DecayProduction(it->first, t) * (*it).second ;
+			IV += ivtmp;
+		}
 	}
-		
 	DBGL;
 	return IV;
 	DBGL;
@@ -96,6 +106,7 @@ void TreatmentFactory::AddIVCooling(IsotopicVector IV)
 	fCoolingStartingTime.push_back(fInternalTime);
 	fCoolingLastIndex++;
 	fCoolingIndex.push_back(fCoolingLastIndex);
+	fParc->AddTotalCooling(IV);
 	DBGL;
 }
 
@@ -107,6 +118,7 @@ void TreatmentFactory::AddIVSeparating(IsotopicVector IV)
 	fSeparatingStartingTime.push_back(fInternalTime);
 	fSeparatingLastIndex++;
 	fSeparatingIndex.push_back(fSeparatingLastIndex);
+	fParc->AddTotalSeparating(IV);
 	DBGL;
 }
 
@@ -155,10 +167,10 @@ void TreatmentFactory::RemoveIVCooling(int i)		//!< Remove a Cooling IsotopicVec
 void TreatmentFactory::TakeFromStock(IsotopicVector isotopicvector, int index)
 {
 	DBGL;
-	if(fFullStockManagement == false )
+	if(fStockManagement == true )
 		fIVStock.at(index) -= isotopicvector;
 	
-	TakeFromFullStock( isotopicvector );
+	fIVFullStock.Remove(isotopicvector);
 	DBGL;
 }
 
@@ -195,7 +207,8 @@ void TreatmentFactory::WasteDecay(long int t)
 
 	long int EvolutionTime = t - fInternalTime;
 	fIVWaste = GetDecayProduct(fIVWaste , EvolutionTime);
-
+	#pragma omp critical(UpdateTotalWasta)
+		{fParc->AddTotalWaste(fIVWaste);}
 	DBGL;
 }
 
@@ -207,14 +220,19 @@ void TreatmentFactory::StockDecay(long int t)
 	if(t<fCreationTime) return;
 
 	int EvolutionTime = t - fInternalTime;
-
 	fIVFullStock = GetDecayProduct(fIVFullStock , EvolutionTime);
 
-	if(fFullStockManagement == false)
+	if(fStockManagement == true)
+	{
+		#pragma omp parallel for
 		for (int i=0; i <(int) fIVStock.size() ; i++)
+		{
 			fIVStock.at(i) = GetDecayProduct(fIVStock.at(i) , EvolutionTime);
-
-
+			#pragma omp critical(UpdateTotalStock)
+				{fParc->AddTotalStock(fIVStock.at(i));}
+		}
+	
+	}
 	DBGL;
 }
 
@@ -228,18 +246,29 @@ void TreatmentFactory::SeparatingEvolution(long int t)
 
 	
 	long int EvolutionTime = t - fInternalTime;
-	for (int i = (int)fIVSeparating.size()-1 ; i >= 0 ; i--)
+#pragma omp parallel for
+	for (int i = 0 ; i < (int)fIVSeparating.size() ; i++)
 	{
 		if (fInternalTime - fSeparatingStartingTime.at(i) + EvolutionTime >= fSeparationTime) // ">" should not append, only "=" is normal...
 		{
-			AddIVStock(GetDecayProduct(fIVSeparating.at(i) , EvolutionTime));
-			RemoveIVSeparation(i);
+			if (t - fSeparatingStartingTime.at(i) > fSeparationTime) // Warning & Quit
+			{
+				cout << "!!Warning!! !!!TreamtmentFactory!!! Separation Step : "<< t/365.4/3600/24 << " :"
+				     << " An evolution Step is probably missing ! " << endl;
+				exit (1);
+			}
+			fIVSeparating.at(i) = GetDecayProduct( fIVSeparating.at(i) , EvolutionTime);
+		#pragma omp critical(DeleteSeprationIVPB)
+			{fSeparationEndOfCycle.push_back(i);}
 		}
 		else 
 		{
 			fIVSeparating.at(i) = GetDecayProduct( fIVSeparating.at(i) , EvolutionTime);
+			#pragma omp critical(UpdateSeparatingStock)
+				{fParc->AddTotalSeparating(fIVSeparating.at(i));}
 		}
 	}
+	sort (fSeparationEndOfCycle.begin(), fSeparationEndOfCycle.end());
 	DBGL;
 }
 
@@ -250,48 +279,39 @@ void TreatmentFactory::CoolingEvolution(long int t)
 	// Check if the TF has been created ...
 	if(t<fCreationTime) return;
 
-
+	int i;
+	int RemainingCoolingTime;
 	long int EvolutionTime = t - fInternalTime;
-	
-	for (int i = (int)fIVCooling.size()-1 ; i >= 0 ; i--)
+#pragma omp parallel for
+	for ( i = 0 ; i < (int)fIVCooling.size() ; i++)
 	{
-
 		if (t - fCoolingStartingTime.at(i) >= fCoolingTime) // ">" should not append, only "=" is normal...
 		{
-			if (t - fCoolingStartingTime.at(i) > fCoolingTime) // Warning 
-				cout << "!!Warning!! !!!TreamtmentFactory!!! Step : "<< t/365.4/3600/24 << " :"
-				     << " An evolution Step is probably missing ! " << endl;
-
-			
-			int RemainingCoolingTime = fCoolingTime - (fInternalTime - fCoolingStartingTime.at(i));
-			//Cooling Decay
-			IsotopicVector coolingresult = GetDecayProduct( fIVCooling.at(i), RemainingCoolingTime);
-			int RemainingTime = EvolutionTime - RemainingCoolingTime;
-			
-			
-			//Separation Waste/Stock
-			pair<IsotopicVector, IsotopicVector> SeparatedIV = Separation(coolingresult);
-			
-			fIVWaste += GetDecayProduct( SeparatedIV.second , RemainingTime); //deal Waste and Decay it
-			
-			if (RemainingCoolingTime >= fSeparationTime) 
-				AddIVStock(GetDecayProduct( SeparatedIV.first , EvolutionTime) ); // Skip Separation Time
-			else	
+			if (t - fCoolingStartingTime.at(i) > fCoolingTime) // Warning & Quit
 			{
-			AddIVSeparating(GetDecayProduct( SeparatedIV.first , EvolutionTime), fInternalTime + RemainingCoolingTime ); 
-								// Add SeparatingIv at the absolute time corresponding to the end of the cooling ;
+				cout << "!!Warning!! !!!TreamtmentFactory!!! Cooling Step : " << t/365.4/3600/24 << " :"
+				     << " An evolution Step is probably missing ! " << " " << endl;
+				exit (1);
 			}
-			RemoveIVCooling(i);
+
+			RemainingCoolingTime = fCoolingTime - (fInternalTime - fCoolingStartingTime.at(i));
+			//Cooling Decay
+			fIVCooling.at(i) = GetDecayProduct( fIVCooling.at(i), RemainingCoolingTime);
+		#pragma omp critical(DeleteCoolingIVPB)
+			{fCoolingEndOfCycle.push_back(i);}
+
 		}
 		else 
 		{
 			fIVCooling.at(i) = GetDecayProduct( fIVCooling.at(i) , EvolutionTime);
-
+			#pragma omp critical(UpdateCoolingStock)
+				{fParc->AddTotalCooling(fIVCooling.at(i));}
 		}
 	}
+
+	sort (fCoolingEndOfCycle.begin(), fCoolingEndOfCycle.end());
 	DBGL;
 }
-
 
 
 //________________________________________________________________________
@@ -307,13 +327,13 @@ void TreatmentFactory::Evolution(long int t)
 		fInternalTime = fCreationTime;
 		IsStarted = true;
 	}
-
 	// Make the evolution for the Waste ...
 	WasteDecay(t);
 	
 	// ... the Stock ...
 	StockDecay(t);
 	
+
 	// ... the SeparatingIV ...
 	SeparatingEvolution(t);
 	
@@ -326,6 +346,50 @@ void TreatmentFactory::Evolution(long int t)
 
 	DBGL;
 }
+
+
+//________________________________________________________________________
+void TreatmentFactory::Dump()
+{
+//------ Cooling ------//
+	for(int i = (int)fCoolingEndOfCycle.size()-1; i >=0 ; i--)	// IV End Of Cooling
+	{
+
+		int idx = fCoolingEndOfCycle.at(i);			// Get Index number
+		pair<IsotopicVector, IsotopicVector> SeparatedIV = Separation(fIVCooling.at(idx));// Separation
+		fIVWaste += SeparatedIV.second;				// Add to waste
+		AddIVSeparating(SeparatedIV.first, fInternalTime );	// Add to speration
+		
+		fCoolingEndOfCycle.erase(fCoolingEndOfCycle.begin()+i);	// Remove index entry
+		RemoveIVCooling(idx);					// Remove IVcooling
+	}
+	if((int)fCoolingEndOfCycle.size() != 0 )// Control
+	{
+		cout << "Problem while Dumping Cooling"<< endl;
+		exit (1);
+	}
+
+
+
+//------ Separation ------//
+	for(int i = (int)fSeparationEndOfCycle.size()-1; i >=0 ; i--)	// IV End Of Cooling
+	{
+		int idx = fSeparationEndOfCycle.at(i);			// Get Index number
+		AddIVStock(fIVSeparating.at(idx));
+		
+		RemoveIVSeparation(idx);				// Remove Separated IV
+		fSeparationEndOfCycle.erase(fSeparationEndOfCycle.begin()+i);	// Remove index entry
+
+	}
+
+	if((int)fSeparationEndOfCycle.size() != 0 ) // Control
+	{
+		cout << "Problem while Dumping Separtion"<< endl;
+		exit (1);
+	}
+
+}
+
 
 //________________________________________________________________________
 void TreatmentFactory::Write(string TFfilename)

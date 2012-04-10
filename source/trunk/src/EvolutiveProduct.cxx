@@ -1,14 +1,17 @@
-#include "CLASSHeaders.hxx"
+#include "EvolutiveProduct.hxx"
+#include "IsotopicVector.hxx"
+#include "ZAI.hxx"
+#include "Defines.hxx"
+#include "StringLine.hxx"
+
 #include <TGraphErrors.h>
 #include <TString.h>
-
-
-//#include <sstream>
 #include <string>
 #include <iostream>
-//#include <fstream>
-//string CLASSPath = "../DataBase/";
-string CLASSPath = "";
+#include <fstream>
+#include <algorithm>
+#include <map>
+#include <TGraphErrors.h>
 
 using namespace std;
 //________________________________________________________________________
@@ -19,6 +22,7 @@ using namespace std;
 //
 //
 //________________________________________________________________________
+
 EvolutiveProduct::EvolutiveProduct(int Z, int A, int I, string DBindexfile)
 {
 	DBGL;
@@ -46,7 +50,7 @@ EvolutiveProduct::EvolutiveProduct(int Z, int A, int I, string DBindexfile)
 
 		if(rZ == Z && rA == A && rI == I)
 		{
-			string file_name = CLASSPath + StringLine::NextWord(line,start);
+			string file_name = StringLine::NextWord(line,start);
 			ReadDB(file_name);		// Read Decay produc DB file name
 			zaifind = true;
 		}
@@ -66,7 +70,7 @@ EvolutiveProduct::EvolutiveProduct(int Z, int A, int I, string DBindexfile)
 EvolutiveProduct::EvolutiveProduct(string DB_reactor_file)
 {
 	DBGL;
-	string file_name = CLASSPath + DB_reactor_file;
+	string file_name = DB_reactor_file;
 	ReadDB(file_name);		// Read Evolution Produc DB file name
 	DBGL;
 

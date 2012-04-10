@@ -1,6 +1,14 @@
-#include "CLASSHeaders.hxx"
 #include "Reactor.hxx"
+#include "IsotopicVector.hxx"
+#include "EvolutiveProduct.hxx"
+#include "CLASS.hxx"
+#include "TreatmentFactory.hxx"
+#include "Defines.hxx"
+
+#include <iostream>
+#include <algorithm>
 #include <omp.h>
+
 //________________________________________________________________________
 //
 //		Reactor
@@ -9,6 +17,8 @@
 //
 //
 //________________________________________________________________________
+ClassImp(Reactor)
+
 Reactor::Reactor()
 {
 	DBGL;
@@ -73,6 +83,8 @@ void Reactor::Evolution(long int t)
 	if(EvolutionTime + fInCycleTime < fCycleTime )			//During Cycle
 	{
 		fIVReactor = fEvolutionDB->GetIsotopicVectorAt(EvolutionTime + fInCycleTime);	// add the new fuel
+		#pragma omp critical(UpdateInReactor)
+			{fParc->AddTotalInReactor(fIVReactor);}
 		fInternalTime += EvolutionTime;							// Update Internal Time
 		fInCycleTime += EvolutionTime;							// Update InCycleTime
 	}
@@ -98,9 +110,9 @@ void Reactor::Evolution(long int t)
 	{
 		// This is so bad!! You will probably unsynchronize all the reactor....
 		cout << "!!Warning!! !!!Reactor!!!";
-		cout << " Evolution is too log! This is a Bad way to deal the evolution of the reactor...";
+		cout << " Evolution is too long! This is a Bad way to deal the evolution of the reactor...";
 		cout << t/365.4/3600/24 << " :" << endl;
-		exit (1);
+		exit(1);
 	}
 	DBGL;
 }
@@ -109,18 +121,35 @@ void Reactor::Evolution(long int t)
 void Reactor::Dump()
 {
 	DBGL;
+	fParc->AddTotalInReactor(fIVReactor);
 	if(fEndOfCycle == true  )
 	{
 		fEndOfCycle = false;
+		if(fParc->GetStockManagement() == true)
+		{
+			IsotopicVector BuildIVtmp = fParc->BuildIsotopicVector(fIVInCycle);
+			fAssociedTreatmentFactory->AddIVGodIncome(fIVInCycle - BuildIVtmp);
+		}
+		else
+		{
+			IsotopicVector BuildIVtmp ;
+			IsotopicVector GodPart;
+			
+			BuildIVtmp.Add(fAssociedTreatmentFactory->GetIVFullStock().GetIsotopicQuantity());
+			BuildIVtmp -= fIVInCycle;
+			GodPart.Add(BuildIVtmp.GetIsotopicQuantityNeeded()) ;
 
-		fAssociedTreatmentFactory->AddIVGodIncome(fIVInCycle - fParc->BuildIsotopicVector(fIVInCycle));
-
+			fAssociedTreatmentFactory->TakeFromStock( fIVInCycle - GodPart, -1);
+			fAssociedTreatmentFactory->AddIVGodIncome(GodPart);
+		}
+		
 		if(fIsStarted == true)					// A Cycle has already been done
+		{
 			fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+		}
 		else fIsStarted = true;					// Just start the first cycle
 		if(fShutDown == true) fIsStarted = false;		// shut down the Reactor
 	}
-
 	DBGL;
 }
 
