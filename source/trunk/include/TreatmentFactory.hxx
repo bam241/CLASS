@@ -6,14 +6,19 @@
  \brief Header file for TreatmentFactory class.
 */
 
-#include "CLASSHeaders.hxx"
+
+//#include "EvolutionDataBase.hxx"
 #include "CLASS.hxx"
-#include<vector>
+#include "IsotopicVector.hxx"
+
+#include <vector>
 using namespace std;
 
+class CLASS;
+class IsotopicVector;
+class EvolutionDataBase;
 
-
-class TreatmentFactory
+class TreatmentFactory : public TObject
 {
 public :
 	//! Normal Constructor.
@@ -36,7 +41,7 @@ public :
 	void SetIVWaste(IsotopicVector IV) 		{fIVWaste = IV;}		//!< Set the initial composition of the Ultimate Waste IV
 	void SetCoolingTime(long int time) 		{fCoolingTime = time;}		//!< Set Cooling Time
 	void SetSeparationTime(long int time) 		{fSeparationTime = time;}	//!< Set Separation Time
-	void SetFullStockManagement(bool bmanagement)	{fFullStockManagement = bmanagement;}
+	void SetStockManagement(bool bmanagement)	{fStockManagement = bmanagement;}
 
 
 //********* Get Method *********//
@@ -76,14 +81,17 @@ public :
 
 //---------- Stock ----------//
 	vector<IsotopicVector>	GetIVStock() const		{return fIVStock;}	//!< Return the Stock IsotopicVector
-	void AddIVStock(ZAI zai, double quantity)		{ fIVStock.push_back(zai*quantity); fIVFullStock += zai*quantity; }
-	void AddIVStock(IsotopicVector isotopicvector)		{ fIVStock.push_back(isotopicvector); fIVFullStock+= isotopicvector;}
+	void AddIVStock(ZAI zai, double quantity)		{fIVStock.push_back(zai*quantity);
+								 fIVFullStock += zai*quantity;
+								 fParc->AddTotalStock(zai*quantity);}
+	void AddIVStock(IsotopicVector isotopicvector)		{fIVStock.push_back(isotopicvector); 
+								 fIVFullStock+= isotopicvector;
+								 fParc->AddTotalStock(isotopicvector);}
 
 	IsotopicVector		GetIVFullStock() const		{return fIVFullStock;}	//!< Return the Stock IsotopicVector
 	void AddIVFullStock(ZAI zai, double quantity)		{fIVFullStock.Add(zai*quantity); }
 	void AddIVFullStock(IsotopicVector isotopicvector)	{fIVFullStock.Add(isotopicvector); }
 
-	void TakeFromFullStock(IsotopicVector isotopicvector ) 	{fIVFullStock.Remove(isotopicvector); }
 	void TakeFromStock(IsotopicVector isotopicvector, int index); 		//!< Take isotopicvector from the (index)st vector of the stock 
 
 //-------- GodIncome --------//
@@ -96,6 +104,7 @@ public :
 
 //********* Other Method *********//
 	void Evolution(long int t);
+	void Dump();
 	void Write(string TFbasename);
 	
 	
@@ -121,6 +130,7 @@ protected :
 	vector<long int>	fCoolingStartingTime;	//!< Vector of the Cooling Starting Time
 	vector<int>		fCoolingIndex;		//!< Vector of the Cooling Index
 	int			fCoolingLastIndex;
+	vector<int>		fCoolingEndOfCycle;
 
 //------- Separation --------//
 	vector<IsotopicVector>	fIVSeparating;		//!< Vector of the Treated Isotopic Vector
@@ -128,12 +138,13 @@ protected :
 	vector<int>		fSeparatingIndex;	//!< Vector of the Treated Index
 	int			fSeparatingLastIndex;
 	IsotopicVector		fIVWaste;		//!< The Ultimate Waste IsotopicVector 
-
+	vector<int>		fSeparationEndOfCycle;
+	
 //---------- Stock ----------//
 	vector<IsotopicVector>	fIVStock;		//!< The Stock IsotopicVector
 	IsotopicVector		fIVGodIncome;		//!< Stock quantity providing by a godlike entitie
 	IsotopicVector		fIVFullStock;		//!< Full stock conglomerat
-	bool 			fFullStockManagement;	//!< if true use the stock as the full conglomerat, not individualy
+	bool 			fStockManagement;	//!< if true use the stock as the full conglomerat, not individualy
 
 
 //********* Private Method *********//
@@ -147,6 +158,8 @@ protected :
 	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);	//!< Make the Separation 
 					// return IV[0] -> To Stock / IV[1] -> To Waste
 
+
+	ClassDef(TreatmentFactory,1);
 };
 
 #endif

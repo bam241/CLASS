@@ -6,8 +6,8 @@
  \brief Header file for ZAI classes. 
 */
 
-#include "CLASSHeaders.hxx"
 #include <string>
+#include "TObject.h"
 
 using namespace std;
 
@@ -18,7 +18,7 @@ using namespace std;
 /*!
 
 */
-class ZAI
+class ZAI : public TObject
 {
 	
 	
@@ -48,7 +48,7 @@ class ZAI
 	
 	void SetMass(double m)	{fMass=m;}//!< set the mass of a ZAI
 	double GetMass();				//!< get the mass of a ZAI
-	void Print();
+
 
 	ZAI& operator=(ZAI& IVa);
 	bool operator <(const ZAI& zai) const	{return (fZ != zai.Z())?  
@@ -63,6 +63,7 @@ class ZAI
 	short	fA;		//!< number of nucleons (A=0 means natural isotopes) 
 	short	fI;		//!< Isomeric state
 	double	fMass;		//!< Mass of a ZAI (from the BaseSummary.dat file
+	ClassDef(ZAI,1);
 };
 
 

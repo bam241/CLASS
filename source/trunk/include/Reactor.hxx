@@ -5,20 +5,25 @@
  \file 
  \brief Header file for Reactor class. 
 */
-#include "CLASSHeaders.hxx"
-#include "CLASS.hxx"
+
+#include "IsotopicVector.hxx"
 #include "TreatmentFactory.hxx"
 
 using namespace std;
 
 
-class Reactor
+class CLASS;
+class TreatmentFactory;
+class EvolutiveProduct;
+
+class Reactor : public TObject
 {
 public :
 	//! Normal Constructor.
  	Reactor();
- 	Reactor(EvolutiveProduct* evolutivedb = NULL, 
- 		TreatmentFactory* TreatmentFactory = NULL,
+ 
+ 	Reactor(EvolutiveProduct* evolutivedb , 
+ 		TreatmentFactory* TreatmentFactory ,
  		long int creationtime = 0, long int lifetime = (long int)(3600*24*365.4)*50 );
 
  	
@@ -82,6 +87,8 @@ protected :
  	bool 			fShutDown;
  	bool			fEndOfCycle;
  
+ 
+ 	ClassDef(Reactor,1);
  };
 
 
