@@ -1,8 +1,19 @@
-#include "CLASSHeaders.hxx"
 #include "CLASS.hxx"
+#include "Reactor.hxx"
+#include "TreatmentFactory.hxx"
+#include "Defines.hxx"
+#include "IsotopicVector.hxx"
+
 #include <ctime>
 #include <cmath>
+#include <fstream>
+#include <iostream>
+#include <algorithm>
 #include <omp.h>
+#include <TFile.h>
+#include <TTree.h>
+
+
 //________________________________________________________________________
 //
 //		CLASS
@@ -11,6 +22,7 @@
 //
 //
 //________________________________________________________________________
+
 
 float random(float a, float b) //peak random numebr between a and b
 {
@@ -27,6 +39,8 @@ CLASS::CLASS()
 	fAbsoluteTime = 0;
 	fTreatmentFactoryLastIndex = 0;
 	fReactorLastIndex = 0;
+	fStockManagement = true;
+	fOutputName = "CLASS_Default.root";
 	DBGL;
 }
 
@@ -38,9 +52,23 @@ CLASS::CLASS(long int abstime)
 	fAbsoluteTime = abstime;
 	fTreatmentFactoryLastIndex = 0;
 	fReactorLastIndex = 0;
+	fStockManagement = true;
+	fOutputName = "CLASS_Default.root";
 	DBGL;
 }
 
+//________________________________________________________________________
+CLASS::CLASS(string name, long int abstime)
+{
+	DBGL;
+	fPrintStep = (long int)(3600*24*365.4);  // One Step per Month
+	fAbsoluteTime = abstime;
+	fTreatmentFactoryLastIndex = 0;
+	fReactorLastIndex = 0;
+	fStockManagement = true;
+	fOutputName = name;
+	DBGL;
+}
 //________________________________________________________________________
 CLASS::~CLASS()
 {
@@ -54,6 +82,7 @@ void CLASS::AddTreatmentFactory(TreatmentFactory* treatmentfactory)
 	DBGL;
 	fTreatmentFactory.push_back(treatmentfactory);
 	fTreatmentFactory.back()->SetParc(this);
+	fTreatmentFactory.back()->SetStockManagement(fStockManagement);
 	fTreatmentFactoryLastIndex++;
 	fTreatmentFactoryIndex.push_back(fTreatmentFactoryLastIndex);
 	DBGL;
@@ -95,106 +124,120 @@ IsotopicVector CLASS::BuildIsotopicVector(IsotopicVector isotopicvector)
 {
 	DBGL;
 	IsotopicVector BuildIV;
-	vector< map<pair<int,int>, double> > Zcontribution;
 	
+	if (fStockManagement == false )
+		return BuildIV;
+
+	vector< map<pair<int,int>, double> > Zcontribution;
+	vector<int>  Zlist;
 	int k;
-//#pragma omp parallel for private(k)
-	for(k = 0; k < (int)isotopicvector.GetAtomicSpecies().size(); k++ ) // Loop on the Atomic Species
+#pragma omp parallel
 	{
-		int z = isotopicvector.GetAtomicSpecies().at(k); 		// Get the Atomic Species Number
-
-		IsotopicVector IVAtomicCompo = isotopicvector.GetAtomicComposition(z);
-		double delta = 1e-5*Norme(IVAtomicCompo);
-		vector<IsotopicVector>	IVStock;
-		vector<double>		IVMaxQuantity;
-		vector<int>		FactoryIndex;
-		vector<int>		StockIndex;
-		
-		for(int i=0; i< (int)fTreatmentFactory.size(); i++ )
-		{
-			for(int j = 0; j < (int)fTreatmentFactory.at(i)->GetIVStock().size(); j++ )
-			{
-				FactoryIndex.push_back(i);
-				StockIndex.push_back(j);
-				double Quantitytmp = Norme(fTreatmentFactory.at(i)->GetIVStock().at(j).GetAtomicComposition(z));
-				IVMaxQuantity.push_back(Quantitytmp);
-				IVStock.push_back( fTreatmentFactory.at(i)->GetIVStock().at(j).GetAtomicComposition(z) / Quantitytmp );
-			}
-		}
-		
-		
-		vector<IsotopicVector>	IVStocktmp 	= IVStock;
-		vector<int>		FactoryIndextmp	= FactoryIndex;
-		vector<int>		StockIndextmp 	= StockIndex;
-
-		map<pair<int,int>, double> contribution;
-		
-		
-		
-		
-		// Choose the Contribution
+		IsotopicVector BuildIVtmp;
 		IsotopicVector BuildIVz;
 		IsotopicVector BuildIVztmp;
-		double DistanceN = Norme(IVAtomicCompo);	// Distance at the Nst iteration
-		double DistanceN_1 = Norme(IVAtomicCompo);	// Distance at the N-1 st iteration
-
-		while(IVStocktmp.size() !=0)
+		int z = 0;
+		
+		map<pair<int,int>, double> contribution;
+		#pragma omp for nowait
+		for(k = 0; k < (int)isotopicvector.GetAtomicSpecies().size(); k++ ) // Loop on the Atomic Species
 		{
-			int IVIndex = IVStocktmp.size();
-			double IVIndexQuantityneed = 0;
-			
-			
-			while(IVIndex == (int)IVStocktmp.size()) IVIndex = (int)random(0,IVStocktmp.size());
-		
-			BuildIVztmp = BuildIVz + (IVStocktmp.at(IVIndex) * delta);
-			DistanceN = Distance( BuildIVztmp, isotopicvector.GetAtomicComposition(z) );
-			
-			// Get the contribution of the IVStock IVIndex
-			map< pair<int,int>, double >::iterator it = 
-					contribution.find(pair<int,int>(FactoryIndextmp.at(IVIndex), StockIndextmp.at(IVIndex) ));
-			if(it != contribution.end() )
-				IVIndexQuantityneed = delta + (*it).second;
-			
-			
+			z = isotopicvector.GetAtomicSpecies().at(k); 		// Get the Atomic Species Number
 
+			IsotopicVector IVAtomicCompo = isotopicvector.GetAtomicComposition(z);
+			double delta = 1e-3*Norme(IVAtomicCompo);
+			vector<IsotopicVector>	IVStock;
+			vector<double>		IVMaxQuantity;
+			vector<int>		FactoryIndex;
+			vector<int>		StockIndex;
 		
-			if(DistanceN > DistanceN_1 || IVIndexQuantityneed > IVMaxQuantity.at(IVIndex) )
+			for(int i=0; i< (int)fTreatmentFactory.size(); i++ )
 			{
-				IVStocktmp.erase(IVStocktmp.begin()+IVIndex);
-				FactoryIndextmp.erase(FactoryIndextmp.begin()+IVIndex);
-				StockIndextmp.erase(StockIndextmp.begin()+IVIndex);
+				for(int j = 0; j < (int)fTreatmentFactory.at(i)->GetIVStock().size(); j++ )
+				{
+					FactoryIndex.push_back(i);
+					StockIndex.push_back(j);
+					double Quantitytmp = Norme(fTreatmentFactory.at(i)->GetIVStock().at(j).GetAtomicComposition(z));
+					IVMaxQuantity.push_back(Quantitytmp);
+					IVStock.push_back( fTreatmentFactory.at(i)->GetIVStock().at(j).GetAtomicComposition(z) / Quantitytmp );
+				}
 			}
-			else
+		
+		
+			vector<IsotopicVector>	IVStocktmp 	= IVStock;
+			vector<int>		FactoryIndextmp	= FactoryIndex;
+			vector<int>		StockIndextmp 	= StockIndex;
+
+			// Choose the Contribution
+//			IsotopicVector BuildIVz;
+//			IsotopicVector BuildIVztmp;
+			double DistanceN = Norme(IVAtomicCompo);	// Distance at the Nst iteration
+			double DistanceN_1 = Norme(IVAtomicCompo);	// Distance at the N-1 st iteration
+
+			while(IVStocktmp.size() !=0)
 			{
-				// Add the delta contribution from the IVIndex Stock IV²
-				pair< map< pair<int,int>, double >::iterator, bool > IResult;
+				int IVIndex = IVStocktmp.size();
+				double IVIndexQuantityneed = 0;
+			
+			
+				while(IVIndex == (int)IVStocktmp.size()) IVIndex = (int)random(0,IVStocktmp.size());
+		
+				BuildIVztmp = BuildIVz + (IVStocktmp.at(IVIndex) * delta);
+				DistanceN = Distance( BuildIVztmp, isotopicvector.GetAtomicComposition(z) );
+			
+				// Get the contribution of the IVStock IVIndex
+				map< pair<int,int>, double >::iterator it = 
+						contribution.find(pair<int,int>(FactoryIndextmp.at(IVIndex), StockIndextmp.at(IVIndex) ));
+				if(it != contribution.end() )
+					IVIndexQuantityneed = delta + (*it).second;
+		
+				if(DistanceN > DistanceN_1 || IVIndexQuantityneed > IVMaxQuantity.at(IVIndex) )
+				{
+					IVStocktmp.erase(IVStocktmp.begin()+IVIndex);
+					FactoryIndextmp.erase(FactoryIndextmp.begin()+IVIndex);
+					StockIndextmp.erase(StockIndextmp.begin()+IVIndex);
+				}
+				else
+				{
+					// Add the delta contribution from the IVIndex Stock IV
+					pair< map< pair<int,int>, double >::iterator, bool > IResult;
 				
-				IResult = contribution.insert( pair< pair< int ,int > , double > 
-					( pair< int ,int >(FactoryIndextmp.at(IVIndex), StockIndextmp.at(IVIndex) ), delta) ) ;
+					IResult = contribution.insert( pair< pair< int ,int > , double > 
+						( pair< int ,int >(FactoryIndextmp.at(IVIndex), StockIndextmp.at(IVIndex) ), delta) ) ;
+					if(IResult.second == false)
+						IResult.first->second += delta;
 
-				if(IResult.second == false)
-					IResult.first->second += delta;
-
-				// Reset value
-				DistanceN_1 = DistanceN;
-				BuildIVz = BuildIVztmp;
-				IVStocktmp 	= IVStock;
-				FactoryIndextmp = FactoryIndex;
-				StockIndextmp 	= StockIndex;
+					// Reset value
+					DistanceN_1 = DistanceN;
+					BuildIVz = BuildIVztmp;
+					IVStocktmp 	= IVStock;
+					FactoryIndextmp = FactoryIndex;
+					StockIndextmp 	= StockIndex;
+				}
 			}
-		}
+			BuildIVtmp += BuildIVz;
+//			BuildIV += BuildIVz;
+//			Zcontribution.push_back( contribution );
+//			Zlist.push_back(z);
 		
-		BuildIV += BuildIVz;
-		Zcontribution.push_back( contribution );
+		}
+		#pragma omp critical(BuildIV)
+		{
+			BuildIV += BuildIVtmp;
+			Zcontribution.push_back( contribution );
+			Zlist.push_back(z);
+		}
+	
 	}
-
-	for(int k = 0; k < (int)isotopicvector.GetAtomicSpecies().size(); k++ ) //Loop on the Atomic Species
+//	#pragma omp critical(BuildIVStockupdate)
+	{
+	for(int k = 0; k < (int)Zlist.size(); k++ ) //Loop on the Atomic Species
 	{
 		// Take it and build the IsotopicVector
 		map<pair<int,int>, double> contribution = Zcontribution.at(k);
 		for(map<pair<int,int>, double>::iterator it = contribution.begin(); it != contribution.end(); it++)
 		{
-			int z = isotopicvector.GetAtomicSpecies().at(k);
+			int z = Zlist.at(k);
 			double IVNorme = Norme(fTreatmentFactory.at((*it).first.first)->GetIVStock().at((*it).first.second).GetAtomicComposition(z));
 			IsotopicVector IV = fTreatmentFactory.at((*it).first.first)->GetIVStock().at((*it).first.second).GetAtomicComposition(z);
 			fTreatmentFactory.at((*it).first.first)->TakeFromStock( IV / IVNorme * (*it).second , (*it).first.second );
@@ -202,8 +245,9 @@ IsotopicVector CLASS::BuildIsotopicVector(IsotopicVector isotopicvector)
 		
 		
 	 }
-
+	}
 	
+	RemoveTotalStock(BuildIV);
 	DBGL;
 	return BuildIV;
 }
@@ -214,6 +258,8 @@ void CLASS::BuildTimeVector(long int t)
 	DBGL;
 	fTimeStep.clear();
 	fTimeStep.insert( pair<long int ,int>(t,1) );
+
+//********* Printing Step *********//
 	{
 		long int step = 0;
 		if(step >= fAbsoluteTime	)
@@ -234,21 +280,26 @@ void CLASS::BuildTimeVector(long int t)
 		long int step = fReactor.at(i)->GetCreationTime();
 		long int coolingstep = fReactor.at(i)->GetAssociedTreatmentFactory()->GetCoolingTime();
 		long int seprationstep = fReactor.at(i)->GetAssociedTreatmentFactory()->GetSeparationTime();
-		if(fReactor.at(i)->GetCreationTime() + fReactor.at(i)->GetLifeTime() > fAbsoluteTime && fReactor.at(i)->GetCreationTime() + fReactor.at(i)->GetLifeTime()<t)
-		{						// set destruction of a reactor
+
+//********* Reactor Evolution Step *********//
+		// set destruction of a reactor
+		if( (fReactor.at(i)->GetCreationTime() + fReactor.at(i)->GetLifeTime() > fAbsoluteTime) &&
+		    (fReactor.at(i)->GetCreationTime() + fReactor.at(i)->GetLifeTime()<t) )
+		{
 			pair< map<long int, int>::iterator, bool > IResult ;
 			IResult = fTimeStep.insert( pair<long int ,int>(fReactor.at(i)->GetCreationTime() + fReactor.at(i)->GetLifeTime(),2) );
 			if( IResult.second == false ) IResult.first->second |= 2;
 		}
-
-		if(step >= fAbsoluteTime &&  step <= t && step < fReactor.at(i)->GetCreationTime() + fReactor.at(i)->GetLifeTime())		// Set End of reactor cycle
+		
+		// Set End of reactor cycle
+		if(step >= fAbsoluteTime &&  step <= t && step < fReactor.at(i)->GetCreationTime() + fReactor.at(i)->GetLifeTime())		
 		{
 			pair< map<long int, int>::iterator, bool > IResult = fTimeStep.insert( pair<long int ,int>(step,4) );
 			if( IResult.second == false ) IResult.first->second |= 4;
 		}
 		
 
-
+//********* TF Evolution Step *********//
 		while(step <= t && step <= fReactor.at(i)->GetCreationTime() + fReactor.at(i)->GetLifeTime() )
 		{
 			step += fReactor.at(i)->GetCycleTime();
@@ -320,9 +371,7 @@ void CLASS::BuildTimeVector(long int t)
 void CLASS::TreatmentEvolution()
 {
 	DBGL;
-	int i;
-//#pragma omp parallel for private(i)
-	for(i = 0; i < (int) fTreatmentFactory.size();i++)
+	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
 		fTreatmentFactory.at(i)->Evolution(fAbsoluteTime);
 	DBGL;
 }
@@ -331,25 +380,28 @@ void CLASS::TreatmentEvolution()
 void CLASS::ReactorEvolution()
 {
 	DBGL;
-	int i;
-	omp_set_dynamic(6);
 	
-#pragma omp sections
+
+ #pragma omp sections
 	{
 	#pragma omp section
-	{
-		TreatmentEvolution();
-	}
-	
+		{TreatmentEvolution();}
+
 	#pragma omp section
 	{
-	#pragma omp for
-		for(i = 0; i < (int)fReactor.size(); i++)
-			fReactor.at(i)->Evolution(fAbsoluteTime);
+		#pragma omp parallel for
+			for(int i = 0; i < (int)fReactor.size(); i++)
+				fReactor.at(i)->Evolution(fAbsoluteTime);
 	}
 	}
-	for(i = 0; i < (int)fReactor.size(); i++)
+	
+
+	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
+		fTreatmentFactory.at(i)->Dump();
+
+	for(int i = 0; i < (int)fReactor.size(); i++)
 		fReactor.at(i)->Dump();
+
 	DBGL;
 }
 
@@ -357,10 +409,13 @@ void CLASS::ReactorEvolution()
 void CLASS::Evolution(long int t)
 {
 	DBGL;
+	OpenOutputTree();
+	OutAttach();
 	BuildTimeVector(t);
 
 	for(map<long int ,int >::iterator it = fTimeStep.begin(); it != fTimeStep.end(); it++)
 	{
+		ResetQuantity();
 		fAbsoluteTime = (*it).first;
 		if(fAbsoluteTime > t) return;
 		
@@ -394,21 +449,29 @@ void CLASS::Evolution(long int t)
 		if( (*it).second & 8 || (*it).second & 16 )
 		{
 			TreatmentEvolution();
+			for(int i = 0; i < (int) fTreatmentFactory.size();i++)
+				fTreatmentFactory.at(i)->Dump();
+
 			if((*it).second & 8 )
 				(*it).second ^= 8;
 			if((*it).second & 16 )
 				(*it).second ^= 16;
 		}
 		
+
+		
 		if( (*it).second & 1 )
 		{
 			
 //			Print();
 //			Write();
+
+			fOutT->Fill();
 		}
 
 	cout << "CLASS : " << (long int)fAbsoluteTime/3600/24/365.4 << " STEP DONE !" << endl;
 	}
+	CloseOutputTree();
 	DBGL;
 }
 
@@ -441,6 +504,92 @@ void CLASS::Print()
 	}
 	DBGL;
 }
+void CLASS::ResetQuantity()
+{
+	DBGL;
+	IsotopicVector EmptyIV;
+	fTotalInReactor		= EmptyIV;
+	fTotalWaste		= EmptyIV;
+	fTotalStock		= EmptyIV;
+	fTotalGodIncome		= EmptyIV;
+	fTotalCooling		= EmptyIV;
+	fTotalSeparating	= EmptyIV;
+	fIVInCycleTotal		= EmptyIV;
+	fIVTotal		= EmptyIV;
+	DBGL;
+}
+
+//________________________________________________________________________
+void CLASS::OpenOutputTree()
+{
+	DBGL;
+
+	cout << "Opening : " << fOutputName << " ...";
+
+	fOutTree = new TFile(fOutputName.c_str(),"recreate");
+
+	if(!fOutTree)
+	{
+		cout << "\nCould not open " << fOutputName <<endl;
+		exit(-1);
+	}
+	cout << "\t ...O.K." << endl;
+
+	fOutT = new TTree("Data","Data Tree");
+	cout << "Creating Data Tree...";
+	if(!fOutTree)
+	{
+		cout << "\nCould not create Data Tree in " << fOutputName << endl;
+		exit(-1);
+	}
+	cout << "\t ...O.K!" << endl;
+	// fOutT->SetAutoFlush(1000000);
+	// outT->SetAutoSave(100000);
+}
+void CLASS::CloseOutputTree()
+{
+	DBGL;
+
+	fOutTree->ls();
+	cout << "Writing outTree " << fOutputName << endl;
+	fOutTree->Write();
+
+	if(fOutTree->IsOpen()) {
+		cout << "Deleting outTree : " << endl;
+		delete fOutT;
+		cout << "Closing file : " << fOutputName <<endl;
+		fOutTree-> Close();
+		delete fOutTree;
+	} else {
+		cout << "File was not opened " << fOutputName << endl;
+		exit(-1);
+	}
+}
+//________________________________________________________________________
+void CLASS::OutAttach()
+{
+	DBGL;
+	//Branch Absolut Time
+	fOutT->Branch("AbsTime",&fAbsoluteTime,"AbsoluteTime/L");
+	
+	// Branch the Sum IV
+
+	
+	fOutT->Branch("TF_WASTE", "IsotopicVector", &fTotalWaste);
+	fOutT->Branch("TF_STOCK", "IsotopicVector", &fTotalStock);
+	fOutT->Branch("TF_SEPARATING", "IsotopicVector", &fTotalSeparating);
+	fOutT->Branch("TF_COOLING", "IsotopicVector", &fTotalCooling);
+	fOutT->Branch("GODINCOME", "IsotopicVector", &fTotalGodIncome);
+	fOutT->Branch("INCYCLE", "IsotopicVector", &fIVInCycleTotal);
+	fOutT->Branch("TOTAL", "IsotopicVector", &fIVTotal);
+	
+	fOutT->Branch("TreatmentFactory", "TreatmentFactory", &fTreatmentFactory.at(0));
+	fOutT->Branch("Reactor", "Reactor", &fReactor.at(0));
+	
+	DBGL;
+}
+
+
 
 //________________________________________________________________________
 void CLASS::Write()

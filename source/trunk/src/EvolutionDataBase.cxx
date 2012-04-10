@@ -1,4 +1,11 @@
-#include "CLASSHeaders.hxx"
+#include "EvolutionDataBase.hxx"
+#include "IsotopicVector.hxx"
+#include "EvolutiveProduct.hxx"
+#include "Defines.hxx"
+
+#include <fstream>
+#include <sstream>
+#include <iostream>
 
 using namespace std;
 //________________________________________________________________________
@@ -9,6 +16,7 @@ using namespace std;
 //
 //
 //________________________________________________________________________
+
 EvolutionDataBase::EvolutionDataBase(string DB_index_file)
 {
 	DBGL;
@@ -29,17 +37,21 @@ EvolutionDataBase::~EvolutionDataBase()
 IsotopicVector	EvolutionDataBase::DecayProduction(const ZAI& zai, double dt)
 {
 	DBGL;
-//	if{dt > fDatabaseEndTime}
+	IsotopicVector	returnIV;
 	map<ZAI ,EvolutiveProduct* >::iterator it;
-	it = fEvolutionDataBase.find(zai);
-	if (it == fEvolutionDataBase.end() )
-	{
-		EvolutiveProduct* evolutionproduct = new EvolutiveProduct(zai.Z(), zai.A(), zai.I(), fDataBaseIndex );
-		fEvolutionDataBase.insert( pair<ZAI ,EvolutiveProduct *>(zai, evolutionproduct) );
-		return evolutionproduct->GetIsotopicVectorAt(dt);
-	}
-	else	return (*it).second->GetIsotopicVectorAt(dt);
+		it = fEvolutionDataBase.find(zai);
 
+		if (it == fEvolutionDataBase.end() )
+		{
+		
+			EvolutiveProduct* evolutionproduct = new EvolutiveProduct(zai.Z(), zai.A(), zai.I(), fDataBaseIndex );
+			#pragma omp critical(DBupdate)
+			{fEvolutionDataBase.insert( pair<ZAI ,EvolutiveProduct *>(zai, evolutionproduct) );}
+			returnIV = evolutionproduct->GetIsotopicVectorAt(dt);
+		}
+		else	returnIV = (*it).second->GetIsotopicVectorAt(dt);
+	
+	return returnIV;
 }
 
 //________________________________________________________________________
@@ -47,7 +59,7 @@ bool EvolutionDataBase::IsDefine(const ZAI& zai) const
 {
 	DBGL;
 	map<ZAI ,EvolutiveProduct* > evolutiondb = (*this).GetEvolutionDataBase();
-	if (  evolutiondb.find(zai) != evolutiondb.end() ) 
+	if (evolutiondb.find(zai) != evolutiondb.end()) 
 		return true;
 	else	
 		return false;

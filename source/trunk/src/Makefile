@@ -13,11 +13,19 @@ ROOTGLIBS	= `root-config --glibs`
 ######### nothing to change from here #########
 INCLUDES	= $(LOCALINC)/*.hxx
 LIBNAME 	= CLASSpkg
-OBJS		= CLASS.o Reactor.o TreatmentFactory.o IsotopicVector.o ZAI.o EvolutionDataBase.o EvolutiveProduct.o 
+OBJS		= 	CLASS.o \
+			TreatmentFactory.o TreatmentFactoryDict.o\
+			Reactor.o ReactorDict.o \
+			IsotopicVector.o IsotopicVectorDict.o \
+			ZAI.o ZAIDict.o \
+			EvolutionDataBase.o \
+			EvolutiveProduct.o  
 		  		  
-		  
+
+
+
 CXX           = g++
-CXXFLAGS      = -O2 -g -Wall  -fPIC -fopenmp ${MCNP_VERSION} -I$(LOCALINC) $(ROOTCFLAGS) -I$(EXTERNINC)
+CXXFLAGS      = -O2 -g -Wall -fopenmp -fPIC -I$(LOCALINC) $(ROOTCFLAGS) -I$(EXTERNINC)
 LD            = g++
 LDFLAGS       =  -g -Wall -fPIC -L$(LIBDIR) -lvalerr -lmctal -shared 
 
@@ -25,8 +33,25 @@ all:		$(OBJS)
 		$(LD) $(LDFLAGS) $(OBJS) -o $(LIBDIR)/lib$(LIBNAME).so
 		@echo "lib$(LIBNAME).so done"
 
+
+
+ReactorDict.cxx:		$(LOCALINC)/Reactor.hxx
+				rootcint -f $@ -c $^
+ 
+TreatmentFactoryDict.cxx:		$(LOCALINC)/TreatmentFactory.hxx
+				rootcint -f $@ -c $^
+
+IsotopicVectorDict.cxx:		$(LOCALINC)/IsotopicVector.hxx
+				rootcint -f $@ -c $^
+
+ZAIDict.cxx:			$(LOCALINC)/ZAI.hxx
+				rootcint -f $@ -c $^
+
+
+
+
 clean:
-		@rm -vf $(OBJS) *~ core
+		@rm -vf $(OBJS) *~ core *Dict.cxx
 
 .SUFFIXES: .cxx
 
