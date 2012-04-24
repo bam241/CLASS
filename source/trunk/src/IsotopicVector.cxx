@@ -322,18 +322,20 @@ double	IsotopicVector::GetZAIIsotopicQuantity(const int z, const int a, const in
 {
 	DBGL;
 	ZAI zai(z, a, i);
-	map<ZAI ,double>::iterator it;
-	it = GetIsotopicQuantity().find(zai);
+	return GetZAIIsotopicQuantity(zai);
+	
+//	map<ZAI ,double>::iterator it;
+//	it = GetIsotopicQuantity().find(zai);
 
-	DBGL;
-	if ( it != GetIsotopicQuantity().end() ) 
-	{
-		return it->second;	
-	}	
-	else	
-	{	
-		return 0;
-	}
+//	DBGL;
+//	if ( it != GetIsotopicQuantity().end() ) 
+//	{
+//		return it->second;	
+//	}	
+//	else	
+//	{	
+//		return 0;
+//	}
 }
 
 IsotopicVector	IsotopicVector::GetAtomicComposition(int z) const
@@ -425,7 +427,7 @@ void IsotopicVector::Print(string option) const
 	
 	for(int i = 0; i < (int)option.length(); i++)
 	{
-//		if(option.at(i) == 'd')	DBPrint = true;	
+//		if(option[i] == 'd')	DBPrint = true;	
 	}
 	
 	if(QuantityPrint)

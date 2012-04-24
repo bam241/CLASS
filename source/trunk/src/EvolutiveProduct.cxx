@@ -57,8 +57,8 @@ EvolutiveProduct::EvolutiveProduct(int Z, int A, int I, string DBindexfile)
 	}
 	if(zaifind == false) 
 	{
-		cout 	<< "!!Warning!! !!!EVOLUTIVE DB!!! Oups... Can't Find the ZAI : " 
-			<< Z << " " << A << " "	<< I << "!!! It will be considered as stable !!" << endl;
+//		cout 	<< "!!Warning!! !!!EVOLUTIVE DB!!! Oups... Can't Find the ZAI : " 
+//			<< Z << " " << A << " "	<< I << "!!! It will be considered as stable !!" << endl;
 	AddAsStable(Z, A, I);
 	}
 	DBGL;
@@ -127,7 +127,7 @@ void EvolutiveProduct::ReadDB(string DBfile)
 	double Time[vTime.size()];
 	double TimeErr[vTime.size()];
 	for(int i=0; i < (int)vTime.size();i++)
-		{Time[i] = vTime.at(i); TimeErr[i] = vTimeErr.at(i);} 
+		{Time[i] = vTime[i]; TimeErr[i] = vTimeErr[i];} 
 
 
 	while (!DecayDB.eof())
