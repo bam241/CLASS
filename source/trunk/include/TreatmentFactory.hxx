@@ -159,7 +159,7 @@ protected :
 					// return IV[0] -> To Stock / IV[1] -> To Waste
 
 
-	ClassDef(TreatmentFactory,1);
+	ClassDef(TreatmentFactory,3);
 };
 
 #endif
