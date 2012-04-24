@@ -66,7 +66,7 @@ public :
 	
 	void	Write(string filename, long int time ) const;
 
-	
+	void Dump() {Print();}
 	void Print(string o =" ") const ;			//<! Print the composition of the IV
 								//<! Put 'd' to get DB information
 
@@ -76,8 +76,9 @@ public :
 	IsotopicVector& operator+=(IsotopicVector const& IVb);	//!....
 	IsotopicVector& operator-=(IsotopicVector const& IVb);	//!....
 
-
-
+	void cleartest() {ftest.clear();}
+	void addtest(long int tt) {ftest.push_back(tt);}
+	long int testout(int i) {return ftest[i];} 
 //***************************************************// 
 
 	
@@ -85,8 +86,10 @@ public :
 
 	map<ZAI ,double>	fIsotopicQuantity;		//!< Isotopic vector composition in gramme
 	map<ZAI ,double>	fIsotopicQuantityNeeded;	//!< Isotopic vector request and not present
+	vector<long int>		ftest;
 
-	ClassDef(IsotopicVector,1);
+
+	ClassDef(IsotopicVector,2);
 };
 
 

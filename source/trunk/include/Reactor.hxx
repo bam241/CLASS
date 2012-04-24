@@ -88,7 +88,7 @@ protected :
  	bool			fEndOfCycle;
  
  
- 	ClassDef(Reactor,1);
+ 	ClassDef(Reactor,3);
  };
 
 

@@ -84,6 +84,8 @@ public :
 	void	AddTotalGodIncome(IsotopicVector IV)		{fTotalGodIncome +=IV;}
 
 //********* Other Method *********//
+	void	PorgressionPrintOut(int starttime, long int t);
+	
 	void	Print();
 	void	Write();
 	
