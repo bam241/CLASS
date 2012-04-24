@@ -2,8 +2,9 @@
 LIBDIR          = ../../lib
 # Base directory containing includes for libmctal and libvalerr
 EXTERNINC	= ../external
-# Directory containing includes for MURE
+# Directory containing includes for CLASS
 LOCALINC	= ../include
+
 
 ROOTCFLAGS    	= `root-config --cflags`
 ROOTLIBS	= `root-config --libs`
@@ -27,7 +28,7 @@ OBJS		= 	CLASS.o \
 CXX           = g++
 CXXFLAGS      = -O2 -g -Wall -fopenmp -fPIC -I$(LOCALINC) $(ROOTCFLAGS) -I$(EXTERNINC)
 LD            = g++
-LDFLAGS       =  -g -Wall -fPIC -L$(LIBDIR) -lvalerr -lmctal -shared 
+LDFLAGS       =  -g -Wall -fPIC $(ROOTLIBS) -shared 
 
 all:		$(OBJS)
 		$(LD) $(LDFLAGS) $(OBJS) -o $(LIBDIR)/lib$(LIBNAME).so
