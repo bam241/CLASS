@@ -8,6 +8,7 @@
 #include <ctime>
 #include "time.h"
 #include <cmath>
+#include <iomanip>
 #include <fstream>
 #include <iostream>
 #include <algorithm>
@@ -189,7 +190,7 @@ DBGL;
 void CLASS::DumpParcStock()
 {
 DBGL;
-	
+	if(fStockManagement == false) return;
 	for(int i = 0; i < (int)fTreatmentFactory.size(); i++)
 		fTreatmentFactory[i]->ClearIVStock();
 	
@@ -645,6 +646,7 @@ DBGL;
 		fReactor[i]->Dump();
 	
 	DumpParcStock();
+	
 DBGL;
 }
 
@@ -705,7 +707,7 @@ DBGL;
 		
 
 		
-		//if( (*it).second & 1 )
+		if( (*it).second & 1 )
 			#pragma omp single
 			{
 //				Print();
@@ -728,8 +730,8 @@ DBGL;
 	double Total = t/3600/24/365.4;
 	double Remain =  (Spent/Time * Total - Spent);
 	cout << "                                                                                             " << flush ;
-	cout << "\rProcessed " << Time << " / " << Total << " STEP "
-	     << (Time/Total*100.0) << "%) ---  I still need : "
+	cout << "\rProcessed " << setprecision(4) << Time << " / " << setprecision(4) << Total << " STEP "
+	     << setprecision(4) << (Time/Total*100.0) << "%) ---  I still need : "
 	<< (long int)Remain/60 << " min "<<  (long int)(Remain)%60 << " sec to finish ! \r" << flush;
 DBGL;
 }
@@ -823,6 +825,7 @@ DBGL;
 	fOutT->Branch("TF_SEPARATING.", "IsotopicVector", &fTotalSeparating);
 	fOutT->Branch("TF_COOLING.", "IsotopicVector", &fTotalCooling);
 	fOutT->Branch("GODINCOME.", "IsotopicVector", &fTotalGodIncome);
+	fOutT->Branch("INTOTALINREACTOR.", "IsotopicVector", &fTotalInReactor);
 	fOutT->Branch("INCYCLE.", "IsotopicVector", &fIVInCycleTotal);
 	fOutT->Branch("TOTAL.", "IsotopicVector", &fIVTotal);
 	

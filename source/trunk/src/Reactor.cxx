@@ -143,9 +143,8 @@ void Reactor::Dump()
 			IsotopicVector GodPart;
 			
 			BuildIVtmp.Add(fAssociedTreatmentFactory->GetIVFullStock().GetIsotopicQuantity());
-			BuildIVtmp -= fIVInCycle;
+			BuildIVtmp -= fIVInCycle;			
 			GodPart.Add(BuildIVtmp.GetIsotopicQuantityNeeded()) ;
-
 			fAssociedTreatmentFactory->TakeFromStock( fIVInCycle - GodPart, -1);
 			fAssociedTreatmentFactory->AddIVGodIncome(GodPart);
 		}
