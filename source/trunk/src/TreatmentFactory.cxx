@@ -233,13 +233,13 @@ DBGL;
 	
 	int EvolutionTime = t - fInternalTime;
 	fIVFullStock = GetDecayProduct(fIVFullStock , EvolutionTime);
-	
+#pragma omp critical(UpdateTotalStock)
+	{fParc->AddTotalStock(fIVFullStock);}
+
 #pragma omp parallel for
 	for (int i=0; i <(int) fIVStock.size() ; i++)
 	{
 		fIVStock[i] = GetDecayProduct(fIVStock[i] , EvolutionTime);
-#pragma omp critical(UpdateTotalStock)
-		{fParc->AddTotalStock(fIVStock[i]);}
 	}
 	
 	

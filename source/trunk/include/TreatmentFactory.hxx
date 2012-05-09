@@ -92,7 +92,7 @@ public :
 	void ClearIVStock();
 	
 	void AddIVStock(ZAI zai, double quantity)		{AddIVStock(zai*quantity);}		//!< Add a ZAI*quantity to the stock
-	void AddIVStock(IsotopicVector isotopicvector)		{fIVStock.push_back(isotopicvector); fIVFullStock+= isotopicvector; fParc->AddTotalStock(isotopicvector);}
+	void AddIVStock(IsotopicVector isotopicvector)		{fIVStock.push_back(isotopicvector); fIVFullStock += isotopicvector; fParc->AddTotalStock(isotopicvector);}
 													//!< Add an Isotopicvector to the stock
 	IsotopicVector		GetIVFullStock() const		{return fIVFullStock;}			//!< Return the Full Stock
 	void AddIVFullStock(ZAI zai, double quantity)		{fIVFullStock.Add(zai*quantity); }	//!< Add a ZAI*quantity to the stock
