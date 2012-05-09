@@ -16,10 +16,11 @@ using namespace std;
 class IsotopicVector;
 class ZAI;
 class EvolutiveProduct;
+class LogFile;
 
 
 
-//! A ZAIIDataBase defined a database which contain the evolution of faction of all product, subproduct (or sub(sub...sub)product) for a nucleus. 
+///< A ZAIIDataBase defined a database which contain the evolution of faction of all product, subproduct (or sub(sub...sub)product) for a nucleus. 
 /*!
  The aim of this class is to handle the evolution all information of all Nuclueus product, subproduct (or sub(sub...sub)product) as the fonction of the time.
  
@@ -34,7 +35,7 @@ class EvolutionDataBase
 public :
 //********* Constructor/Destructor Method *********//
 
-	EvolutionDataBase(string DB_index_file = "Default_Index.dat");
+	EvolutionDataBase(LogFile* Log, string DB_index_file = "Default_Index.dat" );
 	~EvolutionDataBase();
 
 //********* Get Method *********//
@@ -49,7 +50,7 @@ public :
 	
 //********* Modification Method *********//
 	IsotopicVector	DecayProduction(const ZAI &zai, double dt); 
-					//!< Return the Product IsotopicVector evolution from zai during a dt time
+					///< Return the Product IsotopicVector evolution from zai during a dt time
 	bool AddEvolutiveProduct(const ZAI& zai);
 
 
@@ -60,7 +61,8 @@ public :
 protected :
 	
 	map<ZAI ,EvolutiveProduct* >	fEvolutionDataBase;
- 	string fDataBaseIndex;
+ 	string				fDataBaseIndex;
+ 	LogFile*			fLog;
  	
 
 };

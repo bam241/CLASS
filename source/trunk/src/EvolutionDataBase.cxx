@@ -1,6 +1,7 @@
 #include "EvolutionDataBase.hxx"
 #include "IsotopicVector.hxx"
 #include "EvolutiveProduct.hxx"
+#include "LogFile.hxx"
 #include "Defines.hxx"
 
 #include <fstream>
@@ -17,9 +18,10 @@ using namespace std;
 //
 //________________________________________________________________________
 
-EvolutionDataBase::EvolutionDataBase(string DB_index_file)
+EvolutionDataBase::EvolutionDataBase(LogFile* Log, string DB_index_file)
 {
 	DBGL;
+	fLog = Log;
 	fDataBaseIndex = DB_index_file;
 	DBGL;
 }
@@ -44,7 +46,7 @@ IsotopicVector	EvolutionDataBase::DecayProduction(const ZAI& zai, double dt)
 		if (it == fEvolutionDataBase.end() )
 		{
 		
-			EvolutiveProduct* evolutionproduct = new EvolutiveProduct(zai.Z(), zai.A(), zai.I(), fDataBaseIndex );
+			EvolutiveProduct* evolutionproduct = new EvolutiveProduct(fLog, zai.Z(), zai.A(), zai.I(), fDataBaseIndex);
 			#pragma omp critical(DBupdate)
 			{fEvolutionDataBase.insert( pair<ZAI ,EvolutiveProduct *>(zai, evolutionproduct) );}
 			returnIV = evolutionproduct->GetIsotopicVectorAt(dt);
@@ -73,7 +75,7 @@ bool EvolutionDataBase::AddEvolutiveProduct(const ZAI& zai)
 	pair<map<ZAI, EvolutiveProduct *>::iterator, bool> IResult;
 	
 	IResult = fEvolutionDataBase.insert(
-		pair<ZAI ,EvolutiveProduct *>(zai, new EvolutiveProduct(zai.Z(), zai.A(), zai.I(), GetDataBaseIndex())) );
+		pair<ZAI ,EvolutiveProduct *>(zai, new EvolutiveProduct(fLog, zai.Z(), zai.A(), zai.I(), GetDataBaseIndex())) );
 	
 	DBGL;
 	return IResult.second;

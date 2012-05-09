@@ -1,6 +1,7 @@
 #include "EvolutiveProduct.hxx"
 #include "IsotopicVector.hxx"
 #include "ZAI.hxx"
+#include "LogFile.hxx"
 #include "Defines.hxx"
 #include "StringLine.hxx"
 
@@ -23,13 +24,15 @@ using namespace std;
 //
 //________________________________________________________________________
 
-EvolutiveProduct::EvolutiveProduct(int Z, int A, int I, string DBindexfile)
+EvolutiveProduct::EvolutiveProduct(LogFile* Log, int Z, int A, int I, string DBindexfile)
 {
-	DBGL;
+DBGL;
+	fLog = Log;
 	ifstream DB_index(DBindexfile.c_str());
 	if( !DB_index)
 	{
 		cout << "!!!EVOLUTIVE DB!!!! Can't open \"" << DBindexfile << "\"" << endl;
+		fLog->fLog << "!!!EVOLUTIVE DB!!!! Can't open \"" << DBindexfile << "\"" << endl;
 		exit (1);
 	}
 	bool zaifind = false;		
@@ -44,7 +47,7 @@ EvolutiveProduct::EvolutiveProduct(int Z, int A, int I, string DBindexfile)
 		
 		if(first.size()==0) break;						// If First word is null.... quit
 		
-		int rZ=atoi(first.c_str());							// Get Z
+		int rZ=atoi(first.c_str());						// Get Z
 		int rA=atoi(StringLine::NextWord(line,start).c_str());			// Get A
 		int rI=atoi(StringLine::NextWord(line,start).c_str());			// Get Isomeric State
 
@@ -57,11 +60,14 @@ EvolutiveProduct::EvolutiveProduct(int Z, int A, int I, string DBindexfile)
 	}
 	if(zaifind == false) 
 	{
-//		cout 	<< "!!Warning!! !!!EVOLUTIVE DB!!! Oups... Can't Find the ZAI : " 
-//			<< Z << " " << A << " "	<< I << "!!! It will be considered as stable !!" << endl;
-	AddAsStable(Z, A, I);
+		#pragma omp critical(LOGupdate)
+		{
+		fLog->fLog << "!!Warning!! !!!EVOLUTIVE DB!!! Oups... Can't Find the ZAI : " 
+			   << Z << " " << A << " "	<< I << "!!! It will be considered as stable !!" << endl;
+		AddAsStable(Z, A, I);
+		}
 	}
-	DBGL;
+DBGL;
 
 }
 
@@ -105,8 +111,10 @@ void EvolutiveProduct::ReadDB(string DBfile)
 	DBGL;
 	ifstream DecayDB(DBfile.c_str());							// Open the File
 	if(!DecayDB)
+	{
 		cout << "!!Warning!! !!!EvolutiveProduct!!! \n Can't open \"" << DBfile << "\"\n" << endl;
-
+		fLog->fLog << "!!Warning!! !!!EvolutiveProduct!!! \n Can't open \"" << DBfile << "\"\n" << endl;
+	}
 	vector<double> vTime;
 	vector<double> vTimeErr;
 
@@ -115,7 +123,11 @@ void EvolutiveProduct::ReadDB(string DBfile)
 	
 	getline(DecayDB, line); // Nuclei is given with "A Z"
 	if( StringLine::NextWord(line, start, ' ') != "time") 
-		{cout << "!!Bad Trouble!! !!!EvolutiveProduct!!! Bad Database file : " <<  DBfile << endl; exit (1);}
+	{
+		cout << "!!Bad Trouble!! !!!EvolutiveProduct!!! Bad Database file : " <<  DBfile << endl;
+		fLog->fLog << "!!Bad Trouble!! !!!EvolutiveProduct!!! Bad Database file : " <<  DBfile << endl;
+		exit (1);
+	}
 	
 	while(start < (int)line.size())
 	{

@@ -20,20 +20,28 @@ OBJS		= 	CLASS.o \
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAI.o ZAIDict.o \
 			EvolutionDataBase.o \
-			EvolutiveProduct.o  
+			EvolutiveProduct.o \
+			LogFile.o
 		  		  
-
+ROOTOBJS	= 	TreatmentFactory.o TreatmentFactoryDict.o\
+			Reactor.o ReactorDict.o \
+			IsotopicVector.o IsotopicVectorDict.o \
+			ZAI.o ZAIDict.o \
+			EvolutionDataBase.o \
+			EvolutiveProduct.o \
+			LogFile.o
 
 
 CXX           = g++
-CXXFLAGS      = -O2 -g -Wall -fopenmp -fPIC -I$(LOCALINC) $(ROOTCFLAGS) -I$(EXTERNINC)
+CXXFLAGS      = -O2 -g -Wall -fopenmp -fPIC -I$(LOCALINC) $(ROOTCFLAGS) -I$(EXTERNINC) -I/usr/include/gsls
 LD            = g++
-LDFLAGS       =  -g -Wall -fPIC $(ROOTLIBS) -shared 
+LDFLAGS       =  -g -Wall -fPIC $(ROOTLIBS) -shared  -I/usr/include/gsl -lgsl -lgslcblas -lm
 
 all:		$(OBJS)
 		$(LD) $(LDFLAGS) $(OBJS) -o $(LIBDIR)/lib$(LIBNAME).so
 		@echo "lib$(LIBNAME).so done"
-
+		$(LD) $(LDFLAGS) $(ROOTOBJS) -o $(LIBDIR)/lib$(LIBNAME)_root.so
+		@echo "lib$(LIBNAME)_root.so done"
 
 
 ReactorDict.cxx:		$(LOCALINC)/Reactor.hxx
@@ -50,6 +58,7 @@ ZAIDict.cxx:			$(LOCALINC)/ZAI.hxx
 
 
 
+		
 
 clean:
 		@rm -vf $(OBJS) *~ core *Dict.cxx
