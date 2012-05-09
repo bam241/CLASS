@@ -1,5 +1,6 @@
 #include "IsotopicVector.hxx"
 #include "ZAI.hxx"
+#include "LogFile.hxx"
 #include "Defines.hxx"
 
 
@@ -34,15 +35,15 @@ ClassImp(IsotopicVector)
 
 double 	Norme(IsotopicVector IV1)
 {
-	DBGL;
+DBGL;
 	IsotopicVector IV; 
 	return Distance(IV1, IV);
-	DBGL;
+DBGL;
 }
 
 double Distance(IsotopicVector IV1, IsotopicVector IV2 )
 {
-	DBGL;
+DBGL;
 	double d2 = 0;
 	
 	IsotopicVector IVtmp = IV1 + IV2;
@@ -55,7 +56,7 @@ double Distance(IsotopicVector IV1, IsotopicVector IV2 )
 		d2 += pow(Z1-Z2 , 2 );
 	}
 	
-	DBGL;
+DBGL;
 	return sqrt(d2);
 }
 
@@ -99,7 +100,7 @@ IsotopicVector operator/(ZAI const& zai, double F)
 //________________________________________________________________________
 IsotopicVector operator*(IsotopicVector const& IVA, double F)
 {
-	DBGL;
+DBGL;
 	IsotopicVector IV = IVA;
 	IV.Multiply(F);
 	return IV;
@@ -108,7 +109,7 @@ IsotopicVector operator*(IsotopicVector const& IVA, double F)
 //________________________________________________________________________
 IsotopicVector operator/(IsotopicVector const& IVA, double F)
 {
-	DBGL;
+DBGL;
 	IsotopicVector IV = IVA;
 	IV.Multiply(1./F);
 	return IV;
@@ -138,15 +139,15 @@ IsotopicVector& IsotopicVector::operator-=(const IsotopicVector& IVa)
 //________________________________________________________________________
 IsotopicVector::IsotopicVector()
 {
-	DBGL;
-	DBGL;
+DBGL;
+DBGL;
 }
 
 
 //________________________________________________________________________
 IsotopicVector::~IsotopicVector()
 {
-	DBGL;
+DBGL;
 }
 
 
@@ -156,33 +157,33 @@ IsotopicVector::~IsotopicVector()
 //________________________________________________________________________
 void IsotopicVector::Clear()
 {
-	DBGL;
+DBGL;
 	fIsotopicQuantityNeeded.clear();
 	fIsotopicQuantity.clear();
-	DBGL;
+DBGL;
 }
 //________________________________________________________________________
 void IsotopicVector::ClearNeed()
 {
-	DBGL;
+DBGL;
 	fIsotopicQuantityNeeded.clear();
-	DBGL;
+DBGL;
 }
 
 //________________________________________________________________________
 void IsotopicVector::Multiply(double factor)
 {
-	DBGL;
+DBGL;
 	for(map<ZAI ,double >::iterator it = fIsotopicQuantity.begin(); it != fIsotopicQuantity.end(); it++)
 		(*it).second = (*it).second * factor;
-	DBGL;
+DBGL;
 	
 }
 
 //________________________________________________________________________
 void IsotopicVector::Add(const ZAI& zai, double quantity)
 {
-	DBGL;
+DBGL;
 	if( ceil(quantity*1e6) - quantity*1e6 >  quantity*1e6 - floor(quantity*1e6) )
 		quantity = floor(quantity*1e6)*1/1e6;
 	else	quantity = ceil(quantity*1e6)*1/1e6;
@@ -195,30 +196,30 @@ void IsotopicVector::Add(const ZAI& zai, double quantity)
 			IResult.first->second += quantity;
 	}
 
-	DBGL;
+DBGL;
 }
 //________________________________________________________________________
 
 void IsotopicVector::Add(const IsotopicVector& isotopicvector)
 {
-	DBGL;
+DBGL;
 	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
 	
 	for(map<ZAI ,double >::iterator it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		Add( (*it).first, (*it).second);
-	DBGL;
+DBGL;
 
 }
 //________________________________________________________________________
 
 void IsotopicVector::Add(const map<ZAI ,double>& quantity)
 {
-	DBGL;
+DBGL;
 	map<ZAI ,double> isotopicquantity = quantity;
 	
 	for(map<ZAI ,double >::iterator it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		Add( (*it).first, (*it).second);
-	DBGL;
+DBGL;
 
 }
 
@@ -226,7 +227,7 @@ void IsotopicVector::Add(const map<ZAI ,double>& quantity)
 //________________________________________________________________________
 void IsotopicVector::Remove(const ZAI& zai, double quantity)
 {
-	DBGL;
+DBGL;
 
 	map<ZAI ,double>::iterator it;
 	it = fIsotopicQuantity.find(zai);
@@ -252,24 +253,24 @@ void IsotopicVector::Remove(const ZAI& zai, double quantity)
 			Need(zai, quantity);
 		}
 	}
-	DBGL;
+DBGL;
 
 }
 
 //________________________________________________________________________
 void IsotopicVector::Remove(const IsotopicVector& isotopicvector)
 {
-	DBGL;
+DBGL;
 	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
 	for(map<ZAI ,double >::iterator it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		Remove( (*it).first, (*it).second);
-	DBGL;
+DBGL;
 }
 
 //________________________________________________________________________
 void IsotopicVector::Need(const ZAI& zai, double quantity)
 {
-	DBGL;
+DBGL;
 	if( ceil(quantity*1e6) - quantity*1e6 >  quantity*1e6 - floor(quantity*1e6) )
 		quantity = floor(quantity*1e6)*1/1e6;
 	else	quantity = ceil(quantity*1e6)*1/1e6;
@@ -282,7 +283,7 @@ void IsotopicVector::Need(const ZAI& zai, double quantity)
 		if(IResult.second == false)
 			IResult.first->second += quantity;
 	}
-	DBGL;
+DBGL;
 	
 
 }
@@ -290,24 +291,26 @@ void IsotopicVector::Need(const ZAI& zai, double quantity)
 //________________________________________________________________________
 void IsotopicVector::Need(const IsotopicVector& isotopicvector)
 {
-	DBGL;
+DBGL;
 	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
 	
 	for(map<ZAI ,double >::iterator it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		Need( (*it).first, (*it).second);
-	DBGL;
+DBGL;
 }
 
 
 //________________________________________________________________________
 double	IsotopicVector::GetZAIIsotopicQuantity(const ZAI& zai) const
 {
-	DBGL;
+DBGL;
+	map<ZAI ,double> IsotopicQuantity = GetIsotopicQuantity();
+	
 	map<ZAI ,double>::iterator it;
-	it = GetIsotopicQuantity().find(zai);
-
+	it = IsotopicQuantity.find(zai);
 	DBGL;
-	if ( it != GetIsotopicQuantity().end() ) 
+	
+	if ( it != IsotopicQuantity.end() ) 
 	{
 		return it->second;	
 	}	
@@ -320,27 +323,14 @@ double	IsotopicVector::GetZAIIsotopicQuantity(const ZAI& zai) const
 //________________________________________________________________________
 double	IsotopicVector::GetZAIIsotopicQuantity(const int z, const int a, const int i) const
 {
-	DBGL;
+DBGL;
 	ZAI zai(z, a, i);
 	return GetZAIIsotopicQuantity(zai);
-	
-//	map<ZAI ,double>::iterator it;
-//	it = GetIsotopicQuantity().find(zai);
-
-//	DBGL;
-//	if ( it != GetIsotopicQuantity().end() ) 
-//	{
-//		return it->second;	
-//	}	
-//	else	
-//	{	
-//		return 0;
-//	}
 }
 
 IsotopicVector	IsotopicVector::GetAtomicComposition(int z) const
 {
-	DBGL;
+DBGL;
 	IsotopicVector IV;
 	map<ZAI ,double > IsotopicQuantity = GetIsotopicQuantity();
 	map<ZAI ,double >::iterator it;
@@ -350,12 +340,12 @@ IsotopicVector	IsotopicVector::GetAtomicComposition(int z) const
 			IV += (*it).first * (*it).second;
 
 	return IV;
-	DBGL;
+DBGL;
 }
 
 vector<int> IsotopicVector::GetAtomicSpecies() const
 {
-	DBGL;
+DBGL;
 	vector<int> AtomicSpecies;
 	
 	map<ZAI ,double > IsotopicQuantity = GetIsotopicQuantity();
@@ -364,7 +354,7 @@ vector<int> IsotopicVector::GetAtomicSpecies() const
 		if( (int)AtomicSpecies.size() ==0 || (*it).first.Z() != AtomicSpecies.back() )  
 			AtomicSpecies.push_back((*it).first.Z());
 
-	DBGL;
+DBGL;
 	return AtomicSpecies;
 }
 
@@ -399,7 +389,8 @@ void IsotopicVector::Write(string filename, long int time) const
 		
 			string filenameZAI = filename+ "_DIR" +"/" + Z + "_" + A + "_"+ I;
 			string cmd = " mkdir " + filename+ "_DIR" +" 2>/dev/null";
-			system(cmd.c_str());
+			int test = system(cmd.c_str());
+			if (test!=0) cout << "!!Warning!! !!!IsotopicVector!!! \n Can't create \"" << filename<<  "_DIR directory " << "\"\n" << endl;
 			ofstream IVfileZAI(filenameZAI.c_str(), ios_base::app);		// Open the File
 
 			if(!IVfileZAI)
@@ -415,7 +406,7 @@ void IsotopicVector::Write(string filename, long int time) const
 //________________________________________________________________________
 void IsotopicVector::Print(string option) const 
 {
-	DBGL;
+DBGL;
 	cout << "**************************" << endl;
 	cout << "*Isotopic Vector Property*" << endl;
 	cout << "**************************" << endl << endl;
@@ -424,11 +415,6 @@ void IsotopicVector::Print(string option) const
 	bool DBPrint = false;
 
 	QuantityPrint = true;
-	
-	for(int i = 0; i < (int)option.length(); i++)
-	{
-//		if(option[i] == 'd')	DBPrint = true;	
-	}
 	
 	if(QuantityPrint)
 	{
@@ -461,7 +447,7 @@ void IsotopicVector::Print(string option) const
 	{
 		cout << "****Isotopic Vector DB****" << endl;
 	}
-	DBGL;
+DBGL;
 }
 
 

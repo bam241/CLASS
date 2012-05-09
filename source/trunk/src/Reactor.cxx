@@ -2,6 +2,7 @@
 #include "IsotopicVector.hxx"
 #include "EvolutiveProduct.hxx"
 #include "CLASS.hxx"
+#include "LogFile.hxx"
 #include "TreatmentFactory.hxx"
 #include "Defines.hxx"
 
@@ -72,7 +73,7 @@ void Reactor::Evolution(long int t)
 	{
 		fEndOfCycle = true;
 		fIVReactor  = fIVBeginCycle;
-		fInternalTime = fCreationTime;
+		fInternalTime = t;
 	}
 
 	// Check if the Reactor if started ...
@@ -82,8 +83,8 @@ void Reactor::Evolution(long int t)
 
 	if(EvolutionTime + fInCycleTime < fCycleTime )			//During Cycle
 	{
-		fIVReactor = fEvolutionDB->GetIsotopicVectorAt(EvolutionTime + fInCycleTime);	// add the new fuel
-		#pragma omp critical(UpdateInReactor)
+		fIVReactor = fEvolutionDB->GetIsotopicVectorAt(EvolutionTime + fInCycleTime);	// update the fuel composition
+#pragma omp critical(UpdateInReactor)
 			{fParc->AddTotalInReactor(fIVReactor);}
 		fInternalTime += EvolutionTime;							// Update Internal Time
 		fInCycleTime += EvolutionTime;							// Update InCycleTime
@@ -102,16 +103,20 @@ void Reactor::Evolution(long int t)
 		{
 			IsotopicVector IV;
 			fIVReactor = IV;
-			fShutDown = false;
+			fShutDown = true;
 		}
 
 	}
 	else
 	{
 		// This is so bad!! You will probably unsynchronize all the reactor....
-		cout << "!!Warning!! !!!Reactor!!!";
-		cout << " Evolution is too long! This is a Bad way to deal the evolution of the reactor...";
-		cout << t/365.4/3600/24 << " :" << endl;
+		cout << "!!Warning!! !!!Reactor!!!"
+		     << " Evolution is too long! This is a Bad way to deal the evolution of the reactor..."
+		     << t/365.4/3600/24 << " :" << endl;
+				
+		fLog->fLog << "!!Warning!! !!!Reactor!!!"
+		           << " Evolution is too long! This is a Bad way to deal the evolution of the reactor..."
+		           << t/365.4/3600/24 << " :" << endl;
 		exit(1);
 	}
 	DBGL;
@@ -121,13 +126,15 @@ void Reactor::Evolution(long int t)
 void Reactor::Dump()
 {
 	DBGL;
-	fParc->AddTotalInReactor(fIVReactor);
 	if(fEndOfCycle == true  )
 	{
+		if(fShutDown == false)	fParc->AddTotalInReactor(fIVReactor);
+		
 		fEndOfCycle = false;
 		if(fParc->GetStockManagement() == true)
 		{
-			IsotopicVector BuildIVtmp = fParc->BuildIsotopicVector(fIVInCycle);
+			IsotopicVector BuildIVtmp  = fParc->BuildIsotopicVector(fIVInCycle);
+//			BuildIVtmp.Print();
 			fAssociedTreatmentFactory->AddIVGodIncome(fIVInCycle - BuildIVtmp);
 		}
 		else
@@ -143,24 +150,19 @@ void Reactor::Dump()
 			fAssociedTreatmentFactory->AddIVGodIncome(GodPart);
 		}
 		
-		if(fIsStarted == true)					// A Cycle has already been done
+		if(fIsStarted == true )					// A Cycle has already been done
 		{
-			fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+			if(fShutDown == false)	fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+			else			fAssociedTreatmentFactory->AddIVCooling(fEvolutionDB->GetIsotopicVectorAt(fCycleTime));
+
 		}
 		else fIsStarted = true;					// Just start the first cycle
+		
 		if(fShutDown == true) fIsStarted = false;		// shut down the Reactor
 	}
 	DBGL;
 }
 
-
-//________________________________________________________________________
-void Reactor::Write(string Rbasename)
-{
-	DBGL;
-	fIVReactor.Write(Rbasename, fInternalTime);
-	DBGL;
-}
 
 
 

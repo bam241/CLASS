@@ -10,7 +10,7 @@
 #include "TreatmentFactory.hxx"
 #include "IsotopicVector.hxx"
 #include "ZAI.hxx"
-
+#include "LogFile.hxx"
 
 #include "EvolutiveProduct.hxx"
 #include "EvolutionDataBase.hxx"

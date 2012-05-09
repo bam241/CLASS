@@ -27,67 +27,61 @@ double 	Norme(IsotopicVector IV1);
 
 class IsotopicVector : public TObject
 {
-
 public :
 
 //********* Constructor/Destructor Method *********//
-	//! Normal Constructor.
- 	IsotopicVector();
- 	
- 	//! Normal Destructor.
- 	~IsotopicVector();
+	
+ 	IsotopicVector();	///< Normal Constructor.
+ 	~IsotopicVector();	 ///< Normal Destructor.
+
 	
 //********* Get Method *********//
 
-	map<ZAI ,double>	GetIsotopicQuantity() const {return fIsotopicQuantity;} 
-	map<ZAI ,double>	GetIsotopicQuantityNeeded() const {return fIsotopicQuantityNeeded;} 									//<! Return the IVQuantity map
-	IsotopicVector		GetAtomicComposition(int z) const ;	//<! Return the Atomic composition of the "z" atom
-	vector<int>		GetAtomicSpecies() const;		//<! Return the Atomic Species contained
+	map<ZAI ,double>	GetIsotopicQuantity() const {return fIsotopicQuantity;}			//!< Return the IVQuantity map 
+	map<ZAI ,double>	GetIsotopicQuantityNeeded() const {return fIsotopicQuantityNeeded;}	//!< Return the IVQuantityNeeded map
+	IsotopicVector		GetAtomicComposition(int z) const;					//!< Return the Atomic composition of the "z" atom
+	vector<int>		GetAtomicSpecies() const;						//!< Return the Atomic Species contained
 
-									//!< Return the IVQuantity needed map
-	double	GetZAIIsotopicQuantity(const ZAI& zai) const;   	//!< Return the composition of the IsotopicVector
-	double	GetZAIIsotopicQuantity(const int z, const int a, const int i) const;   	//!< Return the composition of the IsotopicVector
-
+	
 //********* Modification Method *********//
 	void 	Clear();					//!< Empty all the IV 
 	void 	ClearNeed();					//!< Empty Need componant of the IV 
 
 	void	Add(const ZAI& zai, double quantity); 		//!< Add Quantity gramme of the ZAI Element
 	void	Add(const IsotopicVector& isotopicvector); 	//!< Add IsotopicVector to the existing IsotopicVector
-	void	Add(const map<ZAI ,double>& quantity); 	//!< Add IsotopicVector to the existing IsotopicVector
+	void	Add(const map<ZAI ,double>& quantity);		//!< Add IsotopicVector to the existing IsotopicVector
 
 	void	Need(const ZAI& zai, double quantity);		//!< Fill the fIsotopicQuantityNeeded
 	void	Need(const IsotopicVector& isotopicvector);	//!< Fill the fIsotopicQuantityNeeded
-	void	Need(const map<ZAI ,double>& quantityneeded) {fIsotopicQuantityNeeded = quantityneeded;}
+	void	Need(const map<ZAI ,double>& quantityneeded) {fIsotopicQuantityNeeded = quantityneeded;}	
+								//!< Fill the fIsotopicQuantityNeeded
+
 	void	Remove(const ZAI& zai, double quantity); 	//!< Remove Quantity gramme of the ZAI Element
 	void	Remove(const IsotopicVector& isotopicvector); 	//!< Remove IsotopicVector to the existing IsotopicVector
 
-	void 	Multiply(double factor);
+	void 	Multiply(double factor);			//!< Multiply the IV by a Factor
 	
-	void	Write(string filename, long int time ) const;
+	void	Write(string filename, long int time ) const;	//!< Write the Content of the IV in the filename file
 
-	void Dump() {Print();}
-	void Print(string o =" ") const ;			//<! Print the composition of the IV
-								//<! Put 'd' to get DB information
+	void	Print(string o =" ") const ;			///< Print the composition of the IV
+	
+	double	GetZAIIsotopicQuantity(const ZAI& zai) const;						///< Return the composition of the IsotopicVector
+	double	GetZAIIsotopicQuantity(const int z, const int a, const int i) const;			///< Return the composition of the IsotopicVector
 
+	
+	
 //******* Set Operator between IsotopicVector *******//
 
+	IsotopicVector& operator+=(IsotopicVector const& IVb);	//!<....
+	IsotopicVector& operator-=(IsotopicVector const& IVb);	//!<....
 
-	IsotopicVector& operator+=(IsotopicVector const& IVb);	//!....
-	IsotopicVector& operator-=(IsotopicVector const& IVb);	//!....
-
-	void cleartest() {ftest.clear();}
-	void addtest(long int tt) {ftest.push_back(tt);}
-	long int testout(int i) {return ftest[i];} 
-//***************************************************// 
+//***************************************************///< 
 
 	
 	protected :
 
-	map<ZAI ,double>	fIsotopicQuantity;		//!< Isotopic vector composition in gramme
-	map<ZAI ,double>	fIsotopicQuantityNeeded;	//!< Isotopic vector request and not present
-	vector<long int>		ftest;
-
+	map<ZAI ,double>	fIsotopicQuantity;		///< Isotopic vector composition in Atome Number
+	map<ZAI ,double>	fIsotopicQuantityNeeded;	///< Isotopic vector request and not present
 
 	ClassDef(IsotopicVector,2);
 };
