@@ -82,89 +82,91 @@ var searchBox = new SearchBox("searchBox", "search",false,'Recherche');
 <a href="_isotopic_vector_8hxx.html">Aller à la documentation de ce fichier.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="preprocessor">#ifndef __ISOTOPICVECTOR_HXX__</span>
 <a name="l00002"></a>00002 <span class="preprocessor"></span><span class="preprocessor">#define __ISOTOPICVECTOR_HXX__</span>
 <a name="l00003"></a>00003 <span class="preprocessor"></span>
-<a name="l00008"></a>00008 <span class="comment">//CLASS library</span>
-<a name="l00009"></a>00009 <span class="preprocessor">#include &quot;<a class="code" href="_z_a_i_8hxx.html" title="Header file for ZAI classes.">ZAI.hxx</a>&quot;</span>
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#include &quot;TObject.h&quot;</span>
-<a name="l00012"></a>00012 <span class="preprocessor">#include &lt;string&gt;</span>
-<a name="l00013"></a>00013 <span class="preprocessor">#include &lt;map&gt;</span>
+<a name="l00004"></a>00004 
+<a name="l00013"></a>00013 <span class="preprocessor">#include &quot;<a class="code" href="_z_a_i_8hxx.html" title="Header file for ZAI classes. Define a nuclei as : Z A I.">ZAI.hxx</a>&quot;</span>
 <a name="l00014"></a>00014 
-<a name="l00015"></a>00015 <span class="keyword">using namespace </span>std;
-<a name="l00016"></a>00016 <span class="keyword">class </span><a class="code" href="class_isotopic_vector.html">IsotopicVector</a>;
-<a name="l00017"></a>00017 
-<a name="l00018"></a>00018 <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <a class="code" href="_isotopic_vector_8cxx.html#afc7ce03edc013ba2c7e888fac97987a9">operator/</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVA, <span class="keywordtype">double</span> F);
-<a name="l00019"></a>00019 <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <a class="code" href="_isotopic_vector_8cxx.html#afc7ce03edc013ba2c7e888fac97987a9">operator/</a>(<a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a> <span class="keyword">const</span>&amp; zai, <span class="keywordtype">double</span> F);
-<a name="l00020"></a>00020 <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <a class="code" href="_isotopic_vector_8cxx.html#a205f04059f4b10cff4660e8898b06bcb">operator*</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVA, <span class="keywordtype">double</span> F);
-<a name="l00021"></a>00021 <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <a class="code" href="_isotopic_vector_8cxx.html#a205f04059f4b10cff4660e8898b06bcb">operator*</a>(<a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a> <span class="keyword">const</span>&amp; zai, <span class="keywordtype">double</span> F);
-<a name="l00022"></a>00022 <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <a class="code" href="_isotopic_vector_8cxx.html#a0c3876dfe456b056fbcfe3d946e09bb9">operator+</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVa, <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVb);
-<a name="l00023"></a>00023 <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <a class="code" href="_isotopic_vector_8cxx.html#a8e57290d6160baa67f72de3181a69e80">operator-</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVa, <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVb);
-<a name="l00024"></a>00024 
-<a name="l00025"></a>00025 <span class="keywordtype">double</span>  <a class="code" href="_isotopic_vector_8cxx.html#afaea8492ba2fd9f4a4c67b1922a17ca9">Distance</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> IV1, <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> IV2 );
-<a name="l00026"></a>00026 <span class="keywordtype">double</span>  <a class="code" href="_isotopic_vector_8hxx.html#a1a033d007f432f80b3b7af6a230ba8db">Norme</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> IV1);
-<a name="l00027"></a>00027 
-<a name="l00028"></a><a class="code" href="class_isotopic_vector.html">00028</a> <span class="keyword">class </span><a class="code" href="class_isotopic_vector.html">IsotopicVector</a> : <span class="keyword">public</span> TObject
-<a name="l00029"></a>00029 {
-<a name="l00030"></a>00030 
-<a name="l00031"></a>00031 <span class="keyword">public</span> :
-<a name="l00032"></a>00032 
-<a name="l00033"></a>00033 <span class="comment">//********* Constructor/Destructor Method *********//</span>
-<a name="l00034"></a>00034         
-<a name="l00035"></a>00035         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>();       
-<a name="l00036"></a>00036         ~<a class="code" href="class_isotopic_vector.html">IsotopicVector</a>();       
-<a name="l00037"></a>00037 
-<a name="l00038"></a>00038         
-<a name="l00039"></a>00039 <span class="comment">//********* Get Method *********//</span>
+<a name="l00015"></a>00015 <span class="preprocessor">#include &quot;TObject.h&quot;</span>
+<a name="l00016"></a>00016 <span class="preprocessor">#include &lt;string&gt;</span>
+<a name="l00017"></a>00017 <span class="preprocessor">#include &lt;map&gt;</span>
+<a name="l00018"></a>00018 
+<a name="l00019"></a>00019 <span class="keyword">using namespace </span>std;
+<a name="l00020"></a>00020 <span class="keyword">class </span><a class="code" href="class_isotopic_vector.html">IsotopicVector</a>;
+<a name="l00021"></a>00021 
+<a name="l00022"></a>00022 <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <a class="code" href="_isotopic_vector_8cxx.html#afc7ce03edc013ba2c7e888fac97987a9">operator/</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVA, <span class="keywordtype">double</span> F);
+<a name="l00023"></a>00023 <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <a class="code" href="_isotopic_vector_8cxx.html#afc7ce03edc013ba2c7e888fac97987a9">operator/</a>(<a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a> <span class="keyword">const</span>&amp; zai, <span class="keywordtype">double</span> F);
+<a name="l00024"></a>00024 <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <a class="code" href="_isotopic_vector_8cxx.html#a205f04059f4b10cff4660e8898b06bcb">operator*</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVA, <span class="keywordtype">double</span> F);
+<a name="l00025"></a>00025 <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <a class="code" href="_isotopic_vector_8cxx.html#a205f04059f4b10cff4660e8898b06bcb">operator*</a>(<a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a> <span class="keyword">const</span>&amp; zai, <span class="keywordtype">double</span> F);
+<a name="l00026"></a>00026 <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <a class="code" href="_isotopic_vector_8cxx.html#a0c3876dfe456b056fbcfe3d946e09bb9">operator+</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVa, <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVb);
+<a name="l00027"></a>00027 <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <a class="code" href="_isotopic_vector_8cxx.html#a8e57290d6160baa67f72de3181a69e80">operator-</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVa, <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVb);
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 <span class="keywordtype">double</span>  <a class="code" href="_isotopic_vector_8cxx.html#afaea8492ba2fd9f4a4c67b1922a17ca9">Distance</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> IV1, <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> IV2 );
+<a name="l00030"></a>00030 <span class="keywordtype">double</span>  <a class="code" href="_isotopic_vector_8hxx.html#a1a033d007f432f80b3b7af6a230ba8db">Norme</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> IV1);
+<a name="l00031"></a>00031 
+<a name="l00032"></a><a class="code" href="class_isotopic_vector.html">00032</a> <span class="keyword">class </span><a class="code" href="class_isotopic_vector.html">IsotopicVector</a> : <span class="keyword">public</span> TObject
+<a name="l00033"></a>00033 {
+<a name="l00034"></a>00034 <span class="keyword">public</span> :
+<a name="l00035"></a>00035 
+<a name="l00036"></a>00036 <span class="comment">//********* Constructor/Destructor Method *********//</span>
+<a name="l00037"></a>00037         
+<a name="l00038"></a>00038         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>();       
+<a name="l00039"></a>00039         ~<a class="code" href="class_isotopic_vector.html">IsotopicVector</a>();       
 <a name="l00040"></a>00040 
-<a name="l00041"></a><a class="code" href="class_isotopic_vector.html#a0b65f2635da76635c97ddc39faad22bb">00041</a>         map&lt;ZAI ,double&gt;        <a class="code" href="class_isotopic_vector.html#a0b65f2635da76635c97ddc39faad22bb" title="Return the IVQuantity map.">GetIsotopicQuantity</a>()<span class="keyword"> const </span>{<span class="keywordflow">return</span> fIsotopicQuantity;}                 
-<a name="l00042"></a><a class="code" href="class_isotopic_vector.html#aa024722b40de94af85af44ae79ee596e">00042</a>         map&lt;ZAI ,double&gt;        <a class="code" href="class_isotopic_vector.html#aa024722b40de94af85af44ae79ee596e" title="Return the IVQuantityNeeded map.">GetIsotopicQuantityNeeded</a>()<span class="keyword"> const </span>{<span class="keywordflow">return</span> fIsotopicQuantityNeeded;}     
-<a name="l00043"></a>00043         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>          GetAtomicComposition(<span class="keywordtype">int</span> z) <span class="keyword">const</span>;                                      
-<a name="l00044"></a>00044         vector&lt;int&gt;             GetAtomicSpecies() <span class="keyword">const</span>;                                               
-<a name="l00045"></a>00045 
-<a name="l00046"></a>00046         <span class="keywordtype">double</span>  GetZAIIsotopicQuantity(<span class="keyword">const</span> <a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a>&amp; zai) <span class="keyword">const</span>;                           
-<a name="l00047"></a>00047         <span class="keywordtype">double</span>  GetZAIIsotopicQuantity(<span class="keyword">const</span> <span class="keywordtype">int</span> z, <span class="keyword">const</span> <span class="keywordtype">int</span> a, <span class="keyword">const</span> <span class="keywordtype">int</span> i) <span class="keyword">const</span>;    
+<a name="l00041"></a>00041         
+<a name="l00042"></a>00042 <span class="comment">//********* Get Method *********//</span>
+<a name="l00043"></a>00043 
+<a name="l00044"></a><a class="code" href="class_isotopic_vector.html#a0b65f2635da76635c97ddc39faad22bb">00044</a>         map&lt;ZAI ,double&gt;        <a class="code" href="class_isotopic_vector.html#a0b65f2635da76635c97ddc39faad22bb" title="Return the IVQuantity map.">GetIsotopicQuantity</a>()<span class="keyword"> const </span>{<span class="keywordflow">return</span> fIsotopicQuantity;}                 
+<a name="l00045"></a><a class="code" href="class_isotopic_vector.html#aa024722b40de94af85af44ae79ee596e">00045</a>         map&lt;ZAI ,double&gt;        <a class="code" href="class_isotopic_vector.html#aa024722b40de94af85af44ae79ee596e" title="Return the IVQuantityNeeded map.">GetIsotopicQuantityNeeded</a>()<span class="keyword"> const </span>{<span class="keywordflow">return</span> fIsotopicQuantityNeeded;}     
+<a name="l00046"></a>00046         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>          GetAtomicComposition(<span class="keywordtype">int</span> z) <span class="keyword">const</span>;                                      
+<a name="l00047"></a>00047         vector&lt;int&gt;             GetAtomicSpecies() <span class="keyword">const</span>;                                               
 <a name="l00048"></a>00048 
-<a name="l00049"></a>00049 <span class="comment">//********* Modification Method *********//</span>
-<a name="l00050"></a>00050         <span class="keywordtype">void</span>    Clear();                                        
-<a name="l00051"></a>00051         <span class="keywordtype">void</span>    ClearNeed();                                    
-<a name="l00052"></a>00052 
-<a name="l00053"></a>00053         <span class="keywordtype">void</span>    Add(<span class="keyword">const</span> <a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a>&amp; zai, <span class="keywordtype">double</span> quantity);           
-<a name="l00054"></a>00054         <span class="keywordtype">void</span>    Add(<span class="keyword">const</span> <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>&amp; isotopicvector);      
-<a name="l00055"></a>00055         <span class="keywordtype">void</span>    Add(<span class="keyword">const</span> map&lt;ZAI ,double&gt;&amp; quantity);          
-<a name="l00056"></a>00056 
-<a name="l00057"></a>00057         <span class="keywordtype">void</span>    Need(<span class="keyword">const</span> <a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a>&amp; zai, <span class="keywordtype">double</span> quantity);          
-<a name="l00058"></a>00058         <span class="keywordtype">void</span>    Need(<span class="keyword">const</span> <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>&amp; isotopicvector);     
-<a name="l00059"></a><a class="code" href="class_isotopic_vector.html#a23cc32d7eb871e43b86c46dd13b788f9">00059</a>         <span class="keywordtype">void</span>    <a class="code" href="class_isotopic_vector.html#a23cc32d7eb871e43b86c46dd13b788f9" title="Fill the fIsotopicQuantityNeeded.">Need</a>(<span class="keyword">const</span> map&lt;ZAI ,double&gt;&amp; quantityneeded) {fIsotopicQuantityNeeded = quantityneeded;}        
-<a name="l00061"></a>00061 
-<a name="l00062"></a>00062         <span class="keywordtype">void</span>    Remove(<span class="keyword">const</span> <a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a>&amp; zai, <span class="keywordtype">double</span> quantity);        
-<a name="l00063"></a>00063         <span class="keywordtype">void</span>    Remove(<span class="keyword">const</span> <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>&amp; isotopicvector);   
-<a name="l00064"></a>00064 
-<a name="l00065"></a>00065         <span class="keywordtype">void</span>    Multiply(<span class="keywordtype">double</span> factor);                        
-<a name="l00066"></a>00066         
-<a name="l00067"></a>00067         <span class="keywordtype">void</span>    Write(<span class="keywordtype">string</span> filename, <span class="keywordtype">long</span> <span class="keywordtype">int</span> time ) <span class="keyword">const</span>;   
-<a name="l00068"></a>00068 
-<a name="l00069"></a>00069         <span class="keywordtype">void</span> Print(<span class="keywordtype">string</span> o =<span class="stringliteral">&quot; &quot;</span>) <span class="keyword">const</span> ;                       
-<a name="l00070"></a>00070 
-<a name="l00071"></a>00071 <span class="comment">//******* Set Operator between IsotopicVector *******//</span>
-<a name="l00072"></a>00072 
-<a name="l00073"></a>00073         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>&amp; operator+=(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVb);  
-<a name="l00074"></a>00074         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>&amp; operator-=(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVb);  
-<a name="l00075"></a>00075 
-<a name="l00076"></a>00076 <span class="comment">//***************************************************///&lt; </span>
-<a name="l00077"></a>00077 
-<a name="l00078"></a>00078         
-<a name="l00079"></a>00079         <span class="keyword">protected</span> :
-<a name="l00080"></a>00080 
-<a name="l00081"></a><a class="code" href="class_isotopic_vector.html#a7908d48ae0f78b1454eb8a0cc01cd621">00081</a>         map&lt;ZAI ,double&gt;        <a class="code" href="class_isotopic_vector.html#a7908d48ae0f78b1454eb8a0cc01cd621" title="Isotopic vector composition in Atome Number.">fIsotopicQuantity</a>;              
-<a name="l00082"></a><a class="code" href="class_isotopic_vector.html#a00bb90a8b08db19d5eba9530c5133e32">00082</a>         map&lt;ZAI ,double&gt;        <a class="code" href="class_isotopic_vector.html#a00bb90a8b08db19d5eba9530c5133e32" title="Isotopic vector request and not present.">fIsotopicQuantityNeeded</a>;        
+<a name="l00049"></a>00049         
+<a name="l00050"></a>00050 <span class="comment">//********* Modification Method *********//</span>
+<a name="l00051"></a>00051         <span class="keywordtype">void</span>    Clear();                                        
+<a name="l00052"></a>00052         <span class="keywordtype">void</span>    ClearNeed();                                    
+<a name="l00053"></a>00053 
+<a name="l00054"></a>00054         <span class="keywordtype">void</span>    Add(<span class="keyword">const</span> <a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a>&amp; zai, <span class="keywordtype">double</span> quantity);           
+<a name="l00055"></a>00055         <span class="keywordtype">void</span>    Add(<span class="keyword">const</span> <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>&amp; isotopicvector);      
+<a name="l00056"></a>00056         <span class="keywordtype">void</span>    Add(<span class="keyword">const</span> map&lt;ZAI ,double&gt;&amp; quantity);          
+<a name="l00057"></a>00057 
+<a name="l00058"></a>00058         <span class="keywordtype">void</span>    Need(<span class="keyword">const</span> <a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a>&amp; zai, <span class="keywordtype">double</span> quantity);          
+<a name="l00059"></a>00059         <span class="keywordtype">void</span>    Need(<span class="keyword">const</span> <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>&amp; isotopicvector);     
+<a name="l00060"></a><a class="code" href="class_isotopic_vector.html#a23cc32d7eb871e43b86c46dd13b788f9">00060</a>         <span class="keywordtype">void</span>    <a class="code" href="class_isotopic_vector.html#a23cc32d7eb871e43b86c46dd13b788f9" title="Fill the fIsotopicQuantityNeeded.">Need</a>(<span class="keyword">const</span> map&lt;ZAI ,double&gt;&amp; quantityneeded) {fIsotopicQuantityNeeded = quantityneeded;}        
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063         <span class="keywordtype">void</span>    Remove(<span class="keyword">const</span> <a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a>&amp; zai, <span class="keywordtype">double</span> quantity);        
+<a name="l00064"></a>00064         <span class="keywordtype">void</span>    Remove(<span class="keyword">const</span> <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>&amp; isotopicvector);   
+<a name="l00065"></a>00065 
+<a name="l00066"></a>00066         <span class="keywordtype">void</span>    Multiply(<span class="keywordtype">double</span> factor);                        
+<a name="l00067"></a>00067         
+<a name="l00068"></a>00068         <span class="keywordtype">void</span>    Write(<span class="keywordtype">string</span> filename, <span class="keywordtype">long</span> <span class="keywordtype">int</span> time ) <span class="keyword">const</span>;   
+<a name="l00069"></a>00069 
+<a name="l00070"></a>00070         <span class="keywordtype">void</span>    Print(<span class="keywordtype">string</span> o =<span class="stringliteral">&quot; &quot;</span>) <span class="keyword">const</span> ;                    
+<a name="l00071"></a>00071         
+<a name="l00072"></a>00072         <span class="keywordtype">double</span>  GetZAIIsotopicQuantity(<span class="keyword">const</span> <a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a>&amp; zai) <span class="keyword">const</span>;                                           
+<a name="l00073"></a>00073         <span class="keywordtype">double</span>  GetZAIIsotopicQuantity(<span class="keyword">const</span> <span class="keywordtype">int</span> z, <span class="keyword">const</span> <span class="keywordtype">int</span> a, <span class="keyword">const</span> <span class="keywordtype">int</span> i) <span class="keyword">const</span>;                    
+<a name="l00074"></a>00074 
+<a name="l00075"></a>00075         
+<a name="l00076"></a>00076         
+<a name="l00077"></a>00077 <span class="comment">//******* Set Operator between IsotopicVector *******//</span>
+<a name="l00078"></a>00078 
+<a name="l00079"></a>00079         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>&amp; operator+=(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVb);  
+<a name="l00080"></a>00080         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>&amp; operator-=(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <span class="keyword">const</span>&amp; IVb);  
+<a name="l00081"></a>00081 
+<a name="l00082"></a>00082 <span class="comment">//***************************************************///&lt; </span>
 <a name="l00083"></a>00083 
-<a name="l00084"></a>00084         ClassDef(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a>,2);
-<a name="l00085"></a>00085 };
+<a name="l00084"></a>00084         
+<a name="l00085"></a>00085         <span class="keyword">protected</span> :
 <a name="l00086"></a>00086 
-<a name="l00087"></a>00087 
-<a name="l00088"></a>00088 
+<a name="l00087"></a><a class="code" href="class_isotopic_vector.html#a7908d48ae0f78b1454eb8a0cc01cd621">00087</a>         map&lt;ZAI ,double&gt;        <a class="code" href="class_isotopic_vector.html#a7908d48ae0f78b1454eb8a0cc01cd621" title="Isotopic vector composition in Atome Number.">fIsotopicQuantity</a>;              
+<a name="l00088"></a><a class="code" href="class_isotopic_vector.html#a00bb90a8b08db19d5eba9530c5133e32">00088</a>         map&lt;ZAI ,double&gt;        <a class="code" href="class_isotopic_vector.html#a00bb90a8b08db19d5eba9530c5133e32" title="Isotopic vector request and not present.">fIsotopicQuantityNeeded</a>;        
 <a name="l00089"></a>00089 
-<a name="l00090"></a>00090 
-<a name="l00091"></a>00091 <span class="preprocessor">#endif</span>
+<a name="l00090"></a>00090         ClassDef(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a>,2);
+<a name="l00091"></a>00091 };
+<a name="l00092"></a>00092 
+<a name="l00093"></a>00093 
+<a name="l00094"></a>00094 
+<a name="l00095"></a>00095 
+<a name="l00096"></a>00096 
+<a name="l00097"></a>00097 <span class="preprocessor">#endif</span>
 </pre></div></div><!-- contents -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -183,7 +185,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Recherche');
 
 
 <hr class="footer"/><address class="footer"><small>
-Généré le Samedi Avril 28 2012 14:44:26 pour CLASS par &#160;<a href="http://www.doxygen.org/index.html">
+Généré le Dimanche Mai 20 2012 10:45:32 pour CLASS par &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
