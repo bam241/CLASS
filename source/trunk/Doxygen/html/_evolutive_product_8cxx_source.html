@@ -1,0 +1,326 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<title>CLASS:  Fichier source de src/EvolutiveProduct.cxx</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { searchBox.OnSelectItem(0); });
+</script>
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">CLASS
+   &#160;<span id="projectnumber">1.1</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Généré par Doxygen 1.7.6.1 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Recherche');
+</script>
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Page&#160;principale</span></a></li>
+      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li class="current"><a href="files.html"><span>Fichiers</span></a></li>
+      <li>
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Recherche" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Liste&#160;des&#160;fichiers</span></a></li>
+      <li><a href="globals.html"><span>Membres&#160;de&#160;fichier</span></a></li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">src/EvolutiveProduct.cxx</div>  </div>
+</div><!--header-->
+<div class="contents">
+<a href="_evolutive_product_8cxx.html">Aller à la documentation de ce fichier.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="preprocessor">#include &quot;<a class="code" href="_evolutive_product_8hxx.html" title="Header file for EvolutiveProduct classes.">EvolutiveProduct.hxx</a>&quot;</span>
+<a name="l00002"></a>00002 <span class="preprocessor">#include &quot;<a class="code" href="_isotopic_vector_8hxx.html" title="Header file for IsotopicVector class.">IsotopicVector.hxx</a>&quot;</span>
+<a name="l00003"></a>00003 <span class="preprocessor">#include &quot;<a class="code" href="_z_a_i_8hxx.html" title="Header file for ZAI classes.">ZAI.hxx</a>&quot;</span>
+<a name="l00004"></a>00004 <span class="preprocessor">#include &quot;<a class="code" href="_log_file_8hxx.html" title="Header file for LogFile class.">LogFile.hxx</a>&quot;</span>
+<a name="l00005"></a>00005 <span class="preprocessor">#include &quot;<a class="code" href="_defines_8hxx.html">Defines.hxx</a>&quot;</span>
+<a name="l00006"></a>00006 <span class="preprocessor">#include &quot;<a class="code" href="_string_line_8hxx.html" title="Header file for StingLine class.">StringLine.hxx</a>&quot;</span>
+<a name="l00007"></a>00007 
+<a name="l00008"></a>00008 <span class="preprocessor">#include &lt;TGraphErrors.h&gt;</span>
+<a name="l00009"></a>00009 <span class="preprocessor">#include &lt;TString.h&gt;</span>
+<a name="l00010"></a>00010 <span class="preprocessor">#include &lt;string&gt;</span>
+<a name="l00011"></a>00011 <span class="preprocessor">#include &lt;iostream&gt;</span>
+<a name="l00012"></a>00012 <span class="preprocessor">#include &lt;fstream&gt;</span>
+<a name="l00013"></a>00013 <span class="preprocessor">#include &lt;algorithm&gt;</span>
+<a name="l00014"></a>00014 <span class="preprocessor">#include &lt;map&gt;</span>
+<a name="l00015"></a>00015 <span class="preprocessor">#include &lt;TGraphErrors.h&gt;</span>
+<a name="l00016"></a>00016 
+<a name="l00017"></a>00017 <span class="keyword">using namespace </span>std;
+<a name="l00018"></a>00018 <span class="comment">//________________________________________________________________________</span>
+<a name="l00019"></a>00019 <span class="comment">//</span>
+<a name="l00020"></a>00020 <span class="comment">//              EvolutiveProduct</span>
+<a name="l00021"></a>00021 <span class="comment">//</span>
+<a name="l00022"></a>00022 <span class="comment">//</span>
+<a name="l00023"></a>00023 <span class="comment">//</span>
+<a name="l00024"></a>00024 <span class="comment">//</span>
+<a name="l00025"></a>00025 <span class="comment">//________________________________________________________________________</span>
+<a name="l00026"></a>00026 
+<a name="l00027"></a><a class="code" href="class_evolutive_product.html#a8753605fba10ff210dc742a1ee02ad40">00027</a> <a class="code" href="class_evolutive_product.html#a8753605fba10ff210dc742a1ee02ad40" title="&lt; Normal ZAI DB Constructor.">EvolutiveProduct::EvolutiveProduct</a>(<a class="code" href="class_log_file.html">LogFile</a>* Log, <span class="keywordtype">int</span> Z, <span class="keywordtype">int</span> A, <span class="keywordtype">int</span> I, <span class="keywordtype">string</span> DBindexfile)
+<a name="l00028"></a>00028 {
+<a name="l00029"></a>00029 <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00030"></a>00030         fLog = Log;
+<a name="l00031"></a>00031         ifstream DB_index(DBindexfile.c_str());
+<a name="l00032"></a>00032         <span class="keywordflow">if</span>( !DB_index)
+<a name="l00033"></a>00033         {
+<a name="l00034"></a>00034                 cout &lt;&lt; <span class="stringliteral">&quot;!!!EVOLUTIVE DB!!!! Can&#39;t open \&quot;&quot;</span> &lt;&lt; DBindexfile &lt;&lt; <span class="stringliteral">&quot;\&quot;&quot;</span> &lt;&lt; endl;
+<a name="l00035"></a>00035                 fLog-&gt;<a class="code" href="class_log_file.html#a050df6a1b906596564f598f0d1263484" title="Log Stream.">fLog</a> &lt;&lt; <span class="stringliteral">&quot;!!!EVOLUTIVE DB!!!! Can&#39;t open \&quot;&quot;</span> &lt;&lt; DBindexfile &lt;&lt; <span class="stringliteral">&quot;\&quot;&quot;</span> &lt;&lt; endl;
+<a name="l00036"></a>00036                 exit (1);
+<a name="l00037"></a>00037         }
+<a name="l00038"></a>00038         <span class="keywordtype">bool</span> zaifind = <span class="keyword">false</span>;           
+<a name="l00039"></a>00039         <span class="keywordtype">string</span> tmp;             
+<a name="l00040"></a>00040         getline(DB_index,tmp);                                                  <span class="comment">// Read first line</span>
+<a name="l00041"></a>00041         <span class="keywordflow">while</span> (!DB_index.eof()) 
+<a name="l00042"></a>00042         {
+<a name="l00043"></a>00043                 <span class="keywordtype">string</span> line;                    
+<a name="l00044"></a>00044                 <span class="keywordtype">int</span> start=0;                            
+<a name="l00045"></a>00045                 getline(DB_index,line);                                                 <span class="comment">// Read first line</span>
+<a name="l00046"></a>00046                 <span class="keywordtype">string</span> first=<a class="code" href="class_string_line.html#a1706a4aa4c9478cc21c44910b4599182">StringLine::NextWord</a>(line,start);                          <span class="comment">// Read first word</span>
+<a name="l00047"></a>00047                 
+<a name="l00048"></a>00048                 <span class="keywordflow">if</span>(first.size()==0) <span class="keywordflow">break</span>;                                              <span class="comment">// If First word is null.... quit</span>
+<a name="l00049"></a>00049                 
+<a name="l00050"></a>00050                 <span class="keywordtype">int</span> rZ=atoi(first.c_str());                                             <span class="comment">// Get Z</span>
+<a name="l00051"></a>00051                 <span class="keywordtype">int</span> rA=atoi(<a class="code" href="class_string_line.html#a1706a4aa4c9478cc21c44910b4599182">StringLine::NextWord</a>(line,start).c_str());                  <span class="comment">// Get A</span>
+<a name="l00052"></a>00052                 <span class="keywordtype">int</span> rI=atoi(<a class="code" href="class_string_line.html#a1706a4aa4c9478cc21c44910b4599182">StringLine::NextWord</a>(line,start).c_str());                  <span class="comment">// Get Isomeric State</span>
+<a name="l00053"></a>00053 
+<a name="l00054"></a>00054                 <span class="keywordflow">if</span>(rZ == Z &amp;&amp; rA == A &amp;&amp; rI == I)
+<a name="l00055"></a>00055                 {
+<a name="l00056"></a>00056                         <span class="keywordtype">string</span> file_name = <a class="code" href="class_string_line.html#a1706a4aa4c9478cc21c44910b4599182">StringLine::NextWord</a>(line,start);
+<a name="l00057"></a>00057                         ReadDB(file_name);              <span class="comment">// Read Decay produc DB file name</span>
+<a name="l00058"></a>00058                         zaifind = <span class="keyword">true</span>;
+<a name="l00059"></a>00059                 }
+<a name="l00060"></a>00060         }
+<a name="l00061"></a>00061         <span class="keywordflow">if</span>(zaifind == <span class="keyword">false</span>) 
+<a name="l00062"></a>00062         {
+<a name="l00063"></a>00063 <span class="preprocessor">                #pragma omp critical(LOGupdate)</span>
+<a name="l00064"></a>00064 <span class="preprocessor"></span>                {
+<a name="l00065"></a>00065                 fLog-&gt;fLog &lt;&lt; <span class="stringliteral">&quot;!!Warning!! !!!EVOLUTIVE DB!!! Oups... Can&#39;t Find the ZAI : &quot;</span> 
+<a name="l00066"></a>00066                            &lt;&lt; Z &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; A &lt;&lt; <span class="stringliteral">&quot; &quot;</span>      &lt;&lt; I &lt;&lt; <span class="stringliteral">&quot;!!! It will be considered as stable !!&quot;</span> &lt;&lt; endl;
+<a name="l00067"></a>00067                 AddAsStable(Z, A, I);
+<a name="l00068"></a>00068                 }
+<a name="l00069"></a>00069         }
+<a name="l00070"></a>00070 <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00071"></a>00071 
+<a name="l00072"></a>00072 }
+<a name="l00073"></a>00073 
+<a name="l00074"></a>00074 <span class="comment">//________________________________________________________________________</span>
+<a name="l00075"></a>00075 
+<a name="l00076"></a><a class="code" href="class_evolutive_product.html#a4694590e0a6267608d561cb7a7af0976">00076</a> <a class="code" href="class_evolutive_product.html#a8753605fba10ff210dc742a1ee02ad40" title="&lt; Normal ZAI DB Constructor.">EvolutiveProduct::EvolutiveProduct</a>(<span class="keywordtype">string</span> DB_reactor_file)
+<a name="l00077"></a>00077 {
+<a name="l00078"></a>00078         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00079"></a>00079         <span class="keywordtype">string</span> file_name = DB_reactor_file;
+<a name="l00080"></a>00080         ReadDB(file_name);              <span class="comment">// Read Evolution Produc DB file name</span>
+<a name="l00081"></a>00081         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00082"></a>00082 
+<a name="l00083"></a>00083 }
+<a name="l00084"></a>00084 
+<a name="l00085"></a>00085 <span class="comment">//________________________________________________________________________</span>
+<a name="l00086"></a><a class="code" href="class_evolutive_product.html#a51e5bdcf7380ab1a470380c7916a1213">00086</a> <a class="code" href="class_evolutive_product.html#a51e5bdcf7380ab1a470380c7916a1213">EvolutiveProduct::~EvolutiveProduct</a>()
+<a name="l00087"></a>00087 {
+<a name="l00088"></a>00088         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00089"></a>00089         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00090"></a>00090 }
+<a name="l00091"></a>00091 
+<a name="l00092"></a>00092 <span class="comment">//________________________________________________________________________</span>
+<a name="l00093"></a>00093 <span class="comment">//________________________________________________________________________</span>
+<a name="l00094"></a>00094 
+<a name="l00095"></a><a class="code" href="class_evolutive_product.html#a464a2b7972efdbaabee98a04f2946bf0">00095</a> <span class="keywordtype">void</span> <a class="code" href="class_evolutive_product.html#a464a2b7972efdbaabee98a04f2946bf0">EvolutiveProduct::AddAsStable</a>(<span class="keywordtype">int</span> Z,<span class="keywordtype">int</span>  A,<span class="keywordtype">int</span> I)
+<a name="l00096"></a>00096 {
+<a name="l00097"></a>00097         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00098"></a>00098         <span class="keywordtype">double</span> time[2] = {0, (int)(500*365.4*3600*24)};
+<a name="l00099"></a>00099         <span class="keywordtype">double</span> Err[2]   = {0, 0};
+<a name="l00100"></a>00100         <span class="keywordtype">double</span> quantity[2] = {1., 1.};
+<a name="l00101"></a>00101         <a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a> zaitmp(Z, A, I);
+<a name="l00102"></a>00102         
+<a name="l00103"></a>00103         fEvolutiveProduct.insert(pair&lt;ZAI ,TGraphErrors* &gt;(zaitmp, <span class="keyword">new</span> TGraphErrors(2, time, quantity, Err, Err) ) );
+<a name="l00104"></a>00104         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00105"></a>00105 }
+<a name="l00106"></a>00106 <span class="comment">//________________________________________________________________________</span>
+<a name="l00107"></a>00107 
+<a name="l00108"></a>00108 <span class="comment">//________________________________________________________________________</span>
+<a name="l00109"></a><a class="code" href="class_evolutive_product.html#a35896fd3d148d3eaadef4f29868d166c">00109</a> <span class="keywordtype">void</span> <a class="code" href="class_evolutive_product.html#a35896fd3d148d3eaadef4f29868d166c">EvolutiveProduct::ReadDB</a>(<span class="keywordtype">string</span> DBfile)
+<a name="l00110"></a>00110 {
+<a name="l00111"></a>00111         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00112"></a>00112         ifstream DecayDB(DBfile.c_str());                                                       <span class="comment">// Open the File</span>
+<a name="l00113"></a>00113         <span class="keywordflow">if</span>(!DecayDB)
+<a name="l00114"></a>00114         {
+<a name="l00115"></a>00115                 cout &lt;&lt; <span class="stringliteral">&quot;!!Warning!! !!!EvolutiveProduct!!! \n Can&#39;t open \&quot;&quot;</span> &lt;&lt; DBfile &lt;&lt; <span class="stringliteral">&quot;\&quot;\n&quot;</span> &lt;&lt; endl;
+<a name="l00116"></a>00116                 fLog-&gt;fLog &lt;&lt; <span class="stringliteral">&quot;!!Warning!! !!!EvolutiveProduct!!! \n Can&#39;t open \&quot;&quot;</span> &lt;&lt; DBfile &lt;&lt; <span class="stringliteral">&quot;\&quot;\n&quot;</span> &lt;&lt; endl;
+<a name="l00117"></a>00117         }
+<a name="l00118"></a>00118         vector&lt;double&gt; vTime;
+<a name="l00119"></a>00119         vector&lt;double&gt; vTimeErr;
+<a name="l00120"></a>00120 
+<a name="l00121"></a>00121         <span class="keywordtype">string</span> line;
+<a name="l00122"></a>00122         <span class="keywordtype">int</span> start = 0;
+<a name="l00123"></a>00123         
+<a name="l00124"></a>00124         getline(DecayDB, line); <span class="comment">// Nuclei is given with &quot;A Z&quot;</span>
+<a name="l00125"></a>00125         <span class="keywordflow">if</span>( <a class="code" href="class_string_line.html#a1706a4aa4c9478cc21c44910b4599182">StringLine::NextWord</a>(line, start, <span class="charliteral">&#39; &#39;</span>) != <span class="stringliteral">&quot;time&quot;</span>) 
+<a name="l00126"></a>00126         {
+<a name="l00127"></a>00127                 cout &lt;&lt; <span class="stringliteral">&quot;!!Bad Trouble!! !!!EvolutiveProduct!!! Bad Database file : &quot;</span> &lt;&lt;  DBfile &lt;&lt; endl;
+<a name="l00128"></a>00128                 fLog-&gt;fLog &lt;&lt; <span class="stringliteral">&quot;!!Bad Trouble!! !!!EvolutiveProduct!!! Bad Database file : &quot;</span> &lt;&lt;  DBfile &lt;&lt; endl;
+<a name="l00129"></a>00129                 exit (1);
+<a name="l00130"></a>00130         }
+<a name="l00131"></a>00131         
+<a name="l00132"></a>00132         <span class="keywordflow">while</span>(start &lt; (<span class="keywordtype">int</span>)line.size())
+<a name="l00133"></a>00133         {
+<a name="l00134"></a>00134                 vTime.push_back(atof(<a class="code" href="class_string_line.html#a1706a4aa4c9478cc21c44910b4599182">StringLine::NextWord</a>(line, start, <span class="charliteral">&#39; &#39;</span>).c_str()));
+<a name="l00135"></a>00135                 vTimeErr.push_back(0); <span class="comment">// Set to Zero because not yet error in DB</span>
+<a name="l00136"></a>00136                 
+<a name="l00137"></a>00137         }
+<a name="l00138"></a>00138 
+<a name="l00139"></a>00139         <span class="keywordtype">double</span> Time[vTime.size()];
+<a name="l00140"></a>00140         <span class="keywordtype">double</span> TimeErr[vTime.size()];
+<a name="l00141"></a>00141         <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i &lt; (int)vTime.size();i++)
+<a name="l00142"></a>00142                 {Time[i] = vTime[i]; TimeErr[i] = vTimeErr[i];} 
+<a name="l00143"></a>00143 
+<a name="l00144"></a>00144 
+<a name="l00145"></a>00145         <span class="keywordflow">while</span> (!DecayDB.eof())
+<a name="l00146"></a>00146         {
+<a name="l00147"></a>00147                 <span class="keywordtype">double</span> DPQuantity[vTime.size()];
+<a name="l00148"></a>00148                 <span class="keywordtype">double</span> DPQuantityErr[vTime.size()];
+<a name="l00149"></a>00149 
+<a name="l00150"></a>00150                 getline(DecayDB, line); <span class="comment">// Nuclei is given with &quot;A Z&quot;</span>
+<a name="l00151"></a>00151                 start = 0;
+<a name="l00152"></a>00152                 <span class="keywordtype">int</span> Z = atoi(<a class="code" href="class_string_line.html#a1706a4aa4c9478cc21c44910b4599182">StringLine::NextWord</a>(line, start, <span class="charliteral">&#39; &#39;</span>).c_str());
+<a name="l00153"></a>00153                 <span class="keywordtype">int</span> A = atoi(<a class="code" href="class_string_line.html#a1706a4aa4c9478cc21c44910b4599182">StringLine::NextWord</a>(line, start, <span class="charliteral">&#39; &#39;</span>).c_str());
+<a name="l00154"></a>00154                 <span class="keywordtype">int</span> I = atoi(<a class="code" href="class_string_line.html#a1706a4aa4c9478cc21c44910b4599182">StringLine::NextWord</a>(line, start, <span class="charliteral">&#39; &#39;</span>).c_str());
+<a name="l00155"></a>00155                 
+<a name="l00156"></a>00156                 <span class="keywordflow">if</span>(A!=0 &amp;&amp; Z!=0)
+<a name="l00157"></a>00157                 {
+<a name="l00158"></a>00158 
+<a name="l00159"></a>00159                         <a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a> zaitmp(Z, A, I);
+<a name="l00160"></a>00160                         <span class="keywordtype">int</span> i=0;
+<a name="l00161"></a>00161                         <span class="keywordflow">while</span>(start &lt; (<span class="keywordtype">int</span>)line.size())
+<a name="l00162"></a>00162                         {       
+<a name="l00163"></a>00163                                 <span class="keywordtype">long</span> <span class="keywordtype">double</span> DPQuantityTmp = atof(<a class="code" href="class_string_line.html#a1706a4aa4c9478cc21c44910b4599182">StringLine::NextWord</a>(line, start, <span class="charliteral">&#39; &#39;</span>).c_str());
+<a name="l00164"></a>00164                                 DPQuantity[i] = (double)DPQuantityTmp;
+<a name="l00165"></a>00165                                 DPQuantityErr[i]=0; <span class="comment">// Set to Zero because not yet error in DB</span>
+<a name="l00166"></a>00166                                 i++;
+<a name="l00167"></a>00167 
+<a name="l00168"></a>00168                         }
+<a name="l00169"></a>00169                         fEvolutiveProduct.insert(pair&lt;ZAI ,TGraphErrors* &gt;(zaitmp, <span class="keyword">new</span> TGraphErrors(vTime.size(), Time, DPQuantity, TimeErr, DPQuantityErr) ) );
+<a name="l00170"></a>00170                 }
+<a name="l00171"></a>00171 
+<a name="l00172"></a>00172         }
+<a name="l00173"></a>00173         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00174"></a>00174 }
+<a name="l00175"></a>00175 
+<a name="l00176"></a>00176 <span class="comment">//________________________________________________________________________</span>
+<a name="l00177"></a><a class="code" href="class_evolutive_product.html#ac9f4bbed31ffa293b2f3384dbe88210f">00177</a> Double_t <a class="code" href="class_evolutive_product.html#ac9f4bbed31ffa293b2f3384dbe88210f" title="Interpolating the value of EvolutionGraph at the t time.">EvolutiveProduct::Interpolate</a>(<span class="keywordtype">double</span> t, TGraphErrors&amp; EvolutionGraph)
+<a name="l00178"></a>00178 {
+<a name="l00179"></a>00179         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00180"></a>00180         TString fOption; 
+<a name="l00181"></a>00181         <span class="keywordflow">return</span> (<span class="keywordtype">double</span>)EvolutionGraph.Eval(t,0x0,fOption);
+<a name="l00182"></a>00182         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00183"></a>00183 }
+<a name="l00184"></a>00184 
+<a name="l00185"></a>00185 <span class="comment">//________________________________________________________________________</span>
+<a name="l00186"></a><a class="code" href="class_evolutive_product.html#a7e36b43c5a1c7d9dc77bfe3fba60b44c">00186</a> TGraphErrors*   <a class="code" href="class_evolutive_product.html#a7e36b43c5a1c7d9dc77bfe3fba60b44c" title="Return the A,Z product proportion evolution TGraphErrors.">EvolutiveProduct::GetEvolutionTGraphErrors</a>(<span class="keyword">const</span> <a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a>&amp; zai)
+<a name="l00187"></a>00187 {
+<a name="l00188"></a>00188         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00189"></a>00189         map&lt;ZAI ,TGraphErrors *&gt;::iterator it = GetEvolutiveProduct().find(zai) ;
+<a name="l00190"></a>00190         
+<a name="l00191"></a>00191         <span class="keywordflow">if</span> ( it != GetEvolutiveProduct().end() ) 
+<a name="l00192"></a>00192                 <span class="keywordflow">return</span> it-&gt;second;      
+<a name="l00193"></a>00193         <span class="keywordflow">else</span>
+<a name="l00194"></a>00194                 <span class="keywordflow">return</span> <span class="keyword">new</span> TGraphErrors();
+<a name="l00195"></a>00195         
+<a name="l00196"></a>00196         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00197"></a>00197 }
+<a name="l00198"></a>00198 
+<a name="l00199"></a>00199 <span class="comment">//________________________________________________________________________</span>
+<a name="l00200"></a><a class="code" href="class_evolutive_product.html#ad701e725b358763a1dd2f6d6e3a19721">00200</a> <a class="code" href="class_isotopic_vector.html">IsotopicVector</a>  <a class="code" href="class_evolutive_product.html#ad701e725b358763a1dd2f6d6e3a19721" title="Return the Product IsotopicVector evolution TGraphErrors.">EvolutiveProduct::GetIsotopicVectorAt</a>(<span class="keywordtype">double</span> t)
+<a name="l00201"></a>00201 {
+<a name="l00202"></a>00202         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00203"></a>00203         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> IsotopicVectorTmp;
+<a name="l00204"></a>00204         map&lt;ZAI ,TGraphErrors* &gt;::iterator it;
+<a name="l00205"></a>00205         <span class="keywordflow">for</span>( it = fEvolutiveProduct.begin(); it != fEvolutiveProduct.end(); it++ )
+<a name="l00206"></a>00206         {
+<a name="l00207"></a>00207                 IsotopicVectorTmp.<a class="code" href="class_isotopic_vector.html#a3931b0fa08d48ef9a731e7672e86c9fd" title="Add Quantity gramme of the ZAI Element.">Add</a>( (*it).first, Interpolate(t, *((*it).second)) );
+<a name="l00208"></a>00208         }
+<a name="l00209"></a>00209 
+<a name="l00210"></a>00210         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00211"></a>00211         <span class="keywordflow">return</span> IsotopicVectorTmp;
+<a name="l00212"></a>00212 }
+<a name="l00213"></a>00213 
+<a name="l00214"></a>00214 <span class="comment">//________________________________________________________________________</span>
+<a name="l00215"></a>00215 
+<a name="l00216"></a>00216 
+<a name="l00217"></a>00217 
+<a name="l00218"></a>00218 
+<a name="l00219"></a>00219 
+<a name="l00220"></a>00220 
+</pre></div></div><!-- contents -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>Tout</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Fichiers</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Fonctions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+
+
+<hr class="footer"/><address class="footer"><small>
+Généré le Samedi Avril 28 2012 14:44:26 pour CLASS par &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.6.1
+</small></address>
+
+</body>
+</html>
