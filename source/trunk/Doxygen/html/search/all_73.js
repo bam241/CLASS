@@ -2,6 +2,7 @@ var searchData=
 [
   ['separatingevolution',['SeparatingEvolution',['../class_treatment_factory.html#afb051dd3f5cb0253c07daffb5f636787',1,'TreatmentFactory']]],
   ['separation',['Separation',['../class_treatment_factory.html#a422f64b900468570a49f5d32be71c632',1,'TreatmentFactory']]],
+  ['setbuildingmethod',['SetBuildingMethod',['../class_c_l_a_s_s.html#a20658de81120348a5fc66ba90a784030',1,'CLASS']]],
   ['setcoolingtime',['SetCoolingTime',['../class_treatment_factory.html#ab42ffe11b47acbd1ab502e27c0cead26',1,'TreatmentFactory']]],
   ['setcycletime',['SetCycleTime',['../class_reactor.html#ac7a8a483adb3a08e5ac2477417537c2d',1,'Reactor']]],
   ['setdatabaseindex',['SetDataBaseIndex',['../class_evolution_data_base.html#aee1fcb2afdea2a171626fe75d79a2c6e',1,'EvolutionDataBase']]],
@@ -11,6 +12,7 @@ var searchData=
   ['setivincycle',['SetIVInCycle',['../class_reactor.html#a2c8e1e7b0b0d3803d19af4a12ee282a6',1,'Reactor']]],
   ['setivoutcycle',['SetIVOutCycle',['../class_reactor.html#a6503c32214882afbf4a471c7d1ce99cd',1,'Reactor']]],
   ['setivreactor',['SetIVReactor',['../class_reactor.html#a0dfaad5f3b0f283ad851778c08380f7e',1,'Reactor']]],
+  ['setivstock',['SetIVStock',['../class_treatment_factory.html#ab62b922559ed33b0a1434f812f222864',1,'TreatmentFactory']]],
   ['setivwaste',['SetIVWaste',['../class_treatment_factory.html#a7fbf44075dcb57c0bcdb0d71bb3e05f9',1,'TreatmentFactory']]],
   ['setlog',['SetLog',['../class_reactor.html#a688d9c6a1c6a0c56282381dd54a9fab5',1,'Reactor::SetLog()'],['../class_treatment_factory.html#ae12bc8c73165006304a6e3ad2745878a',1,'TreatmentFactory::SetLog()']]],
   ['setmass',['SetMass',['../class_z_a_i.html#aa91a865d5bb1bbf2ab0792cb3f79a63c',1,'ZAI']]],
@@ -19,7 +21,7 @@ var searchData=
   ['setseparationtime',['SetSeparationTime',['../class_treatment_factory.html#a36302342cd87c24576ac49add882d36a',1,'TreatmentFactory']]],
   ['setstockmanagement',['SetStockManagement',['../class_c_l_a_s_s.html#a625574cc5338d2fad5983def1162e506',1,'CLASS::SetStockManagement()'],['../class_treatment_factory.html#aa1f17b0b91432b509e3867321d6acb04',1,'TreatmentFactory::SetStockManagement()']]],
   ['settimestep',['SetTimeStep',['../class_c_l_a_s_s.html#a7008e108707a2d1c38a4303c72822fd1',1,'CLASS']]],
-  ['stockdecay',['StockDecay',['../class_treatment_factory.html#a1516dbe08885873eb1e4377f3b20d413',1,'TreatmentFactory']]],
+  ['stockevolution',['StockEvolution',['../class_treatment_factory.html#ab2ab74647f96a0d55c2da06a0fd98ac8',1,'TreatmentFactory']]],
   ['stringline',['StringLine',['../class_string_line.html',1,'']]],
   ['stringline_2ehxx',['StringLine.hxx',['../_string_line_8hxx.html',1,'']]]
 ];
