@@ -4,7 +4,12 @@
 /*!
  \file
  \brief Header file for ZAI classes. 
-*/
+ Define a nuclei as : Z A I.
+
+ 
+ @author BaM
+ @version 0.
+ */
 
 #include <string>
 #include "TObject.h"

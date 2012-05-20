@@ -2,10 +2,15 @@
 #define _CLASS_HXX_
 
 /*!
- \file 
- \brief Header file for CLASS class. 
-*/
+ \file
+ \brief Header file for CLASS classes. 
+ Define a CLASS Parc.
+ The aim of thes Class is to manage the parc, store reactor, TreatmentFactory, process the evolution, build Isotopic vector
 
+ 
+ @author BaM
+ @version 0.
+ */
 #include "IsotopicVector.hxx"
 #include <TFile.h>
 #include <TTree.h>
@@ -59,7 +64,7 @@ public :
 //********* IV Creation Method *********//
 	IsotopicVector	BuildIsotopicVector(IsotopicVector isotopicvector );	///< Build The needed Isotopic Vector from the stock
 	IsotopicVector	MonteCarloBuild(IsotopicVector isotopicvector );	///< Build the needed IV with the MonteCarlo Method
-	IsotopicVector	MinimizationBuild(IsotopicVector isotopicvector );	///< Build the needed IV with the Minimization Method
+//	IsotopicVector	MinimizationBuild(IsotopicVector isotopicvector );	///< Build the needed IV with the Minimization Method
 
 	void	UpdateParcStock();
 	void	DumpParcStock();

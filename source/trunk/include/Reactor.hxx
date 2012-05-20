@@ -2,12 +2,16 @@
 #define __Reactor_HXX__
 
 /*!
- \file 
- \brief Header file for Reactor class. 
-*/
+ \file
+ \brief Header file for reactor classes. 
+  Define a reactor.
+ 
+ 
+ @author BaM
+ @version 0.
+ */
 
 #include "IsotopicVector.hxx"
-//#include "TreatmentFactory.hxx"
 #include "LogFile.hxx"
 
 using namespace std;

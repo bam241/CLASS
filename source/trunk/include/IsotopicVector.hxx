@@ -1,11 +1,15 @@
 #ifndef __ISOTOPICVECTOR_HXX__
 #define __ISOTOPICVECTOR_HXX__
 
+
 /*!
- \file 
+ \file
  \brief Header file for IsotopicVector class. 
-*/
-//CLASS library
+  The aim of this Class is to manage any kind of IsotopicVector, and any operation between them : sum, substraction....
+  
+ @author BaM
+ @version 0.
+ */
 #include "ZAI.hxx"
 
 #include "TObject.h"
