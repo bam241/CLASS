@@ -1,0 +1,507 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<title>CLASS:  Fichier source de src/TreatmentFactory.cxx</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { searchBox.OnSelectItem(0); });
+</script>
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">CLASS
+   &#160;<span id="projectnumber">1.1</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Généré par Doxygen 1.7.6.1 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Recherche');
+</script>
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Page&#160;principale</span></a></li>
+      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li class="current"><a href="files.html"><span>Fichiers</span></a></li>
+      <li>
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Recherche" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Liste&#160;des&#160;fichiers</span></a></li>
+      <li><a href="globals.html"><span>Membres&#160;de&#160;fichier</span></a></li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">src/TreatmentFactory.cxx</div>  </div>
+</div><!--header-->
+<div class="contents">
+<a href="_treatment_factory_8cxx.html">Aller à la documentation de ce fichier.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="preprocessor">#include &quot;<a class="code" href="_treatment_factory_8hxx.html" title="Header file for TreatmentFactory class.">TreatmentFactory.hxx</a>&quot;</span>
+<a name="l00002"></a>00002 <span class="preprocessor">#include &quot;<a class="code" href="_evolution_data_base_8hxx.html" title="Header file for EvolutionDataBase class.">EvolutionDataBase.hxx</a>&quot;</span>
+<a name="l00003"></a>00003 <span class="preprocessor">#include &quot;<a class="code" href="_log_file_8hxx.html" title="Header file for LogFile class.">LogFile.hxx</a>&quot;</span>
+<a name="l00004"></a>00004 <span class="preprocessor">#include &quot;<a class="code" href="_defines_8hxx.html">Defines.hxx</a>&quot;</span>
+<a name="l00005"></a>00005 
+<a name="l00006"></a>00006 
+<a name="l00007"></a>00007 <span class="preprocessor">#include &lt;sstream&gt;</span>
+<a name="l00008"></a>00008 <span class="preprocessor">#include &lt;string&gt;</span>
+<a name="l00009"></a>00009 <span class="preprocessor">#include &lt;iostream&gt;</span>
+<a name="l00010"></a>00010 <span class="preprocessor">#include &lt;cmath&gt;</span>
+<a name="l00011"></a>00011 <span class="preprocessor">#include &lt;algorithm&gt;</span>
+<a name="l00012"></a>00012 
+<a name="l00013"></a>00013 <span class="comment">//________________________________________________________________________</span>
+<a name="l00014"></a>00014 <span class="comment">//</span>
+<a name="l00015"></a>00015 <span class="comment">//              TreatmentFactory</span>
+<a name="l00016"></a>00016 <span class="comment">//</span>
+<a name="l00017"></a>00017 <span class="comment">//</span>
+<a name="l00018"></a>00018 <span class="comment">//</span>
+<a name="l00019"></a>00019 <span class="comment">//</span>
+<a name="l00020"></a>00020 <span class="comment">//________________________________________________________________________</span>
+<a name="l00021"></a><a class="code" href="_treatment_factory_8cxx.html#a3fc3930bdf7c16dcb5a3b5dd9164854d">00021</a> <a class="code" href="_isotopic_vector_8cxx.html#a8a8e482ebbcb821840169b522f490eb5">ClassImp</a>(<a class="code" href="class_treatment_factory.html">TreatmentFactory</a>)
+<a name="l00022"></a>00022 
+<a name="l00023"></a>00023 <a class="code" href="class_treatment_factory.html">TreatmentFactory</a>::<a class="code" href="class_treatment_factory.html">TreatmentFactory</a>()
+<a name="l00024"></a>00024 {
+<a name="l00025"></a>00025         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00026"></a>00026         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00027"></a>00027 }
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 <span class="comment">//________________________________________________________________________</span>
+<a name="l00030"></a><a class="code" href="class_treatment_factory.html#ac5f6383530cac50b51617538510a8d05">00030</a> <a class="code" href="class_treatment_factory.html#a2cb431c8a5306a77c2a531e62b396c52" title="Normal constructor.">TreatmentFactory::TreatmentFactory</a>(<span class="keywordtype">long</span> <span class="keywordtype">int</span> abstime,
+<a name="l00031"></a>00031                                    <span class="keywordtype">long</span> <span class="keywordtype">int</span> coolingtime ,
+<a name="l00032"></a>00032                                    <span class="keywordtype">long</span> <span class="keywordtype">int</span> separationtime, 
+<a name="l00033"></a>00033                                    <a class="code" href="class_evolution_data_base.html" title="A ZAIIDataBase defined a database which contain the evolution of faction of all product, subproduct (or sub(sub...sub)product) for a nucleus.">EvolutionDataBase</a>* evolutivedb)
+<a name="l00034"></a>00034 {
+<a name="l00035"></a>00035         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00036"></a>00036         <a class="code" href="class_treatment_factory.html#a7b976b112a87e4f31498a340e01dceac" title="if true use the stock as the full conglomerat, not individualy">fStockManagement</a> = <span class="keyword">true</span>;
+<a name="l00037"></a>00037         
+<a name="l00038"></a>00038         <a class="code" href="class_treatment_factory.html#aa194cf5a2b02be39d1b68bac846a9b04" title="Cooling Duration Time.">fCoolingTime</a> = coolingtime;
+<a name="l00039"></a>00039         <a class="code" href="class_treatment_factory.html#ae5c094166352b978abd3e297c0fb70b5" title="Internal Clock.">fInternalTime</a> = 0;
+<a name="l00040"></a>00040         <a class="code" href="class_treatment_factory.html#addcde53bf39659204707492d9d8f40a4" title="Pointer to the Evolution DataBase.">fDecayDataBase</a> = evolutivedb;
+<a name="l00041"></a>00041         <a class="code" href="class_treatment_factory.html#ae4f95cabae2551a8f7ed92b807a6367c" title="Separation Duration Time.">fSeparationTime</a> = separationtime;
+<a name="l00042"></a>00042         <a class="code" href="class_treatment_factory.html#ae117813d2125e15619eebce1505046de" title="Date of Creation of the Factory.">fCreationTime</a> = abstime;
+<a name="l00043"></a>00043         <a class="code" href="class_treatment_factory.html#aff1f5d5d754131c7ad33c4bf6da9833b" title="True if Running, False Otherwise.">IsStarted</a> = <span class="keyword">false</span>;
+<a name="l00044"></a>00044         <a class="code" href="class_treatment_factory.html#acfaea8404018da31bc8840f18d951ba6" title="Number of Cooling IV Treated.">fCoolingLastIndex</a> = 0;
+<a name="l00045"></a>00045         <a class="code" href="class_treatment_factory.html#af82688264a9a4a57b961ccf9ae05b517" title="Number of Separation IV Treated.">fSeparatingLastIndex</a> = 0;
+<a name="l00046"></a>00046         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00047"></a>00047 }
+<a name="l00048"></a>00048 
+<a name="l00049"></a>00049 <span class="comment">//________________________________________________________________________</span>
+<a name="l00050"></a><a class="code" href="class_treatment_factory.html#a6a1827cc0cf275925bc1e313cf7de089">00050</a> <a class="code" href="class_treatment_factory.html#a6a1827cc0cf275925bc1e313cf7de089" title="Normal Destructor.">TreatmentFactory::~TreatmentFactory</a>()
+<a name="l00051"></a>00051 {
+<a name="l00052"></a>00052         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00053"></a>00053         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00054"></a>00054 }
+<a name="l00055"></a>00055 
+<a name="l00056"></a>00056 
+<a name="l00057"></a>00057 
+<a name="l00058"></a>00058 <span class="comment">//________________________________________________________________________</span>
+<a name="l00059"></a><a class="code" href="class_treatment_factory.html#a914c64dbe29c1bc3d809bc16f99b964b">00059</a> <span class="keywordtype">void</span>    <a class="code" href="class_treatment_factory.html#a914c64dbe29c1bc3d809bc16f99b964b" title="Add Valorisable Element.">TreatmentFactory::AddValorisableIV</a>(<a class="code" href="class_z_a_i.html" title="&lt; A ZAI defined for a Nucleus.">ZAI</a> zai, <span class="keywordtype">double</span> factor)
+<a name="l00060"></a>00060 {
+<a name="l00061"></a>00061         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00062"></a>00062         pair&lt;map&lt;ZAI, double&gt;::iterator, <span class="keywordtype">bool</span>&gt; IResult;
+<a name="l00063"></a>00063         <span class="keywordflow">if</span>(factor &gt; 1) factor = 1;
+<a name="l00064"></a>00064         
+<a name="l00065"></a>00065         <span class="keywordflow">if</span>(factor &gt; 0)
+<a name="l00066"></a>00066         {       
+<a name="l00067"></a>00067                 IResult = <a class="code" href="class_treatment_factory.html#a25c2e205953028abdd17f3ac621ac62c" title="The Valorisable Table.">fValorisableIV</a>.insert( pair&lt;ZAI ,double&gt;(zai, factor));
+<a name="l00068"></a>00068                 <span class="keywordflow">if</span>(IResult.second == <span class="keyword">false</span>)
+<a name="l00069"></a>00069                         IResult.first-&gt;second = factor;
+<a name="l00070"></a>00070         }
+<a name="l00071"></a>00071         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00072"></a>00072 }
+<a name="l00073"></a>00073 
+<a name="l00074"></a>00074 
+<a name="l00075"></a>00075 <span class="comment">//________________________________________________________________________</span>
+<a name="l00076"></a>00076 <span class="comment">//      Get Decay</span>
+<a name="l00077"></a>00077 <span class="comment">//________________________________________________________________________</span>
+<a name="l00078"></a><a class="code" href="class_treatment_factory.html#a87686aa3bee9be038d3378da99b85fff">00078</a> <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> <a class="code" href="class_treatment_factory.html#a87686aa3bee9be038d3378da99b85fff" title="Get IsotopicVector Decay at the t time.">TreatmentFactory::GetDecayProduct</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> isotopicvector, <span class="keywordtype">long</span> <span class="keywordtype">int</span> t)
+<a name="l00079"></a>00079 {
+<a name="l00080"></a>00080         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00081"></a>00081         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> IV;
+<a name="l00082"></a>00082         map&lt;ZAI ,double&gt; isotopicquantity = isotopicvector.<a class="code" href="class_isotopic_vector.html#a0b65f2635da76635c97ddc39faad22bb" title="Return the IVQuantity map.">GetIsotopicQuantity</a>();
+<a name="l00083"></a>00083         <span class="keywordflow">for</span>(map&lt;ZAI ,double &gt;::iterator it = isotopicquantity.begin(); 
+<a name="l00084"></a>00084                         it != isotopicquantity.end(); it++)
+<a name="l00085"></a>00085         {
+<a name="l00086"></a>00086                 <span class="keywordflow">if</span>((*it).second &gt; 0)
+<a name="l00087"></a>00087                 {
+<a name="l00088"></a>00088                         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> ivtmp = <a class="code" href="class_treatment_factory.html#addcde53bf39659204707492d9d8f40a4" title="Pointer to the Evolution DataBase.">fDecayDataBase</a>-&gt;<a class="code" href="class_evolution_data_base.html#ad01b9d1f78010288126152695e954568" title="Return the Product IsotopicVector evolution from zai during a dt time.">DecayProduction</a>(it-&gt;first, t) * (*it).second ;
+<a name="l00089"></a>00089                         IV += ivtmp;
+<a name="l00090"></a>00090                 }
+<a name="l00091"></a>00091         }
+<a name="l00092"></a>00092         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00093"></a>00093         <span class="keywordflow">return</span> IV;
+<a name="l00094"></a>00094         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00095"></a>00095 }
+<a name="l00096"></a>00096 
+<a name="l00097"></a>00097 
+<a name="l00098"></a>00098 <span class="comment">//________________________________________________________________________</span>
+<a name="l00099"></a>00099 <span class="comment">//      Add Temporary IV : </span>
+<a name="l00100"></a>00100 <span class="comment">//              Cooling</span>
+<a name="l00101"></a>00101 <span class="comment">//              Separation</span>
+<a name="l00102"></a>00102 <span class="comment">//________________________________________________________________________</span>
+<a name="l00103"></a><a class="code" href="class_treatment_factory.html#a6905dab6f27092242c13e2ab58e924cc">00103</a> <span class="keywordtype">void</span> <a class="code" href="class_treatment_factory.html#a6905dab6f27092242c13e2ab58e924cc" title="Add Cooling IsotopicVector.">TreatmentFactory::AddIVCooling</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> IV)
+<a name="l00104"></a>00104 { 
+<a name="l00105"></a>00105         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00106"></a>00106         <a class="code" href="class_treatment_factory.html#a2a9eb76bf9e62c5f285ad340dc1dd692" title="Vector of the Cooling Isotopic Vector.">fIVCooling</a>.push_back(IV);
+<a name="l00107"></a>00107         <a class="code" href="class_treatment_factory.html#a2100d3d1f444b31fe8d3b2a5b6357962" title="Vector of the Cooling Starting Time.">fCoolingStartingTime</a>.push_back(<a class="code" href="class_treatment_factory.html#ae5c094166352b978abd3e297c0fb70b5" title="Internal Clock.">fInternalTime</a>);
+<a name="l00108"></a>00108         <a class="code" href="class_treatment_factory.html#acfaea8404018da31bc8840f18d951ba6" title="Number of Cooling IV Treated.">fCoolingLastIndex</a>++;
+<a name="l00109"></a>00109         <a class="code" href="class_treatment_factory.html#a75b5270f26a523f842eca0123fa6e8ea" title="Vector of the Cooling Index.">fCoolingIndex</a>.push_back(<a class="code" href="class_treatment_factory.html#acfaea8404018da31bc8840f18d951ba6" title="Number of Cooling IV Treated.">fCoolingLastIndex</a>);
+<a name="l00110"></a>00110         <a class="code" href="class_treatment_factory.html#aac610053739c3fa57a84968df6a55454" title="Pointer to the Parc.">fParc</a>-&gt;<a class="code" href="class_c_l_a_s_s.html#ad1864aa27159ef57dbdc4e364c1cbc69">AddTotalCooling</a>(IV);
+<a name="l00111"></a>00111         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00112"></a>00112 }
+<a name="l00113"></a>00113 
+<a name="l00114"></a>00114 <span class="comment">//________________________________________________________________________</span>
+<a name="l00115"></a><a class="code" href="class_treatment_factory.html#aa7193d25c5561739379412e67c396db3">00115</a> <span class="keywordtype">void</span> <a class="code" href="class_treatment_factory.html#aa7193d25c5561739379412e67c396db3" title="Add Separation IsotopicVector.">TreatmentFactory::AddIVSeparating</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> IV)
+<a name="l00116"></a>00116 { 
+<a name="l00117"></a>00117         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00118"></a>00118         <a class="code" href="class_treatment_factory.html#ab6441ded72a3d689f102d73e39ee3782" title="Vector of the Treated Isotopic Vector.">fIVSeparating</a>.push_back(IV); 
+<a name="l00119"></a>00119         <a class="code" href="class_treatment_factory.html#a213f3dd173dcece92d78d8c8d57ecfdf" title="Vector of the Treated Starting Time.">fSeparatingStartingTime</a>.push_back(<a class="code" href="class_treatment_factory.html#ae5c094166352b978abd3e297c0fb70b5" title="Internal Clock.">fInternalTime</a>);
+<a name="l00120"></a>00120         <a class="code" href="class_treatment_factory.html#af82688264a9a4a57b961ccf9ae05b517" title="Number of Separation IV Treated.">fSeparatingLastIndex</a>++;
+<a name="l00121"></a>00121         <a class="code" href="class_treatment_factory.html#abe5ea3f523811f335061ba48236e4ef1" title="Vector of the Treated Index.">fSeparatingIndex</a>.push_back(<a class="code" href="class_treatment_factory.html#af82688264a9a4a57b961ccf9ae05b517" title="Number of Separation IV Treated.">fSeparatingLastIndex</a>);
+<a name="l00122"></a>00122         <a class="code" href="class_treatment_factory.html#aac610053739c3fa57a84968df6a55454" title="Pointer to the Parc.">fParc</a>-&gt;<a class="code" href="class_c_l_a_s_s.html#a62834294b330c718aadcb9564281a106">AddTotalSeparating</a>(IV);
+<a name="l00123"></a>00123         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00124"></a>00124 }
+<a name="l00125"></a>00125 
+<a name="l00126"></a>00126 <span class="comment">//________________________________________________________________________</span>
+<a name="l00127"></a><a class="code" href="class_treatment_factory.html#a6010c66976ea45ad84fa3b24dc2da730">00127</a> <span class="keywordtype">void</span> <a class="code" href="class_treatment_factory.html#aa7193d25c5561739379412e67c396db3" title="Add Separation IsotopicVector.">TreatmentFactory::AddIVSeparating</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> IV, <span class="keywordtype">long</span> <span class="keywordtype">int</span> absolutadditiontime)
+<a name="l00128"></a>00128 { 
+<a name="l00129"></a>00129         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00130"></a>00130         <a class="code" href="class_treatment_factory.html#ab6441ded72a3d689f102d73e39ee3782" title="Vector of the Treated Isotopic Vector.">fIVSeparating</a>.push_back(IV); 
+<a name="l00131"></a>00131         <a class="code" href="class_treatment_factory.html#a213f3dd173dcece92d78d8c8d57ecfdf" title="Vector of the Treated Starting Time.">fSeparatingStartingTime</a>.push_back(absolutadditiontime);
+<a name="l00132"></a>00132         <a class="code" href="class_treatment_factory.html#af82688264a9a4a57b961ccf9ae05b517" title="Number of Separation IV Treated.">fSeparatingLastIndex</a>++;
+<a name="l00133"></a>00133         <a class="code" href="class_treatment_factory.html#abe5ea3f523811f335061ba48236e4ef1" title="Vector of the Treated Index.">fSeparatingIndex</a>.push_back(<a class="code" href="class_treatment_factory.html#af82688264a9a4a57b961ccf9ae05b517" title="Number of Separation IV Treated.">fSeparatingLastIndex</a>);
+<a name="l00134"></a>00134         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00135"></a>00135 }
+<a name="l00136"></a>00136 
+<a name="l00137"></a>00137 
+<a name="l00138"></a>00138 <span class="comment">//________________________________________________________________________</span>
+<a name="l00139"></a><a class="code" href="class_treatment_factory.html#a09d1756eebf71de4f46030d2bc13ade3">00139</a> <span class="keywordtype">void</span> <a class="code" href="class_treatment_factory.html#a09d1756eebf71de4f46030d2bc13ade3" title="Remove a Treated IsotopicVector.">TreatmentFactory::RemoveIVSeparation</a>(<span class="keywordtype">int</span> i)        <span class="comment">//remove a Treated IsotopicVector</span>
+<a name="l00140"></a>00140 { 
+<a name="l00141"></a>00141         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00142"></a>00142         <a class="code" href="class_treatment_factory.html#ab6441ded72a3d689f102d73e39ee3782" title="Vector of the Treated Isotopic Vector.">fIVSeparating</a>.erase(<a class="code" href="class_treatment_factory.html#ab6441ded72a3d689f102d73e39ee3782" title="Vector of the Treated Isotopic Vector.">fIVSeparating</a>.begin()+i);
+<a name="l00143"></a>00143         <a class="code" href="class_treatment_factory.html#a213f3dd173dcece92d78d8c8d57ecfdf" title="Vector of the Treated Starting Time.">fSeparatingStartingTime</a>.erase(<a class="code" href="class_treatment_factory.html#a213f3dd173dcece92d78d8c8d57ecfdf" title="Vector of the Treated Starting Time.">fSeparatingStartingTime</a>.begin()+i);
+<a name="l00144"></a>00144         <a class="code" href="class_treatment_factory.html#abe5ea3f523811f335061ba48236e4ef1" title="Vector of the Treated Index.">fSeparatingIndex</a>.erase(<a class="code" href="class_treatment_factory.html#abe5ea3f523811f335061ba48236e4ef1" title="Vector of the Treated Index.">fSeparatingIndex</a>.begin()+i);
+<a name="l00145"></a>00145         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00146"></a>00146 }
+<a name="l00147"></a>00147 
+<a name="l00148"></a>00148 
+<a name="l00149"></a>00149 <span class="comment">//________________________________________________________________________</span>
+<a name="l00150"></a><a class="code" href="class_treatment_factory.html#a86dc4c7ca4fd7c72123eee92dde6f457">00150</a> <span class="keywordtype">void</span> <a class="code" href="class_treatment_factory.html#a86dc4c7ca4fd7c72123eee92dde6f457" title="Remove a Cooling IsotopicVector.">TreatmentFactory::RemoveIVCooling</a>(<span class="keywordtype">int</span> i)           
+<a name="l00151"></a>00151 {
+<a name="l00152"></a>00152         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00153"></a>00153         <a class="code" href="class_treatment_factory.html#a2a9eb76bf9e62c5f285ad340dc1dd692" title="Vector of the Cooling Isotopic Vector.">fIVCooling</a>.erase(<a class="code" href="class_treatment_factory.html#a2a9eb76bf9e62c5f285ad340dc1dd692" title="Vector of the Cooling Isotopic Vector.">fIVCooling</a>.begin()+i);
+<a name="l00154"></a>00154         <a class="code" href="class_treatment_factory.html#a2100d3d1f444b31fe8d3b2a5b6357962" title="Vector of the Cooling Starting Time.">fCoolingStartingTime</a>.erase(<a class="code" href="class_treatment_factory.html#a2100d3d1f444b31fe8d3b2a5b6357962" title="Vector of the Cooling Starting Time.">fCoolingStartingTime</a>.begin()+i);
+<a name="l00155"></a>00155         <a class="code" href="class_treatment_factory.html#a75b5270f26a523f842eca0123fa6e8ea" title="Vector of the Cooling Index.">fCoolingIndex</a>.erase(<a class="code" href="class_treatment_factory.html#a75b5270f26a523f842eca0123fa6e8ea" title="Vector of the Cooling Index.">fCoolingIndex</a>.begin()+i); 
+<a name="l00156"></a>00156         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00157"></a>00157 }
+<a name="l00158"></a>00158 
+<a name="l00159"></a>00159 
+<a name="l00160"></a>00160 
+<a name="l00161"></a>00161 <span class="comment">//________________________________________________________________________</span>
+<a name="l00162"></a>00162 <span class="comment">//      Time Action with the reste of the Universe : </span>
+<a name="l00163"></a>00163 <span class="comment">//              In/Out stock</span>
+<a name="l00164"></a>00164 <span class="comment">//              Evolution : </span>
+<a name="l00165"></a>00165 <span class="comment">//                      Waste, Stock, Separating, Cooling</span>
+<a name="l00166"></a>00166 <span class="comment">//              Separation</span>
+<a name="l00167"></a>00167 <span class="comment">//________________________________________________________________________</span>
+<a name="l00168"></a><a class="code" href="class_treatment_factory.html#a5a41538920b093d46868d944e756027b">00168</a> <span class="keywordtype">void</span> <a class="code" href="class_treatment_factory.html#a5a41538920b093d46868d944e756027b" title="Take isotopicvector from the (index)st vector of the stock.">TreatmentFactory::TakeFromStock</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> isotopicvector, <span class="keywordtype">int</span> index)
+<a name="l00169"></a>00169 {
+<a name="l00170"></a>00170         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00171"></a>00171         <span class="keywordflow">if</span>(<a class="code" href="class_treatment_factory.html#a7b976b112a87e4f31498a340e01dceac" title="if true use the stock as the full conglomerat, not individualy">fStockManagement</a> == <span class="keyword">true</span> )
+<a name="l00172"></a>00172                 <a class="code" href="class_treatment_factory.html#aca28656166b4fbd2ae1f3621061ba11f" title="The Stock IsotopicVector.">fIVStock</a>[index] -= isotopicvector;
+<a name="l00173"></a>00173         
+<a name="l00174"></a>00174         <a class="code" href="class_treatment_factory.html#a816a02399f94b25f3454c06e8c088062" title="Full stock conglomerat.">fIVFullStock</a>.<a class="code" href="class_isotopic_vector.html#afb929b3a6d85ad2fedb7d30f73c684d0" title="Remove Quantity gramme of the ZAI Element.">Remove</a>(isotopicvector);
+<a name="l00175"></a>00175         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00176"></a>00176 }
+<a name="l00177"></a>00177 
+<a name="l00178"></a>00178 <span class="comment">//________________________________________________________________________</span>
+<a name="l00179"></a><a class="code" href="class_treatment_factory.html#a422f64b900468570a49f5d32be71c632">00179</a> pair&lt;IsotopicVector, IsotopicVector&gt; <a class="code" href="class_treatment_factory.html#a422f64b900468570a49f5d32be71c632">TreatmentFactory::Separation</a>(<a class="code" href="class_isotopic_vector.html">IsotopicVector</a> isotopicvector)
+<a name="l00180"></a>00180 {
+<a name="l00181"></a>00181         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00182"></a>00182         <span class="comment">//[0] = stock ; [1] = waste</span>
+<a name="l00183"></a>00183         pair&lt;IsotopicVector, IsotopicVector&gt;    IVTmp;
+<a name="l00184"></a>00184         
+<a name="l00185"></a>00185         map&lt;ZAI ,double&gt; isotopicquantity = isotopicvector.<a class="code" href="class_isotopic_vector.html#a0b65f2635da76635c97ddc39faad22bb" title="Return the IVQuantity map.">GetIsotopicQuantity</a>();
+<a name="l00186"></a>00186         <span class="keywordflow">for</span>(map&lt;ZAI ,double &gt;::iterator it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+<a name="l00187"></a>00187         {
+<a name="l00188"></a>00188                 map&lt;ZAI ,double&gt;::iterator it2;
+<a name="l00189"></a>00189                 it2 = <a class="code" href="class_treatment_factory.html#a25c2e205953028abdd17f3ac621ac62c" title="The Valorisable Table.">fValorisableIV</a>.find((*it).first);
+<a name="l00190"></a>00190                 <span class="keywordflow">if</span> ( it2 != <a class="code" href="class_treatment_factory.html#a25c2e205953028abdd17f3ac621ac62c" title="The Valorisable Table.">fValorisableIV</a>.end() )
+<a name="l00191"></a>00191                 {
+<a name="l00192"></a>00192                         IVTmp.first.Add(        (*it).first, (*it).second * (*it2).second );            <span class="comment">//stock</span>
+<a name="l00193"></a>00193                         IVTmp.second.Add(       (*it).first, (*it).second * (1-(*it2).second) );        <span class="comment">//waste</span>
+<a name="l00194"></a>00194                 }
+<a name="l00195"></a>00195                 <span class="keywordflow">else</span> IVTmp.second.Add(  (*it).first, (*it).second );    <span class="comment">//waste</span>
+<a name="l00196"></a>00196         }
+<a name="l00197"></a>00197         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00198"></a>00198         <span class="keywordflow">return</span> IVTmp;
+<a name="l00199"></a>00199 }
+<a name="l00200"></a>00200 
+<a name="l00201"></a>00201 
+<a name="l00202"></a>00202 <span class="comment">//________________________________________________________________________</span>
+<a name="l00203"></a><a class="code" href="class_treatment_factory.html#aeca0ee90774cd2cb95008d3bb79a46c8">00203</a> <span class="keywordtype">void</span> <a class="code" href="class_treatment_factory.html#aeca0ee90774cd2cb95008d3bb79a46c8" title="Deal the Waste Decay Evolution.">TreatmentFactory::WasteDecay</a>(<span class="keywordtype">long</span> <span class="keywordtype">int</span> t)
+<a name="l00204"></a>00204 {
+<a name="l00205"></a>00205         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00206"></a>00206         <span class="comment">// Check if the TF has been created ...</span>
+<a name="l00207"></a>00207         <span class="keywordflow">if</span>(t&lt;<a class="code" href="class_treatment_factory.html#ae117813d2125e15619eebce1505046de" title="Date of Creation of the Factory.">fCreationTime</a>) <span class="keywordflow">return</span>;
+<a name="l00208"></a>00208 
+<a name="l00209"></a>00209         <span class="keywordtype">long</span> <span class="keywordtype">int</span> EvolutionTime = t - <a class="code" href="class_treatment_factory.html#ae5c094166352b978abd3e297c0fb70b5" title="Internal Clock.">fInternalTime</a>;
+<a name="l00210"></a>00210         <a class="code" href="class_treatment_factory.html#a0ea1bf5f8c213866de3dc54cc95afbc8" title="The Ultimate Waste IsotopicVector.">fIVWaste</a> = <a class="code" href="class_treatment_factory.html#a87686aa3bee9be038d3378da99b85fff" title="Get IsotopicVector Decay at the t time.">GetDecayProduct</a>(<a class="code" href="class_treatment_factory.html#a0ea1bf5f8c213866de3dc54cc95afbc8" title="The Ultimate Waste IsotopicVector.">fIVWaste</a> , EvolutionTime);
+<a name="l00211"></a>00211 <span class="preprocessor">        #pragma omp critical(UpdateTotalWasta)</span>
+<a name="l00212"></a>00212 <span class="preprocessor"></span>                {<a class="code" href="class_treatment_factory.html#aac610053739c3fa57a84968df6a55454" title="Pointer to the Parc.">fParc</a>-&gt;<a class="code" href="class_c_l_a_s_s.html#a65e6d00c641f709fe3beb35bdc5187fe">AddTotalWaste</a>(<a class="code" href="class_treatment_factory.html#a0ea1bf5f8c213866de3dc54cc95afbc8" title="The Ultimate Waste IsotopicVector.">fIVWaste</a>);}
+<a name="l00213"></a>00213         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00214"></a>00214 }
+<a name="l00215"></a>00215 
+<a name="l00216"></a>00216 <span class="comment">//________________________________________________________________________</span>
+<a name="l00217"></a><a class="code" href="class_treatment_factory.html#a1516dbe08885873eb1e4377f3b20d413">00217</a> <span class="keywordtype">void</span> <a class="code" href="class_treatment_factory.html#a1516dbe08885873eb1e4377f3b20d413" title="Deal the Stock Decay Evolution.">TreatmentFactory::StockDecay</a>(<span class="keywordtype">long</span> <span class="keywordtype">int</span> t)
+<a name="l00218"></a>00218 {
+<a name="l00219"></a>00219         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00220"></a>00220         <span class="comment">// Check if the TF has been created ...</span>
+<a name="l00221"></a>00221         <span class="keywordflow">if</span>(t&lt;<a class="code" href="class_treatment_factory.html#ae117813d2125e15619eebce1505046de" title="Date of Creation of the Factory.">fCreationTime</a>) <span class="keywordflow">return</span>;
+<a name="l00222"></a>00222 
+<a name="l00223"></a>00223         <span class="keywordtype">int</span> EvolutionTime = t - <a class="code" href="class_treatment_factory.html#ae5c094166352b978abd3e297c0fb70b5" title="Internal Clock.">fInternalTime</a>;
+<a name="l00224"></a>00224         <a class="code" href="class_treatment_factory.html#a816a02399f94b25f3454c06e8c088062" title="Full stock conglomerat.">fIVFullStock</a> = <a class="code" href="class_treatment_factory.html#a87686aa3bee9be038d3378da99b85fff" title="Get IsotopicVector Decay at the t time.">GetDecayProduct</a>(<a class="code" href="class_treatment_factory.html#a816a02399f94b25f3454c06e8c088062" title="Full stock conglomerat.">fIVFullStock</a> , EvolutionTime);
+<a name="l00225"></a>00225 
+<a name="l00226"></a>00226         <span class="keywordflow">if</span>(<a class="code" href="class_treatment_factory.html#a7b976b112a87e4f31498a340e01dceac" title="if true use the stock as the full conglomerat, not individualy">fStockManagement</a> == <span class="keyword">true</span>)
+<a name="l00227"></a>00227         {
+<a name="l00228"></a>00228 <span class="preprocessor">                #pragma omp parallel for</span>
+<a name="l00229"></a>00229 <span class="preprocessor"></span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i=0; i &lt;(int) <a class="code" href="class_treatment_factory.html#aca28656166b4fbd2ae1f3621061ba11f" title="The Stock IsotopicVector.">fIVStock</a>.size() ; i++)
+<a name="l00230"></a>00230                 {
+<a name="l00231"></a>00231                         <a class="code" href="class_treatment_factory.html#aca28656166b4fbd2ae1f3621061ba11f" title="The Stock IsotopicVector.">fIVStock</a>[i] = <a class="code" href="class_treatment_factory.html#a87686aa3bee9be038d3378da99b85fff" title="Get IsotopicVector Decay at the t time.">GetDecayProduct</a>(<a class="code" href="class_treatment_factory.html#aca28656166b4fbd2ae1f3621061ba11f" title="The Stock IsotopicVector.">fIVStock</a>[i] , EvolutionTime);
+<a name="l00232"></a>00232 <span class="preprocessor">                        #pragma omp critical(UpdateTotalStock)</span>
+<a name="l00233"></a>00233 <span class="preprocessor"></span>                                {<a class="code" href="class_treatment_factory.html#aac610053739c3fa57a84968df6a55454" title="Pointer to the Parc.">fParc</a>-&gt;<a class="code" href="class_c_l_a_s_s.html#a56d5baf9e2fb22a148a34f134e5ea87e">AddTotalStock</a>(<a class="code" href="class_treatment_factory.html#aca28656166b4fbd2ae1f3621061ba11f" title="The Stock IsotopicVector.">fIVStock</a>[i]);}
+<a name="l00234"></a>00234                 }
+<a name="l00235"></a>00235         
+<a name="l00236"></a>00236         }
+<a name="l00237"></a>00237         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00238"></a>00238 }
+<a name="l00239"></a>00239 
+<a name="l00240"></a>00240 
+<a name="l00241"></a>00241 <span class="comment">//________________________________________________________________________</span>
+<a name="l00242"></a><a class="code" href="class_treatment_factory.html#afb051dd3f5cb0253c07daffb5f636787">00242</a> <span class="keywordtype">void</span> <a class="code" href="class_treatment_factory.html#afb051dd3f5cb0253c07daffb5f636787" title="Deal the Separating IV Decay Evolution and then send it to stock.">TreatmentFactory::SeparatingEvolution</a>(<span class="keywordtype">long</span> <span class="keywordtype">int</span> t)
+<a name="l00243"></a>00243 {
+<a name="l00244"></a>00244         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00245"></a>00245         <span class="comment">// Check if the TF has been created ...</span>
+<a name="l00246"></a>00246         <span class="keywordflow">if</span>(t&lt;<a class="code" href="class_treatment_factory.html#ae117813d2125e15619eebce1505046de" title="Date of Creation of the Factory.">fCreationTime</a>) <span class="keywordflow">return</span>;
+<a name="l00247"></a>00247 
+<a name="l00248"></a>00248         
+<a name="l00249"></a>00249         <span class="keywordtype">long</span> <span class="keywordtype">int</span> EvolutionTime = t - <a class="code" href="class_treatment_factory.html#ae5c094166352b978abd3e297c0fb70b5" title="Internal Clock.">fInternalTime</a>;
+<a name="l00250"></a>00250 <span class="preprocessor">#pragma omp parallel for</span>
+<a name="l00251"></a>00251 <span class="preprocessor"></span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0 ; i &lt; (int)<a class="code" href="class_treatment_factory.html#ab6441ded72a3d689f102d73e39ee3782" title="Vector of the Treated Isotopic Vector.">fIVSeparating</a>.size() ; i++)
+<a name="l00252"></a>00252         {
+<a name="l00253"></a>00253                 <span class="keywordflow">if</span> (fInternalTime - <a class="code" href="class_treatment_factory.html#a213f3dd173dcece92d78d8c8d57ecfdf" title="Vector of the Treated Starting Time.">fSeparatingStartingTime</a>[i] + EvolutionTime &gt;= <a class="code" href="class_treatment_factory.html#ae4f95cabae2551a8f7ed92b807a6367c" title="Separation Duration Time.">fSeparationTime</a>) <span class="comment">// &quot;&gt;&quot; should not append, only &quot;=&quot; is normal...</span>
+<a name="l00254"></a>00254                 {
+<a name="l00255"></a>00255                         <span class="keywordflow">if</span> (t - <a class="code" href="class_treatment_factory.html#a213f3dd173dcece92d78d8c8d57ecfdf" title="Vector of the Treated Starting Time.">fSeparatingStartingTime</a>[i] &gt; <a class="code" href="class_treatment_factory.html#ae4f95cabae2551a8f7ed92b807a6367c" title="Separation Duration Time.">fSeparationTime</a>) <span class="comment">// Warning &amp; Quit</span>
+<a name="l00256"></a>00256                         {
+<a name="l00257"></a>00257                                 cout            &lt;&lt; <span class="stringliteral">&quot;!!Warning!! !!!TreamtmentFactory!!! Separation Step : &quot;</span>&lt;&lt; t/365.4/3600/24 &lt;&lt; <span class="stringliteral">&quot; :&quot;</span>
+<a name="l00258"></a>00258                                                 &lt;&lt; <span class="stringliteral">&quot; An evolution Step is probably missing ! &quot;</span> &lt;&lt; endl;
+<a name="l00259"></a>00259                                 <a class="code" href="class_treatment_factory.html#aa07a902b5f9310ceeea76c4b030cecc4" title="Pointer to the Log.">fLog</a>-&gt;<a class="code" href="class_log_file.html#a050df6a1b906596564f598f0d1263484" title="Log Stream.">fLog</a>      &lt;&lt; <span class="stringliteral">&quot;!!Warning!! !!!TreamtmentFactory!!! Separation Step : &quot;</span>&lt;&lt; t/365.4/3600/24 &lt;&lt; <span class="stringliteral">&quot; :&quot;</span>
+<a name="l00260"></a>00260                                                 &lt;&lt; <span class="stringliteral">&quot; An evolution Step is probably missing ! &quot;</span> &lt;&lt; endl;
+<a name="l00261"></a>00261                                 exit (1);
+<a name="l00262"></a>00262                         }
+<a name="l00263"></a>00263                         <a class="code" href="class_treatment_factory.html#ab6441ded72a3d689f102d73e39ee3782" title="Vector of the Treated Isotopic Vector.">fIVSeparating</a>[i] = <a class="code" href="class_treatment_factory.html#a87686aa3bee9be038d3378da99b85fff" title="Get IsotopicVector Decay at the t time.">GetDecayProduct</a>( <a class="code" href="class_treatment_factory.html#ab6441ded72a3d689f102d73e39ee3782" title="Vector of the Treated Isotopic Vector.">fIVSeparating</a>[i] , EvolutionTime);
+<a name="l00264"></a>00264 <span class="preprocessor">                #pragma omp critical(DeleteSeprationIVPB)</span>
+<a name="l00265"></a>00265 <span class="preprocessor"></span>                        {<a class="code" href="class_treatment_factory.html#a9f11315a9e10a28f555d30572ab89e3b" title="Index of the Separation IV reaching the End of a Cooling Cycle.">fSeparationEndOfCycle</a>.push_back(i);}
+<a name="l00266"></a>00266                 }
+<a name="l00267"></a>00267                 <span class="keywordflow">else</span> 
+<a name="l00268"></a>00268                 {
+<a name="l00269"></a>00269                         <a class="code" href="class_treatment_factory.html#ab6441ded72a3d689f102d73e39ee3782" title="Vector of the Treated Isotopic Vector.">fIVSeparating</a>[i] = <a class="code" href="class_treatment_factory.html#a87686aa3bee9be038d3378da99b85fff" title="Get IsotopicVector Decay at the t time.">GetDecayProduct</a>( <a class="code" href="class_treatment_factory.html#ab6441ded72a3d689f102d73e39ee3782" title="Vector of the Treated Isotopic Vector.">fIVSeparating</a>[i] , EvolutionTime);
+<a name="l00270"></a>00270 <span class="preprocessor">                        #pragma omp critical(UpdateSeparatingStock)</span>
+<a name="l00271"></a>00271 <span class="preprocessor"></span>                                {<a class="code" href="class_treatment_factory.html#aac610053739c3fa57a84968df6a55454" title="Pointer to the Parc.">fParc</a>-&gt;<a class="code" href="class_c_l_a_s_s.html#a62834294b330c718aadcb9564281a106">AddTotalSeparating</a>(<a class="code" href="class_treatment_factory.html#ab6441ded72a3d689f102d73e39ee3782" title="Vector of the Treated Isotopic Vector.">fIVSeparating</a>[i]);}
+<a name="l00272"></a>00272                 }
+<a name="l00273"></a>00273         }
+<a name="l00274"></a>00274         sort (<a class="code" href="class_treatment_factory.html#a9f11315a9e10a28f555d30572ab89e3b" title="Index of the Separation IV reaching the End of a Cooling Cycle.">fSeparationEndOfCycle</a>.begin(), <a class="code" href="class_treatment_factory.html#a9f11315a9e10a28f555d30572ab89e3b" title="Index of the Separation IV reaching the End of a Cooling Cycle.">fSeparationEndOfCycle</a>.end());
+<a name="l00275"></a>00275         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00276"></a>00276 }
+<a name="l00277"></a>00277 
+<a name="l00278"></a>00278 <span class="comment">//________________________________________________________________________</span>
+<a name="l00279"></a><a class="code" href="class_treatment_factory.html#a7bc2e774abb02f71df62bb30e5e6735b">00279</a> <span class="keywordtype">void</span> <a class="code" href="class_treatment_factory.html#a7bc2e774abb02f71df62bb30e5e6735b" title="Deal the cooling and then send it to Separation.">TreatmentFactory::CoolingEvolution</a>(<span class="keywordtype">long</span> <span class="keywordtype">int</span> t)
+<a name="l00280"></a>00280 {
+<a name="l00281"></a>00281         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00282"></a>00282         <span class="comment">// Check if the TF has been created ...</span>
+<a name="l00283"></a>00283         <span class="keywordflow">if</span>(t&lt;<a class="code" href="class_treatment_factory.html#ae117813d2125e15619eebce1505046de" title="Date of Creation of the Factory.">fCreationTime</a>) <span class="keywordflow">return</span>;
+<a name="l00284"></a>00284 
+<a name="l00285"></a>00285         <span class="keywordtype">int</span> i;
+<a name="l00286"></a>00286         <span class="keywordtype">int</span> RemainingCoolingTime;
+<a name="l00287"></a>00287         <span class="keywordtype">long</span> <span class="keywordtype">int</span> EvolutionTime = t - <a class="code" href="class_treatment_factory.html#ae5c094166352b978abd3e297c0fb70b5" title="Internal Clock.">fInternalTime</a>;
+<a name="l00288"></a>00288 <span class="preprocessor">#pragma omp parallel for</span>
+<a name="l00289"></a>00289 <span class="preprocessor"></span>        <span class="keywordflow">for</span> ( i = 0 ; i &lt; (int)<a class="code" href="class_treatment_factory.html#a2a9eb76bf9e62c5f285ad340dc1dd692" title="Vector of the Cooling Isotopic Vector.">fIVCooling</a>.size() ; i++)
+<a name="l00290"></a>00290         {
+<a name="l00291"></a>00291                 <span class="keywordflow">if</span> (t - <a class="code" href="class_treatment_factory.html#a2100d3d1f444b31fe8d3b2a5b6357962" title="Vector of the Cooling Starting Time.">fCoolingStartingTime</a>[i] &gt;= <a class="code" href="class_treatment_factory.html#aa194cf5a2b02be39d1b68bac846a9b04" title="Cooling Duration Time.">fCoolingTime</a>) <span class="comment">// &quot;&gt;&quot; should not append, only &quot;=&quot; is normal...</span>
+<a name="l00292"></a>00292                 {
+<a name="l00293"></a>00293                         <span class="keywordflow">if</span> (t - <a class="code" href="class_treatment_factory.html#a2100d3d1f444b31fe8d3b2a5b6357962" title="Vector of the Cooling Starting Time.">fCoolingStartingTime</a>[i] &gt; <a class="code" href="class_treatment_factory.html#aa194cf5a2b02be39d1b68bac846a9b04" title="Cooling Duration Time.">fCoolingTime</a>) <span class="comment">// Warning &amp; Quit</span>
+<a name="l00294"></a>00294                         {
+<a name="l00295"></a>00295                                 cout            &lt;&lt; <span class="stringliteral">&quot;!!Warning!! !!!TreamtmentFactory!!! Cooling Step : &quot;</span> &lt;&lt; t/365.4/3600/24 &lt;&lt; <span class="stringliteral">&quot; :&quot;</span>
+<a name="l00296"></a>00296                                                 &lt;&lt; <span class="stringliteral">&quot; An evolution Step is probably missing ! &quot;</span> &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; endl;
+<a name="l00297"></a>00297                                 <a class="code" href="class_treatment_factory.html#aa07a902b5f9310ceeea76c4b030cecc4" title="Pointer to the Log.">fLog</a>-&gt;<a class="code" href="class_log_file.html#a050df6a1b906596564f598f0d1263484" title="Log Stream.">fLog</a>      &lt;&lt; <span class="stringliteral">&quot;!!Warning!! !!!TreamtmentFactory!!! Cooling Step : &quot;</span>&lt;&lt; t/365.4/3600/24 &lt;&lt; <span class="stringliteral">&quot; :&quot;</span>
+<a name="l00298"></a>00298                                                 &lt;&lt; <span class="stringliteral">&quot; An evolution Step is probably missing ! &quot;</span> &lt;&lt; endl;
+<a name="l00299"></a>00299                                 exit (1);
+<a name="l00300"></a>00300                         }
+<a name="l00301"></a>00301 
+<a name="l00302"></a>00302                         RemainingCoolingTime = <a class="code" href="class_treatment_factory.html#aa194cf5a2b02be39d1b68bac846a9b04" title="Cooling Duration Time.">fCoolingTime</a> - (fInternalTime - <a class="code" href="class_treatment_factory.html#a2100d3d1f444b31fe8d3b2a5b6357962" title="Vector of the Cooling Starting Time.">fCoolingStartingTime</a>[i]);
+<a name="l00303"></a>00303                         <span class="comment">//Cooling Decay</span>
+<a name="l00304"></a>00304                         <a class="code" href="class_treatment_factory.html#a2a9eb76bf9e62c5f285ad340dc1dd692" title="Vector of the Cooling Isotopic Vector.">fIVCooling</a>[i] = <a class="code" href="class_treatment_factory.html#a87686aa3bee9be038d3378da99b85fff" title="Get IsotopicVector Decay at the t time.">GetDecayProduct</a>( fIVCooling[i], RemainingCoolingTime);
+<a name="l00305"></a>00305 <span class="preprocessor">                #pragma omp critical(DeleteCoolingIVPB)</span>
+<a name="l00306"></a>00306 <span class="preprocessor"></span>                        {<a class="code" href="class_treatment_factory.html#a7d0a9072222330d6b5261c9a945c000c" title="Index of the Cooling IV reaching the End of a Cooling Cycle.">fCoolingEndOfCycle</a>.push_back(i);}
+<a name="l00307"></a>00307 
+<a name="l00308"></a>00308                 }
+<a name="l00309"></a>00309                 <span class="keywordflow">else</span> 
+<a name="l00310"></a>00310                 {
+<a name="l00311"></a>00311                         <a class="code" href="class_treatment_factory.html#a2a9eb76bf9e62c5f285ad340dc1dd692" title="Vector of the Cooling Isotopic Vector.">fIVCooling</a>[i] = <a class="code" href="class_treatment_factory.html#a87686aa3bee9be038d3378da99b85fff" title="Get IsotopicVector Decay at the t time.">GetDecayProduct</a>( <a class="code" href="class_treatment_factory.html#a2a9eb76bf9e62c5f285ad340dc1dd692" title="Vector of the Cooling Isotopic Vector.">fIVCooling</a>[i] , EvolutionTime);
+<a name="l00312"></a>00312 <span class="preprocessor">                        #pragma omp critical(UpdateCoolingStock)</span>
+<a name="l00313"></a>00313 <span class="preprocessor"></span>                                {<a class="code" href="class_treatment_factory.html#aac610053739c3fa57a84968df6a55454" title="Pointer to the Parc.">fParc</a>-&gt;<a class="code" href="class_c_l_a_s_s.html#ad1864aa27159ef57dbdc4e364c1cbc69">AddTotalCooling</a>(<a class="code" href="class_treatment_factory.html#a2a9eb76bf9e62c5f285ad340dc1dd692" title="Vector of the Cooling Isotopic Vector.">fIVCooling</a>[i]);}
+<a name="l00314"></a>00314                 }
+<a name="l00315"></a>00315         }
+<a name="l00316"></a>00316 
+<a name="l00317"></a>00317         sort (<a class="code" href="class_treatment_factory.html#a7d0a9072222330d6b5261c9a945c000c" title="Index of the Cooling IV reaching the End of a Cooling Cycle.">fCoolingEndOfCycle</a>.begin(), <a class="code" href="class_treatment_factory.html#a7d0a9072222330d6b5261c9a945c000c" title="Index of the Cooling IV reaching the End of a Cooling Cycle.">fCoolingEndOfCycle</a>.end());
+<a name="l00318"></a>00318         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00319"></a>00319 }
+<a name="l00320"></a>00320 
+<a name="l00321"></a>00321 
+<a name="l00322"></a>00322 <span class="comment">//________________________________________________________________________</span>
+<a name="l00323"></a><a class="code" href="class_treatment_factory.html#a3adb9c8d9e15a03fd780e97213a4c42e">00323</a> <span class="keywordtype">void</span> <a class="code" href="class_treatment_factory.html#a3adb9c8d9e15a03fd780e97213a4c42e" title="Performe the evolution until the Time t.">TreatmentFactory::Evolution</a>(<span class="keywordtype">long</span> <span class="keywordtype">int</span> t)
+<a name="l00324"></a>00324 {
+<a name="l00325"></a>00325         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00326"></a>00326         <span class="comment">// Check if the TF has been created ...</span>
+<a name="l00327"></a>00327         <span class="keywordflow">if</span>(t&lt;<a class="code" href="class_treatment_factory.html#ae117813d2125e15619eebce1505046de" title="Date of Creation of the Factory.">fCreationTime</a>) <span class="keywordflow">return</span>;
+<a name="l00328"></a>00328         <span class="keywordflow">if</span>(t == <a class="code" href="class_treatment_factory.html#ae5c094166352b978abd3e297c0fb70b5" title="Internal Clock.">fInternalTime</a>) <span class="keywordflow">return</span>;
+<a name="l00329"></a>00329         
+<a name="l00330"></a>00330         <span class="keywordflow">if</span>(<a class="code" href="class_treatment_factory.html#ae5c094166352b978abd3e297c0fb70b5" title="Internal Clock.">fInternalTime</a> ==0 &amp;&amp; <a class="code" href="class_treatment_factory.html#aff1f5d5d754131c7ad33c4bf6da9833b" title="True if Running, False Otherwise.">IsStarted</a> == <span class="keyword">false</span>)
+<a name="l00331"></a>00331         {
+<a name="l00332"></a>00332                 <a class="code" href="class_treatment_factory.html#ae5c094166352b978abd3e297c0fb70b5" title="Internal Clock.">fInternalTime</a> = <a class="code" href="class_treatment_factory.html#ae117813d2125e15619eebce1505046de" title="Date of Creation of the Factory.">fCreationTime</a>;
+<a name="l00333"></a>00333                 <a class="code" href="class_treatment_factory.html#aff1f5d5d754131c7ad33c4bf6da9833b" title="True if Running, False Otherwise.">IsStarted</a> = <span class="keyword">true</span>;
+<a name="l00334"></a>00334         }
+<a name="l00335"></a>00335         <span class="comment">// Make the evolution for the Waste ...</span>
+<a name="l00336"></a>00336         <a class="code" href="class_treatment_factory.html#aeca0ee90774cd2cb95008d3bb79a46c8" title="Deal the Waste Decay Evolution.">WasteDecay</a>(t);
+<a name="l00337"></a>00337         
+<a name="l00338"></a>00338         <span class="comment">// ... the Stock ...</span>
+<a name="l00339"></a>00339         <a class="code" href="class_treatment_factory.html#a1516dbe08885873eb1e4377f3b20d413" title="Deal the Stock Decay Evolution.">StockDecay</a>(t);
+<a name="l00340"></a>00340         
+<a name="l00341"></a>00341 
+<a name="l00342"></a>00342         <span class="comment">// ... the SeparatingIV ...</span>
+<a name="l00343"></a>00343         <a class="code" href="class_treatment_factory.html#afb051dd3f5cb0253c07daffb5f636787" title="Deal the Separating IV Decay Evolution and then send it to stock.">SeparatingEvolution</a>(t);
+<a name="l00344"></a>00344         
+<a name="l00345"></a>00345         <span class="comment">// ... Then Deal the Cooling IV ...</span>
+<a name="l00346"></a>00346         <a class="code" href="class_treatment_factory.html#a7bc2e774abb02f71df62bb30e5e6735b" title="Deal the cooling and then send it to Separation.">CoolingEvolution</a>(t);
+<a name="l00347"></a>00347         
+<a name="l00348"></a>00348         <span class="comment">// ... And Finaly update the AbsoluteInternalTime</span>
+<a name="l00349"></a>00349         <a class="code" href="class_treatment_factory.html#ae5c094166352b978abd3e297c0fb70b5" title="Internal Clock.">fInternalTime</a> = t;
+<a name="l00350"></a>00350         
+<a name="l00351"></a>00351 
+<a name="l00352"></a>00352         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00353"></a>00353 }
+<a name="l00354"></a>00354 
+<a name="l00355"></a>00355 
+<a name="l00356"></a>00356 <span class="comment">//________________________________________________________________________</span>
+<a name="l00357"></a><a class="code" href="class_treatment_factory.html#aa416589f1fa2025f1dc8dfbbcd5f9371">00357</a> <span class="keywordtype">void</span> <a class="code" href="class_treatment_factory.html#aa416589f1fa2025f1dc8dfbbcd5f9371" title="Write Modification (exchange between Cooling, Separation and Stock)">TreatmentFactory::Dump</a>()
+<a name="l00358"></a>00358 {
+<a name="l00359"></a>00359 <span class="comment">//------ Cooling ------//</span>
+<a name="l00360"></a>00360         <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = (<span class="keywordtype">int</span>)<a class="code" href="class_treatment_factory.html#a7d0a9072222330d6b5261c9a945c000c" title="Index of the Cooling IV reaching the End of a Cooling Cycle.">fCoolingEndOfCycle</a>.size()-1; i &gt;=0 ; i--)      <span class="comment">// IV End Of Cooling</span>
+<a name="l00361"></a>00361         {
+<a name="l00362"></a>00362 
+<a name="l00363"></a>00363                 <span class="keywordtype">int</span> idx = <a class="code" href="class_treatment_factory.html#a7d0a9072222330d6b5261c9a945c000c" title="Index of the Cooling IV reaching the End of a Cooling Cycle.">fCoolingEndOfCycle</a>[i];                        <span class="comment">// Get Index number</span>
+<a name="l00364"></a>00364                 pair&lt;IsotopicVector, IsotopicVector&gt; SeparatedIV = <a class="code" href="class_treatment_factory.html#a422f64b900468570a49f5d32be71c632">Separation</a>(<a class="code" href="class_treatment_factory.html#a2a9eb76bf9e62c5f285ad340dc1dd692" title="Vector of the Cooling Isotopic Vector.">fIVCooling</a>[idx]);
+<a name="l00365"></a>00365                                                                         <span class="comment">// Separation</span>
+<a name="l00366"></a>00366                 <a class="code" href="class_treatment_factory.html#a0ea1bf5f8c213866de3dc54cc95afbc8" title="The Ultimate Waste IsotopicVector.">fIVWaste</a> += SeparatedIV.second;                         <span class="comment">// Add to waste</span>
+<a name="l00367"></a>00367                 <a class="code" href="class_treatment_factory.html#aa7193d25c5561739379412e67c396db3" title="Add Separation IsotopicVector.">AddIVSeparating</a>(SeparatedIV.first, <a class="code" href="class_treatment_factory.html#ae5c094166352b978abd3e297c0fb70b5" title="Internal Clock.">fInternalTime</a> );     <span class="comment">// Add to speration</span>
+<a name="l00368"></a>00368                 
+<a name="l00369"></a>00369                 <a class="code" href="class_treatment_factory.html#a7d0a9072222330d6b5261c9a945c000c" title="Index of the Cooling IV reaching the End of a Cooling Cycle.">fCoolingEndOfCycle</a>.erase(<a class="code" href="class_treatment_factory.html#a7d0a9072222330d6b5261c9a945c000c" title="Index of the Cooling IV reaching the End of a Cooling Cycle.">fCoolingEndOfCycle</a>.begin()+i); <span class="comment">// Remove index entry</span>
+<a name="l00370"></a>00370                 <a class="code" href="class_treatment_factory.html#a86dc4c7ca4fd7c72123eee92dde6f457" title="Remove a Cooling IsotopicVector.">RemoveIVCooling</a>(idx);                                   <span class="comment">// Remove IVcooling</span>
+<a name="l00371"></a>00371         }
+<a name="l00372"></a>00372         <span class="keywordflow">if</span>((<span class="keywordtype">int</span>)<a class="code" href="class_treatment_factory.html#a7d0a9072222330d6b5261c9a945c000c" title="Index of the Cooling IV reaching the End of a Cooling Cycle.">fCoolingEndOfCycle</a>.size() != 0 )<span class="comment">// Control</span>
+<a name="l00373"></a>00373         {
+<a name="l00374"></a>00374                 cout            &lt;&lt; <span class="stringliteral">&quot;Problem while Dumping Cooling&quot;</span>&lt;&lt; endl;
+<a name="l00375"></a>00375                 <a class="code" href="class_treatment_factory.html#aa07a902b5f9310ceeea76c4b030cecc4" title="Pointer to the Log.">fLog</a>-&gt;<a class="code" href="class_log_file.html#a050df6a1b906596564f598f0d1263484" title="Log Stream.">fLog</a>      &lt;&lt; <span class="stringliteral">&quot;Problem while Dumping Cooling&quot;</span>&lt;&lt; endl;
+<a name="l00376"></a>00376                 exit (1);
+<a name="l00377"></a>00377         }
+<a name="l00378"></a>00378 
+<a name="l00379"></a>00379 
+<a name="l00380"></a>00380 
+<a name="l00381"></a>00381 <span class="comment">//------ Separation ------//</span>
+<a name="l00382"></a>00382         <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = (<span class="keywordtype">int</span>)<a class="code" href="class_treatment_factory.html#a9f11315a9e10a28f555d30572ab89e3b" title="Index of the Separation IV reaching the End of a Cooling Cycle.">fSeparationEndOfCycle</a>.size()-1; i &gt;=0 ; i--)           <span class="comment">// IV End Of Cooling</span>
+<a name="l00383"></a>00383         {
+<a name="l00384"></a>00384                 <span class="keywordtype">int</span> idx = <a class="code" href="class_treatment_factory.html#a9f11315a9e10a28f555d30572ab89e3b" title="Index of the Separation IV reaching the End of a Cooling Cycle.">fSeparationEndOfCycle</a>[i];                             <span class="comment">// Get Index number</span>
+<a name="l00385"></a>00385                 <a class="code" href="class_treatment_factory.html#ac560470f83d043532d77eec939a02689" title="Add a ZAI*quantity to the stock.">AddIVStock</a>(<a class="code" href="class_treatment_factory.html#ab6441ded72a3d689f102d73e39ee3782" title="Vector of the Treated Isotopic Vector.">fIVSeparating</a>[idx]);
+<a name="l00386"></a>00386                 
+<a name="l00387"></a>00387                 <a class="code" href="class_treatment_factory.html#a09d1756eebf71de4f46030d2bc13ade3" title="Remove a Treated IsotopicVector.">RemoveIVSeparation</a>(idx);                                        <span class="comment">// Remove Separated IV</span>
+<a name="l00388"></a>00388                 <a class="code" href="class_treatment_factory.html#a9f11315a9e10a28f555d30572ab89e3b" title="Index of the Separation IV reaching the End of a Cooling Cycle.">fSeparationEndOfCycle</a>.erase(<a class="code" href="class_treatment_factory.html#a9f11315a9e10a28f555d30572ab89e3b" title="Index of the Separation IV reaching the End of a Cooling Cycle.">fSeparationEndOfCycle</a>.begin()+i);   <span class="comment">// Remove index entry</span>
+<a name="l00389"></a>00389 
+<a name="l00390"></a>00390         }
+<a name="l00391"></a>00391 
+<a name="l00392"></a>00392         <span class="keywordflow">if</span>((<span class="keywordtype">int</span>)<a class="code" href="class_treatment_factory.html#a9f11315a9e10a28f555d30572ab89e3b" title="Index of the Separation IV reaching the End of a Cooling Cycle.">fSeparationEndOfCycle</a>.size() != 0 ) <span class="comment">// Control</span>
+<a name="l00393"></a>00393         {
+<a name="l00394"></a>00394                 cout            &lt;&lt; <span class="stringliteral">&quot;Problem while Dumping Separtion&quot;</span>&lt;&lt; endl;
+<a name="l00395"></a>00395                 <a class="code" href="class_treatment_factory.html#aa07a902b5f9310ceeea76c4b030cecc4" title="Pointer to the Log.">fLog</a>-&gt;<a class="code" href="class_log_file.html#a050df6a1b906596564f598f0d1263484" title="Log Stream.">fLog</a>      &lt;&lt; <span class="stringliteral">&quot;Problem while Dumping Separtion&quot;</span>&lt;&lt; endl;
+<a name="l00396"></a>00396                 exit (1);
+<a name="l00397"></a>00397         }
+<a name="l00398"></a>00398 
+<a name="l00399"></a>00399 }
+<a name="l00400"></a>00400 
+<a name="l00401"></a>00401 
+</pre></div></div><!-- contents -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>Tout</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Fichiers</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Fonctions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+
+
+<hr class="footer"/><address class="footer"><small>
+Généré le Samedi Avril 28 2012 14:44:26 pour CLASS par &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.6.1
+</small></address>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+digraph G
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="Reactor",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fIVOutCycle\nfIVBeginCycle\nfIVInCycle\nfIVReactor" ,fontname="Helvetica"];
+  Node2 [label="IsotopicVector",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_isotopic_vector.html"];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fAssociedTreatmentFactory" ,fontname="Helvetica"];
+  Node3 [label="TreatmentFactory",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_treatment_factory.html"];
+  Node2 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fIVWaste\nfIVGodIncome\nfIVFullStock" ,fontname="Helvetica"];
+  Node4 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fDecayDataBase" ,fontname="Helvetica"];
+  Node4 [label="EvolutionDataBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_evolution_data_base.html",tooltip="A ZAIIDataBase defined a database which contain the evolution of faction of all product, subproduct (or sub(sub...sub)product) for a nucleus."];
+  Node5 -> Node4 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fLog" ,fontname="Helvetica"];
+  Node5 [label="LogFile",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_log_file.html"];
+  Node6 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fParc" ,fontname="Helvetica"];
+  Node6 [label="CLASS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_c_l_a_s_s.html"];
+  Node2 -> Node6 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fIVTotal\nfTotalInReactor\nfTotalSeparating\nfTotalWaste\nfIVInCycleTotal\nfTotalStock\nfTotalCooling\nfTotalGodIncome" ,fontname="Helvetica"];
+  Node5 -> Node6 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fLog" ,fontname="Helvetica"];
+  Node5 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fLog" ,fontname="Helvetica"];
+  Node6 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fParc" ,fontname="Helvetica"];
+  Node7 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fEvolutionDB" ,fontname="Helvetica"];
+  Node7 [label="EvolutiveProduct",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_evolutive_product.html",tooltip="&lt; A ZAIIDataBase defined a database which contain the evolution of faction of all product..."];
+  Node5 -> Node7 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fLog" ,fontname="Helvetica"];
+  Node5 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fLog" ,fontname="Helvetica"];
+}
