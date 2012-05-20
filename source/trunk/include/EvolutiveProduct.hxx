@@ -4,8 +4,11 @@
 /*!
  \file
  \brief Header file for EvolutiveProduct classes. 
+  The aim of this Class is to manage evolution of a system, such as a radioactiv nuclei or a reactor. It store the evolution of daughter nuclei proportion as the function of time of the 
+ 
+ @author BaM
+ @version 0.
  */
-//ROOT library
 
 #include <string>
 #include <map>

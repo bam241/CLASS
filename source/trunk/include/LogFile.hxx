@@ -6,7 +6,13 @@
 /*!
  \file 
  \brief Header file for LogFile class. 
-*/
+  The aim of this Class is to centralize the all CLASS software message inside a file.
+ 
+ 
+ @author BaM
+ @version 0.
+ */
+
 #include <string>
 #include <fstream>
 #include "stdlib.h"

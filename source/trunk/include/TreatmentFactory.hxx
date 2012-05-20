@@ -4,9 +4,13 @@
 /*!
  \file 
  \brief Header file for TreatmentFactory class.
-*/
 
+ The aim of the Class is to manage evolution of all out reactor fuel. from Cooling to Waste
 
+ 
+ @author BaM
+ @version 0.
+ */
 #include "EvolutionDataBase.hxx"
 #include "CLASS.hxx"
 #include "IsotopicVector.hxx"
@@ -92,8 +96,7 @@ public :
 	void ClearIVStock();
 	
 	void AddIVStock(ZAI zai, double quantity)		{AddIVStock(zai*quantity);}		//!< Add a ZAI*quantity to the stock
-	void AddIVStock(IsotopicVector isotopicvector)		{fIVStock.push_back(isotopicvector); fIVFullStock += isotopicvector; fParc->AddTotalStock(isotopicvector);}
-													//!< Add an Isotopicvector to the stock
+	void AddIVStock(IsotopicVector isotopicvector);							//!< Add an Isotopicvector to the stock
 	IsotopicVector		GetIVFullStock() const		{return fIVFullStock;}			//!< Return the Full Stock
 	void AddIVFullStock(ZAI zai, double quantity)		{fIVFullStock.Add(zai*quantity); }	//!< Add a ZAI*quantity to the stock
 	void AddIVFullStock(IsotopicVector isotopicvector)	{fIVFullStock.Add(isotopicvector); }	//!< Add a IsotopicVector to the stock
@@ -157,10 +160,10 @@ protected :
 	IsotopicVector GetDecayProduct(IsotopicVector isotopicvector, long int t);	//!< Get IsotopicVector Decay at the t time
 	void	CoolingEvolution(long int t);						//!< Deal the cooling and then send it to Separation
 	void	SeparatingEvolution(long int t);					//!< Deal the Separating IV Decay Evolution and then send it to stock 
-	void	StockDecay(long int t);							//!< Deal the Stock Decay Evolution
+	void	StockEvolution(long int t);							//!< Deal the Stock Decay Evolution
 
 
-	void	WasteDecay(long int t);							//!< Deal the Waste Decay Evolution
+	void	WasteEvolution(long int t);							//!< Deal the Waste Decay Evolution
 	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);	//!< Make the Separation 
 											//!< return IV[0] -> To Stock / IV[1] -> To Waste
 

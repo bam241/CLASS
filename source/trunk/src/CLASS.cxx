@@ -15,8 +15,8 @@
 #include <omp.h>
 #include <TFile.h>
 #include <TTree.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_multimin.h>
+//#include <gsl/gsl_vector.h>
+//#include <gsl/gsl_multimin.h>
 
 
 //________________________________________________________________________
@@ -173,8 +173,8 @@ DBGL;
 	if(fBuildingMethod == 0)
 		return MonteCarloBuild(isotopicvector);
 	
-	else if(fBuildingMethod == 1)
-		return MinimizationBuild(isotopicvector);
+//	else if(fBuildingMethod == 1)
+//		return MinimizationBuild(isotopicvector);
 	else 
 	{
 		cout		<< "!!Warning!! !!!CLASS!!! Wrong BUilding Method !\n" << endl;
@@ -210,7 +210,7 @@ DBGL;
 
 //________________________________________________________________________
 
-struct MinimizationParameter {
+/*struct MinimizationParameter {
 	int z;
 	vector<int> FactoryIndex;
 	vector<int> StockIndex;
@@ -251,7 +251,7 @@ double	my_f (const gsl_vector *v, void *params)
 	return Distance(IVSum,isotopicvector.GetAtomicComposition(z)); 
 }
 
-/* The gradient of f, df = (df/dx, df/dy). */
+// The gradient of f, df = (df/dx, df/dy). 
 void my_df (const gsl_vector *v, void *params, gsl_vector *df)
 {
 	MinimizationParameter *par = (MinimizationParameter *)params;
@@ -297,7 +297,7 @@ void my_df (const gsl_vector *v, void *params, gsl_vector *df)
 	}
 }
 
-/* Compute both f and df together. */
+// Compute both f and df together. 
 void my_fdf (const gsl_vector *x, void *params, double *f, gsl_vector *df) 
 {
 	*f = my_f(x, params); 
@@ -341,7 +341,7 @@ DBGL;
 		const gsl_multimin_fdfminimizer_type *T;
 		gsl_multimin_fdfminimizer *s;
 		
-		/* Index of IV */
+		// Index of IV 
 		MinimizationParameter par ;
 		par.z = z;
 		par.FactoryIndex = FactoryIndex;
@@ -354,13 +354,13 @@ DBGL;
 		gsl_vector *x;
 		gsl_multimin_function_fdf my_func;
 
-		my_func.n = (int)FactoryIndex.size();  /* number of function components */
+		my_func.n = (int)FactoryIndex.size();  // number of function components 
 		my_func.f = my_f;
 		my_func.df = my_df;
 		my_func.fdf = my_fdf;
 		my_func.params = &par;
 		
-		/* Starting point, x = (5,7) */
+		// Starting point, x = (5,7) 
 		x = gsl_vector_alloc (FactoryIndex.size());
 		for (int i = 0; i < (int)FactoryIndex.size(); i++) 
 		{
@@ -408,7 +408,7 @@ DBGL;
 	return BuildIV;
 DBGL;	
 }
-
+*/
 
 //________________________________________________________________________
 IsotopicVector CLASS::MonteCarloBuild(IsotopicVector isotopicvector )

@@ -4,8 +4,11 @@
 /*!
  \file
  \brief Header file for EvolutionDataBase class. 
+ The aim of this Class is to store the evolution Database of the all decay nuclei.
+ 
+ @author BaM
+ @version 0.
  */
-
 
 #include <map>
 #include <string>
