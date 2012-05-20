@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<title>CLASS:  Fichier source de src/Reactor.cxx</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { searchBox.OnSelectItem(0); });
+</script>
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">CLASS
+   &#160;<span id="projectnumber">1.1</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Généré par Doxygen 1.7.6.1 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Recherche');
+</script>
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Page&#160;principale</span></a></li>
+      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li class="current"><a href="files.html"><span>Fichiers</span></a></li>
+      <li>
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Recherche" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Liste&#160;des&#160;fichiers</span></a></li>
+      <li><a href="globals.html"><span>Membres&#160;de&#160;fichier</span></a></li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">src/Reactor.cxx</div>  </div>
+</div><!--header-->
+<div class="contents">
+<a href="_reactor_8cxx.html">Aller à la documentation de ce fichier.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="preprocessor">#include &quot;<a class="code" href="_reactor_8hxx.html" title="Header file for reactor classes. Define a reactor.">Reactor.hxx</a>&quot;</span>
+<a name="l00002"></a>00002 <span class="preprocessor">#include &quot;<a class="code" href="_isotopic_vector_8hxx.html" title="Header file for IsotopicVector class. The aim of this Class is to manage any kind of IsotopicVector...">IsotopicVector.hxx</a>&quot;</span>
+<a name="l00003"></a>00003 <span class="preprocessor">#include &quot;<a class="code" href="_evolutive_product_8hxx.html" title="Header file for EvolutiveProduct classes. The aim of this Class is to manage evolution of a system...">EvolutiveProduct.hxx</a>&quot;</span>
+<a name="l00004"></a>00004 <span class="preprocessor">#include &quot;<a class="code" href="_c_l_a_s_s_8hxx.html" title="Header file for CLASS classes. Define a CLASS Parc. The aim of thes Class is to manage the parc...">CLASS.hxx</a>&quot;</span>
+<a name="l00005"></a>00005 <span class="preprocessor">#include &quot;<a class="code" href="_log_file_8hxx.html" title="Header file for LogFile class. The aim of this Class is to centralize the all CLASS software message ...">LogFile.hxx</a>&quot;</span>
+<a name="l00006"></a>00006 <span class="preprocessor">#include &quot;<a class="code" href="_treatment_factory_8hxx.html" title="Header file for TreatmentFactory class.">TreatmentFactory.hxx</a>&quot;</span>
+<a name="l00007"></a>00007 <span class="preprocessor">#include &quot;<a class="code" href="_defines_8hxx.html">Defines.hxx</a>&quot;</span>
+<a name="l00008"></a>00008 
+<a name="l00009"></a>00009 <span class="preprocessor">#include &lt;iostream&gt;</span>
+<a name="l00010"></a>00010 <span class="preprocessor">#include &lt;algorithm&gt;</span>
+<a name="l00011"></a>00011 <span class="preprocessor">#include &lt;omp.h&gt;</span>
+<a name="l00012"></a>00012 
+<a name="l00013"></a>00013 <span class="comment">//________________________________________________________________________</span>
+<a name="l00014"></a>00014 <span class="comment">//</span>
+<a name="l00015"></a>00015 <span class="comment">//              Reactor</span>
+<a name="l00016"></a>00016 <span class="comment">//</span>
+<a name="l00017"></a>00017 <span class="comment">//</span>
+<a name="l00018"></a>00018 <span class="comment">//</span>
+<a name="l00019"></a>00019 <span class="comment">//</span>
+<a name="l00020"></a>00020 <span class="comment">//________________________________________________________________________</span>
+<a name="l00021"></a><a class="code" href="_reactor_8cxx.html#a002f96db6bb51ddfd972348c527e5856">00021</a> <a class="code" href="_isotopic_vector_8cxx.html#a8a8e482ebbcb821840169b522f490eb5">ClassImp</a>(<a class="code" href="class_reactor.html">Reactor</a>)
+<a name="l00022"></a>00022 
+<a name="l00023"></a>00023 <a class="code" href="class_reactor.html">Reactor</a>::<a class="code" href="class_reactor.html">Reactor</a>()
+<a name="l00024"></a>00024 {
+<a name="l00025"></a>00025         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00026"></a>00026         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00027"></a>00027 }
+<a name="l00028"></a>00028 
+<a name="l00029"></a><a class="code" href="class_reactor.html#a36132936efa20fc1460fd5ba99133125">00029</a> <a class="code" href="class_reactor.html#a238368d4aa751762a4173839c689c858" title="Normal Constructor.">Reactor::Reactor</a>(<a class="code" href="class_evolutive_product.html" title="&lt; A ZAIIDataBase defined a database which contain the evolution of faction of all product...">EvolutiveProduct</a>* evolutivedb, 
+<a name="l00030"></a>00030                  <a class="code" href="class_treatment_factory.html">TreatmentFactory</a>* <a class="code" href="class_treatment_factory.html">TreatmentFactory</a>,
+<a name="l00031"></a>00031                  <span class="keywordtype">long</span> <span class="keywordtype">int</span> creationtime,
+<a name="l00032"></a>00032                  <span class="keywordtype">long</span> <span class="keywordtype">int</span> lifetime )
+<a name="l00033"></a>00033 {
+<a name="l00034"></a>00034         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00035"></a>00035         <a class="code" href="class_reactor.html#a29609e140e13e85986b91ee0e713a7a8" title="Cycle Time.">fCycleTime</a> = (<span class="keywordtype">long</span> int)(3600*24*365.4)*5;
+<a name="l00036"></a>00036         <a class="code" href="class_reactor.html#aafb718793cbecf5c8a2163a7ed209cac" title="True if Running, False Otherwise.">fIsStarted</a> = <span class="keyword">false</span>;
+<a name="l00037"></a>00037         <a class="code" href="class_reactor.html#ab33d1fc4f1426a65430f6893d7162250" title="True if ShutDown.">fShutDown</a> = <span class="keyword">false</span>;
+<a name="l00038"></a>00038         <a class="code" href="class_reactor.html#a43f6f87f55bdbced31b92a7df35416ad" title="True if Reaching the End of a Reactor Cycle.">fEndOfCycle</a> = <span class="keyword">false</span>;
+<a name="l00039"></a>00039         <a class="code" href="class_reactor.html#a0958fdddca353393fa0cb6d57bf4bdb5" title="Pointer to the Evolution DataBase.">fEvolutionDB</a> = evolutivedb; 
+<a name="l00040"></a>00040         <a class="code" href="class_reactor.html#ad1f9c6e50e2d113a1b798a464927ca5a" title="Pointer to the TF which collect the spend fuel.">fAssociedTreatmentFactory</a> = TreatmentFactory;
+<a name="l00041"></a>00041 
+<a name="l00042"></a>00042         <a class="code" href="class_reactor.html#ae00a6f4d90e116d813385cc7357658ad" title="Internal Clock.">fInternalTime</a> = 0;
+<a name="l00043"></a>00043         <a class="code" href="class_reactor.html#a73433dff3eaada641abbc2e0429d6611" title="Time spend since the beginning of the last Cycle.">fInCycleTime</a> = 0;
+<a name="l00044"></a>00044         <a class="code" href="class_reactor.html#af927315d18127e2a21414f819d2f653b" title="CLASS Universal Time of Creation.">fCreationTime</a> = creationtime;
+<a name="l00045"></a>00045         <a class="code" href="class_reactor.html#a9256fa0319945f2690a01beba9e2549d" title="LifeTime Of the Reactor.">fLifeTime</a> = lifetime;
+<a name="l00046"></a>00046 
+<a name="l00047"></a>00047         <a class="code" href="class_reactor.html#a06f0e2d796ae0500f733bfb09c33b15c" title="Fuel IV at the Beginning of a Cycle.">fIVBeginCycle</a> = <a class="code" href="class_reactor.html#a0958fdddca353393fa0cb6d57bf4bdb5" title="Pointer to the Evolution DataBase.">fEvolutionDB</a>-&gt;<a class="code" href="class_evolutive_product.html#ad701e725b358763a1dd2f6d6e3a19721" title="Return the Product IsotopicVector evolution TGraphErrors.">GetIsotopicVectorAt</a>(0);
+<a name="l00048"></a>00048         <a class="code" href="class_reactor.html#a72371a309481491f5004ec6f3355df49" title="IVBegin add at the Beginning of the Cycle.">fIVInCycle</a> = <a class="code" href="class_reactor.html#a0958fdddca353393fa0cb6d57bf4bdb5" title="Pointer to the Evolution DataBase.">fEvolutionDB</a>-&gt;<a class="code" href="class_evolutive_product.html#ad701e725b358763a1dd2f6d6e3a19721" title="Return the Product IsotopicVector evolution TGraphErrors.">GetIsotopicVectorAt</a>(0);
+<a name="l00049"></a>00049         <a class="code" href="class_reactor.html#ad5842fef6dee87309462878805fb6b9b" title="IV wich get out at the End of a Cycle.">fIVOutCycle</a> = <a class="code" href="class_reactor.html#a0958fdddca353393fa0cb6d57bf4bdb5" title="Pointer to the Evolution DataBase.">fEvolutionDB</a>-&gt;<a class="code" href="class_evolutive_product.html#ad701e725b358763a1dd2f6d6e3a19721" title="Return the Product IsotopicVector evolution TGraphErrors.">GetIsotopicVectorAt</a>(<a class="code" href="class_reactor.html#a29609e140e13e85986b91ee0e713a7a8" title="Cycle Time.">fCycleTime</a>);
+<a name="l00050"></a>00050         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00051"></a>00051 }
+<a name="l00052"></a>00052 
+<a name="l00053"></a>00053 <span class="comment">//________________________________________________________________________</span>
+<a name="l00054"></a><a class="code" href="class_reactor.html#ac0c3e1b109c2f1e99a055df0ac3e5ee6">00054</a> <a class="code" href="class_reactor.html#ac0c3e1b109c2f1e99a055df0ac3e5ee6" title="Normal Destructor.">Reactor::~Reactor</a>()
+<a name="l00055"></a>00055 {
+<a name="l00056"></a>00056         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00057"></a>00057         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00058"></a>00058 }
+<a name="l00059"></a>00059 
+<a name="l00060"></a>00060 
+<a name="l00061"></a>00061 <span class="comment">//________________________________________________________________________</span>
+<a name="l00062"></a><a class="code" href="class_reactor.html#a7a461cf950bdd68f216f57d60467eeb6">00062</a> <span class="keywordtype">void</span> <a class="code" href="class_reactor.html#a7a461cf950bdd68f216f57d60467eeb6" title="Performe the Evolution until the Time t.">Reactor::Evolution</a>(<span class="keywordtype">long</span> <span class="keywordtype">int</span> t)
+<a name="l00063"></a>00063 {
+<a name="l00064"></a>00064         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00065"></a>00065         <span class="keywordflow">if</span>(<a class="code" href="class_reactor.html#ab33d1fc4f1426a65430f6893d7162250" title="True if ShutDown.">fShutDown</a> == <span class="keyword">true</span>) <span class="keywordflow">return</span>; <span class="comment">// Reactor stop...</span>
+<a name="l00066"></a>00066         
+<a name="l00067"></a>00067         <span class="comment">// Check if the Reactor has been created ...</span>
+<a name="l00068"></a>00068         <span class="keywordflow">if</span>(t&lt;<a class="code" href="class_reactor.html#af927315d18127e2a21414f819d2f653b" title="CLASS Universal Time of Creation.">fCreationTime</a>) <span class="keywordflow">return</span>;
+<a name="l00069"></a>00069         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00070"></a>00070         
+<a name="l00071"></a>00071         
+<a name="l00072"></a>00072         <span class="keywordflow">if</span>(<a class="code" href="class_reactor.html#ae00a6f4d90e116d813385cc7357658ad" title="Internal Clock.">fInternalTime</a> == 0 &amp;&amp; <a class="code" href="class_reactor.html#aafb718793cbecf5c8a2163a7ed209cac" title="True if Running, False Otherwise.">fIsStarted</a> == <span class="keyword">false</span>) <span class="comment">// Start of the Reactor</span>
+<a name="l00073"></a>00073         {
+<a name="l00074"></a>00074                 <a class="code" href="class_reactor.html#a43f6f87f55bdbced31b92a7df35416ad" title="True if Reaching the End of a Reactor Cycle.">fEndOfCycle</a> = <span class="keyword">true</span>;
+<a name="l00075"></a>00075                 <a class="code" href="class_reactor.html#a4e03fc6bc1912007bb328957b8936f3a" title="Fuel evoluated IV in the reactor.">fIVReactor</a>  = <a class="code" href="class_reactor.html#a06f0e2d796ae0500f733bfb09c33b15c" title="Fuel IV at the Beginning of a Cycle.">fIVBeginCycle</a>;
+<a name="l00076"></a>00076                 <a class="code" href="class_reactor.html#ae00a6f4d90e116d813385cc7357658ad" title="Internal Clock.">fInternalTime</a> = t;
+<a name="l00077"></a>00077         }
+<a name="l00078"></a>00078 
+<a name="l00079"></a>00079         <span class="comment">// Check if the Reactor if started ...</span>
+<a name="l00080"></a>00080         <span class="keywordflow">if</span>(<a class="code" href="class_reactor.html#aafb718793cbecf5c8a2163a7ed209cac" title="True if Running, False Otherwise.">fIsStarted</a> == <span class="keyword">false</span>) <span class="keywordflow">return</span>; 
+<a name="l00081"></a>00081 
+<a name="l00082"></a>00082         <span class="keywordtype">long</span> <span class="keywordtype">int</span> EvolutionTime = t - <a class="code" href="class_reactor.html#ae00a6f4d90e116d813385cc7357658ad" title="Internal Clock.">fInternalTime</a>; <span class="comment">// Calculation of the evolution time (relativ)</span>
+<a name="l00083"></a>00083 
+<a name="l00084"></a>00084         <span class="keywordflow">if</span>(EvolutionTime + <a class="code" href="class_reactor.html#a73433dff3eaada641abbc2e0429d6611" title="Time spend since the beginning of the last Cycle.">fInCycleTime</a> &lt; <a class="code" href="class_reactor.html#a29609e140e13e85986b91ee0e713a7a8" title="Cycle Time.">fCycleTime</a> )                  <span class="comment">//During Cycle</span>
+<a name="l00085"></a>00085         {
+<a name="l00086"></a>00086                 <a class="code" href="class_reactor.html#a4e03fc6bc1912007bb328957b8936f3a" title="Fuel evoluated IV in the reactor.">fIVReactor</a> = <a class="code" href="class_reactor.html#a0958fdddca353393fa0cb6d57bf4bdb5" title="Pointer to the Evolution DataBase.">fEvolutionDB</a>-&gt;<a class="code" href="class_evolutive_product.html#ad701e725b358763a1dd2f6d6e3a19721" title="Return the Product IsotopicVector evolution TGraphErrors.">GetIsotopicVectorAt</a>(EvolutionTime + <a class="code" href="class_reactor.html#a73433dff3eaada641abbc2e0429d6611" title="Time spend since the beginning of the last Cycle.">fInCycleTime</a>);   <span class="comment">// update the fuel composition</span>
+<a name="l00087"></a>00087 <span class="preprocessor">#pragma omp critical(UpdateInReactor)</span>
+<a name="l00088"></a>00088 <span class="preprocessor"></span>                        {<a class="code" href="class_reactor.html#a1a01a71072d077d4044f1d05b8e3557b" title="Pointer to the main Parc.">fParc</a>-&gt;<a class="code" href="class_c_l_a_s_s.html#a6287bffc1a6f2362d7f77b7beb4fad90">AddTotalInReactor</a>(<a class="code" href="class_reactor.html#a4e03fc6bc1912007bb328957b8936f3a" title="Fuel evoluated IV in the reactor.">fIVReactor</a>);}
+<a name="l00089"></a>00089                 fInternalTime += EvolutionTime;                                                 <span class="comment">// Update Internal Time</span>
+<a name="l00090"></a>00090                 <a class="code" href="class_reactor.html#a73433dff3eaada641abbc2e0429d6611" title="Time spend since the beginning of the last Cycle.">fInCycleTime</a> += EvolutionTime;                                                  <span class="comment">// Update InCycleTime</span>
+<a name="l00091"></a>00091         }
+<a name="l00092"></a>00092         <span class="keywordflow">else</span> <span class="keywordflow">if</span>(EvolutionTime + <a class="code" href="class_reactor.html#a73433dff3eaada641abbc2e0429d6611" title="Time spend since the beginning of the last Cycle.">fInCycleTime</a> == <a class="code" href="class_reactor.html#a29609e140e13e85986b91ee0e713a7a8" title="Cycle Time.">fCycleTime</a> )            <span class="comment">//End of Cycle</span>
+<a name="l00093"></a>00093         {
+<a name="l00094"></a>00094                 <a class="code" href="class_reactor.html#a43f6f87f55bdbced31b92a7df35416ad" title="True if Reaching the End of a Reactor Cycle.">fEndOfCycle</a> = <span class="keyword">true</span>;
+<a name="l00095"></a>00095                 fInternalTime += EvolutionTime;                                                 <span class="comment">// Update Internal Time</span>
+<a name="l00096"></a>00096                 
+<a name="l00097"></a>00097                 <span class="keywordflow">if</span>(t &lt; <a class="code" href="class_reactor.html#af927315d18127e2a21414f819d2f653b" title="CLASS Universal Time of Creation.">fCreationTime</a> + <a class="code" href="class_reactor.html#a9256fa0319945f2690a01beba9e2549d" title="LifeTime Of the Reactor.">fLifeTime</a>)                       <span class="comment">//if the Next Cycle Exist...</span>
+<a name="l00098"></a>00098                 {
+<a name="l00099"></a>00099                         <a class="code" href="class_reactor.html#a4e03fc6bc1912007bb328957b8936f3a" title="Fuel evoluated IV in the reactor.">fIVReactor</a>  = <a class="code" href="class_reactor.html#a06f0e2d796ae0500f733bfb09c33b15c" title="Fuel IV at the Beginning of a Cycle.">fIVBeginCycle</a>;
+<a name="l00100"></a>00100                         <a class="code" href="class_reactor.html#a73433dff3eaada641abbc2e0429d6611" title="Time spend since the beginning of the last Cycle.">fInCycleTime</a> = 0;
+<a name="l00101"></a>00101                 }
+<a name="l00102"></a>00102                 <span class="keywordflow">else</span>                                                    <span class="comment">//if Not....</span>
+<a name="l00103"></a>00103                 {
+<a name="l00104"></a>00104                         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> IV;
+<a name="l00105"></a>00105                         <a class="code" href="class_reactor.html#a4e03fc6bc1912007bb328957b8936f3a" title="Fuel evoluated IV in the reactor.">fIVReactor</a> = IV;
+<a name="l00106"></a>00106                         <a class="code" href="class_reactor.html#ab33d1fc4f1426a65430f6893d7162250" title="True if ShutDown.">fShutDown</a> = <span class="keyword">true</span>;
+<a name="l00107"></a>00107                 }
+<a name="l00108"></a>00108 
+<a name="l00109"></a>00109         }
+<a name="l00110"></a>00110         <span class="keywordflow">else</span>
+<a name="l00111"></a>00111         {
+<a name="l00112"></a>00112                 <span class="comment">// This is so bad!! You will probably unsynchronize all the reactor....</span>
+<a name="l00113"></a>00113                 cout &lt;&lt; <span class="stringliteral">&quot;!!Warning!! !!!Reactor!!!&quot;</span>
+<a name="l00114"></a>00114                      &lt;&lt; <span class="stringliteral">&quot; Evolution is too long! This is a Bad way to deal the evolution of the reactor...&quot;</span>
+<a name="l00115"></a>00115                      &lt;&lt; t/365.4/3600/24 &lt;&lt; <span class="stringliteral">&quot; :&quot;</span> &lt;&lt; endl;
+<a name="l00116"></a>00116                                 
+<a name="l00117"></a>00117                 <a class="code" href="class_reactor.html#a62a347421fb38d4cea5c4514a25b6e6a" title="Pointer to the Log.">fLog</a>-&gt;<a class="code" href="class_log_file.html#a050df6a1b906596564f598f0d1263484" title="Log Stream.">fLog</a> &lt;&lt; <span class="stringliteral">&quot;!!Warning!! !!!Reactor!!!&quot;</span>
+<a name="l00118"></a>00118                            &lt;&lt; <span class="stringliteral">&quot; Evolution is too long! This is a Bad way to deal the evolution of the reactor...&quot;</span>
+<a name="l00119"></a>00119                            &lt;&lt; t/365.4/3600/24 &lt;&lt; <span class="stringliteral">&quot; :&quot;</span> &lt;&lt; endl;
+<a name="l00120"></a>00120                 exit(1);
+<a name="l00121"></a>00121         }
+<a name="l00122"></a>00122         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00123"></a>00123 }
+<a name="l00124"></a>00124 
+<a name="l00125"></a>00125 <span class="comment">//________________________________________________________________________</span>
+<a name="l00126"></a><a class="code" href="class_reactor.html#a62ecaa3d122030fb9a44396c297e032b">00126</a> <span class="keywordtype">void</span> <a class="code" href="class_reactor.html#a62ecaa3d122030fb9a44396c297e032b" title="Write Modification (IV In/Out, filling the TF...)">Reactor::Dump</a>()
+<a name="l00127"></a>00127 {
+<a name="l00128"></a>00128         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00129"></a>00129         <span class="keywordflow">if</span>(<a class="code" href="class_reactor.html#a43f6f87f55bdbced31b92a7df35416ad" title="True if Reaching the End of a Reactor Cycle.">fEndOfCycle</a> == <span class="keyword">true</span>  )
+<a name="l00130"></a>00130         {
+<a name="l00131"></a>00131                 <span class="keywordflow">if</span>(<a class="code" href="class_reactor.html#ab33d1fc4f1426a65430f6893d7162250" title="True if ShutDown.">fShutDown</a> == <span class="keyword">false</span>)  <a class="code" href="class_reactor.html#a1a01a71072d077d4044f1d05b8e3557b" title="Pointer to the main Parc.">fParc</a>-&gt;<a class="code" href="class_c_l_a_s_s.html#a6287bffc1a6f2362d7f77b7beb4fad90">AddTotalInReactor</a>(<a class="code" href="class_reactor.html#a4e03fc6bc1912007bb328957b8936f3a" title="Fuel evoluated IV in the reactor.">fIVReactor</a>);
+<a name="l00132"></a>00132                 
+<a name="l00133"></a>00133                 <a class="code" href="class_reactor.html#a43f6f87f55bdbced31b92a7df35416ad" title="True if Reaching the End of a Reactor Cycle.">fEndOfCycle</a> = <span class="keyword">false</span>;
+<a name="l00134"></a>00134                 <span class="keywordflow">if</span>(<a class="code" href="class_reactor.html#a1a01a71072d077d4044f1d05b8e3557b" title="Pointer to the main Parc.">fParc</a>-&gt;<a class="code" href="class_c_l_a_s_s.html#a606e888334162cbc2a2bd8a3951e5669">GetStockManagement</a>() == <span class="keyword">true</span>)
+<a name="l00135"></a>00135                 {
+<a name="l00136"></a>00136                         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> BuildIVtmp  = <a class="code" href="class_reactor.html#a1a01a71072d077d4044f1d05b8e3557b" title="Pointer to the main Parc.">fParc</a>-&gt;<a class="code" href="class_c_l_a_s_s.html#a38540c368982b9214ad3bf0921f716c5" title="Build The needed Isotopic Vector from the stock.">BuildIsotopicVector</a>(<a class="code" href="class_reactor.html#a72371a309481491f5004ec6f3355df49" title="IVBegin add at the Beginning of the Cycle.">fIVInCycle</a>);
+<a name="l00137"></a>00137 <span class="comment">//                      BuildIVtmp.Print();</span>
+<a name="l00138"></a>00138                         <a class="code" href="class_reactor.html#ad1f9c6e50e2d113a1b798a464927ca5a" title="Pointer to the TF which collect the spend fuel.">fAssociedTreatmentFactory</a>-&gt;<a class="code" href="class_treatment_factory.html#a68dd70c44f9e188cfccbc5bce86f7f9f" title="Add a ZAI*quantity to GodIncome.">AddIVGodIncome</a>(<a class="code" href="class_reactor.html#a72371a309481491f5004ec6f3355df49" title="IVBegin add at the Beginning of the Cycle.">fIVInCycle</a> - BuildIVtmp);
+<a name="l00139"></a>00139                 }
+<a name="l00140"></a>00140                 <span class="keywordflow">else</span>
+<a name="l00141"></a>00141                 {
+<a name="l00142"></a>00142                         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> BuildIVtmp ;
+<a name="l00143"></a>00143                         <a class="code" href="class_isotopic_vector.html">IsotopicVector</a> GodPart;
+<a name="l00144"></a>00144                         
+<a name="l00145"></a>00145                         BuildIVtmp.<a class="code" href="class_isotopic_vector.html#a3931b0fa08d48ef9a731e7672e86c9fd" title="Add Quantity gramme of the ZAI Element.">Add</a>(<a class="code" href="class_reactor.html#ad1f9c6e50e2d113a1b798a464927ca5a" title="Pointer to the TF which collect the spend fuel.">fAssociedTreatmentFactory</a>-&gt;<a class="code" href="class_treatment_factory.html#addb916a2ec7ebf8bea69e5ea5946354a" title="Return the Full Stock.">GetIVFullStock</a>().<a class="code" href="class_isotopic_vector.html#a0b65f2635da76635c97ddc39faad22bb" title="Return the IVQuantity map.">GetIsotopicQuantity</a>());
+<a name="l00146"></a>00146                         BuildIVtmp -= <a class="code" href="class_reactor.html#a72371a309481491f5004ec6f3355df49" title="IVBegin add at the Beginning of the Cycle.">fIVInCycle</a>;                       
+<a name="l00147"></a>00147                         GodPart.<a class="code" href="class_isotopic_vector.html#a3931b0fa08d48ef9a731e7672e86c9fd" title="Add Quantity gramme of the ZAI Element.">Add</a>(BuildIVtmp.<a class="code" href="class_isotopic_vector.html#aa024722b40de94af85af44ae79ee596e" title="Return the IVQuantityNeeded map.">GetIsotopicQuantityNeeded</a>()) ;
+<a name="l00148"></a>00148                         <a class="code" href="class_reactor.html#ad1f9c6e50e2d113a1b798a464927ca5a" title="Pointer to the TF which collect the spend fuel.">fAssociedTreatmentFactory</a>-&gt;<a class="code" href="class_treatment_factory.html#a5a41538920b093d46868d944e756027b" title="Take isotopicvector from the (index)st vector of the stock.">TakeFromStock</a>( <a class="code" href="class_reactor.html#a72371a309481491f5004ec6f3355df49" title="IVBegin add at the Beginning of the Cycle.">fIVInCycle</a> - GodPart, -1);
+<a name="l00149"></a>00149                         <a class="code" href="class_reactor.html#ad1f9c6e50e2d113a1b798a464927ca5a" title="Pointer to the TF which collect the spend fuel.">fAssociedTreatmentFactory</a>-&gt;<a class="code" href="class_treatment_factory.html#a68dd70c44f9e188cfccbc5bce86f7f9f" title="Add a ZAI*quantity to GodIncome.">AddIVGodIncome</a>(GodPart);
+<a name="l00150"></a>00150                 }
+<a name="l00151"></a>00151                 
+<a name="l00152"></a>00152                 <span class="keywordflow">if</span>(<a class="code" href="class_reactor.html#aafb718793cbecf5c8a2163a7ed209cac" title="True if Running, False Otherwise.">fIsStarted</a> == <span class="keyword">true</span> )                                 <span class="comment">// A Cycle has already been done</span>
+<a name="l00153"></a>00153                 {
+<a name="l00154"></a>00154                         <span class="keywordflow">if</span>(<a class="code" href="class_reactor.html#ab33d1fc4f1426a65430f6893d7162250" title="True if ShutDown.">fShutDown</a> == <span class="keyword">false</span>)  <a class="code" href="class_reactor.html#ad1f9c6e50e2d113a1b798a464927ca5a" title="Pointer to the TF which collect the spend fuel.">fAssociedTreatmentFactory</a>-&gt;<a class="code" href="class_treatment_factory.html#a6905dab6f27092242c13e2ab58e924cc" title="Add Cooling IsotopicVector.">AddIVCooling</a>(<a class="code" href="class_reactor.html#ad5842fef6dee87309462878805fb6b9b" title="IV wich get out at the End of a Cycle.">fIVOutCycle</a>);
+<a name="l00155"></a>00155                         <span class="keywordflow">else</span>                    <a class="code" href="class_reactor.html#ad1f9c6e50e2d113a1b798a464927ca5a" title="Pointer to the TF which collect the spend fuel.">fAssociedTreatmentFactory</a>-&gt;<a class="code" href="class_treatment_factory.html#a6905dab6f27092242c13e2ab58e924cc" title="Add Cooling IsotopicVector.">AddIVCooling</a>(<a class="code" href="class_reactor.html#a0958fdddca353393fa0cb6d57bf4bdb5" title="Pointer to the Evolution DataBase.">fEvolutionDB</a>-&gt;<a class="code" href="class_evolutive_product.html#ad701e725b358763a1dd2f6d6e3a19721" title="Return the Product IsotopicVector evolution TGraphErrors.">GetIsotopicVectorAt</a>(<a class="code" href="class_reactor.html#a29609e140e13e85986b91ee0e713a7a8" title="Cycle Time.">fCycleTime</a>));
+<a name="l00156"></a>00156 
+<a name="l00157"></a>00157                 }
+<a name="l00158"></a>00158                 <span class="keywordflow">else</span> <a class="code" href="class_reactor.html#aafb718793cbecf5c8a2163a7ed209cac" title="True if Running, False Otherwise.">fIsStarted</a> = <span class="keyword">true</span>;                                 <span class="comment">// Just start the first cycle</span>
+<a name="l00159"></a>00159                 
+<a name="l00160"></a>00160                 <span class="keywordflow">if</span>(<a class="code" href="class_reactor.html#ab33d1fc4f1426a65430f6893d7162250" title="True if ShutDown.">fShutDown</a> == <span class="keyword">true</span>) <a class="code" href="class_reactor.html#aafb718793cbecf5c8a2163a7ed209cac" title="True if Running, False Otherwise.">fIsStarted</a> = <span class="keyword">false</span>;               <span class="comment">// shut down the Reactor</span>
+<a name="l00161"></a>00161         }
+<a name="l00162"></a>00162         <a class="code" href="_defines_8hxx.html#a199fde64b752128fc08e46300c664e2f">DBGL</a>;
+<a name="l00163"></a>00163 }
+<a name="l00164"></a>00164 
+<a name="l00165"></a>00165 
+<a name="l00166"></a>00166 
+<a name="l00167"></a>00167 
+</pre></div></div><!-- contents -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>Tout</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Fichiers</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Fonctions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Macros</a></div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+
+
+<hr class="footer"/><address class="footer"><small>
+Généré le Dimanche Mai 20 2012 10:45:32 pour CLASS par &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.6.1
+</small></address>
+
+</body>
+</html>
