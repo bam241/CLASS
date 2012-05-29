@@ -101,9 +101,9 @@ void CLASS::AddTreatmentFactory(TreatmentFactory* treatmentfactory)
 DBGL;
 	
 	fTreatmentFactory.push_back(treatmentfactory);
-	fTreatmentFactory.back()->SetParc(this);
-	fTreatmentFactory.back()->SetLog(fLog);
-	fTreatmentFactory.back()->SetStockManagement(fStockManagement);
+	fTreatmentFactory[fTreatmentFactory.size()-1]->SetParc(this);
+	fTreatmentFactory[fTreatmentFactory.size()-1]->SetLog(fLog);
+	fTreatmentFactory[fTreatmentFactory.size()-1]->SetStockManagement(fStockManagement);
 	fTreatmentFactoryLastIndex++;
 	fTreatmentFactoryIndex.push_back(fTreatmentFactoryLastIndex);
 DBGL;
@@ -122,21 +122,21 @@ DBGL;
 }
 
 //________________________________________________________________________
-void CLASS::RemoveReactor()
-{
-DBGL;
-	for(int i = (int)fReactor.size()-1; i >= 0; i--)
-	{
-		if(fAbsoluteTime == fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime())
-		{
-			fReactor[i]->GetAssociedTreatmentFactory()->AddIVCooling(fReactor[i]->GetIVReactor());
-			delete (fReactor[i]);
-			fReactor.erase(fReactor.begin()+i);
-			fReactorIndex.erase(fReactorIndex.begin()+i);
-		}
-	}
-DBGL;
-}
+//void CLASS::RemoveReactor()
+//{
+//DBGL;
+//	for(int i = (int)fReactor.size()-1; i >= 0; i--)
+//	{
+//		if(fAbsoluteTime == fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime())
+//		{
+//			fReactor[i]->GetAssociedTreatmentFactory()->AddIVCooling(fReactor[i]->GetIVReactor());
+//			delete (fReactor[i]);
+//			fReactor.erase(fReactor.begin()+i);
+//			fReactorIndex.erase(fReactorIndex.begin()+i);
+//		}
+//	}
+//DBGL;
+//}
 
 //________________________________________________________________________
 //____________________________ Building Method ___________________________
@@ -201,7 +201,6 @@ DBGL;
 	
 DBGL;	
 }
-
 
 
 
@@ -526,6 +525,23 @@ DBGL;
 			pair< map<long int, int>::iterator, bool > IResult ;
 			IResult = fTimeStep.insert( pair<long int ,int>(fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime(),2) );
 			if( IResult.second == false ) IResult.first->second |= 2;
+
+			if(fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime()+coolingstep >= fAbsoluteTime 
+			&& fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime()+coolingstep <= t)			// Set End of Cooling after end of reactor
+			{
+				pair< map<long int, int>::iterator, bool > IResult;
+				IResult = fTimeStep.insert( pair<long int ,int>(fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime()+coolingstep,8) );
+				if( IResult.second == false ) IResult.first->second |= 8;
+			}
+
+			if(fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime()+coolingstep+seprationstep >= fAbsoluteTime 
+			&& fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime()+coolingstep+seprationstep <= t)	// Set end of Separation after end of reactor
+			{
+				pair< map<long int, int>::iterator, bool > IResult;
+				IResult = fTimeStep.insert( pair<long int ,int>(fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime()+coolingstep+seprationstep,16) );
+				if( IResult.second == false ) IResult.first->second |= 16;
+			}
+
 		}
 		
 		// Set End of reactor cycle
@@ -533,6 +549,7 @@ DBGL;
 		{
 			pair< map<long int, int>::iterator, bool > IResult = fTimeStep.insert( pair<long int ,int>(step,4) );
 			if( IResult.second == false ) IResult.first->second |= 4;
+		
 		}
 		
 
@@ -549,7 +566,8 @@ DBGL;
 
 			if(step >= fAbsoluteTime && step + coolingstep <= t)			// Set End of Cooling
 			{
-				pair< map<long int, int>::iterator, bool > IResult = fTimeStep.insert( pair<long int ,int>(step+coolingstep,8) );
+				pair< map<long int, int>::iterator, bool > IResult;
+				IResult = fTimeStep.insert( pair<long int ,int>(step+coolingstep,8) );
 				if( IResult.second == false ) IResult.first->second |= 8;
 			}
 
@@ -599,7 +617,7 @@ DBGL;
 		fLog->fLog 	<< "!!Warning!! !!!CLASS!!! Can't open \" CLASS_TimeStep \"\n" << endl;
 	}
 	for(map<long int ,int >::iterator it = fTimeStep.begin(); it != fTimeStep.end(); it++)
-		TimeStepfile << (*it).first/365.4/3600/24 << " " << (*it).second << endl;
+		TimeStepfile << (*it).first << " " << (*it).second << endl;
 	
 	DBGL;	
 }
@@ -627,7 +645,12 @@ DBGL;
  #pragma omp sections
 	{
 	#pragma omp section
-		{TreatmentEvolution();}
+	{
+	TreatmentEvolution();
+
+	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
+		fTreatmentFactory[i]->Dump();
+	}
 
 	#pragma omp section
 	{
@@ -638,13 +661,11 @@ DBGL;
 	}
 	
 
-	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
-		fTreatmentFactory[i]->Dump();
 
 	UpdateParcStock();
 	for(int i = 0; i < (int)fReactor.size(); i++)
 		fReactor[i]->Dump();
-	
+
 	DumpParcStock();
 	
 DBGL;
@@ -657,21 +678,18 @@ DBGL;
 	OpenOutputTree();
 	OutAttach();
 	BuildTimeVector(t);
-
+	fOutT->Fill();
 	int Start = time(NULL);
 	for(map<long int ,int >::iterator it = fTimeStep.begin(); it != fTimeStep.end(); it++)
 	{
-
 		ResetQuantity();
 		fAbsoluteTime = (*it).first;
-		//if(fAbsoluteTime > t) return;
-		
 		if( (*it).second & 2 || (*it).second & 1 )
 		{
 			ReactorEvolution();
 			if((*it).second & 2 )
-				RemoveReactor();
-			
+//				RemoveReactor();
+		
 			if((*it).second & 2 )
 				(*it).second ^= 2;
 			if((*it).second & 4 )
@@ -681,7 +699,7 @@ DBGL;
 			if((*it).second & 16 )
 				(*it).second ^= 16;
 		}
-		
+	
 		if( (*it).second & 4 )
 		{
 			ReactorEvolution();
@@ -692,7 +710,7 @@ DBGL;
 			if((*it).second & 16 )
 				(*it).second ^= 16;
 		}
-		
+	
 		if( (*it).second & 8 || (*it).second & 16 )
 		{
 			TreatmentEvolution();
@@ -704,28 +722,30 @@ DBGL;
 			if((*it).second & 16 )
 				(*it).second ^= 16;
 		}
-		
+	
 
-		
+	
 		if( (*it).second & 1 )
-			#pragma omp single
-			{
-//				Print();
-//				Write();
+		{
+#pragma omp single
+				{
+				UpdateParc();
 				fOutT->Fill();
-				//fTotalStock.Print();
 				ProgressPrintout(Start, t);
-			}
+				}
+		}
 	}
+	cout << endl;
 #pragma omp single
 	{CloseOutputTree();}
 DBGL;
 }
+
 void CLASS::ProgressPrintout(int starttime, long int t)
 {
 DBGL;
 	int TimeNow = time(NULL);
-	int Spent = difftime(TimeNow, starttime);
+	int Spent = (int)difftime(TimeNow, starttime);
 	double Time = fAbsoluteTime/3600/24/365.4;
 	double Total = t/3600/24/365.4;
 	double Remain =  (Spent/Time * Total - Spent);
@@ -739,19 +759,44 @@ DBGL;
 //________________________________________________________________________
 //______________________________ Out Method ______________________________
 //________________________________________________________________________
+void CLASS::UpdateParc()
+{
+DBGL;
+
+	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
+	{
+		fTotalWaste += fTreatmentFactory[i]->GetIVWaste();
+		fTotalStock += fTreatmentFactory[i]->GetIVFullStock();
+		fTotalGodIncome += fTreatmentFactory[i]->GetIVGodIncome();
+		
+		for(int j=0; j < (int)fTreatmentFactory[i]->GetIVCooling().size(); j++)
+			fTotalCooling += fTreatmentFactory[i]->GetIVCooling()[j];
+		for(int j=0; j < (int)fTreatmentFactory[i]->GetIVSeparating().size(); j++)
+			fTotalSeparating += fTreatmentFactory[i]->GetIVSeparating()[j];
+	}
+	
+	for(int i = 0; i < (int)fReactor.size(); i++)
+		fTotalInReactor += fReactor[i]->GetIVReactor();
+
+	fIVTotal = fTotalWaste + fTotalStock + fTotalCooling + fTotalSeparating + fTotalInReactor;
+	fIVInCycleTotal = fTotalStock + fTotalCooling + fTotalSeparating + fTotalInReactor;
+	
+DBGL;	
+}
+
+
 
 void CLASS::ResetQuantity()
 {
 DBGL;
-	IsotopicVector EmptyIV;
-	fTotalInReactor		= EmptyIV;
-	fTotalWaste		= EmptyIV;
-	fTotalStock		= EmptyIV;
-//	fTotalGodIncome		= EmptyIV;
-	fTotalCooling		= EmptyIV;
-	fTotalSeparating	= EmptyIV;
-	fIVInCycleTotal		= EmptyIV;
-	fIVTotal		= EmptyIV;
+	fTotalInReactor.Clear();
+	fTotalWaste.Clear();
+	fTotalStock.Clear();
+	fTotalGodIncome.Clear();
+	fTotalCooling.Clear();
+	fTotalSeparating.Clear();
+	fIVInCycleTotal.Clear();
+	fIVTotal.Clear();
 DBGL;
 }
 

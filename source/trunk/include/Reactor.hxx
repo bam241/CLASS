@@ -58,8 +58,8 @@ public :
 	void SetIVBeginCycle(IsotopicVector isotopicvector)	{fIVBeginCycle = isotopicvector;}	//!< Set the IV at the Beginging of the Reactor Cycle
 	void SetIVOutCycle(IsotopicVector isotopicvector)	{fIVOutCycle = isotopicvector;}		//!< Set the IV Going Out at the End of the Cycle
 	void SetIVInCycle(IsotopicVector isotopicvector)	{fIVInCycle = isotopicvector;}		//!< Set the IV Coming In at the Beginning of the Cycle 
-	void SetCycleTime(long int cycletime)			{fCycleTime = cycletime;}		//!< Set the Cycle time (Cycle of the loading Plan)
-	void SetEvolutionDB(EvolutiveProduct* evolutionDB)	{fEvolutionDB = evolutionDB;}		//!< Set the Pointer to the DB Evolution of the Reactor
+	void SetCycleTime(long int cycletime);								//!< Set the Cycle time (Cycle of the loading Plan)
+	void SetEvolutionDB(EvolutiveProduct* evolutionDB);						//!< Set the Pointer to the DB Evolution of the Reactor
 	
 //********* Modification Method *********//
 	void Evolution(long int t);									//!< Performe the Evolution until the Time t

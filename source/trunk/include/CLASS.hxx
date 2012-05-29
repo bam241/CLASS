@@ -100,7 +100,7 @@ public :
 	
 	void	Print();
 	void	Write();
-	
+	void	UpdateParc();
 	void	OpenOutputTree();
 	void	CloseOutputTree();
 	void	OutAttach();
