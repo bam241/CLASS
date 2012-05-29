@@ -56,6 +56,20 @@ Reactor::~Reactor()
 	DBGL;
 	DBGL;
 }
+	void Reactor::SetCycleTime(long int cycletime)
+{
+	fCycleTime = cycletime;
+	fIVOutCycle = fEvolutionDB->GetIsotopicVectorAt(fCycleTime);
+}
+
+void Reactor::SetEvolutionDB(EvolutiveProduct* evolutionDB)
+{
+	DBGL;
+	fEvolutionDB = evolutionDB;
+	fIVOutCycle = fEvolutionDB->GetIsotopicVectorAt(fCycleTime);
+	DBGL;
+}
+
 
 
 //________________________________________________________________________
@@ -83,11 +97,14 @@ void Reactor::Evolution(long int t)
 
 	if(EvolutionTime + fInCycleTime < fCycleTime )			//During Cycle
 	{
+
 		fIVReactor = fEvolutionDB->GetIsotopicVectorAt(EvolutionTime + fInCycleTime);	// update the fuel composition
-#pragma omp critical(UpdateInReactor)
-			{fParc->AddTotalInReactor(fIVReactor);}
 		fInternalTime += EvolutionTime;							// Update Internal Time
 		fInCycleTime += EvolutionTime;							// Update InCycleTime
+		if(t == fCreationTime + fLifeTime)	fShutDown = true;
+		else
+		{
+		}
 	}
 	else if(EvolutionTime + fInCycleTime == fCycleTime )		//End of Cycle
 	{
@@ -101,8 +118,7 @@ void Reactor::Evolution(long int t)
 		}
 		else 							//if Not....
 		{
-			IsotopicVector IV;
-			fIVReactor = IV;
+			fIVReactor.Clear();
 			fShutDown = true;
 		}
 
@@ -125,41 +141,52 @@ void Reactor::Evolution(long int t)
 //________________________________________________________________________
 void Reactor::Dump()
 {
-	DBGL;
-	if(fEndOfCycle == true  )
+DBGL;
+
+	if(fShutDown == true && fIsStarted == false) return; // Reactor stopped...
+	
+	if(fEndOfCycle == true && fShutDown == false )
 	{
-		if(fShutDown == false)	fParc->AddTotalInReactor(fIVReactor);
+
 		
 		fEndOfCycle = false;
 		if(fParc->GetStockManagement() == true)
 		{
 			IsotopicVector BuildIVtmp  = fParc->BuildIsotopicVector(fIVInCycle);
-//			BuildIVtmp.Print();
 			fAssociedTreatmentFactory->AddIVGodIncome(fIVInCycle - BuildIVtmp);
+
 		}
 		else
 		{
+
 			IsotopicVector BuildIVtmp ;
 			IsotopicVector GodPart;
-			
 			BuildIVtmp.Add(fAssociedTreatmentFactory->GetIVFullStock().GetIsotopicQuantity());
-			BuildIVtmp -= fIVInCycle;			
+			BuildIVtmp -= fIVInCycle;
 			GodPart.Add(BuildIVtmp.GetIsotopicQuantityNeeded()) ;
 			fAssociedTreatmentFactory->TakeFromStock( fIVInCycle - GodPart, -1);
 			fAssociedTreatmentFactory->AddIVGodIncome(GodPart);
-		}
-		
-		if(fIsStarted == true )					// A Cycle has already been done
-		{
-			if(fShutDown == false)	fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
-			else			fAssociedTreatmentFactory->AddIVCooling(fEvolutionDB->GetIsotopicVectorAt(fCycleTime));
 
 		}
+
+		if(fIsStarted == true )					// A Cycle has already been done
+			fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
 		else fIsStarted = true;					// Just start the first cycle
-		
-		if(fShutDown == true) fIsStarted = false;		// shut down the Reactor
+
 	}
-	DBGL;
+	else if (fEndOfCycle == true && fShutDown == true)		//shutdown at end of Cycle
+	{
+
+		fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+		fIsStarted = false;		// shut down the Reactor
+	}
+	else if (fEndOfCycle == false && fShutDown == true) 					//shutdown during Cycle
+	{
+		fAssociedTreatmentFactory->AddIVCooling(fIVReactor);
+		fIVReactor.Clear();
+		fIsStarted = false;		// shut down the Reactor
+	}
+DBGL;
 }
 
 
