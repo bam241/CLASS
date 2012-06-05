@@ -28,12 +28,17 @@ public :
 	
  	Reactor();	///< Normal Constructor.
  
- 	Reactor(EvolutiveProduct* evolutivedb , 
- 		TreatmentFactory* TreatmentFactory ,
- 		long int creationtime = 0, long int lifetime = (long int)(3600*24*365.4)*50 );	///< Advbanced Constructor.
+ 	Reactor(EvolutiveProduct* evolutivedb , TreatmentFactory* TreatmentFactory,
+ 		long int creationtime , long int lifetime);	///< Advbanced Constructor.
 
+	Reactor(EvolutiveProduct* evolutivedb, TreatmentFactory* TreatmentFactory, 
+		long int creationtime, long int lifetime, long int cycletime);
  	
- 	
+ 	Reactor(EvolutiveProduct* evolutivedb, TreatmentFactory* TreatmentFactory, 
+		long int creationtime, long int lifetime, long int cycletime,
+		IsotopicVector IVincyle, IsotopicVector IVoutcycle);
+
+	
  	~Reactor();	///< Normal Destructor.
 	
 

@@ -571,12 +571,6 @@ DBGL;
 				if( IResult.second == false ) IResult.first->second |= 8;
 			}
 
-			if(step >= fAbsoluteTime && step + coolingstep + seprationstep <= t)	// Set end of Separation
-			{
-				pair< map<long int, int>::iterator, bool > IResult;
-				IResult = fTimeStep.insert( pair<long int ,int>(step+coolingstep+seprationstep,16) );
-				if( IResult.second == false ) IResult.first->second |= 16;
-			}
 			step += fReactor[i]->GetCycleTime();
 		}
 		while(step <= t && step <= fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime() );
@@ -594,14 +588,6 @@ DBGL;
 				pair< map<long int, int>::iterator, bool > IResult;
 				IResult = fTimeStep.insert( pair<long int ,int>(fTreatmentFactory[i]->GetCoolingStartingTime()[j] +  fTreatmentFactory[i]->GetCoolingTime(),8) );
 				if( IResult.second == false ) IResult.first->second |= 8;
-			}
-		}
-		for(int j = 0; j< (int)fTreatmentFactory[i]->GetIVSeparating().size(); j++ )// Set end of Separation
-		{
-			if(fTreatmentFactory[i]->GetSeparatingStartingTime()[j] +  fTreatmentFactory[i]->GetSeparationTime() > fAbsoluteTime )
-			{
-				pair< map<long int, int>::iterator, bool > IResult = fTimeStep.insert( pair<long int ,int>(fTreatmentFactory[i]->GetSeparatingStartingTime()[j] +  fTreatmentFactory[i]->GetSeparationTime(),16) );
-				if( IResult.second == false ) IResult.first->second |= 16;
 			}
 		}
 	}
@@ -771,8 +757,6 @@ DBGL;
 		
 		for(int j=0; j < (int)fTreatmentFactory[i]->GetIVCooling().size(); j++)
 			fTotalCooling += fTreatmentFactory[i]->GetIVCooling()[j];
-		for(int j=0; j < (int)fTreatmentFactory[i]->GetIVSeparating().size(); j++)
-			fTotalSeparating += fTreatmentFactory[i]->GetIVSeparating()[j];
 	}
 	
 	for(int i = 0; i < (int)fReactor.size(); i++)
@@ -911,8 +895,6 @@ DBGL;
 		
 		for(int j=0; j < (int)fTreatmentFactory[i]->GetIVCooling().size(); j++)
 			TotalCooling += fTreatmentFactory[i]->GetIVCooling()[j];
-		for(int j=0; j < (int)fTreatmentFactory[i]->GetIVSeparating().size(); j++)
-			TotalSeparating += fTreatmentFactory[i]->GetIVSeparating()[j];
 	}
 
 	string TFWaste = basename + "_TF_WASTE";

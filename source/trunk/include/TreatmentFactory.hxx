@@ -27,10 +27,11 @@ class TreatmentFactory : public TObject
 public :
  	TreatmentFactory();						///< Normal constructor
 
-	TreatmentFactory(long int abstime,
+
+	TreatmentFactory(EvolutionDataBase* evolutivedb,
+			 long int abstime = 0,
 			 long int coolingtime = 5,
-			 long int separationtime = 2,
-			 EvolutionDataBase* evolutivedb = NULL);		///< Advanced Constructor
+			 long int separationtime = 2);		///< Advanced Constructor
 	
  	~TreatmentFactory();						///< Normal Destructor.
 
@@ -58,8 +59,7 @@ public :
 	long int GetCoolingTime() const			{return fCoolingTime;}		//!< Return the Cooling Time
 	long int GetSeparationTime() const		{return fSeparationTime;}	//!< Return the Separation Time
 	
-	EvolutionDataBase* 	GeDecayDataBase() const	{return fDecayDataBase;}	
-								//!< Return the pointer to the Evolution DataBase
+	EvolutionDataBase* 	GeDecayDataBase() const	{return fDecayDataBase;}	//!< Return the pointer to the Evolution DataBase
 	
 	map<ZAI ,double>	GetValorisableIV() const {return fValorisableIV;} 	///< Return the Valorisable Table
 	void			AddValorisableIV(ZAI zai, double factor);		///< Add Valorisable Element
@@ -82,13 +82,6 @@ public :
 	void			AddIVWaste(IsotopicVector IV)		{fIVWaste += IV; }		//!< Add a IsotopicVector to the waste
 
 
-//------- Separation --------//
-	vector<long int>	GetSeparatingStartingTime() const	{return fSeparatingStartingTime;}	//!< Return the vector of Separation Starting Time
-	vector<IsotopicVector>	GetIVSeparating() const			{return fIVSeparating;}			//!< Return the vector of Separation IsotopicVector
-	
-	void			AddIVSeparating(IsotopicVector IV);						//!< Add Separation IsotopicVector
-	void			AddIVSeparating(IsotopicVector IV, long int absolutadditiontime);		//!< Add Separation IsotopicVector at an absolute time
-	void			RemoveIVSeparation(int i);							//!< Remove a Treated IsotopicVector
 
 //---------- Stock ----------//
 	vector<IsotopicVector>	GetIVStock() const		{return fIVStock;}			//!< Return the Stock IsotopicVector
@@ -107,7 +100,7 @@ public :
 
 	IsotopicVector		GetIVGodIncome() const		{return fIVGodIncome;}	//!< Return the God Providings IsotopicVector
 	void AddIVGodIncome(ZAI zai, double quantity)		{AddIVGodIncome(zai*quantity);}	//!< Add a ZAI*quantity to GodIncome
-	void AddIVGodIncome(IsotopicVector isotopicvector)	{fIVGodIncome.Add(isotopicvector); fParc->AddTotalGodIncome(isotopicvector);}	//!< Add a isotopicVector to GodIncome
+	void AddIVGodIncome(IsotopicVector isotopicvector)	{fIVGodIncome.Add(isotopicvector);}	//!< Add a isotopicVector to GodIncome
 
 
 
@@ -141,13 +134,6 @@ protected :
 	int			fCoolingLastIndex;	//!< Number of Cooling IV Treated
 	vector<int>		fCoolingEndOfCycle;	//!< Index of the Cooling IV reaching the End of a Cooling Cycle
 
-//------- Separation --------//
-	vector<IsotopicVector>	fIVSeparating;		///< Vector of the Treated Isotopic Vector
-	vector<long int>	fSeparatingStartingTime;///< Vector of the Treated Starting Time
-	vector<int>		fSeparatingIndex;	///< Vector of the Treated Index
-	int			fSeparatingLastIndex;	//!< Number of Separation IV Treated
-	vector<int>		fSeparationEndOfCycle;	//!< Index of the Separation IV reaching the End of a Cooling Cycle
-	
 //---------- Stock ----------//
 	vector<IsotopicVector>	fIVStock;		///< The Stock IsotopicVector
 	IsotopicVector		fIVGodIncome;		///< Stock quantity providing by a godlike entitie
@@ -160,10 +146,10 @@ protected :
 	IsotopicVector GetDecayProduct(IsotopicVector isotopicvector, long int t);	//!< Get IsotopicVector Decay at the t time
 	void	CoolingEvolution(long int t);						//!< Deal the cooling and then send it to Separation
 	void	SeparatingEvolution(long int t);					//!< Deal the Separating IV Decay Evolution and then send it to stock 
-	void	StockEvolution(long int t);							//!< Deal the Stock Decay Evolution
+	void	StockEvolution(long int t);						//!< Deal the Stock Decay Evolution
 
 
-	void	WasteEvolution(long int t);							//!< Deal the Waste Decay Evolution
+	void	WasteEvolution(long int t);						//!< Deal the Waste Decay Evolution
 	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);	//!< Make the Separation 
 											//!< return IV[0] -> To Stock / IV[1] -> To Waste
 
