@@ -49,7 +49,57 @@ Reactor::Reactor(EvolutiveProduct* evolutivedb,
 	fIVOutCycle = fEvolutionDB->GetIsotopicVectorAt(fCycleTime);
 	DBGL;
 }
+Reactor::Reactor(EvolutiveProduct* evolutivedb, 
+ 		 TreatmentFactory* TreatmentFactory,
+ 		 long int creationtime,
+ 		 long int lifetime,
+ 		 long int cycletime)
+{
+	DBGL;
+	fCycleTime = cycletime;
+	fIsStarted = false;
+	fShutDown = false;
+	fEndOfCycle = false;
+	fEvolutionDB = evolutivedb; 
+	fAssociedTreatmentFactory = TreatmentFactory;
 
+	fInternalTime = 0;
+	fInCycleTime = 0;
+	fCreationTime = creationtime;
+	fLifeTime = lifetime;
+
+	fIVBeginCycle = fEvolutionDB->GetIsotopicVectorAt(0);
+	fIVInCycle = fEvolutionDB->GetIsotopicVectorAt(0);
+	fIVOutCycle = fEvolutionDB->GetIsotopicVectorAt(fCycleTime);
+	DBGL;
+}
+
+Reactor::Reactor(EvolutiveProduct* evolutivedb, 
+ 		 TreatmentFactory* TreatmentFactory,
+ 		 long int creationtime,
+ 		 long int lifetime,
+ 		 long int cycletime,
+ 		 IsotopicVector IVincyle,
+ 		 IsotopicVector IVoutcycle )
+{
+	DBGL;
+	fCycleTime = cycletime;
+	fIsStarted = false;
+	fShutDown = false;
+	fEndOfCycle = false;
+	fEvolutionDB = evolutivedb; 
+	fAssociedTreatmentFactory = TreatmentFactory;
+
+	fInternalTime = 0;
+	fInCycleTime = 0;
+	fCreationTime = creationtime;
+	fLifeTime = lifetime;
+
+	fIVBeginCycle = fEvolutionDB->GetIsotopicVectorAt(0);
+	fIVInCycle = IVincyle;
+	fIVOutCycle = IVoutcycle;
+	DBGL;
+}
 //________________________________________________________________________
 Reactor::~Reactor()
 {

@@ -23,6 +23,8 @@ IsotopicVector operator/(IsotopicVector const& IVA, double F);
 IsotopicVector operator/(ZAI const& zai, double F);
 IsotopicVector operator*(IsotopicVector const& IVA, double F);
 IsotopicVector operator*(ZAI const& zai, double F);
+IsotopicVector operator*(double F, IsotopicVector const& IVA);
+IsotopicVector operator*(double F, ZAI const& zai);
 IsotopicVector operator+(IsotopicVector const& IVa, IsotopicVector const& IVb);
 IsotopicVector operator-(IsotopicVector const& IVa, IsotopicVector const& IVb);
 

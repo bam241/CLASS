@@ -86,6 +86,9 @@ IsotopicVector operator*(ZAI const& zai, double F)
 		
 	return IVtmp;
 }
+
+IsotopicVector operator*(double F, IsotopicVector const& IVA) {return IVA*F;}
+
 //________________________________________________________________________
 IsotopicVector operator/(ZAI const& zai, double F)
 {
@@ -105,6 +108,8 @@ DBGL;
 	IV.Multiply(F);
 	return IV;
 }
+
+IsotopicVector operator*(double F, ZAI const& zai) {return zai*F;}
 
 //________________________________________________________________________
 IsotopicVector operator/(IsotopicVector const& IVA, double F)
