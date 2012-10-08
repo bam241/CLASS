@@ -1,18 +1,25 @@
 #include "EvolutiveProduct.hxx"
+
+/*! \class EvolutiveProduct EvolutiveProduct.hxx "../include/EvolutiveProduct.hxx"
+ *
+ *  Docs for EvolutiveProduct
+ */
+
 #include "IsotopicVector.hxx"
-#include "ZAI.hxx"
 #include "LogFile.hxx"
 #include "Defines.hxx"
 #include "StringLine.hxx"
 
-#include <TGraphErrors.h>
+#include "TMatrixT.h"
+#include <TGraph.h>
 #include <TString.h>
+
 #include <string>
+#include <cmath>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
 #include <map>
-#include <TGraphErrors.h>
 
 using namespace std;
 //________________________________________________________________________
@@ -23,63 +30,94 @@ using namespace std;
 //
 //
 //________________________________________________________________________
-
-EvolutiveProduct::EvolutiveProduct(LogFile* Log, int Z, int A, int I, string DBindexfile)
+ClassImp(EvolutiveProduct)
+//________________________________________________________________________
+EvolutiveProduct operator*(EvolutiveProduct const& evol, double F)
 {
-DBGL;
-	fLog = Log;
-	ifstream DB_index(DBindexfile.c_str());
-	if( !DB_index)
+	DBGL;
+	EvolutiveProduct evoltmp;
+	map<ZAI ,TGraph* >::iterator it;
+	map<ZAI ,TGraph* > evolutiveproduct = evol.GetEvolutiveProduct();
+	for(it = evolutiveproduct.begin(); it != evolutiveproduct.end(); it++)
 	{
-		cout << "!!!EVOLUTIVE DB!!!! Can't open \"" << DBindexfile << "\"" << endl;
-		fLog->fLog << "!!!EVOLUTIVE DB!!!! Can't open \"" << DBindexfile << "\"" << endl;
-		exit (1);
-	}
-	bool zaifind = false;		
-	string tmp;		
-	getline(DB_index,tmp);							// Read first line
-	while (!DB_index.eof()) 
-	{
-		string line;			
-		int start=0;				
-		getline(DB_index,line);							// Read first line
-		string first=StringLine::NextWord(line,start);				// Read first word
+		double X[(*it).second->GetN()];
+		double Y[(*it).second->GetN()];
 		
-		if(first.size()==0) break;						// If First word is null.... quit
+		for(int i = 0; i < (*it).second->GetN(); i++)
+		{
+			double y;
+			(*it).second->GetPoint( i, X[i], y );
+			Y[i] = y*F;
+		}
+		evoltmp.Insert( pair<ZAI, TGraph*> ( (*it).first,new TGraph((*it).second->GetN(), X, Y) ) );
 		
-		int rZ=atoi(first.c_str());						// Get Z
-		int rA=atoi(StringLine::NextWord(line,start).c_str());			// Get A
-		int rI=atoi(StringLine::NextWord(line,start).c_str());			// Get Isomeric State
-
-		if(rZ == Z && rA == A && rI == I)
-		{
-			string file_name = StringLine::NextWord(line,start);
-			ReadDB(file_name);		// Read Decay produc DB file name
-			zaifind = true;
-		}
 	}
-	if(zaifind == false) 
-	{
-		#pragma omp critical(LOGupdate)
-		{
-		fLog->fLog << "!!Warning!! !!!EVOLUTIVE DB!!! Oups... Can't Find the ZAI : " 
-			   << Z << " " << A << " "	<< I << "!!! It will be considered as stable !!" << endl;
-		AddAsStable(Z, A, I);
-		}
-	}
-DBGL;
-
+	
+	return evoltmp;
+	DBGL;
 }
 
 //________________________________________________________________________
-
-EvolutiveProduct::EvolutiveProduct(string DB_reactor_file)
+EvolutiveProduct operator*(double F, EvolutiveProduct const& evol)
 {
 	DBGL;
-	string file_name = DB_reactor_file;
-	ReadDB(file_name);		// Read Evolution Produc DB file name
+	return evol*F;
 	DBGL;
+}
 
+//________________________________________________________________________
+EvolutiveProduct operator+(EvolutiveProduct const& evola, EvolutiveProduct const& evolb)
+{
+	DBGL;
+	EvolutiveProduct evoltmp = evola;
+	evoltmp += evolb;
+	return evoltmp;
+	DBGL;
+}
+
+//________________________________________________________________________
+EvolutiveProduct operator-(EvolutiveProduct const& evola, EvolutiveProduct const& evolb)
+{
+	DBGL;
+	EvolutiveProduct evoltmp = evola;
+	evoltmp -= evolb;
+	return evoltmp;
+	DBGL;
+}
+
+//________________________________________________________________________
+//________________________________________________________________________
+EvolutiveProduct::EvolutiveProduct()
+{
+	DBGL;
+	fIsCrossSection = false;
+	DBGL;
+}
+
+//________________________________________________________________________
+EvolutiveProduct::EvolutiveProduct(LogFile* Log)
+{
+	DBGL;
+	fLog = Log;
+	fIsCrossSection = false;
+	DBGL;
+}
+
+//________________________________________________________________________
+EvolutiveProduct::EvolutiveProduct(LogFile* Log, string DB_file, bool stable, ZAI zai)
+{
+	DBGL;
+	fLog = Log;
+	fIsCrossSection = false;
+	
+	if(stable == true)
+		AddAsStable(zai);
+	else
+		ReadDB( DB_file);		// Read Evolution Produc DB file name
+	
+	
+	DBGL;
+	
 }
 
 //________________________________________________________________________
@@ -90,91 +128,95 @@ EvolutiveProduct::~EvolutiveProduct()
 }
 
 //________________________________________________________________________
-//________________________________________________________________________
 
-void EvolutiveProduct::AddAsStable(int Z,int  A,int I)
+EvolutiveProduct& EvolutiveProduct::operator+=(const EvolutiveProduct& evol)
 {
 	DBGL;
-	double time[2] = {0, (int)(500*365.4*3600*24)};
-	double Err[2]	= {0, 0};
-	double quantity[2] = {1., 1.};
-	ZAI zaitmp(Z, A, I);
+	map<ZAI ,TGraph* >::iterator it;
+	map<ZAI ,TGraph* > evolutionproduct_evol = evol.GetEvolutiveProduct();
 	
-	fEvolutiveProduct.insert(pair<ZAI ,TGraphErrors* >(zaitmp, new TGraphErrors(2, time, quantity, Err, Err) ) );
-	DBGL;
-}
-//________________________________________________________________________
-
-//________________________________________________________________________
-void EvolutiveProduct::ReadDB(string DBfile)
-{
-	DBGL;
-	ifstream DecayDB(DBfile.c_str());							// Open the File
-	if(!DecayDB)
+	for(it = evolutionproduct_evol.begin(); it != evolutionproduct_evol.end(); it++)
 	{
-		cout << "!!Warning!! !!!EvolutiveProduct!!! \n Can't open \"" << DBfile << "\"\n" << endl;
-		fLog->fLog << "!!Warning!! !!!EvolutiveProduct!!! \n Can't open \"" << DBfile << "\"\n" << endl;
-	}
-	vector<double> vTime;
-	vector<double> vTimeErr;
-
-	string line;
-	int start = 0;
-	
-	getline(DecayDB, line); // Nuclei is given with "A Z"
-	if( StringLine::NextWord(line, start, ' ') != "time") 
-	{
-		cout << "!!Bad Trouble!! !!!EvolutiveProduct!!! Bad Database file : " <<  DBfile << endl;
-		fLog->fLog << "!!Bad Trouble!! !!!EvolutiveProduct!!! Bad Database file : " <<  DBfile << endl;
-		exit (1);
-	}
-	
-	while(start < (int)line.size())
-	{
-		vTime.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
-		vTimeErr.push_back(0); // Set to Zero because not yet error in DB
+		pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+		IResult = fEvolutiveProduct.insert( pair<ZAI, TGraph*> ((*it).first, (*it).second) );
 		
-	}
-
-	double Time[vTime.size()];
-	double TimeErr[vTime.size()];
-	for(int i=0; i < (int)vTime.size();i++)
-		{Time[i] = vTime[i]; TimeErr[i] = vTimeErr[i];} 
-
-
-	while (!DecayDB.eof())
-	{
-		double DPQuantity[vTime.size()];
-		double DPQuantityErr[vTime.size()];
-
-		getline(DecayDB, line); // Nuclei is given with "A Z"
-		start = 0;
-		int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
-		int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
-		int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
-		
-		if(A!=0 && Z!=0)
+		if(IResult.second == false)
 		{
-
-			ZAI zaitmp(Z, A, I);
-			int i=0;
-			while(start < (int)line.size())
-			{	
-				long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
-				DPQuantity[i] = (double)DPQuantityTmp;
-				DPQuantityErr[i]=0; // Set to Zero because not yet error in DB
-				i++;
-
+			for (int i = 0; i < IResult.first->second->GetN(); i++)
+			{
+				double x = 0;
+				double y = 0;
+				IResult.first->second->GetPoint( i, x, y );
+				IResult.first->second->SetPoint( i, x, y + (*it).second->Eval(x) );
 			}
-			fEvolutiveProduct.insert(pair<ZAI ,TGraphErrors* >(zaitmp, new TGraphErrors(vTime.size(), Time, DPQuantity, TimeErr, DPQuantityErr) ) );
 		}
-
 	}
+	
+	
+	
+	return *this;
 	DBGL;
 }
 
 //________________________________________________________________________
-Double_t EvolutiveProduct::Interpolate(double t, TGraphErrors& EvolutionGraph)
+EvolutiveProduct& EvolutiveProduct::operator-=(const EvolutiveProduct& evol)
+{
+	DBGL;
+	map<ZAI ,TGraph* >::iterator it;
+	map<ZAI ,TGraph* > evolutionproduct_evol = evol.GetEvolutiveProduct();
+	
+	
+	for(it = evolutionproduct_evol.begin(); it != evolutionproduct_evol.end(); it++)
+	{
+		for (int i = 0; i < (*it).second->GetN(); i++)
+		{
+			double x = 0;
+			double y = 0;
+			(*it).second->GetPoint( i, x, y );
+			(*it).second->SetPoint( i, x, -y  );
+		}
+		
+		pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+		IResult = fEvolutiveProduct.insert( (*it) );
+		if(IResult.second == false)
+		{
+			map<ZAI ,TGraph* >::iterator it2;
+			it2 = fEvolutiveProduct.find( (*it).first );
+			for (int i = 0; i < (*it2).second->GetN(); i++)
+			{
+				double x = 0;
+				double y = 0;
+				(*it2).second->GetPoint( i, x, y );
+				(*it2).second->SetPoint( i, x, y + (*it).second->Eval(x) );
+			}
+		}
+	}
+	return *this;
+	DBGL;
+}
+
+bool EvolutiveProduct::Insert(pair<ZAI, TGraph*> zaitoinsert)
+{
+	DBGL;
+	pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+	IResult = fEvolutiveProduct.insert( zaitoinsert);
+	return IResult.second;
+	DBGL;
+}
+
+//________________________________________________________________________
+void EvolutiveProduct::AddAsStable(ZAI zai)
+{
+	DBGL;
+	double time[2] = {0, (int)(500*365.25*3600*24)};
+	double quantity[2] = {1., 1.};
+	
+	fEvolutiveProduct.insert(pair<ZAI ,TGraph* >(zai, new TGraph(2, time, quantity) ) );
+	DBGL;
+}
+
+//________________________________________________________________________
+Double_t EvolutiveProduct::Interpolate(double t, TGraph& EvolutionGraph)
 {
 	DBGL;
 	TString fOption; 
@@ -183,15 +225,15 @@ Double_t EvolutiveProduct::Interpolate(double t, TGraphErrors& EvolutionGraph)
 }
 
 //________________________________________________________________________
-TGraphErrors*	EvolutiveProduct::GetEvolutionTGraphErrors(const ZAI& zai)
+TGraph*	EvolutiveProduct::GetEvolutionTGraph(const ZAI& zai)
 {
 	DBGL;
-	map<ZAI ,TGraphErrors *>::iterator it = GetEvolutiveProduct().find(zai) ;
+	map<ZAI ,TGraph *>::iterator it = GetEvolutiveProduct().find(zai) ;
 	
 	if ( it != GetEvolutiveProduct().end() ) 
 		return it->second;	
 	else
-		return new TGraphErrors();
+		return new TGraph();
 	
 	DBGL;
 }
@@ -201,17 +243,690 @@ IsotopicVector	EvolutiveProduct::GetIsotopicVectorAt(double t)
 {
 	DBGL;
 	IsotopicVector IsotopicVectorTmp;
-	map<ZAI ,TGraphErrors* >::iterator it;
+	map<ZAI ,TGraph* >::iterator it;
 	for( it = fEvolutiveProduct.begin(); it != fEvolutiveProduct.end(); it++ )
 	{
 		IsotopicVectorTmp.Add( (*it).first, Interpolate(t, *((*it).second)) );
 	}
-
+	
 	DBGL;
 	return IsotopicVectorTmp;
 }
 
 //________________________________________________________________________
+
+//________________________________________________________________________
+void EvolutiveProduct::ReadDB(string DBfile)
+{
+	DBGL;
+	
+	{
+		ifstream DecayDB(DBfile.c_str());							// Open the File
+		if(!DecayDB)
+		{
+			cout << "!!Warning!! !!!EvolutiveProduct!!! \n Can't open \"" << DBfile << "\"\n" << endl;
+			fLog->fLog << "!!Warning!! !!!EvolutiveProduct!!! \n Can't open \"" << DBfile << "\"\n" << endl;
+		}
+		vector<double> vTime;
+		vector<double> vTimeErr;
+	
+		string line;
+		int start = 0;
+	
+		getline(DecayDB, line); 
+		if( StringLine::NextWord(line, start, ' ') != "time") 
+		{
+			cout << "!!Bad Trouble!! !!!EvolutiveProduct!!! Bad Database file : " <<  DBfile << endl;
+			fLog->fLog << "!!Bad Trouble!! !!!EvolutiveProduct!!! Bad Database file : " <<  DBfile << endl;
+			exit (1);
+		}
+	
+		while(start < (int)line.size())
+			vTime.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
+	
+		fDBendTime = vTime.back();
+		double Time[vTime.size()];
+		for(int i=0; i < (int)vTime.size();i++)
+			Time[i] = vTime[i]; 
+	
+		start = 0;
+		getline(DecayDB, line); 
+		if (StringLine::NextWord(line, start, ' ') == "keff")
+		{
+			while(start < (int)line.size())
+				fKeff.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
+
+			start = 0;
+			getline(DecayDB, line); 
+			if (StringLine::NextWord(line, start, ' ') == "flux")
+				while(start < (int)line.size())
+					fFlux.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
+
+		}
+	
+		double DPQuantity[vTime.size()];
+		do
+		{
+		
+		
+			start = 0;
+			int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
+			int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
+			int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
+		
+			if(A!=0 && Z!=0)
+			{
+			
+			
+				ZAI zaitmp(Z, A, I);
+				int i=0;
+				while(start < (int)line.size())
+				{	
+					long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
+					DPQuantity[i] = (double)DPQuantityTmp;
+					i++;
+				
+				}
+				fEvolutiveProduct.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size(), Time, DPQuantity) ) );
+			}
+		
+			getline(DecayDB, line); 
+			if(line == "" || line == "CrossSection" ) break;
+		}while (!DecayDB.eof() );
+	
+		if(line == "CrossSection")
+		{
+			fIsCrossSection = true;
+			getline(DecayDB, line);
+
+			if (line == "Fission")
+			{
+				getline(DecayDB, line);
+			
+				do
+				{
+					double DPQuantity[vTime.size()];
+				
+					start = 0;
+					int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
+					int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
+					int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
+					if(A!=0 && Z!=0)
+					{
+					
+					
+						ZAI zaitmp(Z, A, I);
+						int i=0;
+						while(start < (int)line.size())
+						{	
+							long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
+							DPQuantity[i] = (double)DPQuantityTmp;
+							i++;
+						
+						}
+						fFissionXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size(), Time, DPQuantity) ) );
+					}
+					getline(DecayDB, line); 
+				if(line == "" || line == "Capture" ) break;
+				}while (  !DecayDB.eof() );
+			}
+		
+			if (line == "Capture")
+			{
+				getline(DecayDB, line); // Nuclei is given with "A Z"
+			
+				do
+				{
+					double DPQuantity[vTime.size()];
+				
+				
+					start = 0;
+					int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
+					int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
+					int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
+				
+					if(A!=0 && Z!=0)
+					{
+					
+					
+						ZAI zaitmp(Z, A, I);
+						int i=0;
+						while(start < (int)line.size())
+						{	
+							long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
+							DPQuantity[i] = (double)DPQuantityTmp;
+							i++;
+						
+						}
+						fCaptureXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size(), Time, DPQuantity) ) );
+					}
+					getline(DecayDB, line); // Nuclei is given with "A Z"
+				if(line == "" || line == "n2n" ) break;
+				}while ( !DecayDB.eof() );
+			
+			}
+		
+			if (line == "n2n")
+			{
+			
+				getline(DecayDB, line); // Nuclei is given with "A Z"
+			
+				do
+				{
+					double DPQuantity[vTime.size()];
+				
+					start = 0;
+					int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
+					int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
+					int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
+				
+					if(A!=0 && Z!=0)
+					{
+					
+					
+						ZAI zaitmp(Z, A, I);
+						int i=0;
+						while(start < (int)line.size())
+						{	
+							long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
+							DPQuantity[i] = (double)DPQuantityTmp;
+							i++;
+						
+						}
+						fn2nXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size(), Time, DPQuantity) ) );
+					}
+					getline(DecayDB, line); // Nuclei is given with "A Z"
+				if(line == "" ) break;
+				
+				}while ( !DecayDB.eof() );
+			}
+		
+		}
+	}
+	
+	{
+		string line;
+		int start = 0;
+		
+		string InfoDBFile  = DBfile.erase(DBfile.size()-3,DBfile.size());
+		InfoDBFile += "info";
+		ifstream InfoDB(InfoDBFile.c_str());							// Open the File
+		if(!InfoDB)
+		{
+			fLog->fLog << "!!Warning!! !!!EvolutiveProduct!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
+			return;
+		}
+		
+		start = 0;
+		getline(InfoDB, line); 
+		if (StringLine::NextWord(line, start, ' ') == "Reactor")
+			fReactorType =  StringLine::NextWord(line, start, ' ');
+		start = 0;
+		getline(InfoDB, line); 
+		if (StringLine::NextWord(line, start, ' ') == "Fueltype")
+			fFuelType =  StringLine::NextWord(line, start, ' ');
+		start = 0;
+		getline(InfoDB, line); 
+		if (StringLine::NextWord(line, start, ' ') == "CycleTime")
+			fReactorType =  StringLine::NextWord(line, start, ' ');
+		getline(InfoDB, line); // Assembly HM Mass
+		start = 0;
+		getline(InfoDB, line); 
+		if (StringLine::NextWord(line, start, ' ') == "ConstantPower")
+			fPower =  atof(StringLine::NextWord(line, start, ' ').c_str());
+		getline(InfoDB, line); // cutoff
+		getline(InfoDB, line); // NUmber of Nuclei
+		start = 0;
+		getline(InfoDB, line); 
+		if (StringLine::NextWord(line, start, ' ') == "NormalizationFactor")
+		{
+			double NormFactor = atof(StringLine::NextWord(line, start, ' ').c_str());
+			fPower = fPower * NormFactor;
+			for (int i = 0; i < (int) fFlux.size(); i++)
+				fFlux[i] =  fFlux[i]  * NormFactor;
+		}
+		start = 0;
+		getline(InfoDB, line); 
+		if (StringLine::NextWord(line, start, ' ') == "FinalHeavyMetalMass")
+			fHMMass =  atof(StringLine::NextWord(line, start, ' ').c_str());
+	
+		}
+
+	DBGL;
+}
+
+
+//________________________________________________________________________
+
+EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
+{
+	DBGL;
+	
+	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
+	
+	{	// TMP
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(-3,-3,-3), pair<double, map< ZAI, double > > ( 1e28 ,toAdd )) ) ;
+	}
+	{	// PF
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-2,-2,-2), 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(-2,-2,-2), pair<double, map< ZAI, double > > ( 1e28 ,toAdd )) ) ;
+	}
+	{	// 232Th
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(90,232,0), pair<double, map< ZAI, double > > ( 4.41806400000000000e+17, toAdd ) ) );
+	}
+	{	// 233U
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,233,0), pair<double, map< ZAI, double > > ( 5.02396992000000000e+12, toAdd) ) );
+	}
+	{	// 234U
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,234,0), pair<double, map< ZAI, double > > ( 7.74739080000000000e+12, toAdd) ) );
+	}
+	{	// 235U
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,235,0), pair<double, map< ZAI, double > > ( 2.22165504000000000e+16, toAdd) ) );
+	}
+	{	// 236U
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,236,0), pair<double, map< ZAI, double > > ( 7.39078992000000000e+14, toAdd) ) );
+	}
+	{	// 238U
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,238,0), pair<double, map< ZAI, double > > ( 1.40999356800000000e+17, toAdd) ) );
+	}
+	{	// 237Np
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(92,237,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(93,237,0), pair<double, map< ZAI, double > > ( 6.76594944000000000e+13, toAdd) ) );
+	}
+	{	// 238Pu
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(92,234,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,238,0), pair<double, map< ZAI, double > > ( 2.76760152000000000e+09, toAdd) ) );
+	}
+	{	// 239Pu
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(92,235,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,239,0), pair<double, map< ZAI, double > > ( 7.60853736000000000e+11, toAdd) ) );
+	}
+	{	// 240Pu
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(92,236,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,240,0), pair<double, map< ZAI, double > > ( 2.07049413600000000e+11, toAdd) ) );
+	}
+	{	// 241Pu
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,241,0), pair<double, map< ZAI, double > > ( 4.52062620000000000e+08, toAdd) ) );
+	}
+	{	// 242Pu
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,242,0), pair<double, map< ZAI, double > > ( 1.18341000000000000e+15, toAdd) ) );
+	}
+	{	// 241Am
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(95,241,0), pair<double, map< ZAI, double > > ( 1.36518177600000000e+10, toAdd) ) );
+	}
+	{	// 242Am*
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,238,0) , 0.0045) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(96,242,0) , 0.827*0.9955) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,242,0) , 0.173*0.9955) );
+		
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(95,242,1), pair<double, map< ZAI, double > > ( 4.44962160000000000e+09, toAdd) ) );
+	}
+	{	// 243Am
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,239,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(95,243,0), pair<double, map< ZAI, double > > ( 2.32579512000000000e+11, toAdd) ) );
+	}
+	{	// 242Cm
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,242,0), pair<double, map< ZAI, double > > ( 5.13757728000000000e+09, toAdd) ) );
+	}
+	{	// 243Cm
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,239,0) , 0.997) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,243,0) , 0.003) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,243,0), pair<double, map< ZAI, double > > ( 9.18326160000000000e+08, toAdd) ) );
+	}
+	{	// 244Cm
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,240,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,244,0), pair<double, map< ZAI, double > > ( 5.71192560000000000e+08, toAdd) ) );
+	}
+	{	// 245Cm
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,241,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,245,0), pair<double, map< ZAI, double > > ( 2.65809664800000000e+11, toAdd) ) );
+	}
+	{	// 246Cm
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,242,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,246,0), pair<double, map< ZAI, double > > ( 1.48510065600000000e+11, toAdd) ) );
+	}
+	{	// 247Cm
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,247,0), pair<double, map< ZAI, double > > ( 4.92298560000000000e+14, toAdd) ) );
+	}	
+	{	// 247Cm
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,248,0), pair<double, map< ZAI, double > > ( 1.09820448000000000e+13, toAdd) ) );
+	}
+	
+	
+	map<ZAI, map<int, double> > decayindex;
+	
+	{
+		int i = 0;
+		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
+		for(it = ZAIDecay.begin() ; it != ZAIDecay.end(); it++)
+		{
+			map<int, double> toAdd ;
+			toAdd.insert( pair<int, double> (i,1) );
+			decayindex.insert( pair< ZAI, map<int, double> > ( (*it).first, toAdd ));
+			i++;
+		}
+		
+		{	// 233Th
+			map<int, double> toAdd ;
+			toAdd = decayindex.find( ZAI(92,233,0) )->second ;
+			
+			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(90,233,0), toAdd ) ); 
+		}
+		{	// 237U
+			map<int, double> toAdd ;
+			toAdd = decayindex.find( ZAI(93,237,0) )->second ;
+			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(92,237,0), toAdd ) ); 
+		}
+		{	// 239U
+			map<int, double> toAdd ;
+			toAdd = decayindex.find( ZAI(94,239,0) )->second ;
+			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(92,239,0), toAdd ) );
+		}
+		{	// 238Np
+			map<int, double> toAdd ;
+			toAdd = decayindex.find( ZAI(94,238,0) )->second ;
+			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(93,238,0), toAdd ) ); 
+		}
+		{	// 243Pu
+			map<int, double> toAdd ;
+			toAdd = decayindex.find( ZAI(95,243,0) )->second ;
+			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(94,243,0), toAdd ) ); 
+		}
+		{	// 242Am*
+			map<int, double> toAdd ;
+			map<int, double>::iterator it2;
+			map<int, double> loop = decayindex.find( ZAI(96,242,0) )->second ;
+			
+			for(it2 = loop.begin(); it2 !=loop.end(); it2++)
+				toAdd.insert(  pair<int, double> ((*it2).first, (*it2).second * 0.827) );
+			loop = decayindex.find( ZAI(94,242,0) )->second;
+			for(it2 = loop.begin(); it2 !=loop.end(); it2++)
+			{
+				pair<map<int, double>::iterator, bool> IResult;
+				IResult = toAdd.insert(  pair<int, double> ((*it2).first, (*it2).second * 0.173) );
+				if(IResult.second == false)
+					IResult.first->second += (*it2).second * 0.173 ;
+			}
+			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(95,242,0), toAdd ) );
+		}
+		{	// 245Am
+			map<int, double> toAdd ;
+			toAdd = decayindex.find( ZAI(93,237,0) )->second ;
+			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(95,245,0), toAdd ) );
+		}
+		{	// 248Cm
+			map<int, double> toAdd ;
+			toAdd = decayindex.find( ZAI(-3,-3,-3) )->second ;
+			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(95,245,0), toAdd ) ); 
+		}
+	}
+	
+	map<int, ZAI> index;
+	{
+		int i = 0;
+		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
+		for(it = ZAIDecay.begin() ; it != ZAIDecay.end(); it++)
+		{
+			index.insert( pair<int, ZAI > ( i, (*it).first ) );
+			i++;
+		}
+	}
+
+	map<ZAI, int> index_inver;
+	{
+		int i = 0;
+		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
+		for(it = ZAIDecay.begin() ; it != ZAIDecay.end(); it++)
+		{
+			 index_inver.insert( pair<ZAI, int > ( (*it).first , i ));
+			i++;
+		}
+	}
+
+	TMatrixT<double> DecayMatrix = TMatrixT<double>(index.size(),index.size());
+	for(int i = 0; i < (int)index.size(); i++)
+		for(int j = 0; j < (int)index.size(); j++)
+			DecayMatrix[i][j] = 0;
+
+	{
+		int i = 0;
+		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
+		for(it = ZAIDecay.begin() ; it != ZAIDecay.end(); it++)
+		{
+			map< ZAI, double >::iterator it2;
+			map< ZAI, double > decaylist = (*it).second.second;
+			for(it2 = decaylist.begin(); it2!= decaylist.end(); it2++)
+			{
+				map<ZAI, map<int, double> >::iterator it3 = decayindex.find( (*it2).first );
+				map<int, double>::iterator it4;
+				for(it4 = (*it3).second.begin(); it4 != (*it3).second.end() ; it4++)
+					DecayMatrix[i][(*it4).first] = log(2.)/(*it).second.first * (*it2).second * (*it4).second ;
+			}
+			DecayMatrix[i][i] += -log(2.)/(*it).second.first;
+			i++;
+		}
+	}
+	
+
+	vector< TMatrixT<double> > NMatrix ;//  TMatrixT<double>(decayindex.size(),1))
+	double NormFactor = 0;
+	{
+		IsotopicVector WantedHMIV = isotopicvector.GetSpeciesComposition(90)
+					+isotopicvector.GetSpeciesComposition(92)
+					+isotopicvector.GetSpeciesComposition(93)
+					+isotopicvector.GetSpeciesComposition(94)
+					+isotopicvector.GetSpeciesComposition(95)
+					+isotopicvector.GetSpeciesComposition(96);
+
+		IsotopicVector DBHMIV = GetIsotopicVectorAt(0).GetSpeciesComposition(90)
+					+GetIsotopicVectorAt(0).GetSpeciesComposition(92)
+					+GetIsotopicVectorAt(0).GetSpeciesComposition(93)
+					+GetIsotopicVectorAt(0).GetSpeciesComposition(94)
+					+GetIsotopicVectorAt(0).GetSpeciesComposition(95)
+					+GetIsotopicVectorAt(0).GetSpeciesComposition(96);
+			
+		NormFactor = Norme(WantedHMIV)/ Norme(DBHMIV);
+	}
+
+	{	// Filling the t=0 State;
+		map<ZAI, double > isotopicquantity = isotopicvector.GetIsotopicQuantity();
+		map<ZAI, double >::iterator it ;
+		TMatrixT<double>  N_0Matrix =  TMatrixT<double>( index.size(),1) ;
+		for(it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+		{
+			
+			map<ZAI, map<int, double> >::iterator it2;
+			
+			if( (*it).first.Z() < 90 ) 
+				it2 = decayindex.find( ZAI(-2,-2,-2) );
+			else it2 = decayindex.find( (*it).first );
+			
+			if(it2 == decayindex.end() )
+				it2 = decayindex.find( ZAI(-3,-3,-3) );
+			
+			
+
+			map<int, double>::iterator it3;
+			for(it3 = (*it2).second.begin(); it3 != (*it2).second.end() ; it3++)
+				N_0Matrix[ (*it3).first ][0] = (*it).second * (*it3).second;
+
+			
+		}
+		NMatrix.push_back(N_0Matrix);
+
+	}
+
+	//-------------------------//
+	//--- Perform Evolution ---//
+	//-------------------------//
+	double timevector[fEvolutiveProduct.begin()->second->GetN()];
+	timevector[0] = 0.;
+
+	for(int i = 0; i < fEvolutiveProduct.begin()->second->GetN()-1; i++)
+	{
+		TMatrixT<double> BatemanMatrix = TMatrixT<double>(index.size(),index.size());
+		BatemanMatrix = DecayMatrix ;
+		map<ZAI ,TGraph* >::iterator it;
+		// ----------------  A(n,.) X+Y
+		for(it = fFissionXS.begin() ; it != fFissionXS.end(); it++)
+		{
+			double x,y;
+			(*it).second->GetPoint(i, x,y);
+			BatemanMatrix[ index_inver.find( (*it).first )->second ][index_inver.find( (*it).first )->second] += -y* 1e-24 *fFlux[i];
+			BatemanMatrix[ index_inver.find( (*it).first )->second][1] += y* 1e-24 *fFlux[i];
+		}
+		// ----------------  A(n,.)A+1
+		for(it = fCaptureXS.begin() ; it != fCaptureXS.end(); it++)
+		{
+			double x,y;
+			(*it).second->GetPoint(i, x, y);
+			map<ZAI, map<int, double> >::iterator it3 = decayindex.find( ZAI( (*it).first.Z(), (*it).first.A()+1, (*it).first.I()) );
+			if( it3 == decayindex.end() ) 
+				it3 = decayindex.find( ZAI( -3, -3, -3 ) );
+			
+			BatemanMatrix[ index_inver.find( (*it).first )->second ][index_inver.find( (*it).first )->second] += -y* 1e-24 *fFlux[i]*NormFactor;
+			
+			map<int, double>::iterator it4;
+			for(it4 = (*it3).second.begin(); it4 != (*it3).second.end() ; it4++)
+				BatemanMatrix[index_inver.find( (*it).first )->second][(*it4).first] += y* 1e-24 *fFlux[i] * (*it4).second ;
+		}
+		// ----------------  A(n,2n)A-1
+		for(it = fn2nXS.begin() ; it != fn2nXS.end(); it++)
+		{
+			double x,y;
+			(*it).second->GetPoint(i, x,y);
+			map<ZAI, map<int, double> >::iterator it3 = decayindex.find( ZAI( (*it).first.Z(), (*it).first.A()-1, (*it).first.I()) );
+			if( it3 == decayindex.end() ) 
+				it3 = decayindex.find( ZAI( -3, -3, -3 ) );
+			
+			BatemanMatrix[ index_inver.find( (*it).first )->second ][index_inver.find( (*it).first )->second] += -y* 1e-24 *fFlux[i];
+			
+			map<int, double>::iterator it4;
+			for(it4 = (*it3).second.begin(); it4 != (*it3).second.end() ; it4++)
+				BatemanMatrix[index_inver.find( (*it).first )->second][(*it4).first] += y* 1e-24 *fFlux[i] * (*it4).second ;
+		}
+		
+		// ----------------   Evolution
+		TMatrixT<double> NEvoluingMatrix = TMatrixT<double>(index.size(),1);
+		NEvoluingMatrix = NMatrix.back();
+
+
+		double TStepMax;
+		{
+			double x,y;
+			fFissionXS.begin()->second->GetPoint(i+1, x,y);
+			TStepMax = x;
+			timevector[i+1] = x;
+		}
+		
+		BatemanMatrix *= TStepMax;
+		
+		TMatrixT<double> IdMatrix = TMatrixT<double>(index.size(),index.size());
+		for(int j = 0; j < (int)index.size(); j++)
+			for(int k = 0; k < (int)index.size(); k++)
+			{
+				if(k == j)	IdMatrix[j][k] = 1;
+				else 		IdMatrix[j][k] = 0;
+			}
+
+		int DLOrder = 20;
+		TMatrixT<double> BatemanMatrixDL = TMatrixT<double>(index.size(),index.size());   // Order 0 Term from the DL : Id
+		TMatrixT<double> BatemanMatrixDLTermN = TMatrixT<double>(index.size(),index.size());  // Addind it;
+
+		BatemanMatrixDLTermN = IdMatrix;
+		BatemanMatrixDL = BatemanMatrixDLTermN;
+
+
+		for(int j = 1 ; j < DLOrder; j++)
+		{
+		
+			// Calculating the j'st term : M^j / j!
+			TMatrixT<double> TmpMatrix = TMatrixT<double>(index.size(),index.size());
+			TmpMatrix.Mult(BatemanMatrixDLTermN, BatemanMatrix);
+			TmpMatrix *= 1/j;
+			BatemanMatrixDLTermN = TmpMatrix;
+			BatemanMatrixDL += BatemanMatrixDLTermN;
+		}
+		
+
+		TMatrixT<double> dNMatrix  = TMatrixT<double>(index.size(),1);
+		
+		dNMatrix.Mult(BatemanMatrixDL, NEvoluingMatrix);
+		
+		NEvoluingMatrix = dNMatrix;
+
+		NMatrix.push_back(NEvoluingMatrix);
+
+	}
+
+	EvolutiveProduct GeneratedDB = EvolutiveProduct(fLog);
+	
+	for(int i = 0; i < (int)index.size(); i++)
+	{
+		double ZAIQuantity[NMatrix.size()];
+		for(int j = 0; j < (int)NMatrix.size(); j++)
+			ZAIQuantity[j] = (NMatrix[j])[i][0];
+		GeneratedDB.Insert(pair<ZAI, TGraph*> (index.find(i)->second, new TGraph(NMatrix.size(), timevector, ZAIQuantity) ) );
+	}
+	
+	GeneratedDB.SetPower(fPower*NormFactor );
+	GeneratedDB.SetFuelType(fFuelType );
+	GeneratedDB.SetReactorType(fReactorType );
+	GeneratedDB.SetHMMass(fHMMass*NormFactor );
+
+	return GeneratedDB;
+	DBGL;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
