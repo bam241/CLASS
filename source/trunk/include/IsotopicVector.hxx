@@ -19,6 +19,7 @@
 using namespace std;
 class IsotopicVector;
 
+
 IsotopicVector operator/(IsotopicVector const& IVA, double F);
 IsotopicVector operator/(ZAI const& zai, double F);
 IsotopicVector operator*(IsotopicVector const& IVA, double F);
@@ -28,6 +29,7 @@ IsotopicVector operator*(double F, ZAI const& zai);
 IsotopicVector operator+(IsotopicVector const& IVa, IsotopicVector const& IVb);
 IsotopicVector operator-(IsotopicVector const& IVa, IsotopicVector const& IVb);
 
+double 	RelativDistance(IsotopicVector IV1, IsotopicVector IV2 );
 double 	Distance(IsotopicVector IV1, IsotopicVector IV2 );
 double 	Norme(IsotopicVector IV1);
 
@@ -36,17 +38,19 @@ class IsotopicVector : public TObject
 public :
 
 //********* Constructor/Destructor Method *********//
-	
- 	IsotopicVector();	///< Normal Constructor.
- 	~IsotopicVector();	 ///< Normal Destructor.
+	///< Normal Constructor.
+ 	IsotopicVector();
+ 	
+ 	///< Normal Destructor.
+ 	~IsotopicVector();	 
 
 	
 //********* Get Method *********//
 
-	map<ZAI ,double>	GetIsotopicQuantity() const {return fIsotopicQuantity;}			//!< Return the IVQuantity map 
-	map<ZAI ,double>	GetIsotopicQuantityNeeded() const {return fIsotopicQuantityNeeded;}	//!< Return the IVQuantityNeeded map
-	IsotopicVector		GetAtomicComposition(int z) const;					//!< Return the Atomic composition of the "z" atom
-	vector<int>		GetAtomicSpecies() const;						//!< Return the Atomic Species contained
+	map<ZAI ,double>	GetIsotopicQuantity() const { return fIsotopicQuantity; }			//!< Return the IVQuantity map 
+	map<ZAI ,double>	GetIsotopicQuantityNeeded() const { return fIsotopicQuantityNeeded; }	//!< Return the IVQuantityNeeded map
+	IsotopicVector		GetSpeciesComposition(int z) const;					//!< Return the Species composition of the "z" atom
+	vector<int>		GetChemicalSpecies() const;						//!< Return the Species Species contained
 
 	
 //********* Modification Method *********//
@@ -59,7 +63,7 @@ public :
 
 	void	Need(const ZAI& zai, double quantity);		//!< Fill the fIsotopicQuantityNeeded
 	void	Need(const IsotopicVector& isotopicvector);	//!< Fill the fIsotopicQuantityNeeded
-	void	Need(const map<ZAI ,double>& quantityneeded) {fIsotopicQuantityNeeded = quantityneeded;}	
+	void	Need(const map<ZAI ,double>& quantityneeded) { fIsotopicQuantityNeeded = quantityneeded; }	
 								//!< Fill the fIsotopicQuantityNeeded
 
 	void	Remove(const ZAI& zai, double quantity); 	//!< Remove Quantity gramme of the ZAI Element
@@ -67,7 +71,7 @@ public :
 
 	void 	Multiply(double factor);			//!< Multiply the IV by a Factor
 	
-	void	Write(string filename, long int time ) const;	//!< Write the Content of the IV in the filename file
+	void	Write(string filename, double time ) const;	//!< Write the Content of the IV in the filename file
 
 	void	Print(string o =" ") const ;			///< Print the composition of the IV
 	
@@ -80,6 +84,7 @@ public :
 
 	IsotopicVector& operator+=(IsotopicVector const& IVb);	//!<....
 	IsotopicVector& operator-=(IsotopicVector const& IVb);	//!<....
+	bool operator <(const IsotopicVector& isotopicvector) const;	//!< IsotopicVector Comparator
 
 //***************************************************///< 
 

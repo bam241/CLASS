@@ -21,11 +21,14 @@ using namespace std;
 
 class LogFile
 {
-	public:
-		LogFile(string LogFileName );	//!< Normal Constructor
-		~LogFile();			//!< Normal Destructor
+public:
+	//!< Normal Constructor
+	LogFile(string LogFileName );
 
-		std::ofstream fLog;		//!< Log Stream
+	//!< Normal Destructor
+	~LogFile();
+
+	std::ofstream fLog;		//!< Log Stream
 
 };
 

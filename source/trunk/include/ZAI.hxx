@@ -28,6 +28,8 @@ class ZAI : public TObject
 	
 	
  public:
+	///< Default constructor
+	ZAI();
  	///< Normal Constructor. 
  	/*!
  	 Default: No parent
@@ -35,28 +37,30 @@ class ZAI : public TObject
  	 \param A : number of nucleons (A=0 means natural isotopes) 
  	*/
 	ZAI(int Z, int A, int I=0);
-	ZAI(); ///< Default constructor
-	~ZAI(); ///<  destructor
+
+	///< Normal Destructor.
+	~ZAI(); 
 
 	/*!
 	\name ZAI main attributes 
 	*/
 	//@{
-	int  Z()const{return fZ;} //!< returns the number of protons
-	int  A()const{return fA;} //!< returns the number of nucleons
-	int  I()const{return fI;} //!< returns the Isomeric State
-	int  N()const{return fA-fZ;} //!< returns the number of neutrons
+	int  Z()const{ return fZ; } //!< returns the number of protons
+	int  A()const{ return fA; } //!< returns the number of nucleons
+	int  I()const{ return fI; } //!< returns the Isomeric State
+	int  N()const{ return fA-fZ; } //!< returns the number of neutrons
 		
-	void SetMass(double m)	{fMass=m;}	///< set the mass of a ZAI
+	void SetMass(double m)	{ fMass=m; }	///< set the mass of a ZAI
 	double GetMass();			///< get the mass of a ZAI
 
 
 	ZAI& operator=(ZAI& IVa);		//!< ...
-	bool operator <(const ZAI& zai) const	{return (fZ != zai.Z())?  
-								(fZ < zai.Z()) : ( (fA != zai.A())?
-											 (fA < zai.A()) : (fI < zai.I()) );}
+	bool operator <(const ZAI& zai) const	{ return (fZ != zai.Z())?  
+							(fZ < zai.Z()) : ( (fA != zai.A())?
+								 (fA < zai.A()) : (fI < zai.I()) ); }
 						//!< ZAI Comparator
-	
+	bool operator !=(const ZAI& zai) const	{ return ( fZ != zai.Z() ) || ( fA != zai.A() ) || ( fI < zai.I() ); }
+						//!< ZAI Comparator
 	protected :
  	
  	string 	fName;		///< Name of the ZAI
