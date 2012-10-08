@@ -15,27 +15,32 @@ ROOTGLIBS	= `root-config --glibs`
 INCLUDES	= $(LOCALINC)/*.hxx
 LIBNAME 	= CLASSpkg
 OBJS		= 	CLASS.o \
+			IVFit.o \
+			Storage.o StorageDict.o\
+			FabricationPlant.o FabricationPlantDict.o \
 			TreatmentFactory.o TreatmentFactoryDict.o\
 			Reactor.o ReactorDict.o \
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAI.o ZAIDict.o \
 			EvolutionDataBase.o \
-			EvolutiveProduct.o \
+			EvolutiveProduct.o EvolutiveProductDict.o \
 			LogFile.o
-		  		  
-ROOTOBJS	= 	TreatmentFactory.o TreatmentFactoryDict.o\
+
+ROOTOBJS	= 	Storage.o StorageDict.o\
+			TreatmentFactory.o TreatmentFactoryDict.o\
 			Reactor.o ReactorDict.o \
+			FabricationPlant.o FabricationPlantDict.o \
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAI.o ZAIDict.o \
 			EvolutionDataBase.o \
-			EvolutiveProduct.o \
+			EvolutiveProduct.o EvolutiveProductDict.o \
 			LogFile.o
 
 
 CXX           = g++
-CXXFLAGS      = -O2 -g -Wall -fopenmp -fPIC -I$(LOCALINC) $(ROOTCFLAGS) #-I$(EXTERNINC) -I/usr/include/gsls
+CXXFLAGS      = -O2 -g -Wall -fopenmp -fPIC -lMinuit2 -lgomp -Wunused-result -I$(LOCALINC) $(ROOTCFLAGS) #-I$(EXTERNINC) -I/usr/include/gsls
 LD            = g++
-LDFLAGS       =  -g -Wall -fPIC $(ROOTLIBS) -shared  #"-I/usr/include/gsl -lgsl -lgslcblas -lm
+LDFLAGS       =  -g -Wall -fPIC $(ROOTLIBS) -shared -lMinuit2 -lgomp -Wunused-result #"-I/usr/include/gsl -lgsl -lgslcblas -lm
 
 all:		$(OBJS)
 		$(LD) $(LDFLAGS) $(OBJS) -o $(LIBDIR)/lib$(LIBNAME).so
@@ -44,10 +49,16 @@ all:		$(OBJS)
 		@echo "lib$(LIBNAME)_root.so done"
 
 
+
+
+
+StorageDict.cxx:		$(LOCALINC)/Storage.hxx
+				rootcint -f $@ -c $^
+
 ReactorDict.cxx:		$(LOCALINC)/Reactor.hxx
 				rootcint -f $@ -c $^
- 
-TreatmentFactoryDict.cxx:		$(LOCALINC)/TreatmentFactory.hxx
+
+TreatmentFactoryDict.cxx:	$(LOCALINC)/TreatmentFactory.hxx
 				rootcint -f $@ -c $^
 
 IsotopicVectorDict.cxx:		$(LOCALINC)/IsotopicVector.hxx
@@ -56,9 +67,14 @@ IsotopicVectorDict.cxx:		$(LOCALINC)/IsotopicVector.hxx
 ZAIDict.cxx:			$(LOCALINC)/ZAI.hxx
 				rootcint -f $@ -c $^
 
+FabricationPlantDict.cxx:	$(LOCALINC)/FabricationPlant.hxx
+				rootcint -f $@ -c $^
+
+EvolutiveProductDict.cxx:	$(LOCALINC)/EvolutiveProduct.hxx
+				rootcint -f $@ -c $^
 
 
-		
+
 
 clean:
 		@rm -vf $(OBJS) *~ core *Dict.cxx

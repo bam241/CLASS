@@ -1,9 +1,13 @@
 #include "Reactor.hxx"
-#include "IsotopicVector.hxx"
+
 #include "EvolutiveProduct.hxx"
-#include "CLASS.hxx"
-#include "LogFile.hxx"
+#include "EvolutionDataBase.hxx"
 #include "TreatmentFactory.hxx"
+#include "FabricationPlant.hxx"
+#include "Storage.hxx"
+#include "CLASS.hxx"
+
+#include "LogFile.hxx"
 #include "Defines.hxx"
 
 #include <iostream>
@@ -26,104 +30,107 @@ Reactor::Reactor()
 	DBGL;
 }
 
-Reactor::Reactor(EvolutiveProduct* evolutivedb, 
- 		 TreatmentFactory* TreatmentFactory,
- 		 long int creationtime,
- 		 long int lifetime )
+
+Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
+		 FabricationPlant* fabricationplant,
+ 		 TreatmentFactory* treatmentfactory,
+ 		 double creationtime, double lifetime, double cycletime,
+ 		 double HMMass, double BurnUp)
 {
 	DBGL;
-	fCycleTime = (long int)(3600*24*365.4)*5;
+
 	fIsStarted = false;
 	fShutDown = false;
 	fEndOfCycle = false;
-	fEvolutionDB = evolutivedb; 
-	fAssociedTreatmentFactory = TreatmentFactory;
+
+	fFabricationPlant = fabricationplant;
+	fFixedFuel = false;
+	fBurnUp = BurnUp;
+	fHeavyMetalMass = HMMass;
+
+	fAssociedTreatmentFactory = treatmentfactory;
+
+	fFuelTypeDB = fueltypeDB;
 
 	fInternalTime = 0;
 	fInCycleTime = 0;
-	fCreationTime = creationtime;
-	fLifeTime = lifetime;
-
-	fIVBeginCycle = fEvolutionDB->GetIsotopicVectorAt(0);
-	fIVInCycle = fEvolutionDB->GetIsotopicVectorAt(0);
-	fIVOutCycle = fEvolutionDB->GetIsotopicVectorAt(fCycleTime);
-	DBGL;
-}
-Reactor::Reactor(EvolutiveProduct* evolutivedb, 
- 		 TreatmentFactory* TreatmentFactory,
- 		 long int creationtime,
- 		 long int lifetime,
- 		 long int cycletime)
-{
-	DBGL;
 	fCycleTime = cycletime;
-	fIsStarted = false;
-	fShutDown = false;
-	fEndOfCycle = false;
-	fEvolutionDB = evolutivedb; 
-	fAssociedTreatmentFactory = TreatmentFactory;
-
-	fInternalTime = 0;
-	fInCycleTime = 0;
 	fCreationTime = creationtime;
 	fLifeTime = lifetime;
+	fPower = BurnUp/ (cycletime*3600*24) *1e9 * HMMass; //BU in GWd.t
+	
 
-	fIVBeginCycle = fEvolutionDB->GetIsotopicVectorAt(0);
-	fIVInCycle = fEvolutionDB->GetIsotopicVectorAt(0);
-	fIVOutCycle = fEvolutionDB->GetIsotopicVectorAt(fCycleTime);
 	DBGL;
 }
 
-Reactor::Reactor(EvolutiveProduct* evolutivedb, 
- 		 TreatmentFactory* TreatmentFactory,
- 		 long int creationtime,
- 		 long int lifetime,
- 		 long int cycletime,
- 		 IsotopicVector IVincyle,
- 		 IsotopicVector IVoutcycle )
+Reactor::Reactor(EvolutiveProduct evolutivedb, 
+ 		 TreatmentFactory* treatmentfactory,
+ 		 double creationtime,
+ 		 double lifetime,
+ 		 double cycletime)
 {
 	DBGL;
-	fCycleTime = cycletime;
+
 	fIsStarted = false;
 	fShutDown = false;
 	fEndOfCycle = false;
+
 	fEvolutionDB = evolutivedb; 
-	fAssociedTreatmentFactory = TreatmentFactory;
+	fFixedFuel = true;
+	fIsStorage = false;
+
+	fAssociedTreatmentFactory = treatmentfactory;
 
 	fInternalTime = 0;
 	fInCycleTime = 0;
+	fCycleTime = cycletime;
 	fCreationTime = creationtime;
 	fLifeTime = lifetime;
 
-	fIVBeginCycle = fEvolutionDB->GetIsotopicVectorAt(0);
-	fIVInCycle = IVincyle;
-	fIVOutCycle = IVoutcycle;
+	fPower = fEvolutionDB.GetPower();
+
+	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
+	fIVInCycle = fEvolutionDB.GetIsotopicVectorAt(0);
+	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt(fCycleTime/fEvolutionDB.GetPower()*fPower);
 	DBGL;
 }
+
+
 //________________________________________________________________________
 Reactor::~Reactor()
 {
 	DBGL;
 	DBGL;
 }
-	void Reactor::SetCycleTime(long int cycletime)
+
+//________________________________________________________________________
+void Reactor::SetCycleTime(double cycletime)
 {
 	fCycleTime = cycletime;
-	fIVOutCycle = fEvolutionDB->GetIsotopicVectorAt(fCycleTime);
+	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt(fCycleTime/fEvolutionDB.GetPower()*fPower);
 }
 
-void Reactor::SetEvolutionDB(EvolutiveProduct* evolutionDB)
+//________________________________________________________________________
+void Reactor::SetEvolutionDB(EvolutiveProduct evolutionDB)
 {
 	DBGL;
 	fEvolutionDB = evolutionDB;
-	fIVOutCycle = fEvolutionDB->GetIsotopicVectorAt(fCycleTime);
+	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt(fCycleTime/fEvolutionDB.GetPower()*fPower);
+	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
+	
 	DBGL;
 }
 
-
+//________________________________________________________________________
+void Reactor::SetNewFuel(EvolutiveProduct ivdb)
+{
+	DBGL;
+	SetEvolutionDB(ivdb);
+	DBGL;
+}
 
 //________________________________________________________________________
-void Reactor::Evolution(long int t)
+void Reactor::Evolution(double t)
 {
 	DBGL;
 	if(fShutDown == true) return; // Reactor stop...
@@ -132,7 +139,7 @@ void Reactor::Evolution(long int t)
 	if(t<fCreationTime) return;
 	DBGL;
 	
-	
+
 	if(fInternalTime == 0 && fIsStarted == false) // Start of the Reactor
 	{
 		fEndOfCycle = true;
@@ -143,12 +150,13 @@ void Reactor::Evolution(long int t)
 	// Check if the Reactor if started ...
 	if(fIsStarted == false) return; 
 
-	long int EvolutionTime = t - fInternalTime; // Calculation of the evolution time (relativ)
+	double EvolutionTime = t - fInternalTime; // Calculation of the evolution time (relativ)
 
 	if(EvolutionTime + fInCycleTime < fCycleTime )			//During Cycle
 	{
-
-		fIVReactor = fEvolutionDB->GetIsotopicVectorAt(EvolutionTime + fInCycleTime);	// update the fuel composition
+		
+	
+		fIVReactor = fEvolutionDB.GetIsotopicVectorAt( (EvolutionTime + fInCycleTime)/fEvolutionDB.GetPower()*fPower );	// update the fuel composition
 		fInternalTime += EvolutionTime;							// Update Internal Time
 		fInCycleTime += EvolutionTime;							// Update InCycleTime
 		if(t == fCreationTime + fLifeTime)	fShutDown = true;
@@ -178,13 +186,14 @@ void Reactor::Evolution(long int t)
 		// This is so bad!! You will probably unsynchronize all the reactor....
 		cout << "!!Warning!! !!!Reactor!!!"
 		     << " Evolution is too long! This is a Bad way to deal the evolution of the reactor..."
-		     << t/365.4/3600/24 << " :" << endl;
+		     << t/365.25/3600/24 << " :" << endl;
 				
 		fLog->fLog << "!!Warning!! !!!Reactor!!!"
 		           << " Evolution is too long! This is a Bad way to deal the evolution of the reactor..."
-		           << t/365.4/3600/24 << " :" << endl;
+		           << t/365.25/3600/24 << " :" << endl;
 		exit(1);
 	}
+
 	DBGL;
 }
 
@@ -192,49 +201,85 @@ void Reactor::Evolution(long int t)
 void Reactor::Dump()
 {
 DBGL;
-
+	if(fInternalTime < fCreationTime) return;
 	if(fShutDown == true && fIsStarted == false) return; // Reactor stopped...
-	
-	if(fEndOfCycle == true && fShutDown == false )
+
+	if(fFixedFuel == true)
 	{
 
-		
-		fEndOfCycle = false;
-		if(fParc->GetStockManagement() == true)
+		if(fEndOfCycle == true && fShutDown == false )
 		{
-			IsotopicVector BuildIVtmp  = fParc->BuildIsotopicVector(fIVInCycle);
-			fAssociedTreatmentFactory->AddIVGodIncome(fIVInCycle - BuildIVtmp);
+			fEndOfCycle = false;
 
-		}
-		else
-		{
+			if(fParc->GetStockManagement() == false && fIsStorage == true)
+			{
+				IsotopicVector BuildIVtmp ;
+				IsotopicVector GodPart;
+				
+				//Get The Storage Compostion
+				BuildIVtmp.Add(fStorage->GetFullStock().GetIsotopicQuantity());
+				//Get the rest after IVIn creation
+				BuildIVtmp -= fIVInCycle;
+				//Get the God part form this rest
+				GodPart.Add(BuildIVtmp.GetIsotopicQuantityNeeded()) ;
+				//Take what you can from Storage...
+				fStorage->TakeFromStock( fIVInCycle - GodPart);
+				//And Get the rest from God
+				fParc->AddGodIncome(GodPart);
 
-			IsotopicVector BuildIVtmp ;
-			IsotopicVector GodPart;
-			BuildIVtmp.Add(fAssociedTreatmentFactory->GetIVFullStock().GetIsotopicQuantity());
-			BuildIVtmp -= fIVInCycle;
-			GodPart.Add(BuildIVtmp.GetIsotopicQuantityNeeded()) ;
-			fAssociedTreatmentFactory->TakeFromStock( fIVInCycle - GodPart, -1);
-			fAssociedTreatmentFactory->AddIVGodIncome(GodPart);
+			}
+			else	fParc->AddGodIncome(fIVInCycle);
 
-		}
-
-		if(fIsStarted == true )					// A Cycle has already been done
+			if(fIsStarted == true )					// A Cycle has already been done
 			fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
-		else fIsStarted = true;					// Just start the first cycle
+			else fIsStarted = true;					// Just start the first cycle
 
-	}
-	else if (fEndOfCycle == true && fShutDown == true)		//shutdown at end of Cycle
-	{
 
-		fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
-		fIsStarted = false;		// shut down the Reactor
+
+		}
+		else if (fEndOfCycle == true && fShutDown == true)		//shutdown at end of Cycle
+		{
+
+			fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+			fIsStarted = false;		// shut down the Reactor
+		}
+		else if (fEndOfCycle == false && fShutDown == true) 					//shutdown during Cycle
+		{
+			fAssociedTreatmentFactory->AddIVCooling(fIVReactor);
+			fIVReactor.Clear();
+			fIsStarted = false;		// shut down the Reactor
+		}
 	}
-	else if (fEndOfCycle == false && fShutDown == true) 					//shutdown during Cycle
+	else
 	{
-		fAssociedTreatmentFactory->AddIVCooling(fIVReactor);
-		fIVReactor.Clear();
-		fIsStarted = false;		// shut down the Reactor
+		if(fParc->GetStockManagement() == false)
+		{
+			cout << "!!Warning!! !!!Reactor!!! Can't have unfixedFuel without stock management'" << endl;
+			fLog->fLog << "!!Warning!! !!!Reactor!!! Can't have unfixedFuel without stock management" << endl;
+			exit(1);
+		}
+		SetNewFuel(fFabricationPlant->GetReactorEvolutionDB(fId));
+		
+		
+		if(fEndOfCycle == true && fShutDown == false )
+		{
+			fEndOfCycle = false;
+
+			if(fIsStarted == true )					// A Cycle has already been done
+				fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+			else fIsStarted = true;					// Just start the first cycle
+		}
+		else if (fEndOfCycle == true && fShutDown == true)		//shutdown at end of Cycle
+		{
+			fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+			fIsStarted = false;		// shut down the Reactor
+		}
+		else if (fEndOfCycle == false && fShutDown == true) 					//shutdown during Cycle
+		{
+			fAssociedTreatmentFactory->AddIVCooling(fIVReactor);
+			fIVReactor.Clear();
+			fIsStarted = false;		// shut down the Reactor
+		}
 	}
 DBGL;
 }
