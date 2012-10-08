@@ -12,7 +12,7 @@
 
 #include <map>
 #include <string>
-
+#include <vector>
 
 using namespace std;
 
@@ -31,31 +31,33 @@ class LogFile;
  @version 1.0
  */
 
+template <class T> 
+class EvolutionDataBase {
 
-class EvolutionDataBase 
-{
-	
 public :
 //********* Constructor/Destructor Method *********//
-
-	EvolutionDataBase(LogFile* Log, string DB_index_file = "Default_Index.dat" );
+	///< Normal Constructor.
+	EvolutionDataBase(LogFile* Log, string DB_index_file );
+	
 	~EvolutionDataBase();
 
 //********* Get Method *********//
-
-	map<ZAI ,EvolutiveProduct* >	GetEvolutionDataBase() const {return fEvolutionDataBase;}
-	string 	GetDataBaseIndex() const {return fDataBaseIndex;}
-	bool 	IsDefine(const ZAI& zai) const;
-	
+	LogFile*			GetLog()			{ return fLog; }			//!< Return the Pointer to Log
+	map<T ,EvolutiveProduct >	GetEvolutionDataBase()	const	{ return fEvolutionDataBase; }		//!< ...
+	string 				GetDataBaseIndex()	const	{ return fDataBaseIndex; }		//!< ...
+	string				GetFuelType()		const	{ return fFuelType; }			//!< ...
+	vector<double>			GetPFuelParameter()	const	{ return fFuelParameter; }		//!< ...
+	vector<IsotopicVector>		GetAvailableFuel()	const	{ return fAvailableFuel;}		//!< ...
+	pair<double,double>		GetBurnUpRange()	const	{ return fBurnUpRange;}			//!< ...
+	bool 				IsDefine(const T& key)	const;						//!< ...
+	map<double, EvolutiveProduct>	GetDistances(IsotopicVector) const;
 //********* Set Method *********//
 
-	void SetDataBaseIndex(string database) {fDataBaseIndex = database;}
-	
-//********* Modification Method *********//
-	IsotopicVector	DecayProduction(const ZAI &zai, double dt); 
-					///< Return the Product IsotopicVector evolution from zai during a dt time
-	bool AddEvolutiveProduct(const ZAI& zai);
+	void SetDataBaseIndex(string database) { fDataBaseIndex = database; }
 
+//********* Modification Method *********//
+	IsotopicVector	Evolution(const T &key, double dt);	///< Return the Product IsotopicVector evolution from zai during a dt time
+	void		ReadDataBase();				///< ...
 
 
 //********* Printing Method *********//
@@ -63,12 +65,18 @@ public :
 	
 protected :
 	
-	map<ZAI ,EvolutiveProduct* >	fEvolutionDataBase;
+	map<T, EvolutiveProduct>	fEvolutionDataBase;
  	string				fDataBaseIndex;
  	LogFile*			fLog;
- 	
+
+
+ 	string 				fFuelType;
+ 	pair<double,double>		fBurnUpRange;
+ 	vector<double>			fFuelParameter;
+ 	vector<IsotopicVector>		fAvailableFuel;
 
 };
+
 
 
 #endif

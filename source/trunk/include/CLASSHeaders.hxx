@@ -8,6 +8,8 @@
 #include "CLASS.hxx"
 #include "Reactor.hxx"
 #include "TreatmentFactory.hxx"
+#include "FabricationPlant.hxx"
+#include "Storage.hxx"
 #include "IsotopicVector.hxx"
 #include "ZAI.hxx"
 #include "LogFile.hxx"
