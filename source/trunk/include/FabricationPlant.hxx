@@ -65,8 +65,9 @@ public :
 
 	double	GetInternalTime()	const	{ return fInternalTime; }	//!< Return Creation Time
 	double	GetFabricationTime()	const	{ return fFabricationTime; }	//!< Return the Fabrication Time
-
-
+	
+	
+	map<int, IsotopicVector >	GetReactorFuturIncome()	const	{return fReactorFuturIncome;}	//!< ...
 	EvolutionDataBase<ZAI>* 	GeDecayDataBase()	const	{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
 
 	EvolutiveProduct		GetReactorEvolutionDB(int ReactorId);				//!<
@@ -84,6 +85,8 @@ public :
 	IsotopicVector	GetStockToRecycle();									//!< ...
 	void 		DumpStock();										//!< ...
 	EvolutiveProduct	BuildEvolutiveDB(int ReactorId, IsotopicVector isotopicvector);			//!< ...
+	void TakeReactorFuel(int Id) ;										//!< ...
+	
 
 
 //********* Other Method *********//

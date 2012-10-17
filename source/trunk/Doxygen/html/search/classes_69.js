@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['isotopicvector',['IsotopicVector',['../class_isotopic_vector.html',1,'']]]
+  ['isotopicvector',['IsotopicVector',['../classIsotopicVector.html',1,'']]],
+  ['ivfit',['IVFit',['../classIVFit.html',1,'']]]
 ];

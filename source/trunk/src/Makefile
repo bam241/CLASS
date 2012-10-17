@@ -15,7 +15,6 @@ ROOTGLIBS	= `root-config --glibs`
 INCLUDES	= $(LOCALINC)/*.hxx
 LIBNAME 	= CLASSpkg
 OBJS		= 	CLASS.o \
-			IVFit.o \
 			Storage.o StorageDict.o\
 			FabricationPlant.o FabricationPlantDict.o \
 			TreatmentFactory.o TreatmentFactoryDict.o\
@@ -38,9 +37,9 @@ ROOTOBJS	= 	Storage.o StorageDict.o\
 
 
 CXX           = g++
-CXXFLAGS      = -O2 -g -Wall -fopenmp -fPIC -lMinuit2 -lgomp -Wunused-result -I$(LOCALINC) $(ROOTCFLAGS) #-I$(EXTERNINC) -I/usr/include/gsls
+CXXFLAGS      = -O2 -g -Wall -fopenmp -fPIC -lgomp -Wunused-result -I$(LOCALINC) $(ROOTCFLAGS) #-I$(EXTERNINC) -I/usr/include/gsls
 LD            = g++
-LDFLAGS       =  -g -Wall -fPIC $(ROOTLIBS) -shared -lMinuit2 -lgomp -Wunused-result #"-I/usr/include/gsl -lgsl -lgslcblas -lm
+LDFLAGS       =  -g -Wall -fPIC $(ROOTLIBS) -shared  -lgomp -Wunused-result #"-I/usr/include/gsl -lgsl -lgslcblas -lm
 
 all:		$(OBJS)
 		$(LD) $(LDFLAGS) $(OBJS) -o $(LIBDIR)/lib$(LIBNAME).so

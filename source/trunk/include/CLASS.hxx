@@ -99,8 +99,6 @@ public :
 	void	RemoveTotalStorage(IsotopicVector IV)		{ fIVTotal -=IV; fIVInCycleTotal -=IV; fTotalStorage -=IV; }
 	void	AddTotalCooling(IsotopicVector IV)		{ fIVTotal +=IV; fIVInCycleTotal +=IV; fTotalCooling +=IV; }
 	void	RemoveTotalCooling(IsotopicVector IV)		{ fIVTotal -=IV; fIVInCycleTotal -=IV; fTotalCooling -=IV; }
-	void	AddTotalSeparating(IsotopicVector IV)		{ fIVTotal +=IV; fIVInCycleTotal +=IV; fTotalSeparating +=IV; }
-	void	RemoveTotalSeparating(IsotopicVector IV)	{ fIVTotal -=IV; fIVInCycleTotal -=IV; fTotalSeparating -=IV; }
 	void	AddTotalInReactor(IsotopicVector IV)		{ fIVTotal +=IV; fIVInCycleTotal +=IV; fTotalInReactor +=IV; }
 	void	RemoveTotalInReactor(IsotopicVector IV)		{ fIVTotal -=IV; fIVInCycleTotal -=IV; fTotalInReactor -=IV; }
 	void	AddIVInCycleTotal(IsotopicVector IV)		{ fIVTotal +=IV; fIVInCycleTotal +=IV; }
@@ -133,6 +131,7 @@ public :
 protected :
 	double			fPrintStep;
 	double			fAbsoluteTime;		///< Absolute Clock
+	double 			fStartingTime;
 	map<double, int>	fTimeStep;		///< Time Step Vector for the evolution : 
 							///< 1 Printing, 
 							///< 2 Reactor Studown
@@ -162,7 +161,7 @@ protected :
 	IsotopicVector			fTotalStorage;
 	IsotopicVector			fGodIncome;
 	IsotopicVector			fTotalCooling;
-	IsotopicVector			fTotalSeparating;
+	IsotopicVector			fFuelFabrication;
 	
 	IsotopicVector			fTotalInReactor;
 	

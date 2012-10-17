@@ -57,7 +57,7 @@ Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	fCycleTime = cycletime;
 	fCreationTime = creationtime;
 	fLifeTime = lifetime;
-	fPower = BurnUp/ (cycletime*3600*24) *1e9 * HMMass; //BU in GWd.t
+	fPower = BurnUp / (cycletime/3600/24) *1e9 * HMMass; //BU in GWd.t
 	
 
 	DBGL;
@@ -117,7 +117,7 @@ void Reactor::SetEvolutionDB(EvolutiveProduct evolutionDB)
 	fEvolutionDB = evolutionDB;
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt(fCycleTime/fEvolutionDB.GetPower()*fPower);
 	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
-	
+
 	DBGL;
 }
 
@@ -133,6 +133,7 @@ void Reactor::SetNewFuel(EvolutiveProduct ivdb)
 void Reactor::Evolution(double t)
 {
 	DBGL;
+
 	if(fShutDown == true) return; // Reactor stop...
 	
 	// Check if the Reactor has been created ...
@@ -152,33 +153,24 @@ void Reactor::Evolution(double t)
 
 	double EvolutionTime = t - fInternalTime; // Calculation of the evolution time (relativ)
 
+
 	if(EvolutionTime + fInCycleTime < fCycleTime )			//During Cycle
 	{
 		
-	
-		fIVReactor = fEvolutionDB.GetIsotopicVectorAt( (EvolutionTime + fInCycleTime)/fEvolutionDB.GetPower()*fPower );	// update the fuel composition
 		fInternalTime += EvolutionTime;							// Update Internal Time
 		fInCycleTime += EvolutionTime;							// Update InCycleTime
-		if(t == fCreationTime + fLifeTime)	fShutDown = true;
-		else
-		{
-		}
+	
+		fIVReactor = fEvolutionDB.GetIsotopicVectorAt( (fInCycleTime)/fEvolutionDB.GetPower()*fPower );	// update the fuel composition
+		
+		if(t>=fCreationTime + fLifeTime)	fShutDown = true;
 	}
 	else if(EvolutionTime + fInCycleTime == fCycleTime )		//End of Cycle
 	{
 		fEndOfCycle = true;
 		fInternalTime += EvolutionTime; 						// Update Internal Time
 		
-		if(t < fCreationTime + fLifeTime)			//if the Next Cycle Exist...
-		{
-			fIVReactor  = fIVBeginCycle;
-			fInCycleTime = 0;
-		}
-		else 							//if Not....
-		{
-			fIVReactor.Clear();
+		if(t >= fCreationTime + fLifeTime)			//if the Next Cycle don't 'Exist...
 			fShutDown = true;
-		}
 
 	}
 	else
@@ -201,6 +193,7 @@ void Reactor::Evolution(double t)
 void Reactor::Dump()
 {
 DBGL;
+
 	if(fInternalTime < fCreationTime) return;
 	if(fShutDown == true && fIsStarted == false) return; // Reactor stopped...
 
@@ -210,6 +203,10 @@ DBGL;
 		if(fEndOfCycle == true && fShutDown == false )
 		{
 			fEndOfCycle = false;
+
+			if(fIsStarted == true )					// A Cycle has already been done
+			fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+			else fIsStarted = true;					// Just start the first cycle
 
 			if(fParc->GetStockManagement() == false && fIsStorage == true)
 			{
@@ -229,24 +226,23 @@ DBGL;
 
 			}
 			else	fParc->AddGodIncome(fIVInCycle);
-
-			if(fIsStarted == true )					// A Cycle has already been done
-			fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
-			else fIsStarted = true;					// Just start the first cycle
-
-
-
+			
+			fIVReactor  = fIVBeginCycle;
+			fInCycleTime = 0;
 		}
 		else if (fEndOfCycle == true && fShutDown == true)		//shutdown at end of Cycle
 		{
 
 			fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+			fIVReactor.Clear();
+			fInCycleTime = 0;
 			fIsStarted = false;		// shut down the Reactor
 		}
 		else if (fEndOfCycle == false && fShutDown == true) 					//shutdown during Cycle
 		{
 			fAssociedTreatmentFactory->AddIVCooling(fIVReactor);
 			fIVReactor.Clear();
+			fInCycleTime = 0;
 			fIsStarted = false;		// shut down the Reactor
 		}
 	}
@@ -258,29 +254,45 @@ DBGL;
 			fLog->fLog << "!!Warning!! !!!Reactor!!! Can't have unfixedFuel without stock management" << endl;
 			exit(1);
 		}
-		SetNewFuel(fFabricationPlant->GetReactorEvolutionDB(fId));
-		
+
 		
 		if(fEndOfCycle == true && fShutDown == false )
 		{
 			fEndOfCycle = false;
 
 			if(fIsStarted == true )					// A Cycle has already been done
+			{
 				fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+			}
 			else fIsStarted = true;					// Just start the first cycle
+
+			SetNewFuel(fFabricationPlant->GetReactorEvolutionDB(fId));
+			fFabricationPlant->TakeReactorFuel(fId);
+
+
+			fIVReactor  = fIVBeginCycle;
+			fInCycleTime = 0;
+
 		}
 		else if (fEndOfCycle == true && fShutDown == true)		//shutdown at end of Cycle
 		{
 			fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+			fIVReactor.Clear();
+			fInCycleTime = 0;
 			fIsStarted = false;		// shut down the Reactor
 		}
 		else if (fEndOfCycle == false && fShutDown == true) 					//shutdown during Cycle
 		{
 			fAssociedTreatmentFactory->AddIVCooling(fIVReactor);
 			fIVReactor.Clear();
+			fInCycleTime = 0;
 			fIsStarted = false;		// shut down the Reactor
 		}
+		
+
+
 	}
+
 DBGL;
 }
 

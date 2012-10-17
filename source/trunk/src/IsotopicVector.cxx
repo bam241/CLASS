@@ -242,9 +242,9 @@ DBGL;
 void IsotopicVector::Add(const ZAI& zai, double quantity)
 {
 DBGL;
-	if( ceil(quantity*1e6) - quantity*1e6 >  quantity*1e6 - floor(quantity*1e6) )
-		quantity = floor(quantity*1e6)*1/1e6;
-	else	quantity = ceil(quantity*1e6)*1/1e6;
+	if( ceil(quantity*1e25) - quantity*1e25 >  quantity*1e25 - floor(quantity*1e25) )
+		quantity = floor(quantity*1e25)*1/1e25;
+	else	quantity = ceil(quantity*1e25)*1/1e25;
 	
 
 	if(quantity > 0)
@@ -291,9 +291,9 @@ DBGL;
 	map<ZAI ,double>::iterator it;
 	it = fIsotopicQuantity.find(zai);
 
-	if( ceil(quantity*1e6) - quantity*1e6 >  quantity*1e6 - floor(quantity*1e6) )
-		quantity = floor(quantity*1e6)*1/1e6;
-	else	quantity = ceil(quantity*1e6)*1/1e6;
+	if( ceil(quantity*1e25) - quantity*1e25 >  quantity*1e25 - floor(quantity*1e25) )
+		quantity = floor(quantity*1e25)*1/1e25;
+	else	quantity = ceil(quantity*1e25)*1/1e25;
 	
 	if(quantity > 0)
 	{	
@@ -330,9 +330,9 @@ DBGL;
 void IsotopicVector::Need(const ZAI& zai, double quantity)
 {
 DBGL;
-	if( ceil(quantity*1e6) - quantity*1e6 >  quantity*1e6 - floor(quantity*1e6) )
-		quantity = floor(quantity*1e6)*1/1e6;
-	else	quantity = ceil(quantity*1e6)*1/1e6;
+	if( ceil(quantity*1e25) - quantity*1e25 >  quantity*1e25 - floor(quantity*1e25) )
+		quantity = floor(quantity*1e25)*1/1e25;
+	else	quantity = ceil(quantity*1e25)*1/1e25;
 	
 
 	pair<map<ZAI, double>::iterator, bool> IResult;
