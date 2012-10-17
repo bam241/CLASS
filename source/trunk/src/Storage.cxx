@@ -84,12 +84,11 @@ void Storage::AddToStock(IsotopicVector isotopicvector)
 DBGL;
 	if(fParc->GetStockManagement() == true) fIVStock.push_back(isotopicvector);
 	AddToFullStock(isotopicvector);
-
 DBGL;
 }
 
 //________________________________________________________________________
-void Storage::TakeFractionFromStock(int IVId,int fraction)
+void Storage::TakeFractionFromStock(int IVId,double fraction)
 {
 DBGL;
 	if(fParc->GetStockManagement() == true)
@@ -100,11 +99,13 @@ DBGL;
 			cout << "!!Warning!! !!!Storage!!! You try to remove fraction superior than 1 or a negative one..." << endl;
 			fLog->fLog << "!!Warning!! !!!Storage!!! You try to remove fraction superior than 1 or a negative one..." << endl;
 		}
-		else if(fraction == 1)
+		else 
 		{
 			fIVFullStock -= fIVStock[IVId]*fraction;
 			fIVStock[IVId] = fIVStock[IVId]*(1-fraction);
+			
 		}
+
 	}
 	else
 	{
@@ -139,6 +140,12 @@ DBGL;
 
 	if(t == fInternalTime && t!=0) return;
 
+	for(int i = (int)fIVStock.size()-1 ; i >=0; i--)
+		if(Norme(fIVStock[i]) == 0)
+			fIVStock.erase(fIVStock.begin()+i); 
+	
+	
+
 	int EvolutionTime = t - fInternalTime;
 
 	fIVFullStock = 	GetDecay(fIVFullStock , EvolutionTime);
@@ -149,9 +156,6 @@ DBGL;
 		fIVStock[i] = GetDecay(fIVStock[i] , EvolutionTime);
 	}
 	
-	for(int i = (int)fIVStock.size()-1 ; i >=0; i--)
-		if(Norme(fIVStock[i]) == 0)
-			fIVStock.erase(fIVStock.begin()+i); 
 
 	
 DBGL;

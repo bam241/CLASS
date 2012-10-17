@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['stringline',['StringLine',['../class_string_line.html',1,'']]]
+  ['storage',['Storage',['../classStorage.html',1,'']]],
+  ['stringline',['StringLine',['../classStringLine.html',1,'']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['zai',['ZAI',['../class_z_a_i.html',1,'']]]
+  ['zai',['ZAI',['../classZAI.html',1,'']]]
 ];

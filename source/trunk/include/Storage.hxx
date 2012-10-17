@@ -68,10 +68,10 @@ public :
 	
 	void AddToStock(ZAI zai, double quantity)		{ AddToStock(zai*quantity); }		//!< Add a ZAI*quantity to the Storage
 	void AddToStock(IsotopicVector isotopicvector);							//!< Add an Isotopicvector to the Storage
-	void AddToFullStock(ZAI zai, double quantity)		{ fIVFullStock.Add(zai*quantity); }	//!< Add a ZAI*quantity to the Storage
-	void AddToFullStock(IsotopicVector isotopicvector)	{ fIVFullStock.Add(isotopicvector); }	//!< Add a IsotopicVector to the Storage
+	void AddToFullStock(ZAI zai, double quantity)		{ fIVFullStock += zai*quantity; }	//!< Add a ZAI*quantity to the Storage
+	void AddToFullStock(IsotopicVector isotopicvector)	{ fIVFullStock += isotopicvector; }	//!< Add a IsotopicVector to the Storage
 
-	void TakeFractionFromStock(int IVId,int fraction);						//!< Take a part from an IV in sotck;
+	void TakeFractionFromStock(int IVId,double fraction);						//!< Take a part from an IV in sotck;
 	void TakeFromStock(IsotopicVector isotopicvector);						//!<
 
 //********* Other Method *********//

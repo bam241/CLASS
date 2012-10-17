@@ -152,8 +152,8 @@ DBGL;
 			fIVCooling[i] = GetDecay( fIVCooling[i] , EvolutionTime);
 		}
 	}
-
-	sort (fCoolingEndOfCycle.begin(), fCoolingEndOfCycle.end());
+#pragma omp critical(DeleteCoolingIVPB)
+	{sort (fCoolingEndOfCycle.begin(), fCoolingEndOfCycle.end());}
 DBGL;
 }
 
@@ -191,8 +191,9 @@ void TreatmentFactory::Dump()
 	{
 	
 		int idx = fCoolingEndOfCycle[i];			// Get Index number
+
 		fStorage->AddToStock(fIVCooling[idx]);
-	
+		
 		fCoolingEndOfCycle.erase(fCoolingEndOfCycle.begin()+i);	// Remove index entry
 		RemoveIVCooling(idx);					// Remove IVcooling
 

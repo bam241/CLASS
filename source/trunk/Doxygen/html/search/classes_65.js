@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['evolutiondatabase',['EvolutionDataBase',['../class_evolution_data_base.html',1,'']]],
-  ['evolutiveproduct',['EvolutiveProduct',['../class_evolutive_product.html',1,'']]]
+  ['evolutiondatabase',['EvolutionDataBase',['../classEvolutionDataBase.html',1,'']]],
+  ['evolutiondatabase_3c_20isotopicvector_20_3e',['EvolutionDataBase< IsotopicVector >',['../classEvolutionDataBase.html',1,'']]],
+  ['evolutiondatabase_3c_20zai_20_3e',['EvolutionDataBase< ZAI >',['../classEvolutionDataBase.html',1,'']]],
+  ['evolutiveproduct',['EvolutiveProduct',['../classEvolutiveProduct.html',1,'']]]
 ];

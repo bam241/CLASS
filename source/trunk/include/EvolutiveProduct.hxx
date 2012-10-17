@@ -83,6 +83,8 @@ public :
 
 
 protected :
+	
+	string fDB_file;
 	map<ZAI ,TGraph* >	fEvolutiveProduct;	//!< 
 	map<ZAI ,TGraph* >	fFissionXS;	//!< 
 	map<ZAI ,TGraph* >	fCaptureXS;	//!< 
@@ -92,6 +94,8 @@ protected :
 	
 	double 		fDBendTime;
 	bool		fIsCrossSection;
+	
+	
 	
 	string 		fReactorType;
 	string		fFuelType;

@@ -52,7 +52,7 @@ DBGL;
 	fAbsoluteTime = 0;
 	fStockManagement = true;
 	fBuildingMethod = 0;
-	
+	fStartingTime = 0;
 	fOutputName = "CLASS_Default.root";
 	string logname = "CLASS.log";
 	fLog = new LogFile("CLASS.log");
@@ -70,7 +70,7 @@ DBGL;
 	fAbsoluteTime = abstime;
 	fStockManagement = true;
 	fBuildingMethod = 0;
-	
+	fStartingTime = fAbsoluteTime;
 	fOutputName = "CLASS_Default.root";
 	string logname = "CLASS.log";
 	fLog = new LogFile("CLASS.log");
@@ -87,7 +87,7 @@ DBGL;
 	fPrintStep = (double)(3600*24*365.25);  // One Step per Year
 	fAbsoluteTime = abstime;
 	fStockManagement = true;
-
+	fStartingTime = fAbsoluteTime;
 	fBuildingMethod = 0;
 
 	fOutputName = name;
@@ -167,7 +167,7 @@ DBGL;
 
 //********* Printing Step *********//
 	{
-		double step = 0;
+		double step = fStartingTime;
 		if(step >= fAbsoluteTime	)
 			fTimeStep.insert( pair<double ,int>(step,1) );
 		step += fPrintStep;
@@ -187,8 +187,9 @@ DBGL;
 		double coolingstep = fReactor[i]->GetAssociedTreatmentFactory()->GetCoolingTime();
 		double fabricationstep = 0;
 		if(fReactor[i]->IsFuelFixed() == false)
+		{
 			fabricationstep = fReactor[i]->GetFabricationPlant()->GetFabricationTime();
-
+		}
 //********* Reactor Evolution Step *********//
 		// set destruction of a reactor
 		if( (fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime() > fAbsoluteTime) &&
@@ -217,12 +218,19 @@ DBGL;
 
 		//********* FabricationPlant Evolution Step *********//
 		if(fReactor[i]->IsFuelFixed() == false)
-			if(step > fAbsoluteTime && step - fabricationstep <= t && step < fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime())
-			{						// Set End of reactor cycle
+		{
+			if(step > fAbsoluteTime && step - fabricationstep <= t && step < fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime() )
+			{
 				pair< map<double, int>::iterator, bool > IResult = fTimeStep.insert( pair<double ,int>(step -fabricationstep,16) );
 				if( IResult.second == false ) IResult.first->second  |= 16;
 			}
-
+			else if(step - fabricationstep < fStartingTime)
+			{
+				cout		<< "!!Warning!! !!!CLASS!!! Can't Build Fuel before Scenario's start\"\n" << endl;
+				fLog->fLog 	<< "!!Warning!! !!!CLASS!!! Can't Build Fuel before Scenario's start\"\n" << endl;
+				exit(1);
+			}
+		}
 
 
 //********* Reactor related Step *********//
@@ -288,7 +296,7 @@ DBGL;
 		fLog->fLog 	<< "!!Warning!! !!!CLASS!!! Can't open \" CLASS_TimeStep \"\n" << endl;
 	}
 	for(map<double ,int >::iterator it = fTimeStep.begin(); it != fTimeStep.end(); it++)
-		TimeStepfile << (*it).first << " " << (*it).second << endl;
+		TimeStepfile << (*it).first/3600/24./365.25 << " " << (*it).second << endl;
 	
 	DBGL;	
 }
@@ -334,21 +342,13 @@ void CLASS::ReactorEvolution()
 DBGL;
 	
 
-
 #pragma omp parallel for
 		for(int i = 0; i < (int)fReactor.size(); i++)
 			fReactor[i]->Evolution(fAbsoluteTime);
 	
-
-//	UpdateParcStorage();
-
 	
 	for(int i = 0; i < (int)fReactor.size(); i++)
 		fReactor[i]->Dump();
-
-
-//	DumpParcStorage();
-
 
 DBGL;
 }
@@ -360,15 +360,17 @@ DBGL;
 
 	BuildTimeVector(t);
 
+
 	
 	OpenOutputTree();
+
 	OutAttach();
 
 	fOutT->Fill();
 
 	for(map<double ,int >::iterator it = fTimeStep.begin(); it != fTimeStep.end(); it++)
 	{
-		ResetQuantity();
+
 		fAbsoluteTime = (*it).first;
 		if( (*it).second & 2 || (*it).second & 1 )
 		{
@@ -376,7 +378,6 @@ DBGL;
 			TreatmentEvolution();
 			FabricationPlantEvolution();
 			ReactorEvolution();
-
 		
 			if((*it).second & 2 )
 				(*it).second ^= 2;
@@ -425,11 +426,11 @@ DBGL;
 		if( (*it).second & 1 || (*it).first == (*fTimeStep.begin()).first )
 		{
 #pragma omp single
-				{
-				UpdateParc();
-				fOutT->Fill();
-				ProgressPrintout(t);
-				}
+			{
+			UpdateParc();
+			fOutT->Fill();
+			ProgressPrintout(t);
+			}
 		}
 
 	}
@@ -442,8 +443,8 @@ DBGL;
 void CLASS::ProgressPrintout(double t)
 {
 DBGL;
-	double Time = fAbsoluteTime/3600/24/365.25;
-	double Total = t/3600/24/365.25;
+	double Time = (fAbsoluteTime-fStartingTime)/3600/24/365.25 ;
+	double Total = (t-fStartingTime)/3600/24/365.25;
 
 	cout << "                                                                                                       " << flush ;
 	cout << "\r[";
@@ -456,7 +457,7 @@ DBGL;
 	cout << " Processed ";
 	if (Time < 10) cout << " ";
 	if (Time < 100) cout << " ";
-	cout << setprecision(4) << Time << " / " << setprecision(4) << Total << " Years \r" << flush;
+	cout << (int)Time << " / " << (int)Total << " Years \r" << flush;
 DBGL;
 }
 
@@ -466,6 +467,15 @@ DBGL;
 void CLASS::UpdateParc()
 {
 DBGL;
+	ResetQuantity();
+	
+	for (int i =0; i < (int)fFabricationPlant.size(); i++)
+	{
+		map<int, IsotopicVector >::iterator it;
+		map<int, IsotopicVector > reactorNextStep = fFabricationPlant[i]->GetReactorFuturIncome();
+		for ( it = reactorNextStep.begin(); it != reactorNextStep.end(); it++)
+			fFuelFabrication += (*it).second;
+	}
 
 	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
 	{
@@ -480,8 +490,8 @@ DBGL;
 	for(int i = 0; i < (int)fReactor.size(); i++)
 		fTotalInReactor += fReactor[i]->GetIVReactor();
 
-	fIVTotal = fWaste + fTotalStorage + fTotalCooling + fTotalSeparating + fTotalInReactor;
-	fIVInCycleTotal = fTotalStorage + fTotalCooling + fTotalSeparating + fTotalInReactor;
+	fIVTotal = fWaste + fTotalStorage + fTotalCooling + fFuelFabrication + fTotalInReactor;
+	fIVInCycleTotal = fTotalStorage + fTotalCooling + fFuelFabrication + fTotalInReactor;
 	
 DBGL;	
 }
@@ -491,10 +501,11 @@ DBGL;
 void CLASS::ResetQuantity()
 {
 DBGL;
+
 	fTotalInReactor.Clear();
 	fTotalStorage.Clear();
 	fTotalCooling.Clear();
-	fTotalSeparating.Clear();
+	fFuelFabrication.Clear();
 	fIVInCycleTotal.Clear();
 	fIVTotal.Clear();
 DBGL;
@@ -565,8 +576,8 @@ DBGL;
 
 	
 	fOutT->Branch("STOCK.", "IsotopicVector", &fTotalStorage);
-	fOutT->Branch("TF_SEPARATING.", "IsotopicVector", &fTotalSeparating);
-	fOutT->Branch("TF_COOLING.", "IsotopicVector", &fTotalCooling);
+	fOutT->Branch("FUELFABRICATION.", "IsotopicVector", &fFuelFabrication);
+	fOutT->Branch("COOLING.", "IsotopicVector", &fTotalCooling);
 	fOutT->Branch("INREACTOR.", "IsotopicVector", &fTotalInReactor);
 	fOutT->Branch("INCYCLE.", "IsotopicVector", &fIVInCycleTotal);
 	fOutT->Branch("TOTAL.", "IsotopicVector", &fIVTotal);

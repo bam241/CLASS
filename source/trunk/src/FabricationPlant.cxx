@@ -9,7 +9,7 @@
 #include "CLASS.hxx"
 #include "Defines.hxx"
 #include "LogFile.hxx"
-#include "IVFit.hxx"
+
 
 
 
@@ -28,7 +28,7 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
-using namespace ROOT::Minuit2;
+
 //________________________________________________________________________
 //
 //		FabricationPlant
@@ -132,16 +132,16 @@ DBGL;
 
 	isotopicvector = GetDecay(isotopicvector, fFabricationTime);
 	
-	IsotopicVector IVclean = isotopicvector.GetSpeciesComposition(94)
-		+ZAI(92,238,0)* isotopicvector.GetZAIIsotopicQuantity(92,238,0)
-		+ZAI(95,241,0)* isotopicvector.GetZAIIsotopicQuantity(95,241,0);
+//	IsotopicVector IVclean = isotopicvector.GetSpeciesComposition(94)
+//		+ZAI(92,238,0)* isotopicvector.GetZAIIsotopicQuantity(92,238,0)
+//		+ZAI(95,241,0)* isotopicvector.GetZAIIsotopicQuantity(95,241,0);
 	
 
 	
-	map<double, EvolutiveProduct> distances = evolutiondb->GetDistances(IVclean);
+	map<double, EvolutiveProduct> distances = evolutiondb->GetDistances(isotopicvector);
 	
 
-	EvolutiveProduct EvolBuild = distances.begin()->second.GenerateDBFor(IVclean);
+	EvolutiveProduct EvolBuild = distances.begin()->second.GenerateDBFor(isotopicvector);
 	
 	
 
@@ -218,7 +218,6 @@ void FabricationPlant::BuildMOXFuelForReactor(int ReactorId, EvolutionDataBase<I
 {
 DBGL;
 	
-	
 	if(FuelType->GetFuelType() != "MOX")
 	{
 		cout << "!!Bad Trouble!! !!!FabricationPlant!!! Try to do MOX with a not MOXed DB "<< endl;
@@ -242,7 +241,7 @@ DBGL;
 	double BU = fParc->GetReactor()[ReactorId]->GetBurnUp();
 	IsotopicVector FullUsedStock;
 	IsotopicVector stock;
-	IsotopicVector IVBeginCycle;
+
 	bool FuelBuild = false;
 	while(FuelBuild == false)
 	{
@@ -277,6 +276,7 @@ DBGL;
 					IResult.first->second = EmptyIV;
 			}
 			FuelBuild = true;
+			fFractionToTake.clear();
 		}
 		else
 		{
@@ -328,30 +328,42 @@ DBGL;
 			}
 			else 
 			{
+				RecycleStock(StockFactionToUse);
+
+				IsotopicVector IVBeginCycle;
 				FuelBuild = true;
 
 				ZAI U8 = ZAI(92,238,0);
-				double U8_Quantity =  (HMmass -  (MPu_0+StockFactionToUse*MPu_1 ))/ZAImass.find( ZAI(92,238,0))->second*Na/1e-6;			
+				double U8_Quantity =  (HMmass - (MPu_0+StockFactionToUse*MPu_1 ))/ZAImass.find( ZAI(92,238,0))->second*Na/1e-6;			
 				fParc->AddGodIncome( U8, U8_Quantity );
-				RecycleStock(StockFactionToUse);
+				
 				for(int i = (int)fFractionToTake.size()-1; i >= 0; i--)
 				{
+					IVBeginCycle += fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*( fFractionToTake[i].second );
 					pair<IsotopicVector,IsotopicVector> reste = Separation( fStorage->GetStock()[fFractionToTake[i].first]*(fFractionToTake[i].second) 
 									- fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*(fFractionToTake[i].second) );
+
 					fStorage->TakeFractionFromStock(fFractionToTake[i].first,fFractionToTake[i].second);
 					fParc->AddWaste(reste.second);
 					fReUsable->AddToStock(reste.first);
 				}
 				fFractionToTake.clear();
 				
-				IVBeginCycle += FullUsedStock.GetSpeciesComposition(94) + stock.GetSpeciesComposition(94)*StockFactionToUse ;
 				IVBeginCycle += U8_Quantity*U8;
 				EvolutiveProduct evolutiondb = BuildEvolutiveDB(ReactorId, IVBeginCycle);
-
-				pair<map<int, EvolutiveProduct>::iterator, bool> IResult;
-				IResult = fReactorIncome.insert( pair<int, EvolutiveProduct>(ReactorId,evolutiondb) );
-				if(IResult.second == false)
-					IResult.first->second = evolutiondb;
+				
+				{
+					pair<map<int, EvolutiveProduct>::iterator, bool> IResult;
+					IResult = fReactorIncome.insert( pair<int, EvolutiveProduct>(ReactorId,evolutiondb) );
+					if(IResult.second == false)
+						IResult.first->second = evolutiondb;
+				}
+				{
+					pair<map<int, IsotopicVector>::iterator, bool> IResult;
+					IResult = fReactorFuturIncome.insert( pair<int, IsotopicVector>(ReactorId,IVBeginCycle) );
+					if(IResult.second == false)
+						IResult.first->second = IVBeginCycle;
+				}
 			}
 		}
 	}
@@ -379,19 +391,45 @@ DBGL;
 }
 
 
-
+void FabricationPlant::TakeReactorFuel(int Id)
+{
+DBGL;
+	
+	IsotopicVector IV;
+	map<int ,IsotopicVector >::iterator it2 = fReactorFuturIncome.find( Id );
+	if (it2 != fReactorFuturIncome.end())
+		(*it2).second = IV;
+DBGL;
+}
 
 //________________________________________________________________________
 void FabricationPlant::FabricationPlantEvolution(double t)
 {
 DBGL;
+
+
 	map<int ,double >::iterator it;
 	for( it = fReactorNextStep.begin(); it!= fReactorNextStep.end(); it++ )
-		if( (*it).second == t )
-		{	
-			BuildFuelForReactor( (*it).first );
-			(*it).second += fParc->GetReactor()[ (*it).first ]->GetCycleTime();
+	{
+		
+		if( t + fFabricationTime < fParc->GetReactor()[ (*it).first ]->GetCreationTime() + fParc->GetReactor()[ (*it).first ]->GetLifeTime())
+		{
+			if( (*it).second == t )
+			{	
+				BuildFuelForReactor( (*it).first );
+				(*it).second += fParc->GetReactor()[ (*it).first ]->GetCycleTime();
+			}
+			if ( (*it).second > t  && (*it).second - t <= fFabricationTime  )
+			{
+				map<int ,IsotopicVector >::iterator it2 = fReactorFuturIncome.find( (*it).first );
+				if (it2 != fReactorFuturIncome.end())
+					(*it2).second = GetDecay((*it2).second, fFabricationTime - ((*it).second - t) );
+		
+			}
 		}
+	}
+
+
 DBGL;
 }
 

@@ -109,6 +109,7 @@ EvolutiveProduct::EvolutiveProduct(LogFile* Log, string DB_file, bool stable, ZA
 	DBGL;
 	fLog = Log;
 	fIsCrossSection = false;
+	fDB_file = DB_file;
 	
 	if(stable == true)
 		AddAsStable(zai);
@@ -501,7 +502,6 @@ void EvolutiveProduct::ReadDB(string DBfile)
 EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 {
 	DBGL;
-	
 	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
 	
 	{	// TMP
@@ -517,7 +517,7 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 	{	// 232Th
 		map< ZAI, double > toAdd;
 		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(90,232,0), pair<double, map< ZAI, double > > ( 4.41806400000000000e+17, toAdd ) ) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(90,232,0), pair<double, map< ZAI, double > > ( 2.37944304000000000e+18 , toAdd ) ) );
 	}
 	{	// 233U
 		map< ZAI, double > toAdd;
@@ -536,7 +536,7 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 	}
 	{	// 236U
 		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(90,232,0) , 1) );
 		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,236,0), pair<double, map< ZAI, double > > ( 7.39078992000000000e+14, toAdd) ) );
 	}
 	{	// 238U
@@ -546,7 +546,7 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 	}
 	{	// 237Np
 		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(92,237,0) , 1) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(91,233,0) , 1) );
 		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(93,237,0), pair<double, map< ZAI, double > > ( 6.76594944000000000e+13, toAdd) ) );
 	}
 	{	// 238Pu
@@ -566,24 +566,23 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 	}
 	{	// 241Pu
 		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,241,0) , 1) );
 		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,241,0), pair<double, map< ZAI, double > > ( 4.52062620000000000e+08, toAdd) ) );
 	}
 	{	// 242Pu
 		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,242,0), pair<double, map< ZAI, double > > ( 1.18341000000000000e+15, toAdd) ) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(92,238,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,242,0), pair<double, map< ZAI, double > > ( 1.18341000000000000e+13, toAdd) ) );
 	}
 	{	// 241Am
 		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(93,237,0) , 1) );
 		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(95,241,0), pair<double, map< ZAI, double > > ( 1.36518177600000000e+10, toAdd) ) );
 	}
 	{	// 242Am*
 		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(94,238,0) , 0.0045) );
-		toAdd.insert(pair<ZAI, double> ( ZAI(96,242,0) , 0.827*0.9955) );
-		toAdd.insert(pair<ZAI, double> ( ZAI(94,242,0) , 0.173*0.9955) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(93,238,0) , 0.00459) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,242,0) , 0.99541) );
 		
 		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(95,242,1), pair<double, map< ZAI, double > > ( 4.44962160000000000e+09, toAdd) ) );
 	}
@@ -594,13 +593,13 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 	}
 	{	// 242Cm
 		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,242,0), pair<double, map< ZAI, double > > ( 5.13757728000000000e+09, toAdd) ) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,238,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,242,0), pair<double, map< ZAI, double > > ( 1.40659200000000000e+07 , toAdd) ) );
 	}
 	{	// 243Cm
 		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(94,239,0) , 0.997) );
-		toAdd.insert(pair<ZAI, double> ( ZAI(95,243,0) , 0.003) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,239,0) , 0.9971) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,243,0) , 0.0029) );
 		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,243,0), pair<double, map< ZAI, double > > ( 9.18326160000000000e+08, toAdd) ) );
 	}
 	{	// 244Cm
@@ -620,84 +619,114 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 	}
 	{	// 247Cm
 		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,243,0) , 1) );
 		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,247,0), pair<double, map< ZAI, double > > ( 4.92298560000000000e+14, toAdd) ) );
 	}	
-	{	// 247Cm
+	{	// 248Cm
 		map< ZAI, double > toAdd;
 		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
 		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,248,0), pair<double, map< ZAI, double > > ( 1.09820448000000000e+13, toAdd) ) );
 	}
 	
-	
-	map<ZAI, map<int, double> > decayindex;
-	
-	{
-		int i = 0;
-		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
-		for(it = ZAIDecay.begin() ; it != ZAIDecay.end(); it++)
-		{
-			map<int, double> toAdd ;
-			toAdd.insert( pair<int, double> (i,1) );
-			decayindex.insert( pair< ZAI, map<int, double> > ( (*it).first, toAdd ));
-			i++;
-		}
+	map<ZAI, map<ZAI, double> > FastDecay;
+	{	// 231Th
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
 		
-		{	// 233Th
-			map<int, double> toAdd ;
-			toAdd = decayindex.find( ZAI(92,233,0) )->second ;
-			
-			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(90,233,0), toAdd ) ); 
-		}
-		{	// 237U
-			map<int, double> toAdd ;
-			toAdd = decayindex.find( ZAI(93,237,0) )->second ;
-			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(92,237,0), toAdd ) ); 
-		}
-		{	// 239U
-			map<int, double> toAdd ;
-			toAdd = decayindex.find( ZAI(94,239,0) )->second ;
-			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(92,239,0), toAdd ) );
-		}
-		{	// 238Np
-			map<int, double> toAdd ;
-			toAdd = decayindex.find( ZAI(94,238,0) )->second ;
-			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(93,238,0), toAdd ) ); 
-		}
-		{	// 243Pu
-			map<int, double> toAdd ;
-			toAdd = decayindex.find( ZAI(95,243,0) )->second ;
-			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(94,243,0), toAdd ) ); 
-		}
-		{	// 242Am*
-			map<int, double> toAdd ;
-			map<int, double>::iterator it2;
-			map<int, double> loop = decayindex.find( ZAI(96,242,0) )->second ;
-			
-			for(it2 = loop.begin(); it2 !=loop.end(); it2++)
-				toAdd.insert(  pair<int, double> ((*it2).first, (*it2).second * 0.827) );
-			loop = decayindex.find( ZAI(94,242,0) )->second;
-			for(it2 = loop.begin(); it2 !=loop.end(); it2++)
-			{
-				pair<map<int, double>::iterator, bool> IResult;
-				IResult = toAdd.insert(  pair<int, double> ((*it2).first, (*it2).second * 0.173) );
-				if(IResult.second == false)
-					IResult.first->second += (*it2).second * 0.173 ;
-			}
-			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(95,242,0), toAdd ) );
-		}
-		{	// 245Am
-			map<int, double> toAdd ;
-			toAdd = decayindex.find( ZAI(93,237,0) )->second ;
-			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(95,245,0), toAdd ) );
-		}
-		{	// 248Cm
-			map<int, double> toAdd ;
-			toAdd = decayindex.find( ZAI(-3,-3,-3) )->second ;
-			decayindex.insert( pair< ZAI, map<int, double> > ( ZAI(95,245,0), toAdd ) ); 
-		}
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(90,231,0), toAdd ) ); 
 	}
-	
+	{	// 233Th
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(92,233,0) , 1) );
+		
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(90,233,0), toAdd ) ); 
+	}
+	{	// 233Pa
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(92,233,0) , 1) );
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(91,233,0), toAdd ) ); 
+	}
+	{	// 237U
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(93,237,0) , 1) );
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(92,237,0), toAdd ) ); 
+	}
+	{	// 239U
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,239,0) , 1) );
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(92,239,0), toAdd ) );
+	}
+	{	// 238Np
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,238,0) , 1) );
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,238,0), toAdd ) ); 
+	}
+	{	// 239Np
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,239,0) , 1) );
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,239,0), toAdd ) ); 
+	}
+	{	// 240Np
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,240,0) , 1) );
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,240,0), toAdd ) ); 
+	}
+	{	// 241Np
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,241,0) , 1) );
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,241,0), toAdd ) ); 
+	}
+	{	// 237Pu
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(93,237,0) , 1) );
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(94,237,0), toAdd ) ); 
+	}
+	{	// 243Pu
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,243,0) , 1) );
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(94,243,0), toAdd ) ); 
+	}
+	{	// 240Am
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,240,0) , 1) );
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,240,0), toAdd ) ); 
+	}
+	{	// 242Am
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(96,242,0) , 0.827) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,242,0) , 0.173) );
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,242,0), toAdd ) ); 
+	}
+	{	// 244Am
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(96,244,0) , 1) );
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,244,0), toAdd ) );
+	}
+	{	// 245Am
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(96,245,0) , 1) );
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,245,0), toAdd ) );
+	}
+	{	// 249Cm
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(96,249,0), toAdd ) ); 
+	}
+
+
+	map<ZAI, map<ZAI, double> > Capture;
+	{	// 241Am
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,242,0) , 0.086) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,242,1) , 0.914) );
+		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,241,0), toAdd ) ); 
+	}
+	{	// 242Am*
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,243,0) , 1) );
+		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,242,1), toAdd ) ); 
+	}
+	map<ZAI, int> index_inver;
 	map<int, ZAI> index;
 	{
 		int i = 0;
@@ -705,21 +734,11 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 		for(it = ZAIDecay.begin() ; it != ZAIDecay.end(); it++)
 		{
 			index.insert( pair<int, ZAI > ( i, (*it).first ) );
-			i++;
-		}
-	}
-
-	map<ZAI, int> index_inver;
-	{
-		int i = 0;
-		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
-		for(it = ZAIDecay.begin() ; it != ZAIDecay.end(); it++)
-		{
 			 index_inver.insert( pair<ZAI, int > ( (*it).first , i ));
 			i++;
 		}
 	}
-
+	
 	TMatrixT<double> DecayMatrix = TMatrixT<double>(index.size(),index.size());
 	for(int i = 0; i < (int)index.size(); i++)
 		for(int j = 0; j < (int)index.size(); j++)
@@ -734,16 +753,42 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 			map< ZAI, double > decaylist = (*it).second.second;
 			for(it2 = decaylist.begin(); it2!= decaylist.end(); it2++)
 			{
-				map<ZAI, map<int, double> >::iterator it3 = decayindex.find( (*it2).first );
-				map<int, double>::iterator it4;
-				for(it4 = (*it3).second.begin(); it4 != (*it3).second.end() ; it4++)
-					DecayMatrix[i][(*it4).first] = log(2.)/(*it).second.first * (*it2).second * (*it4).second ;
+			
+				map<ZAI, int >::iterator it3 = index_inver.find( (*it2).first );
+				if( it3 != index_inver.end() )
+					DecayMatrix[i][(*it3).second] = log(2.)/(*it).second.first * (*it2).second;
+				else
+				{
+					map<ZAI, map<ZAI, double> >::iterator it4 = FastDecay.find( (*it2).first );
+
+					if( it4 == FastDecay.end() ) 
+					{
+						cout << "Problem in FastDecay for nuclei " << (*it2).first.Z() << " " << (*it2).first.A() << " " << (*it2).first.I() << endl; 
+						exit(1);
+					}
+					
+					map< ZAI, double >::iterator it5;
+					map< ZAI, double > decaylist2 = (*it4).second;
+					for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
+					{
+						it3 = index_inver.find( (*it5).first );
+						if( it3 == index_inver.end() )
+						{
+							cout << "Problem in FastDecay for nuclei " << (*it2).first.Z() << " " << (*it2).first.A() << " " << (*it2).first.I() << endl; 
+							exit(1);
+						}
+						DecayMatrix[i][(*it3).second] = log(2.)/(*it).second.first * (*it2).second * (*it5).second;
+					}
+				
+				}
 			}
 			DecayMatrix[i][i] += -log(2.)/(*it).second.first;
 			i++;
+
+			
 		}
 	}
-	
+
 
 	vector< TMatrixT<double> > NMatrix ;//  TMatrixT<double>(decayindex.size(),1))
 	double NormFactor = 0;
@@ -772,20 +817,16 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 		for(it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		{
 			
-			map<ZAI, map<int, double> >::iterator it2;
+			map<ZAI, int >::iterator it2;
 			
 			if( (*it).first.Z() < 90 ) 
-				it2 = decayindex.find( ZAI(-2,-2,-2) );
-			else it2 = decayindex.find( (*it).first );
+				it2 = index_inver.find( ZAI(-2,-2,-2) );
+			else it2 = index_inver.find( (*it).first );
 			
-			if(it2 == decayindex.end() )
-				it2 = decayindex.find( ZAI(-3,-3,-3) );
+			if(it2 == index_inver.end() )				//If not in index should be TMP, can't be fast decay for new Fuel !!!
+				it2 = index_inver.find( ZAI(-3,-3,-3) );
 			
-			
-
-			map<int, double>::iterator it3;
-			for(it3 = (*it2).second.begin(); it3 != (*it2).second.end() ; it3++)
-				N_0Matrix[ (*it3).first ][0] = (*it).second * (*it3).second;
+			N_0Matrix[ (*it2).second ][0] = (*it).second ;
 
 			
 		}
@@ -803,46 +844,160 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 	{
 		TMatrixT<double> BatemanMatrix = TMatrixT<double>(index.size(),index.size());
 		BatemanMatrix = DecayMatrix ;
+
 		map<ZAI ,TGraph* >::iterator it;
 		// ----------------  A(n,.) X+Y
 		for(it = fFissionXS.begin() ; it != fFissionXS.end(); it++)
 		{
-			double x,y;
-			(*it).second->GetPoint(i, x,y);
-			BatemanMatrix[ index_inver.find( (*it).first )->second ][index_inver.find( (*it).first )->second] += -y* 1e-24 *fFlux[i];
-			BatemanMatrix[ index_inver.find( (*it).first )->second][1] += y* 1e-24 *fFlux[i];
+			if( index_inver.find( (*it).first ) != index_inver.end() ) 
+			{
+				double x,y;
+				(*it).second->GetPoint(i, x,y);
+				BatemanMatrix[ index_inver.find( (*it).first )->second ][index_inver.find( (*it).first )->second] += -y* 1e-24 *fFlux[i];
+				BatemanMatrix[ index_inver.find( (*it).first )->second][1] += 2*y* 1e-24 *fFlux[i];
+			}
 		}
+		
 		// ----------------  A(n,.)A+1
 		for(it = fCaptureXS.begin() ; it != fCaptureXS.end(); it++)
 		{
-			double x,y;
-			(*it).second->GetPoint(i, x, y);
-			map<ZAI, map<int, double> >::iterator it3 = decayindex.find( ZAI( (*it).first.Z(), (*it).first.A()+1, (*it).first.I()) );
-			if( it3 == decayindex.end() ) 
-				it3 = decayindex.find( ZAI( -3, -3, -3 ) );
-			
-			BatemanMatrix[ index_inver.find( (*it).first )->second ][index_inver.find( (*it).first )->second] += -y* 1e-24 *fFlux[i]*NormFactor;
-			
-			map<int, double>::iterator it4;
-			for(it4 = (*it3).second.begin(); it4 != (*it3).second.end() ; it4++)
-				BatemanMatrix[index_inver.find( (*it).first )->second][(*it4).first] += y* 1e-24 *fFlux[i] * (*it4).second ;
+
+			if( index_inver.find( (*it).first ) != index_inver.end() ) 
+			{
+				double x,y;
+				(*it).second->GetPoint(i, x, y);
+				
+				BatemanMatrix[index_inver.find( (*it).first )->second][ index_inver.find( (*it).first )->second ] += -y* 1e-24 *fFlux[i];
+				
+				map<ZAI, map<ZAI, double> >::iterator it3 = Capture.find( (*it).first );
+				
+				
+				if( it3 == Capture.end() )
+				{
+					map<ZAI, int >::iterator it6 = index_inver.find( ZAI( (*it).first.Z(), (*it).first.A()+1, (*it).first.I()) );
+					
+					
+					if( it6 != index_inver.end() )
+					{
+						BatemanMatrix[index_inver.find( (*it).first )->second][(*it6).second] += y* 1e-24 *fFlux[i] ;
+
+					}
+					else
+					{
+						map<ZAI, map<ZAI, double> >::iterator it4 = FastDecay.find(  ZAI( (*it).first.Z(), (*it).first.A()+1, (*it).first.I()) );
+
+						if( it4 == FastDecay.end() ) 
+						{
+							cout << "Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A()+1 << " " << (*it).first.I() << endl; 
+							exit(1);
+						}
+					
+						map< ZAI, double >::iterator it5;
+						map< ZAI, double > decaylist2 = (*it4).second;
+						for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
+						{
+							
+							it6 = index_inver.find( (*it5).first );
+							if( it6 == index_inver.end() )
+							{
+								cout << "Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A() << " " << (*it).first.I() << endl; 
+								exit(1);
+							}
+
+							BatemanMatrix[index_inver.find( (*it).first )->second][(*it6).second] += y* 1e-24 *fFlux[i] * (*it5).second;
+						}
+					}
+				}
+				else
+				{
+					if( (*it3).first.Z() == 90 && (*it3).first.A() == 232) cout << y* 1e-24 *fFlux[i] << endl;
+					map<ZAI, double>::iterator it4;
+					map<ZAI, double> CaptureList = (*it3).second;
+					for(it4 = CaptureList.begin(); it4 != CaptureList.end() ; it4++)
+					{
+					
+						map<ZAI, int >::iterator it6 = index_inver.find( (*it4).first );
+					
+					
+						if( it6 != index_inver.end() )
+							BatemanMatrix[index_inver.find( (*it).first )->second][(*it6).second] += y* 1e-24 *fFlux[i] * (*it4).second ;
+						else
+						{
+							map<ZAI, map<ZAI, double> >::iterator it7 = FastDecay.find( (*it4).first );
+
+							if( it7 == FastDecay.end() ) 
+							{
+								cout << "Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl; 
+								exit(1);
+							}
+					
+							map< ZAI, double >::iterator it5;
+							map< ZAI, double > decaylist2 = (*it7).second;
+							for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
+							{
+							
+								it6 = index_inver.find( (*it5).first );
+								if( it6 == index_inver.end() )
+								{
+									cout << "Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl; 
+									exit(1);
+								}
+								if( (*it6).first.Z() == 92 && (*it6).first.A() == 233) cout << y* 1e-24 *fFlux[i] * (*it5).second << endl;
+								BatemanMatrix[index_inver.find( (*it).first )->second][(*it6).second] += y * 1e-24 * fFlux[i] * (*it5).second * (*it4).second;
+							}
+						}
+
+					}
+				}
+
+
+			}
 		}
+
 		// ----------------  A(n,2n)A-1
 		for(it = fn2nXS.begin() ; it != fn2nXS.end(); it++)
 		{
-			double x,y;
-			(*it).second->GetPoint(i, x,y);
-			map<ZAI, map<int, double> >::iterator it3 = decayindex.find( ZAI( (*it).first.Z(), (*it).first.A()-1, (*it).first.I()) );
-			if( it3 == decayindex.end() ) 
-				it3 = decayindex.find( ZAI( -3, -3, -3 ) );
-			
-			BatemanMatrix[ index_inver.find( (*it).first )->second ][index_inver.find( (*it).first )->second] += -y* 1e-24 *fFlux[i];
-			
-			map<int, double>::iterator it4;
-			for(it4 = (*it3).second.begin(); it4 != (*it3).second.end() ; it4++)
-				BatemanMatrix[index_inver.find( (*it).first )->second][(*it4).first] += y* 1e-24 *fFlux[i] * (*it4).second ;
+			if( index_inver.find( (*it).first ) != index_inver.end() ) 
+			{
+				double x,y;
+				(*it).second->GetPoint(i, x,y);
+				BatemanMatrix[ index_inver.find( (*it).first )->second ][index_inver.find( (*it).first )->second] += -y* 1e-24 *fFlux[i];
+				
+				
+				map<ZAI, int>::iterator it3 = index_inver.find( ZAI( (*it).first.Z(), (*it).first.A()-1, 0) );
+				
+				if( it3 != index_inver.end() ) 
+						BatemanMatrix[index_inver.find( (*it).first )->second][(*it3).second] += y* 1e-24 *fFlux[i];
+				else
+				{
+
+					map<ZAI, map<ZAI, double> >::iterator it4 = FastDecay.find( ZAI( (*it).first.Z(), (*it).first.A()-1, 0) );
+
+					if( it4 == FastDecay.end() ) 
+					{
+						it3 = index_inver.find( ZAI( -3, -3, -3 ) );
+						BatemanMatrix[index_inver.find( (*it).first )->second][(*it3).second] += y* 1e-24 *fFlux[i];
+					}
+					else
+					{
+						map< ZAI, double >::iterator it5;
+						map< ZAI, double > decaylist2 = (*it4).second;
+						for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
+						{
+					
+							it3 = index_inver.find( (*it5).first );
+							if( it3 == index_inver.end() )
+							{
+								cout << "Problem in FastDecay for nuclei " << (*it4).first.Z() << " " << (*it4).first.A() << " " << (*it4).first.I() << endl; 
+								exit(1);
+							}
+							BatemanMatrix[index_inver.find( (*it).first )->second][(*it3).second] += y* 1e-24 *fFlux[i] * (*it5).second ;
+						}
+					}
+				}
+			}
 		}
-		
+
 		// ----------------   Evolution
 		TMatrixT<double> NEvoluingMatrix = TMatrixT<double>(index.size(),1);
 		NEvoluingMatrix = NMatrix.back();
@@ -852,7 +1007,7 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 		{
 			double x,y;
 			fFissionXS.begin()->second->GetPoint(i+1, x,y);
-			TStepMax = x;
+			TStepMax = x - timevector[i];
 			timevector[i+1] = x;
 		}
 		
@@ -866,36 +1021,40 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 				else 		IdMatrix[j][k] = 0;
 			}
 
-		int DLOrder = 20;
+
 		TMatrixT<double> BatemanMatrixDL = TMatrixT<double>(index.size(),index.size());   // Order 0 Term from the DL : Id
 		TMatrixT<double> BatemanMatrixDLTermN = TMatrixT<double>(index.size(),index.size());  // Addind it;
 
-		BatemanMatrixDLTermN = IdMatrix;
-		BatemanMatrixDL = BatemanMatrixDLTermN;
 
-
-		for(int j = 1 ; j < DLOrder; j++)
 		{
+			BatemanMatrixDLTermN = IdMatrix;
+			BatemanMatrixDL = BatemanMatrixDLTermN;
+
+
+			int j = 1;
+			double NormN = 0;
 		
-			// Calculating the j'st term : M^j / j!
-			TMatrixT<double> TmpMatrix = TMatrixT<double>(index.size(),index.size());
-			TmpMatrix.Mult(BatemanMatrixDLTermN, BatemanMatrix);
-			TmpMatrix *= 1/j;
-			BatemanMatrixDLTermN = TmpMatrix;
-			BatemanMatrixDL += BatemanMatrixDLTermN;
+			do
+			{
+				NormN = 0;
+				BatemanMatrixDLTermN *= BatemanMatrix ;
+			
+				BatemanMatrixDLTermN *= 1./( (double)(j) );
+				BatemanMatrixDL += BatemanMatrixDLTermN;
+
+				NormN = 0;
+				for(int m = 0; m < (int)index.size(); m++)
+					for(int n = 0; n < (int)index.size(); n++)
+						NormN+=BatemanMatrixDLTermN[m][n]*BatemanMatrixDLTermN[m][n]; 
+				j++;
+			} while ( NormN != 0);
 		}
 		
-
-		TMatrixT<double> dNMatrix  = TMatrixT<double>(index.size(),1);
-		
-		dNMatrix.Mult(BatemanMatrixDL, NEvoluingMatrix);
-		
-		NEvoluingMatrix = dNMatrix;
-
+		NEvoluingMatrix = BatemanMatrixDL * NEvoluingMatrix ;
 		NMatrix.push_back(NEvoluingMatrix);
-
 	}
-
+	
+	
 	EvolutiveProduct GeneratedDB = EvolutiveProduct(fLog);
 	
 	for(int i = 0; i < (int)index.size(); i++)
@@ -903,6 +1062,7 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 		double ZAIQuantity[NMatrix.size()];
 		for(int j = 0; j < (int)NMatrix.size(); j++)
 			ZAIQuantity[j] = (NMatrix[j])[i][0];
+
 		GeneratedDB.Insert(pair<ZAI, TGraph*> (index.find(i)->second, new TGraph(NMatrix.size(), timevector, ZAIQuantity) ) );
 	}
 	
