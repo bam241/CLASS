@@ -62,8 +62,8 @@ IsotopicVector TreatmentFactory::GetDecay(IsotopicVector isotopicvector, double 
 DBGL;
 	IsotopicVector IV;
 	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
-	for(map<ZAI ,double >::iterator it = isotopicquantity.begin(); 
-			it != isotopicquantity.end(); it++)
+	map<ZAI ,double >::iterator it;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 	{
 		if((*it).second > 0)
 		{
@@ -127,7 +127,7 @@ DBGL;
 #pragma omp parallel for
 	for ( i = 0 ; i < (int)fIVCooling.size() ; i++)
 	{
-		if (t - fCoolingStartingTime[i] >= fCoolingTime) // ">" should not append, only "=" is normal...
+		if ( abs(t - fCoolingStartingTime[i] - fCoolingTime) < 3600 ) // ">" should not append, only "=" is normal...
 		{
 			if (t - fCoolingStartingTime[i] > fCoolingTime) // Warning & Quit
 			{

@@ -49,8 +49,8 @@ DBGL;
 	
 	IsotopicVector IVtmp = IV1 + IV2;
 	map<ZAI ,double> IVtmpIsotopicQuantity = IVtmp.GetIsotopicQuantity();
-	
-	for(map<ZAI ,double >::iterator it = IVtmpIsotopicQuantity.begin(); it != IVtmpIsotopicQuantity.end(); it++)
+	map<ZAI ,double >::iterator it;
+	for( it = IVtmpIsotopicQuantity.begin(); it != IVtmpIsotopicQuantity.end(); it++)
 	{
 		double Z1 = IV1.GetZAIIsotopicQuantity( (*it).first );
 		double Z2 = IV2.GetZAIIsotopicQuantity( (*it).first );
@@ -68,11 +68,19 @@ DBGL;
 	IsotopicVector IVtmp = IV1 + IV2;
 	map<ZAI ,double> IVtmpIsotopicQuantity = IVtmp.GetIsotopicQuantity();
 	
-	for(map<ZAI ,double >::iterator it = IVtmpIsotopicQuantity.begin(); it != IVtmpIsotopicQuantity.end(); it++)
+	double Z1total = 0;
+	double Z2total = 0;
+	map<ZAI ,double >::iterator it;
+	for( it = IVtmpIsotopicQuantity.begin(); it != IVtmpIsotopicQuantity.end(); it++)
+	{
+		Z1total += IV1.GetZAIIsotopicQuantity( (*it).first );
+		Z2total += IV2.GetZAIIsotopicQuantity( (*it).first );
+	}	
+	for( it = IVtmpIsotopicQuantity.begin(); it != IVtmpIsotopicQuantity.end(); it++)
 	{
 		double Z1 = IV1.GetZAIIsotopicQuantity( (*it).first );
 		double Z2 = IV2.GetZAIIsotopicQuantity( (*it).first );
-		d2 += pow( (Z1-Z2)/(Z1+Z2)*2 , 2 );
+		d2 += pow( (Z1/Z1total - Z2/Z2total) , 2 );
 	}
 	
 DBGL;
@@ -180,7 +188,8 @@ DBGL;
 	{
 		map<ZAI ,double>::iterator it;
 		map<ZAI ,double>::iterator it2 = isotopicvector.GetIsotopicQuantity().begin();
-		for( it = (*this).GetIsotopicQuantity().begin(); it != (*this).GetIsotopicQuantity().end(); it++ )
+		map<ZAI ,double> IsotopicQuantity = (*this).GetIsotopicQuantity();
+		for( it = IsotopicQuantity.begin(); it != IsotopicQuantity.end(); it++ )
 		{
 			if( (*it).first != (*it2).first )
 				return (*it).first < (*it2).first;
@@ -232,7 +241,8 @@ DBGL;
 void IsotopicVector::Multiply(double factor)
 {
 DBGL;
-	for(map<ZAI ,double >::iterator it = fIsotopicQuantity.begin(); it != fIsotopicQuantity.end(); it++)
+	map<ZAI ,double >::iterator it;
+	for( it = fIsotopicQuantity.begin(); it != fIsotopicQuantity.end(); it++)
 		(*it).second = (*it).second * factor;
 DBGL;
 	
@@ -263,8 +273,8 @@ void IsotopicVector::Add(const IsotopicVector& isotopicvector)
 {
 DBGL;
 	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
-
-	for(map<ZAI ,double >::iterator it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+	map<ZAI ,double >::iterator it;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		Add( (*it).first, (*it).second);
 DBGL;
 
@@ -275,8 +285,8 @@ void IsotopicVector::Add(const map<ZAI ,double>& quantity)
 {
 DBGL;
 	map<ZAI ,double> isotopicquantity = quantity;
-	
-	for(map<ZAI ,double >::iterator it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+	map<ZAI ,double >::iterator it;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		Add( (*it).first, (*it).second);
 DBGL;
 
@@ -321,7 +331,8 @@ void IsotopicVector::Remove(const IsotopicVector& isotopicvector)
 {
 DBGL;
 	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
-	for(map<ZAI ,double >::iterator it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+	map<ZAI ,double >::iterator it;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		Remove( (*it).first, (*it).second);
 DBGL;
 }
@@ -352,8 +363,8 @@ void IsotopicVector::Need(const IsotopicVector& isotopicvector)
 {
 DBGL;
 	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
-	
-	for(map<ZAI ,double >::iterator it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+	map<ZAI ,double >::iterator it;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		Need( (*it).first, (*it).second);
 DBGL;
 }
@@ -428,8 +439,8 @@ void IsotopicVector::Write(string filename, double time) const
 	IVfile << time << " ";
 
 	map<ZAI ,double> IsotopicQuantity = GetIsotopicQuantity();
-	for(map<ZAI ,double >::iterator it = IsotopicQuantity.begin();
-					it != IsotopicQuantity.end(); it++)
+	map<ZAI ,double >::iterator it;
+	for(it = IsotopicQuantity.begin(); it != IsotopicQuantity.end(); it++)
 	{
 		IVfile << (*it).first.Z() << " ";
 		IVfile << (*it).first.A() << " ";
@@ -479,8 +490,8 @@ DBGL;
 	{
 		cout << "*Isotopic Vector Quantity*" << endl;
 		map<ZAI ,double> IsotopicQuantity = GetIsotopicQuantity();
-		for(map<ZAI ,double >::iterator it = IsotopicQuantity.begin();
-						it != IsotopicQuantity.end(); it++)
+		map<ZAI ,double >::iterator it;
+		for(it = IsotopicQuantity.begin();it != IsotopicQuantity.end(); it++)
 		{
 			cout << (*it).first.Z() << " ";
 			cout << (*it).first.A() << " ";
@@ -491,8 +502,7 @@ DBGL;
 		cout << endl;
 		cout << "*Isotopic Vector Quantity Needed*" << endl;
 		map<ZAI ,double> IsotopicQuantityNeeded = GetIsotopicQuantityNeeded();
-		for(map<ZAI ,double >::iterator it = IsotopicQuantityNeeded.begin();
-		    				it != IsotopicQuantityNeeded.end(); it++)
+		for(it = IsotopicQuantityNeeded.begin(); it != IsotopicQuantityNeeded.end(); it++)
 		{
 			cout << (*it).first.Z() << " ";
 			cout << (*it).first.A() << " ";
