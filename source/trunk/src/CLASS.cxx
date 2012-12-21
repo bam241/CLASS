@@ -186,14 +186,15 @@ DBGL;
 		double step = fReactor[i]->GetCreationTime();
 		double coolingstep = fReactor[i]->GetAssociedTreatmentFactory()->GetCoolingTime();
 		double fabricationstep = 0;
+
 		if(fReactor[i]->IsFuelFixed() == false)
-		{
 			fabricationstep = fReactor[i]->GetFabricationPlant()->GetFabricationTime();
-		}
+
+
 //********* Reactor Evolution Step *********//
 		// set destruction of a reactor
 		if( (fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime() > fAbsoluteTime) &&
-		    (fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime()<t) )
+		    (fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime() < t) )
 		{
 			//********* Reactor Shutdown *********//
 			pair< map<double, int>::iterator, bool > IResult  = fTimeStep.insert( pair<double ,int>(fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime(),2) );
@@ -295,7 +296,8 @@ DBGL;
 		cout		<< "!!Warning!! !!!CLASS!!! Can't open \" CLASS_TimeStep \"\n" << endl;
 		fLog->fLog 	<< "!!Warning!! !!!CLASS!!! Can't open \" CLASS_TimeStep \"\n" << endl;
 	}
-	for(map<double ,int >::iterator it = fTimeStep.begin(); it != fTimeStep.end(); it++)
+	map<double ,int >::iterator it;
+	for( it = fTimeStep.begin(); it != fTimeStep.end(); it++)
 		TimeStepfile << (*it).first/3600/24./365.25 << " " << (*it).second << endl;
 	
 	DBGL;	
@@ -367,8 +369,8 @@ DBGL;
 	OutAttach();
 
 	fOutT->Fill();
-
-	for(map<double ,int >::iterator it = fTimeStep.begin(); it != fTimeStep.end(); it++)
+	map<double ,int >::iterator it;
+	for(it = fTimeStep.begin(); it != fTimeStep.end(); it++)
 	{
 
 		fAbsoluteTime = (*it).first;
@@ -471,8 +473,8 @@ DBGL;
 	
 	for (int i =0; i < (int)fFabricationPlant.size(); i++)
 	{
-		map<int, IsotopicVector >::iterator it;
 		map<int, IsotopicVector > reactorNextStep = fFabricationPlant[i]->GetReactorFuturIncome();
+		map<int, IsotopicVector >::iterator it;
 		for ( it = reactorNextStep.begin(); it != reactorNextStep.end(); it++)
 			fFuelFabrication += (*it).second;
 	}
@@ -518,9 +520,9 @@ DBGL;
 
 	cout << "Opening OutPut File ...\t";
 	fLog->fLog << "Opening : " << fOutputName << " ...\t";
-	fOutTree = new TFile(fOutputName.c_str(),"UPDATE");
+	fOutFile = new TFile(fOutputName.c_str(),"UPDATE");
 
-	if(!fOutTree)
+	if(!fOutFile)
 	{
 		cout << "\nCould not open " << fOutputName <<endl;
 		fLog->fLog << "\nCould not open " << fOutputName <<endl;
@@ -531,7 +533,7 @@ DBGL;
 	fOutT = new TTree("Data","Data Tree");
 	cout << "Creating Data Tree ...\t";
 	fLog->fLog << "Creating Data Tree ...\t";
-	if(!fOutTree)
+	if(!fOutT)
 	{
 		cout << "\nCould not create Data Tree in " << fOutputName << endl;
 		fLog->fLog << "\nCould not create Data Tree in " << fOutputName << endl;
@@ -545,19 +547,19 @@ void CLASS::CloseOutputTree()
 {
 DBGL;
 
-	fOutTree->ls();
+	fOutFile->ls();
 	cout << "Writing outTree " << fOutputName << endl;
 	fLog->fLog << "Writing outTree " << fOutputName << endl;
-	fOutTree->Write();
+	fOutFile->Write();
 
-	if(fOutTree->IsOpen()) {
+	if(fOutFile->IsOpen()) {
 		cout << "Deleting outTree : " << endl;
 		fLog->fLog << "Deleting outTree : " << endl;
 		delete fOutT;
 		cout << "Closing file : " << fOutputName <<endl;
 		fLog->fLog << "Closing file : " << fOutputName <<endl;
-		fOutTree-> Close();
-		delete fOutTree;
+		fOutFile-> Close();
+		delete fOutFile;
 	} else {
 		cout << "File was not opened " << fOutputName << endl;
 		fLog->fLog << "File was not opened " << fOutputName << endl;

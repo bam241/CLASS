@@ -54,8 +54,8 @@ DBGL;
 	IsotopicVector IV;
 
 	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
-	for(map<ZAI ,double >::iterator it = isotopicquantity.begin(); 
-			it != isotopicquantity.end(); it++)
+	map<ZAI ,double >::iterator it;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 	{
 		if((*it).second > 0)
 		{
@@ -82,7 +82,8 @@ DBGL;
 void Storage::AddToStock(IsotopicVector isotopicvector)
 {
 DBGL;
-	if(fParc->GetStockManagement() == true) fIVStock.push_back(isotopicvector);
+	if(fParc->GetStockManagement() == true)
+		fIVStock.push_back(isotopicvector);
 	AddToFullStock(isotopicvector);
 DBGL;
 }

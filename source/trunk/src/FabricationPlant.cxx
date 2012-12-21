@@ -50,7 +50,7 @@ template <class T>  T random(T a, T b) //peak random numebr between a and b
 FabricationPlant::FabricationPlant()
 {
 DBGL;
-	fChronologicalTimePriority = true;
+	fChronologicalTimePriority = false;
 DBGL;
 }
 
@@ -58,7 +58,7 @@ FabricationPlant::FabricationPlant(Storage* storage, Storage* reusable, double f
 {
 DBGL;
 	fFabricationTime = fabircationtime;
-	fChronologicalTimePriority = true;
+	fChronologicalTimePriority = false;
 	fStorage = storage;
 	fReUsable = reusable;
 DBGL;
@@ -118,7 +118,7 @@ DBGL;
 EvolutiveProduct FabricationPlant::GetReactorEvolutionDB(int ReactorId)
 {
 DBGL;
-	map< int,EvolutiveProduct >::iterator	it = fReactorIncome.find(ReactorId);
+	map< int,EvolutiveProduct >::iterator it = fReactorIncome.find(ReactorId);
 	return (*it).second;
 DBGL;
 }
@@ -132,13 +132,7 @@ DBGL;
 
 	isotopicvector = GetDecay(isotopicvector, fFabricationTime);
 	
-//	IsotopicVector IVclean = isotopicvector.GetSpeciesComposition(94)
-//		+ZAI(92,238,0)* isotopicvector.GetZAIIsotopicQuantity(92,238,0)
-//		+ZAI(95,241,0)* isotopicvector.GetZAIIsotopicQuantity(95,241,0);
-	
-
-	
-	map<double, EvolutiveProduct> distances = evolutiondb->GetDistances(isotopicvector);
+	map<double, EvolutiveProduct> distances = evolutiondb->GetDistancesTo(isotopicvector);
 	
 
 	EvolutiveProduct EvolBuild = distances.begin()->second.GenerateDBFor(isotopicvector);
@@ -198,7 +192,8 @@ DBGL;
 	pair<IsotopicVector, IsotopicVector>	IVTmp;
 	
 	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
-	for(map<ZAI ,double >::iterator it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+	map<ZAI ,double >::iterator it;
+	for(it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 	{
 		map<ZAI ,double>::iterator it2;
 		it2 = fValorisableIV.find((*it).first);
@@ -217,7 +212,6 @@ DBGL;
 void FabricationPlant::BuildMOXFuelForReactor(int ReactorId, EvolutionDataBase<IsotopicVector>* FuelType)
 {
 DBGL;
-	
 	if(FuelType->GetFuelType() != "MOX")
 	{
 		cout << "!!Bad Trouble!! !!!FabricationPlant!!! Try to do MOX with a not MOXed DB "<< endl;
@@ -411,22 +405,32 @@ DBGL;
 	map<int ,double >::iterator it;
 	for( it = fReactorNextStep.begin(); it!= fReactorNextStep.end(); it++ )
 	{
-		
-		if( t + fFabricationTime < fParc->GetReactor()[ (*it).first ]->GetCreationTime() + fParc->GetReactor()[ (*it).first ]->GetLifeTime())
+		if( t + fFabricationTime >= fParc->GetReactor()[ (*it).first ]->GetCreationTime() 
+		 && t + fFabricationTime < fParc->GetReactor()[ (*it).first ]->GetCreationTime() + fParc->GetReactor()[ (*it).first ]->GetLifeTime())
 		{
-			if( (*it).second == t )
+			if( abs((*it).second - t) < 3600 )
 			{	
 				BuildFuelForReactor( (*it).first );
 				(*it).second += fParc->GetReactor()[ (*it).first ]->GetCycleTime();
 			}
-			if ( (*it).second > t  && (*it).second - t <= fFabricationTime  )
+			else if ( (*it).second > t  && abs((*it).second - t - fFabricationTime) < 3600 )
 			{
 				map<int ,IsotopicVector >::iterator it2 = fReactorFuturIncome.find( (*it).first );
 				if (it2 != fReactorFuturIncome.end())
 					(*it2).second = GetDecay((*it2).second, fFabricationTime - ((*it).second - t) );
 		
 			}
-		}
+/*			else 
+			{
+				cout << "!!Warning!! !!!FabricationPlant!!!" << " Evolution is too long! ..."
+				<< t/365.25/3600/24 << " :" << endl;
+				
+				fLog->fLog << "!!Warning!! !!!FabricationPlant!!!" << " Evolution is too long! ..."
+				<< t/365.25/3600/24 << " :" << endl;
+				exit(1);
+
+			}
+*/		}
 	}
 
 

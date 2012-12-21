@@ -11,7 +11,7 @@
 #include "Defines.hxx"
 
 #include <iostream>
-#include <algorithm>
+#include <cmath>
 #include <omp.h>
 
 //________________________________________________________________________
@@ -57,8 +57,8 @@ Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	fCycleTime = cycletime;
 	fCreationTime = creationtime;
 	fLifeTime = lifetime;
-	fPower = BurnUp / (cycletime/3600/24) *1e9 * HMMass; //BU in GWd.t
-	
+	fPower = BurnUp / (cycletime/3600/24) *1e9 * HMMass; //BU in GWd/t
+	cout << fPower << endl;
 
 	DBGL;
 }
@@ -153,8 +153,17 @@ void Reactor::Evolution(double t)
 
 	double EvolutionTime = t - fInternalTime; // Calculation of the evolution time (relativ)
 
-
-	if(EvolutionTime + fInCycleTime < fCycleTime )			//During Cycle
+	if( abs(EvolutionTime + fInCycleTime - fCycleTime) < 3600 )		//End of Cycle
+	{
+		fEndOfCycle = true;
+		fInternalTime += EvolutionTime; 						// Update Internal Time
+		fInCycleTime += EvolutionTime;							// Update InCycleTime
+		
+		if(t >= fCreationTime + fLifeTime)			//if the Next Cycle don't 'Exist...
+			fShutDown = true;
+	
+	}
+	else if(EvolutionTime + fInCycleTime < fCycleTime )			//During Cycle
 	{
 		
 		fInternalTime += EvolutionTime;							// Update Internal Time
@@ -163,16 +172,7 @@ void Reactor::Evolution(double t)
 		fIVReactor = fEvolutionDB.GetIsotopicVectorAt( (fInCycleTime)/fEvolutionDB.GetPower()*fPower );	// update the fuel composition
 		
 		if(t>=fCreationTime + fLifeTime)	fShutDown = true;
-	}
-	else if(EvolutionTime + fInCycleTime == fCycleTime )		//End of Cycle
-	{
-		fEndOfCycle = true;
-		fInternalTime += EvolutionTime; 						// Update Internal Time
-		
-		if(t >= fCreationTime + fLifeTime)			//if the Next Cycle don't 'Exist...
-			fShutDown = true;
-
-	}
+	} 
 	else
 	{
 		// This is so bad!! You will probably unsynchronize all the reactor....
