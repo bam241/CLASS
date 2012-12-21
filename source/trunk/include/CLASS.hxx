@@ -154,7 +154,7 @@ protected :
 	LogFile*			fLog;
 	
 	string				fOutputName;
-	TFile*				fOutTree;
+	TFile*				fOutFile;
 	TTree*				fOutT;
 
 	IsotopicVector			fWaste;
