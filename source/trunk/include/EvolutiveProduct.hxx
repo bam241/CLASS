@@ -34,8 +34,6 @@ using namespace std;
 
 EvolutiveProduct operator*(EvolutiveProduct const& evol, double F);
 EvolutiveProduct operator*(double F, EvolutiveProduct const& evol);
-EvolutiveProduct operator+(EvolutiveProduct const& evola, EvolutiveProduct const& evolb);
-EvolutiveProduct operator-(EvolutiveProduct const& evola, EvolutiveProduct const& evolb);
 
 
 
@@ -64,8 +62,14 @@ public :
 	
 //********* Get Method *********//
 	map<ZAI ,TGraph* >	GetEvolutiveProduct()	const { return fEvolutiveProduct; }	//!<
-	double			GetPower()		const {return fPower;}			//!<
+	map<ZAI ,TGraph* >	GetFissionXS()		const { return fFissionXS; }		//!<
+	map<ZAI ,TGraph* >	GetCaptureXS()		const { return fCaptureXS; }		//!<
+	map<ZAI ,TGraph* >	Getn2nXS()		const { return fn2nXS; }		//!<
+	TGraph*			GetKeff()		const { return fKeff; }
+	TGraph*			GetFlux()		const { return fFlux; }
 
+	double			GetPower()		const { return fPower; }			//!<
+	string			GetDB_file()		const { return fDB_file; }
 
 	TGraph*	GetEvolutionTGraph(const ZAI& zai); 
 								///< Return the A,Z product proportion evolution TGraph
@@ -74,8 +78,6 @@ public :
 
 
 
-	EvolutiveProduct& operator+=(EvolutiveProduct const& evol);	//!<....
-	EvolutiveProduct& operator-=(EvolutiveProduct const& evol);	//!<....
 	bool Insert(pair<ZAI, TGraph*> zaitoinsert);			//!<
 
 //********* Get Method *********//
@@ -89,8 +91,8 @@ protected :
 	map<ZAI ,TGraph* >	fFissionXS;	//!< 
 	map<ZAI ,TGraph* >	fCaptureXS;	//!< 
 	map<ZAI ,TGraph* >	fn2nXS;	//!< 
-	vector<double>		fKeff;
-	vector<double>		fFlux;
+	TGraph*		fKeff;
+	TGraph*		fFlux;
 	
 	double 		fDBendTime;
 	bool		fIsCrossSection;

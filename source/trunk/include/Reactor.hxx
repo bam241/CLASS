@@ -84,7 +84,7 @@ public :
 //********* Modification Method *********//
 	void Evolution(double t);									//!< Performe the Evolution until the Time t
 	void Dump();											//!< Write Modification (IV In/Out, filling the TF...)
-	void SetNewFuel(EvolutiveProduct ivdb);								//!< ...
+	void SetNewFuel(EvolutiveProduct ivdb);								//!< Change the Evolutive DB of the Reactor
 //********* Other Method *********//
 	
 	
@@ -111,7 +111,7 @@ protected :
 	double		fCreationTime;		///< CLASS Universal Time of Creation
 	double		fLifeTime;		///< LifeTime Of the Reactor
 	double 		fCycleTime;		///< Cycle Time
-	double 		fPower;		///< Power
+	double 		fPower;			///< Power
 	
 	IsotopicVector	fIVReactor;		///< Fuel evoluated IV in the reactor
 	IsotopicVector	fIVBeginCycle;		///< Fuel IV at the Beginning of a Cycle
@@ -122,7 +122,7 @@ protected :
 //********* Unfixed Fuel Parameter *********//
 
 
-	FabricationPlant*	fFabricationPlant;		//!< Poitner to tje FabricationPlant
+	FabricationPlant*	fFabricationPlant;		//!< Poitner to the FabricationPlant
 	double			fHeavyMetalMass;		///< In tons
 	double			fBurnUp;			///< In GWd/tHM
 
