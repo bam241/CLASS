@@ -37,9 +37,9 @@ ROOTOBJS	= 	Storage.o StorageDict.o\
 
 
 CXX           = g++
-CXXFLAGS      = -O2 -g -Wall -fopenmp -fPIC -lgomp -Wunused-result -I$(LOCALINC) $(ROOTCFLAGS) #-I$(EXTERNINC) -I/usr/include/gsls
+CXXFLAGS      = -O2 -g -Wall -fopenmp -fPIC -I$(LOCALINC) $(ROOTCFLAGS)
 LD            = g++
-LDFLAGS       =  -g -Wall -fPIC $(ROOTLIBS) -shared  -lgomp -Wunused-result #"-I/usr/include/gsl -lgsl -lgslcblas -lm
+LDFLAGS       =  -g -Wall -fPIC $(ROOTLIBS) -shared -lgomp
 
 all:		$(OBJS)
 		$(LD) $(LDFLAGS) $(OBJS) -o $(LIBDIR)/lib$(LIBNAME).so
