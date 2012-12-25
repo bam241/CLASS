@@ -1024,8 +1024,6 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 	GeneratedDB.SetFuelType(fFuelType );
 	GeneratedDB.SetReactorType(fReactorType );
 	GeneratedDB.SetHMMass(fHMMass*NormFactor );
-cout << fPower*NormFactor << endl;
-
 
 	return GeneratedDB;
 	DBGL;

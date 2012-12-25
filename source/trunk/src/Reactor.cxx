@@ -58,8 +58,6 @@ Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	fCreationTime = creationtime;
 	fLifeTime = lifetime;
 	fPower = BurnUp / (cycletime/3600/24) *1e9 * HMMass; //BU in GWd/t
-	cout << fPower << endl;
-
 	DBGL;
 }
 
