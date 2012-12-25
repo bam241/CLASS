@@ -168,13 +168,13 @@ DBGL;
 //********* Printing Step *********//
 	{
 		double step = fStartingTime;
-		if(step >= fAbsoluteTime	)
+		if(step >= fAbsoluteTime )
 			fTimeStep.insert( pair<double ,int>(step,1) );
 		step += fPrintStep;
 		do 
 		{
 			
-			if(step >= fAbsoluteTime	)
+			if(step >= fAbsoluteTime )
 				fTimeStep.insert( pair<double ,int>(step,1) );
 			step += fPrintStep;
 		}
