@@ -53,7 +53,7 @@ EvolutiveProduct operator*(EvolutiveProduct const& evol, double F)
 		evoltmp.Insert( pair<ZAI, TGraph*> ( (*it).first,new TGraph((*it).second->GetN(), X, Y) ) );
 		
 	}
-	
+	evoltmp.SetPower(evol.GetPower()*F);
 	return evoltmp;
 	DBGL;
 }

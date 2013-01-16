@@ -300,11 +300,18 @@ DBGL;
 			}
 			
 			double StockFactionToUse = 0;
-			double Nr = HMmass*1e6/ZAImass.find( ZAI(92,238,0))->second*Na;
-			StockFactionToUse = ( ( BU - FuelType->GetPFuelParameter()[0] - FuelType->GetPFuelParameter()[6] ) * Nr
-						+ FuelType->GetPFuelParameter()[0]*nPu_0 - Sum_AlphaI_nPuI0 ) 
-						/ ( Sum_AlphaI_nPuI - FuelType->GetPFuelParameter()[0]*nPu_1 );
-						
+				//double Nr = HMmass*1e6/ZAImass.find( ZAI(92,238,0))->second*Na;
+				//StockFactionToUse = ( ( BU - FuelType->GetPFuelParameter()[0] - FuelType->GetPFuelParameter()[6] ) * Nr
+				//		+ FuelType->GetPFuelParameter()[0]*nPu_0 - Sum_AlphaI_nPuI0 )
+				//		/ ( Sum_AlphaI_nPuI - FuelType->GetPFuelParameter()[0]*nPu_1 );
+			StockFactionToUse = ( Sum_AlphaI_nPuI0	- nPu_0 * (BU - FuelType->GetPFuelParameter()[0] )
+						+ (FuelType->GetPFuelParameter()[6] - BU + FuelType->GetPFuelParameter()[0] )
+							* Na / ZAImass.find( ZAI(92,238,0) )->second * ( HMmass * 1e6 - MPu_0 )  )
+					  / ( nPu_1 * (BU - FuelType->GetPFuelParameter()[0])
+						- Sum_AlphaI_nPuI
+						+ ( FuelType->GetPFuelParameter()[6] - BU + FuelType->GetPFuelParameter()[0])
+							* Na / ZAImass.find( ZAI(92,238,0) )->second *  MPu_1 );
+		
 
 			if(StockFactionToUse < 0)
 			{
@@ -328,7 +335,7 @@ DBGL;
 				FuelBuild = true;
 
 				ZAI U8 = ZAI(92,238,0);
-				double U8_Quantity =  (HMmass - (MPu_0+StockFactionToUse*MPu_1 ))/ZAImass.find( ZAI(92,238,0))->second*Na/1e-6;			
+				double U8_Quantity =  (HMmass - (MPu_0+StockFactionToUse*MPu_1 ))/ZAImass.find( ZAI(92,238,0))->second*Na/1e-6;
 				fParc->AddGodIncome( U8, U8_Quantity );
 				
 				for(int i = (int)fFractionToTake.size()-1; i >= 0; i--)
