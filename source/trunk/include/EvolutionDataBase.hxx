@@ -39,6 +39,7 @@ public :
 	///< Normal Constructor.
 	EvolutionDataBase(LogFile* Log, string DB_index_file );
 	
+	///< Normal Destructor.
 	~EvolutionDataBase();
 
 //********* Get Method *********//
