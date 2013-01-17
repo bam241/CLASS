@@ -300,10 +300,6 @@ DBGL;
 			}
 			
 			double StockFactionToUse = 0;
-				//double Nr = HMmass*1e6/ZAImass.find( ZAI(92,238,0))->second*Na;
-				//StockFactionToUse = ( ( BU - FuelType->GetPFuelParameter()[0] - FuelType->GetPFuelParameter()[6] ) * Nr
-				//		+ FuelType->GetPFuelParameter()[0]*nPu_0 - Sum_AlphaI_nPuI0 )
-				//		/ ( Sum_AlphaI_nPuI - FuelType->GetPFuelParameter()[0]*nPu_1 );
 			StockFactionToUse = ( Sum_AlphaI_nPuI0	- nPu_0 * (BU - FuelType->GetPFuelParameter()[0] )
 						+ (FuelType->GetPFuelParameter()[6] - BU + FuelType->GetPFuelParameter()[0] )
 							* Na / ZAImass.find( ZAI(92,238,0) )->second * ( HMmass * 1e6 - MPu_0 )  )
@@ -420,24 +416,14 @@ DBGL;
 				BuildFuelForReactor( (*it).first );
 				(*it).second += fParc->GetReactor()[ (*it).first ]->GetCycleTime();
 			}
-			else if ( (*it).second > t  && abs((*it).second - t - fFabricationTime) < 3600 )
+			else if ( (*it).second - fParc->GetReactor()[ (*it).first ]->GetCycleTime() + fFabricationTime > t )
 			{
+				cout << "totot" << endl;
 				map<int ,IsotopicVector >::iterator it2 = fReactorFuturIncome.find( (*it).first );
 				if (it2 != fReactorFuturIncome.end())
-					(*it2).second = GetDecay((*it2).second, fFabricationTime - ((*it).second - t) );
-		
+					(*it2).second = GetDecay((*it2).second, fFabricationTime - ((*it).second - t) );	
 			}
-/*			else 
-			{
-				cout << "!!Warning!! !!!FabricationPlant!!!" << " Evolution is too long! ..."
-				<< t/365.25/3600/24 << " :" << endl;
-				
-				fLog->fLog << "!!Warning!! !!!FabricationPlant!!!" << " Evolution is too long! ..."
-				<< t/365.25/3600/24 << " :" << endl;
-				exit(1);
-
-			}
-*/		}
+		}
 	}
 
 
