@@ -51,7 +51,6 @@ DBGL;
 	fPrintStep = (double)(3600*24*365.25);  // One Step per Year
 	fAbsoluteTime = 0;
 	fStockManagement = true;
-	fBuildingMethod = 0;
 	fStartingTime = 0;
 	fOutputName = "CLASS_Default.root";
 	string logname = "CLASS.log";
@@ -69,7 +68,6 @@ DBGL;
 	fPrintStep = (double)(3600*24*365.25);  // One Step per Year
 	fAbsoluteTime = abstime;
 	fStockManagement = true;
-	fBuildingMethod = 0;
 	fStartingTime = fAbsoluteTime;
 	fOutputName = "CLASS_Default.root";
 	string logname = "CLASS.log";
@@ -88,7 +86,6 @@ DBGL;
 	fAbsoluteTime = abstime;
 	fStockManagement = true;
 	fStartingTime = fAbsoluteTime;
-	fBuildingMethod = 0;
 
 	fOutputName = name;
 	fOutputName += ".log";
