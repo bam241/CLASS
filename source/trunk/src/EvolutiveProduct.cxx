@@ -206,8 +206,9 @@ void EvolutiveProduct::ReadDB(string DBfile)
 			Time[i] = vTime[i]; 
 		vector<double> vFlux;
 		start = 0;
-		getline(DecayDB, line); 
-		if (StringLine::NextWord(line, start, ' ') == "keff")
+		getline(DecayDB, line);
+		string tmp = StringLine::NextWord(line, start, ' ');
+		if ( tmp == "keff"  || tmp == "Keff" )
 		{
 			vector<double> vKeff;
 			while(start < (int)line.size())
@@ -219,7 +220,6 @@ void EvolutiveProduct::ReadDB(string DBfile)
 
 			fKeff = new TGraph(vTime.size(), Time, Keff);
 			
-
 			start = 0;
 			getline(DecayDB, line); 
 			if (StringLine::NextWord(line, start, ' ') == "flux")

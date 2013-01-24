@@ -53,9 +53,12 @@ public :
 	void	SetParc(CLASS* parc)			{ fParc = parc; }			//!< Set the Pointer to the Parc
 	void	SetLog(LogFile* Log)			{ fLog = Log; }				//!< Set the Pointer to the Log
 	void	SetStorage(Storage* storage)		{ fStorage = storage; }			//!< Set the Pointer to the Storage
+	void	SetDecayDataBase(EvolutionDataBase<ZAI>* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
 	
-	void	SetDecayDataBase(EvolutionDataBase<ZAI>* ddb)		{ fDecayDataBase = ddb; }		//!< Set the pointer to the Decay DataBase
-	void	AddReactor(int reactorid, double creationtime)		{ fReactorNextStep.insert( pair<int,double> (reactorid, creationtime-fFabricationTime) ); }	//!< ...
+
+	
+	void	AddReactor(int reactorid, double creationtime)
+			{ fReactorNextStep.insert( pair<int,double> (reactorid, creationtime-fFabricationTime) ); }	//!< Add a new reactor
 
 //********* Get Method *********//
 
@@ -63,29 +66,30 @@ public :
 	CLASS*		GetParc()		{ return fParc; }		//!< Return the Pointer to the Parc
 	Storage*	GetStorage()		{ return fStorage; }		//!< Return the Pointer to the Storage
 
-	double	GetInternalTime()	const	{ return fInternalTime; }	//!< Return Creation Time
-	double	GetFabricationTime()	const	{ return fFabricationTime; }	//!< Return the Fabrication Time
+	double	GetInternalTime() const		{ return fInternalTime; }	//!< Return Creation Time
+	double	GetFabricationTime() const	{ return fFabricationTime; }	//!< Return the Fabrication Time
 	
 	
-	map<int, IsotopicVector >	GetReactorFuturIncome()	const	{return fReactorFuturIncome;}	//!< ...
-	EvolutionDataBase<ZAI>* 	GeDecayDataBase()	const	{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
+	map<int, IsotopicVector >	GetReactorFuturIncome() const
+						{ return fReactorFuturIV;}	//!< Return the List of the Futur Fuel IV
+	EvolutionDataBase<ZAI>* 	GeDecayDataBase() const
+						{ return fDecayDataBase; }	//!< Return the pointer to the DecayDB
 
-	EvolutiveProduct		GetReactorEvolutionDB(int ReactorId);				//!<
+	
+	EvolutiveProduct GetReactorEvolutionDB(int ReactorId);			//!< Return the EvolutiveProduct of Reactor ReactorId
 
-
+	
 
 //---------- FabricationPlant ----------//
 
-	void		AddValorisableIV(ZAI zai, double factor);						///< Add Valorisable Element
-	void		Evolution(double t);									//!< ...
-	void		BuildFuelForReactor(int ReactorId);							//!< ...
-	void		BuildMOXFuelForReactor(int ReactorId, EvolutionDataBase<IsotopicVector>* FuelType);	//!< ...
-	void		BuildADSFuelForReactor(int ReactorId, EvolutionDataBase<IsotopicVector>* FuelType);	//!< ...
-	void		RecycleStock(double fraction);								//!< ...
-	IsotopicVector	GetStockToRecycle();									//!< ...
-	void 		DumpStock();										//!< ...
-	EvolutiveProduct	BuildEvolutiveDB(int ReactorId, IsotopicVector isotopicvector);			//!< ...
-	void TakeReactorFuel(int Id) ;										//!< ...
+	void	AddValorisableIV(ZAI zai, double factor);						///< Add Valorisable Element
+	void	Evolution(double t);									//!< Perform the Evolution
+	void	BuildFuelForReactor(int ReactorId);							//!< Build a Fuel for the reactor ReactorId
+	void	RecycleStock(double fraction);								//!< Take a franction of the current stock
+	IsotopicVector	GetStockToRecycle();								//!< Get the next stock to recycle
+	void 	DumpStock();										//!< Update the storage
+	EvolutiveProduct	BuildEvolutiveDB(int ReactorId, IsotopicVector isotopicvector);		//!< Build the Evolution Database for the Reactir ReactorId Fuel
+	void	TakeReactorFuel(int Id) ;								//!< Remove the Fuel of reactor ReactorId
 	
 
 
@@ -106,16 +110,16 @@ protected :
 	LogFile*	fLog;				//!< Pointer to the Log
 
 	map<ZAI ,double>	fValorisableIV;		///< The Valorisable Table
-	map<int, double >	fReactorNextStep;	//!< ...
+	map<int, double >	fReactorNextStep;	//!< Next Time Step to Build a New Fuel
 
-	map< int,EvolutiveProduct >	fReactorIncome; 	//!<
-	map< int,IsotopicVector >	fReactorFuturIncome; 	//!<
+	map< int,EvolutiveProduct >	fReactorFuturDB; //!< List of the Futur EvolutiveProduct use in the reactor
+	map< int,IsotopicVector >	fReactorFuturIV; //!< List of the Futur Fuel Isotopic Vector used in the reactor
 
-	EvolutionDataBase<ZAI>*		fDecayDataBase;		//!< Pointer to the Decay DataBase
+	EvolutionDataBase<ZAI>*		fDecayDataBase;	//!< Pointer to the Decay DataBase
 
 
-	Storage*	fStorage;				//!< Pointer to the Storage to recycle
-	Storage*	fReUsable;				//!< 
+	Storage*	fStorage;			//!< Pointer to the Storage to recycle
+	Storage*	fReUsable;			//!< Pointer to the Storage using for recycling unused Product
 
 	vector< pair<int, double> >	fFractionToTake;	//!< The Temporary Storage IsotopicVector
 
@@ -127,7 +131,7 @@ protected :
 	IsotopicVector GetDecay(IsotopicVector isotopicvector, double t);	//!< Get IsotopicVector Decay at the t time
 	void	FabricationPlantEvolution(double t);				//!< Deal the FabricationPlant Evolution
 	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);	//!< Make the Separation 
-											//!< return IV[0] -> To Stock / IV[1] -> To Waste
+						//!< return IV[0] -> To Stock / IV[1] -> To Waste
 
 	ClassDef(FabricationPlant,0);
 
