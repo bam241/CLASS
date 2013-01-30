@@ -38,8 +38,17 @@ public :
 	///< Advbanced Constructor.
 	Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 		FabricationPlant* fabricationplant, TreatmentFactory* treatmentfactory,
+		double creationtime , double lifetime);						//!
+	Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
+		FabricationPlant* fabricationplant, TreatmentFactory* treatmentfactory,
 		double creationtime , double lifetime, double cycletime,
 		double HMMass, double BurnUp);						//!<
+	Reactor(double Power, EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
+		FabricationPlant* fabricationplant, TreatmentFactory* treatmentfactory,
+		double creationtime , double lifetime,
+		double HMMass, double BurnUp);						//!<
+
+	
 	Reactor(EvolutiveProduct evolutivedb, TreatmentFactory* treatmentfactory,	//!<
 		double creationtime, double lifetime, double cycletime);		//!<
 
@@ -78,7 +87,11 @@ public :
 	void SetIVBeginCycle(IsotopicVector isotopicvector)	{ fIVBeginCycle = isotopicvector; }	//!< Set the IV at the Beginging of the Reactor Cycle
 	void SetIVOutCycle(IsotopicVector isotopicvector)	{ fIVOutCycle = isotopicvector; }	//!< Set the IV Going Out at the End of the Cycle
 	void SetIVInCycle(IsotopicVector isotopicvector)	{ fIVInCycle = isotopicvector; }	//!< Set the IV Coming In at the Beginning of the Cycle 
-	void SetCycleTime(double cycletime);								//!< Set the Cycle time (Cycle of the loading Plan)
+	void SetCycleTime(double cycletime);								//!< Set the Power time (Cycle of the loading Plan)
+	void SetPower(double Power);									//!< Set the Power
+	void SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}				//!< Set the Mass
+	void SetBurnUp(double BU)		{fBurnUp = BU;}						//!< Set the Mass
+
 	void SetEvolutionDB(EvolutiveProduct evolutionDB);						//!< Set the Pointer to the DB Evolution of the Reactor
 	
 //********* Modification Method *********//
