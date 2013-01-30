@@ -577,11 +577,11 @@ DBGL;
 	fOutT->Branch("STOCK.", "IsotopicVector", &fTotalStorage);
 	fOutT->Branch("FUELFABRICATION.", "IsotopicVector", &fFuelFabrication);
 	fOutT->Branch("COOLING.", "IsotopicVector", &fTotalCooling);
-	fOutT->Branch("INREACTOR.", "IsotopicVector", &fTotalInReactor);
+	fOutT->Branch("REACTOR.", "IsotopicVector", &fTotalInReactor);
 	fOutT->Branch("INCYCLE.", "IsotopicVector", &fIVInCycleTotal);
 	fOutT->Branch("TOTAL.", "IsotopicVector", &fIVTotal);
 	
-	fOutT->Branch("GODINCOME.", "IsotopicVector", &fGodIncome);
+	fOutT->Branch("GOD.", "IsotopicVector", &fGod);
 	fOutT->Branch("WASTE.", "IsotopicVector", &fWaste);
 	
 	for(int i = 0; i < (int)fStorage.size(); i++)

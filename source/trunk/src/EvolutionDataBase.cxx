@@ -191,9 +191,9 @@ void EvolutionDataBase<IsotopicVector>::ReadDataBase()
 		getline(DataDB, line); 
 		if(line != "")
 		{
-			EvolutiveProduct evolutionproduct = EvolutiveProduct(fLog, line);
-			IsotopicVector ivtmp  = evolutionproduct.GetIsotopicVectorAt(0.);
-			fEvolutionDataBase.insert( pair<IsotopicVector, EvolutiveProduct >(ivtmp , evolutionproduct) );
+			EvolutiveProduct* evolutionproduct = new EvolutiveProduct(fLog, line);
+			IsotopicVector ivtmp  = evolutionproduct->GetIsotopicVectorAt(0.).GetActinidesComposition();
+			fEvolutionDataBase.insert( pair<IsotopicVector, EvolutiveProduct >(ivtmp , (*evolutionproduct) ));
 		}
 	}
 	DBGL;
@@ -214,7 +214,7 @@ map<double, EvolutiveProduct> EvolutionDataBase<IsotopicVector>::GetDistancesTo(
 	for( it = evolutiondb.begin(); it != evolutiondb.end(); it++ )
 	{
 		pair<map<double, EvolutiveProduct>::iterator, bool> IResult;
-		double D = Distance(isotopicvector, (*it).second.GetIsotopicVectorAt(t)/ Norme( (*it).second.GetIsotopicVectorAt(t) )*Norme(isotopicvector) );
+		double D = Distance(isotopicvector.GetActinidesComposition(), (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition()/ Norme( (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition() )*Norme(isotopicvector.GetActinidesComposition()) );
 //		double D = RelativDistance(isotopicvector, (*it).second.GetIsotopicVectorAt(t)/ Norme( (*it).second.GetIsotopicVectorAt(t) )*Norme(isotopicvector) );
 		IResult = distances.insert( pair<double, EvolutiveProduct>( D , (*it).second ) );
 	}

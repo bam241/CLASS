@@ -259,13 +259,12 @@ void EvolutiveProduct::ReadDB(string DBfile)
 				int i=0;
 				while(start < (int)line.size())
 				{	
-					long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
+					double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
 					DPQuantity[i] = (double)DPQuantityTmp;
-					
 					i++;
 				
 				}
-				fEvolutiveProduct.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size(), Time, DPQuantity) ) );
+				fEvolutiveProduct.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph((int)vTime.size()-1, Time, DPQuantity) ) );
 			}
 		
 			getline(DecayDB, line); 
@@ -304,7 +303,7 @@ void EvolutiveProduct::ReadDB(string DBfile)
 							i++;
 						
 						}
-						fFissionXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size(), Time, DPQuantity) ) );
+						fFissionXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
 					}
 					getline(DecayDB, line); 
 				if(line == "" || line == "Capture" ) break;
@@ -340,7 +339,7 @@ void EvolutiveProduct::ReadDB(string DBfile)
 							i++;
 						
 						}
-						fCaptureXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size(), Time, DPQuantity) ) );
+						fCaptureXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
 					}
 					getline(DecayDB, line); // Nuclei is given with "A Z"
 				if(line == "" || line == "n2n" ) break;
@@ -377,7 +376,7 @@ void EvolutiveProduct::ReadDB(string DBfile)
 							i++;
 						
 						}
-						fn2nXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size(), Time, DPQuantity) ) );
+						fn2nXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
 					}
 					getline(DecayDB, line); // Nuclei is given with "A Z"
 				if(line == "" ) break;
@@ -386,7 +385,7 @@ void EvolutiveProduct::ReadDB(string DBfile)
 			}
 		
 		}
-
+		DecayDB.close();
 		start = 0;
 		
 		string InfoDBFile  = DBfile.erase(DBfile.size()-3,DBfile.size());
@@ -430,7 +429,7 @@ void EvolutiveProduct::ReadDB(string DBfile)
 			for(int i=0; i < (int)vFlux.size();i++)
 				Flux[i] = vFlux[i]; 
 
-			fFlux = new TGraph(vTime.size(), Time, Flux);
+			fFlux = new TGraph(vTime.size()-1, Time, Flux);
 		}
 		start = 0;
 		getline(InfoDB, line); 
@@ -438,7 +437,6 @@ void EvolutiveProduct::ReadDB(string DBfile)
 			fHMMass =  atof(StringLine::NextWord(line, start, ' ').c_str());
 	
 		}
-
 	DBGL;
 }
 
