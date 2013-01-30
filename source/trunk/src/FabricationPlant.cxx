@@ -215,33 +215,43 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 			{
 				map<ZAI ,double>::iterator it;
 				map<ZAI ,double> isotopicquantity = GetDecay( stock , fFabricationTime).GetSpeciesComposition(94).GetIsotopicQuantity();
-				
+
 				for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 				{
-					nPu_1 += (*it).second;
-					Sum_AlphaI_nPuI += FuelType->GetPFuelParameter()[(*it).first.A() -237]*(*it).second;
+					if ((*it).first.A() >= 238 && (*it).first.A() <= 242)
+					{ 
+						nPu_1 += (*it).second;
+						Sum_AlphaI_nPuI += FuelType->GetPFuelParameter()[(*it).first.A() -237]*(*it).second;
+					}
 				}
 				
 				isotopicquantity = stock.GetSpeciesComposition(94).GetIsotopicQuantity();
 				for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
+				if ((*it).first.A() >= 238 && (*it).first.A() <= 242)
+				{ 
 					MPu_1 += (*it).second * (ZAImass.find( (*it).first )->second)/Na*1e-6;
-				
+				}
 				
 				isotopicquantity = GetDecay( FullUsedStock , fFabricationTime).GetSpeciesComposition(94).GetIsotopicQuantity();
 				for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-					Sum_AlphaI_nPuI0 += FuelType->GetPFuelParameter()[(*it).first.A() -237]*(*it).second;
-				
+					if ((*it).first.A() >= 238 && (*it).first.A() <= 242)
+					{ 
+						Sum_AlphaI_nPuI0 += FuelType->GetPFuelParameter()[(*it).first.A() -237]*(*it).second;
+					}				
 			}
 			
 			double StockFactionToUse = 0;
-			StockFactionToUse = ( Sum_AlphaI_nPuI0	- nPu_0 * (BU - FuelType->GetPFuelParameter()[0] )
-					     + (FuelType->GetPFuelParameter()[6] - BU + FuelType->GetPFuelParameter()[0] )
-					     * Na / ZAImass.find( ZAI(92,238,0) )->second * ( HMmass * 1e6 - MPu_0 )  )
-			/ ( nPu_1 * (BU - FuelType->GetPFuelParameter()[0])
-			   - Sum_AlphaI_nPuI
-			   + ( FuelType->GetPFuelParameter()[6] - BU + FuelType->GetPFuelParameter()[0])
-			   * Na / ZAImass.find( ZAI(92,238,0) )->second *  MPu_1 );
+			   
+			double NT = HMmass*1e6 * Na / ZAImass.find( ZAI(92,238,0) )->second;
 			
+			double N1 = (BU - FuelType->GetPFuelParameter()[6]) * NT;
+			double N2 = -Sum_AlphaI_nPuI0;
+			double N3 = -FuelType->GetPFuelParameter()[0] * Na / ZAImass.find( ZAI(92,238,0) )->second * (HMmass*1e6 - MPu_0*1e6);
+			
+			double D1 = Sum_AlphaI_nPuI;
+			double D2 = -FuelType->GetPFuelParameter()[0] * MPu_1*1e6 * Na / ZAImass.find( ZAI(92,238,0) )->second;
+			
+			StockFactionToUse = (N1 + N2 + N3) / (D1 + D2);
 			
 			if(StockFactionToUse < 0)
 			{

@@ -413,6 +413,16 @@ DBGL;
 DBGL;
 }
 
+IsotopicVector	IsotopicVector::GetActinidesComposition() const
+{
+	DBGL;
+	IsotopicVector IV;
+	for (int i = 0; i <12; i++)
+		IV += GetSpeciesComposition(89+i);
+	return IV;
+	DBGL;
+}
+
 vector<int> IsotopicVector::GetChemicalSpecies() const
 {
 DBGL;

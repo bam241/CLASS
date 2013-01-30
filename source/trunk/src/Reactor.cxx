@@ -29,7 +29,66 @@ Reactor::Reactor()
 	DBGL;
 	DBGL;
 }
+Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
+		 FabricationPlant* fabricationplant,
+ 		 TreatmentFactory* treatmentfactory,
+ 		 double creationtime, double lifetime)
+{
+	DBGL;
+	
+	fIsStarted = false;
+	fShutDown = false;
+	fEndOfCycle = false;
+	
+	fFabricationPlant = fabricationplant;
+	fFixedFuel = false;
+	fBurnUp = -1.;
+	fHeavyMetalMass = -1.;
+	
+	fAssociedTreatmentFactory = treatmentfactory;
+	
+	fFuelTypeDB = fueltypeDB;
+	
+	fInternalTime = 0;
+	fInCycleTime = 0;
+	fPower = -1.;
+	fCycleTime = -1.;	 //BU in GWd/t
+	
+	fCreationTime = creationtime;
+	fLifeTime = lifetime;
+	DBGL;
+}
 
+Reactor::Reactor(double Power, EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
+		 FabricationPlant* fabricationplant,
+ 		 TreatmentFactory* treatmentfactory,
+ 		 double creationtime, double lifetime,
+ 		 double HMMass, double BurnUp)
+{
+	DBGL;
+	
+	fIsStarted = false;
+	fShutDown = false;
+	fEndOfCycle = false;
+	
+	fFabricationPlant = fabricationplant;
+	fFixedFuel = false;
+	fBurnUp = BurnUp;
+	fHeavyMetalMass = HMMass;
+	
+	fAssociedTreatmentFactory = treatmentfactory;
+	
+	fFuelTypeDB = fueltypeDB;
+	
+	fInternalTime = 0;
+	fInCycleTime = 0;
+	fPower = Power;
+	fCycleTime = BurnUp*1e9 / (fPower)  * HMMass  *3600*24;	 //BU in GWd/t
+
+	fCreationTime = creationtime;
+	fLifeTime = lifetime;
+	DBGL;
+}
 
 Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 		 FabricationPlant* fabricationplant,
@@ -57,7 +116,7 @@ Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	fCycleTime = cycletime;
 	fCreationTime = creationtime;
 	fLifeTime = lifetime;
-	fPower = BurnUp / (cycletime/3600/24) *1e9 * HMMass; //BU in GWd/t
+	fPower = BurnUp*3600*24 / (cycletime) * HMMass *1e9; //BU in GWd/t
 	DBGL;
 }
 
@@ -104,8 +163,31 @@ Reactor::~Reactor()
 //________________________________________________________________________
 void Reactor::SetCycleTime(double cycletime)
 {
-	fCycleTime = cycletime;
-	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt(fCycleTime/fEvolutionDB.GetPower()*fPower);
+	if(fFixedFuel==true)
+	{
+		fCycleTime = cycletime;
+		fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt(fCycleTime/fEvolutionDB.GetPower()*fPower);
+	}
+	else
+	{
+		fCycleTime = cycletime;
+		fPower = fBurnUp*3600*24 / (fCycleTime) * fHeavyMetalMass *1e9; //BU in GWd/t
+	}
+}
+	//________________________________________________________________________
+void Reactor::SetPower(double Power)
+{
+	if(fFixedFuel==true)
+	{
+		fPower = Power;
+		fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt(fCycleTime/fEvolutionDB.GetPower()*fPower);
+	}
+	else
+	{
+		fPower = Power;
+		fCycleTime = fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24;	 //BU in GWd/t
+	}
+
 }
 
 //________________________________________________________________________
@@ -220,10 +302,10 @@ DBGL;
 				//Take what you can from Storage...
 				fStorage->TakeFromStock( fIVInCycle - GodPart);
 				//And Get the rest from God
-				fParc->AddGodIncome(GodPart);
+				fParc->AddGod(GodPart);
 
 			}
-			else	fParc->AddGodIncome(fIVInCycle);
+			else	fParc->AddGod(fIVInCycle);
 			
 			fIVReactor  = fIVBeginCycle;
 			fInCycleTime = 0;
