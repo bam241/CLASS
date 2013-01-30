@@ -55,7 +55,7 @@ public :
 	void	SetStorage(Storage* storage)		{ fStorage = storage; }			//!< Set the Pointer to the Storage
 	void	SetDecayDataBase(EvolutionDataBase<ZAI>* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
 	
-
+	void	SetChronologicalTimePriority(bool bval)	{ fChronologicalTimePriority = bval;}	//!< Set the chronological priority (true for chronological, false unstead)
 	
 	void	AddReactor(int reactorid, double creationtime)
 			{ fReactorNextStep.insert( pair<int,double> (reactorid, creationtime-fFabricationTime) ); }	//!< Add a new reactor

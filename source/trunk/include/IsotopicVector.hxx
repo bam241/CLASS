@@ -50,6 +50,8 @@ public :
 	map<ZAI ,double>	GetIsotopicQuantity() const { return fIsotopicQuantity; }			//!< Return the IVQuantity map 
 	map<ZAI ,double>	GetIsotopicQuantityNeeded() const { return fIsotopicQuantityNeeded; }	//!< Return the IVQuantityNeeded map
 	IsotopicVector		GetSpeciesComposition(int z) const;					//!< Return the Species composition of the "z" atom
+	IsotopicVector		GetActinidesComposition() const;					//!< Return the Actinides composition of the "z" atom
+
 	vector<int>		GetChemicalSpecies() const;						//!< Return the Species Species contained
 
 	

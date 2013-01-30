@@ -86,11 +86,11 @@ public :
 
 
 
-//-------- GodIncome --------//
+//-------- God --------//
 
-	IsotopicVector		GetGodIncome() const		{ return fGodIncome; }	//!< Return the God Providings IsotopicVector
-	void AddGodIncome(ZAI zai, double quantity)		{ AddGodIncome(zai*quantity); }	//!< Add a ZAI*quantity to GodIncome
-	void AddGodIncome(IsotopicVector isotopicvector)	{ fGodIncome.Add(isotopicvector); }	//!< Add a isotopicVector to GodIncome
+	IsotopicVector		GetGod() const		{ return fGod; }	//!< Return the God Providings IsotopicVector
+	void AddGodIncome(ZAI zai, double quantity)		{ AddGod(zai*quantity); }	//!< Add a ZAI*quantity to GodIncome
+	void AddGod(IsotopicVector isotopicvector)	{ fGod.Add(isotopicvector); }	//!< Add a isotopicVector to GodIncome
 	void AddWaste(ZAI zai, double quantity)			{ AddWaste(zai*quantity); }	//!< Add a ZAI*quantity to Waste
 	void AddWaste(IsotopicVector isotopicvector)		{ fWaste.Add(isotopicvector); }	//!< Add a isotopicVector to Waste
 
@@ -138,7 +138,7 @@ protected :
 
 	IsotopicVector			fWaste;				///< Waste IV
 	IsotopicVector			fTotalStorage;			///< Sum of all IV in Storage IV
-	IsotopicVector			fGodIncome;			///< GodIncome IV
+	IsotopicVector			fGod;			///< GodIncome IV
 	IsotopicVector			fTotalCooling;			///< Sum of all IV in Cooling IV
 	IsotopicVector			fFuelFabrication;		///< Sum of all IV in Fabrication IV
 	
