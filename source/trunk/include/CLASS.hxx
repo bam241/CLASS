@@ -22,6 +22,7 @@
 
 
 using namespace std;
+typedef long long int cSecond;
 
 template <class T> class EvolutionDataBase;
 class FabricationPlant;
@@ -44,21 +45,21 @@ public :
 
 
 //********* Get Method *********//
-	double				GetAbsoluteTime()	{ return fAbsoluteTime; }	///< Return the Absolute Clock
-	map<double, int>		GetTimeStep()		{ return fTimeStep; }		///< Return the Time Step Vector
+	cSecond				GetAbsoluteTime()	{ return fAbsoluteTime; }	///< Return the Absolute Clock
+	map<cSecond, int>		GetTimeStep()		{ return fTimeStep; }		///< Return the Time Step Vector
 	vector<TreatmentFactory*>	GetTreatmentFactory()	{ return fTreatmentFactory; }	///< Return the TF Vector
 	vector<Reactor*>		GetReactor()		{ return fReactor; }		///< Return the Reactor Vector
 	vector<Storage*>		GetStorage()		{ return fStorage; }		///< Return the Reactor Vector
 	EvolutionDataBase<ZAI>*		GetDecayDataBase() 	{ return fDecayDataBase; }	//!< Return the Pointer to the Decay DataBase
 
-	double				GetPrintSet()		{ return fPrintStep; }		///< Return the Print Step Periodicity
+	cSecond				GetPrintSet()		{ return fPrintStep; }		///< Return the Print Step Periodicity
 	bool				GetStockManagement()	{ return fStockManagement; }
 	string				GetOutputName()		{ return fOutputName; }
 	LogFile*			GetLog()		{ return fLog; }
 
 
 //********* Set Method *********//
-	void	SetTimeStep(double timestep) 				{ fPrintStep = timestep; }		///< Set the Printing Step periodicity
+	void	SetTimeStep(double timestep) 				{ fPrintStep = (cSecond)timestep; }		///< Set the Printing Step periodicity
 	void	SetStockManagement(bool val)				{ fStockManagement = val; }
 	void	SetDecayDataBase(EvolutionDataBase<ZAI>* decaydatabase) { fDecayDataBase = decaydatabase; }	//!< Set the Pointer to the Decay DataBase
 	
@@ -77,7 +78,7 @@ public :
 	
  	
 //********* Evolution Method *********//
-	void	BuildTimeVector(double t);				///< Build the Time Evolution Vector
+	void	BuildTimeVector(cSecond t);				///< Build the Time Evolution Vector
 	void	Evolution(double t);					///< Do the Evolution
 	void	TreatmentEvolution();					///< Do TF Evolution
 	void	ReactorEvolution();					///< Do the Reactor Evolution
@@ -97,7 +98,7 @@ public :
 
 
 //********* In/Out related Method *********//
-	void	ProgressPrintout( double t);
+	void	ProgressPrintout(cSecond t);
 	
 	void	Print();
 	void	Write();
@@ -113,10 +114,10 @@ public :
 protected :
 	LogFile*			fLog;
 
-	double			fPrintStep;		///< Time interval between two output update
-	double			fAbsoluteTime;		///< Absolute Clock
-	double 			fStartingTime;		///< Starting Time
-	map<double, int>	fTimeStep;		///< Time Step Vector for the evolution : 
+	cSecond			fPrintStep;		///< Time interval between two output update
+	cSecond			fAbsoluteTime;		///< Absolute Clock
+	cSecond 			fStartingTime;		///< Starting Time
+	map<cSecond, int>	fTimeStep;		///< Time Step Vector for the evolution :
 							///< 1 Printing, 
 							///< 2 Reactor Studown
 							///< 4 Start/End of reactor cycle,
