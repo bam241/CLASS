@@ -275,7 +275,8 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 				FuelBuild = true;
 				
 				ZAI U8 = ZAI(92,238,0);
-				double U8_Quantity =  (HMmass - (MPu_0+StockFactionToUse*MPu_1 ))/ZAImass.find( ZAI(92,238,0))->second*Na/1e-6;
+				double U8_Quantity = (HMmass - (MPu_0+StockFactionToUse*MPu_1 ))/ZAImass.find( ZAI(92,238,0))->second*Na/1e-6;
+				
 				fParc->AddGodIncome( U8, U8_Quantity );
 				
 				for(int i = (int)fFractionToTake.size()-1; i >= 0; i--)
@@ -353,8 +354,6 @@ DBGL;
 
 	EvolutiveProduct EvolBuild = distances.begin()->second.GenerateDBFor(isotopicvector);
 	
-	
-
 	return EvolBuild;
 DBGL;
 }

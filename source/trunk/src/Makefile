@@ -46,7 +46,7 @@ all:		$(OBJS)
 		@echo "lib$(LIBNAME).so done"
 		$(LD) $(LDFLAGS) $(ROOTOBJS) -o $(LIBDIR)/lib$(LIBNAME)_root.so
 		@echo "lib$(LIBNAME)_root.so done"
-
+		@rm -f *.o
 
 
 
@@ -76,6 +76,8 @@ EvolutiveProductDict.cxx:	$(LOCALINC)/EvolutiveProduct.hxx
 
 
 clean:
+		@rm -vf $(OBJS) *~ core
+fullclean :
 		@rm -vf $(OBJS) *~ core *Dict.cxx
 
 .SUFFIXES: .cxx

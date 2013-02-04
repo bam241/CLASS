@@ -116,7 +116,7 @@ Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	fCycleTime = cycletime;
 	fCreationTime = creationtime;
 	fLifeTime = lifetime;
-	fPower = BurnUp*3600*24 / (cycletime) * HMMass *1e9; //BU in GWd/t
+	fPower = BurnUp*3600.*24. / (cycletime) * HMMass *1e9; //BU in GWd/t
 	DBGL;
 }
 
