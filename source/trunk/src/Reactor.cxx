@@ -54,8 +54,8 @@ Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	fPower = -1.;
 	fCycleTime = -1.;	 //BU in GWd/t
 	
-	fCreationTime = creationtime;
-	fLifeTime = lifetime;
+	fCreationTime = (cSecond)creationtime;
+	fLifeTime = (cSecond)lifetime;
 	DBGL;
 }
 
@@ -83,10 +83,10 @@ Reactor::Reactor(double Power, EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	fInternalTime = 0;
 	fInCycleTime = 0;
 	fPower = Power;
-	fCycleTime = BurnUp*1e9 / (fPower)  * HMMass  *3600*24;	 //BU in GWd/t
+	fCycleTime = (cSecond) (BurnUp*1e9 / (fPower)  * HMMass  *3600*24);	 //BU in GWd/t
 
-	fCreationTime = creationtime;
-	fLifeTime = lifetime;
+	fCreationTime = (cSecond)creationtime;
+	fLifeTime = (cSecond)lifetime;
 	DBGL;
 }
 
@@ -113,10 +113,10 @@ Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 
 	fInternalTime = 0;
 	fInCycleTime = 0;
-	fCycleTime = cycletime;
-	fCreationTime = creationtime;
-	fLifeTime = lifetime;
-	fPower = BurnUp*3600.*24. / (cycletime) * HMMass *1e9; //BU in GWd/t
+	fCycleTime = (cSecond)cycletime;
+	fCreationTime = (cSecond)creationtime;
+	fLifeTime = (cSecond)lifetime;
+	fPower = BurnUp*3600.*24. / (fCycleTime) * HMMass *1e9; //BU in GWd/t
 	DBGL;
 }
 
@@ -140,15 +140,15 @@ Reactor::Reactor(EvolutiveProduct evolutivedb,
 
 	fInternalTime = 0;
 	fInCycleTime = 0;
-	fCycleTime = cycletime;
-	fCreationTime = creationtime;
-	fLifeTime = lifetime;
+	fCycleTime = (cSecond)cycletime;
+	fCreationTime = (cSecond)creationtime;
+	fLifeTime = (cSecond)lifetime;
 
 	fPower = fEvolutionDB.GetPower();
 
 	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
 	fIVInCycle = fEvolutionDB.GetIsotopicVectorAt(0);
-	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt(fCycleTime/fEvolutionDB.GetPower()*fPower);
+	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 	DBGL;
 }
 
@@ -165,12 +165,12 @@ void Reactor::SetCycleTime(double cycletime)
 {
 	if(fFixedFuel==true)
 	{
-		fCycleTime = cycletime;
+		fCycleTime = (cSecond)cycletime;
 		fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt(fCycleTime/fEvolutionDB.GetPower()*fPower);
 	}
 	else
 	{
-		fCycleTime = cycletime;
+		fCycleTime = (cSecond)cycletime;
 		fPower = fBurnUp*3600*24 / (fCycleTime) * fHeavyMetalMass *1e9; //BU in GWd/t
 	}
 }
@@ -180,12 +180,12 @@ void Reactor::SetPower(double Power)
 	if(fFixedFuel==true)
 	{
 		fPower = Power;
-		fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt(fCycleTime/fEvolutionDB.GetPower()*fPower);
+		fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 	}
 	else
 	{
 		fPower = Power;
-		fCycleTime = fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24;	 //BU in GWd/t
+		fCycleTime = (cSecond)(fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);	 //BU in GWd/t
 	}
 
 }
@@ -195,7 +195,7 @@ void Reactor::SetEvolutionDB(EvolutiveProduct evolutionDB)
 {
 	DBGL;
 	fEvolutionDB = evolutionDB;
-	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt(fCycleTime/fEvolutionDB.GetPower()*fPower);
+	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
 
 	DBGL;
@@ -210,14 +210,13 @@ void Reactor::SetNewFuel(EvolutiveProduct ivdb)
 }
 
 //________________________________________________________________________
-void Reactor::Evolution(double t)
+void Reactor::Evolution(cSecond t)
 {
 	DBGL;
 
-	if(fShutDown == true) return; // Reactor stop...
-	
-	// Check if the Reactor has been created ...
-	if(t<fCreationTime) return;
+	if( fShutDown == true || t < fCreationTime || (t == fInternalTime && t!=0) ) return; // Reactor stop...
+										   // Check if the Reactor has been created ...
+
 	DBGL;
 	
 
@@ -231,7 +230,7 @@ void Reactor::Evolution(double t)
 	// Check if the Reactor if started ...
 	if(fIsStarted == false) return; 
 
-	double EvolutionTime = t - fInternalTime; // Calculation of the evolution time (relativ)
+	cSecond EvolutionTime = t - fInternalTime; // Calculation of the evolution time (relativ)
 
 	if( abs(EvolutionTime + fInCycleTime - fCycleTime) < 3600 )		//End of Cycle
 	{
@@ -249,7 +248,7 @@ void Reactor::Evolution(double t)
 		fInternalTime += EvolutionTime;							// Update Internal Time
 		fInCycleTime += EvolutionTime;							// Update InCycleTime
 	
-		fIVReactor = fEvolutionDB.GetIsotopicVectorAt( (fInCycleTime)/fEvolutionDB.GetPower()*fPower );	// update the fuel composition
+		fIVReactor = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fInCycleTime/fEvolutionDB.GetPower()*fPower) );	// update the fuel composition
 		
 		if(t>=fCreationTime + fLifeTime)	fShutDown = true;
 	} 

@@ -48,7 +48,7 @@ DBGL;
 //________________________________________________________________________
 //	Get Decay
 //________________________________________________________________________
-IsotopicVector Storage::GetDecay(IsotopicVector isotopicvector, double t)
+IsotopicVector Storage::GetDecay(IsotopicVector isotopicvector, cSecond t)
 {
 DBGL;
 	IsotopicVector IV;
@@ -135,11 +135,11 @@ DBGL;
 }
 
 //________________________________________________________________________
-void Storage::StorageEvolution(double t)
+void Storage::StorageEvolution(cSecond t)
 {
 DBGL;
 
-	if(t == fInternalTime && t!=0) return;
+	if(t == fInternalTime && t !=0 ) return;
 
 	for(int i = (int)fIVStock.size()-1 ; i >=0; i--)
 		if(Norme(fIVStock[i]) == 0)
@@ -163,7 +163,7 @@ DBGL;
 }
 
 //________________________________________________________________________
-void Storage::Evolution(double t)
+void Storage::Evolution(cSecond t)
 {
 DBGL;
 	// Check if the Storage has been created ...
