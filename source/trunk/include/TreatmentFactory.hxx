@@ -1,17 +1,6 @@
 #ifndef __TreatmentFactory_HXX__
 #define __TreatmentFactory_HXX__
 
-/*!
- \file 
- \brief Header file for TreatmentFactory class.
-
- The aim of the Class is to manage evolution of all out reactor fuel. from Cooling to Waste
-
- 
- @author BaM
- @version 0.
- */
-
 
 
 
@@ -21,12 +10,27 @@
 #include "IsotopicVector.hxx"
 
 using namespace std;
+typedef long long int cSecond;
 
 class Storage;
 class CLASS;
 class LogFile;
 template <class T> 
 class EvolutionDataBase;
+
+
+/*!
+ \file
+ \brief Header file for TreatmentFactory class.
+ 
+ The aim of the Class is to manage evolution of all out reactor fuel. from Cooling to Waste
+ 
+ 
+ @author BaM
+ @version 0.
+ */
+
+
 
 class TreatmentFactory : public TObject
 {
@@ -52,7 +56,7 @@ public :
 
 	void SetDecayDataBase(EvolutionDataBase<ZAI>* ddb)	{ fDecayDataBase = ddb; }		//!< Set the pointer to the Decay DataBase
 
-	void SetCoolingTime(double time) 		{ fCoolingTime = time; }			//!< Set Cooling Time
+	void SetCoolingTime(double time) 		{ fCoolingTime = (cSecond)time; }			//!< Set Cooling Time
 
 //********* Get Method *********//
 	int 		GetId()		const		{ return fId; }			//!< Return the TF Parc'Is
@@ -60,9 +64,9 @@ public :
 	CLASS*		GetParc()	const		{ return fParc; }			//!< Return the Pointer to the Parc
 	Storage*	GetStorage()	const		{ return fStorage; }		//!< Return the Pointer to the Storage
 	
-	double GetInternalTime() const			{ return fInternalTime; }		//!< Return Creation Time
-	double GetCreationTime() const			{ return fCreationTime; }		//!< Return Internal Time
-	double GetCoolingTime() const			{ return fCoolingTime; }		//!< Return the Cooling Time
+	cSecond GetInternalTime() const			{ return fInternalTime; }		//!< Return Creation Time
+	cSecond GetCreationTime() const			{ return fCreationTime; }		//!< Return Internal Time
+	cSecond GetCoolingTime() const			{ return fCoolingTime; }		//!< Return the Cooling Time
 
 	
 	EvolutionDataBase<ZAI>* 	GeDecayDataBase() const	{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
@@ -72,7 +76,7 @@ public :
 //********* IsotopicVector Method *********//
 
 //--------- Cooling ---------//
-	vector<double>	GetCoolingStartingTime() const	{ return fCoolingStartingTime; }
+	vector<cSecond>	GetCoolingStartingTime() const	{ return fCoolingStartingTime; }
 											//!< Return the vector of Cooling Sstarting Time
 	vector<IsotopicVector>	GetIVCooling() const		{ return fIVCooling; }	//!< Return the vector of Cooling IsotopicVector
 	void			AddIVCooling(IsotopicVector IV);			//!< Add Cooling IsotopicVector
@@ -81,13 +85,13 @@ public :
 
 
 //********* Other Method *********//
-	void Evolution(double t);		//!< Performe the evolution until the Time t
+	void Evolution(cSecond t);		//!< Performe the evolution until the Time t
 	void Dump();				//!< Write Modification (exchange between Cooling, Separation and Storage)
 	
 	
 protected :
 	int		fId;			//!< Identity of the Reactor inside the Parc
-	double 		fInternalTime;		///< Internal Clock
+	cSecond		fInternalTime;		///< Internal Clock
 	bool 		IsStarted;		///< True if Running, False Otherwise
 	
 //********* Internal Parameter *********//
@@ -98,22 +102,22 @@ protected :
 
 	EvolutionDataBase<ZAI>*	fDecayDataBase;		//!< Pointer to the Decay DataBase
 
-	double 		fCreationTime;		///< Date of Creation of the Factory
-	double 		fCoolingTime;		///< Cooling Duration Time
+	cSecond 		fCreationTime;		///< Date of Creation of the Factory
+	cSecond 		fCoolingTime;		///< Cooling Duration Time
 
 
 //********* Isotopic Quantity *********//
 //--------- Cooling ---------//
 	vector<IsotopicVector>	fIVCooling;		///< Vector of the Cooling Isotopic Vector
-	vector<double>		fCoolingStartingTime;	///< Vector of the Cooling Starting Time
+	vector<cSecond>		fCoolingStartingTime;	///< Vector of the Cooling Starting Time
 	vector<int>		fCoolingIndex;		///< Vector of the Cooling Index
 	int			fCoolingLastIndex;	//!< Number of Cooling IV Treated
 	vector<int>		fCoolingEndOfCycle;	//!< Index of the Cooling IV reaching the End of a Cooling Cycle
 
 
 //********* Private Method *********//
-	IsotopicVector GetDecay(IsotopicVector isotopicvector, double t);	//!< Get IsotopicVector Decay at the t time
-	void	CoolingEvolution(double t);						//!< Deal the cooling and then send it to Separation
+	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
+	void	CoolingEvolution(cSecond t);						//!< Deal the cooling and then send it to Separation
 
 
 

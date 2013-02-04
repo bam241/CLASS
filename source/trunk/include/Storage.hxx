@@ -18,6 +18,7 @@
 #include <vector>
 
 using namespace std;
+typedef long long int cSecond;
 
 class CLASS;
 class LogFile;
@@ -56,8 +57,8 @@ public :
 	
 	//!<
 	EvolutionDataBase<ZAI>* GeDecayDataBase() const		{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
-	vector<IsotopicVector> GetStock() 	const		{ return fIVStock; }		//!< Return the Storage IsotopicVector
-	IsotopicVector GetFullStock() 	const			{ return fIVFullStock; }	//!< Return the Full Storage
+	vector<IsotopicVector> GetStock()	const		{ return fIVStock; }		//!< Return the Storage IsotopicVector
+	IsotopicVector GetFullStock()		const		{ return fIVFullStock; }	//!< Return the Full Storage
 
 //********* IsotopicVector Method *********//
 
@@ -75,12 +76,12 @@ public :
 	void TakeFromStock(IsotopicVector isotopicvector);						//!<
 
 //********* Other Method *********//
-	void Evolution(double t);		//!< Performe the evolution until the Time t
+	void Evolution(cSecond t);		//!< Performe the evolution until the Time t
 	
 	
 protected :
 	int		fId;			//!< Identity of the Reactor inside the Parc
-	double 		fInternalTime;		///< Internal Clock
+	cSecond		fInternalTime;		///< Internal Clock
 	
 //********* Internal Parameter *********//
 	CLASS* 		fParc;			//!< Pointer to the Parc
@@ -99,8 +100,8 @@ protected :
 
 
 //********* Private Method *********//
-	IsotopicVector GetDecay(IsotopicVector isotopicvector, double t);	//!< Get IsotopicVector Decay at the t time
-	void	StorageEvolution(double t);					//!< Deal the Storage Decay Evolution
+	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
+	void	StorageEvolution(cSecond t);					//!< Deal the Storage Decay Evolution
 
 
 

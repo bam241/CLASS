@@ -23,6 +23,7 @@ class EvolutiveProduct;
 class LogFile;
 
 using namespace std;
+typedef long long int cSecond;
 
 ///< A ZAIIDataBase defined a database which contain the evolution of faction of all product, subproduct (or sub(sub...sub)product) for a nucleus. 
 /*!
@@ -94,7 +95,7 @@ protected :
 	TGraph*		fKeff;
 	TGraph*		fFlux;
 	
-	double 		fDBendTime;
+	cSecond 		fDBendTime;
 	bool		fIsCrossSection;
 	
 	

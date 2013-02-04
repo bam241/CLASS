@@ -20,7 +20,9 @@
 #include <vector>
 #include <map>
 #include "TObject.h"
+
 using namespace std;
+typedef long long int cSecond;
 
 class Storage;
 class CLASS;
@@ -58,7 +60,7 @@ public :
 	void	SetChronologicalTimePriority(bool bval)	{ fChronologicalTimePriority = bval;}	//!< Set the chronological priority (true for chronological, false unstead)
 	
 	void	AddReactor(int reactorid, double creationtime)
-			{ fReactorNextStep.insert( pair<int,double> (reactorid, creationtime-fFabricationTime) ); }	//!< Add a new reactor
+			{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-fFabricationTime) ); }	//!< Add a new reactor
 
 //********* Get Method *********//
 
@@ -66,8 +68,8 @@ public :
 	CLASS*		GetParc()		{ return fParc; }		//!< Return the Pointer to the Parc
 	Storage*	GetStorage()		{ return fStorage; }		//!< Return the Pointer to the Storage
 
-	double	GetInternalTime() const		{ return fInternalTime; }	//!< Return Creation Time
-	double	GetFabricationTime() const	{ return fFabricationTime; }	//!< Return the Fabrication Time
+	cSecond	GetInternalTime() const		{ return fInternalTime; }	//!< Return Creation Time
+	cSecond	GetFabricationTime() const	{ return fFabricationTime; }	//!< Return the Fabrication Time
 	
 	
 	map<int, IsotopicVector >	GetReactorFuturIncome() const
@@ -83,7 +85,7 @@ public :
 //---------- FabricationPlant ----------//
 
 	void	AddValorisableIV(ZAI zai, double factor);						///< Add Valorisable Element
-	void	Evolution(double t);									//!< Perform the Evolution
+	void	Evolution(cSecond t);									//!< Perform the Evolution
 	void	BuildFuelForReactor(int ReactorId);							//!< Build a Fuel for the reactor ReactorId
 	void	RecycleStock(double fraction);								//!< Take a franction of the current stock
 	IsotopicVector	GetStockToRecycle();								//!< Get the next stock to recycle
@@ -102,7 +104,7 @@ public :
 
 protected :
 	int		fId;			//!< Identity of the FabricationPlant inside the Parc
-	double 		fInternalTime;		///< Internal Clock
+	cSecond		fInternalTime;		///< Internal Clock
 
 
 //********* Internal Parameter *********//
@@ -110,7 +112,7 @@ protected :
 	LogFile*	fLog;				//!< Pointer to the Log
 
 	map<ZAI ,double>	fValorisableIV;		///< The Valorisable Table
-	map<int, double >	fReactorNextStep;	//!< Next Time Step to Build a New Fuel
+	map<int, cSecond >	fReactorNextStep;	//!< Next Time Step to Build a New Fuel
 
 	map< int,EvolutiveProduct >	fReactorFuturDB; //!< List of the Futur EvolutiveProduct use in the reactor
 	map< int,IsotopicVector >	fReactorFuturIV; //!< List of the Futur Fuel Isotopic Vector used in the reactor
@@ -128,8 +130,8 @@ protected :
 
 
 //********* Private Method *********//
-	IsotopicVector GetDecay(IsotopicVector isotopicvector, double t);	//!< Get IsotopicVector Decay at the t time
-	void	FabricationPlantEvolution(double t);				//!< Deal the FabricationPlant Evolution
+	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
+	void	FabricationPlantEvolution(cSecond t);				//!< Deal the FabricationPlant Evolution
 	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);	//!< Make the Separation 
 						//!< return IV[0] -> To Stock / IV[1] -> To Waste
 

@@ -15,6 +15,7 @@
 #include <vector>
 
 using namespace std;
+typedef long long int cSecond;
 
 class IsotopicVector;
 class ZAI;

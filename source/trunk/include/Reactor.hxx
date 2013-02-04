@@ -19,6 +19,7 @@
 
 
 using namespace std;
+typedef long long int cSecond;
 
 
 class CLASS;
@@ -63,9 +64,9 @@ public :
 	IsotopicVector		GetIVBeginCycle() const		{ return fIVBeginCycle; }	//!< Return the Starting Cycle IV (Note : IVBegin != IVIn, only if using charging plan)
 	IsotopicVector		GetIVOutCycle()	const		{ return fIVOutCycle; }		//!< Return the Out Cycle IV 
 	IsotopicVector		GetIVInCycle()	const		{ return fIVInCycle; }		//!< Return the In Cycle IV (Note : IVIn != IVBegin, only if using charging plan)
-	double 			GetCycleTime()	const		{ return fCycleTime; } 		//!< Return the cycle time of the Reactor
-	double 			GetCreationTime() const		{ return fCreationTime; }	//!< Return the creation time of the Reactor
-	double 			GetLifeTime()	const		{ return fLifeTime; }		//!< Return the creation time of the Reactor
+	cSecond 		GetCycleTime()	const		{ return fCycleTime; } 		//!< Return the cycle time of the Reactor
+	cSecond 		GetCreationTime() const		{ return fCreationTime; }	//!< Return the creation time of the Reactor
+	cSecond 		GetLifeTime()	const		{ return fLifeTime; }		//!< Return the creation time of the Reactor
 
 	EvolutiveProduct	GetEvolutionDB()		const	{ return fEvolutionDB; }		//!< Return the Evolution database of the Fuel
 	TreatmentFactory*	GetAssociedTreatmentFactory()	const	{ return fAssociedTreatmentFactory; }	//!< Return the pointer to Associeted TF
@@ -95,7 +96,7 @@ public :
 	void SetEvolutionDB(EvolutiveProduct evolutionDB);						//!< Set the Pointer to the DB Evolution of the Reactor
 	
 //********* Modification Method *********//
-	void Evolution(double t);									//!< Performe the Evolution until the Time t
+	void Evolution(cSecond t);									//!< Performe the Evolution until the Time t
 	void Dump();											//!< Write Modification (IV In/Out, filling the TF...)
 	void SetNewFuel(EvolutiveProduct ivdb);								//!< Change the Evolutive DB of the Reactor
 //********* Other Method *********//
@@ -103,8 +104,8 @@ public :
 	
 protected :
 	int		fId;			//!< Identity of the Reactor inside the Parc
-	double		fInternalTime;		///< Internal Clock
-	double		fInCycleTime;		///< Time spend since the beginning of the last Cycle
+	cSecond		fInternalTime;		///< Internal Clock
+	cSecond		fInCycleTime;		///< Time spend since the beginning of the last Cycle
 	bool		fIsStarted;		///< True if Running, False Otherwise
 	bool		fShutDown;		///< True if ShutDown
 	bool		fEndOfCycle;		///< True if Reaching the End of a Reactor Cycle
@@ -121,9 +122,9 @@ protected :
 	EvolutiveProduct	fEvolutionDB;			//!< Pointer to the Evolution DataBase
 	EvolutionDataBase<IsotopicVector>* 	fFuelTypeDB;	//! Pointer to a Fuel Type Database
 	
-	double		fCreationTime;		///< CLASS Universal Time of Creation
-	double		fLifeTime;		///< LifeTime Of the Reactor
-	double 		fCycleTime;		///< Cycle Time
+	cSecond		fCreationTime;		///< CLASS Universal Time of Creation
+	cSecond		fLifeTime;		///< LifeTime Of the Reactor
+	cSecond		fCycleTime;		///< Cycle Time
 	double 		fPower;			///< Power
 	
 	IsotopicVector	fIVReactor;		///< Fuel evoluated IV in the reactor
