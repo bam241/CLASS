@@ -421,10 +421,7 @@ void EvolutiveProduct::ReadDB(string DBfile)
 		if (StringLine::NextWord(line, start, ' ') == "NormalizationFactor")
 		{
 			double NormFactor = atof(StringLine::NextWord(line, start, ' ').c_str());
-			fPower = fPower * NormFactor;
-			for (int i = 0; i < (int) vFlux.size(); i++)
-				vFlux[i] =  vFlux[i]  * NormFactor;
-				
+			fPower = fPower * NormFactor;				
 			double Flux[vFlux.size()];
 			for(int i=0; i < (int)vFlux.size();i++)
 				Flux[i] = vFlux[i]; 
@@ -446,6 +443,7 @@ void EvolutiveProduct::ReadDB(string DBfile)
 EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 {
 	DBGL;
+	
 	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
 	
 	{	// TMP
@@ -786,6 +784,7 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 	//-------------------------//
 	double timevector[fEvolutiveProduct.begin()->second->GetN()];
 	timevector[0] = 0.;
+	cout << "decay "<< DecayMatrix[7][7] << endl;
 
 	for(int i = 0; i < fEvolutiveProduct.begin()->second->GetN()-1; i++)
 	{
@@ -809,7 +808,7 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 				BatemanMatrix[1][ index_inver.find( (*it).first )->second] += 2*y* 1e-24 *Flux;
 			}
 		}
-		
+
 		// ----------------  A(n,.)A+1
 		for(it = fCaptureXS.begin() ; it != fCaptureXS.end(); it++)
 		{
@@ -894,7 +893,7 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 									cout << "Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl; 
 									exit(1);
 								}
-//								if( (*it6).first.Z() == 92 && (*it6).first.A() == 233) cout << y* 1e-24 *Flux * (*it5).second << endl;
+//if( (*it6).first.Z() == 92 && (*it6).first.A() == 233) cout << y* 1e-24 *Flux * (*it5).second << endl;
 								BatemanMatrix[(*it6).second][index_inver.find( (*it).first )->second] += y * 1e-24 * Flux * (*it5).second * (*it4).second;
 							}
 						}
@@ -905,7 +904,6 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 
 			}
 		}
-
 		// ----------------  A(n,2n)A-1
 		for(it = fn2nXS.begin() ; it != fn2nXS.end(); it++)
 		{
@@ -987,6 +985,7 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 			do
 			{
 				NormN = 0;
+
 				TMatrixT<double> BatemanMatrixDLTermtmp = TMatrixT<double>(index.size(),index.size());  // Addind it;
 				BatemanMatrixDLTermtmp = BatemanMatrixDLTermN;
 				BatemanMatrixDLTermN.Mult(BatemanMatrixDLTermtmp, BatemanMatrix );
@@ -999,9 +998,11 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 					for(int n = 0; n < (int)index.size(); n++)
 						NormN += BatemanMatrixDLTermN[m][n]*BatemanMatrixDLTermN[m][n]; 
 				j++;
-			} while ( NormN != 0);
+			} while ( NormN != 0 || j==2);
+
 		}
 		
+
 		NEvoluingMatrix = BatemanMatrixDL * NMatrix.back() ;
 		NMatrix.push_back(NEvoluingMatrix);
 	}
@@ -1017,8 +1018,7 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 
 		GeneratedDB.Insert(pair<ZAI, TGraph*> (index.find(i)->second, new TGraph(NMatrix.size(), timevector, ZAIQuantity) ) );
 	}
-	
-	GeneratedDB.SetPower(fPower*NormFactor );
+	GeneratedDB.SetPower(fPower * NormFactor );
 	GeneratedDB.SetFuelType(fFuelType );
 	GeneratedDB.SetReactorType(fReactorType );
 	GeneratedDB.SetHMMass(fHMMass*NormFactor );
