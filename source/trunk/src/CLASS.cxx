@@ -48,7 +48,7 @@ string dtoa(double num)
 CLASS::CLASS()
 {
 DBGL;
-	fPrintStep = (double)(3600*24*365.25);  // One Step per Year
+	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
 	fAbsoluteTime = 0;
 	fStockManagement = true;
 	fStartingTime = 0;
@@ -65,8 +65,8 @@ DBGL;
 CLASS::CLASS(double abstime)
 {
 DBGL;
-	fPrintStep = (double)(3600*24*365.25);  // One Step per Year
-	fAbsoluteTime = abstime;
+	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
+	fAbsoluteTime = (cSecond)abstime;
 	fStockManagement = true;
 	fStartingTime = fAbsoluteTime;
 	fOutputName = "CLASS_Default.root";
@@ -82,8 +82,8 @@ DBGL;
 CLASS::CLASS(string name, double abstime)
 {
 DBGL;
-	fPrintStep = (double)(3600*24*365.25);  // One Step per Year
-	fAbsoluteTime = abstime;
+	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
+	fAbsoluteTime = (cSecond)abstime;
 	fStockManagement = true;
 	fStartingTime = fAbsoluteTime;
 
@@ -156,23 +156,24 @@ DBGL;
 
 
 //________________________________________________________________________
-void CLASS::BuildTimeVector(double t)
+void CLASS::BuildTimeVector(cSecond t)
 {
 DBGL;
+	
 	fTimeStep.clear();
 	fTimeStep.insert( pair<double ,int>(t,1) );
 
 //********* Printing Step *********//
 	{
-		double step = fStartingTime;
+		cSecond step = fStartingTime;
 		if(step >= fAbsoluteTime )
-			fTimeStep.insert( pair<double ,int>(step,1) );
+			fTimeStep.insert( pair<cSecond ,int>(step,1) );
 		step += fPrintStep;
 		do 
 		{
 			
 			if(step >= fAbsoluteTime )
-				fTimeStep.insert( pair<double ,int>(step,1) );
+				fTimeStep.insert( pair<cSecond ,int>(step,1) );
 			step += fPrintStep;
 		}
 		while( step < t );
@@ -194,14 +195,14 @@ DBGL;
 		    (fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime() < t) )
 		{
 			//********* Reactor Shutdown *********//
-			pair< map<double, int>::iterator, bool > IResult  = fTimeStep.insert( pair<double ,int>(fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime(),2) );
+			pair< map<cSecond, int>::iterator, bool > IResult  = fTimeStep.insert( pair<cSecond ,int>(fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime(),2) );
 			if( IResult.second == false ) IResult.first->second |= 2;
 			
 			//********* End of Cooling after reactor Shutdown *********//
 			if(fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime()+coolingstep >= fAbsoluteTime 
 			&& fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime()+coolingstep <= t)
 			{
-				pair< map<double, int>::iterator, bool > IResult = fTimeStep.insert( pair<double ,int>(fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime()+coolingstep,8) );
+				pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime()+coolingstep,8) );
 				if( IResult.second == false ) IResult.first->second |= 8;
 			}
 		}
@@ -210,7 +211,7 @@ DBGL;
 		//********* Start Of Reactor First Cycle *********//
 		if(step >= fAbsoluteTime &&  step <= t && step < fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime())		
 		{
-			pair< map<double, int>::iterator, bool > IResult = fTimeStep.insert( pair<double ,int>(step,4) );
+			pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step,4) );
 			if( IResult.second == false ) IResult.first->second |= 4;
 		}
 
@@ -219,7 +220,7 @@ DBGL;
 		{
 			if(step > fAbsoluteTime && step - fabricationstep <= t && step < fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime() )
 			{
-				pair< map<double, int>::iterator, bool > IResult = fTimeStep.insert( pair<double ,int>(step -fabricationstep,16) );
+				pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step -fabricationstep,16) );
 				if( IResult.second == false ) IResult.first->second  |= 16;
 			}
 			else if(step - fabricationstep < fStartingTime)
@@ -241,7 +242,7 @@ DBGL;
 			if(fReactor[i]->IsFuelFixed() == false)
 				if(step > fAbsoluteTime && step - fabricationstep <= t && step < fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime())
 				{						// Set End of reactor cycle
-					pair< map<double, int>::iterator, bool > IResult = fTimeStep.insert( pair<double ,int>(step -fabricationstep,16) );
+					pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step -fabricationstep,16) );
 					if( IResult.second == false ) IResult.first->second  |= 16;
 				}
 
@@ -249,14 +250,14 @@ DBGL;
 			//********* End/Start Of Reactor Cycle Step *********//
 			if(step > fAbsoluteTime && step <= t && step < fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime())
 			{						// Set End of reactor cycle
-				pair< map<double, int>::iterator, bool > IResult = fTimeStep.insert( pair<double ,int>(step,4) );
+				pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step,4) );
 				if( IResult.second == false ) IResult.first->second  |= 4;
 			}
 
 			//********* End of Cooling Step *********//
 			if(step >= fAbsoluteTime && step + coolingstep <= t)			// Set End of Cooling
 			{
-				pair< map<double, int>::iterator, bool > IResult = fTimeStep.insert( pair<double ,int>(step+coolingstep,8) );
+				pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step+coolingstep,8) );
 				if( IResult.second == false ) IResult.first->second |= 8;
 			}
 
@@ -276,8 +277,8 @@ DBGL;
 		{
 			if(fTreatmentFactory[i]->GetCoolingStartingTime()[j] +  fTreatmentFactory[i]->GetCoolingTime() > fAbsoluteTime )
 			{
-				pair< map<double, int>::iterator, bool > IResult;
-				IResult = fTimeStep.insert( pair<double ,int>(fTreatmentFactory[i]->GetCoolingStartingTime()[j] +  fTreatmentFactory[i]->GetCoolingTime(),8) );
+				pair< map<cSecond, int>::iterator, bool > IResult;
+				IResult = fTimeStep.insert( pair<cSecond ,int>(fTreatmentFactory[i]->GetCoolingStartingTime()[j] +  fTreatmentFactory[i]->GetCoolingTime(),8) );
 				if( IResult.second == false ) IResult.first->second |= 8;
 			}
 		}
@@ -293,9 +294,9 @@ DBGL;
 		cout		<< "!!Warning!! !!!CLASS!!! Can't open \" CLASS_TimeStep \"\n" << endl;
 		fLog->fLog 	<< "!!Warning!! !!!CLASS!!! Can't open \" CLASS_TimeStep \"\n" << endl;
 	}
-	map<double ,int >::iterator it;
+	map<cSecond ,int >::iterator it;
 	for( it = fTimeStep.begin(); it != fTimeStep.end(); it++)
-		TimeStepfile << (*it).first/3600/24./365.25 << " " << (*it).second << endl;
+		TimeStepfile << (double)((*it).first/3600/24./365.25) << " " << (*it).second << endl;
 	
 	DBGL;	
 }
@@ -357,7 +358,7 @@ void CLASS::Evolution(double t)
 {
 DBGL;
 
-	BuildTimeVector(t);
+	BuildTimeVector( (cSecond)t );
 
 
 	
@@ -366,7 +367,7 @@ DBGL;
 	OutAttach();
 
 	fOutT->Fill();
-	map<double ,int >::iterator it;
+	map<cSecond ,int >::iterator it;
 	for(it = fTimeStep.begin(); it != fTimeStep.end(); it++)
 	{
 
@@ -428,7 +429,7 @@ DBGL;
 			{
 			UpdateParc();
 			fOutT->Fill();
-			ProgressPrintout(t);
+			ProgressPrintout( (cSecond)t);
 			}
 		}
 
@@ -439,7 +440,7 @@ DBGL;
 DBGL;
 }
 
-void CLASS::ProgressPrintout(double t)
+void CLASS::ProgressPrintout(cSecond t)
 {
 DBGL;
 	double Time = (fAbsoluteTime-fStartingTime)/3600/24/365.25 ;
@@ -569,7 +570,7 @@ void CLASS::OutAttach()
 DBGL;
 	ResetQuantity();
 	//Branch Absolut Time
-	fOutT->Branch("AbsTime",&fAbsoluteTime,"AbsoluteTime/D");
+	fOutT->Branch("AbsTime",&fAbsoluteTime,"AbsoluteTime/l");
 	
 	// Branch the Sum IV
 

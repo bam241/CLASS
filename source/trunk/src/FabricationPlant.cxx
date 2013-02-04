@@ -57,7 +57,7 @@ DBGL;
 FabricationPlant::FabricationPlant(Storage* storage, Storage* reusable, double fabircationtime)
 {
 DBGL;
-	fFabricationTime = fabircationtime;
+	fFabricationTime = (cSecond)fabircationtime;
 	fChronologicalTimePriority = false;
 	fStorage = storage;
 	fReUsable = reusable;
@@ -95,11 +95,11 @@ DBGL;
 //________________________________________________________________________
 //_______________________________ Evolution ______________________________
 //________________________________________________________________________
-void FabricationPlant::Evolution(double t)
+void FabricationPlant::Evolution(cSecond t)
 {
 	DBGL;
 		// Check if the FabricationPlant has been created ...
-	if(t == fInternalTime && t!=0) return;
+	if(t == fInternalTime && t != 0) return;
 		// Make the evolution for the FabricationPlant ...
 	FabricationPlantEvolution(t);
 		// ... And Finaly update the AbsoluteInternalTime
@@ -108,12 +108,12 @@ void FabricationPlant::Evolution(double t)
 }
 
 //________________________________________________________________________
-void FabricationPlant::FabricationPlantEvolution(double t)
+void FabricationPlant::FabricationPlantEvolution(cSecond t)
 {
 	DBGL;
 	
 	
-	map<int ,double >::iterator it;
+	map<int ,cSecond >::iterator it;
 	for( it = fReactorNextStep.begin(); it!= fReactorNextStep.end(); it++ )
 	{
 		if( t + fFabricationTime >= fParc->GetReactor()[ (*it).first ]->GetCreationTime()
@@ -318,7 +318,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 //________________________________________________________________________
 //_________________________________ Decay ________________________________
 //________________________________________________________________________
-IsotopicVector FabricationPlant::GetDecay(IsotopicVector isotopicvector, double t)
+IsotopicVector FabricationPlant::GetDecay(IsotopicVector isotopicvector, cSecond t)
 {
 	DBGL;
 	IsotopicVector IV;

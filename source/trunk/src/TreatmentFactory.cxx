@@ -35,10 +35,10 @@ TreatmentFactory::TreatmentFactory(Storage* storage,
 				   double coolingtime)
 {
 DBGL;
-	fCoolingTime = coolingtime;
+	fCoolingTime = (cSecond)coolingtime;
 	fInternalTime = 0;
 	fStorage = storage;
-	fCreationTime = creation;
+	fCreationTime = (cSecond)creation;
 	IsStarted = false;
 	fCoolingLastIndex = 0;
 DBGL;
@@ -57,7 +57,7 @@ DBGL;
 //________________________________________________________________________
 //	Get Decay
 //________________________________________________________________________
-IsotopicVector TreatmentFactory::GetDecay(IsotopicVector isotopicvector, double t)
+IsotopicVector TreatmentFactory::GetDecay(IsotopicVector isotopicvector, cSecond t)
 {
 DBGL;
 	IsotopicVector IV;
@@ -117,15 +117,14 @@ DBGL;
 
 
 //________________________________________________________________________
-void TreatmentFactory::CoolingEvolution(double t)
+void TreatmentFactory::CoolingEvolution(cSecond t)
 {
 DBGL;
 	if(t == fInternalTime && t!=0) return;
-	int i;
 	int RemainingCoolingTime;
-	double EvolutionTime = t - fInternalTime;
+	cSecond EvolutionTime = t - fInternalTime;
 #pragma omp parallel for
-	for ( i = 0 ; i < (int)fIVCooling.size() ; i++)
+	for ( int i = 0 ; i < (int)fIVCooling.size() ; i++)
 	{
 		if ( abs(t - fCoolingStartingTime[i] - fCoolingTime) < 3600 ) // ">" should not append, only "=" is normal...
 		{
@@ -159,7 +158,7 @@ DBGL;
 
 
 //________________________________________________________________________
-void TreatmentFactory::Evolution(double t)
+void TreatmentFactory::Evolution(cSecond t)
 {
 DBGL;
 	// Check if the TF has been created ...

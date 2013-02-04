@@ -784,7 +784,6 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 	//-------------------------//
 	double timevector[fEvolutiveProduct.begin()->second->GetN()];
 	timevector[0] = 0.;
-	cout << "decay "<< DecayMatrix[7][7] << endl;
 
 	for(int i = 0; i < fEvolutiveProduct.begin()->second->GetN()-1; i++)
 	{
