@@ -48,7 +48,7 @@ public :
 	map<T ,EvolutiveProduct >	GetEvolutionDataBase()	const	{ return fEvolutionDataBase; }		//!< Return the EvolutionDataBase
 	string 				GetDataBaseIndex()	const	{ return fDataBaseIndex; }		//!< Return the index Name
 	string				GetFuelType()		const	{ return fFuelType; }			//!< Return the fuel type of the DB
-	vector<double>			GetPFuelParameter()	const	{ return fFuelParameter; }		//!< Return the Fuel parameter of the DB
+	vector<double>			GetFuelParameter()	const	{ return fFuelParameter; }		//!< Return the Fuel parameter of the DB
 	pair<double,double>		GetBurnUpRange()	const	{ return fBurnUpRange;}			//!< Return the BurnUp range of the DB
 	bool 				IsDefine(const T& key)	const;						//!< True the key is define, false unstead
 
