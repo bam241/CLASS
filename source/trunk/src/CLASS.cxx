@@ -52,7 +52,8 @@ DBGL;
 	fAbsoluteTime = 0;
 	fStockManagement = true;
 	fStartingTime = 0;
-	fOutputName = "CLASS_Default.root";
+	fOutputFileName = "CLASS_Default.root";
+	fOutputTreeName = "Data";
 	string logname = "CLASS.log";
 	fLog = new LogFile("CLASS.log");
 
@@ -69,7 +70,8 @@ DBGL;
 	fAbsoluteTime = (cSecond)abstime;
 	fStockManagement = true;
 	fStartingTime = fAbsoluteTime;
-	fOutputName = "CLASS_Default.root";
+	fOutputFileName = "CLASS_Default.root";
+	fOutputTreeName = "Data";
 	string logname = "CLASS.log";
 	fLog = new LogFile("CLASS.log");
 
@@ -78,23 +80,7 @@ DBGL;
 DBGL;
 }
 
-//________________________________________________________________________
-CLASS::CLASS(string name, double abstime)
-{
-DBGL;
-	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
-	fAbsoluteTime = (cSecond)abstime;
-	fStockManagement = true;
-	fStartingTime = fAbsoluteTime;
 
-	fOutputName = name;
-	fOutputName += ".log";
-	fLog = new LogFile(fOutputName);
-
-
-
-DBGL;
-}
 //________________________________________________________________________
 CLASS::~CLASS()
 {
@@ -517,24 +503,24 @@ void CLASS::OpenOutputTree()
 DBGL;
 
 	cout << "Opening OutPut File ...\t";
-	fLog->fLog << "Opening : " << fOutputName << " ...\t";
-	fOutFile = new TFile(fOutputName.c_str(),"UPDATE");
+	fLog->fLog << "Opening : " << fOutputFileName << " ...\t";
+	fOutFile = new TFile(fOutputFileName.c_str(),"UPDATE");
 
 	if(!fOutFile)
 	{
-		cout << "\nCould not open " << fOutputName <<endl;
-		fLog->fLog << "\nCould not open " << fOutputName <<endl;
+		cout << "\nCould not open " << fOutputFileName <<endl;
+		fLog->fLog << "\nCould not open " << fOutputFileName <<endl;
 		exit(-1);
 	}
 	cout << "\t ...OK!" << endl;
 
-	fOutT = new TTree("Data","Data Tree");
+	fOutT = new TTree(fOutputTreeName.c_str(), "Data Tree");
 	cout << "Creating Data Tree ...\t";
 	fLog->fLog << "Creating Data Tree ...\t";
 	if(!fOutT)
 	{
-		cout << "\nCould not create Data Tree in " << fOutputName << endl;
-		fLog->fLog << "\nCould not create Data Tree in " << fOutputName << endl;
+		cout << "\nCould not create Data Tree in " << fOutputFileName << endl;
+		fLog->fLog << "\nCould not create Data Tree in " << fOutputFileName << endl;
 		exit(-1);
 	}
 	cout << "\t ...OK!" << endl;
@@ -546,21 +532,21 @@ void CLASS::CloseOutputTree()
 DBGL;
 
 	fOutFile->ls();
-	cout << "Writing outTree " << fOutputName << endl;
-	fLog->fLog << "Writing outTree " << fOutputName << endl;
+	cout << "Writing outTree " << fOutputFileName << endl;
+	fLog->fLog << "Writing outTree " << fOutputFileName << endl;
 	fOutFile->Write();
 
 	if(fOutFile->IsOpen()) {
 		cout << "Deleting outTree : " << endl;
 		fLog->fLog << "Deleting outTree : " << endl;
 		delete fOutT;
-		cout << "Closing file : " << fOutputName <<endl;
-		fLog->fLog << "Closing file : " << fOutputName <<endl;
+		cout << "Closing file : " << fOutputFileName <<endl;
+		fLog->fLog << "Closing file : " << fOutputFileName <<endl;
 		fOutFile-> Close();
 		delete fOutFile;
 	} else {
-		cout << "File was not opened " << fOutputName << endl;
-		fLog->fLog << "File was not opened " << fOutputName << endl;
+		cout << "File was not opened " << fOutputFileName << endl;
+		fLog->fLog << "File was not opened " << fOutputFileName << endl;
 		exit(-1);
 	}
 }
