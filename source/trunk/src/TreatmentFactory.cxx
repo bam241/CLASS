@@ -26,6 +26,28 @@ ClassImp(TreatmentFactory)
 TreatmentFactory::TreatmentFactory()
 {
 DBGL;
+	fCoolingTime = 5*3600.*24.*365.25;
+
+	IsStarted = false;
+	fPutToWaste = true;
+	fInternalTime = 0;
+	fCreationTime = 0;
+	fCoolingLastIndex = 0;
+
+
+DBGL;
+}
+	//________________________________________________________________________
+TreatmentFactory::TreatmentFactory(double creation,
+				   double coolingtime)
+{
+DBGL;
+	fCoolingTime = (cSecond)coolingtime;
+	fInternalTime = 0;
+	fCreationTime = (cSecond)creation;
+	IsStarted = false;
+	fPutToWaste = true;
+	fCoolingLastIndex = 0;
 DBGL;
 }
 
@@ -40,6 +62,7 @@ DBGL;
 	fStorage = storage;
 	fCreationTime = (cSecond)creation;
 	IsStarted = false;
+	fPutToWaste = false;
 	fCoolingLastIndex = 0;
 DBGL;
 }
@@ -190,8 +213,11 @@ void TreatmentFactory::Dump()
 	{
 	
 		int idx = fCoolingEndOfCycle[i];			// Get Index number
-
-		fStorage->AddToStock(fIVCooling[idx]);
+		
+		if(fPutToWaste == false)
+			fStorage->AddToStock(fIVCooling[idx]);
+		else
+			fParc->AddWaste(fIVCooling[idx]);
 		
 		fCoolingEndOfCycle.erase(fCoolingEndOfCycle.begin()+i);	// Remove index entry
 		RemoveIVCooling(idx);					// Remove IVcooling
