@@ -221,7 +221,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 					if ((*it).first.A() >= 238 && (*it).first.A() <= 242)
 					{ 
 						nPu_1 += (*it).second;
-						Sum_AlphaI_nPuI += FuelType->GetPFuelParameter()[(*it).first.A() -237]*(*it).second;
+						Sum_AlphaI_nPuI += FuelType->GetFuelParameter()[(*it).first.A() -237]*(*it).second;
 					}
 				}
 				
@@ -236,7 +236,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 				for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 					if ((*it).first.A() >= 238 && (*it).first.A() <= 242)
 					{ 
-						Sum_AlphaI_nPuI0 += FuelType->GetPFuelParameter()[(*it).first.A() -237]*(*it).second;
+						Sum_AlphaI_nPuI0 += FuelType->GetFuelParameter()[(*it).first.A() -237]*(*it).second;
 					}				
 			}
 			
@@ -244,12 +244,12 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 			   
 			double NT = HMmass*1e6 * Na / ZAImass.find( ZAI(92,238,0) )->second;
 			
-			double N1 = (BU - FuelType->GetPFuelParameter()[6]) * NT;
+			double N1 = (BU - FuelType->GetFuelParameter()[6]) * NT;
 			double N2 = -Sum_AlphaI_nPuI0;
-			double N3 = -FuelType->GetPFuelParameter()[0] * Na / ZAImass.find( ZAI(92,238,0) )->second * (HMmass*1e6 - MPu_0*1e6);
+			double N3 = -FuelType->GetFuelParameter()[0] * Na / ZAImass.find( ZAI(92,238,0) )->second * (HMmass*1e6 - MPu_0*1e6);
 			
 			double D1 = Sum_AlphaI_nPuI;
-			double D2 = -FuelType->GetPFuelParameter()[0] * MPu_1*1e6 * Na / ZAImass.find( ZAI(92,238,0) )->second;
+			double D2 = -FuelType->GetFuelParameter()[0] * MPu_1*1e6 * Na / ZAImass.find( ZAI(92,238,0) )->second;
 			
 			StockFactionToUse = (N1 + N2 + N3) / (D1 + D2);
 			
