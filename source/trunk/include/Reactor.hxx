@@ -39,7 +39,7 @@ public :
 	///< Advbanced Constructor.
 	Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 		FabricationPlant* fabricationplant, TreatmentFactory* treatmentfactory,
-		double creationtime , double lifetime);						//!
+		double creationtime , double lifetime);					//!<
 	Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 		FabricationPlant* fabricationplant, TreatmentFactory* treatmentfactory,
 		double creationtime , double lifetime, double cycletime,
