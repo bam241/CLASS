@@ -38,9 +38,12 @@ public :
 	///< Normal constructor
  	TreatmentFactory();
 	///< Advanced Constructor
+	TreatmentFactory(double abstime,
+			 double coolingtime = 5*3600.*24.*365.25); //!<
+	
 	TreatmentFactory(Storage* Storage,
 			 double abstime = 0,
-			 double coolingtime = 5);
+			 double coolingtime = 5*3600.*24.*365.25); //!<
 
 	///< Normal Destructor.
 	~TreatmentFactory();
@@ -49,20 +52,24 @@ public :
 
 
 //********* Set Method *********//
-	void SetId(int id)				{ fId = id; }				//!< Set The TF Parc'Id
-	void SetParc(CLASS* parc)			{ fParc = parc; }				//!< Set the Pointer to the Parc
-	void SetLog(LogFile* Log)			{ fLog = Log; }				//!< Set the Pointer to the Log
-	void SetStorage(Storage* storage)		{ fStorage = storage; }			//!< Set the Pointer to the Storage
+	void SetId(int id)			{ fId = id; }			//!< Set The TF Parc'Id
+	void SetParc(CLASS* parc)		{ fParc = parc; }		//!< Set the Pointer to the Parc
+	void SetLog(LogFile* Log)		{ fLog = Log; }			//!< Set the Pointer to the Log
+	void SetStorage(Storage* storage)	{ fStorage = storage; fPutToWaste = true; }		//!< Set the Pointer to the Storage
+	void SetPutToWaste(bool val)		{ fPutToWaste = val; }		//!< Set True if IV goes to waste after cooling false instead
 
 	void SetDecayDataBase(EvolutionDataBase<ZAI>* ddb)	{ fDecayDataBase = ddb; }		//!< Set the pointer to the Decay DataBase
 
 	void SetCoolingTime(double time) 		{ fCoolingTime = (cSecond)time; }			//!< Set Cooling Time
 
 //********* Get Method *********//
-	int 		GetId()		const		{ return fId; }			//!< Return the TF Parc'Is
-	LogFile*	GetLog()	const		{ return fLog; }			//!< Return the Pointer to the Log
-	CLASS*		GetParc()	const		{ return fParc; }			//!< Return the Pointer to the Parc
-	Storage*	GetStorage()	const		{ return fStorage; }		//!< Return the Pointer to the Storage
+	int 		GetId()		const	{ return fId; }			//!< Return the TF Parc'Is
+	LogFile*	GetLog()	const	{ return fLog; }		//!< Return the Pointer to the Log
+	CLASS*		GetParc()	const	{ return fParc; }		//!< Return the Pointer to the Parc
+	Storage*	GetStorage()	const	{ return fStorage; }		//!< Return the Pointer to the Storage
+	bool		GetPutToWaste()	const	{ return fPutToWaste; }		//!< Return True if IV goes to waste after cooling false instead
+
+	
 	
 	cSecond GetInternalTime() const			{ return fInternalTime; }		//!< Return Creation Time
 	cSecond GetCreationTime() const			{ return fCreationTime; }		//!< Return Internal Time
@@ -94,9 +101,12 @@ protected :
 	cSecond		fInternalTime;		///< Internal Clock
 	bool 		IsStarted;		///< True if Running, False Otherwise
 	
+	
+	
 //********* Internal Parameter *********//
 	CLASS* 			fParc;			//!< Pointer to the Parc
 	Storage*		fStorage;		//!< Pointer to the Stock
+	bool			fPutToWaste;		//!< True if IV goes to waste after cooling false instead
 	LogFile*		fLog;			//!< Pointer to the Log
 
 
@@ -117,12 +127,12 @@ protected :
 
 //********* Private Method *********//
 	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
-	void	CoolingEvolution(cSecond t);						//!< Deal the cooling and then send it to Separation
+	void	CoolingEvolution(cSecond t);					//!< Deal the cooling and then send it to Separation
 
 
 
 
-	ClassDef(TreatmentFactory,2);
+	ClassDef(TreatmentFactory,1);
 };
 
 #endif

@@ -37,9 +37,7 @@ public :
 	///< Normal Constructor.
 	CLASS();
 	CLASS(double abstime);
-	CLASS(string name);
-	CLASS(string name, double abstime);
-
+	
 	///< Normal Destructor.
 	~CLASS();
 
@@ -53,17 +51,19 @@ public :
 	EvolutionDataBase<ZAI>*		GetDecayDataBase() 	{ return fDecayDataBase; }	//!< Return the Pointer to the Decay DataBase
 
 	cSecond				GetPrintSet()		{ return fPrintStep; }		///< Return the Print Step Periodicity
-	bool				GetStockManagement()	{ return fStockManagement; }
-	string				GetOutputName()		{ return fOutputName; }
-	LogFile*			GetLog()		{ return fLog; }
+	bool				GetStockManagement()	{ return fStockManagement; }	///< Return the StockManagement method (True or False)
+	string				GetOutputFileName()	{ return fOutputFileName; }	///< Return the Output File name
+	string				GetOutputTreeName()	{ return fOutputTreeName; }	///< Return the Output File name
+	LogFile*			GetLog()		{ return fLog; }		///< Return the pointer to the log
 
 
 //********* Set Method *********//
-	void	SetTimeStep(double timestep) 				{ fPrintStep = (cSecond)timestep; }		///< Set the Printing Step periodicity
-	void	SetStockManagement(bool val)				{ fStockManagement = val; }
+	void	SetTimeStep(double timestep) 				{ fPrintStep = (cSecond)timestep; }	///< Set the Printing Step periodicity
+	void	SetStockManagement(bool val)				{ fStockManagement = val; }		//!< Set the StockManagement method (True or false)
 	void	SetDecayDataBase(EvolutionDataBase<ZAI>* decaydatabase) { fDecayDataBase = decaydatabase; }	//!< Set the Pointer to the Decay DataBase
 	
-	void	SetOutpurName(string name)	{ fOutputName =name; }
+	void	SetOutputFileName(string name)	{ fOutputFileName = name; }		//!< Set the Output File Name
+	void	SetOutputTreeName(string name)	{ fOutputTreeName = name; }		//!< Set the Output File Name
 
 
 //********* Add Method *********//
@@ -112,11 +112,14 @@ public :
 	
 	
 protected :
-	LogFile*			fLog;
+	LogFile*		fLog;
 
+	bool			fStockManagement;	///< True if real StockManagement false unstead
+	
+	
 	cSecond			fPrintStep;		///< Time interval between two output update
 	cSecond			fAbsoluteTime;		///< Absolute Clock
-	cSecond 			fStartingTime;		///< Starting Time
+	cSecond			fStartingTime;		///< Starting Time
 	map<cSecond, int>	fTimeStep;		///< Time Step Vector for the evolution :
 							///< 1 Printing, 
 							///< 2 Reactor Studown
@@ -124,29 +127,28 @@ protected :
 							///< 8 End of Cooling,
 							///< 16 Fuel Fabrication 
 
+	
 	vector<Storage*>		fStorage;			///< Vector of Storages
 	vector<TreatmentFactory*>	fTreatmentFactory;		///< Vector of Treament Factory
 	vector<Reactor*>		fReactor;			///< Vector of Reactor
 	vector<FabricationPlant*>	fFabricationPlant;		///< Vector of FabricationPlant
-
 	EvolutionDataBase<ZAI>*		fDecayDataBase;			//!< Pointer to the Decay DataBase
 
-	bool				fStockManagement;		///< True if real StockManagement false unstead
 	
-	string				fOutputName;			//! Name of the Output File
-	TFile*				fOutFile;			///< Pointer to the Root Output File
-	TTree*				fOutT;				///< Pointer to the Root Output Tree
+	TFile*			fOutFile;			///< Pointer to the Root Output File
+	string			fOutputFileName;		//! Name of the Output File
+	TTree*			fOutT;				///< Pointer to the Root Output TTree
+	string			fOutputTreeName;			//! Name of the Output TTree
 
-	IsotopicVector			fWaste;				///< Waste IV
-	IsotopicVector			fTotalStorage;			///< Sum of all IV in Storage IV
-	IsotopicVector			fGod;			///< GodIncome IV
-	IsotopicVector			fTotalCooling;			///< Sum of all IV in Cooling IV
-	IsotopicVector			fFuelFabrication;		///< Sum of all IV in Fabrication IV
 	
-	IsotopicVector			fTotalInReactor;		///< Sum of all IV in Reactor IV
-	
-	IsotopicVector			fIVInCycleTotal;		///< Summ of all IV in the cycle (without Waste) IV
-	IsotopicVector			fIVTotal;			///< Summ of all IV in the parc (including Waste) IV
+	IsotopicVector		fWaste;				///< Waste IV
+	IsotopicVector		fTotalStorage;			///< Sum of all IV in Storage IV
+	IsotopicVector		fGod;				///< GodIncome IV
+	IsotopicVector		fTotalCooling;			///< Sum of all IV in Cooling IV
+	IsotopicVector		fFuelFabrication;		///< Sum of all IV in Fabrication IV
+	IsotopicVector		fTotalInReactor;		///< Sum of all IV in Reactor IV
+	IsotopicVector		fIVInCycleTotal;		///< Summ of all IV in the cycle (without Waste) IV
+	IsotopicVector		fIVTotal;			///< Summ of all IV in the parc (including Waste) IV
 	
 
 };
