@@ -87,14 +87,14 @@ public :
 
 
 
-//-------- God --------//
+//-------- IsotopicVector --------//
 
-	IsotopicVector		GetGod() const		{ return fGod; }	//!< Return the God Providings IsotopicVector
-	void AddGodIncome(ZAI zai, double quantity)		{ AddGod(zai*quantity); }	//!< Add a ZAI*quantity to GodIncome
+	IsotopicVector		GetGod() const		{ return fGod; }		//!< Return the God Providings IsotopicVector
+	void AddGodIncome(ZAI zai, double quantity)	{ AddGod(zai*quantity); }	//!< Add a ZAI*quantity to GodIncome
 	void AddGod(IsotopicVector isotopicvector)	{ fGod.Add(isotopicvector); }	//!< Add a isotopicVector to GodIncome
-	void AddWaste(ZAI zai, double quantity)			{ AddWaste(zai*quantity); }	//!< Add a ZAI*quantity to Waste
-	void AddWaste(IsotopicVector isotopicvector)		{ fWaste.Add(isotopicvector); }	//!< Add a isotopicVector to Waste
-
+	void AddWaste(ZAI zai, double quantity)		{ AddWaste(zai*quantity); }	//!< Add a ZAI*quantity to Waste
+	void AddWaste(IsotopicVector isotopicvector)	{ fWaste.Add(isotopicvector); }	//!< Add a isotopicVector to Waste
+	void AddToPower(double power)			{ fParcPower += power;}		//!< Add power to the installed power in the Parc
 
 
 //********* In/Out related Method *********//
@@ -149,7 +149,7 @@ protected :
 	IsotopicVector		fTotalInReactor;		///< Sum of all IV in Reactor IV
 	IsotopicVector		fIVInCycleTotal;		///< Summ of all IV in the cycle (without Waste) IV
 	IsotopicVector		fIVTotal;			///< Summ of all IV in the parc (including Waste) IV
-	
+	double			fParcPower;			///< Summ of the Power of all reactor in the parc
 
 };
 
