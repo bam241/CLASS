@@ -13,14 +13,6 @@
 
 
 
-//#include "Minuit2/FunctionMinimum.h"
-//#include "Minuit2/MnMigrad.h"
-//#include "Minuit2/MnMinimize.h"
-//#include "Minuit2/MnMinos.h"
-//#include "Minuit2/MnSimplex.h"
-//#include "Minuit2/MnUserParameters.h"
-//#include "Minuit2/FCNBase.h"
-//#include "Minuit2/MnPrint.h"
 #include "TMatrixT.h"
 
 #include <sstream>

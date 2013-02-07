@@ -230,6 +230,7 @@ void Reactor::Evolution(cSecond t)
 	// Check if the Reactor if started ...
 	if(fIsStarted == false) return; 
 
+	fParc->AddToPower(fPower);
 	cSecond EvolutionTime = t - fInternalTime; // Calculation of the evolution time (relativ)
 
 	if( abs(EvolutionTime + fInCycleTime - fCycleTime) < 3600 )		//End of Cycle
