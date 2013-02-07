@@ -54,8 +54,8 @@ DBGL;
 	fStartingTime = 0;
 	fOutputFileName = "CLASS_Default.root";
 	fOutputTreeName = "Data";
-	string logname = "CLASS.log";
 	fLog = new LogFile("CLASS.log");
+	fParcPower = 0;
 
 
 
@@ -72,8 +72,8 @@ DBGL;
 	fStartingTime = fAbsoluteTime;
 	fOutputFileName = "CLASS_Default.root";
 	fOutputTreeName = "Data";
-	string logname = "CLASS.log";
 	fLog = new LogFile("CLASS.log");
+	fParcPower = 0;
 
 
 
@@ -327,7 +327,7 @@ void CLASS::ReactorEvolution()
 {
 DBGL;
 	
-
+	fParcPower = 0;
 #pragma omp parallel for
 		for(int i = 0; i < (int)fReactor.size(); i++)
 			fReactor[i]->Evolution(fAbsoluteTime);
@@ -557,7 +557,9 @@ DBGL;
 	ResetQuantity();
 	//Branch Absolut Time
 	fOutT->Branch("AbsTime",&fAbsoluteTime,"AbsoluteTime/l");
-	
+	//Branch The Power installed in the Parc
+	fOutT->Branch("ParcPower",&fParcPower,"ParcPower/D");
+
 	// Branch the Sum IV
 
 	
