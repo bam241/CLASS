@@ -326,11 +326,10 @@ DBGL;
 void CLASS::ReactorEvolution()
 {
 DBGL;
-	
 	fParcPower = 0;
-#pragma omp parallel for
-		for(int i = 0; i < (int)fReactor.size(); i++)
-			fReactor[i]->Evolution(fAbsoluteTime);
+#pragma omp parallel for 
+	for(int i = 0; i < (int)fReactor.size(); i++)
+		fReactor[i]->Evolution(fAbsoluteTime);
 	
 	
 	for(int i = 0; i < (int)fReactor.size(); i++)
@@ -360,6 +359,7 @@ DBGL;
 		fAbsoluteTime = (*it).first;
 		if( (*it).second & 2 || (*it).second & 1 )
 		{
+			if( (*it).second & 1 )
 			StorageEvolution();
 			TreatmentEvolution();
 			FabricationPlantEvolution();
