@@ -214,9 +214,13 @@ void Reactor::Evolution(cSecond t)
 {
 	DBGL;
 
-	if( fShutDown == true || t < fCreationTime || (t == fInternalTime && t!=0) ) return; // Reactor stop...
-										   // Check if the Reactor has been created ...
+	if( fShutDown == true || t < fCreationTime ) return; // Reactor stop or not started...
 
+#pragma omp critical(ParcPowerUpdate)
+	{fParc->AddToPower(fPower);}
+	
+	
+	if( t == fInternalTime && t!=0 ) return
 	DBGL;
 	
 
@@ -225,29 +229,30 @@ void Reactor::Evolution(cSecond t)
 		fEndOfCycle = true;
 		fIVReactor  = fIVBeginCycle;
 		fInternalTime = t;
+		
 	}
 
 	// Check if the Reactor if started ...
-	if(fIsStarted == false) return; 
+	if(fIsStarted == false) return;			// If the reactor just start don't need to make Fuel evolution 
 
-	fParc->AddToPower(fPower);
+
 	cSecond EvolutionTime = t - fInternalTime; // Calculation of the evolution time (relativ)
 
 	if( abs(EvolutionTime + fInCycleTime - fCycleTime) < 3600 )		//End of Cycle
 	{
 		fEndOfCycle = true;
-		fInternalTime += EvolutionTime; 						// Update Internal Time
-		fInCycleTime += EvolutionTime;							// Update InCycleTime
+		fInternalTime += EvolutionTime; 				// Update Internal Time
+		fInCycleTime += EvolutionTime;					// Update InCycleTime
 		
-		if(t >= fCreationTime + fLifeTime)			//if the Next Cycle don't 'Exist...
+		if(t >= fCreationTime + fLifeTime)				// if the Next Cycle don't 'Exist...
 			fShutDown = true;
 	
 	}
-	else if(EvolutionTime + fInCycleTime < fCycleTime )			//During Cycle
+	else if(EvolutionTime + fInCycleTime < fCycleTime )			// During Cycle
 	{
 		
-		fInternalTime += EvolutionTime;							// Update Internal Time
-		fInCycleTime += EvolutionTime;							// Update InCycleTime
+		fInternalTime += EvolutionTime;					// Update Internal Time
+		fInCycleTime += EvolutionTime;					// Update InCycleTime
 	
 		fIVReactor = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fInCycleTime/fEvolutionDB.GetPower()*fPower) );	// update the fuel composition
 		
