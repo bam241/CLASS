@@ -95,7 +95,7 @@ protected :
 	TGraph*		fKeff;
 	TGraph*		fFlux;
 	
-	cSecond 		fDBendTime;
+	cSecond 	fDBendTime;
 	bool		fIsCrossSection;
 	
 	
