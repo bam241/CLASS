@@ -51,6 +51,7 @@ public :
 
 
 //********* Set Method *********//
+	void	SetUpdateReferenceDBatEachStep(bool val){ fUpdateReferenceDBatEachStep = val;}
 	void	SetId(int id)				{ fId = id; }				//!< Set The FB Parc'Id
 	void	SetParc(CLASS* parc)			{ fParc = parc; }			//!< Set the Pointer to the Parc
 	void	SetLog(LogFile* Log)			{ fLog = Log; }				//!< Set the Pointer to the Log
@@ -105,7 +106,7 @@ public :
 protected :
 	int		fId;			//!< Identity of the FabricationPlant inside the Parc
 	cSecond		fInternalTime;		///< Internal Clock
-
+	bool		fUpdateReferenceDBatEachStep;
 
 //********* Internal Parameter *********//
 	CLASS* 		fParc;				//!< Pointer to the Parc
