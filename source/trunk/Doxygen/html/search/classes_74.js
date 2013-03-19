@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['treatmentfactory',['TreatmentFactory',['../classTreatmentFactory.html',1,'']]]
+  ['treatmentfactory',['TreatmentFactory',['../da/d68/classTreatmentFactory.html',1,'']]]
 ];
