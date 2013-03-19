@@ -408,7 +408,7 @@ void EvolutiveProduct::ReadDB(string DBfile)
 		start = 0;
 		getline(InfoDB, line); 
 		if (StringLine::NextWord(line, start, ' ') == "CycleTime")
-			fReactorType =  StringLine::NextWord(line, start, ' ');
+			fCycleTime =  atof(StringLine::NextWord(line, start, ' ').c_str());;
 		getline(InfoDB, line); // Assembly HM Mass
 		start = 0;
 		getline(InfoDB, line); 
@@ -948,7 +948,7 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 		}
 
 		// ----------------   Evolution
-		TMatrixT<double> NEvoluingMatrix = TMatrixT<double>(index.size(),1);
+		TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(index.size(),1);
 
 		double TStepMax;
 		{
@@ -985,7 +985,7 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 			{
 				NormN = 0;
 
-				TMatrixT<double> BatemanMatrixDLTermtmp = TMatrixT<double>(index.size(),index.size());  // Addind it;
+				TMatrixT<double> BatemanMatrixDLTermtmp = TMatrixT<double>(index.size(),index.size());  // Adding it;
 				BatemanMatrixDLTermtmp = BatemanMatrixDLTermN;
 				BatemanMatrixDLTermN.Mult(BatemanMatrixDLTermtmp, BatemanMatrix );
 			
@@ -1002,8 +1002,8 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 		}
 		
 
-		NEvoluingMatrix = BatemanMatrixDL * NMatrix.back() ;
-		NMatrix.push_back(NEvoluingMatrix);
+		NEvolutionMatrix = BatemanMatrixDL * NMatrix.back() ;
+		NMatrix.push_back(NEvolutionMatrix);
 	}
 	
 	

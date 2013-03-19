@@ -21,14 +21,14 @@
 #include <cmath>
 #include <algorithm>
 
-//________________________________________________________________________
-//
-//		FabricationPlant
-//
-//
-//
-//
-//________________________________________________________________________
+	//________________________________________________________________________
+	//
+	//		FabricationPlant
+	//
+	//
+	//
+	//
+	//________________________________________________________________________
 ClassImp(FabricationPlant)
 
 template <class T>  T random(T a, T b) //peak random numebr between a and b
@@ -41,35 +41,60 @@ template <class T>  T random(T a, T b) //peak random numebr between a and b
 
 FabricationPlant::FabricationPlant()
 {
-DBGL;
+	DBGL;
 	fChronologicalTimePriority = false;
-DBGL;
+	fFabricationTime = -1;
+	fUpdateReferenceDBatEachStep = true;
+	
+	
+		// Warning
+	
+	cout	<< "!!Info!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
+	cout	<< "\t Chronological Stock Priority set! "<< endl << endl;
+	
+	fLog->fLog 	<< "!!Info!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
+	fLog->fLog 	<<"\t Chronological Stock Priority set! "<< endl << endl;
+	
+	DBGL;
 }
 
 FabricationPlant::FabricationPlant(Storage* storage, Storage* reusable, double fabircationtime)
 {
-DBGL;
-	fFabricationTime = (cSecond)fabircationtime;
+	DBGL;
+	
 	fChronologicalTimePriority = false;
+	fUpdateReferenceDBatEachStep = true;
+	
+	
+	fFabricationTime = (cSecond)fabircationtime;
 	fStorage = storage;
 	fReUsable = reusable;
-DBGL;
+	
+	
+	cout	<< "!!Info!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
+	cout	<< "\t Chronological Stock Priority has been set! "<< endl;
+	cout	<< "\t Fabrication time set to \t " << (double)(fFabricationTime/3600/24/365.25) << " year" << endl << endl;
+	
+	fLog->fLog 	<< "!!Info!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
+	fLog->fLog 	<<"\t Chronological Stock Priority has been set! "<< endl;
+	fLog->fLog 	<< "\t Fabrication time set to \t " << (double)(fFabricationTime/3600/24/365.25) << " year" << endl << endl;
+	DBGL;
 }
 
 
 
-//________________________________________________________________________
+	//________________________________________________________________________
 FabricationPlant::~FabricationPlant()
 {
-DBGL;
-DBGL;
+	DBGL;
+	DBGL;
 }
 
 
-//________________________________________________________________________
+	//________________________________________________________________________
 void	FabricationPlant::AddValorisableIV(ZAI zai, double factor)
 {
-DBGL;
+	DBGL;
 	pair<map<ZAI, double>::iterator, bool> IResult;
 	if(factor > 1) factor = 1;
 	
@@ -79,14 +104,14 @@ DBGL;
 		if(IResult.second == false)
 			IResult.first->second = factor;
 	}
-DBGL;
+	DBGL;
 }
 
 
 
-//________________________________________________________________________
-//_______________________________ Evolution ______________________________
-//________________________________________________________________________
+	//________________________________________________________________________
+	//_______________________________ Evolution ______________________________
+	//________________________________________________________________________
 void FabricationPlant::Evolution(cSecond t)
 {
 	DBGL;
@@ -99,7 +124,7 @@ void FabricationPlant::Evolution(cSecond t)
 	DBGL;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 void FabricationPlant::FabricationPlantEvolution(cSecond t)
 {
 	DBGL;
@@ -207,11 +232,11 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 			{
 				map<ZAI ,double>::iterator it;
 				map<ZAI ,double> isotopicquantity = GetDecay( stock , fFabricationTime).GetSpeciesComposition(94).GetIsotopicQuantity();
-
+				
 				for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 				{
 					if ((*it).first.A() >= 238 && (*it).first.A() <= 242)
-					{ 
+					{
 						nPu_1 += (*it).second;
 						Sum_AlphaI_nPuI += FuelType->GetFuelParameter()[(*it).first.A() -237]*(*it).second;
 					}
@@ -219,21 +244,21 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 				
 				isotopicquantity = stock.GetSpeciesComposition(94).GetIsotopicQuantity();
 				for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-				if ((*it).first.A() >= 238 && (*it).first.A() <= 242)
-				{ 
-					MPu_1 += (*it).second * (ZAImass.find( (*it).first )->second)/Na*1e-6;
-				}
+					if ((*it).first.A() >= 238 && (*it).first.A() <= 242)
+					{
+						MPu_1 += (*it).second * (ZAImass.find( (*it).first )->second)/Na*1e-6;
+					}
 				
 				isotopicquantity = GetDecay( FullUsedStock , fFabricationTime).GetSpeciesComposition(94).GetIsotopicQuantity();
 				for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 					if ((*it).first.A() >= 238 && (*it).first.A() <= 242)
-					{ 
+					{
 						Sum_AlphaI_nPuI0 += FuelType->GetFuelParameter()[(*it).first.A() -237]*(*it).second;
-					}				
+					}
 			}
 			
 			double StockFactionToUse = 0;
-			   
+			
 			double NT = HMmass*1e6 * Na / ZAImass.find( ZAI(92,238,0) )->second;
 			
 			double N1 = (BU - FuelType->GetFuelParameter()[6]) * NT;
@@ -307,9 +332,9 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 
 
 
-//________________________________________________________________________
-//_________________________________ Decay ________________________________
-//________________________________________________________________________
+	//________________________________________________________________________
+	//_________________________________ Decay ________________________________
+	//________________________________________________________________________
 IsotopicVector FabricationPlant::GetDecay(IsotopicVector isotopicvector, cSecond t)
 {
 	DBGL;
@@ -331,26 +356,35 @@ IsotopicVector FabricationPlant::GetDecay(IsotopicVector isotopicvector, cSecond
 }
 
 
-//________________________________________________________________________
-//_____________________________ Reactor & DB _____________________________
-//________________________________________________________________________
+	//________________________________________________________________________
+	//_____________________________ Reactor & DB _____________________________
+	//________________________________________________________________________
 EvolutiveProduct FabricationPlant::BuildEvolutiveDB(int ReactorId,IsotopicVector isotopicvector)
 {
-DBGL;
+	DBGL;
 	EvolutionDataBase<IsotopicVector>* evolutiondb = fParc->GetReactor()[ReactorId]->GetFuelType();
-
+	
 	isotopicvector = GetDecay(isotopicvector, fFabricationTime);
 	
-	map<double, EvolutiveProduct> distances = evolutiondb->GetDistancesTo(isotopicvector);
+	EvolutiveProduct EvolBuild;
 	
-
-	EvolutiveProduct EvolBuild = distances.begin()->second.GenerateDBFor(isotopicvector);
-	
+	if( fUpdateReferenceDBatEachStep == true )
+	{
+		EvolutiveProduct EvolBuild = evolutiondb->GenerateDB(isotopicvector,
+								     fParc->GetReactor()[ReactorId]->GetCycleTime(),
+								     fParc->GetReactor()[ReactorId]->GetPower());
+	}
+	else
+	{
+		map<double, EvolutiveProduct> distances = evolutiondb->GetDistancesTo(isotopicvector);
+		EvolBuild = distances.begin()->second.GenerateDBFor(isotopicvector);
+		
+	}
 	return EvolBuild;
-DBGL;
+	DBGL;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 void FabricationPlant::TakeReactorFuel(int Id)
 {
 	DBGL;
@@ -362,7 +396,7 @@ void FabricationPlant::TakeReactorFuel(int Id)
 	DBGL;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 EvolutiveProduct FabricationPlant::GetReactorEvolutionDB(int ReactorId)
 {
 	DBGL;
@@ -371,9 +405,9 @@ EvolutiveProduct FabricationPlant::GetReactorEvolutionDB(int ReactorId)
 	DBGL;
 }
 
-//________________________________________________________________________
-//_______________________________ Storage ________________________________
-//________________________________________________________________________
+	//________________________________________________________________________
+	//_______________________________ Storage ________________________________
+	//________________________________________________________________________
 
 IsotopicVector FabricationPlant::GetStockToRecycle()
 {
@@ -396,30 +430,30 @@ IsotopicVector FabricationPlant::GetStockToRecycle()
 	DBGL;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 void FabricationPlant::RecycleStock(double fraction)
 {
-DBGL;
+	DBGL;
 	fFractionToTake.back().second = fraction;
-DBGL;
+	DBGL;
 }
 
 
 
-//________________________________________________________________________
+	//________________________________________________________________________
 void FabricationPlant::DumpStock()
 {
-DBGL;
+	DBGL;
 	
 	
-DBGL;
+	DBGL;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector isotopicvector)
 {
-DBGL;
-	//[0] = re-use ; [1] = waste
+	DBGL;
+		//[0] = re-use ; [1] = waste
 	pair<IsotopicVector, IsotopicVector>	IVTmp;
 	
 	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
@@ -435,7 +469,7 @@ DBGL;
 		}
 		else IVTmp.second.Add(	(*it).first, (*it).second );	//waste
 	}
-DBGL;
+	DBGL;
 	return IVTmp;
 }
 

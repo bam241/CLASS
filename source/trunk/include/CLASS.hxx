@@ -112,7 +112,7 @@ public :
 	
 	
 protected :
-	LogFile*		fLog;
+	LogFile*		fLog;			//!< Pointer to the Log
 
 	bool			fStockManagement;	///< True if real StockManagement false unstead
 	
@@ -128,28 +128,28 @@ protected :
 							///< 16 Fuel Fabrication 
 
 	
-	vector<Storage*>		fStorage;			///< Vector of Storages
-	vector<TreatmentFactory*>	fTreatmentFactory;		///< Vector of Treament Factory
-	vector<Reactor*>		fReactor;			///< Vector of Reactor
-	vector<FabricationPlant*>	fFabricationPlant;		///< Vector of FabricationPlant
-	EvolutionDataBase<ZAI>*		fDecayDataBase;			//!< Pointer to the Decay DataBase
+	vector<Storage*>		fStorage;		///< Vector of Storages
+	vector<TreatmentFactory*>	fTreatmentFactory;	///< Vector of Treament Factory
+	vector<Reactor*>		fReactor;		///< Vector of Reactor
+	vector<FabricationPlant*>	fFabricationPlant;	///< Vector of FabricationPlant
+	EvolutionDataBase<ZAI>*		fDecayDataBase;		//!< Pointer to the Decay DataBase
 
 	
-	TFile*			fOutFile;			///< Pointer to the Root Output File
-	string			fOutputFileName;		//! Name of the Output File
-	TTree*			fOutT;				///< Pointer to the Root Output TTree
-	string			fOutputTreeName;			//! Name of the Output TTree
-
+	TFile*		fOutFile;		///< Pointer to the Root Output File
+	string		fOutputFileName;	//! Name of the Output File
+	TTree*		fOutT;			///< Pointer to the Root Output TTree
+	string		fOutputTreeName;	//! Name of the Output TTree
+	string		fOutputLogName;		///< Name of the Ouput log File
 	
-	IsotopicVector		fWaste;				///< Waste IV
-	IsotopicVector		fTotalStorage;			///< Sum of all IV in Storage IV
-	IsotopicVector		fGod;				///< GodIncome IV
-	IsotopicVector		fTotalCooling;			///< Sum of all IV in Cooling IV
-	IsotopicVector		fFuelFabrication;		///< Sum of all IV in Fabrication IV
-	IsotopicVector		fTotalInReactor;		///< Sum of all IV in Reactor IV
-	IsotopicVector		fIVInCycleTotal;		///< Summ of all IV in the cycle (without Waste) IV
-	IsotopicVector		fIVTotal;			///< Summ of all IV in the parc (including Waste) IV
-	double			fParcPower;			///< Summ of the Power of all reactor in the parc
+	IsotopicVector	fWaste;			///< Waste IV
+	IsotopicVector	fTotalStorage;		///< Sum of all IV in Storage IV
+	IsotopicVector	fGod;			///< GodIncome IV
+	IsotopicVector	fTotalCooling;		///< Sum of all IV in Cooling IV
+	IsotopicVector	fFuelFabrication;	///< Sum of all IV in Fabrication IV
+	IsotopicVector	fTotalInReactor;	///< Sum of all IV in Reactor IV
+	IsotopicVector	fIVInCycleTotal;	///< Summ of all IV in the cycle (without Waste) IV
+	IsotopicVector	fIVTotal;		///< Summ of all IV in the parc (including Waste) IV
+	double		fParcPower;		///< Summ of the Power of all reactor in the parc
 
 };
 

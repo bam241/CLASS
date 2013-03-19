@@ -50,13 +50,32 @@ CLASS::CLASS()
 DBGL;
 	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
 	fAbsoluteTime = 0;
-	fStockManagement = true;
 	fStartingTime = 0;
+
+	fStockManagement = true;	
+	
 	fOutputFileName = "CLASS_Default.root";
 	fOutputTreeName = "Data";
-	fLog = new LogFile("CLASS.log");
+	
+	fOutputLogName = "CLASS.log";
+	fLog = new LogFile(fOutputLogName.c_str());
 	fParcPower = 0;
 
+
+	// Warning
+	
+	cout	<< "!!Info!! !!!CLASS!!! A Parc has been define :" << endl;
+	cout	<< "\t Print set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	cout	<< "\t Absolute Time set at " << (double)(fAbsoluteTime/3600/24/365.25) << " year" << endl;
+	cout	<< "\t StockManagement set at : true" << endl;
+	cout	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
+	cout	<< "\t Log will be in " << fOutputLogName << endl << endl;
+	
+	fLog->fLog 	<< "!!Info!! !!!CLASS!!! Parc has been define :" << endl;
+	fLog->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	fLog->fLog	<< "\t StockManagement set at : true" << endl;
+	fLog->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
+	fLog->fLog	<< "\t Log will be in " << fOutputLogName << endl << endl;
 
 
 DBGL;
@@ -68,13 +87,33 @@ CLASS::CLASS(double abstime)
 DBGL;
 	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
 	fAbsoluteTime = (cSecond)abstime;
-	fStockManagement = true;
 	fStartingTime = fAbsoluteTime;
+	
+	fStockManagement = true;
+	
 	fOutputFileName = "CLASS_Default.root";
 	fOutputTreeName = "Data";
-	fLog = new LogFile("CLASS.log");
+	
+	fOutputLogName = "CLASS.log" ;
+	fLog = new LogFile(fOutputLogName.c_str());
 	fParcPower = 0;
 
+	
+	
+	
+	// Warning
+	
+	cout	<< "!!Info!! !!!CLASS!!! A Parc has been define :" << endl;
+	cout	<< "\t Print set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	cout	<< "\t StockManagement set at : true" << endl;
+	cout	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
+	cout	<< "\t Log will be in " << fOutputLogName << endl;
+	
+	fLog->fLog 	<< "!!Info!! !!!CLASS!!! Parc has been define :" << endl;
+	fLog->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	fLog->fLog	<< "\t StockManagement set at : true" << endl;
+	fLog->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
+	fLog->fLog	<< "\t Log will be in " << fOutputLogName << endl << endl;
 
 
 DBGL;

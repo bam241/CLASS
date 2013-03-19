@@ -69,7 +69,8 @@ public :
 	TGraph*			GetKeff()		const { return fKeff; }
 	TGraph*			GetFlux()		const { return fFlux; }
 
-	double			GetPower()		const { return fPower; }			//!<
+	double			GetPower()		const { return fPower; }		//!<
+	double			GetHMMass()		const { return fHMMass; }
 	string			GetDB_file()		const { return fDB_file; }
 
 	TGraph*	GetEvolutionTGraph(const ZAI& zai); 
@@ -100,11 +101,13 @@ protected :
 	
 	
 	
-	string 		fReactorType;
+	string		fReactorType;
 	string		fFuelType;
-	double 		fPower;
+	double		fPower;
+	double		fCycleTime;
 	double 		fHMMass;
 	
+    
 	void		ReadDB(string DBfile);
 	double		Interpolate(double t, TGraph& EvolutionGraph); 
 								///< Interpolating the value of EvolutionGraph at the t time

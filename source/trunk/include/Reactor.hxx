@@ -64,6 +64,7 @@ public :
 	IsotopicVector		GetIVBeginCycle() const		{ return fIVBeginCycle; }	//!< Return the Starting Cycle IV (Note : IVBegin != IVIn, only if using charging plan)
 	IsotopicVector		GetIVOutCycle()	const		{ return fIVOutCycle; }		//!< Return the Out Cycle IV 
 	IsotopicVector		GetIVInCycle()	const		{ return fIVInCycle; }		//!< Return the In Cycle IV (Note : IVIn != IVBegin, only if using charging plan)
+	double			GetPower()	const		{ return fPower; } 		//!< Return the cycle time of the Reactor
 	cSecond 		GetCycleTime()	const		{ return fCycleTime; } 		//!< Return the cycle time of the Reactor
 	cSecond 		GetCreationTime() const		{ return fCreationTime; }	//!< Return the creation time of the Reactor
 	cSecond 		GetLifeTime()	const		{ return fLifeTime; }		//!< Return the creation time of the Reactor
@@ -123,9 +124,9 @@ protected :
 	EvolutionDataBase<IsotopicVector>* 	fFuelTypeDB;	//! Pointer to a Fuel Type Database
 	
 	cSecond		fCreationTime;		///< CLASS Universal Time of Creation
-	cSecond		fLifeTime;		///< LifeTime Of the Reactor
+	cSecond		fLifeTime;		///< LifeTime Of the Reactor (Operating's Duration)
 	cSecond		fCycleTime;		///< Cycle Time
-	double 		fPower;			///< Power
+	double 		fPower;			///< Power (in Watt)
 	
 	IsotopicVector	fIVReactor;		///< Fuel evoluated IV in the reactor
 	IsotopicVector	fIVBeginCycle;		///< Fuel IV at the Beginning of a Cycle
