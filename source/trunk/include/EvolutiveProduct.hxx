@@ -69,6 +69,7 @@ public :
 	TGraph*			GetKeff()		const { return fKeff; }
 	TGraph*			GetFlux()		const { return fFlux; }
 
+	double			GetCycleTime()		const { return fCycleTime; }
 	double			GetPower()		const { return fPower; }		//!<
 	double			GetHMMass()		const { return fHMMass; }
 	string			GetDB_file()		const { return fDB_file; }
