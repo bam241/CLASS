@@ -38,6 +38,8 @@ class EvolutionDataBase {
 public :
 //********* Constructor/Destructor Method *********//
 	///< Normal Constructor.
+	EvolutionDataBase( );
+	
 	EvolutionDataBase(LogFile* Log, string DB_index_file );
 	
 	///< Normal Destructor.
@@ -53,8 +55,8 @@ public :
 	bool 				IsDefine(const T& key)	const;						//!< True the key is define, false unstead
 
 	map<double, EvolutiveProduct>	GetDistancesTo(IsotopicVector isotopicvector, double t = 0) const;	//! Return a map containing the distance of each EvolutiveProduct in the DataBase to the set IV at the t time
-
 //********* Set Method *********//
+	void SetEvolutionDataBase(map<T ,EvolutiveProduct > mymap)	{ fEvolutionDataBase = mymap; }
 
 	void SetDataBaseIndex(string database) { fDataBaseIndex = database; }
 	EvolutiveProduct GenerateDB(IsotopicVector isotopicvector, double cycletime, double Power); //!< Genration of a New EvolutiveProduct From the one already present

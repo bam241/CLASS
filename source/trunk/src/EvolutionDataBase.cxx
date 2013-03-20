@@ -33,6 +33,21 @@ template<>
 void EvolutionDataBase<IsotopicVector>::ReadDataBase();
 
 template<>
+EvolutionDataBase<ZAI>::EvolutionDataBase()
+{
+	DBGL;
+
+	
+		// Warning
+	
+	cout	<< "!!Info!! !!!EvolutionDataBase<ZAI>!!! A EvolutionData<ZAI> has been define :" <<  endl << endl;
+	
+	fLog->fLog 	<< "!!Info!! !!!EvolutionDataBase<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
+	
+	DBGL;
+}
+
+template<>
 EvolutionDataBase<ZAI>::EvolutionDataBase(LogFile* Log, string DB_index_file)
 {
 	DBGL;
@@ -143,6 +158,19 @@ EvolutionDataBase<IsotopicVector>::~EvolutionDataBase()
 	DBGL;
 	DBGL;
 }
+
+template<>
+EvolutionDataBase<IsotopicVector>::EvolutionDataBase()
+{
+	DBGL;
+		// Warning
+	cout	<< "!!Info!! !!!EvolutionDataBase<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
+
+	fLog = new LogFile("EvoluData_log");
+	fLog->fLog 	<< "!!Info!! !!!EvolutionDataBase<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
+	DBGL;
+}
+
 
 template<>
 EvolutionDataBase<IsotopicVector>::EvolutionDataBase(LogFile* Log, string DB_index_file)
