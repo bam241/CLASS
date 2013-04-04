@@ -42,7 +42,7 @@ EvolutionDataBase<ZAI>::EvolutionDataBase()
 	
 	cout	<< "!!Info!! !!!EvolutionDataBase<ZAI>!!! A EvolutionData<ZAI> has been define :" <<  endl << endl;
 	
-	fLog->fLog 	<< "!!Info!! !!!EvolutionDataBase<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
+		//	fLog->fLog 	<< "!!Info!! !!!EvolutionDataBase<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
 	
 	DBGL;
 }
@@ -602,6 +602,9 @@ EvolutiveProduct EvolutionDataBase<IsotopicVector>::GenerateDB(IsotopicVector is
 		NMatrix.push_back(N_0Matrix);
 	}
 	
+	
+	TMatrixT<double> SigmaPhi = TMatrixT<double>(index.size()*3+1,16);
+
 	for(int i = 0; i < 16; i++)
 	{
 		
@@ -640,6 +643,8 @@ EvolutiveProduct EvolutionDataBase<IsotopicVector>::GenerateDB(IsotopicVector is
 		
 		
 		double Flux = evolutiveproductStep.GetFlux()->Eval(TStep)*Power/(evolutiveproductStep.GetPower()*NormFactor);
+		SigmaPhi[index.size()*3][i] = Flux;
+		
 		
 		map<ZAI ,TGraph* >::iterator it;
 		// ----------------  A(n,.) X+Y
@@ -656,6 +661,8 @@ EvolutiveProduct EvolutionDataBase<IsotopicVector>::GenerateDB(IsotopicVector is
 				
 				BatemanMatrix[ index_inver.find( (*it).first )->second ][index_inver.find( (*it).first )->second] += -y* 1e-24 *Flux;
 				BatemanMatrix[1][ index_inver.find( (*it).first )->second] += 2*y* 1e-24 *Flux;
+				
+				SigmaPhi[index_inver.find( (*it).first )->second][i] = y ;
 			}
 			
 		}
@@ -664,26 +671,23 @@ EvolutiveProduct EvolutionDataBase<IsotopicVector>::GenerateDB(IsotopicVector is
 		map<ZAI ,TGraph* > CaptureXS = evolutiveproductStep.GetCaptureXS();
 		for(it = CaptureXS.begin(); it != CaptureXS.end(); it++)
 		{
-			
 			if( index_inver.find( (*it).first ) != index_inver.end() )
 			{
 				double y;
 				y = (*it).second->Eval(TStep);
 				
 				BatemanMatrix[index_inver.find( (*it).first )->second][ index_inver.find( (*it).first )->second ] += -y* 1e-24 *Flux;
-				
+				SigmaPhi[index_inver.find( (*it).first )->second + index.size() ][i] = y ;
+
 				map<ZAI, map<ZAI, double> >::iterator it3 = Capture.find( (*it).first );
-				
 				
 				if( it3 == Capture.end() )
 				{
 					map<ZAI, int >::iterator it6 = index_inver.find( ZAI( (*it).first.Z(), (*it).first.A()+1, (*it).first.I()) );
 					
-					
 					if( it6 != index_inver.end() )
 					{
 						BatemanMatrix[(*it6).second][index_inver.find( (*it).first )->second] += y* 1e-24 *Flux ;
-						
 					}
 					else
 					{
@@ -699,14 +703,12 @@ EvolutiveProduct EvolutionDataBase<IsotopicVector>::GenerateDB(IsotopicVector is
 						map< ZAI, double > decaylist2 = (*it4).second;
 						for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
 						{
-							
 							it6 = index_inver.find( (*it5).first );
 							if( it6 == index_inver.end() )
 							{
 								cout << "Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A() << " " << (*it).first.I() << endl;
 								exit(1);
 							}
-							
 							BatemanMatrix[(*it6).second][index_inver.find( (*it).first )->second] += y* 1e-24 *Flux * (*it5).second;
 						}
 					}
@@ -720,8 +722,6 @@ EvolutiveProduct EvolutionDataBase<IsotopicVector>::GenerateDB(IsotopicVector is
 					{
 						
 						map<ZAI, int >::iterator it6 = index_inver.find( (*it4).first );
-						
-						
 						if( it6 != index_inver.end() )
 							BatemanMatrix[(*it6).second][index_inver.find( (*it).first )->second] += y* 1e-24 *Flux * (*it4).second ;
 						else
@@ -766,7 +766,8 @@ EvolutiveProduct EvolutionDataBase<IsotopicVector>::GenerateDB(IsotopicVector is
 				double y;
 				y = (*it).second->Eval(TStep);
 				BatemanMatrix[ index_inver.find( (*it).first )->second ][index_inver.find( (*it).first )->second] += -y* 1e-24 *Flux;
-				
+				SigmaPhi[index_inver.find( (*it).first )->second + index.size() + index.size()][i] = y ;
+
 				
 				map<ZAI, int>::iterator it3 = index_inver.find( ZAI( (*it).first.Z(), (*it).first.A()-1, 0) );
 				
@@ -855,14 +856,31 @@ EvolutiveProduct EvolutionDataBase<IsotopicVector>::GenerateDB(IsotopicVector is
 	
 	
 	EvolutiveProduct GeneratedDB = EvolutiveProduct(fLog);
-	
+	double Flux[16];
+	for(int j = 0; j < 16; j++)
+		Flux[j] = SigmaPhi[index.size()*3][j];
+	GeneratedDB.SetFlux( new TGraph(16, timevector, Flux)  );
+
 	for(int i = 0; i < (int)index.size(); i++)
 	{
 		double ZAIQuantity[NMatrix.size()];
+		double FissionXS[16];
+		double CaptureXS[16];
+		double n2nXS[16];
 		for(int j = 0; j < (int)NMatrix.size(); j++)
 			ZAIQuantity[j] = (NMatrix[j])[i][0];
 		
-		GeneratedDB.Insert(pair<ZAI, TGraph*> (index.find(i)->second, new TGraph(NMatrix.size(), timevector, ZAIQuantity) ) );
+		for(int j = 0; j < 16; j++)
+		{
+			FissionXS[j]	= SigmaPhi[i][j];
+			CaptureXS[j]	= SigmaPhi[i + index.size()][j];
+			n2nXS[j]	= SigmaPhi[i + index.size() + index.size()][j];
+		}
+		
+		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (index.find(i)->second, new TGraph(NMatrix.size(), timevector, ZAIQuantity) ) );
+		GeneratedDB.FissionXSInsert(pair<ZAI, TGraph*> (index.find(i)->second, new TGraph(16, timevector, FissionXS) ) );
+		GeneratedDB.CaptureXSInsert(pair<ZAI, TGraph*> (index.find(i)->second, new TGraph(16, timevector, CaptureXS) ) );
+		GeneratedDB.n2nXSInsert(pair<ZAI, TGraph*> (index.find(i)->second, new TGraph(16, timevector, n2nXS) ) );
 	}
 	
 	GeneratedDB.SetPower(Power );

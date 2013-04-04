@@ -51,10 +51,7 @@ FabricationPlant::FabricationPlant()
 	
 	cout	<< "!!Info!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
 	cout	<< "\t Chronological Stock Priority set! "<< endl << endl;
-	
-	fLog->fLog 	<< "!!Info!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
-	fLog->fLog 	<<"\t Chronological Stock Priority set! "<< endl << endl;
-	
+
 	DBGL;
 }
 
@@ -74,10 +71,7 @@ FabricationPlant::FabricationPlant(Storage* storage, Storage* reusable, double f
 	cout	<< "!!Info!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
 	cout	<< "\t Chronological Stock Priority has been set! "<< endl;
 	cout	<< "\t Fabrication time set to \t " << (double)(fFabricationTime/3600/24/365.25) << " year" << endl << endl;
-	
-	fLog->fLog 	<< "!!Info!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
-	fLog->fLog 	<<"\t Chronological Stock Priority has been set! "<< endl;
-	fLog->fLog 	<< "\t Fabrication time set to \t " << (double)(fFabricationTime/3600/24/365.25) << " year" << endl << endl;
+
 	DBGL;
 }
 

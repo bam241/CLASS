@@ -50,7 +50,7 @@ EvolutiveProduct operator*(EvolutiveProduct const& evol, double F)
 			(*it).second->GetPoint( i, X[i], y );
 			Y[i] = y*F;
 		}
-		evoltmp.Insert( pair<ZAI, TGraph*> ( (*it).first,new TGraph((*it).second->GetN(), X, Y) ) );
+		evoltmp.NucleiInsert( pair<ZAI, TGraph*> ( (*it).first,new TGraph((*it).second->GetN(), X, Y) ) );
 		
 	}
 	evoltmp.SetPower(evol.GetPower()*F);
@@ -111,11 +111,38 @@ EvolutiveProduct::~EvolutiveProduct()
 }
 
 
-bool EvolutiveProduct::Insert(pair<ZAI, TGraph*> zaitoinsert)
+bool EvolutiveProduct::NucleiInsert(pair<ZAI, TGraph*> zaitoinsert)
 {
 	DBGL;
 	pair<map<ZAI, TGraph*>::iterator, bool> IResult;
 	IResult = fEvolutiveProduct.insert( zaitoinsert);
+	return IResult.second;
+	DBGL;
+}
+
+bool EvolutiveProduct::FissionXSInsert(pair<ZAI, TGraph*> zaitoinsert)
+{
+	DBGL;
+	pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+	IResult = fFissionXS.insert( zaitoinsert);
+	return IResult.second;
+	DBGL;
+}
+
+bool EvolutiveProduct::CaptureXSInsert(pair<ZAI, TGraph*> zaitoinsert)
+{
+	DBGL;
+	pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+	IResult = fCaptureXS.insert( zaitoinsert);
+	return IResult.second;
+	DBGL;
+}
+
+bool EvolutiveProduct::n2nXSInsert(pair<ZAI, TGraph*> zaitoinsert)
+{
+	DBGL;
+	pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+	IResult = fn2nXS.insert( zaitoinsert);
 	return IResult.second;
 	DBGL;
 }
@@ -1015,7 +1042,7 @@ EvolutiveProduct EvolutiveProduct::GenerateDBFor(IsotopicVector isotopicvector)
 		for(int j = 0; j < (int)NMatrix.size(); j++)
 			ZAIQuantity[j] = (NMatrix[j])[i][0];
 
-		GeneratedDB.Insert(pair<ZAI, TGraph*> (index.find(i)->second, new TGraph(NMatrix.size(), timevector, ZAIQuantity) ) );
+		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (index.find(i)->second, new TGraph(NMatrix.size(), timevector, ZAIQuantity) ) );
 	}
 	GeneratedDB.SetPower(fPower * NormFactor );
 	GeneratedDB.SetFuelType(fFuelType );
