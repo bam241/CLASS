@@ -59,6 +59,7 @@ public :
 	void	SetFuelType(string fueltype)		{fFuelType = fueltype;}
 	void 	SetPower(double power)			{fPower = power;}
 	void 	SetHMMass(double HMMass)		{fHMMass = HMMass;}
+	void	SetFlux(TGraph* flux )				{fFlux = flux; }
 
 	
 //********* Get Method *********//
@@ -81,8 +82,12 @@ public :
 
 
 
-	bool Insert(pair<ZAI, TGraph*> zaitoinsert);			//!<
-
+	bool NucleiInsert(pair<ZAI, TGraph*> zaitoinsert);			//!<
+	bool FissionXSInsert(pair<ZAI, TGraph*> zaitoinsert);
+	bool CaptureXSInsert(pair<ZAI, TGraph*> zaitoinsert);
+	bool n2nXSInsert(pair<ZAI, TGraph*> zaitoinsert);
+	
+	
 //********* Get Method *********//
 	EvolutiveProduct GenerateDBFor(IsotopicVector isotopicvector);	///< Build A DB from a close one
 
