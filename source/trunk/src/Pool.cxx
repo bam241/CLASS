@@ -1,6 +1,6 @@
-#include "TreatmentFactory.hxx"
+#include "Pool.hxx"
 
-#include "EvolutionDataBase.hxx"
+#include "DataBank.hxx"
 #include "IsotopicVector.hxx"
 #include "Storage.hxx"
 #include "CLASS.hxx"
@@ -15,15 +15,15 @@
 
 //________________________________________________________________________
 //
-//		TreatmentFactory
+//		Pool
 //
 //
 //
 //
 //________________________________________________________________________
-ClassImp(TreatmentFactory)
+ClassImp(Pool)
 
-TreatmentFactory::TreatmentFactory()
+Pool::Pool()
 {
 DBGL;
 	fCoolingTime = 5*3600.*24.*365.25;
@@ -38,7 +38,7 @@ DBGL;
 DBGL;
 }
 	//________________________________________________________________________
-TreatmentFactory::TreatmentFactory(double creation,
+Pool::Pool(double creation,
 				   double coolingtime)
 {
 DBGL;
@@ -52,7 +52,7 @@ DBGL;
 }
 
 //________________________________________________________________________
-TreatmentFactory::TreatmentFactory(Storage* storage,
+Pool::Pool(Storage* storage,
 				   double creation,
 				   double coolingtime)
 {
@@ -68,7 +68,7 @@ DBGL;
 }
 
 //________________________________________________________________________
-TreatmentFactory::~TreatmentFactory()
+Pool::~Pool()
 {
 DBGL;
 DBGL;
@@ -80,7 +80,7 @@ DBGL;
 //________________________________________________________________________
 //	Get Decay
 //________________________________________________________________________
-IsotopicVector TreatmentFactory::GetDecay(IsotopicVector isotopicvector, cSecond t)
+IsotopicVector Pool::GetDecay(IsotopicVector isotopicvector, cSecond t)
 {
 DBGL;
 	IsotopicVector IV;
@@ -105,7 +105,7 @@ DBGL;
 //		Cooling
 //		Separation
 //________________________________________________________________________
-void TreatmentFactory::AddIVCooling(IsotopicVector IV)
+void Pool::AddIVCooling(IsotopicVector IV)
 { 
 DBGL;
 	fIVCooling.push_back(IV);
@@ -117,7 +117,7 @@ DBGL;
 
 
 //________________________________________________________________________
-void TreatmentFactory::RemoveIVCooling(int i)		//!< Remove a Cooling IsotopicVector
+void Pool::RemoveIVCooling(int i)		//!< Remove a Cooling IsotopicVector
 {
 DBGL;
 	fIVCooling.erase(fIVCooling.begin()+i);
@@ -126,7 +126,7 @@ DBGL;
 DBGL;
 }
 
-IsotopicVector TreatmentFactory::GetFullCooling()
+IsotopicVector Pool::GetFullCooling()
 {
 DBGL;
 	IsotopicVector tmp = 0*ZAI(0,0,0);
@@ -151,7 +151,7 @@ DBGL;
 
 
 //________________________________________________________________________
-void TreatmentFactory::CoolingEvolution(cSecond t)
+void Pool::CoolingEvolution(cSecond t)
 {
 DBGL;
 	if(t == fInternalTime && t!=0) return;
@@ -192,7 +192,7 @@ DBGL;
 
 
 //________________________________________________________________________
-void TreatmentFactory::Evolution(cSecond t)
+void Pool::Evolution(cSecond t)
 {
 DBGL;
 	// Check if the TF has been created ...
@@ -217,7 +217,7 @@ DBGL;
 
 
 //________________________________________________________________________
-void TreatmentFactory::Dump()
+void Pool::Dump()
 {
 //------ Cooling ------//
 	for(int i = (int)fCoolingEndOfCycle.size()-1; i >=0 ; i--)	// IV End Of Cooling

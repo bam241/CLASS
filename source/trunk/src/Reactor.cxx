@@ -1,8 +1,8 @@
 #include "Reactor.hxx"
 
-#include "EvolutiveProduct.hxx"
-#include "EvolutionDataBase.hxx"
-#include "TreatmentFactory.hxx"
+#include "EvolutionData.hxx"
+#include "DataBank.hxx"
+#include "Pool.hxx"
 #include "FabricationPlant.hxx"
 #include "Storage.hxx"
 #include "CLASS.hxx"
@@ -29,9 +29,9 @@ Reactor::Reactor()
 	DBGL;
 	DBGL;
 }
-Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
+Reactor::Reactor(DataBank<IsotopicVector>* 	fueltypeDB,
 		 FabricationPlant* fabricationplant,
- 		 TreatmentFactory* treatmentfactory,
+ 		 Pool* Pool,
  		 double creationtime, double lifetime)
 {
 	DBGL;
@@ -45,7 +45,7 @@ Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	fBurnUp = -1.;
 	fHeavyMetalMass = -1.;
 	
-	fAssociedTreatmentFactory = treatmentfactory;
+	fAssociedPool = Pool;
 	
 	fFuelTypeDB = fueltypeDB;
 	
@@ -67,7 +67,7 @@ Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	DBGL;
 }
 
-Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB, FabricationPlant* fabricationplant, TreatmentFactory* treatmentfactory,
+Reactor::Reactor(DataBank<IsotopicVector>* 	fueltypeDB, FabricationPlant* fabricationplant, Pool* Pool,
  		 double creationtime, double lifetime,
  		 double Power, double HMMass, double BurnUp, double EffectiveCharge)
 {
@@ -80,7 +80,7 @@ Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB, FabricationPlan
 	fFabricationPlant = fabricationplant;
 	fFixedFuel = false;
 	
-	fAssociedTreatmentFactory = treatmentfactory;
+	fAssociedPool = Pool;
 	
 	fFuelTypeDB = fueltypeDB;
 	
@@ -110,9 +110,9 @@ Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB, FabricationPlan
 	DBGL;
 }
 
-Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
+Reactor::Reactor(DataBank<IsotopicVector>* 	fueltypeDB,
 		 FabricationPlant* fabricationplant,
- 		 TreatmentFactory* treatmentfactory,
+ 		 Pool* Pool,
  		 double creationtime, double lifetime, double cycletime,
  		 double HMMass, double BurnUp)
 {
@@ -127,7 +127,7 @@ Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	fBurnUp = BurnUp;
 	fHeavyMetalMass = HMMass;
 
-	fAssociedTreatmentFactory = treatmentfactory;
+	fAssociedPool = Pool;
 
 	fFuelTypeDB = fueltypeDB;
 
@@ -152,8 +152,8 @@ Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	DBGL;
 }
 
-Reactor::Reactor(EvolutiveProduct evolutivedb, 
- 		 TreatmentFactory* treatmentfactory,
+Reactor::Reactor(EvolutionData evolutivedb, 
+ 		 Pool* Pool,
  		 double creationtime,
  		 double lifetime,
  		 double cycletime)
@@ -168,7 +168,7 @@ Reactor::Reactor(EvolutiveProduct evolutivedb,
 	fFixedFuel = true;
 	fIsStorage = false;
 
-	fAssociedTreatmentFactory = treatmentfactory;
+	fAssociedPool = Pool;
 
 	fInternalTime = 0;
 	fInCycleTime = 0;
@@ -195,8 +195,8 @@ Reactor::Reactor(EvolutiveProduct evolutivedb,
 	DBGL;
 }
 
-Reactor::Reactor(EvolutiveProduct evolutivedb,
- 		 TreatmentFactory* treatmentfactory,
+Reactor::Reactor(EvolutionData evolutivedb,
+ 		 Pool* Pool,
  		 double creationtime,
  		 double lifetime,
  		 double power, double HMMass, double BurnUp, double ChargeFactor )
@@ -216,7 +216,7 @@ Reactor::Reactor(EvolutiveProduct evolutivedb,
 	fFixedFuel = true;
 	fIsStorage = false;
 	
-	fAssociedTreatmentFactory = treatmentfactory;
+	fAssociedPool = Pool;
 	
 	fInternalTime = 0;
 	fInCycleTime = 0;
@@ -304,7 +304,7 @@ void Reactor::SetPower(double Power)
 }
 
 //________________________________________________________________________
-void Reactor::SetEvolutionDB(EvolutiveProduct evolutionDB)
+void Reactor::SetEvolutionDB(EvolutionData evolutionDB)
 {
 	DBGL;
 	fEvolutionDB = evolutionDB;
@@ -315,7 +315,7 @@ void Reactor::SetEvolutionDB(EvolutiveProduct evolutionDB)
 }
 
 //________________________________________________________________________
-void Reactor::SetNewFuel(EvolutiveProduct ivdb)
+void Reactor::SetNewFuel(EvolutionData ivdb)
 {
 	DBGL;
 	SetEvolutionDB(ivdb);
@@ -402,7 +402,7 @@ DBGL;
 			fEndOfCycle = false;
 
 			if(fIsStarted == true )					// A Cycle has already been done
-				fAssociedTreatmentFactory->AddIVCooling(fIVReactor);
+				fAssociedPool->AddIVCooling(fIVReactor);
 			else fIsStarted = true;					// Just start the first cycle
 
 			if(fParc->GetStockManagement() == false && fIsStorage == true)
@@ -430,14 +430,14 @@ DBGL;
 		else if (fEndOfCycle == true && fShutDown == true)		//shutdown at end of Cycle
 		{
 
-			fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+			fAssociedPool->AddIVCooling(fIVOutCycle);
 			fIVReactor.Clear();
 			fInCycleTime = 0;
 			fIsStarted = false;		// shut down the Reactor
 		}
 		else if (fEndOfCycle == false && fShutDown == true) 					//shutdown during Cycle
 		{
-			fAssociedTreatmentFactory->AddIVCooling(fIVReactor);
+			fAssociedPool->AddIVCooling(fIVReactor);
 			fIVReactor.Clear();
 			fInCycleTime = 0;
 			fIsStarted = false;		// shut down the Reactor
@@ -459,7 +459,7 @@ DBGL;
 
 			if(fIsStarted == true )					// A Cycle has already been done
 			{
-				fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+				fAssociedPool->AddIVCooling(fIVOutCycle);
 			}
 			else fIsStarted = true;					// Just start the first cycle
 
@@ -473,14 +473,14 @@ DBGL;
 		}
 		else if (fEndOfCycle == true && fShutDown == true)		//shutdown at end of Cycle
 		{
-			fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+			fAssociedPool->AddIVCooling(fIVOutCycle);
 			fIVReactor.Clear();
 			fInCycleTime = 0;
 			fIsStarted = false;		// shut down the Reactor
 		}
 		else if (fEndOfCycle == false && fShutDown == true) 					//shutdown during Cycle
 		{
-			fAssociedTreatmentFactory->AddIVCooling(fIVReactor);
+			fAssociedPool->AddIVCooling(fIVReactor);
 			fIVReactor.Clear();
 			fInCycleTime = 0;
 			fIsStarted = false;		// shut down the Reactor

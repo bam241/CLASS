@@ -2,7 +2,7 @@
 
 #include "Storage.hxx"
 #include "Reactor.hxx"
-#include "TreatmentFactory.hxx"
+#include "Pool.hxx"
 #include "FabricationPlant.hxx"
 #include "Defines.hxx"
 #include "LogFile.hxx"
@@ -128,16 +128,16 @@ DBGL;
 }
 
 //________________________________________________________________________
-void CLASS::AddTreatmentFactory(TreatmentFactory* treatmentfactory)
+void CLASS::AddPool(Pool* Pool)
 {
 DBGL;
 	
-	fTreatmentFactory.push_back(treatmentfactory);
-	fTreatmentFactory.back()->SetParc(this);
-	fTreatmentFactory.back()->SetDecayDataBase( (*this).GetDecayDataBase() );
+	fPool.push_back(Pool);
+	fPool.back()->SetParc(this);
+	fPool.back()->SetDecayDataBase( (*this).GetDecayDataBase() );
 	
-	fTreatmentFactory.back()->SetLog(fLog);
-	fTreatmentFactory.back()->SetId((int)fTreatmentFactory.size()-1);
+	fPool.back()->SetLog(fLog);
+	fPool.back()->SetId((int)fPool.size()-1);
 DBGL;
 }
 
@@ -207,7 +207,7 @@ DBGL;
 	for(int i = 0; i < (int)fReactor.size();i++)
 	{
 		double step = fReactor[i]->GetCreationTime();
-		double coolingstep = fReactor[i]->GetAssociedTreatmentFactory()->GetCoolingTime();
+		double coolingstep = fReactor[i]->GetAssociedPool()->GetCoolingTime();
 		double fabricationstep = 0;
 
 		if(fReactor[i]->IsFuelFixed() == false)
@@ -292,17 +292,17 @@ DBGL;
 
 
 //*** In Case of Evolution Restart ****//
-	for(int i =0; i < (int)fTreatmentFactory.size(); i++) 
+	for(int i =0; i < (int)fPool.size(); i++) 
 	{
 		
 		
 		//********* End of Cooling Step *********//
-		for(int j = 0; j<(int)fTreatmentFactory[i]->GetIVCooling().size(); j++ )// Set End of Cooling
+		for(int j = 0; j<(int)fPool[i]->GetIVCooling().size(); j++ )// Set End of Cooling
 		{
-			if(fTreatmentFactory[i]->GetCoolingStartingTime()[j] +  fTreatmentFactory[i]->GetCoolingTime() > fAbsoluteTime )
+			if(fPool[i]->GetCoolingStartingTime()[j] +  fPool[i]->GetCoolingTime() > fAbsoluteTime )
 			{
 				pair< map<cSecond, int>::iterator, bool > IResult;
-				IResult = fTimeStep.insert( pair<cSecond ,int>(fTreatmentFactory[i]->GetCoolingStartingTime()[j] +  fTreatmentFactory[i]->GetCoolingTime(),8) );
+				IResult = fTimeStep.insert( pair<cSecond ,int>(fPool[i]->GetCoolingStartingTime()[j] +  fPool[i]->GetCoolingTime(),8) );
 				if( IResult.second == false ) IResult.first->second |= 8;
 			}
 		}
@@ -334,11 +334,11 @@ DBGL;
 void CLASS::TreatmentEvolution()
 {
 DBGL;
-	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
-		fTreatmentFactory[i]->Evolution(fAbsoluteTime);
+	for(int i = 0; i < (int) fPool.size();i++)
+		fPool[i]->Evolution(fAbsoluteTime);
 	
-	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
-		fTreatmentFactory[i]->Dump();
+	for(int i = 0; i < (int) fPool.size();i++)
+		fPool[i]->Dump();
 DBGL;
 }
 
@@ -500,10 +500,10 @@ DBGL;
 		for ( it = reactorNextStep.begin(); it != reactorNextStep.end(); it++)
 			fFuelFabrication += (*it).second;
 	}
-	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
+	for(int i = 0; i < (int) fPool.size();i++)
 	{
-		for(int j=0; j < (int)fTreatmentFactory[i]->GetIVCooling().size(); j++)
-			fTotalCooling += fTreatmentFactory[i]->GetIVCooling()[j];
+		for(int j=0; j < (int)fPool[i]->GetIVCooling().size(); j++)
+			fTotalCooling += fPool[i]->GetIVCooling()[j];
 	}
 	
 	for(int i = 0; i < (int)fStorage.size(); i++)
@@ -619,12 +619,12 @@ DBGL;
 		fOutT->Branch(Storage_name.c_str(), "Storage", &fStorage[i]);
 	}
 
-	for(int i = 0; i < (int)fTreatmentFactory.size(); i++)
+	for(int i = 0; i < (int)fPool.size(); i++)
 	{
-		string TF_name = "TreatmentFactory";
+		string TF_name = "Pool";
 		TF_name += dtoa(i);
 		TF_name += ".";		
-		fOutT->Branch(TF_name.c_str(), "TreatmentFactory", &fTreatmentFactory[i]);
+		fOutT->Branch(TF_name.c_str(), "Pool", &fPool[i]);
 	}
 	
 	for(int i = 0; i < (int)fReactor.size(); i++)
@@ -650,12 +650,12 @@ DBGL;
 void CLASS::Print()
 {
 DBGL;
-	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
+	for(int i = 0; i < (int) fPool.size();i++)
 	{
 		cout << "!!!!!!!!!STEP : " << fAbsoluteTime/(int)(3600*24*365.25) << endl;
-		cout << "TreatmentFactory : " << endl;
+		cout << "Pool : " << endl;
 		cout << "Cooling ";
-		cout << fTreatmentFactory[i]->GetIVCooling().size()<< endl;
+		cout << fPool[i]->GetIVCooling().size()<< endl;
 	}
 
 	for(int i = 0; i < (int)fReactor.size(); i++)

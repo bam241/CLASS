@@ -17,22 +17,22 @@ LIBNAME 	= CLASSpkg
 OBJS		= 	CLASS.o \
 			Storage.o StorageDict.o\
 			FabricationPlant.o FabricationPlantDict.o \
-			TreatmentFactory.o TreatmentFactoryDict.o\
+			Pool.o PoolDict.o\
 			Reactor.o ReactorDict.o \
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAI.o ZAIDict.o \
-			EvolutionDataBase.o \
-			EvolutiveProduct.o EvolutiveProductDict.o \
+			DataBank.o \
+			EvolutionData.o EvolutionDataDict.o \
 			LogFile.o
 
 ROOTOBJS	= 	Storage.o StorageDict.o\
-			TreatmentFactory.o TreatmentFactoryDict.o\
+			Pool.o PoolDict.o\
 			Reactor.o ReactorDict.o \
 			FabricationPlant.o FabricationPlantDict.o \
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAI.o ZAIDict.o \
-			EvolutionDataBase.o \
-			EvolutiveProduct.o EvolutiveProductDict.o \
+			DataBank.o \
+			EvolutionData.o EvolutionDataDict.o \
 			LogFile.o
 
 
@@ -56,7 +56,7 @@ StorageDict.cxx:		$(LOCALINC)/Storage.hxx
 ReactorDict.cxx:		$(LOCALINC)/Reactor.hxx
 				rootcint -f $@ -c $^
 
-TreatmentFactoryDict.cxx:	$(LOCALINC)/TreatmentFactory.hxx
+PoolDict.cxx:	$(LOCALINC)/Pool.hxx
 				rootcint -f $@ -c $^
 
 IsotopicVectorDict.cxx:		$(LOCALINC)/IsotopicVector.hxx
@@ -68,16 +68,16 @@ ZAIDict.cxx:			$(LOCALINC)/ZAI.hxx
 FabricationPlantDict.cxx:	$(LOCALINC)/FabricationPlant.hxx
 				rootcint -f $@ -c $^
 
-EvolutiveProductDict.cxx:	$(LOCALINC)/EvolutiveProduct.hxx
+EvolutionDataDict.cxx:	$(LOCALINC)/EvolutionData.hxx
 				rootcint -f $@ -c $^
 
 
 
 
 clean:
-		@rm -vf $(OBJS) *~ core *Dict.cxx
+		@rm -vf $(OBJS) *~ core *Dict.cxx *Dict.h
 oclean :
-		@rm -vf $(OBJS) *~ core *Dict.cxx
+		@rm -vf $(OBJS) *~ core *Dict.cxx *Dict.h
 .SUFFIXES: .cxx
 
 %.o: %.cxx $(INCLUDES)
