@@ -3,8 +3,8 @@
 #include "Storage.hxx"
 #include "FabricationPlant.hxx"
 #include "Reactor.hxx"
-#include "EvolutiveProduct.hxx"
-#include "EvolutionDataBase.hxx"
+#include "EvolutionData.hxx"
+#include "DataBank.hxx"
 #include "IsotopicVector.hxx"
 #include "CLASS.hxx"
 #include "Defines.hxx"
@@ -154,7 +154,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 {
 	DBGL;
 	
-	EvolutionDataBase<IsotopicVector>* FuelType = fParc->GetReactor()[ReactorId]->GetFuelType();
+	DataBank<IsotopicVector>* FuelType = fParc->GetReactor()[ReactorId]->GetFuelType();
 	
 	
 	if(FuelType->GetFuelType() != "MOX")
@@ -201,9 +201,9 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 		if( stock.GetZAIIsotopicQuantity(ZAI(-1,-1,-1)) == 1 )
 		{
 			{
-				EvolutiveProduct evolutiondb;
-				pair<map<int, EvolutiveProduct>::iterator, bool> IResult;
-				IResult = fReactorFuturDB.insert( pair<int, EvolutiveProduct>(ReactorId,evolutiondb) );
+				EvolutionData evolutiondb;
+				pair<map<int, EvolutionData>::iterator, bool> IResult;
+				IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,evolutiondb) );
 				if(IResult.second == false)
 					IResult.first->second = evolutiondb;
 			}
@@ -312,11 +312,11 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 				fFractionToTake.clear();
 				
 				IVBeginCycle += U8_Quantity*U8*0.997 + U8_Quantity*U5*0.003;
-				EvolutiveProduct evolutiondb = BuildEvolutiveDB(ReactorId, IVBeginCycle);
+				EvolutionData evolutiondb = BuildEvolutiveDB(ReactorId, IVBeginCycle);
 				
 				{
-					pair<map<int, EvolutiveProduct>::iterator, bool> IResult;
-					IResult = fReactorFuturDB.insert( pair<int, EvolutiveProduct>(ReactorId,evolutiondb) );
+					pair<map<int, EvolutionData>::iterator, bool> IResult;
+					IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,evolutiondb) );
 					if(IResult.second == false)
 						IResult.first->second = evolutiondb;
 				}
@@ -362,24 +362,24 @@ IsotopicVector FabricationPlant::GetDecay(IsotopicVector isotopicvector, cSecond
 	//________________________________________________________________________
 	//_____________________________ Reactor & DB _____________________________
 	//________________________________________________________________________
-EvolutiveProduct FabricationPlant::BuildEvolutiveDB(int ReactorId,IsotopicVector isotopicvector)
+EvolutionData FabricationPlant::BuildEvolutiveDB(int ReactorId,IsotopicVector isotopicvector)
 {
 	DBGL;
-	EvolutionDataBase<IsotopicVector>* evolutiondb = fParc->GetReactor()[ReactorId]->GetFuelType();
+	DataBank<IsotopicVector>* evolutiondb = fParc->GetReactor()[ReactorId]->GetFuelType();
 	
 	isotopicvector = GetDecay(isotopicvector, fFabricationTime);
 	
-	EvolutiveProduct EvolBuild;
+	EvolutionData EvolBuild;
 	
 	if( fUpdateReferenceDBatEachStep == true )
 	{
-		EvolutiveProduct EvolBuild = evolutiondb->GenerateDB(isotopicvector,
+		EvolutionData EvolBuild = evolutiondb->GenerateDB(isotopicvector,
 								     fParc->GetReactor()[ReactorId]->GetCycleTime(),
 								     fParc->GetReactor()[ReactorId]->GetPower());
 	}
 	else
 	{
-		map<double, EvolutiveProduct> distances = evolutiondb->GetDistancesTo(isotopicvector);
+		map<double, EvolutionData> distances = evolutiondb->GetDistancesTo(isotopicvector);
 		EvolBuild = distances.begin()->second.GenerateDBFor(isotopicvector);
 		
 	}
@@ -400,10 +400,10 @@ void FabricationPlant::TakeReactorFuel(int Id)
 }
 
 	//________________________________________________________________________
-EvolutiveProduct FabricationPlant::GetReactorEvolutionDB(int ReactorId)
+EvolutionData FabricationPlant::GetReactorEvolutionDB(int ReactorId)
 {
 	DBGL;
-	map< int,EvolutiveProduct >::iterator it = fReactorFuturDB.find(ReactorId);
+	map< int,EvolutionData >::iterator it = fReactorFuturDB.find(ReactorId);
 	return (*it).second;
 	DBGL;
 }

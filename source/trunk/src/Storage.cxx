@@ -1,6 +1,6 @@
 #include "Storage.hxx"
 
-#include "EvolutionDataBase.hxx"
+#include "DataBank.hxx"
 #include "CLASS.hxx"
 #include "Defines.hxx"
 #include "LogFile.hxx"
@@ -29,7 +29,7 @@ DBGL;
 }
 
 //________________________________________________________________________
-Storage::Storage(EvolutionDataBase<ZAI>* evolutivedb)
+Storage::Storage(DataBank<ZAI>* evolutivedb)
 {
 DBGL;
 	fInternalTime = 0;
