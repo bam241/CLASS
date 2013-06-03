@@ -44,15 +44,17 @@ public :
 		FabricationPlant* fabricationplant, TreatmentFactory* treatmentfactory,
 		double creationtime , double lifetime, double cycletime,
 		double HMMass, double BurnUp);						//!<
-	Reactor(double Power, EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
+	Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 		FabricationPlant* fabricationplant, TreatmentFactory* treatmentfactory,
 		double creationtime , double lifetime,
-		double HMMass, double BurnUp);						//!<
+		double Power, double HMMass, double BurnUp, double EffectiveCharge);						//!<
 
 	
 	Reactor(EvolutiveProduct evolutivedb, TreatmentFactory* treatmentfactory,	//!<
 		double creationtime, double lifetime, double cycletime);		//!<
-
+	Reactor(EvolutiveProduct evolutivedb, TreatmentFactory* treatmentfactory,
+		double creationtime, double lifetime,
+		double power, double HMMass, double BurnUp, double ChargeFactor = 1. );
 
 	///< Normal Destructor
 	~Reactor();
@@ -67,7 +69,7 @@ public :
 	double			GetPower()	const		{ return fPower; } 		//!< Return the cycle time of the Reactor
 	cSecond 		GetCycleTime()	const		{ return fCycleTime; } 		//!< Return the cycle time of the Reactor
 	cSecond 		GetCreationTime() const		{ return fCreationTime; }	//!< Return the creation time of the Reactor
-	cSecond 		GetLifeTime()	const		{ return fLifeTime; }		//!< Return the creation time of the Reactor
+	cSecond 		GetLifeTime()	const		{ return fLifeTime; }		//!< Return the life time of the Reactor
 
 	EvolutiveProduct	GetEvolutionDB()		const	{ return fEvolutionDB; }		//!< Return the Evolution database of the Fuel
 	TreatmentFactory*	GetAssociedTreatmentFactory()	const	{ return fAssociedTreatmentFactory; }	//!< Return the pointer to Associeted TF
@@ -85,6 +87,8 @@ public :
 	void SetParc(CLASS* parc)				{ fParc = parc; }				//!< Set the Pointer to the Parc
 	void SetStorage(Storage* storage)			{ fStorage = storage; fIsStorage = true;}	//!< Set the Pointer to the Storage
 	void SetLog(LogFile* LOG)				{ fLog = LOG; }				//!< Set the Pointer to the Log
+	void SetLifeTime(double lifetime)			{ fLifeTime = lifetime; }		//!< Set the life time of the Reactor
+
 	void SetIVReactor(IsotopicVector isotopicvector)	{ fIVReactor = isotopicvector; }	//!< Set the IV inside the Reactor Core
 	void SetIVBeginCycle(IsotopicVector isotopicvector)	{ fIVBeginCycle = isotopicvector; }	//!< Set the IV at the Beginging of the Reactor Cycle
 	void SetIVOutCycle(IsotopicVector isotopicvector)	{ fIVOutCycle = isotopicvector; }	//!< Set the IV Going Out at the End of the Cycle

@@ -56,7 +56,7 @@ public :
 
 	map<double, EvolutiveProduct>	GetDistancesTo(IsotopicVector isotopicvector, double t = 0) const;	//! Return a map containing the distance of each EvolutiveProduct in the DataBase to the set IV at the t time
 //********* Set Method *********//
-	void SetEvolutionDataBase(map<T ,EvolutiveProduct > mymap)	{ fEvolutionDataBase = mymap; }
+	void SetEvolutionDataBase(map<T ,EvolutiveProduct > mymap)	{ fEvolutionDataBase = mymap; } 
 
 	void SetDataBaseIndex(string database) { fDataBaseIndex = database; }
 	EvolutiveProduct GenerateDB(IsotopicVector isotopicvector, double cycletime, double Power); //!< Genration of a New EvolutiveProduct From the one already present
@@ -65,7 +65,6 @@ public :
 //********* Modification Method *********//
 	IsotopicVector	Evolution(const T &key, double dt);	///< Return the Product IsotopicVector evolution from zai during a dt time
 	void		ReadDataBase();				///< ...
-
 
 //********* Printing Method *********//
 	void Print() const;
