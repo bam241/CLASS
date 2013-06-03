@@ -15,7 +15,7 @@
 #include <string>
 #include <map>
 #include "IsotopicVector.hxx"
-#include "EvolutiveProduct.hxx"
+#include "EvolutionData.hxx"
 
 
 using namespace std;
@@ -23,10 +23,10 @@ typedef long long int cSecond;
 
 
 class CLASS;
-class TreatmentFactory;
-class EvolutiveProduct;
+class Pool;
+class EvolutionData;
 template <class T> 
-class EvolutionDataBase;
+class DataBank;
 class FabricationPlant;
 class Storage;
 class LogFile;
@@ -37,22 +37,22 @@ public :
 	///< Normal Constructor.
 	Reactor();
 	///< Advbanced Constructor.
-	Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
-		FabricationPlant* fabricationplant, TreatmentFactory* treatmentfactory,
+	Reactor(DataBank<IsotopicVector>* 	fueltypeDB,
+		FabricationPlant* fabricationplant, Pool* Pool,
 		double creationtime , double lifetime);					//!<
-	Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
-		FabricationPlant* fabricationplant, TreatmentFactory* treatmentfactory,
+	Reactor(DataBank<IsotopicVector>* 	fueltypeDB,
+		FabricationPlant* fabricationplant, Pool* Pool,
 		double creationtime , double lifetime, double cycletime,
 		double HMMass, double BurnUp);						//!<
-	Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
-		FabricationPlant* fabricationplant, TreatmentFactory* treatmentfactory,
+	Reactor(DataBank<IsotopicVector>* 	fueltypeDB,
+		FabricationPlant* fabricationplant, Pool* Pool,
 		double creationtime , double lifetime,
 		double Power, double HMMass, double BurnUp, double EffectiveCharge);						//!<
 
 	
-	Reactor(EvolutiveProduct evolutivedb, TreatmentFactory* treatmentfactory,	//!<
+	Reactor(EvolutionData evolutivedb, Pool* Pool,	//!<
 		double creationtime, double lifetime, double cycletime);		//!<
-	Reactor(EvolutiveProduct evolutivedb, TreatmentFactory* treatmentfactory,
+	Reactor(EvolutionData evolutivedb, Pool* Pool,
 		double creationtime, double lifetime,
 		double power, double HMMass, double BurnUp, double ChargeFactor = 1. );
 
@@ -71,13 +71,13 @@ public :
 	cSecond 		GetCreationTime() const		{ return fCreationTime; }	//!< Return the creation time of the Reactor
 	cSecond 		GetLifeTime()	const		{ return fLifeTime; }		//!< Return the life time of the Reactor
 
-	EvolutiveProduct	GetEvolutionDB()		const	{ return fEvolutionDB; }		//!< Return the Evolution database of the Fuel
-	TreatmentFactory*	GetAssociedTreatmentFactory()	const	{ return fAssociedTreatmentFactory; }	//!< Return the pointer to Associeted TF
+	EvolutionData	GetEvolutionDB()		const	{ return fEvolutionDB; }		//!< Return the Evolution database of the Fuel
+	Pool*	GetAssociedPool()	const	{ return fAssociedPool; }	//!< Return the pointer to Associeted TF
 	LogFile*		GetLog()			const	{ return fLog; }			//!< Return the Pointer to Log
 
 	bool 			IsFuelFixed()				{ return fFixedFuel; }			//!< True if using fixed Fuel, False otherwise
 	FabricationPlant*	GetFabricationPlant()		const	{ return fFabricationPlant; }		//!< Return the Pointer to the FabricationPlant
-	EvolutionDataBase<IsotopicVector>* GetFuelType()	const	{ return fFuelTypeDB; }			//!< Return the Fuel Type DB of the reactor
+	DataBank<IsotopicVector>* GetFuelType()	const	{ return fFuelTypeDB; }			//!< Return the Fuel Type DB of the reactor
 	double			GetHeavyMetalMass()		const	{ return fHeavyMetalMass; }		//!< Return the HeavyMetal Mass in the Core at the begining of the cycle
 	double			GetBurnUp()			const	{ return fBurnUp; }			//!< Return the Burn Up of the Fuel at the end of the cycle
 
@@ -98,12 +98,12 @@ public :
 	void SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}				//!< Set the Mass
 	void SetBurnUp(double BU)		{fBurnUp = BU;}						//!< Set the Mass
 
-	void SetEvolutionDB(EvolutiveProduct evolutionDB);						//!< Set the Pointer to the DB Evolution of the Reactor
+	void SetEvolutionDB(EvolutionData evolutionDB);						//!< Set the Pointer to the DB Evolution of the Reactor
 	
 //********* Modification Method *********//
 	void Evolution(cSecond t);									//!< Performe the Evolution until the Time t
 	void Dump();											//!< Write Modification (IV In/Out, filling the TF...)
-	void SetNewFuel(EvolutiveProduct ivdb);								//!< Change the Evolutive DB of the Reactor
+	void SetNewFuel(EvolutionData ivdb);								//!< Change the Evolutive DB of the Reactor
 //********* Other Method *********//
 	
 	
@@ -121,11 +121,11 @@ protected :
 //********* Internal Parameter *********//
  	LogFile*		fLog;				//!< Pointer to the Log
 	CLASS*			fParc;				//!< Pointer to the main Parc
-	TreatmentFactory*	fAssociedTreatmentFactory;	//!< Pointer to the TF which collect the spend fuel
+	Pool*	fAssociedPool;	//!< Pointer to the TF which collect the spend fuel
 	Storage*		fStorage;			//!< Pointer to the Stock
 								//!<
-	EvolutiveProduct	fEvolutionDB;			//!< Pointer to the Evolution DataBase
-	EvolutionDataBase<IsotopicVector>* 	fFuelTypeDB;	//! Pointer to a Fuel Type Database
+	EvolutionData	fEvolutionDB;			//!< Pointer to the Evolution DataBase
+	DataBank<IsotopicVector>* 	fFuelTypeDB;	//! Pointer to a Fuel Type Database
 	
 	cSecond		fCreationTime;		///< CLASS Universal Time of Creation
 	cSecond		fLifeTime;		///< LifeTime Of the Reactor (Operating's Duration)

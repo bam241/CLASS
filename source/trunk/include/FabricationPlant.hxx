@@ -15,7 +15,7 @@
 
 
 #include "IsotopicVector.hxx"
-#include "EvolutiveProduct.hxx"
+#include "EvolutionData.hxx"
 
 #include <vector>
 #include <map>
@@ -30,7 +30,7 @@ class LogFile;
 class ZAI;
 class IsotopicVector;		
 template <class T> 
-class EvolutionDataBase;
+class DataBank;
 
 
 
@@ -56,7 +56,7 @@ public :
 	void	SetParc(CLASS* parc)			{ fParc = parc; }			//!< Set the Pointer to the Parc
 	void	SetLog(LogFile* Log)			{ fLog = Log; }				//!< Set the Pointer to the Log
 	void	SetStorage(Storage* storage)		{ fStorage = storage; }			//!< Set the Pointer to the Storage
-	void	SetDecayDataBase(EvolutionDataBase<ZAI>* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
+	void	SetDecayDataBase(DataBank<ZAI>* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
 	
 	void	SetChronologicalTimePriority(bool bval)	{ fChronologicalTimePriority = bval;}	//!< Set the chronological priority (true for chronological, false unstead)
 	
@@ -75,11 +75,11 @@ public :
 	
 	map<int, IsotopicVector >	GetReactorFuturIncome() const
 						{ return fReactorFuturIV;}	//!< Return the List of the Futur Fuel IV
-	EvolutionDataBase<ZAI>* 	GeDecayDataBase() const
+	DataBank<ZAI>* 	GeDecayDataBase() const
 						{ return fDecayDataBase; }	//!< Return the pointer to the DecayDB
 
 	
-	EvolutiveProduct GetReactorEvolutionDB(int ReactorId);			//!< Return the EvolutiveProduct of Reactor ReactorId
+	EvolutionData GetReactorEvolutionDB(int ReactorId);			//!< Return the EvolutionData of Reactor ReactorId
 
 	
 
@@ -91,7 +91,7 @@ public :
 	void	RecycleStock(double fraction);								//!< Take a franction of the current stock
 	IsotopicVector	GetStockToRecycle();								//!< Get the next stock to recycle
 	void 	DumpStock();										//!< Update the storage
-	EvolutiveProduct	BuildEvolutiveDB(int ReactorId, IsotopicVector isotopicvector);		//!< Build the Evolution Database for the Reactir ReactorId Fuel
+	EvolutionData	BuildEvolutiveDB(int ReactorId, IsotopicVector isotopicvector);		//!< Build the Evolution Database for the Reactir ReactorId Fuel
 	void	TakeReactorFuel(int Id) ;								//!< Remove the Fuel of reactor ReactorId
 	
 
@@ -115,10 +115,10 @@ protected :
 	map<ZAI ,double>	fValorisableIV;		///< The Valorisable Table
 	map<int, cSecond >	fReactorNextStep;	//!< Next Time Step to Build a New Fuel
 
-	map< int,EvolutiveProduct >	fReactorFuturDB; //!< List of the Futur EvolutiveProduct use in the reactor
+	map< int,EvolutionData >	fReactorFuturDB; //!< List of the Futur EvolutionData use in the reactor
 	map< int,IsotopicVector >	fReactorFuturIV; //!< List of the Futur Fuel Isotopic Vector used in the reactor
 
-	EvolutionDataBase<ZAI>*		fDecayDataBase;	//!< Pointer to the Decay DataBase
+	DataBank<ZAI>*		fDecayDataBase;	//!< Pointer to the Decay DataBase
 
 
 	Storage*	fStorage;			//!< Pointer to the Storage to recycle

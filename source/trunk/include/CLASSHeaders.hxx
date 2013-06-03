@@ -7,15 +7,15 @@
 //CLASS library
 #include "CLASS.hxx"
 #include "Reactor.hxx"
-#include "TreatmentFactory.hxx"
+#include "Pool.hxx"
 #include "FabricationPlant.hxx"
 #include "Storage.hxx"
 #include "IsotopicVector.hxx"
 #include "ZAI.hxx"
 #include "LogFile.hxx"
 
-#include "EvolutiveProduct.hxx"
-#include "EvolutionDataBase.hxx"
+#include "EvolutionData.hxx"
+#include "DataBank.hxx"
 #include "StringLine.hxx"
 
 
