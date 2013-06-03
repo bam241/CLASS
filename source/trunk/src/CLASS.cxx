@@ -151,6 +151,7 @@ DBGL;
 	fReactor.back()->SetId((int)fReactor.size()-1);
 	if(fReactor.back()->IsFuelFixed() == false)
 		fReactor.back()->GetFabricationPlant()->AddReactor( (int)fReactor.size()-1,fReactor.back()->GetCreationTime() );
+	
 DBGL;
 }
 
@@ -184,7 +185,6 @@ DBGL;
 void CLASS::BuildTimeVector(cSecond t)
 {
 DBGL;
-	
 	fTimeStep.clear();
 	fTimeStep.insert( pair<double ,int>(t,1) );
 
@@ -285,7 +285,6 @@ DBGL;
 				pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step+coolingstep,8) );
 				if( IResult.second == false ) IResult.first->second |= 8;
 			}
-
 			step += fReactor[i]->GetCycleTime();
 		}
 		while(step <= t && step <= fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime() );
@@ -501,7 +500,6 @@ DBGL;
 		for ( it = reactorNextStep.begin(); it != reactorNextStep.end(); it++)
 			fFuelFabrication += (*it).second;
 	}
-
 	for(int i = 0; i < (int) fTreatmentFactory.size();i++)
 	{
 		for(int j=0; j < (int)fTreatmentFactory[i]->GetIVCooling().size(); j++)

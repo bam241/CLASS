@@ -21,6 +21,8 @@
 #include <algorithm>
 #include <map>
 
+#pragma link C++ class pair<ZAI,TGraph*>;
+
 using namespace std;
 //________________________________________________________________________
 //
@@ -195,6 +197,35 @@ IsotopicVector	EvolutiveProduct::GetIsotopicVectorAt(double t)
 	DBGL;
 	return IsotopicVectorTmp;
 }
+
+//________________________________________________________________________
+double	EvolutiveProduct::GetGetXSForAt(double t, ZAI zai, int ReactionId)
+{
+	DBGL;
+	map<ZAI ,TGraph* > XSEvol;
+	switch(ReactionId)
+	{
+		case 1: XSEvol = GetFissionXS();
+			break;
+		case 2: XSEvol = GetCaptureXS();
+			break;
+		case 3: XSEvol = Getn2nXS();
+			break;
+		default:cout << "!!Error!! !!!EvolutiveProduct!!! \n Wrong ReactionId !!" << endl;
+			fLog->fLog << "!!Error!! !!!EvolutiveProduct!!! \n Wrong ReactionId !!" << endl;
+			exit(1);
+	}
+	
+	map<ZAI ,TGraph* >::iterator it = XSEvol.find(zai);
+	
+	
+	if (it == XSEvol.end())
+		return 0.;
+	else
+		return Interpolate(t, *((*it).second) );
+	DBGL;
+}
+
 
 //________________________________________________________________________
 

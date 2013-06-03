@@ -177,3 +177,14 @@ DBGL;
 DBGL;
 }
 
+void Storage::Write(string filename, cSecond date)
+{
+DBGL;
+	for(int i=0;i < (int)fIVStock.size(); i++)
+	{
+		
+		fIVStock[i].Write(filename, date);
+	}
+DBGL;
+}
+

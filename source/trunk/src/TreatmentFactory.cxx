@@ -126,6 +126,17 @@ DBGL;
 DBGL;
 }
 
+IsotopicVector TreatmentFactory::GetFullCooling()
+{
+DBGL;
+	IsotopicVector tmp = 0*ZAI(0,0,0);
+	
+	for(int i =0; i< (int)fIVCooling.size(); i++)
+		tmp += fIVCooling[i];
+	
+	return tmp;
+DBGL;
+}
 
 
 

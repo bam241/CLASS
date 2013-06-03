@@ -67,11 +67,9 @@ Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	DBGL;
 }
 
-Reactor::Reactor(double Power, EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
-		 FabricationPlant* fabricationplant,
- 		 TreatmentFactory* treatmentfactory,
+Reactor::Reactor(EvolutionDataBase<IsotopicVector>* 	fueltypeDB, FabricationPlant* fabricationplant, TreatmentFactory* treatmentfactory,
  		 double creationtime, double lifetime,
- 		 double HMMass, double BurnUp)
+ 		 double Power, double HMMass, double BurnUp, double EffectiveCharge)
 {
 	DBGL;
 	
@@ -81,8 +79,6 @@ Reactor::Reactor(double Power, EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	
 	fFabricationPlant = fabricationplant;
 	fFixedFuel = false;
-	fBurnUp = BurnUp;
-	fHeavyMetalMass = HMMass;
 	
 	fAssociedTreatmentFactory = treatmentfactory;
 	
@@ -90,8 +86,11 @@ Reactor::Reactor(double Power, EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	
 	fInternalTime = 0;
 	fInCycleTime = 0;
-	fPower = Power;
-	fCycleTime = (cSecond) (BurnUp*1e9 / (fPower)  * HMMass  *3600*24);	 //BU in GWd/t
+	
+	fBurnUp = BurnUp;
+	fHeavyMetalMass = HMMass;
+	fPower = Power*EffectiveCharge;
+	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);	 //BU in GWd/t
 
 	fCreationTime = (cSecond)creationtime;
 	fLifeTime = (cSecond)lifetime;
@@ -102,7 +101,7 @@ Reactor::Reactor(double Power, EvolutionDataBase<IsotopicVector>* 	fueltypeDB,
 	cout	<< "\t Fuel Composition is not fixed ! "<< endl;
 	cout	<< "\t Fuel Type set to : \t "<<  fFuelTypeDB->GetFuelType() << endl;
 	cout	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
-	cout	<< "\t Life time (Operating's Duration) set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
+	cout	<< "\t Life time (Operating's Duration) set at \t " << (double)(fLifeTime/3600/24/365.25) << " year" << endl;
 	cout	<< "\t The Effective Thermal Power set at \t " << (double)(fPower *1e-6) << " MW" << endl;
 	cout	<< "\t Burn-Up at end of Cycle set at \t " << (double)(fBurnUp) << " GWj/t" << endl;
 	cout	<< "\t The corresponding Cycle Time is\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
@@ -196,6 +195,76 @@ Reactor::Reactor(EvolutiveProduct evolutivedb,
 	DBGL;
 }
 
+Reactor::Reactor(EvolutiveProduct evolutivedb,
+ 		 TreatmentFactory* treatmentfactory,
+ 		 double creationtime,
+ 		 double lifetime,
+ 		 double power, double HMMass, double BurnUp, double ChargeFactor )
+{
+	DBGL;
+	
+	fIsStarted = false;
+	fShutDown = false;
+	fEndOfCycle = false;
+	
+		
+
+	
+	
+
+
+	fFixedFuel = true;
+	fIsStorage = false;
+	
+	fAssociedTreatmentFactory = treatmentfactory;
+	
+	fInternalTime = 0;
+	fInCycleTime = 0;
+	fCreationTime = (cSecond)creationtime;
+	fLifeTime = (cSecond)lifetime;
+	
+	fPower = power * ChargeFactor;
+	
+	fHeavyMetalMass = HMMass;
+	
+	map<ZAI, double> ZAImass;
+	ZAImass.insert( pair< ZAI,double >( ZAI(92,238,0), 238050788.247e-6 ) );
+	ZAImass.insert( pair< ZAI,double >( ZAI(92,235,0), 235043929.918e-6 ) );
+	ZAImass.insert( pair< ZAI,double >( ZAI(94,238,0), 238049559.894e-6 ) );
+	ZAImass.insert( pair< ZAI,double >( ZAI(94,239,0), 239052163.381e-6 ) );
+	ZAImass.insert( pair< ZAI,double >( ZAI(94,240,0), 240053813.545e-6 ) );
+	ZAImass.insert( pair< ZAI,double >( ZAI(94,241,0), 241056851.456e-6 ) );
+	ZAImass.insert( pair< ZAI,double >( ZAI(94,242,0), 242058742.611e-6 ) );
+	ZAImass.insert( pair< ZAI,double >( ZAI(95,241,0), 241056829.144e-6 ) );
+	
+	double Na = 6.02214129e23;	//N Avogadro
+	map<ZAI ,double>::iterator it;
+	map<ZAI ,double> isotopicquantity = evolutivedb.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
+	double M0 = 0;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
+		M0 += (*it).second*ZAImass.find( (*it).first )->second/Na*1e-6;
+	
+	fEvolutionDB = evolutivedb * (fHeavyMetalMass/M0);
+	
+	fBurnUp = BurnUp;
+	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);
+
+	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
+	fIVInCycle = fEvolutionDB.GetIsotopicVectorAt(0);
+	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
+		
+	cout	<< "!!Info!! !!!Reactor!!! A Reactor has been define :" << endl;
+	cout	<< "\t Fuel Composition is fixed ! "<< endl;
+		//cout	<< "\t Fuel Type set to : \t "<<  fFuelTypeDB->GetFuelType() << endl;
+	cout	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
+	cout	<< "\t Life time (Operating's Duration) set at \t " << (double)(fLifeTime/3600/24/365.25) << " year" << endl;
+	cout	<< "\t The Cycle Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
+	cout	<< "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << ChargeFactor << " Charge Factor"<< endl;
+	cout	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
+	
+	DBGL;
+}
+
 
 //________________________________________________________________________
 Reactor::~Reactor()
@@ -282,12 +351,12 @@ void Reactor::Evolution(cSecond t)
 
 	cSecond EvolutionTime = t - fInternalTime; // Calculation of the evolution time (relativ)
 
-	if( abs(EvolutionTime + fInCycleTime - fCycleTime) < 3600 )		//End of Cycle
+	if( EvolutionTime + fInCycleTime == fCycleTime )		//End of Cycle
 	{
 		fEndOfCycle = true;
 		fInternalTime += EvolutionTime; 				// Update Internal Time
 		fInCycleTime += EvolutionTime;					// Update InCycleTime
-		
+
 		if(t >= fCreationTime + fLifeTime)				// if the Next Cycle don't 'Exist...
 			fShutDown = true;
 	
@@ -299,7 +368,6 @@ void Reactor::Evolution(cSecond t)
 		fInCycleTime += EvolutionTime;					// Update InCycleTime
 	
 		fIVReactor = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fInCycleTime/fEvolutionDB.GetPower()*fPower) );	// update the fuel composition
-		
 		if(t>=fCreationTime + fLifeTime)	fShutDown = true;
 	} 
 	else
@@ -334,7 +402,7 @@ DBGL;
 			fEndOfCycle = false;
 
 			if(fIsStarted == true )					// A Cycle has already been done
-			fAssociedTreatmentFactory->AddIVCooling(fIVOutCycle);
+				fAssociedTreatmentFactory->AddIVCooling(fIVReactor);
 			else fIsStarted = true;					// Just start the first cycle
 
 			if(fParc->GetStockManagement() == false && fIsStorage == true)

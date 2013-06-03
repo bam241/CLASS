@@ -20,6 +20,40 @@
 
 
 using namespace std;
+
+double ReactionRateWeightedDistance(IsotopicVector IV1, EvolutiveProduct DB )
+{
+	DBGL;
+	double d2 = 0;
+	double XS_total = 0;
+	IsotopicVector IV2 = DB.GetIsotopicVectorAt(0.).GetActinidesComposition();
+	IsotopicVector IVtmp = IV1 + IV2;
+	map<ZAI ,double> IVtmpIsotopicQuantity = IVtmp.GetIsotopicQuantity();
+	map<ZAI ,double >::iterator it;
+	
+	for( it = IVtmpIsotopicQuantity.begin(); it != IVtmpIsotopicQuantity.end(); it++)
+	{
+		double XS = 0;
+		
+		for(int i = 1; i < 4 ; i++)
+			XS += DB.GetGetXSForAt(0., (*it).first, i);
+		
+		double Z1 = IV1.GetZAIIsotopicQuantity( (*it).first );
+		double Z2 = IV2.GetZAIIsotopicQuantity( (*it).first );
+		d2 += pow( (Z1-Z2)*XS , 2 );
+		XS_total += (Z1+Z2)*XS/2;
+	}
+	
+	DBGL;
+	return sqrt(d2)/XS_total;
+}
+
+double ReactionRateWeightedDistance(EvolutiveProduct DB, IsotopicVector IV1  )
+{
+	return ReactionRateWeightedDistance( IV1, DB );
+}
+
+
 //________________________________________________________________________
 //
 //		EvolutionDataBase
@@ -28,6 +62,8 @@ using namespace std;
 //
 //
 //________________________________________________________________________
+
+
 
 template<>
 void EvolutionDataBase<IsotopicVector>::ReadDataBase();
@@ -233,7 +269,6 @@ void EvolutionDataBase<IsotopicVector>::ReadDataBase()
 	while(start < (int)line.size())
 		fFuelParameter.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
 	
-	
 	//Then Get All the Database
 	
 	while (!DataDB.eof())
@@ -264,8 +299,12 @@ map<double, EvolutiveProduct> EvolutionDataBase<IsotopicVector>::GetDistancesTo(
 	for( it = evolutiondb.begin(); it != evolutiondb.end(); it++ )
 	{
 		pair<map<double, EvolutiveProduct>::iterator, bool> IResult;
-		double D = Distance(isotopicvector.GetActinidesComposition(), (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition()/ Norme( (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition() )*Norme(isotopicvector.GetActinidesComposition()) );
-		//		double D = RelativDistance(isotopicvector, (*it).second.GetIsotopicVectorAt(t)/ Norme( (*it).second.GetIsotopicVectorAt(t) )*Norme(isotopicvector) );
+			//double D = Distance(isotopicvector.GetActinidesComposition(), (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition()/ Norme( (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition() )*Norme(isotopicvector.GetActinidesComposition()) );
+			//double D = RelativDistance(isotopicvector, (*it).second.GetIsotopicVectorAt(t)/ Norme( (*it).second.GetIsotopicVectorAt(t) )*Norme(isotopicvector) );
+		
+		double D = ReactionRateWeightedDistance(isotopicvector.GetActinidesComposition(), (*it).second);
+		
+		
 		IResult = distances.insert( pair<double, EvolutiveProduct>( D , (*it).second ) );
 	}
 	
