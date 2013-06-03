@@ -22,7 +22,7 @@ typedef long long int cSecond;
 class CLASS;
 class LogFile;
 template <class T> 
-class EvolutionDataBase;
+class DataBank;
 
 
 class Storage : public TObject
@@ -31,7 +31,7 @@ public :
 	///< Normal Constructor.
  	Storage();
  	///< Advanced Constructor
-	Storage(EvolutionDataBase<ZAI>* evolutivedb);						//!<
+	Storage(DataBank<ZAI>* evolutivedb);						//!<
 
  	///< Normal Destructor.
  	~Storage();
@@ -43,7 +43,7 @@ public :
 	void SetParc(CLASS* parc)			{ fParc = parc; }			//!< Set the Pointer to the Parc
 	void SetLog(LogFile* Log)			{ fLog = Log; }				//!< Set the Pointer to the Log
 
-	void SetDecayDataBase(EvolutionDataBase<ZAI>* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
+	void SetDecayDataBase(DataBank<ZAI>* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
 	void SetStock(vector<IsotopicVector> IVsstock)	{ fIVStock = IVsstock; }		//!< Set The Storage isotopicVector
 
 
@@ -55,7 +55,7 @@ public :
 	double GetInternalTime() const				{ return fInternalTime; }	//!< Return Creation Time
 	
 	//!<
-	EvolutionDataBase<ZAI>* GeDecayDataBase() const		{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
+	DataBank<ZAI>* GeDecayDataBase() const		{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
 	vector<IsotopicVector> GetStock()	const		{ return fIVStock; }		//!< Return the Storage IsotopicVector
 	IsotopicVector GetFullStock()		const		{ return fIVFullStock; }	//!< Return the Full Storage
 
@@ -87,7 +87,7 @@ protected :
 	CLASS* 		fParc;			//!< Pointer to the Parc
 	LogFile*	fLog;			//!< Pointer to the Log
 
-	EvolutionDataBase<ZAI>*	fDecayDataBase;	//!< Pointer to the Decay DataBase
+	DataBank<ZAI>*	fDecayDataBase;	//!< Pointer to the Decay DataBase
 
 
 

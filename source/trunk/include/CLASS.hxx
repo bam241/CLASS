@@ -5,7 +5,7 @@
  \file
  \brief Header file for CLASS classes. 
  Define a CLASS Parc.
- The aim of thes Class is to manage the parc, store reactor, TreatmentFactory, process the evolution, build Isotopic vector
+ The aim of thes Class is to manage the parc, store reactor, Pool, process the evolution, build Isotopic vector
 
  
  @author BaM
@@ -24,10 +24,10 @@
 using namespace std;
 typedef long long int cSecond;
 
-template <class T> class EvolutionDataBase;
+template <class T> class DataBank;
 class FabricationPlant;
 class Reactor;
-class TreatmentFactory;
+class Pool;
 class LogFile;
 class Storage;
 
@@ -45,10 +45,10 @@ public :
 //********* Get Method *********//
 	cSecond				GetAbsoluteTime()	{ return fAbsoluteTime; }	///< Return the Absolute Clock
 	map<cSecond, int>		GetTimeStep()		{ return fTimeStep; }		///< Return the Time Step Vector
-	vector<TreatmentFactory*>	GetTreatmentFactory()	{ return fTreatmentFactory; }	///< Return the TF Vector
+	vector<Pool*>	GetPool()	{ return fPool; }	///< Return the TF Vector
 	vector<Reactor*>		GetReactor()		{ return fReactor; }		///< Return the Reactor Vector
 	vector<Storage*>		GetStorage()		{ return fStorage; }		///< Return the Reactor Vector
-	EvolutionDataBase<ZAI>*		GetDecayDataBase() 	{ return fDecayDataBase; }	//!< Return the Pointer to the Decay DataBase
+	DataBank<ZAI>*		GetDecayDataBase() 	{ return fDecayDataBase; }	//!< Return the Pointer to the Decay DataBase
 
 	cSecond				GetPrintSet()		{ return fPrintStep; }		///< Return the Print Step Periodicity
 	bool				GetStockManagement()	{ return fStockManagement; }	///< Return the StockManagement method (True or False)
@@ -60,14 +60,14 @@ public :
 //********* Set Method *********//
 	void	SetTimeStep(double timestep) 				{ fPrintStep = (cSecond)timestep; }	///< Set the Printing Step periodicity
 	void	SetStockManagement(bool val)				{ fStockManagement = val; }		//!< Set the StockManagement method (True or false)
-	void	SetDecayDataBase(EvolutionDataBase<ZAI>* decaydatabase) { fDecayDataBase = decaydatabase; }	//!< Set the Pointer to the Decay DataBase
+	void	SetDecayDataBase(DataBank<ZAI>* decaydatabase) { fDecayDataBase = decaydatabase; }	//!< Set the Pointer to the Decay DataBase
 	
 	void	SetOutputFileName(string name)	{ fOutputFileName = name; }		//!< Set the Output File Name
 	void	SetOutputTreeName(string name)	{ fOutputTreeName = name; }		//!< Set the Output File Name
 
 
 //********* Add Method *********//
-	void	AddTreatmentFactory(TreatmentFactory* treatmentfactory);	///< Add A TF to the Park
+	void	AddPool(Pool* Pool);	///< Add A TF to the Park
 	void	AddReactor(Reactor* reactor);					///< Add a Reactor to the Park 
 	void 	AddStorage(Storage* storage);					///< Add a Storage to the Park
 	void 	AddFabricationPlant(FabricationPlant* fabricationplant);	///< Add a Storage to the Park
@@ -129,10 +129,10 @@ protected :
 
 	
 	vector<Storage*>		fStorage;		///< Vector of Storages
-	vector<TreatmentFactory*>	fTreatmentFactory;	///< Vector of Treament Factory
+	vector<Pool*>	fPool;	///< Vector of Treament Factory
 	vector<Reactor*>		fReactor;		///< Vector of Reactor
 	vector<FabricationPlant*>	fFabricationPlant;	///< Vector of FabricationPlant
-	EvolutionDataBase<ZAI>*		fDecayDataBase;		//!< Pointer to the Decay DataBase
+	DataBank<ZAI>*		fDecayDataBase;		//!< Pointer to the Decay DataBase
 
 	
 	TFile*		fOutFile;		///< Pointer to the Root Output File

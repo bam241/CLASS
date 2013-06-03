@@ -1,5 +1,5 @@
-#ifndef __TreatmentFactory_HXX__
-#define __TreatmentFactory_HXX__
+#ifndef __Pool_HXX__
+#define __Pool_HXX__
 
 
 
@@ -16,12 +16,12 @@ class Storage;
 class CLASS;
 class LogFile;
 template <class T> 
-class EvolutionDataBase;
+class DataBank;
 
 
 /*!
  \file
- \brief Header file for TreatmentFactory class.
+ \brief Header file for Pool class.
  
  The aim of the Class is to manage evolution of all out reactor fuel. from Cooling to Waste
  
@@ -32,21 +32,21 @@ class EvolutionDataBase;
 
 
 
-class TreatmentFactory : public TObject
+class Pool : public TObject
 {
 public :
 	///< Normal constructor
- 	TreatmentFactory();
+ 	Pool();
 	///< Advanced Constructor
-	TreatmentFactory(double abstime,
+	Pool(double abstime,
 			 double coolingtime = 5*3600.*24.*365.25); //!<
 	
-	TreatmentFactory(Storage* Storage,
+	Pool(Storage* Storage,
 			 double abstime = 0,
 			 double coolingtime = 5*3600.*24.*365.25); //!<
 
 	///< Normal Destructor.
-	~TreatmentFactory();
+	~Pool();
 
   
 
@@ -58,7 +58,7 @@ public :
 	void SetStorage(Storage* storage)	{ fStorage = storage; fPutToWaste = true; }		//!< Set the Pointer to the Storage
 	void SetPutToWaste(bool val)		{ fPutToWaste = val; }		//!< Set True if IV goes to waste after cooling false instead
 
-	void SetDecayDataBase(EvolutionDataBase<ZAI>* ddb)	{ fDecayDataBase = ddb; }		//!< Set the pointer to the Decay DataBase
+	void SetDecayDataBase(DataBank<ZAI>* ddb)	{ fDecayDataBase = ddb; }		//!< Set the pointer to the Decay DataBase
 
 	void SetCoolingTime(double time) 		{ fCoolingTime = (cSecond)time; }			//!< Set Cooling Time
 
@@ -76,7 +76,7 @@ public :
 	cSecond GetCoolingTime() const			{ return fCoolingTime; }		//!< Return the Cooling Time
 
 	
-	EvolutionDataBase<ZAI>* 	GeDecayDataBase() const	{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
+	DataBank<ZAI>* 	GeDecayDataBase() const	{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
 
 
 
@@ -110,7 +110,7 @@ protected :
 	LogFile*		fLog;			//!< Pointer to the Log
 
 
-	EvolutionDataBase<ZAI>*	fDecayDataBase;		//!< Pointer to the Decay DataBase
+	DataBank<ZAI>*	fDecayDataBase;		//!< Pointer to the Decay DataBase
 
 	cSecond 		fCreationTime;		///< Date of Creation of the Factory
 	cSecond 		fCoolingTime;		///< Cooling Duration Time
@@ -132,7 +132,7 @@ protected :
 
 
 
-	ClassDef(TreatmentFactory,1);
+	ClassDef(Pool,1);
 };
 
 #endif
