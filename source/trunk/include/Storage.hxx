@@ -14,7 +14,6 @@
 
 #include "IsotopicVector.hxx"
 
-
 #include <vector>
 
 using namespace std;
@@ -74,7 +73,8 @@ public :
 
 	void TakeFractionFromStock(int IVId,double fraction);						//!< Take a part from an IV in sotck;
 	void TakeFromStock(IsotopicVector isotopicvector);						//!<
-
+	void Write(string filename,cSecond date);
+	
 //********* Other Method *********//
 	void Evolution(cSecond t);		//!< Performe the evolution until the Time t
 	
@@ -94,7 +94,7 @@ protected :
 //********* Isotopic Quantity *********//
 
 //---------- Storage ----------//
-	vector<IsotopicVector>	fIVStock;	///< The Storage IsotopicVector
+	vector<IsotopicVector>	fIVStock;	
 	IsotopicVector		fIVFullStock;	///< Full Storage conglomerat
 
 

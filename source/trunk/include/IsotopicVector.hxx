@@ -17,6 +17,7 @@
 #include <map>
 
 using namespace std;
+typedef long long int cSecond;
 
 class IsotopicVector;
 
@@ -76,7 +77,7 @@ public :
 
 	void 	Multiply(double factor);			//!< Multiply the IV by a Factor
 	
-	void	Write(string filename, double time ) const;	//!< Write the Content of the IV in the filename file
+	void	Write(string filename, cSecond time ) const;	///< Write the Content of the IV in the filename file
 
 	void	Print(string o =" ") const ;			///< Print the composition of the IV
 	

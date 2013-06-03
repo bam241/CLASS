@@ -88,7 +88,7 @@ public :
 	vector<IsotopicVector>	GetIVCooling() const		{ return fIVCooling; }	//!< Return the vector of Cooling IsotopicVector
 	void			AddIVCooling(IsotopicVector IV);			//!< Add Cooling IsotopicVector
 	void			RemoveIVCooling(int i);					//!< Remove a Cooling IsotopicVector
-
+	IsotopicVector		GetFullCooling();
 
 
 //********* Other Method *********//
