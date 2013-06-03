@@ -44,7 +44,7 @@ FabricationPlant::FabricationPlant()
 	DBGL;
 	fChronologicalTimePriority = false;
 	fFabricationTime = -1;
-	fUpdateReferenceDBatEachStep = true;
+	fUpdateReferenceDBatEachStep = false;
 	
 	
 		// Warning
@@ -60,7 +60,7 @@ FabricationPlant::FabricationPlant(Storage* storage, Storage* reusable, double f
 	DBGL;
 	
 	fChronologicalTimePriority = false;
-	fUpdateReferenceDBatEachStep = true;
+	fUpdateReferenceDBatEachStep = false;
 	
 	
 	fFabricationTime = (cSecond)fabircationtime;
@@ -130,7 +130,7 @@ void FabricationPlant::FabricationPlantEvolution(cSecond t)
 		if( t + fFabricationTime >= fParc->GetReactor()[ (*it).first ]->GetCreationTime()
 		   && t + fFabricationTime < fParc->GetReactor()[ (*it).first ]->GetCreationTime() + fParc->GetReactor()[ (*it).first ]->GetLifeTime())
 		{
-			if( abs((*it).second - t) < 3600 )
+			if( (*it).second == t )
 			{
 				BuildFuelForReactor( (*it).first );
 				(*it).second += fParc->GetReactor()[ (*it).first ]->GetCycleTime();
@@ -139,7 +139,7 @@ void FabricationPlant::FabricationPlantEvolution(cSecond t)
 			{
 				map<int ,IsotopicVector >::iterator it2 = fReactorFuturIV.find( (*it).first );
 				if (it2 != fReactorFuturIV.end())
-					(*it2).second = GetDecay((*it2).second, fFabricationTime - ((*it).second - t) );
+					(*it2).second = GetDecay((*it2).second, t - fInternalTime );
 			}
 		}
 	}
@@ -253,14 +253,14 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 			
 			double StockFactionToUse = 0;
 			
-			double NT = HMmass*1e6 * Na / ZAImass.find( ZAI(92,238,0) )->second;
+			double NT = HMmass*1e6 * Na / (ZAImass.find( ZAI(92,238,0) )->second*0.997 + ZAImass.find( ZAI(92,235,0) )->second*0.003 );
 			
 			double N1 = (BU - FuelType->GetFuelParameter()[6]) * NT;
 			double N2 = -Sum_AlphaI_nPuI0;
-			double N3 = -FuelType->GetFuelParameter()[0] * Na / ZAImass.find( ZAI(92,238,0) )->second * (HMmass*1e6 - MPu_0*1e6);
+			double N3 = -FuelType->GetFuelParameter()[0] * Na / (ZAImass.find( ZAI(92,238,0) )->second*0.997 + ZAImass.find( ZAI(92,235,0) )->second*0.003 ) * (HMmass*1e6 - MPu_0*1e6);
 			
 			double D1 = Sum_AlphaI_nPuI;
-			double D2 = -FuelType->GetFuelParameter()[0] * MPu_1*1e6 * Na / ZAImass.find( ZAI(92,238,0) )->second;
+			double D2 = -FuelType->GetFuelParameter()[0] * MPu_1*1e6 * Na / (ZAImass.find( ZAI(92,238,0) )->second*0.997 + ZAImass.find( ZAI(92,235,0) )->second*0.003 ) ;
 			
 			StockFactionToUse = (N1 + N2 + N3) / (D1 + D2);
 			
@@ -286,23 +286,32 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 				FuelBuild = true;
 				
 				ZAI U8 = ZAI(92,238,0);
-				double U8_Quantity = (HMmass - (MPu_0+StockFactionToUse*MPu_1 ))/ZAImass.find( ZAI(92,238,0))->second*Na/1e-6;
+				ZAI U5 = ZAI(92,235,0);
+				double U8_Quantity = (HMmass - (MPu_0+StockFactionToUse*MPu_1 ))/(ZAImass.find( ZAI(92,238,0) )->second*0.997 + ZAImass.find( ZAI(92,235,0) )->second*0.003 )*Na/1e-6;
 				
-				fParc->AddGodIncome( U8, U8_Quantity );
+				fParc->AddGodIncome( U8, U8_Quantity*0.997 );
+				fParc->AddGodIncome( U5, U8_Quantity*0.003 );
 				
 				for(int i = (int)fFractionToTake.size()-1; i >= 0; i--)
 				{
 					IVBeginCycle += fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*( fFractionToTake[i].second );
-					pair<IsotopicVector,IsotopicVector> reste = Separation( fStorage->GetStock()[fFractionToTake[i].first]*(fFractionToTake[i].second)
-											       - fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*(fFractionToTake[i].second) );
+					//pair<IsotopicVector,IsotopicVector> reste = Separation( fStorage->GetStock()[fFractionToTake[i].first]*(fFractionToTake[i].second)
+					//						       - fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*(fFractionToTake[i].second) );
+					
+					fReUsable->AddToStock(fStorage->GetStock()[fFractionToTake[i].first]*(fFractionToTake[i].second)
+							      - fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*(fFractionToTake[i].second));
+
+					
 					
 					fStorage->TakeFractionFromStock(fFractionToTake[i].first,fFractionToTake[i].second);
-					fParc->AddWaste(reste.second);
-					fReUsable->AddToStock(reste.first);
+					//fParc->AddWaste(reste.second);
+					//fReUsable->AddToStock(reste.first);
+					
+				
 				}
 				fFractionToTake.clear();
 				
-				IVBeginCycle += U8_Quantity*U8;
+				IVBeginCycle += U8_Quantity*U8*0.997 + U8_Quantity*U5*0.003;
 				EvolutiveProduct evolutiondb = BuildEvolutiveDB(ReactorId, IVBeginCycle);
 				
 				{

@@ -60,6 +60,8 @@ DBGL;
 DBGL;
 	return sqrt(d2);
 }
+
+
 double RelativDistance(IsotopicVector IV1, IsotopicVector IV2 )
 {
 DBGL;
@@ -440,13 +442,13 @@ DBGL;
 
 
 //________________________________________________________________________
-void IsotopicVector::Write(string filename, double time) const 
+void IsotopicVector::Write(string filename, cSecond time) const
 {
 	ofstream IVfile(filename.c_str(), ios_base::app);		// Open the File
 	if(!IVfile)
 	cout << "!!Warning!! !!!IsotopicVector!!! \n Can't open \"" << filename << "\"\n" << endl;
 
-	IVfile << time << " ";
+	IVfile << "Time "<< time/365.25/3600./24. << endl;
 
 	map<ZAI ,double> IsotopicQuantity = GetIsotopicQuantity();
 	map<ZAI ,double >::iterator it;
@@ -455,8 +457,8 @@ void IsotopicVector::Write(string filename, double time) const
 		IVfile << (*it).first.Z() << " ";
 		IVfile << (*it).first.A() << " ";
 		IVfile << (*it).first.I() << " ";
-		IVfile << (*it).second << " ";
-
+		IVfile << (*it).second << " " << endl;
+		/*
 		if((*it).first.Z()>70)
 		{
 			char Z[33];
@@ -479,6 +481,7 @@ void IsotopicVector::Write(string filename, double time) const
 			IVfileZAI << time << " " << (*it).second << endl;;
 			IVfileZAI.close();		
 		}
+		 */
 	
 	}
 	IVfile << endl;
