@@ -221,7 +221,7 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file)
 	cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
 	cout	<< "\t " << fDataBank.size() << " EvolutionData have been read."<< endl << endl;
 	
-	fLog->fLog 	<< "!!Info!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
+	fLog->fLog 	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
 	fLog->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
 	fLog->fLog	<< "\t " << fDataBank.size() << " EvolutionData have been read."<< endl << endl;
 	
