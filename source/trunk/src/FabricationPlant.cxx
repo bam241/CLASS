@@ -403,7 +403,7 @@ EvolutionData FabricationPlant::BuildEvolutiveDB(int ReactorId,IsotopicVector is
 	isotopicvector = GetDecay(isotopicvector, fFabricationTime);
 	
 	EvolutionData EvolBuild;
-	
+	/*
 	if( fUpdateReferenceDBatEachStep == true )
 	{
 		EvolutionData EvolBuild = evolutiondb->GenerateDB(isotopicvector,
@@ -416,6 +416,11 @@ EvolutionData FabricationPlant::BuildEvolutiveDB(int ReactorId,IsotopicVector is
 		EvolBuild = distances.begin()->second.GenerateDBFor(isotopicvector);
 		
 	}
+	 */
+	EvolBuild = evolutiondb->GenerateEvolutionData(isotopicvector,
+					    fParc->GetReactor()[ReactorId]->GetCycleTime(),
+					    fParc->GetReactor()[ReactorId]->GetPower());
+	 
 	return EvolBuild;
 	DBGL;
 }

@@ -55,12 +55,14 @@ public :
 	bool 				IsDefine(const T& key)	const;						//!< True the key is define, false unstead
 
 	map<double, EvolutionData>	GetDistancesTo(IsotopicVector isotopicvector, double t = 0) const;	//! Return a map containing the distance of each EvolutionData in the DataBase to the set IV at the t time
+	EvolutionData	GetClosest(IsotopicVector isotopicvector, double t = 0) const;	//! Return the closest
+
 //********* Set Method *********//
 	void SetDataBank(map<T ,EvolutionData > mymap)	{ fDataBank = mymap; } 
 
 	void SetDataBaseIndex(string database) { fDataBaseIndex = database; }
-	EvolutionData GenerateDB(IsotopicVector isotopicvector, double cycletime, double Power); //!< Genration of a New EvolutionData From the one already present
-
+	EvolutionData GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power); //!< Genration of a New EvolutionData From the one already present
+	void SetUpdateReferenceDBatEachStep(bool val) {fUpdateReferenceDBatEachStep = val;}
 
 //********* Modification Method *********//
 	IsotopicVector	Evolution(const T &key, double dt);	///< Return the Product IsotopicVector evolution from zai during a dt time
@@ -79,13 +81,18 @@ protected :
  	string				fDataBaseIndex;
  	LogFile*			fLog;
 
+	bool		fUpdateReferenceDBatEachStep;
+
 
  	string 				fFuelType;
  	pair<double,double>		fBurnUpRange;
  	vector<double>			fFuelParameter;
 
-	int 				fDistanceType;///< 0 is for the standard norme, 1 for each ZAI weighted with its XS, 2 for each ZAI weighted with coefficient given by the user
-	T				fDistanceParameter;///< weight for each ZAI in the distance calculation
+	int 	fDistanceType;		///< 0 is for the standard norme,
+					///< 1 for each ZAI weighted with its XS,
+					///< 2 for each ZAI weighted with coefficient given by the user
+	
+	T	fDistanceParameter;	///< weight for each ZAI in the distance calculation
 
 
 };
