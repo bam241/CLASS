@@ -22,14 +22,6 @@ typedef long long int cSecond;
 class IsotopicVector;
 
 
-IsotopicVector operator/(IsotopicVector const& IVA, double F);
-IsotopicVector operator/(ZAI const& zai, double F);
-IsotopicVector operator*(IsotopicVector const& IVA, double F);
-IsotopicVector operator*(ZAI const& zai, double F);
-IsotopicVector operator*(double F, IsotopicVector const& IVA);
-IsotopicVector operator*(double F, ZAI const& zai);
-IsotopicVector operator+(IsotopicVector const& IVa, IsotopicVector const& IVb);
-IsotopicVector operator-(IsotopicVector const& IVa, IsotopicVector const& IVb);
 
 
 
@@ -75,7 +67,7 @@ public :
 
 	void 	Multiply(double factor);			//!< Multiply the IV by a Factor
 	
-	void	Write(string filename, cSecond time ) const;	///< Write the Content of the IV in the filename file
+	void	Write(string filename, cSecond time = -1 ) const;	///< Write the Content of the IV in the filename file
 
 	void	Print(string o =" ") const ;			///< Print the composition of the IV
 	
@@ -98,6 +90,15 @@ public :
 
 	ClassDef(IsotopicVector,2);
 };
+
+IsotopicVector operator/(IsotopicVector const& IVA, double F);
+IsotopicVector operator/(ZAI const& zai, double F);
+IsotopicVector operator*(IsotopicVector const& IVA, double F);
+IsotopicVector operator*(ZAI const& zai, double F);
+IsotopicVector operator*(double F, IsotopicVector const& IVA);
+IsotopicVector operator*(double F, ZAI const& zai);
+IsotopicVector operator+(IsotopicVector const& IVa, IsotopicVector const& IVb);
+IsotopicVector operator-(IsotopicVector const& IVa, IsotopicVector const& IVb);
 
 
 double 	RelativDistance(IsotopicVector IV1, IsotopicVector IV2 );

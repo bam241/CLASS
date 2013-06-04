@@ -39,39 +39,50 @@ template <class T>  T random(T a, T b) //peak random numebr between a and b
 }
 
 
-FabricationPlant::FabricationPlant()
+FabricationPlant::FabricationPlant(LogFile* log)
 {
 	DBGL;
+	fLog = log;
 	fChronologicalTimePriority = false;
 	fFabricationTime = -1;
 	fUpdateReferenceDBatEachStep = false;
-	
+	fSubstitutionFuel = false;
 	
 		// Warning
 	
-	cout	<< "!!Info!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
+	cout	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
 	cout	<< "\t Chronological Stock Priority set! "<< endl << endl;
-
+	cout	<< "!!WARNING!! !!!FabricationPlant!!! You need to set the different stock manually as well as the Fabrication Time Manualy !! " << endl;
+	
+	fLog->fLog	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
+	fLog->fLog	<< "\t Chronological Stock Priority set! "<< endl << endl;
+	fLog->fLog	<< "!!WARNING!! !!!FabricationPlant!!! You need to set the different stock manually as well as the Fabrication Time Manualy !! " << endl;
+	
 	DBGL;
 }
 
-FabricationPlant::FabricationPlant(Storage* storage, Storage* reusable, double fabircationtime)
+FabricationPlant::FabricationPlant(LogFile* log, Storage* storage, Storage* reusable, double fabircationtime)
 {
 	DBGL;
+	fLog = log;
 	
 	fChronologicalTimePriority = false;
 	fUpdateReferenceDBatEachStep = false;
-	
+	fSubstitutionFuel = false;
 	
 	fFabricationTime = (cSecond)fabircationtime;
 	fStorage = storage;
 	fReUsable = reusable;
 	
 	
-	cout	<< "!!Info!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
+	cout	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
 	cout	<< "\t Chronological Stock Priority has been set! "<< endl;
 	cout	<< "\t Fabrication time set to \t " << (double)(fFabricationTime/3600/24/365.25) << " year" << endl << endl;
-
+	
+	fLog->fLog	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
+	fLog->fLog	<< "\t Chronological Stock Priority has been set! "<< endl;
+	fLog->fLog	<< "\t Fabrication time set to \t " << (double)(fFabricationTime/3600/24/365.25) << " year" << endl << endl;
+	
 	DBGL;
 }
 
@@ -182,7 +193,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 	IsotopicVector stock;
 	
 	bool FuelBuild = false;
-	while(FuelBuild == false)
+	while(!FuelBuild)
 	{
 		double nPu_0 = 0;
 		double MPu_0 = 0;
@@ -197,22 +208,45 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 			for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 				MPu_0 += (*it).second*ZAImass.find( (*it).first )->second/Na*1e-6;
 		}
+		
 		stock = GetStockToRecycle();
-		if( stock.GetZAIIsotopicQuantity(ZAI(-1,-1,-1)) == 1 )
+		
+		if( stock.GetZAIIsotopicQuantity(ZAI(-1,-1,-1)) == 1 ) // Not enought stock to build the needed fuel
 		{
+			if (!fSubstitutionFuel)
 			{
-				EvolutionData evolutiondb;
-				pair<map<int, EvolutionData>::iterator, bool> IResult;
-				IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,evolutiondb) );
-				if(IResult.second == false)
-					IResult.first->second = evolutiondb;
+				{
+					EvolutionData evolutiondb;
+					pair<map<int, EvolutionData>::iterator, bool> IResult;
+					IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,evolutiondb) );
+					if(IResult.second == false)
+						IResult.first->second = evolutiondb;
+				}
+				{
+					IsotopicVector EmptyIV;
+					pair<map<int, IsotopicVector>::iterator, bool> IResult;
+					IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId,EmptyIV) );
+					if(IResult.second == false)
+						IResult.first->second = EmptyIV;
+				}
 			}
+			else
 			{
-				IsotopicVector EmptyIV;
-				pair<map<int, IsotopicVector>::iterator, bool> IResult;
-				IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId,EmptyIV) );
-				if(IResult.second == false)
-					IResult.first->second = EmptyIV;
+				{
+					EvolutionData evolutiondb = fSubstitutionEvolutionData* HMmass;
+					pair<map<int, EvolutionData>::iterator, bool> IResult;
+					IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,evolutiondb) );
+					if(IResult.second == false)
+						IResult.first->second = evolutiondb;
+				}
+				{
+					IsotopicVector IV = fSubstitutionEvolutionData.GetIsotopicVectorAt(0)* HMmass;
+					pair<map<int, IsotopicVector>::iterator, bool> IResult;
+					IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId, IV) );
+					if(IResult.second == false)
+						IResult.first->second = IV;
+				}
+				
 			}
 			FuelBuild = true;
 			fFractionToTake.clear();
@@ -294,20 +328,12 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 				
 				for(int i = (int)fFractionToTake.size()-1; i >= 0; i--)
 				{
-					IVBeginCycle += fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*( fFractionToTake[i].second );
-					//pair<IsotopicVector,IsotopicVector> reste = Separation( fStorage->GetStock()[fFractionToTake[i].first]*(fFractionToTake[i].second)
-					//						       - fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*(fFractionToTake[i].second) );
-					
+					IVBeginCycle += fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*( fFractionToTake[i].second );					
 					fReUsable->AddToStock(fStorage->GetStock()[fFractionToTake[i].first]*(fFractionToTake[i].second)
 							      - fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*(fFractionToTake[i].second));
-
 					
+					fStorage->TakeFractionFromStock(fFractionToTake[i].first,fFractionToTake[i].second);			
 					
-					fStorage->TakeFractionFromStock(fFractionToTake[i].first,fFractionToTake[i].second);
-					//fParc->AddWaste(reste.second);
-					//fReUsable->AddToStock(reste.first);
-					
-				
 				}
 				fFractionToTake.clear();
 				
@@ -333,6 +359,13 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 	DBGL;
 }
 
+void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel)
+{
+	DBGL;
+	fSubstitutionFuel = true;
+	fSubstitutionEvolutionData = fuel / fuel.GetHMMass();
+	DBGL;
+}
 
 
 	//________________________________________________________________________
@@ -374,8 +407,8 @@ EvolutionData FabricationPlant::BuildEvolutiveDB(int ReactorId,IsotopicVector is
 	if( fUpdateReferenceDBatEachStep == true )
 	{
 		EvolutionData EvolBuild = evolutiondb->GenerateDB(isotopicvector,
-								     fParc->GetReactor()[ReactorId]->GetCycleTime(),
-								     fParc->GetReactor()[ReactorId]->GetPower());
+								  fParc->GetReactor()[ReactorId]->GetCycleTime(),
+								  fParc->GetReactor()[ReactorId]->GetPower());
 	}
 	else
 	{

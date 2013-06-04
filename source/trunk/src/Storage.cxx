@@ -22,18 +22,29 @@
 //________________________________________________________________________
 ClassImp(Storage)
 
-Storage::Storage()
+Storage::Storage(LogFile* log)
 {
 DBGL;
+	fLog = log;
+	
+	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
+
+	fLog->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 DBGL;
 }
 
 //________________________________________________________________________
-Storage::Storage(DataBank<ZAI>* evolutivedb)
+Storage::Storage(LogFile* log, DataBank<ZAI>* evolutivedb)
 {
 DBGL;
+	fLog = log;
 	fInternalTime = 0;
 	fDecayDataBase = evolutivedb;
+	
+	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
+	
+	fLog->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
+
 DBGL;
 }
 

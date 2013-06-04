@@ -64,14 +64,14 @@ DBGL;
 
 	// Warning
 	
-	cout	<< "!!Info!! !!!CLASS!!! A Parc has been define :" << endl;
+	cout	<< "!!INFO!! !!!CLASS!!! A Parc has been define :" << endl;
 	cout	<< "\t Print set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
 	cout	<< "\t Absolute Time set at " << (double)(fAbsoluteTime/3600/24/365.25) << " year" << endl;
 	cout	<< "\t StockManagement set at : true" << endl;
 	cout	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
 	cout	<< "\t Log will be in " << fOutputLogName << endl << endl;
 	
-	fLog->fLog 	<< "!!Info!! !!!CLASS!!! Parc has been define :" << endl;
+	fLog->fLog 	<< "!!INFO!! !!!CLASS!!! Parc has been define :" << endl;
 	fLog->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
 	fLog->fLog	<< "\t StockManagement set at : true" << endl;
 	fLog->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
@@ -103,13 +103,13 @@ DBGL;
 	
 	// Warning
 	
-	cout	<< "!!Info!! !!!CLASS!!! A Parc has been define :" << endl;
+	cout	<< "!!INFO!! !!!CLASS!!! A Parc has been define :" << endl;
 	cout	<< "\t Print set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
 	cout	<< "\t StockManagement set at : true" << endl;
 	cout	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
 	cout	<< "\t Log will be in " << fOutputLogName << endl;
 	
-	fLog->fLog 	<< "!!Info!! !!!CLASS!!! Parc has been define :" << endl;
+	fLog->fLog 	<< "!!INFO!! !!!CLASS!!! Parc has been define :" << endl;
 	fLog->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
 	fLog->fLog	<< "\t StockManagement set at : true" << endl;
 	fLog->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
@@ -331,7 +331,7 @@ DBGL;
 //___________________________ Evolution Method ___________________________
 //________________________________________________________________________
 
-void CLASS::TreatmentEvolution()
+void CLASS::PoolEvolution()
 {
 DBGL;
 	for(int i = 0; i < (int) fPool.size();i++)
@@ -399,7 +399,7 @@ DBGL;
 		{
 			if( (*it).second & 1 )
 			StorageEvolution();
-			TreatmentEvolution();
+			PoolEvolution();
 			FabricationPlantEvolution();
 			ReactorEvolution();
 		
@@ -417,7 +417,7 @@ DBGL;
 		if( (*it).second & 4 )
 		{
 			StorageEvolution();
-			TreatmentEvolution();
+			PoolEvolution();
 			ReactorEvolution();
 
 			(*it).second ^= 4;
@@ -428,7 +428,7 @@ DBGL;
 		if( (*it).second & 16 )
 		{
 			StorageEvolution();
-			TreatmentEvolution();
+			PoolEvolution();
 			FabricationPlantEvolution();
 		
 			(*it).second ^= 16;
@@ -440,7 +440,7 @@ DBGL;
 		if( (*it).second & 8 )
 		{
 			StorageEvolution();
-			TreatmentEvolution();
+			PoolEvolution();
 
 			(*it).second ^= 8;
 		}

@@ -26,7 +26,7 @@ class LogFile;
 
 ///< A ZAIIDataBase defined a database which contain the evolution of faction of all product, subproduct (or sub(sub...sub)product) for a nucleus. 
 /*!
- The aim of this class is to handle the evolution all information of all Nuclueus product, subproduct (or sub(sub...sub)product) as the fonction of the time.
+ The aim of this class is to handle the evolution all Information of all Nuclueus product, subproduct (or sub(sub...sub)product) as the fonction of the time.
  
  @author BaM
  @version 1.0
