@@ -197,11 +197,17 @@ template<>
 DataBank<IsotopicVector>::DataBank()
 {
 	DBGL;
-		// Warning
+	
+	fUpdateReferenceDBatEachStep = false;
+
+	// Warning
 	cout	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
 
 	fLog = new LogFile("EvoluData_log");
 	fLog->fLog 	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
+	
+	
+
 	DBGL;
 }
 
@@ -212,7 +218,8 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file)
 	DBGL;
 	fLog = Log;
 	fDataBaseIndex = DB_index_file;
-	
+	fUpdateReferenceDBatEachStep = false;
+
 	ReadDataBase();
 	
 	
@@ -297,11 +304,9 @@ map<double, EvolutionData> DataBank<IsotopicVector>::GetDistancesTo(IsotopicVect
 	for( it = evolutiondb.begin(); it != evolutiondb.end(); it++ )
 	{
 		pair<map<double, EvolutionData>::iterator, bool> IResult;
-			//double D = Distance(isotopicvector.GetActinidesComposition(), (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition()/ Norme( (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition() )*Norme(isotopicvector.GetActinidesComposition()) );
-			//double D = RelativDistance(isotopicvector, (*it).second.GetIsotopicVectorAt(t)/ Norme( (*it).second.GetIsotopicVectorAt(t) )*Norme(isotopicvector) );
-		
-		double D = ReactionRateWeightedDistance(isotopicvector.GetActinidesComposition(), (*it).second);
-		
+	
+		double D = Distance(isotopicvector.GetActinidesComposition(), (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition()/ Norme( (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition() )*Norme(isotopicvector.GetActinidesComposition())
+				    ,fDistanceType, fDistanceParameter);
 		
 		IResult = distances.insert( pair<double, EvolutionData>( D , (*it).second ) );
 	}
@@ -311,7 +316,41 @@ map<double, EvolutionData> DataBank<IsotopicVector>::GetDistancesTo(IsotopicVect
 }
 
 template<>
-EvolutionData DataBank<IsotopicVector>::GenerateDB(IsotopicVector isotopicvector, double cycletime, double Power)
+EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector, double t) const
+{
+	DBGL;
+	map<IsotopicVector, EvolutionData > evolutiondb = fDataBank;
+
+	double distance = Distance(isotopicvector.GetActinidesComposition(),
+				   evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition()
+					/ Norme( evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition() )
+					* Norme(isotopicvector.GetActinidesComposition()),
+				   fDistanceType, fDistanceParameter);
+	
+	EvolutionData CloseEvolData = evolutiondb.begin()->second ;
+	
+	map<IsotopicVector, EvolutionData >::iterator it;
+	for( it = evolutiondb.begin(); it != evolutiondb.end(); it++ )
+	{
+		pair<map<double, EvolutionData>::iterator, bool> IResult;
+		double D = Distance(isotopicvector.GetActinidesComposition(),
+				    (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition()
+					/ Norme( (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition() )
+					* Norme(isotopicvector.GetActinidesComposition()),
+				    fDistanceType, fDistanceParameter);
+		if (D< distance)
+		{
+			distance = D;
+			CloseEvolData = (*it).second;
+		}
+	}
+	
+	return CloseEvolData;
+	DBGL;
+}
+
+template<>
+EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power)
 {
 	DBGL;
 	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
@@ -641,7 +680,9 @@ EvolutionData DataBank<IsotopicVector>::GenerateDB(IsotopicVector isotopicvector
 	
 	
 	TMatrixT<double> SigmaPhi = TMatrixT<double>(index.size()*3+1,16);
-
+	
+	EvolutionData EvolutionDataStep = GetClosest(isotopicvector.GetActinidesComposition(), 0.);	//GetCLosest at the begining of evolution
+	
 	for(int i = 0; i < 16; i++)
 	{
 		
@@ -656,8 +697,8 @@ EvolutionData DataBank<IsotopicVector>::GenerateDB(IsotopicVector isotopicvector
 		for(int k = 0; k < (int)index.size(); k++)
 			IVStep += index.find(k)->second * NMatrix.back()[k][0];
 		
-		
-		EvolutionData EvolutionDataStep = GetDistancesTo(IVStep, TStep).begin()->second;
+		if(fUpdateReferenceDBatEachStep && i != 0);		//GetCLosest at the each of evolution step (begining already done...)
+			EvolutionDataStep = GetClosest(IVStep, TStep);
 		
 		double NormFactor = 1;
 		{

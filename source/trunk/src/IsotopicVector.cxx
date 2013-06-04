@@ -82,15 +82,17 @@ DBGL;
 double Distance(IsotopicVector IV1, IsotopicVector IV2 ,int DistanceType, IsotopicVector DistanceParameter)
 {
 DBGL;
-	if(DistanceType==0){
+	if(DistanceType==0)
+	{
 		return DistanceStandard(IV1,IV2);
 	}
 	else if(DistanceType==1||DistanceType==2){
 		return DistanceAdjusted(IV1,IV2,DistanceParameter);
 	}
-	else{
+	else
+	{
 		cout << "!!ERROR!! !!!Distance!!!"
-		     << " Distancetype defined by the user isn't recognized by the code"<<endl;
+		     << " DistanceType defined by the user isn't recognized by the code"<<endl;
 
 		exit(1);
 	}	
