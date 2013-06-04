@@ -153,7 +153,7 @@ bool EvolutionData::n2nXSInsert(pair<ZAI, TGraph*> zaitoinsert)
 void EvolutionData::AddAsStable(ZAI zai)
 {
 	DBGL;
-	double time[2] = {0, (int)(500*365.25*3600*24)};
+	double time[2] = {0, (500*365.25*3600*24)};
 	double quantity[2] = {1., 1.};
 	
 	fEvolutionData.insert(pair<ZAI ,TGraph* >(zai, new TGraph(2, time, quantity) ) );

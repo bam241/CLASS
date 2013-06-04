@@ -31,9 +31,7 @@ IsotopicVector operator*(double F, ZAI const& zai);
 IsotopicVector operator+(IsotopicVector const& IVa, IsotopicVector const& IVb);
 IsotopicVector operator-(IsotopicVector const& IVa, IsotopicVector const& IVb);
 
-double 	RelativDistance(IsotopicVector IV1, IsotopicVector IV2 );
-double 	Distance(IsotopicVector IV1, IsotopicVector IV2 );
-double 	Norme(IsotopicVector IV1);
+
 
 class IsotopicVector : public TObject
 {
@@ -102,7 +100,11 @@ public :
 };
 
 
-
+double 	RelativDistance(IsotopicVector IV1, IsotopicVector IV2 );
+double 	Distance(IsotopicVector IV1, IsotopicVector IV2 ,int DistanceType=0, IsotopicVector DistanceParameter=IsotopicVector());
+double	DistanceStandard(IsotopicVector IV1, IsotopicVector IV2);
+double	DistanceAdjusted(IsotopicVector IV1, IsotopicVector IV2, IsotopicVector DistanceParameter);
+double 	Norme(IsotopicVector IV1,int DistanceType=0, IsotopicVector DistanceParameter=IsotopicVector());
 
 
 #endif
