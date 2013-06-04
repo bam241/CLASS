@@ -41,9 +41,9 @@ class FabricationPlant : public TObject
 
 public :
 	///< Normal constructor
-	FabricationPlant();
+	FabricationPlant(LogFile* log);
 	
-	FabricationPlant(Storage* storage, Storage* reusable, double fabricationtime = 365.25*24*3600*2);
+	FabricationPlant(LogFile* log, Storage* storage, Storage* reusable, double fabricationtime = 365.25*24*3600*2);
 	///< Normal Destructor.
 	~FabricationPlant();
 
@@ -59,6 +59,8 @@ public :
 	void	SetDecayDataBase(DataBank<ZAI>* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
 	
 	void	SetChronologicalTimePriority(bool bval)	{ fChronologicalTimePriority = bval;}	//!< Set the chronological priority (true for chronological, false unstead)
+	
+	void	SetSubstitutionFuel(EvolutionData fuel);
 	
 	void	AddReactor(int reactorid, double creationtime)
 			{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-fFabricationTime) ); }	//!< Add a new reactor
@@ -129,6 +131,9 @@ protected :
 	double		fFabricationTime;		///< Fabrication Duration Time
 	bool		fChronologicalTimePriority;	//!< Set the Chronological Priotity (for the Stock Management) or the anti-chronological one
 
+	bool		fSubstitutionFuel;
+	EvolutionData	fSubstitutionEvolutionData;
+	
 
 //********* Private Method *********//
 	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time

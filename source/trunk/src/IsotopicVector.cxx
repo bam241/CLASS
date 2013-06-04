@@ -483,8 +483,9 @@ void IsotopicVector::Write(string filename, cSecond time) const
 	ofstream IVfile(filename.c_str(), ios_base::app);		// Open the File
 	if(!IVfile)
 	cout << "!!Warning!! !!!IsotopicVector!!! \n Can't open \"" << filename << "\"\n" << endl;
-
-	IVfile << "Time "<< time/365.25/3600./24. << endl;
+	
+	if(time != -1)
+		IVfile << "Time "<< time/365.25/3600./24. << endl;
 
 	map<ZAI ,double> IsotopicQuantity = GetIsotopicQuantity();
 	map<ZAI ,double >::iterator it;
@@ -494,31 +495,6 @@ void IsotopicVector::Write(string filename, cSecond time) const
 		IVfile << (*it).first.A() << " ";
 		IVfile << (*it).first.I() << " ";
 		IVfile << (*it).second << " " << endl;
-		/*
-		if((*it).first.Z()>70)
-		{
-			char Z[33];
-			sprintf(Z,"%d",(*it).first.Z());
-			char A[33];
-			sprintf(A,"%d",(*it).first.A());
-			char I[33];
-			sprintf(I,"%d",(*it).first.I());
-
-
-			string filenameZAI = filename+ "_DIR" +"/" + Z + "_" + A + "_"+ I;
-			string cmd = " mkdir " + filename+ "_DIR" +" 2>/dev/null";
-			int test = system(cmd.c_str());
-			if (test!=0) cout << "!!Warning!! !!!IsotopicVector!!! \n Can't create \"" << filename<<  "_DIR directory " << "\"\n" << endl;
-			ofstream IVfileZAI(filenameZAI.c_str(), ios_base::app);		// Open the File
-
-			if(!IVfileZAI)
-				cout << "!!Warning!! !!!IsotopicVector!!! \n Can't open \"" << filenameZAI << "\"\n" << endl;
-		
-			IVfileZAI << time << " " << (*it).second << endl;;
-			IVfileZAI.close();		
-		}
-		*/
-	
 	}
 	IVfile << endl;
 }

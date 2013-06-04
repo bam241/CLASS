@@ -29,9 +29,9 @@ class Storage : public TObject
 {
 public :
 	///< Normal Constructor.
- 	Storage();
+ 	Storage(LogFile* log);
  	///< Advanced Constructor
-	Storage(DataBank<ZAI>* evolutivedb);						//!<
+	Storage(LogFile* log, DataBank<ZAI>* evolutivedb);						//!<
 
  	///< Normal Destructor.
  	~Storage();
@@ -73,7 +73,7 @@ public :
 
 	void TakeFractionFromStock(int IVId,double fraction);						//!< Take a part from an IV in sotck;
 	void TakeFromStock(IsotopicVector isotopicvector);						//!<
-	void Write(string filename,cSecond date);
+	void Write(string filename,cSecond date = -1);
 	
 //********* Other Method *********//
 	void Evolution(cSecond t);		//!< Performe the evolution until the Time t

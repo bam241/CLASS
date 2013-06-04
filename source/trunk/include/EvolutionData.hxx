@@ -27,7 +27,7 @@ typedef long long int cSecond;
 
 ///< A ZAIIDataBase defined a database which contain the evolution of faction of all product, subproduct (or sub(sub...sub)product) for a nucleus. 
 /*!
- The aim of this class is to handle the evolution all information of all Nucleus product, subproduct (or sub(sub...sub)product) as the fonction of the time.
+ The aim of this class is to handle the evolution all Information of all Nucleus product, subproduct (or sub(sub...sub)product) as the fonction of the time.
  
  @author BaM
  @version 1.0
@@ -35,7 +35,7 @@ typedef long long int cSecond;
 
 EvolutionData operator*(EvolutionData const& evol, double F);
 EvolutionData operator*(double F, EvolutionData const& evol);
-
+EvolutionData operator/(EvolutionData const& evol, double F);
 
 
 

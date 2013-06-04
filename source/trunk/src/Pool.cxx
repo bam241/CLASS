@@ -23,9 +23,10 @@
 //________________________________________________________________________
 ClassImp(Pool)
 
-Pool::Pool()
+Pool::Pool(LogFile* log)
 {
 DBGL;
+	fLog = log;
 	fCoolingTime = 5*3600.*24.*365.25;
 
 	IsStarted = false;
@@ -34,29 +35,55 @@ DBGL;
 	fCreationTime = 0;
 	fCoolingLastIndex = 0;
 
+	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
+	cout	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
+	cout	<< "\t Life time (Operating's Duration) set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl << endl;
+	cout	<< "\t The Cooling Time set at\t " << (double)(fCoolingTime/3600/24/365.25) << " year" << endl;
+	cout	<< "!!WARNING!! !!!Pool!!! All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
+
+	fLog->fLog	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
+	fLog->fLog	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog	<< "\t Life time (Operating's Duration) set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl << endl;
+	fLog->fLog	<< "\t The Cooling Time set at\t " << (double)(fCoolingTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog	<< "!!WARNING!! !!!Pool!!! All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
 
 DBGL;
 }
 	//________________________________________________________________________
-Pool::Pool(double creation,
+Pool::Pool(LogFile* log, double creation,
 				   double coolingtime)
 {
 DBGL;
+	fLog = log;
 	fCoolingTime = (cSecond)coolingtime;
 	fInternalTime = 0;
 	fCreationTime = (cSecond)creation;
 	IsStarted = false;
 	fPutToWaste = true;
 	fCoolingLastIndex = 0;
+	
+	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
+	cout	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
+	cout	<< "\t Life time (Operating's Duration) set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl << endl;
+	cout	<< "\t The Cooling Time set at\t " << (double)(fCoolingTime/3600/24/365.25) << " year" << endl;
+	cout	<< "!!WARNING!! !!!Pool!!! All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
+	
+	fLog->fLog	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
+	fLog->fLog	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog	<< "\t Life time (Operating's Duration) set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl << endl;
+	fLog->fLog	<< "\t The Cooling Time set at\t " << (double)(fCoolingTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog	<< "!!WARNING!! !!!Pool!!! All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
+
 DBGL;
 }
 
 //________________________________________________________________________
-Pool::Pool(Storage* storage,
+Pool::Pool(LogFile* log, Storage* storage,
 				   double creation,
 				   double coolingtime)
 {
 DBGL;
+	fLog = log;
 	fCoolingTime = (cSecond)coolingtime;
 	fInternalTime = 0;
 	fStorage = storage;
@@ -64,6 +91,18 @@ DBGL;
 	IsStarted = false;
 	fPutToWaste = false;
 	fCoolingLastIndex = 0;
+	
+	
+	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
+	cout	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
+	cout	<< "\t Life time (Operating's Duration) set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl << endl;
+	cout	<< "\t The Cooling Time set at\t " << (double)(fCoolingTime/3600/24/365.25) << " year" << endl;
+	
+	fLog->fLog	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
+	fLog->fLog	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog	<< "\t Life time (Operating's Duration) set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl << endl;
+	fLog->fLog	<< "\t The Cooling Time set at\t " << (double)(fCoolingTime/3600/24/365.25) << " year" << endl;
+
 DBGL;
 }
 

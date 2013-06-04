@@ -24,17 +24,19 @@
 //________________________________________________________________________
 ClassImp(Reactor)
 
-Reactor::Reactor()
+Reactor::Reactor(LogFile* log)
 {
 	DBGL;
+	fLog = log;
 	DBGL;
 }
-Reactor::Reactor(DataBank<IsotopicVector>* 	fueltypeDB,
+Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 Pool* Pool,
  		 double creationtime, double lifetime)
 {
 	DBGL;
+	fLog = log;
 	
 	fIsStarted = false;
 	fShutDown = false;
@@ -57,21 +59,30 @@ Reactor::Reactor(DataBank<IsotopicVector>* 	fueltypeDB,
 	fCreationTime = (cSecond)creationtime;
 	fLifeTime = (cSecond)lifetime;
 	
-	cout	<< "!!Info!! !!!Reactor!!! A Reactor has been define :" << endl;
+	cout	<< "!!INFO!! !!!Reactor!!! A Reactor has been define :" << endl;
 	cout	<< "\t Fuel Composition is not fixed ! "<< endl;
 	cout	<< "\t Fuel Type set to : \t "<<  fFuelTypeDB->GetFuelType() << endl;
 	cout	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
-	cout	<< "\t Life time (Operating's Duration) set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl << endl;
+	cout	<< "\t Life time (Operating's Duration) set at \t " << (double)(fLifeTime/3600/24/365.25) << " year" << endl << endl;
 	cout	<< "!!WARNING!! !!!Reactor!!! You need to set Burn-up/Power/CycleTime (2 of 3) & Heavy Metal Mass Manualy !! " << endl;
+
+	
+	fLog->fLog	<< "!!INFO!! !!!Reactor!!! A Reactor has been define :" << endl;
+	fLog->fLog	<< "\t Fuel Composition is not fixed ! "<< endl;
+	fLog->fLog	<< "\t Fuel Type set to : \t "<<  fFuelTypeDB->GetFuelType() << endl;
+	fLog->fLog	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog	<< "\t Life time (Operating's Duration) set at \t " << (double)(fLifeTime/3600/24/365.25) << " year" << endl << endl;
+	fLog->fLog	<< "!!WARNING!! !!!Reactor!!! You need to set Burn-up/Power/CycleTime (2 of 3) & Heavy Metal Mass Manualy !! " << endl;
 
 	DBGL;
 }
 
-Reactor::Reactor(DataBank<IsotopicVector>* 	fueltypeDB, FabricationPlant* fabricationplant, Pool* Pool,
+Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB, FabricationPlant* fabricationplant, Pool* Pool,
  		 double creationtime, double lifetime,
- 		 double Power, double HMMass, double BurnUp, double EffectiveCharge)
+ 		 double Power, double HMMass, double BurnUp, double ChargeFactor)
 {
 	DBGL;
+	fLog = log;
 	
 	fIsStarted = false;
 	fShutDown = false;
@@ -89,7 +100,7 @@ Reactor::Reactor(DataBank<IsotopicVector>* 	fueltypeDB, FabricationPlant* fabric
 	
 	fBurnUp = BurnUp;
 	fHeavyMetalMass = HMMass;
-	fPower = Power*EffectiveCharge;
+	fPower = Power*ChargeFactor;
 	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);	 //BU in GWd/t
 
 	fCreationTime = (cSecond)creationtime;
@@ -97,26 +108,37 @@ Reactor::Reactor(DataBank<IsotopicVector>* 	fueltypeDB, FabricationPlant* fabric
 	
 	
 	
-	cout	<< "!!Info!! !!!Reactor!!! A Reactor has been define :" << endl;
+	cout	<< "!!INFO!! !!!Reactor!!! A Reactor has been define :" << endl;
 	cout	<< "\t Fuel Composition is not fixed ! "<< endl;
 	cout	<< "\t Fuel Type set to : \t "<<  fFuelTypeDB->GetFuelType() << endl;
 	cout	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
 	cout	<< "\t Life time (Operating's Duration) set at \t " << (double)(fLifeTime/3600/24/365.25) << " year" << endl;
-	cout	<< "\t The Effective Thermal Power set at \t " << (double)(fPower *1e-6) << " MW" << endl;
+	cout	<< "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << Power << " and " << ChargeFactor << " Charge Factor)"<< endl;
 	cout	<< "\t Burn-Up at end of Cycle set at \t " << (double)(fBurnUp) << " GWj/t" << endl;
 	cout	<< "\t The corresponding Cycle Time is\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
 	cout	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 	
+	fLog->fLog 	<< "!!INFO!! !!!Reactor!!! A Reactor has been define :" << endl;
+	fLog->fLog 	<< "\t Fuel Composition is not fixed ! "<< endl;
+	fLog->fLog 	<< "\t Fuel Type set to : \t "<<  fFuelTypeDB->GetFuelType() << endl;
+	fLog->fLog 	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog 	<< "\t Life time (Operating's Duration) set at \t " << (double)(fLifeTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog 	<< "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << Power << " and " << ChargeFactor << " Charge Factor)"<< endl;
+	fLog->fLog 	<< "\t Burn-Up at end of Cycle set at \t " << (double)(fBurnUp) << " GWj/t" << endl;
+	fLog->fLog 	<< "\t The corresponding Cycle Time is\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog 	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
+	
 	DBGL;
 }
 
-Reactor::Reactor(DataBank<IsotopicVector>* 	fueltypeDB,
+Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 Pool* Pool,
  		 double creationtime, double lifetime, double cycletime,
  		 double HMMass, double BurnUp)
 {
 	DBGL;
+	fLog = log;
 
 	fIsStarted = false;
 	fShutDown = false;
@@ -139,7 +161,7 @@ Reactor::Reactor(DataBank<IsotopicVector>* 	fueltypeDB,
 	fPower = BurnUp*3600.*24. / (fCycleTime) * HMMass *1e9; //BU in GWd/t
 	
 	
-	cout	<< "!!Info!! !!!Reactor!!! A Reactor has been define :" << endl;
+	cout	<< "!!INFO!! !!!Reactor!!! A Reactor has been define :" << endl;
 	cout	<< "\t Fuel Composition is not fixed ! "<< endl;
 	cout	<< "\t Fuel Type set to : \t "<<  fFuelTypeDB->GetFuelType() << endl;
 	cout	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
@@ -148,60 +170,29 @@ Reactor::Reactor(DataBank<IsotopicVector>* 	fueltypeDB,
 	cout	<< "\t Burn-Up at end of Cycle set at \t " << (double)(fBurnUp) << " GWj/t" << endl;
 	cout	<< "\t The corresponding Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW" << endl;
 	cout	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
+
+	fLog->fLog 	<< "!!INFO!! !!!Reactor!!! A Reactor has been define :" << endl;
+	fLog->fLog	<< "\t Fuel Composition is not fixed ! "<< endl;
+	fLog->fLog	<< "\t Fuel Type set to : \t "<<  fFuelTypeDB->GetFuelType() << endl;
+	fLog->fLog	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog	<< "\t Life time (Operating's Duration) set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog	<< "\t The Cycle Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog	<< "\t Burn-Up at end of Cycle set at \t " << (double)(fBurnUp) << " GWj/t" << endl;
+	fLog->fLog	<< "\t The corresponding Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW" << endl;
+	fLog->fLog	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 	
 	DBGL;
 }
 
-Reactor::Reactor(EvolutionData evolutivedb, 
- 		 Pool* Pool,
- 		 double creationtime,
- 		 double lifetime,
- 		 double cycletime)
-{
-	DBGL;
 
-	fIsStarted = false;
-	fShutDown = false;
-	fEndOfCycle = false;
-
-	fEvolutionDB = evolutivedb; 
-	fFixedFuel = true;
-	fIsStorage = false;
-
-	fAssociedPool = Pool;
-
-	fInternalTime = 0;
-	fInCycleTime = 0;
-	fCycleTime = (cSecond)cycletime;
-	fCreationTime = (cSecond)creationtime;
-	fLifeTime = (cSecond)lifetime;
-
-	fPower = fEvolutionDB.GetPower();
-
-	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
-	fIVInCycle = fEvolutionDB.GetIsotopicVectorAt(0);
-	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
-	
-	
-	cout	<< "!!Info!! !!!Reactor!!! A Reactor has been define :" << endl;
-	cout	<< "\t Fuel Composition is fixed ! "<< endl;
-	cout	<< "\t Fuel Type set to : \t "<<  fFuelTypeDB->GetFuelType() << endl;
-	cout	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
-	cout	<< "\t Life time (Operating's Duration) set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
-	cout	<< "\t The Cycle Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
-	cout	<< "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW" << endl;
-	cout	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
-	
-	DBGL;
-}
-
-Reactor::Reactor(EvolutionData evolutivedb,
+Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
  		 Pool* Pool,
  		 double creationtime,
  		 double lifetime,
  		 double power, double HMMass, double BurnUp, double ChargeFactor )
 {
 	DBGL;
+	fLog = log;
 	
 	fIsStarted = false;
 	fShutDown = false;
@@ -253,15 +244,22 @@ Reactor::Reactor(EvolutionData evolutivedb,
 	fIVInCycle = fEvolutionDB.GetIsotopicVectorAt(0);
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 		
-	cout	<< "!!Info!! !!!Reactor!!! A Reactor has been define :" << endl;
+	cout	<< "!!INFO!! !!!Reactor!!! A Reactor has been define :" << endl;
 	cout	<< "\t Fuel Composition is fixed ! "<< endl;
-		//cout	<< "\t Fuel Type set to : \t "<<  fFuelTypeDB->GetFuelType() << endl;
 	cout	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
 	cout	<< "\t Life time (Operating's Duration) set at \t " << (double)(fLifeTime/3600/24/365.25) << " year" << endl;
 	cout	<< "\t The Cycle Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
-	cout	<< "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << ChargeFactor << " Charge Factor"<< endl;
+	cout	<< "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << ChargeFactor << " Charge Factor)"<< endl;
 	cout	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
-	
+
+	fLog->fLog	<< "!!INFO!! !!!Reactor!!! A Reactor has been define :" << endl;
+	fLog->fLog	<< "\t Fuel Composition is fixed ! "<< endl;
+	fLog->fLog	<< "\t Creation time set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog	<< "\t Life time (Operating's Duration) set at \t " << (double)(fLifeTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog	<< "\t The Cycle Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
+	fLog->fLog	<< "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << ChargeFactor << " Charge Factor)"<< endl;
+	fLog->fLog	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
+
 	DBGL;
 }
 

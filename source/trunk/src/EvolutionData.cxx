@@ -67,7 +67,13 @@ EvolutionData operator*(double F, EvolutionData const& evol)
 	return evol*F;
 	DBGL;
 }
-
+	//________________________________________________________________________
+EvolutionData operator/(EvolutionData const& evol, double F)
+{
+	DBGL;
+	return evol*(1./F);
+	DBGL;
+}
 
 //________________________________________________________________________
 //________________________________________________________________________
@@ -447,7 +453,7 @@ void EvolutionData::ReadDB(string DBfile)
 		start = 0;
 		
 		string InfoDBFile  = DBfile.erase(DBfile.size()-3,DBfile.size());
-		InfoDBFile += "info";
+		InfoDBFile += "Info";
 		ifstream InfoDB(InfoDBFile.c_str());							// Open the File
 		if(!InfoDB)
 		{

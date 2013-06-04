@@ -36,12 +36,12 @@ class Pool : public TObject
 {
 public :
 	///< Normal constructor
- 	Pool();
+ 	Pool(LogFile* log);
 	///< Advanced Constructor
-	Pool(double abstime,
+	Pool(LogFile* log, double abstime,
 			 double coolingtime = 5*3600.*24.*365.25); //!<
 	
-	Pool(Storage* Storage,
+	Pool(LogFile* log, Storage* Storage,
 			 double abstime = 0,
 			 double coolingtime = 5*3600.*24.*365.25); //!<
 

@@ -35,26 +35,25 @@ class Reactor : public TObject
 {
 public :
 	///< Normal Constructor.
-	Reactor();
+	Reactor(LogFile* log);
 	///< Advbanced Constructor.
-	Reactor(DataBank<IsotopicVector>* 	fueltypeDB,
+	Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 		FabricationPlant* fabricationplant, Pool* Pool,
-		double creationtime , double lifetime);					//!<
-	Reactor(DataBank<IsotopicVector>* 	fueltypeDB,
+		double creationtime , double lifetime);				//!<
+	
+	Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 		FabricationPlant* fabricationplant, Pool* Pool,
 		double creationtime , double lifetime, double cycletime,
-		double HMMass, double BurnUp);						//!<
-	Reactor(DataBank<IsotopicVector>* 	fueltypeDB,
+		double HMMass, double BurnUp);					//!<
+	
+	Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 		FabricationPlant* fabricationplant, Pool* Pool,
 		double creationtime , double lifetime,
-		double Power, double HMMass, double BurnUp, double EffectiveCharge);						//!<
+		double Power, double HMMass, double BurnUp, double ChargeFactor);	//!<
 
-	
-	Reactor(EvolutionData evolutivedb, Pool* Pool,	//!<
-		double creationtime, double lifetime, double cycletime);		//!<
-	Reactor(EvolutionData evolutivedb, Pool* Pool,
+	Reactor(LogFile* log, EvolutionData evolutivedb, Pool* Pool,
 		double creationtime, double lifetime,
-		double power, double HMMass, double BurnUp, double ChargeFactor = 1. );
+		double power, double HMMass, double BurnUp, double ChargeFactor);
 
 	///< Normal Destructor
 	~Reactor();
@@ -71,20 +70,20 @@ public :
 	cSecond 		GetCreationTime() const		{ return fCreationTime; }	//!< Return the creation time of the Reactor
 	cSecond 		GetLifeTime()	const		{ return fLifeTime; }		//!< Return the life time of the Reactor
 
-	EvolutionData	GetEvolutionDB()		const	{ return fEvolutionDB; }		//!< Return the Evolution database of the Fuel
-	Pool*	GetAssociedPool()	const	{ return fAssociedPool; }	//!< Return the pointer to Associeted TF
-	LogFile*		GetLog()			const	{ return fLog; }			//!< Return the Pointer to Log
+	EvolutionData	GetEvolutionDB()		const	{ return fEvolutionDB; }	//!< Return the Evolution database of the Fuel
+	Pool*	GetAssociedPool()	const	{ return fAssociedPool; }			//!< Return the pointer to Associeted TF
+	LogFile*		GetLog()			const	{ return fLog; }	//!< Return the Pointer to Log
 
-	bool 			IsFuelFixed()				{ return fFixedFuel; }			//!< True if using fixed Fuel, False otherwise
-	FabricationPlant*	GetFabricationPlant()		const	{ return fFabricationPlant; }		//!< Return the Pointer to the FabricationPlant
-	DataBank<IsotopicVector>* GetFuelType()	const	{ return fFuelTypeDB; }			//!< Return the Fuel Type DB of the reactor
-	double			GetHeavyMetalMass()		const	{ return fHeavyMetalMass; }		//!< Return the HeavyMetal Mass in the Core at the begining of the cycle
-	double			GetBurnUp()			const	{ return fBurnUp; }			//!< Return the Burn Up of the Fuel at the end of the cycle
+	bool 			IsFuelFixed()				{ return fFixedFuel; }		//!< True if using fixed Fuel, False otherwise
+	FabricationPlant*	GetFabricationPlant()		const	{ return fFabricationPlant; }	//!< Return the Pointer to the FabricationPlant
+	DataBank<IsotopicVector>* GetFuelType()	const	{ return fFuelTypeDB; }				//!< Return the Fuel Type DB of the reactor
+	double			GetHeavyMetalMass()		const	{ return fHeavyMetalMass; }	//!< Return the HeavyMetal Mass in the Core at the begining of the cycle
+	double			GetBurnUp()			const	{ return fBurnUp; }	//!< Return the Burn Up of the Fuel at the end of the cycle
 
 
 //********* Set Method *********//
-	void SetId(int id)					{ fId = id; }					//!< Set The Reactor Parc'Id
-	void SetParc(CLASS* parc)				{ fParc = parc; }				//!< Set the Pointer to the Parc
+	void SetId(int id)					{ fId = id; }				//!< Set The Reactor Parc'Id
+	void SetParc(CLASS* parc)				{ fParc = parc; }			//!< Set the Pointer to the Parc
 	void SetStorage(Storage* storage)			{ fStorage = storage; fIsStorage = true;}	//!< Set the Pointer to the Storage
 	void SetLog(LogFile* LOG)				{ fLog = LOG; }				//!< Set the Pointer to the Log
 	void SetLifeTime(double lifetime)			{ fLifeTime = lifetime; }		//!< Set the life time of the Reactor

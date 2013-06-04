@@ -76,9 +76,7 @@ DataBank<ZAI>::DataBank()
 	
 		// Warning
 	
-	cout	<< "!!Info!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" <<  endl << endl;
-	
-		//	fLog->fLog 	<< "!!Info!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
+	cout	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define." <<  endl << endl;
 	
 	DBGL;
 }
@@ -93,10 +91,10 @@ DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file)
 	
 	// Warning
 	
-	cout	<< "!!Info!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
+	cout	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
 	cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
 	
-	fLog->fLog 	<< "!!Info!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
+	fLog->fLog 	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
 	fLog->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
 	
 	DBGL;
@@ -200,11 +198,10 @@ DataBank<IsotopicVector>::DataBank()
 {
 	DBGL;
 		// Warning
-	cout	<< "!!Info!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
+	cout	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
 
-	fDistanceType=0;
 	fLog = new LogFile("EvoluData_log");
-	fLog->fLog 	<< "!!Info!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
+	fLog->fLog 	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
 	DBGL;
 }
 
@@ -218,9 +215,9 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file)
 	
 	ReadDataBase();
 	
-	fDistanceType=0;
+	
 	// Warning
-	cout	<< "!!Info!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
+	cout	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
 	cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
 	cout	<< "\t " << fDataBank.size() << " EvolutionData have been read."<< endl << endl;
 	
@@ -1037,5 +1034,9 @@ void DataBank<IsotopicVector>::SetDistanceType(int DistanceType)
 	}
 	DBGL;
 }
+
+
+
+
 
 
