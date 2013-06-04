@@ -65,6 +65,10 @@ public :
 //********* Modification Method *********//
 	IsotopicVector	Evolution(const T &key, double dt);	///< Return the Product IsotopicVector evolution from zai during a dt time
 	void		ReadDataBase();				///< ...
+	void		CalculateDistanceParameter();///< Calculate automaticly the weight for each ZAI in the distance calculation from the mean XS of the DataBank
+	void		SetDistanceParameter(IsotopicVector DistanceParameter);///< Define mannually the weight for each ZAI in the distance calculation 
+	void		SetDistanceType(int DistanceType);///< Define the way to decide if two isotopic vectors are close. 0 is for the standard norme, 1 for each ZAI weighted with its XS, 2 for each ZAI weighted with coefficient given by the user
+
 
 //********* Printing Method *********//
 	void Print() const;
@@ -79,6 +83,9 @@ protected :
  	string 				fFuelType;
  	pair<double,double>		fBurnUpRange;
  	vector<double>			fFuelParameter;
+
+	int 				fDistanceType;///< 0 is for the standard norme, 1 for each ZAI weighted with its XS, 2 for each ZAI weighted with coefficient given by the user
+	T				fDistanceParameter;///< weight for each ZAI in the distance calculation
 
 
 };

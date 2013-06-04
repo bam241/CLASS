@@ -28,25 +28,25 @@
 //__________________________Operator Overlaoding__________________________
 //________________________________________________________________________
 
+
+
 //____________________________General Operator____________________________
 //________________________________________________________________________
 
 ClassImp(IsotopicVector)
 
-double 	Norme(IsotopicVector IV1)
+double 	Norme(IsotopicVector IV1,int DistanceType, IsotopicVector DistanceParameter)
 {
 DBGL;
 	IsotopicVector IV; 
 	
-	return Distance(IV1, IV);
+	return Distance(IV1, IV, DistanceType,DistanceParameter);
 DBGL;
 }
-
-double Distance(IsotopicVector IV1, IsotopicVector IV2 )
+double DistanceStandard(IsotopicVector IV1, IsotopicVector IV2)
 {
 DBGL;
-	double d2 = 0;
-	
+	double d2=0;
 	IsotopicVector IVtmp = IV1 + IV2;
 	map<ZAI ,double> IVtmpIsotopicQuantity = IVtmp.GetIsotopicQuantity();
 	map<ZAI ,double >::iterator it;
@@ -56,9 +56,45 @@ DBGL;
 		double Z2 = IV2.GetZAIIsotopicQuantity( (*it).first );
 		d2 += pow(Z1-Z2 , 2 );
 	}
-	
-DBGL;
 	return sqrt(d2);
+DBGL;
+}
+double DistanceAdjusted(IsotopicVector IV1, IsotopicVector IV2, IsotopicVector DistanceParameter)
+{
+DBGL;
+	double d2=0;
+	IsotopicVector IVtmp = IV1 + IV2;
+	map<ZAI ,double> IVtmpIsotopicQuantity = IVtmp.GetIsotopicQuantity();
+	map<ZAI ,double >::iterator it;
+	for( it = IVtmpIsotopicQuantity.begin(); it != IVtmpIsotopicQuantity.end(); it++)
+	{
+		double Z1 = IV1.GetZAIIsotopicQuantity( (*it).first );
+		double Z2 = IV2.GetZAIIsotopicQuantity( (*it).first );
+		double lambda = DistanceParameter.GetZAIIsotopicQuantity( (*it).first );
+		d2 += lambda*abs(Z1-Z2);
+	}
+	return d2;
+DBGL;
+}
+
+
+
+double Distance(IsotopicVector IV1, IsotopicVector IV2 ,int DistanceType, IsotopicVector DistanceParameter)
+{
+DBGL;
+	if(DistanceType==0){
+		return DistanceStandard(IV1,IV2);
+	}
+	else if(DistanceType==1||DistanceType==2){
+		return DistanceAdjusted(IV1,IV2,DistanceParameter);
+	}
+	else{
+		cout << "!!ERROR!! !!!Distance!!!"
+		     << " Distancetype defined by the user isn't recognized by the code"<<endl;
+
+		exit(1);
+	}	
+DBGL;
 }
 
 
@@ -481,7 +517,7 @@ void IsotopicVector::Write(string filename, cSecond time) const
 			IVfileZAI << time << " " << (*it).second << endl;;
 			IVfileZAI.close();		
 		}
-		 */
+		*/
 	
 	}
 	IVfile << endl;

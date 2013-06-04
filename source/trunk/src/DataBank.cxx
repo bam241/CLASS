@@ -202,6 +202,7 @@ DataBank<IsotopicVector>::DataBank()
 		// Warning
 	cout	<< "!!Info!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
 
+	fDistanceType=0;
 	fLog = new LogFile("EvoluData_log");
 	fLog->fLog 	<< "!!Info!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
 	DBGL;
@@ -217,7 +218,7 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file)
 	
 	ReadDataBase();
 	
-	
+	fDistanceType=0;
 	// Warning
 	cout	<< "!!Info!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
 	cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
@@ -933,6 +934,108 @@ EvolutionData DataBank<IsotopicVector>::GenerateDB(IsotopicVector isotopicvector
 
 
 
+//________________________________________________________________________
+//________________________________________________________________________
+template<>
+void DataBank<IsotopicVector>::CalculateDistanceParameter()
+{
+	DBGL;
+	if(fDistanceType!=1){
+		cout << "!!Warning!! !!!CalculateDistanceParameter!!!"
+		     << " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
+				
+		fLog->fLog << "!!Warning!! !!!CalculateDistanceParameter!!!"
+		     << " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
+	}
 
+	fDistanceParameter.Clear();
+
+	//We calculate the weight for the distance calculation.
+	map<IsotopicVector ,EvolutionData >::iterator it;
+	map<IsotopicVector ,EvolutionData > databank = (*this).GetDataBank();
+	int NevolutionDatainDataBank=0;
+
+	for( it = databank.begin(); it != databank.end(); it++ ){
+		NevolutionDatainDataBank++;
+		map<ZAI ,double>::iterator itit;
+		map<ZAI ,double> isovector=(*it).first.GetIsotopicQuantity();
+		for(itit=isovector.begin(); itit != isovector.end(); itit++){//Boucle sur ZAI
+			ZAI TmpZAI=(*itit).first;
+			double TmpXS=0;
+			for(int i=1;i<4;i++){//Boucle sur Reactions 1==fission, 2==capture, 3==n2n
+				TmpXS+=	(*it).second.GetGetXSForAt(0,TmpZAI,i);
+			}
+			fDistanceParameter.Add(TmpZAI,TmpXS); 
+		}
+
+
+	}
+	fDistanceParameter.Multiply((double)1.0/NevolutionDatainDataBank);
+
+
+	fLog->fLog <<"!!INFO!! Distance Parameters "<<endl;
+	map<ZAI ,double >::iterator it2;
+	for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
+		{
+			fLog->fLog << (*it2).first.Z() << " ";
+			fLog->fLog << (*it2).first.A() << " ";
+			fLog->fLog << (*it2).first.I() << " ";
+			fLog->fLog << ": " << (*it2).second;
+			fLog->fLog << endl;
+		}
+	fLog->fLog << endl;
+
+
+	DBGL;
+}
+
+//________________________________________________________________________
+template<>
+void DataBank<IsotopicVector>::SetDistanceParameter(IsotopicVector DistanceParameter){
+	DBGL;
+	fDistanceParameter=DistanceParameter;
+
+	fLog->fLog <<"!!INFO!! Distance Parameters "<<endl;
+	map<ZAI ,double >::iterator it2;
+	for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
+		{
+			fLog->fLog << (*it2).first.Z() << " ";
+			fLog->fLog << (*it2).first.A() << " ";
+			fLog->fLog << (*it2).first.I() << " ";
+			fLog->fLog << ": " << (*it2).second;
+			fLog->fLog << endl;
+		}
+	fLog->fLog << endl;
+	DBGL;
+}
+
+//________________________________________________________________________
+template<>
+void DataBank<IsotopicVector>::SetDistanceType(int DistanceType)
+{
+	DBGL;
+	fDistanceType=DistanceType;
+	if(fDistanceType==1){
+		CalculateDistanceParameter();
+	}
+	else if(fDistanceType==2&&Norme(fDistanceParameter)==0){
+		// This is so bad!! You will probably unsynchronize all the reactor....
+		cout << "!!Warning!! !!!DistanceType!!!"
+		     << " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
+				
+		fLog->fLog << "!!Warning!! !!!DistanceType!!!"
+		     << " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
+		exit(1);
+	}
+	else if (fDistanceType!=0&&fDistanceType!=1&&fDistanceType!=2){
+		cout << "!!ERROR!! !!!DistanceType!!!"
+		     << " Distancetype defined by the user isn't recognized by the code"<<endl;
+				
+		fLog->fLog << "!!ERROR!! !!!DistanceType!!!"
+		     << " Distancetype defined by the user isn't recognized by the code"<<endl;
+		exit(1);
+	}
+	DBGL;
+}
 
 
