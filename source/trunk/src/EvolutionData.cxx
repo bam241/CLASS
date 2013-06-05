@@ -24,21 +24,39 @@
 #pragma link C++ class pair<ZAI,TGraph*>;
 
 using namespace std;
-//________________________________________________________________________
-//
-//		EvolutionData
-//
-//
-//
-//
-//________________________________________________________________________
+	//________________________________________________________________________
+	//
+	//		EvolutionData
+	//
+	//
+	//
+	//
+	//________________________________________________________________________
+
+
+
+struct my_tolower
+{
+	char operator()(char c) const
+	{
+		return std::tolower(static_cast<unsigned char>(c));
+	}
+};
+
+	//To Lower Case, convert any string in lower case
+string tlc(string data)
+{
+	transform(data.begin(), data.end(), data.begin(), my_tolower());
+	return data;
+}
+
 ClassImp(EvolutionData)
-//________________________________________________________________________
+	//________________________________________________________________________
 EvolutionData operator*(EvolutionData const& evol, double F)
 {
 	DBGL;
 	EvolutionData evoltmp;
-
+	
 	map<ZAI ,TGraph* > EvolutionData = evol.GetEvolutionData();
 	map<ZAI ,TGraph* >::iterator it;
 	for(it = EvolutionData.begin(); it != EvolutionData.end(); it++)
@@ -60,7 +78,7 @@ EvolutionData operator*(EvolutionData const& evol, double F)
 	DBGL;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 EvolutionData operator*(double F, EvolutionData const& evol)
 {
 	DBGL;
@@ -75,8 +93,8 @@ EvolutionData operator/(EvolutionData const& evol, double F)
 	DBGL;
 }
 
-//________________________________________________________________________
-//________________________________________________________________________
+	//________________________________________________________________________
+	//________________________________________________________________________
 EvolutionData::EvolutionData()
 {
 	DBGL;
@@ -84,7 +102,7 @@ EvolutionData::EvolutionData()
 	DBGL;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 EvolutionData::EvolutionData(LogFile* Log)
 {
 	DBGL;
@@ -93,25 +111,25 @@ EvolutionData::EvolutionData(LogFile* Log)
 	DBGL;
 }
 
-//________________________________________________________________________
-EvolutionData::EvolutionData(LogFile* Log, string DB_file, bool stable, ZAI zai)
+	//________________________________________________________________________
+EvolutionData::EvolutionData(LogFile* Log, string DB_file, bool oldread, ZAI zai)
 {
 	DBGL;
 	fLog = Log;
 	fIsCrossSection = false;
 	fDB_file = DB_file;
 	
-	if(stable == true)
+	if(zai != ZAI(0,0,0))
 		AddAsStable(zai);
 	else
-		ReadDB( DB_file);		// Read Evolution Produc DB file name
+		ReadDB( fDB_file, oldread);		// Read Evolution Produc DB file name
 	
 	
 	DBGL;
 	
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 EvolutionData::~EvolutionData()
 {
 	DBGL;
@@ -155,7 +173,7 @@ bool EvolutionData::n2nXSInsert(pair<ZAI, TGraph*> zaitoinsert)
 	DBGL;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 void EvolutionData::AddAsStable(ZAI zai)
 {
 	DBGL;
@@ -166,30 +184,30 @@ void EvolutionData::AddAsStable(ZAI zai)
 	DBGL;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 Double_t EvolutionData::Interpolate(double t, TGraph& EvolutionGraph)
 {
 	DBGL;
-	TString fOption; 
+	TString fOption;
 	return (double)EvolutionGraph.Eval(t,0x0,fOption);
 	DBGL;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 TGraph*	EvolutionData::GetEvolutionTGraph(const ZAI& zai)
 {
 	DBGL;
 	map<ZAI ,TGraph *>::iterator it = GetEvolutionData().find(zai) ;
 	
-	if ( it != GetEvolutionData().end() ) 
-		return it->second;	
+	if ( it != GetEvolutionData().end() )
+		return it->second;
 	else
 		return new TGraph();
 	
 	DBGL;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 IsotopicVector	EvolutionData::GetIsotopicVectorAt(double t)
 {
 	DBGL;
@@ -204,7 +222,7 @@ IsotopicVector	EvolutionData::GetIsotopicVectorAt(double t)
 	return IsotopicVectorTmp;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 double	EvolutionData::GetGetXSForAt(double t, ZAI zai, int ReactionId)
 {
 	DBGL;
@@ -233,276 +251,9 @@ double	EvolutionData::GetGetXSForAt(double t, ZAI zai, int ReactionId)
 }
 
 
-//________________________________________________________________________
-
-//________________________________________________________________________
-void EvolutionData::ReadDB(string DBfile)
-{
-	DBGL;
-	
-	{
-		ifstream DecayDB(DBfile.c_str());							// Open the File
-		if(!DecayDB)
-		{
-			cout << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
-			fLog->fLog << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
-		}
-		vector<double> vTime;
-		vector<double> vTimeErr;
-	
-		string line;
-		int start = 0;
-	
-		getline(DecayDB, line); 
-		if( StringLine::NextWord(line, start, ' ') != "time") 
-		{
-			cout << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
-			fLog->fLog << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
-			exit (1);
-		}
-	
-		while(start < (int)line.size())
-			vTime.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
-	
-		fFinalTime = vTime.back();
-		double Time[vTime.size()];
-		for(int i=0; i < (int)vTime.size();i++)
-			Time[i] = vTime[i]; 
-		vector<double> vFlux;
-		start = 0;
-		getline(DecayDB, line);
-		string tmp = StringLine::NextWord(line, start, ' ');
-		if ( tmp == "keff"  || tmp == "Keff" )
-		{
-			vector<double> vKeff;
-			while(start < (int)line.size())
-				vKeff.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
-
-			double Keff[vKeff.size()];
-			for(int i=0; i < (int)vKeff.size();i++)
-				Keff[i] = vKeff[i]; 
-
-			fKeff = new TGraph(vTime.size(), Time, Keff);
-			
-			start = 0;
-			getline(DecayDB, line); 
-			if (StringLine::NextWord(line, start, ' ') == "flux")
-			{
 
 
-				while(start < (int)line.size())
-					vFlux.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
-
-				double Flux[vFlux.size()];
-				for(int i=0; i < (int)vFlux.size();i++)
-					Flux[i] = vFlux[i]; 
-
-				fFlux = new TGraph(vTime.size(), Time, Flux);
-			
-			}
-		}
-	
-
-		do
-		{
-		
-		
-			start = 0;
-			int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
-			int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
-			int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
-		
-			if(A!=0 && Z!=0)
-			{
-				double DPQuantity[vTime.size()];
-				for(int k = 0; k < (int)vTime.size(); k++ )
-					DPQuantity[k] = 0;
-			
-			
-				ZAI zaitmp(Z, A, I);
-				int i=0;
-				while(start < (int)line.size())
-				{	
-					double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
-					DPQuantity[i] = (double)DPQuantityTmp;
-					i++;
-				
-				}
-				fEvolutionData.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph((int)vTime.size()-1, Time, DPQuantity) ) );
-			}
-		
-			getline(DecayDB, line); 
-			if(line == "" || line == "CrossSection" ) break;
-		}while (!DecayDB.eof() );
-	
-		if(line == "CrossSection")
-		{
-			fIsCrossSection = true;
-			getline(DecayDB, line);
-
-			if (line == "Fission")
-			{
-				getline(DecayDB, line);
-			
-				do
-				{
-					double DPQuantity[vTime.size()];
-					for(int k = 0; k < (int)vTime.size(); k++ )
-						DPQuantity[k] = 0;
-
-					start = 0;
-					int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					if(A!=0 && Z!=0)
-					{
-					
-					
-						ZAI zaitmp(Z, A, I);
-						int i=0;
-						while(start < (int)line.size())
-						{	
-							long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
-							DPQuantity[i] = (double)DPQuantityTmp;
-							i++;
-						
-						}
-						fFissionXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
-					}
-					getline(DecayDB, line); 
-				if(line == "" || line == "Capture" ) break;
-				}while (  !DecayDB.eof() );
-			}
-		
-			if (line == "Capture")
-			{
-				getline(DecayDB, line); // Nuclei is given with "A Z"
-			
-				do
-				{
-					double DPQuantity[vTime.size()];
-					for(int k = 0; k < (int)vTime.size(); k++ )
-						DPQuantity[k] = 0;
-				
-				
-					start = 0;
-					int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
-				
-					if(A!=0 && Z!=0)
-					{
-					
-					
-						ZAI zaitmp(Z, A, I);
-						int i=0;
-						while(start < (int)line.size())
-						{	
-							long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
-							DPQuantity[i] = (double)DPQuantityTmp;
-							i++;
-						
-						}
-						fCaptureXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
-					}
-					getline(DecayDB, line); // Nuclei is given with "A Z"
-				if(line == "" || line == "n2n" ) break;
-				}while ( !DecayDB.eof() );
-			
-			}
-		
-			if (line == "n2n")
-			{
-			
-				getline(DecayDB, line); // Nuclei is given with "A Z"
-			
-				do
-				{
-					double DPQuantity[vTime.size()];
-					for(int k = 0; k < (int)vTime.size(); k++ )
-						DPQuantity[k] = 0;
-				
-					start = 0;
-					int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
-				
-					if(A!=0 && Z!=0)
-					{
-					
-					
-						ZAI zaitmp(Z, A, I);
-						int i=0;
-						while(start < (int)line.size())
-						{	
-							long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
-							DPQuantity[i] = (double)DPQuantityTmp;
-							i++;
-						
-						}
-						fn2nXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
-					}
-					getline(DecayDB, line); // Nuclei is given with "A Z"
-				if(line == "" ) break;
-				
-				}while ( !DecayDB.eof() );
-			}
-		
-		}
-		DecayDB.close();
-		start = 0;
-		
-		string InfoDBFile  = DBfile.erase(DBfile.size()-3,DBfile.size());
-		InfoDBFile += "Info";
-		ifstream InfoDB(InfoDBFile.c_str());							// Open the File
-		if(!InfoDB)
-		{
-			fLog->fLog << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
-			return;
-		}
-		
-		start = 0;
-		getline(InfoDB, line); 
-		if (StringLine::NextWord(line, start, ' ') == "Reactor")
-			fReactorType =  StringLine::NextWord(line, start, ' ');
-		start = 0;
-		getline(InfoDB, line); 
-		if (StringLine::NextWord(line, start, ' ') == "Fueltype")
-			fFuelType =  StringLine::NextWord(line, start, ' ');
-		start = 0;
-		getline(InfoDB, line); 
-		if (StringLine::NextWord(line, start, ' ') == "CycleTime")
-			fCycleTime =  atof(StringLine::NextWord(line, start, ' ').c_str());;
-		getline(InfoDB, line); // Assembly HM Mass
-		start = 0;
-		getline(InfoDB, line); 
-		if (StringLine::NextWord(line, start, ' ') == "ConstantPower")
-			fPower =  atof(StringLine::NextWord(line, start, ' ').c_str());
-		getline(InfoDB, line); // cutoff
-		getline(InfoDB, line); // NUmber of Nuclei
-		start = 0;
-		getline(InfoDB, line); 
-		if (StringLine::NextWord(line, start, ' ') == "NormalizationFactor")
-		{
-			double NormFactor = atof(StringLine::NextWord(line, start, ' ').c_str());
-			fPower = fPower * NormFactor;				
-			double Flux[vFlux.size()];
-			for(int i=0; i < (int)vFlux.size();i++)
-				Flux[i] = vFlux[i]; 
-
-			fFlux = new TGraph(vTime.size()-1, Time, Flux);
-		}
-		start = 0;
-		getline(InfoDB, line); 
-		if (StringLine::NextWord(line, start, ' ') == "FinalHeavyMetalMass")
-			fHMMass =  atof(StringLine::NextWord(line, start, ' ').c_str());
-	
-		}
-	DBGL;
-}
-
-
-//________________________________________________________________________
+	//________________________________________________________________________
 
 EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 {
@@ -627,7 +378,7 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 		map< ZAI, double > toAdd;
 		toAdd.insert(pair<ZAI, double> ( ZAI(94,243,0) , 1) );
 		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,247,0), pair<double, map< ZAI, double > > ( 4.92298560000000000e+14, toAdd) ) );
-	}	
+	}
 	{	// 248Cm
 		map< ZAI, double > toAdd;
 		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
@@ -639,23 +390,23 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
 		
-		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(90,231,0), toAdd ) ); 
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(90,231,0), toAdd ) );
 	}
 	{	// 233Th
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(92,233,0) , 1) );
 		
-		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(90,233,0), toAdd ) ); 
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(90,233,0), toAdd ) );
 	}
 	{	// 233Pa
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(92,233,0) , 1) );
-		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(91,233,0), toAdd ) ); 
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(91,233,0), toAdd ) );
 	}
 	{	// 237U
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(93,237,0) , 1) );
-		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(92,237,0), toAdd ) ); 
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(92,237,0), toAdd ) );
 	}
 	{	// 239U
 		map<ZAI, double> toAdd ;
@@ -665,43 +416,43 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 	{	// 238Np
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(94,238,0) , 1) );
-		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,238,0), toAdd ) ); 
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,238,0), toAdd ) );
 	}
 	{	// 239Np
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(94,239,0) , 1) );
-		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,239,0), toAdd ) ); 
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,239,0), toAdd ) );
 	}
 	{	// 240Np
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(94,240,0) , 1) );
-		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,240,0), toAdd ) ); 
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,240,0), toAdd ) );
 	}
 	{	// 241Np
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(94,241,0) , 1) );
-		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,241,0), toAdd ) ); 
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,241,0), toAdd ) );
 	}
 	{	// 237Pu
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(93,237,0) , 1) );
-		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(94,237,0), toAdd ) ); 
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(94,237,0), toAdd ) );
 	}
 	{	// 243Pu
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(95,243,0) , 1) );
-		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(94,243,0), toAdd ) ); 
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(94,243,0), toAdd ) );
 	}
 	{	// 240Am
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(94,240,0) , 1) );
-		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,240,0), toAdd ) ); 
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,240,0), toAdd ) );
 	}
 	{	// 242Am
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(96,242,0) , 0.827) );
 		toAdd.insert(pair<ZAI, double> ( ZAI(94,242,0) , 0.173) );
-		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,242,0), toAdd ) ); 
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,242,0), toAdd ) );
 	}
 	{	// 244Am
 		map<ZAI, double> toAdd ;
@@ -716,21 +467,21 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 	{	// 249Cm
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(96,249,0), toAdd ) ); 
+		FastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(96,249,0), toAdd ) );
 	}
-
-
+	
+	
 	map<ZAI, map<ZAI, double> > Capture;
 	{	// 241Am
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(95,242,0) , 0.086) );
 		toAdd.insert(pair<ZAI, double> ( ZAI(95,242,1) , 0.914) );
-		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,241,0), toAdd ) ); 
+		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,241,0), toAdd ) );
 	}
 	{	// 242Am*
 		map<ZAI, double> toAdd ;
 		toAdd.insert(pair<ZAI, double> ( ZAI(95,243,0) , 1) );
-		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,242,1), toAdd ) ); 
+		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,242,1), toAdd ) );
 	}
 	map<ZAI, int> index_inver;
 	map<int, ZAI> index;
@@ -740,7 +491,7 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 		for(it = ZAIDecay.begin() ; it != ZAIDecay.end(); it++)
 		{
 			index.insert( pair<int, ZAI > ( i, (*it).first ) );
-			 index_inver.insert( pair<ZAI, int > ( (*it).first , i ));
+			index_inver.insert( pair<ZAI, int > ( (*it).first , i ));
 			i++;
 		}
 	}
@@ -749,7 +500,7 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 	for(int i = 0; i < (int)index.size(); i++)
 		for(int j = 0; j < (int)index.size(); j++)
 			DecayMatrix[i][j] = 0;
-
+	
 	{
 		int i = 0;
 		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
@@ -759,17 +510,17 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 			map< ZAI, double > decaylist = (*it).second.second;
 			for(it2 = decaylist.begin(); it2!= decaylist.end(); it2++)
 			{
-			
+				
 				map<ZAI, int >::iterator it3 = index_inver.find( (*it2).first );
 				if( it3 != index_inver.end() )
 					DecayMatrix[(*it3).second][i] = log(2.)/(*it).second.first * (*it2).second;
 				else
 				{
 					map<ZAI, map<ZAI, double> >::iterator it4 = FastDecay.find( (*it2).first );
-
-					if( it4 == FastDecay.end() ) 
+					
+					if( it4 == FastDecay.end() )
 					{
-						cout << "Problem in FastDecay for nuclei " << (*it2).first.Z() << " " << (*it2).first.A() << " " << (*it2).first.I() << endl; 
+						cout << "Problem in FastDecay for nuclei " << (*it2).first.Z() << " " << (*it2).first.A() << " " << (*it2).first.I() << endl;
 						exit(1);
 					}
 					
@@ -780,56 +531,56 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 						it3 = index_inver.find( (*it5).first );
 						if( it3 == index_inver.end() )
 						{
-							cout << "Problem in FastDecay for nuclei " << (*it2).first.Z() << " " << (*it2).first.A() << " " << (*it2).first.I() << endl; 
+							cout << "Problem in FastDecay for nuclei " << (*it2).first.Z() << " " << (*it2).first.A() << " " << (*it2).first.I() << endl;
 							exit(1);
 						}
 						DecayMatrix[(*it3).second][i] = log(2.)/(*it).second.first * (*it2).second * (*it5).second;
 					}
-				
+					
 				}
 			}
 			DecayMatrix[i][i] += -log(2.)/(*it).second.first;
 			i++;
-
+			
 			
 		}
 	}
-
-
+	
+	
 	vector< TMatrixT<double> > NMatrix ;//  TMatrixT<double>(decayindex.size(),1))
 	double NormFactor = 1;
 	{
 		IsotopicVector WantedHMIV = 	  isotopicvector.GetSpeciesComposition(90)
-						+ isotopicvector.GetSpeciesComposition(92)
-						+ isotopicvector.GetSpeciesComposition(93)
-						+ isotopicvector.GetSpeciesComposition(94)
-						+ isotopicvector.GetSpeciesComposition(95)
-						+ isotopicvector.GetSpeciesComposition(96);
-
+		+ isotopicvector.GetSpeciesComposition(92)
+		+ isotopicvector.GetSpeciesComposition(93)
+		+ isotopicvector.GetSpeciesComposition(94)
+		+ isotopicvector.GetSpeciesComposition(95)
+		+ isotopicvector.GetSpeciesComposition(96);
+		
 		IsotopicVector DBHMIV =   GetIsotopicVectorAt(0).GetSpeciesComposition(90)
-					+ GetIsotopicVectorAt(0).GetSpeciesComposition(92)
-					+ GetIsotopicVectorAt(0).GetSpeciesComposition(93)
-					+ GetIsotopicVectorAt(0).GetSpeciesComposition(94)
-					+ GetIsotopicVectorAt(0).GetSpeciesComposition(95)
-					+ GetIsotopicVectorAt(0).GetSpeciesComposition(96);
-			
+		+ GetIsotopicVectorAt(0).GetSpeciesComposition(92)
+		+ GetIsotopicVectorAt(0).GetSpeciesComposition(93)
+		+ GetIsotopicVectorAt(0).GetSpeciesComposition(94)
+		+ GetIsotopicVectorAt(0).GetSpeciesComposition(95)
+		+ GetIsotopicVectorAt(0).GetSpeciesComposition(96);
+		
 		NormFactor = Norme(WantedHMIV)/ Norme(DBHMIV);
 	}
-
+	
 	{	// Filling the t=0 State;
 		map<ZAI, double > isotopicquantity = isotopicvector.GetIsotopicQuantity();
 		TMatrixT<double>  N_0Matrix =  TMatrixT<double>( index.size(),1) ;
-
+		
 		map<ZAI, double >::iterator it ;
 		for(int i = 0; i < (int)index.size(); i++)
 			N_0Matrix[i] = 0;
-			
+		
 		for(it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		{
 			
 			map<ZAI, int >::iterator it2;
 			
-			if( (*it).first.Z() < 90 ) 
+			if( (*it).first.Z() < 90 )
 				it2 = index_inver.find( ZAI(-2,-2,-2) );
 			else it2 = index_inver.find( (*it).first );
 			
@@ -837,18 +588,18 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 				it2 = index_inver.find( ZAI(-3,-3,-3) );
 			
 			N_0Matrix[ (*it2).second ][0] = (*it).second ;
-
+			
 			
 		}
 		NMatrix.push_back(N_0Matrix);
 	}
-
-	//-------------------------//
-	//--- Perform Evolution ---//
-	//-------------------------//
+	
+		//-------------------------//
+		//--- Perform Evolution ---//
+		//-------------------------//
 	double timevector[fEvolutionData.begin()->second->GetN()];
 	timevector[0] = 0.;
-
+	
 	for(int i = 0; i < fEvolutionData.begin()->second->GetN()-1; i++)
 	{
 		TMatrixT<double> BatemanMatrix = TMatrixT<double>(index.size(),index.size());
@@ -860,10 +611,10 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 			Flux = y;
 		}
 		map<ZAI ,TGraph* >::iterator it;
-		// ----------------  A(n,.) X+Y
+			// ----------------  A(n,.) X+Y
 		for(it = fFissionXS.begin() ; it != fFissionXS.end(); it++)
 		{
-			if( index_inver.find( (*it).first ) != index_inver.end() ) 
+			if( index_inver.find( (*it).first ) != index_inver.end() )
 			{
 				double x,y;
 				(*it).second->GetPoint(i, x,y);
@@ -871,12 +622,12 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 				BatemanMatrix[1][ index_inver.find( (*it).first )->second] += 2*y* 1e-24 *Flux;
 			}
 		}
-
-		// ----------------  A(n,.)A+1
+		
+			// ----------------  A(n,.)A+1
 		for(it = fCaptureXS.begin() ; it != fCaptureXS.end(); it++)
 		{
-
-			if( index_inver.find( (*it).first ) != index_inver.end() ) 
+			
+			if( index_inver.find( (*it).first ) != index_inver.end() )
 			{
 				double x,y;
 				(*it).second->GetPoint(i, x, y);
@@ -894,18 +645,18 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 					if( it6 != index_inver.end() )
 					{
 						BatemanMatrix[(*it6).second][index_inver.find( (*it).first )->second] += y* 1e-24 *Flux ;
-
+						
 					}
 					else
 					{
 						map<ZAI, map<ZAI, double> >::iterator it4 = FastDecay.find(  ZAI( (*it).first.Z(), (*it).first.A()+1, (*it).first.I()) );
-
-						if( it4 == FastDecay.end() ) 
+						
+						if( it4 == FastDecay.end() )
 						{
-							cout << "Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A()+1 << " " << (*it).first.I() << endl; 
+							cout << "Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A()+1 << " " << (*it).first.I() << endl;
 							exit(1);
 						}
-					
+						
 						map< ZAI, double >::iterator it5;
 						map< ZAI, double > decaylist2 = (*it4).second;
 						for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
@@ -914,63 +665,63 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 							it6 = index_inver.find( (*it5).first );
 							if( it6 == index_inver.end() )
 							{
-								cout << "Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A() << " " << (*it).first.I() << endl; 
+								cout << "Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A() << " " << (*it).first.I() << endl;
 								exit(1);
 							}
-
+							
 							BatemanMatrix[(*it6).second][index_inver.find( (*it).first )->second] += y* 1e-24 *Flux * (*it5).second;
 						}
 					}
 				}
 				else
 				{
-//					if( (*it3).first.Z() == 90 && (*it3).first.A() == 232) cout << y* 1e-24 *Flux << endl;
+						//					if( (*it3).first.Z() == 90 && (*it3).first.A() == 232) cout << y* 1e-24 *Flux << endl;
 					map<ZAI, double>::iterator it4;
 					map<ZAI, double> CaptureList = (*it3).second;
 					for(it4 = CaptureList.begin(); it4 != CaptureList.end() ; it4++)
 					{
-					
+						
 						map<ZAI, int >::iterator it6 = index_inver.find( (*it4).first );
-					
-					
+						
+						
 						if( it6 != index_inver.end() )
 							BatemanMatrix[(*it6).second][index_inver.find( (*it).first )->second] += y* 1e-24 *Flux * (*it4).second ;
 						else
 						{
 							map<ZAI, map<ZAI, double> >::iterator it7 = FastDecay.find( (*it4).first );
-
-							if( it7 == FastDecay.end() ) 
+							
+							if( it7 == FastDecay.end() )
 							{
-								cout << "Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl; 
+								cout << "Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
 								exit(1);
 							}
-					
+							
 							map< ZAI, double >::iterator it5;
 							map< ZAI, double > decaylist2 = (*it7).second;
 							for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
 							{
-							
+								
 								it6 = index_inver.find( (*it5).first );
 								if( it6 == index_inver.end() )
 								{
-									cout << "Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl; 
+									cout << "Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
 									exit(1);
 								}
-//if( (*it6).first.Z() == 92 && (*it6).first.A() == 233) cout << y* 1e-24 *Flux * (*it5).second << endl;
+									//if( (*it6).first.Z() == 92 && (*it6).first.A() == 233) cout << y* 1e-24 *Flux * (*it5).second << endl;
 								BatemanMatrix[(*it6).second][index_inver.find( (*it).first )->second] += y * 1e-24 * Flux * (*it5).second * (*it4).second;
 							}
 						}
-
+						
 					}
 				}
-
-
+				
+				
 			}
 		}
-		// ----------------  A(n,2n)A-1
+			// ----------------  A(n,2n)A-1
 		for(it = fn2nXS.begin() ; it != fn2nXS.end(); it++)
 		{
-			if( index_inver.find( (*it).first ) != index_inver.end() ) 
+			if( index_inver.find( (*it).first ) != index_inver.end() )
 			{
 				double x,y;
 				(*it).second->GetPoint(i, x,y);
@@ -979,14 +730,14 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 				
 				map<ZAI, int>::iterator it3 = index_inver.find( ZAI( (*it).first.Z(), (*it).first.A()-1, 0) );
 				
-				if( it3 != index_inver.end() ) 
-						BatemanMatrix[(*it3).second][index_inver.find( (*it).first )->second] += y* 1e-24 *Flux;
+				if( it3 != index_inver.end() )
+					BatemanMatrix[(*it3).second][index_inver.find( (*it).first )->second] += y* 1e-24 *Flux;
 				else
 				{
-
+					
 					map<ZAI, map<ZAI, double> >::iterator it4 = FastDecay.find( ZAI( (*it).first.Z(), (*it).first.A()-1, 0) );
-
-					if( it4 == FastDecay.end() ) 
+					
+					if( it4 == FastDecay.end() )
 					{
 						it3 = index_inver.find( ZAI( -3, -3, -3 ) );
 						BatemanMatrix[(*it3).second][index_inver.find( (*it).first )->second] += y* 1e-24 *Flux;
@@ -997,11 +748,11 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 						map< ZAI, double > decaylist2 = (*it4).second;
 						for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
 						{
-					
+							
 							it3 = index_inver.find( (*it5).first );
 							if( it3 == index_inver.end() )
 							{
-								cout << "Problem in FastDecay for nuclei " << (*it4).first.Z() << " " << (*it4).first.A() << " " << (*it4).first.I() << endl; 
+								cout << "Problem in FastDecay for nuclei " << (*it4).first.Z() << " " << (*it4).first.A() << " " << (*it4).first.I() << endl;
 								exit(1);
 							}
 							BatemanMatrix[(*it3).second][index_inver.find( (*it).first )->second] += y* 1e-24 *Flux * (*it5).second ;
@@ -1010,10 +761,10 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 				}
 			}
 		}
-
-		// ----------------   Evolution
+		
+			// ----------------   Evolution
 		TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(index.size(),1);
-
+		
 		double TStepMax;
 		{
 			double x,y;
@@ -1031,41 +782,41 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 				if(k == j)	IdMatrix[j][k] = 1;
 				else 		IdMatrix[j][k] = 0;
 			}
-
-
+		
+		
 		TMatrixT<double> BatemanMatrixDL = TMatrixT<double>(index.size(),index.size());   // Order 0 Term from the DL : Id
 		TMatrixT<double> BatemanMatrixDLTermN = TMatrixT<double>(index.size(),index.size());  // Addind it;
-
-
+		
+		
 		{
 			BatemanMatrixDLTermN = IdMatrix;
 			BatemanMatrixDL = BatemanMatrixDLTermN;
-
-
+			
+			
 			int j = 1;
 			double NormN = 0;
-		
+			
 			do
 			{
 				NormN = 0;
-
+				
 				TMatrixT<double> BatemanMatrixDLTermtmp = TMatrixT<double>(index.size(),index.size());  // Adding it;
 				BatemanMatrixDLTermtmp = BatemanMatrixDLTermN;
 				BatemanMatrixDLTermN.Mult(BatemanMatrixDLTermtmp, BatemanMatrix );
-			
+				
 				BatemanMatrixDLTermN *= 1./j;
 				BatemanMatrixDL += BatemanMatrixDLTermN;
-
+				
 				NormN = 0;
 				for(int m = 0; m < (int)index.size(); m++)
 					for(int n = 0; n < (int)index.size(); n++)
-						NormN += BatemanMatrixDLTermN[m][n]*BatemanMatrixDLTermN[m][n]; 
+						NormN += BatemanMatrixDLTermN[m][n]*BatemanMatrixDLTermN[m][n];
 				j++;
 			} while ( NormN != 0 || j==2);
-
+			
 		}
 		
-
+		
 		NEvolutionMatrix = BatemanMatrixDL * NMatrix.back() ;
 		NMatrix.push_back(NEvolutionMatrix);
 	}
@@ -1078,14 +829,14 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 		double ZAIQuantity[NMatrix.size()];
 		for(int j = 0; j < (int)NMatrix.size(); j++)
 			ZAIQuantity[j] = (NMatrix[j])[i][0];
-
+		
 		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (index.find(i)->second, new TGraph(NMatrix.size(), timevector, ZAIQuantity) ) );
 	}
 	GeneratedDB.SetPower(fPower * NormFactor );
 	GeneratedDB.SetFuelType(fFuelType );
 	GeneratedDB.SetReactorType(fReactorType );
 	GeneratedDB.SetHMMass(fHMMass*NormFactor );
-
+	
 	return GeneratedDB;
 	DBGL;
 }
@@ -1095,20 +846,320 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 
 
 
-/*
+
+	//________________________________________________________________________
+
+	//________________________________________________________________________
 
 
 
 
+void EvolutionData::ReadDB(string DBfile, bool oldread)
+{
+	DBGL;
+	if(oldread)
+	{
+		OldReadDB(DBfile);
+		return;
+	}
+	
+	
+	ifstream* DecayDB = new ifstream(DBfile.c_str());	// Open the File
+	if(!(*DecayDB))				//check if file is correctly open
+	{
+		cout << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
+		fLog->fLog << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
+	}
+	vector<double> vTime;
+	
+	string line;
+	int start = 0;
+	
+	getline((*DecayDB), line);
+	if( tlc(StringLine::NextWord(line, start, ' ')) != "time")
+	{
+		cout << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
+		fLog->fLog << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
+		exit (1);
+	}
+	
+	while(start < (int)line.size())
+		vTime.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
+	
+	fFinalTime = vTime.back();
+	double Time[vTime.size()];
+	for(int i=0; i < (int)vTime.size();i++)
+		Time[i] = vTime[i];
+	
+	enum { Keff, Flux, XSFis, XSCap, XSn2n };
+	
+	map<string, int> keyword_map;
+	keyword_map["keff"] = Keff;
+	keyword_map["flux"] = Flux;
+	keyword_map["xsfis"] = XSFis;
+	keyword_map["xscap"] = XSCap;
+	keyword_map["xsn2n"] = XSn2n;
+	
+	
+	
+	do
+	{
+		getline((*DecayDB), line);
+		start = 0;
+		
+		switch (keyword_map[tlc(StringLine::NextWord(line, start, ' '))])
+		{
+			case Keff:
+				ReadKeff(line, Time);
+				break;
+				
+			case Flux:
+				ReadFlux(line, Time);
+				break;
+				
+			case XSFis:
+				ReadXSFis(line, Time);
+				break;
+				
+			case XSCap:
+				ReadXSCap(line, Time);
+				break;
+				
+			case XSn2n:
+				ReadXSn2n(line, Time);
+				break;
+				
+			default:
+				break;
+		}
+		
+		
+		
+	}while ( (*DecayDB).eof() )
+		
+		
+		DBGL;
+}
+
+void EvolutionData::ReadKeff(string line, double* time)
+{
+	DBGL;
+	
+	int start = 0;
+	
+	if( tlc(StringLine::NextWord(line, start, ' ')) != "keff" )	// Check the keyword
+	{
+		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"keff\" not found !" << endl;
+		fLog->fLog << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"keff\" not found !" << endl;
+		exit(1);
+	}
+	
+	
+	
+	const int NTimeStep = sizeof(time)/sizeof(double);
+	double Keff[NTimeStep];
+	
+	int i = 0;
+	while(start < (int)line.size() && i < NTimeStep )		// Read the Data
+	{
+		Keff[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
+		i++;
+	}
+	
+	
+	fFlux = new TGraph(NTimeStep, time, Keff);			// Add the TGraph
+	
+	
+	DBGL;
+	
+}
+
+void EvolutionData::ReadFlux(string line, double* time)
+{
+	DBGL;
+	
+	int start = 0;
+	
+	if( tlc(StringLine::NextWord(line, start, ' ')) != "flux" )	// Check the keyword
+	{
+		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"flux\" not found !" << endl;
+		fLog->fLog << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"flux\" not found !" << endl;
+		exit(1);
+	}
+	
+	const int NTimeStep = sizeof(time)/sizeof(double);
+	double Flux[NTimeStep];
+	
+	int i = 0;
+	while(start < (int)line.size() && i < NTimeStep )		// Read the Data
+	{
+		Flux[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
+		i++;
+	}
+	
+	
+	fFlux = new TGraph(NTimeStep, time, Flux);			// Add the TGraph
+	
+	ReadInfo();							// Read the .info associeted
+
+	DBGL;
+}
+
+void	EvolutionData::ReadXSFis(string line, double* time)
+{
+	DBGL;
+	
+	int start = 0;
+	if( tlc(StringLine::NextWord(line, start, ' ')) != "xsfis" )	// Check the keyword
+	{
+		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xsfis\" not found !" << endl;
+		fLog->fLog << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xsfis\" not found !" << endl;
+		exit(1);
+	}
+		// Read the Z A I
+	int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	
+	if(A!=0 && Z!=0)
+	{
+		const int NTimeStep = sizeof(time)/sizeof(double);
+		double XSFis[NTimeStep];
+		
+		int i = 0;
+		while(start < (int)line.size() && i < NTimeStep )	// Read the Data
+		{
+			XSFis[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
+			i++;
+		}
+									// Add the TGraph
+		fFissionXS.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, XSFis) ) );		
+	}
+	
+	DBGL;
+}
+
+void	EvolutionData::ReadXSCap(string line, double* time)
+{
+	DBGL;
+	
+	int start = 0;
+	if( tlc(StringLine::NextWord(line, start, ' ')) != "xscap" )	// Check the keyword
+	{
+		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xscap\" not found !" << endl;
+		fLog->fLog << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xscap\" not found !" << endl;
+		exit(1);
+	}
+		// Read the Z A I
+	int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	
+	if(A!=0 && Z!=0)
+	{
+		const int NTimeStep = sizeof(time)/sizeof(double);
+		double XSCap[NTimeStep];
+		
+		int i = 0;
+		while(start < (int)line.size() && i < NTimeStep )	// Read the Data
+		{
+			XSCap[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
+			i++;
+		}
+			// Add the TGraph
+		fCaptureXS.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, XSCap) ) );
+	}
+	
+	DBGL;
+}
+
+void	EvolutionData::ReadXSn2n(string line, double* time)
+{
+	DBGL;
+	
+	int start = 0;
+	if( tlc(StringLine::NextWord(line, start, ' ')) != "xsn2n" )	// Check the keyword
+	{
+		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xsn2n\" not found !" << endl;
+		fLog->fLog << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xsn2n\" not found !" << endl;
+		exit(1);
+	}
+		// Read the Z A I
+	int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	
+	if(A!=0 && Z!=0)
+	{
+		const int NTimeStep = sizeof(time)/sizeof(double);
+		double XSn2n[NTimeStep];
+		
+		int i = 0;
+		while(start < (int)line.size() && i < NTimeStep )	// Read the Data
+		{
+			XSn2n[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
+			i++;
+		}
+			// Add the TGraph
+		fn2nXS.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, XSn2n) ) );
+	}
+	
+	DBGL;
+}
 
 
-void EvolutionData::AlternateReadDB(string DBfile)
+
+void EvolutionData::ReadInfo()
+{
+	string InfoDBFile  = fDB_file.erase(fDB_file.size()-3,fDB_file.size());
+	InfoDBFile += "Info";
+	ifstream InfoDB(InfoDBFile.c_str());				// Open the File
+	if(!InfoDB)
+	{
+		fLog->fLog << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
+		return;
+	}
+	
+	int start = 0;
+	string line;
+	getline(InfoDB, line);
+	if ( tlc(StringLine::NextWord(line, start, ' ')) == "reactor")
+		fReactorType =  StringLine::NextWord(line, start, ' ');
+	start = 0;
+	getline(InfoDB, line);
+	if (tlc(StringLine::NextWord(line, start, ' ')) == "fueltype")
+		fFuelType =  StringLine::NextWord(line, start, ' ');
+	start = 0;
+	getline(InfoDB, line);
+	if ( tlc(StringLine::NextWord(line, start, ' ')) == "cycletime")
+		fCycleTime =  atof(StringLine::NextWord(line, start, ' ').c_str());;
+	getline(InfoDB, line); // Assembly HM Mass
+	start = 0;
+	getline(InfoDB, line);
+	if ( tlc(StringLine::NextWord(line, start, ' ')) == "constantpower")
+		fPower =  atof(StringLine::NextWord(line, start, ' ').c_str());
+	getline(InfoDB, line); // cutoff
+	getline(InfoDB, line); // NUmber of Nuclei
+	start = 0;
+	getline(InfoDB, line);
+	if ( tlc(StringLine::NextWord(line, start, ' ')) == "normalizationfactor")
+	{
+		double NormFactor = atof(StringLine::NextWord(line, start, ' ').c_str());
+		fPower = fPower * NormFactor;
+	}
+	start = 0;
+	getline(InfoDB, line);
+	if ( tlc(StringLine::NextWord(line, start, ' ')) == "finalheavymetalmass")
+		fHMMass =  atof(StringLine::NextWord(line, start, ' ').c_str());
+}
+
+void EvolutionData::OldReadDB(string DBfile)
 {
 	DBGL;
 	
 	{
-		ifstream DecayDB(DBfile.c_str());	// Open the File
-		if(!DecayDB)				//check if file is correctly open
+		ifstream DecayDB(DBfile.c_str());							// Open the File
+		if(!DecayDB)
 		{
 			cout << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
 			fLog->fLog << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
@@ -1134,8 +1185,6 @@ void EvolutionData::AlternateReadDB(string DBfile)
 		double Time[vTime.size()];
 		for(int i=0; i < (int)vTime.size();i++)
 			Time[i] = vTime[i];
-		
-		
 		vector<double> vFlux;
 		start = 0;
 		getline(DecayDB, line);
@@ -1373,4 +1422,3 @@ void EvolutionData::AlternateReadDB(string DBfile)
 
 
 
-*/

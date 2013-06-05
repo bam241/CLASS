@@ -8,7 +8,7 @@
  The aim of the Class is to manage evolution of FabricationPlant
 
  
- @author BaM
+ @author BaM, Marc
  @version 0.
  */
 
@@ -81,7 +81,8 @@ public :
 	DataBank<ZAI>* 	GeDecayDataBase() const
 						{ return fDecayDataBase; }	//!< Return the pointer to the DecayDB
 
-	
+	IsotopicVector GetFullFabrication();
+
 	EvolutionData GetReactorEvolutionDB(int ReactorId);			//!< Return the EvolutionData of Reactor ReactorId
 
 	
