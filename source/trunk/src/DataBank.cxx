@@ -82,13 +82,13 @@ DataBank<ZAI>::DataBank()
 }
 
 template<>
-DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file)
+DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool olfreadmethod)
 {
 	DBGL;
 	fLog = Log;
 	fDataBaseIndex = DB_index_file;
 	
-	fOldReadMethod = true;
+	fOldReadMethod = olfreadmethod;
 		// Warning
 	
 	cout	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
@@ -185,6 +185,29 @@ bool DataBank<ZAI>::IsDefine(const ZAI& zai) const
 	//________________________________________________________________________
 	//________________________________________________________________________
 	//________________________________________________________________________
+	//________________________________________________________________________
+	//________________________________________________________________________
+	//________________________________________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//________________________________________________________________________
+	//________________________________________________________________________
+	//________________________________________________________________________
+	//________________________________________________________________________
+	//________________________________________________________________________
 
 template<>
 DataBank<IsotopicVector>::~DataBank()
@@ -198,9 +221,7 @@ DataBank<IsotopicVector>::DataBank()
 {
 	DBGL;
 	
-	fUpdateReferenceDBatEachStep = false;
-	
-		// Warning
+	// Warning
 	cout	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
 	
 	fLog = new LogFile("EvoluData_log");
@@ -213,13 +234,13 @@ DataBank<IsotopicVector>::DataBank()
 
 
 template<>
-DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file)
+DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool olfreadmethod)
 {
 	DBGL;
 	fLog = Log;
 	fDataBaseIndex = DB_index_file;
 	fUpdateReferenceDBatEachStep = false;
-	fOldReadMethod = true;
+	fOldReadMethod = olfreadmethod;
 
 	ReadDataBase();
 	

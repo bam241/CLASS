@@ -891,7 +891,7 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 	for(int i=0; i < (int)vTime.size();i++)
 		Time[i] = vTime[i];
 	
-	enum { Keff, Flux, XSFis, XSCap, XSn2n };
+	enum { Keff, Flux, Inv, XSFis, XSCap, XSn2n };
 	
 	map<string, int> keyword_map;
 	keyword_map["keff"] = Keff;
@@ -899,7 +899,8 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 	keyword_map["xsfis"] = XSFis;
 	keyword_map["xscap"] = XSCap;
 	keyword_map["xsn2n"] = XSn2n;
-	
+	keyword_map["inv"] = Inv;
+
 	
 	
 	do
@@ -916,6 +917,10 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 			case Flux:
 				ReadFlux(line, Time);
 				break;
+
+			case Inv:
+				ReadInv(line, Time);
+				break;
 				
 			case XSFis:
 				ReadXSFis(line, Time);
@@ -928,6 +933,7 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 			case XSn2n:
 				ReadXSn2n(line, Time);
 				break;
+				
 				
 			default:
 				break;
@@ -1032,8 +1038,42 @@ void	EvolutionData::ReadXSFis(string line, double* time)
 			XSFis[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
 			i++;
 		}
-									// Add the TGraph
-		fFissionXS.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, XSFis) ) );		
+			// Add the TGraph
+		fFissionXS.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, XSFis) ) );
+	}
+	
+	DBGL;
+}
+
+void	EvolutionData::ReadInv(string line, double* time)
+{
+	DBGL;
+	
+	int start = 0;
+	if( tlc(StringLine::NextWord(line, start, ' ')) != "inv" )	// Check the keyword
+	{
+		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"inv\" not found !" << endl;
+		fLog->fLog << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"inv\" not found !" << endl;
+		exit(1);
+	}
+		// Read the Z A I
+	int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	
+	if(A!=0 && Z!=0)
+	{
+		const int NTimeStep = sizeof(time)/sizeof(double);
+		double Inv[NTimeStep];
+		
+		int i = 0;
+		while(start < (int)line.size() && i < NTimeStep )	// Read the Data
+		{
+			Inv[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
+			i++;
+		}
+			// Add the TGraph
+		fEvolutionData.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, Inv) ) );
 	}
 	
 	DBGL;
