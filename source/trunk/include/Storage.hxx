@@ -29,6 +29,7 @@ class Storage : public TObject
 {
 public :
 	///< Normal Constructor.
+ 	Storage();
  	Storage(LogFile* log);
  	///< Advanced Constructor
 	Storage(LogFile* log, DataBank<ZAI>* evolutivedb);						//!<

@@ -22,17 +22,23 @@
 //________________________________________________________________________
 ClassImp(Storage)
 
-Storage::Storage(LogFile* log)
+Storage::Storage()
 {
 DBGL;
-	fLog = log;
 	
-	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
-
-	fLog->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 DBGL;
 }
 
+Storage::Storage(LogFile* log)
+{
+	DBGL;
+	fLog = log;
+	
+	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
+	
+	fLog->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
+	DBGL;
+}
 //________________________________________________________________________
 Storage::Storage(LogFile* log, DataBank<ZAI>* evolutivedb)
 {

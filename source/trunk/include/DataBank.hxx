@@ -6,7 +6,7 @@
  \brief Header file for DataBank class. 
  The aim of this Class is to store the evolution Database of the all decay nuclei.
  
- @author BaM
+ @author BaM, Marc
  @version 0.
  */
 
@@ -38,7 +38,7 @@ class DataBank {
 public :
 //********* Constructor/Destructor Method *********//
 	///< Normal Constructor.
-	DataBank( );
+	DataBank();
 	
 	DataBank(LogFile* Log, string DB_index_file );
 	

@@ -7,7 +7,7 @@
  \brief Header file for IsotopicVector class. 
   The aim of this Class is to manage any kind of IsotopicVector, and any operation between them : sum, substraction....
   
- @author BaM
+ @author BaM, Marc
  @version 0.
  */
 #include "ZAI.hxx"

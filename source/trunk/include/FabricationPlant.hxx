@@ -41,6 +41,7 @@ class FabricationPlant : public TObject
 
 public :
 	///< Normal constructor
+	FabricationPlant();
 	FabricationPlant(LogFile* log);
 	
 	FabricationPlant(LogFile* log, Storage* storage, Storage* reusable, double fabricationtime = 365.25*24*3600*2);
