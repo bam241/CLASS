@@ -4,7 +4,7 @@
 
 
 
-#include "TObject.h"
+#include "TNamed.h"
 #include <string>
 #include <map>
 #include "IsotopicVector.hxx"
@@ -32,7 +32,7 @@ class DataBank;
 
 
 
-class Pool : public TObject
+class Pool : public TNamed
 {
 public :
 	///< Normal constructor

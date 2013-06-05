@@ -15,6 +15,7 @@
 #include "IsotopicVector.hxx"
 
 #include <vector>
+#include "TNamed.h"
 
 using namespace std;
 typedef long long int cSecond;
@@ -25,7 +26,7 @@ template <class T>
 class DataBank;
 
 
-class Storage : public TObject
+class Storage : public TNamed
 {
 public :
 	///< Normal Constructor.
@@ -46,7 +47,6 @@ public :
 
 	void SetDecayDataBase(DataBank<ZAI>* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
 	void SetStock(vector<IsotopicVector> IVsstock)	{ fIVStock = IVsstock; }		//!< Set The Storage isotopicVector
-
 
 //********* Get Method *********//
 	int 			GetId()		const		{ return fId; }			//!< Return the Storage Parc'Is

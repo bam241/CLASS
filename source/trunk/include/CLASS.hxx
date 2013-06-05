@@ -45,9 +45,10 @@ public :
 //********* Get Method *********//
 	cSecond				GetAbsoluteTime()	{ return fAbsoluteTime; }	///< Return the Absolute Clock
 	map<cSecond, int>		GetTimeStep()		{ return fTimeStep; }		///< Return the Time Step Vector
-	vector<Pool*>	GetPool()	{ return fPool; }	///< Return the TF Vector
 	vector<Reactor*>		GetReactor()		{ return fReactor; }		///< Return the Reactor Vector
-	vector<Storage*>		GetStorage()		{ return fStorage; }		///< Return the Reactor Vector
+	vector<Storage*>		GetStorage()		{ return fStorage; }		///< Return the Storage Vector
+	vector<Pool*>			GetPool()		{ return fPool; }		///< Return the Pool Vector
+	vector<FabricationPlant*>		GetFabricationPlant()		{ return fFabricationPlant; }		///< Return the FabricationPlant Vector
 	DataBank<ZAI>*		GetDecayDataBase() 	{ return fDecayDataBase; }	//!< Return the Pointer to the Decay DataBase
 
 	cSecond				GetPrintSet()		{ return fPrintStep; }		///< Return the Print Step Periodicity
@@ -129,10 +130,10 @@ protected :
 
 	
 	vector<Storage*>		fStorage;		///< Vector of Storages
-	vector<Pool*>	fPool;	///< Vector of Treament Factory
+	vector<Pool*>			fPool;			///< Vector of Pool
 	vector<Reactor*>		fReactor;		///< Vector of Reactor
 	vector<FabricationPlant*>	fFabricationPlant;	///< Vector of FabricationPlant
-	DataBank<ZAI>*		fDecayDataBase;		//!< Pointer to the Decay DataBase
+	DataBank<ZAI>*			fDecayDataBase;		//!< Pointer to the Decay DataBase
 
 	
 	TFile*		fOutFile;		///< Pointer to the Root Output File
