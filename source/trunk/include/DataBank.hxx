@@ -58,13 +58,18 @@ public :
 	EvolutionData	GetClosest(IsotopicVector isotopicvector, double t = 0) const;	//! Return the closest
 
 //********* Set Method *********//
+	
 	void SetDataBank(map<T ,EvolutionData > mymap)	{ fDataBank = mymap; } 
 
 	void SetDataBaseIndex(string database) { fDataBaseIndex = database; }
 	EvolutionData GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power); //!< Genration of a New EvolutionData From the one already present
-	void SetUpdateReferenceDBatEachStep(bool val) {fUpdateReferenceDBatEachStep = val;}
+	void SetUpdateReferenceDBatEachStep(bool val)	{fUpdateReferenceDBatEachStep = val;}
 
+	void SetOldReadMethod(bool val)			{ fOldReadMethod = val;}
+	
+	
 //********* Modification Method *********//
+	
 	IsotopicVector	Evolution(const T &key, double dt);	///< Return the Product IsotopicVector evolution from zai during a dt time
 	void		ReadDataBase();				///< ...
 	void		CalculateDistanceParameter();///< Calculate automaticly the weight for each ZAI in the distance calculation from the mean XS of the DataBank
@@ -81,7 +86,8 @@ protected :
  	string				fDataBaseIndex;
  	LogFile*			fLog;
 
-	bool		fUpdateReferenceDBatEachStep;
+	bool				fUpdateReferenceDBatEachStep;
+	bool				fOldReadMethod;
 
 
  	string 				fFuelType;

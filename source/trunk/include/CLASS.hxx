@@ -8,7 +8,7 @@
  The aim of thes Class is to manage the parc, store reactor, Pool, process the evolution, build Isotopic vector
 
  
- @author BaM
+ @author BaM, Marc
  @version 0.
  */
 #include "IsotopicVector.hxx"
@@ -48,8 +48,8 @@ public :
 	vector<Reactor*>		GetReactor()		{ return fReactor; }		///< Return the Reactor Vector
 	vector<Storage*>		GetStorage()		{ return fStorage; }		///< Return the Storage Vector
 	vector<Pool*>			GetPool()		{ return fPool; }		///< Return the Pool Vector
-	vector<FabricationPlant*>		GetFabricationPlant()		{ return fFabricationPlant; }		///< Return the FabricationPlant Vector
-	DataBank<ZAI>*		GetDecayDataBase() 	{ return fDecayDataBase; }	//!< Return the Pointer to the Decay DataBase
+	vector<FabricationPlant*>	GetFabricationPlant()	{ return fFabricationPlant; }	///< Return the FabricationPlant Vector
+	DataBank<ZAI>*			GetDecayDataBase() 	{ return fDecayDataBase; }	//!< Return the Pointer to the Decay DataBase
 
 	cSecond				GetPrintSet()		{ return fPrintStep; }		///< Return the Print Step Periodicity
 	bool				GetStockManagement()	{ return fStockManagement; }	///< Return the StockManagement method (True or False)

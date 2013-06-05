@@ -49,7 +49,7 @@ public :
 	
 	EvolutionData();  
 	EvolutionData(LogFile* Log); 	///< Make a new Evolutive Product evolution 
-	EvolutionData(LogFile* Log, string DB_file, bool stable = false, ZAI zai = ZAI(0,0,0) ); 	///< Make a new Evolutive Product evolution 
+	EvolutionData(LogFile* Log, string DB_file, bool oldread = false, ZAI zai = ZAI(0,0,0) ); 	///< Make a new Evolutive Product evolution
 	 
 	///< Normal Destructor.
 	~EvolutionData();
@@ -60,7 +60,6 @@ public :
 	void 	SetPower(double power)			{ fPower = power; }
 	void 	SetHMMass(double HMMass)		{ fHMMass = HMMass; }
 	void	SetFlux(TGraph* flux )			{ fFlux = flux; }
-
 	
 //********* Get Method *********//
 	map<ZAI ,TGraph* >	GetEvolutionData()	const { return fEvolutionData; }	//!<
@@ -74,7 +73,7 @@ public :
 	double	GetPower()		const { return fPower; }		//!<
 	double	GetHMMass()		const { return fHMMass; }
 	string	GetDB_file()		const { return fDB_file; }
-
+	string	GetReactorType()	const { return fReactorType; }
 	TGraph*	GetEvolutionTGraph(const ZAI& zai); 
 								///< Return the A,Z product proportion evolution TGraph
 	IsotopicVector	GetIsotopicVectorAt(double t); 		///< Return the Product IsotopicVector at t time
@@ -119,8 +118,16 @@ protected :
 	double 	fHMMass;
 	
     
-	void	ReadDB(string DBfile);
-	void	AlternateReadDB(string DBfile);
+	void	OldReadDB(string DBfile);
+	void	ReadDB(string DBfile, bool oldread = false);
+	void	ReadKeff(string line, double* time);
+	void	ReadFlux(string line, double* time);
+	void	ReadXSFis(string line, double* time);
+	void	ReadXSCap(string line, double* time);
+	void	ReadXSn2n(string line, double* time);
+	void	ReadInfo();
+
+	
 	double	Interpolate(double t, TGraph& EvolutionGraph);
 								///< Interpolating the value of EvolutionGraph at the t time
 	void	AddAsStable(ZAI zai);

@@ -453,6 +453,20 @@ EvolutionData FabricationPlant::GetReactorEvolutionDB(int ReactorId)
 	DBGL;
 }
 
+IsotopicVector FabricationPlant::GetFullFabrication()
+{
+	DBGL;
+	IsotopicVector tmp = 0*ZAI(0,0,0);
+	
+	map<int, IsotopicVector > reactorNextStep = fReactorFuturIV;
+	map<int, IsotopicVector >::iterator it;
+	for ( it = reactorNextStep.begin(); it != reactorNextStep.end(); it++)
+		tmp += (*it).second;
+	
+	return tmp;
+	DBGL;
+}
+
 	//________________________________________________________________________
 	//_______________________________ Storage ________________________________
 	//________________________________________________________________________

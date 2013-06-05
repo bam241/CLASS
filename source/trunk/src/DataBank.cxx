@@ -54,14 +54,14 @@ double ReactionRateWeightedDistance(EvolutionData DB, IsotopicVector IV1  )
 }
 
 
-//________________________________________________________________________
-//
-//		DataBank
-//
-//
-//
-//
-//________________________________________________________________________
+	//________________________________________________________________________
+	//
+	//		DataBank
+	//
+	//
+	//
+	//
+	//________________________________________________________________________
 
 
 
@@ -72,7 +72,7 @@ template<>
 DataBank<ZAI>::DataBank()
 {
 	DBGL;
-
+	
 	
 		// Warning
 	
@@ -88,8 +88,8 @@ DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file)
 	fLog = Log;
 	fDataBaseIndex = DB_index_file;
 	
-	
-	// Warning
+	fOldReadMethod = true;
+		// Warning
 	
 	cout	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
 	cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
@@ -100,7 +100,7 @@ DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file)
 	DBGL;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 template<>
 DataBank<ZAI>::~DataBank()
 {
@@ -154,14 +154,14 @@ IsotopicVector	DataBank<ZAI>::Evolution(const ZAI& zai, double dt)
 		
 		if(zaifind == false)
 		{
-			{
-				fLog->fLog << "!!Warning!! !!!EVOLUTIVE DB!!! Oups... Can't Find the ZAI : "
-				<< zai.Z() << " " << zai.A() << " "	<< zai.I() << "!!! It will be considered as stable !!" << endl;
-				EvolutionData evolutionproduct = EvolutionData(fLog," " , true, zai);
-				{fDataBank.insert( pair<ZAI, EvolutionData >(zai, evolutionproduct) );}
-				returnIV = evolutionproduct.GetIsotopicVectorAt(dt);
-				
-			}
+			fLog->fLog << "!!Warning!! !!!EVOLUTIVE DB!!! Oups... Can't Find the ZAI : " ;
+			fLog->fLog << zai.Z() << " " << zai.A() << " "	<< zai.I() << "!!! It will be considered as stable !!" << endl;
+			
+			EvolutionData evolutionproduct = EvolutionData(fLog," " , false, zai);
+			{fDataBank.insert( pair<ZAI, EvolutionData >(zai, evolutionproduct) );}
+			returnIV = evolutionproduct.GetIsotopicVectorAt(dt);
+			
+			
 		}
 		
 		
@@ -182,9 +182,9 @@ bool DataBank<ZAI>::IsDefine(const ZAI& zai) const
 		return false;
 	
 }
-//________________________________________________________________________
-//________________________________________________________________________
-//________________________________________________________________________
+	//________________________________________________________________________
+	//________________________________________________________________________
+	//________________________________________________________________________
 
 template<>
 DataBank<IsotopicVector>::~DataBank()
@@ -199,15 +199,15 @@ DataBank<IsotopicVector>::DataBank()
 	DBGL;
 	
 	fUpdateReferenceDBatEachStep = false;
-
-	// Warning
+	
+		// Warning
 	cout	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
-
+	
 	fLog = new LogFile("EvoluData_log");
 	fLog->fLog 	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
 	
 	
-
+	
 	DBGL;
 }
 
@@ -219,11 +219,12 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file)
 	fLog = Log;
 	fDataBaseIndex = DB_index_file;
 	fUpdateReferenceDBatEachStep = false;
+	fOldReadMethod = true;
 
 	ReadDataBase();
 	
 	
-	// Warning
+		// Warning
 	cout	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
 	cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
 	cout	<< "\t " << fDataBank.size() << " EvolutionData have been read."<< endl << endl;
@@ -253,7 +254,7 @@ void DataBank<IsotopicVector>::ReadDataBase()
 	
 	
 	
-	// First Get Fuel Type
+		// First Get Fuel Type
 	getline(DataDB, line);
 	if( StringLine::NextWord(line, start, ' ') != "TYPE")
 	{
@@ -262,7 +263,7 @@ void DataBank<IsotopicVector>::ReadDataBase()
 		exit (1);
 	}
 	fFuelType = StringLine::NextWord(line, start, ' ');
-	// First Get Fuel Parameter
+		// First Get Fuel Parameter
 	getline(DataDB, line);
 	start = 0;
 	if( StringLine::NextWord(line, start, ' ') != "PARAM")
@@ -274,21 +275,21 @@ void DataBank<IsotopicVector>::ReadDataBase()
 	while(start < (int)line.size())
 		fFuelParameter.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
 	
-	//Then Get All the Database
+		//Then Get All the Database
 	
 	while (!DataDB.eof())
 	{
 		getline(DataDB, line);
 		if(line != "")
 		{
-			EvolutionData* evolutionproduct = new EvolutionData(fLog, line);
+			EvolutionData* evolutionproduct = new EvolutionData(fLog, line, fOldReadMethod);
 			IsotopicVector ivtmp  = evolutionproduct->GetIsotopicVectorAt(0.).GetActinidesComposition();
 			fDataBank.insert( pair<IsotopicVector, EvolutionData >(ivtmp , (*evolutionproduct) ));
 		}
 	}
 	DBGL;
 }
-//________________________________________________________________________
+	//________________________________________________________________________
 
 
 
@@ -304,7 +305,7 @@ map<double, EvolutionData> DataBank<IsotopicVector>::GetDistancesTo(IsotopicVect
 	for( it = evolutiondb.begin(); it != evolutiondb.end(); it++ )
 	{
 		pair<map<double, EvolutionData>::iterator, bool> IResult;
-	
+		
 		double D = Distance(isotopicvector.GetActinidesComposition(), (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition()/ Norme( (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition() )*Norme(isotopicvector.GetActinidesComposition())
 				    ,fDistanceType, fDistanceParameter);
 		
@@ -320,11 +321,11 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 {
 	DBGL;
 	map<IsotopicVector, EvolutionData > evolutiondb = fDataBank;
-
+	
 	double distance = Distance(isotopicvector.GetActinidesComposition(),
 				   evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition()
-					/ Norme( evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition() )
-					* Norme(isotopicvector.GetActinidesComposition()),
+				   / Norme( evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition() )
+				   * Norme(isotopicvector.GetActinidesComposition()),
 				   fDistanceType, fDistanceParameter);
 	
 	EvolutionData CloseEvolData = evolutiondb.begin()->second ;
@@ -335,8 +336,8 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 		pair<map<double, EvolutionData>::iterator, bool> IResult;
 		double D = Distance(isotopicvector.GetActinidesComposition(),
 				    (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition()
-					/ Norme( (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition() )
-					* Norme(isotopicvector.GetActinidesComposition()),
+				    / Norme( (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition() )
+				    * Norme(isotopicvector.GetActinidesComposition()),
 				    fDistanceType, fDistanceParameter);
 		if (D< distance)
 		{
@@ -353,6 +354,9 @@ template<>
 EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power)
 {
 	DBGL;
+	
+	string ReactorType;
+	double ReactorMass = 0;
 	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
 	
 	{	// TMP
@@ -596,7 +600,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			DecayMatrix[i][j] = 0;
 	
 	
-	// Fill the Decay Part of the Bateman Matrix
+		// Fill the Decay Part of the Bateman Matrix
 	{
 		int i = 0;
 		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
@@ -645,9 +649,9 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	
 	
 	
-	//-------------------------//
-	//--- Perform Evolution ---//
-	//-------------------------//
+		//-------------------------//
+		//--- Perform Evolution ---//
+		//-------------------------//
 	double timevector[17];
 	timevector[0] = 0.;
 	vector< TMatrixT<double> > NMatrix ;//  TMatrixT<double>(decayindex.size(),1))
@@ -683,6 +687,8 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	
 	EvolutionData EvolutionDataStep = GetClosest(isotopicvector.GetActinidesComposition(), 0.);	//GetCLosest at the begining of evolution
 	
+	ReactorType = EvolutionDataStep.GetReactorType();
+	
 	for(int i = 0; i < 16; i++)
 	{
 		
@@ -698,7 +704,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			IVStep += index.find(k)->second * NMatrix.back()[k][0];
 		
 		if(fUpdateReferenceDBatEachStep && i != 0);		//GetCLosest at the each of evolution step (begining already done...)
-			EvolutionDataStep = GetClosest(IVStep, TStep);
+		EvolutionDataStep = GetClosest(IVStep, TStep);
 		
 		double NormFactor = 1;
 		{
@@ -718,6 +724,8 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			
 			NormFactor = Norme(WantedHMIV)/ Norme(DBHMIV);
 		}
+		if(i==0)
+			ReactorMass = EvolutionDataStep.GetHMMass()*NormFactor;
 		
 		
 		double Flux = EvolutionDataStep.GetFlux()->Eval(TStep)*Power/(EvolutionDataStep.GetPower()*NormFactor);
@@ -725,7 +733,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 		
 		
 		map<ZAI ,TGraph* >::iterator it;
-		// ----------------  A(n,.) X+Y
+			// ----------------  A(n,.) X+Y
 		
 		map<ZAI ,TGraph* > FissionXS = EvolutionDataStep.GetFissionXS();
 		
@@ -745,7 +753,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			
 		}
 		
-		// ----------------  A(n,.)A+1
+			// ----------------  A(n,.)A+1
 		map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetCaptureXS();
 		for(it = CaptureXS.begin(); it != CaptureXS.end(); it++)
 		{
@@ -756,7 +764,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 				
 				BatemanMatrix[index_inver.find( (*it).first )->second][ index_inver.find( (*it).first )->second ] += -y* 1e-24 *Flux;
 				SigmaPhi[index_inver.find( (*it).first )->second + index.size() ][i] = y ;
-
+				
 				map<ZAI, map<ZAI, double> >::iterator it3 = Capture.find( (*it).first );
 				
 				if( it3 == Capture.end() )
@@ -793,7 +801,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 				}
 				else
 				{
-					//if( (*it3).first.Z() == 90 && (*it3).first.A() == 232) cout << y* 1e-24 *Flux << endl;
+						//if( (*it3).first.Z() == 90 && (*it3).first.A() == 232) cout << y* 1e-24 *Flux << endl;
 					map<ZAI, double>::iterator it4;
 					map<ZAI, double> CaptureList = (*it3).second;
 					for(it4 = CaptureList.begin(); it4 != CaptureList.end() ; it4++)
@@ -823,7 +831,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 									cout << "Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
 									exit(1);
 								}
-								//if( (*it6).first.Z() == 92 && (*it6).first.A() == 233) cout << y* 1e-24 *Flux * (*it5).second << endl;
+									//if( (*it6).first.Z() == 92 && (*it6).first.A() == 233) cout << y* 1e-24 *Flux * (*it5).second << endl;
 								BatemanMatrix[(*it6).second][index_inver.find( (*it).first )->second] += y * 1e-24 * Flux * (*it5).second * (*it4).second;
 							}
 						}
@@ -835,7 +843,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			}
 		}
 		
-		// ----------------  A(n,2n)A-1
+			// ----------------  A(n,2n)A-1
 		map<ZAI ,TGraph* > n2nXS = EvolutionDataStep.Getn2nXS();
 		for(it = n2nXS.begin() ; it != n2nXS.end(); it++)
 		{
@@ -845,7 +853,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 				y = (*it).second->Eval(TStep);
 				BatemanMatrix[ index_inver.find( (*it).first )->second ][index_inver.find( (*it).first )->second] += -y* 1e-24 *Flux;
 				SigmaPhi[index_inver.find( (*it).first )->second + index.size() + index.size()][i] = y ;
-
+				
 				
 				map<ZAI, int>::iterator it3 = index_inver.find( ZAI( (*it).first.Z(), (*it).first.A()-1, 0) );
 				
@@ -881,7 +889,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			}
 		}
 		
-		// ----------------   Evolution
+			// ----------------   Evolution
 		TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(index.size(),1);
 		
 		double TStepMax = cycletime/16.;
@@ -938,7 +946,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	for(int j = 0; j < 16; j++)
 		Flux[j] = SigmaPhi[index.size()*3][j];
 	GeneratedDB.SetFlux( new TGraph(16, timevector, Flux)  );
-
+	
 	for(int i = 0; i < (int)index.size(); i++)
 	{
 		double ZAIQuantity[NMatrix.size()];
@@ -963,8 +971,8 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	
 	GeneratedDB.SetPower(Power );
 	GeneratedDB.SetFuelType(fFuelType );
-		//GeneratedDB.SetReactorType(fReactorType );
-		//GeneratedDB.SetHMMass(fHMMass*NormFactor );
+	GeneratedDB.SetReactorType(ReactorType );
+	GeneratedDB.SetHMMass(ReactorMass );
 	
 	return GeneratedDB;
 	DBGL;
@@ -972,27 +980,27 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 
 
 
-//________________________________________________________________________
-//________________________________________________________________________
+	//________________________________________________________________________
+	//________________________________________________________________________
 template<>
 void DataBank<IsotopicVector>::CalculateDistanceParameter()
 {
 	DBGL;
 	if(fDistanceType!=1){
 		cout << "!!Warning!! !!!CalculateDistanceParameter!!!"
-		     << " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
-				
+		<< " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
+		
 		fLog->fLog << "!!Warning!! !!!CalculateDistanceParameter!!!"
-		     << " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
+		<< " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
 	}
-
+	
 	fDistanceParameter.Clear();
-
-	//We calculate the weight for the distance calculation.
+	
+		//We calculate the weight for the distance calculation.
 	map<IsotopicVector ,EvolutionData >::iterator it;
 	map<IsotopicVector ,EvolutionData > databank = (*this).GetDataBank();
 	int NevolutionDatainDataBank=0;
-
+	
 	for( it = databank.begin(); it != databank.end(); it++ ){
 		NevolutionDatainDataBank++;
 		map<ZAI ,double>::iterator itit;
@@ -1003,51 +1011,51 @@ void DataBank<IsotopicVector>::CalculateDistanceParameter()
 			for(int i=1;i<4;i++){		//Loop on Reactions 1==fission, 2==capture, 3==n2n
 				TmpXS+=	(*it).second.GetGetXSForAt(0,TmpZAI,i);
 			}
-			fDistanceParameter.Add(TmpZAI,TmpXS); 
+			fDistanceParameter.Add(TmpZAI,TmpXS);
 		}
-
-
+		
+		
 	}
 	fDistanceParameter.Multiply((double)1.0/NevolutionDatainDataBank);
-
-
+	
+	
 	fLog->fLog <<"!!INFO!! Distance Parameters "<<endl;
 	map<ZAI ,double >::iterator it2;
 	for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
-		{
-			fLog->fLog << (*it2).first.Z() << " ";
-			fLog->fLog << (*it2).first.A() << " ";
-			fLog->fLog << (*it2).first.I() << " ";
-			fLog->fLog << ": " << (*it2).second;
-			fLog->fLog << endl;
-		}
+	{
+		fLog->fLog << (*it2).first.Z() << " ";
+		fLog->fLog << (*it2).first.A() << " ";
+		fLog->fLog << (*it2).first.I() << " ";
+		fLog->fLog << ": " << (*it2).second;
+		fLog->fLog << endl;
+	}
 	fLog->fLog << endl;
-
-
+	
+	
 	DBGL;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 template<>
 void DataBank<IsotopicVector>::SetDistanceParameter(IsotopicVector DistanceParameter){
 	DBGL;
 	fDistanceParameter=DistanceParameter;
-
+	
 	fLog->fLog <<"!!INFO!! Distance Parameters "<<endl;
 	map<ZAI ,double >::iterator it2;
 	for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
-		{
-			fLog->fLog << (*it2).first.Z() << " ";
-			fLog->fLog << (*it2).first.A() << " ";
-			fLog->fLog << (*it2).first.I() << " ";
-			fLog->fLog << ": " << (*it2).second;
-			fLog->fLog << endl;
-		}
+	{
+		fLog->fLog << (*it2).first.Z() << " ";
+		fLog->fLog << (*it2).first.A() << " ";
+		fLog->fLog << (*it2).first.I() << " ";
+		fLog->fLog << ": " << (*it2).second;
+		fLog->fLog << endl;
+	}
 	fLog->fLog << endl;
 	DBGL;
 }
 
-//________________________________________________________________________
+	//________________________________________________________________________
 template<>
 void DataBank<IsotopicVector>::SetDistanceType(int DistanceType)
 {
@@ -1057,20 +1065,20 @@ void DataBank<IsotopicVector>::SetDistanceType(int DistanceType)
 		CalculateDistanceParameter();
 	}
 	else if(fDistanceType==2&&Norme(fDistanceParameter)==0){
-		// This is so bad!! You will probably unsynchronize all the reactor....
+			// This is so bad!! You will probably unsynchronize all the reactor....
 		cout << "!!Warning!! !!!DistanceType!!!"
-		     << " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
-				
+		<< " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
+		
 		fLog->fLog << "!!Warning!! !!!DistanceType!!!"
-		     << " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
+		<< " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
 		exit(1);
 	}
 	else if (fDistanceType!=0&&fDistanceType!=1&&fDistanceType!=2){
 		cout << "!!ERROR!! !!!DistanceType!!!"
-		     << " Distancetype defined by the user isn't recognized by the code"<<endl;
-				
+		<< " Distancetype defined by the user isn't recognized by the code"<<endl;
+		
 		fLog->fLog << "!!ERROR!! !!!DistanceType!!!"
-		     << " Distancetype defined by the user isn't recognized by the code"<<endl;
+		<< " Distancetype defined by the user isn't recognized by the code"<<endl;
 		exit(1);
 	}
 	DBGL;
