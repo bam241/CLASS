@@ -35,6 +35,7 @@ class Reactor : public TObject
 {
 public :
 	///< Normal Constructor.
+	Reactor();
 	Reactor(LogFile* log);
 	///< Advbanced Constructor.
 	Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,

@@ -55,11 +55,11 @@ public :
 	~EvolutionData();
 
 //********* Set Method *********//
-	void 	SetReactorType(string reactortype)	{fReactorType = reactortype;}
-	void	SetFuelType(string fueltype)		{fFuelType = fueltype;}
-	void 	SetPower(double power)			{fPower = power;}
-	void 	SetHMMass(double HMMass)		{fHMMass = HMMass;}
-	void	SetFlux(TGraph* flux )				{fFlux = flux; }
+	void 	SetReactorType(string reactortype)	{ fReactorType = reactortype; }
+	void	SetFuelType(string fueltype)		{ fFuelType = fueltype; }
+	void 	SetPower(double power)			{ fPower = power; }
+	void 	SetHMMass(double HMMass)		{ fHMMass = HMMass; }
+	void	SetFlux(TGraph* flux )			{ fFlux = flux; }
 
 	
 //********* Get Method *********//
@@ -70,10 +70,10 @@ public :
 	TGraph*			GetKeff()		const { return fKeff; }
 	TGraph*			GetFlux()		const { return fFlux; }
 
-	double			GetCycleTime()		const { return fCycleTime; }
-	double			GetPower()		const { return fPower; }		//!<
-	double			GetHMMass()		const { return fHMMass; }
-	string			GetDB_file()		const { return fDB_file; }
+	double	GetCycleTime()		const { return fCycleTime; }
+	double	GetPower()		const { return fPower; }		//!<
+	double	GetHMMass()		const { return fHMMass; }
+	string	GetDB_file()		const { return fDB_file; }
 
 	TGraph*	GetEvolutionTGraph(const ZAI& zai); 
 								///< Return the A,Z product proportion evolution TGraph
@@ -99,30 +99,31 @@ public :
 
 protected :
 	
-	string fDB_file;
+	string	fDB_file;
 	map<ZAI ,TGraph* >	fEvolutionData;	//!< 
 	map<ZAI ,TGraph* >	fFissionXS;	//!< 
 	map<ZAI ,TGraph* >	fCaptureXS;	//!< 
 	map<ZAI ,TGraph* >	fn2nXS;	//!< 
-	TGraph*		fKeff;
-	TGraph*		fFlux;
+	TGraph*	fKeff;
+	TGraph*	fFlux;
 	
-	cSecond 	fDBendTime;
-	bool		fIsCrossSection;
+	cSecond	fFinalTime;
+	bool	fIsCrossSection;
 	
 	
 	
-	string		fReactorType;
-	string		fFuelType;
-	double		fPower;
-	double		fCycleTime;
-	double 		fHMMass;
+	string	fReactorType;
+	string	fFuelType;
+	double	fPower;
+	double	fCycleTime;
+	double 	fHMMass;
 	
     
-	void		ReadDB(string DBfile);
-	double		Interpolate(double t, TGraph& EvolutionGraph); 
+	void	ReadDB(string DBfile);
+	void	AlternateReadDB(string DBfile);
+	double	Interpolate(double t, TGraph& EvolutionGraph);
 								///< Interpolating the value of EvolutionGraph at the t time
-	void		AddAsStable(ZAI zai);
+	void	AddAsStable(ZAI zai);
 	LogFile*	fLog;
 
 	ClassDef(EvolutionData,0);

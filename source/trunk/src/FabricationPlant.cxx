@@ -39,6 +39,13 @@ template <class T>  T random(T a, T b) //peak random numebr between a and b
 }
 
 
+FabricationPlant::FabricationPlant()
+{
+	DBGL;
+
+	DBGL;
+}
+
 FabricationPlant::FabricationPlant(LogFile* log)
 {
 	DBGL;

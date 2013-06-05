@@ -1000,7 +1000,7 @@ void DataBank<IsotopicVector>::CalculateDistanceParameter()
 		for(itit=isovector.begin(); itit != isovector.end(); itit++){//Boucle sur ZAI
 			ZAI TmpZAI=(*itit).first;
 			double TmpXS=0;
-			for(int i=1;i<4;i++){//Boucle sur Reactions 1==fission, 2==capture, 3==n2n
+			for(int i=1;i<4;i++){		//Loop on Reactions 1==fission, 2==capture, 3==n2n
 				TmpXS+=	(*it).second.GetGetXSForAt(0,TmpZAI,i);
 			}
 			fDistanceParameter.Add(TmpZAI,TmpXS); 

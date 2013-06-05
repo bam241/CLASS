@@ -135,7 +135,6 @@ DBGL;
 	fPool.push_back(Pool);
 	fPool.back()->SetParc(this);
 	fPool.back()->SetDecayDataBase( (*this).GetDecayDataBase() );
-	
 	fPool.back()->SetLog(fLog);
 	fPool.back()->SetId((int)fPool.size()-1);
 DBGL;

@@ -24,12 +24,19 @@
 //________________________________________________________________________
 ClassImp(Reactor)
 
+Reactor::Reactor()
+{
+	DBGL;
+	DBGL;
+}
+
 Reactor::Reactor(LogFile* log)
 {
 	DBGL;
 	fLog = log;
 	DBGL;
 }
+
 Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 Pool* Pool,
