@@ -11,7 +11,7 @@
  @version 0.
  */
 
-#include "TObject.h"
+#include "TNamed.h"
 #include <string>
 #include <map>
 #include "IsotopicVector.hxx"
@@ -31,7 +31,7 @@ class FabricationPlant;
 class Storage;
 class LogFile;
 
-class Reactor : public TObject
+class Reactor : public TNamed
 {
 public :
 	///< Normal Constructor.
@@ -95,11 +95,11 @@ public :
 	void SetIVInCycle(IsotopicVector isotopicvector)	{ fIVInCycle = isotopicvector; }	//!< Set the IV Coming In at the Beginning of the Cycle 
 	void SetCycleTime(double cycletime);								//!< Set the Power time (Cycle of the loading Plan)
 	void SetPower(double Power);									//!< Set the Power
-	void SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}				//!< Set the Mass
-	void SetBurnUp(double BU)		{fBurnUp = BU;}						//!< Set the Mass
+	void SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}				//!< Set the HeavyMetal Mass in the Core at the begining of the cycle
+	void SetBurnUp(double BU)		{fBurnUp = BU;}						//!< Set the the Burn Up of the Fuel at the end of the cycle
 
 	void SetEvolutionDB(EvolutionData evolutionDB);						//!< Set the Pointer to the DB Evolution of the Reactor
-	
+
 //********* Modification Method *********//
 	void Evolution(cSecond t);									//!< Performe the Evolution until the Time t
 	void Dump();											//!< Write Modification (IV In/Out, filling the TF...)

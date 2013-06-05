@@ -19,7 +19,7 @@
 
 #include <vector>
 #include <map>
-#include "TObject.h"
+#include "TNamed.h"
 
 using namespace std;
 typedef long long int cSecond;
@@ -36,7 +36,7 @@ class DataBank;
 
 
 
-class FabricationPlant : public TObject
+class FabricationPlant : public TNamed
 {
 
 public :
