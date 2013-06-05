@@ -49,7 +49,7 @@ public :
 	
 	EvolutionData();  
 	EvolutionData(LogFile* Log); 	///< Make a new Evolutive Product evolution 
-	EvolutionData(LogFile* Log, string DB_file, bool oldread = false, ZAI zai = ZAI(0,0,0) ); 	///< Make a new Evolutive Product evolution
+	EvolutionData(LogFile* Log, string DB_file, bool oldread = true, ZAI zai = ZAI(0,0,0) ); 	///< Make a new Evolutive Product evolution
 	 
 	///< Normal Destructor.
 	~EvolutionData();

@@ -863,9 +863,8 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 		return;
 	}
 	
-	
-	ifstream* DecayDB = new ifstream(DBfile.c_str());	// Open the File
-	if(!(*DecayDB))				//check if file is correctly open
+	ifstream DecayDB(DBfile.c_str());	// Open the File
+	if(!DecayDB)				//check if file is correctly open
 	{
 		cout << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
 		fLog->fLog << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
@@ -875,7 +874,7 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 	string line;
 	int start = 0;
 	
-	getline((*DecayDB), line);
+	getline(DecayDB, line);
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "time")
 	{
 		cout << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
@@ -901,13 +900,13 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 	keyword_map["xsn2n"] = XSn2n;
 	keyword_map["inv"] = Inv;
 
-	
+	cout << Inv << endl;
 	
 	do
 	{
-		getline((*DecayDB), line);
+		getline(DecayDB, line);
 		start = 0;
-		
+		cout << line << endl;
 		switch (keyword_map[tlc(StringLine::NextWord(line, start, ' '))])
 		{
 			case Keff:
@@ -941,7 +940,7 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 		
 		
 		
-	}while ( (*DecayDB).eof() )
+	}while ( DecayDB.eof() )
 		
 		
 		DBGL;
@@ -950,7 +949,8 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 void EvolutionData::ReadKeff(string line, double* time)
 {
 	DBGL;
-	
+	cout << "Keff" << endl;
+
 	int start = 0;
 	
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "keff" )	// Check the keyword
@@ -985,6 +985,7 @@ void EvolutionData::ReadFlux(string line, double* time)
 	DBGL;
 	
 	int start = 0;
+	cout << "Flux" << endl;
 	
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "flux" )	// Check the keyword
 	{
@@ -1011,43 +1012,11 @@ void EvolutionData::ReadFlux(string line, double* time)
 	DBGL;
 }
 
-void	EvolutionData::ReadXSFis(string line, double* time)
-{
-	DBGL;
-	
-	int start = 0;
-	if( tlc(StringLine::NextWord(line, start, ' ')) != "xsfis" )	// Check the keyword
-	{
-		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xsfis\" not found !" << endl;
-		fLog->fLog << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xsfis\" not found !" << endl;
-		exit(1);
-	}
-		// Read the Z A I
-	int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
-	int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
-	int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
-	
-	if(A!=0 && Z!=0)
-	{
-		const int NTimeStep = sizeof(time)/sizeof(double);
-		double XSFis[NTimeStep];
-		
-		int i = 0;
-		while(start < (int)line.size() && i < NTimeStep )	// Read the Data
-		{
-			XSFis[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
-			i++;
-		}
-			// Add the TGraph
-		fFissionXS.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, XSFis) ) );
-	}
-	
-	DBGL;
-}
 
 void	EvolutionData::ReadInv(string line, double* time)
 {
 	DBGL;
+	cout << "Inv" << endl;
 	
 	int start = 0;
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "inv" )	// Check the keyword
@@ -1079,10 +1048,47 @@ void	EvolutionData::ReadInv(string line, double* time)
 	DBGL;
 }
 
+
+void	EvolutionData::ReadXSFis(string line, double* time)
+{
+	DBGL;
+	cout << "Fiss" << endl;
+
+	int start = 0;
+	if( tlc(StringLine::NextWord(line, start, ' ')) != "xsfis" )	// Check the keyword
+	{
+		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xsfis\" not found !" << endl;
+		fLog->fLog << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xsfis\" not found !" << endl;
+		exit(1);
+	}
+		// Read the Z A I
+	int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	
+	if(A!=0 && Z!=0)
+	{
+		const int NTimeStep = sizeof(time)/sizeof(double);
+		double XSFis[NTimeStep];
+		
+		int i = 0;
+		while(start < (int)line.size() && i < NTimeStep )	// Read the Data
+		{
+			XSFis[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
+			i++;
+		}
+			// Add the TGraph
+		fFissionXS.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, XSFis) ) );
+	}
+	
+	DBGL;
+}
+
 void	EvolutionData::ReadXSCap(string line, double* time)
 {
 	DBGL;
-	
+	cout << "Cap" << endl;
+
 	int start = 0;
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "xscap" )	// Check the keyword
 	{
@@ -1116,7 +1122,8 @@ void	EvolutionData::ReadXSCap(string line, double* time)
 void	EvolutionData::ReadXSn2n(string line, double* time)
 {
 	DBGL;
-	
+	cout << "n2n" << endl;
+
 	int start = 0;
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "xsn2n" )	// Check the keyword
 	{
@@ -1196,7 +1203,6 @@ void EvolutionData::ReadInfo()
 void EvolutionData::OldReadDB(string DBfile)
 {
 	DBGL;
-	
 	{
 		ifstream DecayDB(DBfile.c_str());							// Open the File
 		if(!DecayDB)
