@@ -179,7 +179,6 @@ DBGL;
 DBGL;
 }
 
-
 //________________________________________________________________________
 void CLASS::BuildTimeVector(cSecond t)
 {
@@ -381,7 +380,6 @@ void CLASS::Evolution(double t)
 DBGL;
 
 	BuildTimeVector( (cSecond)t );
-
 
 	
 	OpenOutputTree();
@@ -595,6 +593,7 @@ DBGL;
 	fOutT->Branch("AbsTime",&fAbsoluteTime,"AbsoluteTime/l");
 	//Branch The Power installed in the Parc
 	fOutT->Branch("ParcPower",&fParcPower,"ParcPower/D");
+	
 
 	// Branch the Sum IV
 
@@ -608,6 +607,8 @@ DBGL;
 	
 	fOutT->Branch("GOD.", "IsotopicVector", &fGod);
 	fOutT->Branch("WASTE.", "IsotopicVector", &fWaste);
+
+	// Branch the separate object
 	
 	for(int i = 0; i < (int)fStorage.size(); i++)
 	{
@@ -632,6 +633,13 @@ DBGL;
 		R_name += dtoa(i);
 		R_name += ".";		
 		fOutT->Branch(R_name.c_str(), "Reactor", &fReactor[i]);
+	}
+	for(int i = 0; i < (int)fFabricationPlant.size(); i++)
+	{
+		string FP_name = "FabricationPlant";
+		FP_name += dtoa(i);
+		FP_name += ".";		
+		fOutT->Branch(FP_name.c_str(), "FabricationPlant", &fFabricationPlant[i]);
 	}
 DBGL;
 }
