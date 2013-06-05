@@ -120,7 +120,7 @@ protected :
 	map<int, cSecond >	fReactorNextStep;	//!< Next Time Step to Build a New Fuel
 
 	map< int,EvolutionData >	fReactorFuturDB; //!< List of the Futur EvolutionData use in the reactor
-	map< int,IsotopicVector >	fReactorFuturIV; //!< List of the Futur Fuel Isotopic Vector used in the reactor
+	map< int,IsotopicVector >	fReactorFuturIV; ///< List of the Futur Fuel Isotopic Vector used in the reactor
 
 	DataBank<ZAI>*		fDecayDataBase;	//!< Pointer to the Decay DataBase
 
