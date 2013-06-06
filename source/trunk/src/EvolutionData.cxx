@@ -878,7 +878,9 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "time")
 	{
 		cout << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
+		cout << "!!Bad Trouble!! !!!EvolutionData!!! The first Line MUST be the time line !!!" << endl;
 		fLog->fLog << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
+		fLog->fLog << "!!Bad Trouble!! !!!EvolutionData!!! The first Line MUST be the time line !!!" << endl;
 		exit (1);
 	}
 	
