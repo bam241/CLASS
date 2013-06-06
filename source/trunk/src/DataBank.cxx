@@ -375,7 +375,6 @@ template<>
 EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power)
 {
 	DBGL;
-	
 	string ReactorType;
 	double ReactorMass = 0;
 	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
@@ -614,7 +613,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			i++;
 		}
 	}
-	
+
 	TMatrixT<double> DecayMatrix = TMatrixT<double>(index.size(),index.size());
 	for(int i = 0; i < (int)index.size(); i++)
 		for(int j = 0; j < (int)index.size(); j++)
@@ -666,7 +665,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			
 		}
 	}
-	
+
 	
 	
 	
@@ -703,10 +702,12 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 		NMatrix.push_back(N_0Matrix);
 	}
 	
-	
+
 	TMatrixT<double> SigmaPhi = TMatrixT<double>(index.size()*3+1,16);
 	
 	EvolutionData EvolutionDataStep = GetClosest(isotopicvector.GetActinidesComposition(), 0.);	//GetCLosest at the begining of evolution
+	
+		//return EvolutionDataStep.GenerateDBFor(isotopicvector);
 	
 	ReactorType = EvolutionDataStep.GetReactorType();
 	
@@ -773,7 +774,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			}
 			
 		}
-		
+
 			// ----------------  A(n,.)A+1
 		map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetCaptureXS();
 		for(it = CaptureXS.begin(); it != CaptureXS.end(); it++)
@@ -863,7 +864,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 				
 			}
 		}
-		
+
 			// ----------------  A(n,2n)A-1
 		map<ZAI ,TGraph* > n2nXS = EvolutionDataStep.Getn2nXS();
 		for(it = n2nXS.begin() ; it != n2nXS.end(); it++)
@@ -909,7 +910,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 				}
 			}
 		}
-		
+
 			// ----------------   Evolution
 		TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(index.size(),1);
 		
@@ -929,8 +930,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 		
 		TMatrixT<double> BatemanMatrixDL = TMatrixT<double>(index.size(),index.size());   // Order 0 Term from the DL : Id
 		TMatrixT<double> BatemanMatrixDLTermN = TMatrixT<double>(index.size(),index.size());  // Addind it;
-		
-		
+
 		{
 			BatemanMatrixDLTermN = IdMatrix;
 			BatemanMatrixDL = BatemanMatrixDLTermN;
@@ -941,6 +941,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			
 			do
 			{
+
 				NormN = 0;
 				TMatrixT<double> BatemanMatrixDLTermtmp = TMatrixT<double>(index.size(),index.size());  // Adding it;
 				BatemanMatrixDLTermtmp = BatemanMatrixDLTermN;
@@ -954,13 +955,13 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 					for(int n = 0; n < (int)index.size(); n++)
 						NormN += BatemanMatrixDLTermN[m][n]*BatemanMatrixDLTermN[m][n];
 				j++;
-			} while ( NormN != 0);
+			} while ( NormN != 0 );
 		}
-		
+
 		NEvolutionMatrix = BatemanMatrixDL * NMatrix.back() ;
 		NMatrix.push_back(NEvolutionMatrix);
 	}
-	
+
 	
 	EvolutionData GeneratedDB = EvolutionData(fLog);
 	double Flux[16];
@@ -995,6 +996,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	GeneratedDB.SetReactorType(ReactorType );
 	GeneratedDB.SetHMMass(ReactorMass );
 	
+
 	return GeneratedDB;
 	DBGL;
 }
