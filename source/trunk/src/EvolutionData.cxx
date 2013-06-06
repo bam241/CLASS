@@ -892,7 +892,7 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 	const int NTimeStep = sizeof(Time)/sizeof(double);
 
 	
-	enum { Keff, Flux, Inv, XSFis, XSCap, XSn2n };
+	enum { Keff=1, Flux, Inv, XSFis, XSCap, XSn2n };
 	
 	map<string, int> keyword_map;
 	keyword_map["keff"] = Keff;
@@ -952,7 +952,6 @@ void EvolutionData::ReadKeff(string line, double* time, int NTimeStep)
 	DBGL;
 
 	int start = 0;
-	
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "keff" )	// Check the keyword
 	{
 		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"keff\" not found !" << endl;
