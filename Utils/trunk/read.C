@@ -667,7 +667,6 @@ void ReadFabrication(TTree *T, int FabricationId, int Z, int A, int I, char* opt
 	T->SetTitle(TitleName);
 	for (Long64_t i = 0; i < nentries; i++)
 	{
-		cout << i << endl;
 		T->GetEntry(i);
 		ZAIQ = fabrication->GetFullFabrication().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 		newBranch->Fill();
