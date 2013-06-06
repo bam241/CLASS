@@ -114,7 +114,7 @@ public :
 	
 protected :
 	LogFile*		fLog;			//!< Pointer to the Log
-
+	bool			fNewTtree;
 	bool			fStockManagement;	///< True if real StockManagement false unstead
 	
 	

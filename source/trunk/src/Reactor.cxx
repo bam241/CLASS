@@ -334,9 +334,9 @@ void Reactor::Evolution(cSecond t)
 
 	if( fShutDown == true || t < fCreationTime ) return; // Reactor stop or not started...
 
-#pragma omp critical(ParcPowerUpdate)
 	if(Norme(fIVReactor)!=0){
-		fParc->AddToPower(fPower);
+#pragma omp critical(ParcPowerUpdate)
+		{fParc->AddToPower(fPower);}
 	}
 	else if(fIsStarted==true){
 	fLog->fLog << "!!Warning!! !!!Reactor!!!"

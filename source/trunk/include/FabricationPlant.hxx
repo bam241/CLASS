@@ -70,6 +70,7 @@ public :
 
 	LogFile*	GetLog()		{ return fLog; }		//!< Return the Pointer to the Log
 	CLASS*		GetParc()		{ return fParc; }		//!< Return the Pointer to the Parc
+	int		GetId()			{ return fId;}
 	Storage*	GetStorage()		{ return fStorage; }		//!< Return the Pointer to the Storage
 
 	cSecond	GetInternalTime() const		{ return fInternalTime; }	//!< Return Creation Time
@@ -108,7 +109,7 @@ public :
 
 
 protected :
-	int		fId;			//!< Identity of the FabricationPlant inside the Parc
+	int		fId;			///< Identity of the FabricationPlant inside the Parc
 	cSecond		fInternalTime;		///< Internal Clock
 	bool		fUpdateReferenceDBatEachStep;
 
@@ -117,9 +118,9 @@ protected :
 	LogFile*	fLog;				//!< Pointer to the Log
 
 	map<ZAI ,double>	fValorisableIV;		///< The Valorisable Table
-	map<int, cSecond >	fReactorNextStep;	//!< Next Time Step to Build a New Fuel
+	map<int, cSecond >	fReactorNextStep;	///< Next Time Step to Build a New Fuel
 
-	map< int,EvolutionData >	fReactorFuturDB; //!< List of the Futur EvolutionData use in the reactor
+	map< int,EvolutionData >	fReactorFuturDB; ///< List of the Futur EvolutionData use in the reactor
 	map< int,IsotopicVector >	fReactorFuturIV; ///< List of the Futur Fuel Isotopic Vector used in the reactor
 
 	DataBank<ZAI>*		fDecayDataBase;	//!< Pointer to the Decay DataBase
@@ -143,7 +144,7 @@ protected :
 	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);	//!< Make the Separation 
 						//!< return IV[0] -> To Stock / IV[1] -> To Waste
 
-	ClassDef(FabricationPlant,0);
+	ClassDef(FabricationPlant,1);
 
 };
 

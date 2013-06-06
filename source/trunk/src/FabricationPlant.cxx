@@ -459,10 +459,9 @@ IsotopicVector FabricationPlant::GetFullFabrication()
 	IsotopicVector tmp = 0*ZAI(0,0,0);
 	
 	map<int, IsotopicVector > reactorNextStep = fReactorFuturIV;
-	cout << fReactorFuturIV.size() << endl;
 	map<int, IsotopicVector >::iterator it;
 	for ( it = reactorNextStep.begin(); it != reactorNextStep.end(); it++)
-		(*it).second.Print();;
+		tmp += (*it).second;
 
 	return tmp;
 	DBGL;

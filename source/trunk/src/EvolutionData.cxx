@@ -1136,7 +1136,6 @@ void	EvolutionData::ReadXSn2n(string line, double* time, int NTimeStep)
 			XSn2n[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
 			i++;
 		}
-		cout << endl;
 			// Add the TGraph
 		fn2nXS.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, XSn2n) ) );
 	}
