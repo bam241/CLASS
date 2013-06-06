@@ -120,12 +120,12 @@ protected :
     
 	void	OldReadDB(string DBfile);
 	void	ReadDB(string DBfile, bool oldread = false);
-	void	ReadKeff(string line, double* time);
-	void	ReadFlux(string line, double* time);
-	void	ReadInv(string line, double* time);
-	void	ReadXSFis(string line, double* time);
-	void	ReadXSCap(string line, double* time);
-	void	ReadXSn2n(string line, double* time);
+	void	ReadKeff(string line, double* time, int NTimeStep);
+	void	ReadFlux(string line, double* time, int NTimeStep);
+	void	ReadInv(string line, double* time, int NTimeStep);
+	void	ReadXSFis(string line, double* time, int NTimeStep);
+	void	ReadXSCap(string line, double* time, int NTimeStep);
+	void	ReadXSn2n(string line, double* time, int NTimeStep);
 	void	ReadInfo();
 
 	
