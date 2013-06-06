@@ -335,8 +335,15 @@ void Reactor::Evolution(cSecond t)
 	if( fShutDown == true || t < fCreationTime ) return; // Reactor stop or not started...
 
 #pragma omp critical(ParcPowerUpdate)
-	{fParc->AddToPower(fPower);}
-	
+	if(Norme(fIVReactor)!=0){
+		fParc->AddToPower(fPower);
+	}
+	else if(fIsStarted==true){
+	fLog->fLog << "!!Warning!! !!!Reactor!!!"
+		   << " Reactor should be working but there is no Heavy Nucleus Inside. It's not working so have a zero power..."
+		   << " Time : "<< t/365.25/3600/24 << " years" << endl;	
+	}
+
 	
 	if( t == fInternalTime && t!=0 ) return
 	DBGL;
