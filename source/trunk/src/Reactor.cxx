@@ -26,15 +26,15 @@ ClassImp(Reactor)
 
 Reactor::Reactor()
 {
-	DBGL;
-	DBGL;
+	
+	
 }
 
 Reactor::Reactor(LogFile* log)
 {
-	DBGL;
+	
 	fLog = log;
-	DBGL;
+	
 }
 
 Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
@@ -42,7 +42,7 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
  		 Pool* Pool,
  		 double creationtime, double lifetime)
 {
-	DBGL;
+	
 	fLog = log;
 	
 	fIsStarted = false;
@@ -81,14 +81,14 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 	fLog->fLog	<< "\t Life time (Operating's Duration) set at \t " << (double)(fLifeTime/3600/24/365.25) << " year" << endl << endl;
 	fLog->fLog	<< "!!WARNING!! !!!Reactor!!! You need to set Burn-up/Power/CycleTime (2 of 3) & Heavy Metal Mass Manualy !! " << endl;
 
-	DBGL;
+	
 }
 
 Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB, FabricationPlant* fabricationplant, Pool* Pool,
  		 double creationtime, double lifetime,
  		 double Power, double HMMass, double BurnUp, double ChargeFactor)
 {
-	DBGL;
+	
 	fLog = log;
 	
 	fIsStarted = false;
@@ -135,7 +135,7 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB, Fabricatio
 	fLog->fLog 	<< "\t The corresponding Cycle Time is\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
 	fLog->fLog 	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 	
-	DBGL;
+	
 }
 
 Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
@@ -144,7 +144,7 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
  		 double creationtime, double lifetime, double cycletime,
  		 double HMMass, double BurnUp)
 {
-	DBGL;
+	
 	fLog = log;
 
 	fIsStarted = false;
@@ -188,7 +188,7 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 	fLog->fLog	<< "\t The corresponding Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW" << endl;
 	fLog->fLog	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 	
-	DBGL;
+	
 }
 
 
@@ -198,7 +198,7 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
  		 double lifetime,
  		 double power, double HMMass, double BurnUp, double ChargeFactor )
 {
-	DBGL;
+	
 	fLog = log;
 	
 	fIsStarted = false;
@@ -267,15 +267,15 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
 	fLog->fLog	<< "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << ChargeFactor << " Charge Factor)"<< endl;
 	fLog->fLog	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 
-	DBGL;
+	
 }
 
 
 //________________________________________________________________________
 Reactor::~Reactor()
 {
-	DBGL;
-	DBGL;
+	
+	
 }
 
 //________________________________________________________________________
@@ -311,26 +311,26 @@ void Reactor::SetPower(double Power)
 //________________________________________________________________________
 void Reactor::SetEvolutionDB(EvolutionData evolutionDB)
 {
-	DBGL;
+	
 	fEvolutionDB = evolutionDB;
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
 
-	DBGL;
+	
 }
 
 //________________________________________________________________________
 void Reactor::SetNewFuel(EvolutionData ivdb)
 {
-	DBGL;
+	
 	SetEvolutionDB(ivdb);
-	DBGL;
+	
 }
 
 //________________________________________________________________________
 void Reactor::Evolution(cSecond t)
 {
-	DBGL;
+	
 
 	if( fShutDown == true || t < fCreationTime ) return; // Reactor stop or not started...
 
@@ -345,8 +345,8 @@ void Reactor::Evolution(cSecond t)
 	}
 
 	
-	if( t == fInternalTime && t!=0 ) return
-	DBGL;
+	if( t == fInternalTime && t!=0 ) return; 
+	
 	
 
 	if(fInternalTime == 0 && fIsStarted == false) // Start of the Reactor
@@ -395,13 +395,13 @@ void Reactor::Evolution(cSecond t)
 		exit(1);
 	}
 
-	DBGL;
+	
 }
 
 //________________________________________________________________________
 void Reactor::Dump()
 {
-DBGL;
+
 
 	if(fInternalTime < fCreationTime) return;
 	if(fShutDown == true && fIsStarted == false) return; // Reactor stopped...
@@ -502,7 +502,7 @@ DBGL;
 
 	}
 
-DBGL;
+
 }
 
 

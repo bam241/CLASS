@@ -25,14 +25,14 @@ ClassImp(Pool)
 
 Pool::Pool()
 {
-DBGL;
 
-DBGL;
+
+
 }
 
 Pool::Pool(LogFile* log)
 {
-	DBGL;
+	
 	fLog = log;
 	fCoolingTime = 5*3600.*24.*365.25;
 	
@@ -54,13 +54,13 @@ Pool::Pool(LogFile* log)
 	fLog->fLog	<< "\t The Cooling Time set at\t " << (double)(fCoolingTime/3600/24/365.25) << " year" << endl;
 	fLog->fLog	<< "!!WARNING!! !!!Pool!!! All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
 	
-	DBGL;
+	
 }
 	//________________________________________________________________________
 Pool::Pool(LogFile* log, double creation,
 				   double coolingtime)
 {
-DBGL;
+
 	fLog = log;
 	fCoolingTime = (cSecond)coolingtime;
 	fInternalTime = 0;
@@ -81,7 +81,7 @@ DBGL;
 	fLog->fLog	<< "\t The Cooling Time set at\t " << (double)(fCoolingTime/3600/24/365.25) << " year" << endl;
 	fLog->fLog	<< "!!WARNING!! !!!Pool!!! All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
 
-DBGL;
+
 }
 
 //________________________________________________________________________
@@ -89,7 +89,7 @@ Pool::Pool(LogFile* log, Storage* storage,
 				   double creation,
 				   double coolingtime)
 {
-DBGL;
+
 	fLog = log;
 	fCoolingTime = (cSecond)coolingtime;
 	fInternalTime = 0;
@@ -110,14 +110,14 @@ DBGL;
 	fLog->fLog	<< "\t Life time (Operating's Duration) set at \t " << (double)(fCreationTime/3600/24/365.25) << " year" << endl << endl;
 	fLog->fLog	<< "\t The Cooling Time set at\t " << (double)(fCoolingTime/3600/24/365.25) << " year" << endl;
 
-DBGL;
+
 }
 
 //________________________________________________________________________
 Pool::~Pool()
 {
-DBGL;
-DBGL;
+
+
 }
 
 
@@ -128,7 +128,7 @@ DBGL;
 //________________________________________________________________________
 IsotopicVector Pool::GetDecay(IsotopicVector isotopicvector, cSecond t)
 {
-DBGL;
+
 	IsotopicVector IV;
 	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
 	map<ZAI ,double >::iterator it;
@@ -140,9 +140,8 @@ DBGL;
 			IV += ivtmp;
 		}
 	}
-DBGL;
+
 	return IV;
-DBGL;
 }
 
 
@@ -153,35 +152,35 @@ DBGL;
 //________________________________________________________________________
 void Pool::AddIVCooling(IsotopicVector IV)
 { 
-DBGL;
+
 	fIVCooling.push_back(IV);
 	fCoolingStartingTime.push_back(fInternalTime);
 	fCoolingLastIndex++;
 	fCoolingIndex.push_back(fCoolingLastIndex);
-DBGL;
+
 }
 
 
 //________________________________________________________________________
 void Pool::RemoveIVCooling(int i)		//!< Remove a Cooling IsotopicVector
 {
-DBGL;
+
 	fIVCooling.erase(fIVCooling.begin()+i);
 	fCoolingStartingTime.erase(fCoolingStartingTime.begin()+i);
 	fCoolingIndex.erase(fCoolingIndex.begin()+i); 
-DBGL;
+
 }
 
 IsotopicVector Pool::GetFullCooling()
 {
-DBGL;
+
 	IsotopicVector tmp = 0*ZAI(0,0,0);
 	
 	for(int i =0; i< (int)fIVCooling.size(); i++)
 		tmp += fIVCooling[i];
 	
 	return tmp;
-DBGL;
+
 }
 
 
@@ -199,7 +198,7 @@ DBGL;
 //________________________________________________________________________
 void Pool::CoolingEvolution(cSecond t)
 {
-DBGL;
+
 	if(t == fInternalTime && t!=0) return;
 	int RemainingCoolingTime;
 	cSecond EvolutionTime = t - fInternalTime;
@@ -233,14 +232,14 @@ DBGL;
 	}
 #pragma omp critical(DeleteCoolingIVPB)
 	{sort (fCoolingEndOfCycle.begin(), fCoolingEndOfCycle.end());}
-DBGL;
+
 }
 
 
 //________________________________________________________________________
 void Pool::Evolution(cSecond t)
 {
-DBGL;
+
 	// Check if the TF has been created ...
 	if(t<fCreationTime) return;
 	if(t == fInternalTime && t!=0) return;
@@ -258,7 +257,7 @@ DBGL;
 	fInternalTime = t;
 	
 
-DBGL;
+
 }
 
 
