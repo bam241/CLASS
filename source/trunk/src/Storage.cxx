@@ -24,25 +24,25 @@ ClassImp(Storage)
 
 Storage::Storage()
 {
-DBGL;
+
 	
-DBGL;
+
 }
 
 Storage::Storage(LogFile* log)
 {
-	DBGL;
+	
 	fLog = log;
 	
 	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 	
 	fLog->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
-	DBGL;
+	
 }
 //________________________________________________________________________
 Storage::Storage(LogFile* log, DataBank<ZAI>* evolutivedb)
 {
-DBGL;
+
 	fLog = log;
 	fInternalTime = 0;
 	fDecayDataBase = evolutivedb;
@@ -51,14 +51,14 @@ DBGL;
 	
 	fLog->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 
-DBGL;
+
 }
 
 //________________________________________________________________________
 Storage::~Storage()
 {
-DBGL;
-DBGL;
+
+
 }
 
 
@@ -67,7 +67,7 @@ DBGL;
 //________________________________________________________________________
 IsotopicVector Storage::GetDecay(IsotopicVector isotopicvector, cSecond t)
 {
-DBGL;
+
 	IsotopicVector IV;
 
 	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
@@ -80,35 +80,35 @@ DBGL;
 			IV += ivtmp;
 		}
 	}
-DBGL;
+
 	return IV;
-DBGL;
+
 }
 
 //________________________________________________________________________
 void Storage::ClearStock()
 {
-DBGL;
+
 	IsotopicVector EmptyIV;
 	fIVFullStock = EmptyIV;
 	fIVStock.clear();
-DBGL;
+
 }
 
 //________________________________________________________________________
 void Storage::AddToStock(IsotopicVector isotopicvector)
 {
-DBGL;
+
 	if(fParc->GetStockManagement() == true)
 		fIVStock.push_back(isotopicvector);
 	AddToFullStock(isotopicvector);
-DBGL;
+
 }
 
 //________________________________________________________________________
 void Storage::TakeFractionFromStock(int IVId,double fraction)
 {
-DBGL;
+
 	if(fParc->GetStockManagement() == true)
 	{
 		if(fraction > 1 || fraction < 0)
@@ -134,12 +134,12 @@ DBGL;
 	}
 	
 	
-DBGL;
+
 }
 
 void Storage::TakeFromStock(IsotopicVector isotopicvector)
 {
-DBGL;
+
 	if(fParc->GetStockManagement() == false)
 		fIVFullStock -= isotopicvector;
 	else
@@ -148,13 +148,13 @@ DBGL;
 		fLog->fLog << "!!Warning!! !!!Storage!!! TakeFromStock can't be DEFINE WITH REAL stock management" << endl;
 		exit(1);
 	}
-DBGL;
+
 }
 
 //________________________________________________________________________
 void Storage::StorageEvolution(cSecond t)
 {
-DBGL;
+
 
 	if(t == fInternalTime && t !=0 ) return;
 
@@ -176,13 +176,13 @@ DBGL;
 	
 
 	
-DBGL;
+
 }
 
 //________________________________________________________________________
 void Storage::Evolution(cSecond t)
 {
-DBGL;
+
 	// Check if the Storage has been created ...
 	if(t == fInternalTime && t!=0) return;
 	// Make the evolution for the Storage ...
@@ -191,17 +191,17 @@ DBGL;
 	fInternalTime = t;
 	
 
-DBGL;
+
 }
 
 void Storage::Write(string filename, cSecond date)
 {
-DBGL;
+
 	for(int i=0;i < (int)fIVStock.size(); i++)
 	{
 		
 		fIVStock[i].Write(filename, date);
 	}
-DBGL;
+
 }
 

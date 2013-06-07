@@ -26,33 +26,33 @@ ZAI& ZAI::operator=(ZAI& IVa)
 
 ZAI::ZAI()
 {
-	DBGL;	
+		
 	fName="";
 	fZ=0;
 	fA=0;
 	fI=0;
 	fMass=0;	
-	DBGL;	
+		
 }
 ZAI::~ZAI()
 {
-	DBGL;	
+		
 }
 
 //________________________________________________________________________
 ZAI::ZAI(int Z, int A, int I)
 {
-	DBGL;	
+		
 	fZ=Z;
 	fA=A;
 	fI=I;
-	DBGL;	
+		
 }
 
 //________________________________________________________________________
 double ZAI::GetMass()
 {
-	DBGL;	
+		
 	return fMass;
 }
 

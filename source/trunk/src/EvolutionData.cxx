@@ -54,7 +54,7 @@ ClassImp(EvolutionData)
 	//________________________________________________________________________
 EvolutionData operator*(EvolutionData const& evol, double F)
 {
-	DBGL;
+	
 	EvolutionData evoltmp;
 	
 	map<ZAI ,TGraph* > EvolutionData = evol.GetEvolutionData();
@@ -75,46 +75,46 @@ EvolutionData operator*(EvolutionData const& evol, double F)
 	}
 	evoltmp.SetPower(evol.GetPower()*F);
 	return evoltmp;
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 EvolutionData operator*(double F, EvolutionData const& evol)
 {
-	DBGL;
+	
 	return evol*F;
-	DBGL;
+	
 }
 	//________________________________________________________________________
 EvolutionData operator/(EvolutionData const& evol, double F)
 {
-	DBGL;
+	
 	return evol*(1./F);
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 	//________________________________________________________________________
 EvolutionData::EvolutionData()
 {
-	DBGL;
+	
 	fIsCrossSection = false;
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 EvolutionData::EvolutionData(LogFile* Log)
 {
-	DBGL;
+	
 	fLog = Log;
 	fIsCrossSection = false;
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 EvolutionData::EvolutionData(LogFile* Log, string DB_file, bool oldread, ZAI zai)
 {
-	DBGL;
+	
 	fLog = Log;
 	fIsCrossSection = false;
 	fDB_file = DB_file;
@@ -125,78 +125,78 @@ EvolutionData::EvolutionData(LogFile* Log, string DB_file, bool oldread, ZAI zai
 		ReadDB( fDB_file, oldread);		// Read Evolution Produc DB file name
 	
 	
-	DBGL;
+	
 	
 }
 
 	//________________________________________________________________________
 EvolutionData::~EvolutionData()
 {
-	DBGL;
-	DBGL;
+	
+	
 }
 
 
 bool EvolutionData::NucleiInsert(pair<ZAI, TGraph*> zaitoinsert)
 {
-	DBGL;
+	
 	pair<map<ZAI, TGraph*>::iterator, bool> IResult;
 	IResult = fEvolutionData.insert( zaitoinsert);
 	return IResult.second;
-	DBGL;
+	
 }
 
 bool EvolutionData::FissionXSInsert(pair<ZAI, TGraph*> zaitoinsert)
 {
-	DBGL;
+	
 	pair<map<ZAI, TGraph*>::iterator, bool> IResult;
 	IResult = fFissionXS.insert( zaitoinsert);
 	return IResult.second;
-	DBGL;
+	
 }
 
 bool EvolutionData::CaptureXSInsert(pair<ZAI, TGraph*> zaitoinsert)
 {
-	DBGL;
+	
 	pair<map<ZAI, TGraph*>::iterator, bool> IResult;
 	IResult = fCaptureXS.insert( zaitoinsert);
 	return IResult.second;
-	DBGL;
+	
 }
 
 bool EvolutionData::n2nXSInsert(pair<ZAI, TGraph*> zaitoinsert)
 {
-	DBGL;
+	
 	pair<map<ZAI, TGraph*>::iterator, bool> IResult;
 	IResult = fn2nXS.insert( zaitoinsert);
 	return IResult.second;
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 void EvolutionData::AddAsStable(ZAI zai)
 {
-	DBGL;
+	
 	double time[2] = {0, (500*365.25*3600*24)};
 	double quantity[2] = {1., 1.};
 	
 	fEvolutionData.insert(pair<ZAI ,TGraph* >(zai, new TGraph(2, time, quantity) ) );
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 Double_t EvolutionData::Interpolate(double t, TGraph& EvolutionGraph)
 {
-	DBGL;
+	
 	TString fOption;
 	return (double)EvolutionGraph.Eval(t,0x0,fOption);
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 TGraph*	EvolutionData::GetEvolutionTGraph(const ZAI& zai)
 {
-	DBGL;
+	
 	map<ZAI ,TGraph *>::iterator it = GetEvolutionData().find(zai) ;
 	
 	if ( it != GetEvolutionData().end() )
@@ -204,13 +204,13 @@ TGraph*	EvolutionData::GetEvolutionTGraph(const ZAI& zai)
 	else
 		return new TGraph();
 	
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 IsotopicVector	EvolutionData::GetIsotopicVectorAt(double t)
 {
-	DBGL;
+	
 	IsotopicVector IsotopicVectorTmp;
 	map<ZAI ,TGraph* >::iterator it;
 	for( it = fEvolutionData.begin(); it != fEvolutionData.end(); it++ )
@@ -218,14 +218,14 @@ IsotopicVector	EvolutionData::GetIsotopicVectorAt(double t)
 		IsotopicVectorTmp.Add( (*it).first, Interpolate(t, *((*it).second)) );
 	}
 	
-	DBGL;
+	
 	return IsotopicVectorTmp;
 }
 
 	//________________________________________________________________________
 double	EvolutionData::GetGetXSForAt(double t, ZAI zai, int ReactionId)
 {
-	DBGL;
+	
 	map<ZAI ,TGraph* > XSEvol;
 	switch(ReactionId)
 	{
@@ -247,7 +247,7 @@ double	EvolutionData::GetGetXSForAt(double t, ZAI zai, int ReactionId)
 		return 0.;
 	else
 		return Interpolate(t, *((*it).second) );
-	DBGL;
+	
 }
 
 
@@ -257,7 +257,7 @@ double	EvolutionData::GetGetXSForAt(double t, ZAI zai, int ReactionId)
 
 EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 {
-	DBGL;
+	
 	
 	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
 	
@@ -838,7 +838,7 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 	GeneratedDB.SetHMMass(fHMMass*NormFactor );
 	
 	return GeneratedDB;
-	DBGL;
+	
 }
 
 
@@ -856,7 +856,7 @@ EvolutionData EvolutionData::GenerateDBFor(IsotopicVector isotopicvector)
 
 void EvolutionData::ReadDB(string DBfile, bool oldread)
 {
-	DBGL;
+	
 	if(oldread)
 	{
 		OldReadDB(DBfile);
@@ -943,15 +943,15 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 		getline(DecayDB, line);
 
 		
-	}while ( !DecayDB.eof() )
+	}while ( !DecayDB.eof() );
 		
 		
-		DBGL;
+		
 }
 
 void EvolutionData::ReadKeff(string line, double* time, int NTimeStep)
 {
-	DBGL;
+	
 
 	int start = 0;
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "keff" )	// Check the keyword
@@ -974,13 +974,13 @@ void EvolutionData::ReadKeff(string line, double* time, int NTimeStep)
 	fFlux = new TGraph(NTimeStep, time, Keff);			// Add the TGraph
 	
 	
-	DBGL;
+	
 	
 }
 
 void EvolutionData::ReadFlux(string line, double* time, int NTimeStep)
 {
-	DBGL;
+	
 	
 	int start = 0;
 	
@@ -1005,13 +1005,13 @@ void EvolutionData::ReadFlux(string line, double* time, int NTimeStep)
 	
 	ReadInfo();							// Read the .info associeted
 
-	DBGL;
+	
 }
 
 
 void	EvolutionData::ReadInv(string line, double* time, int NTimeStep)
 {
-	DBGL;
+	
 	
 	int start = 0;
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "inv" )	// Check the keyword
@@ -1039,13 +1039,13 @@ void	EvolutionData::ReadInv(string line, double* time, int NTimeStep)
 		fEvolutionData.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, Inv) ) );
 	}
 	
-	DBGL;
+	
 }
 
 
 void	EvolutionData::ReadXSFis(string line, double* time, int NTimeStep)
 {
-	DBGL;
+	
 
 	int start = 0;
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "xsfis" )	// Check the keyword
@@ -1074,12 +1074,12 @@ void	EvolutionData::ReadXSFis(string line, double* time, int NTimeStep)
 		fFissionXS.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, XSFis) ) );
 	}
 	
-	DBGL;
+	
 }
 
 void	EvolutionData::ReadXSCap(string line, double* time, int NTimeStep)
 {
-	DBGL;
+	
 
 	int start = 0;
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "xscap" )	// Check the keyword
@@ -1108,12 +1108,12 @@ void	EvolutionData::ReadXSCap(string line, double* time, int NTimeStep)
 		fCaptureXS.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, XSCap) ) );
 	}
 	
-	DBGL;
+	
 }
 
 void	EvolutionData::ReadXSn2n(string line, double* time, int NTimeStep)
 {
-	DBGL;
+	
 
 	int start = 0;
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "xsn2n" )	// Check the keyword
@@ -1141,7 +1141,7 @@ void	EvolutionData::ReadXSn2n(string line, double* time, int NTimeStep)
 		fn2nXS.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, XSn2n) ) );
 	}
 	
-	DBGL;
+	
 }
 
 
@@ -1195,7 +1195,7 @@ void EvolutionData::ReadInfo()
 
 void EvolutionData::OldReadDB(string DBfile)
 {
-	DBGL;
+	
 	{
 		ifstream DecayDB(DBfile.c_str());							// Open the File
 		if(!DecayDB)
@@ -1454,7 +1454,7 @@ void EvolutionData::OldReadDB(string DBfile)
 			fHMMass =  atof(StringLine::NextWord(line, start, ' ').c_str());
 		
 	}
-	DBGL;
+	
 }
 
 

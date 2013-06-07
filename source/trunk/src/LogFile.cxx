@@ -17,7 +17,7 @@ using namespace std;
 
 LogFile::LogFile(string LogFileName )
 {
-DBGL;
+
 
 	fLog.open(LogFileName.c_str());
 	if(!fLog)
@@ -27,15 +27,15 @@ DBGL;
 	}
 	else
 		cout << "LogFile: " << LogFileName << " opened." << endl;
-DBGL;
+
 }
 
 //________________________________________________________________________
 LogFile::~LogFile()
 {
-DBGL;
+
 	fLog.close();
-DBGL;
+
 }
 
 

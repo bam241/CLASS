@@ -23,7 +23,7 @@ using namespace std;
 
 double ReactionRateWeightedDistance(IsotopicVector IV1, EvolutionData DB )
 {
-	DBGL;
+	
 	double d2 = 0;
 	double XS_total = 0;
 	IsotopicVector IV2 = DB.GetIsotopicVectorAt(0.).GetActinidesComposition();
@@ -44,7 +44,7 @@ double ReactionRateWeightedDistance(IsotopicVector IV1, EvolutionData DB )
 		XS_total += (Z1+Z2)*XS/2;
 	}
 	
-	DBGL;
+	
 	return sqrt(d2)/XS_total;
 }
 
@@ -71,20 +71,20 @@ void DataBank<IsotopicVector>::ReadDataBase();
 template<>
 DataBank<ZAI>::DataBank()
 {
-	DBGL;
+	
 	
 	
 		// Warning
 	
 	cout	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define." <<  endl << endl;
 	
-	DBGL;
+	
 }
 
 template<>
 DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool olfreadmethod)
 {
-	DBGL;
+	
 	fLog = Log;
 	fDataBaseIndex = DB_index_file;
 	
@@ -97,21 +97,21 @@ DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool olfreadmethod)
 	fLog->fLog 	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
 	fLog->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
 	
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 template<>
 DataBank<ZAI>::~DataBank()
 {
-	DBGL;
-	DBGL;
+	
+	
 }
 
 template<>
 IsotopicVector	DataBank<ZAI>::Evolution(const ZAI& zai, double dt)
 {
-	DBGL;
+	
 	IsotopicVector	returnIV;
 	
 	map<ZAI ,EvolutionData >::iterator it = fDataBank.find(zai);
@@ -174,7 +174,7 @@ IsotopicVector	DataBank<ZAI>::Evolution(const ZAI& zai, double dt)
 template<>
 bool DataBank<ZAI>::IsDefine(const ZAI& zai) const
 {
-	DBGL;
+	
 	map<ZAI ,EvolutionData > evolutiondb = (*this).GetDataBank();
 	if (evolutiondb.find(zai) != evolutiondb.end())
 		return true;
@@ -212,14 +212,14 @@ bool DataBank<ZAI>::IsDefine(const ZAI& zai) const
 template<>
 DataBank<IsotopicVector>::~DataBank()
 {
-	DBGL;
-	DBGL;
+	
+	
 }
 
 template<>
 DataBank<IsotopicVector>::DataBank()
 {
-	DBGL;
+	
 	
 	// Warning
 	cout	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
@@ -229,14 +229,14 @@ DataBank<IsotopicVector>::DataBank()
 	
 	
 	
-	DBGL;
+	
 }
 
 
 template<>
 DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool olfreadmethod)
 {
-	DBGL;
+	
 	fLog = Log;
 	fDataBaseIndex = DB_index_file;
 	fUpdateReferenceDBatEachStep = false;
@@ -254,13 +254,13 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool olfr
 	fLog->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
 	fLog->fLog	<< "\t " << fDataBank.size() << " EvolutionData have been read."<< endl << endl;
 	
-	DBGL;
+	
 }
 
 template<>
 void DataBank<IsotopicVector>::ReadDataBase()
 {
-	DBGL;
+	
 	ifstream DataDB(fDataBaseIndex.c_str());							// Open the File
 	if(!DataDB)
 	{
@@ -308,7 +308,7 @@ void DataBank<IsotopicVector>::ReadDataBase()
 			fDataBank.insert( pair<IsotopicVector, EvolutionData >(ivtmp , (*evolutionproduct) ));
 		}
 	}
-	DBGL;
+	
 }
 	//________________________________________________________________________
 
@@ -317,7 +317,7 @@ void DataBank<IsotopicVector>::ReadDataBase()
 template<>
 map<double, EvolutionData> DataBank<IsotopicVector>::GetDistancesTo(IsotopicVector isotopicvector, double t) const
 {
-	DBGL;
+	
 	map<double, EvolutionData> distances;
 	
 	map<IsotopicVector, EvolutionData > evolutiondb = fDataBank;
@@ -334,13 +334,13 @@ map<double, EvolutionData> DataBank<IsotopicVector>::GetDistancesTo(IsotopicVect
 	}
 	
 	return distances;
-	DBGL;
+	
 }
 
 template<>
 EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector, double t) const
 {
-	DBGL;
+	
 	map<IsotopicVector, EvolutionData > evolutiondb = fDataBank;
 	
 	double distance = Distance(isotopicvector.GetActinidesComposition(),
@@ -368,13 +368,13 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 	}
 	
 	return CloseEvolData;
-	DBGL;
+	
 }
 
 template<>
 EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power)
 {
-	DBGL;
+	
 	string ReactorType;
 	double ReactorMass = 0;
 	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
@@ -998,7 +998,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	
 
 	return GeneratedDB;
-	DBGL;
+	
 }
 
 
@@ -1008,7 +1008,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 template<>
 void DataBank<IsotopicVector>::CalculateDistanceParameter()
 {
-	DBGL;
+	
 	if(fDistanceType!=1){
 		cout << "!!Warning!! !!!CalculateDistanceParameter!!!"
 		<< " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
@@ -1055,13 +1055,13 @@ void DataBank<IsotopicVector>::CalculateDistanceParameter()
 	fLog->fLog << endl;
 	
 	
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 template<>
 void DataBank<IsotopicVector>::SetDistanceParameter(IsotopicVector DistanceParameter){
-	DBGL;
+	
 	fDistanceParameter=DistanceParameter;
 	
 	fLog->fLog <<"!!INFO!! Distance Parameters "<<endl;
@@ -1075,14 +1075,14 @@ void DataBank<IsotopicVector>::SetDistanceParameter(IsotopicVector DistanceParam
 		fLog->fLog << endl;
 	}
 	fLog->fLog << endl;
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 template<>
 void DataBank<IsotopicVector>::SetDistanceType(int DistanceType)
 {
-	DBGL;
+	
 	fDistanceType=DistanceType;
 	if(fDistanceType==1){
 		CalculateDistanceParameter();
@@ -1104,7 +1104,7 @@ void DataBank<IsotopicVector>::SetDistanceType(int DistanceType)
 		<< " Distancetype defined by the user isn't recognized by the code"<<endl;
 		exit(1);
 	}
-	DBGL;
+	
 }
 
 

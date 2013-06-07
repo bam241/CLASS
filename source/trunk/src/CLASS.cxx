@@ -47,7 +47,7 @@ string dtoa(double num)
 	//________________________________________________________________________
 CLASS::CLASS()
 {
-	DBGL;
+	
 	
 	fNewTtree = true;
 	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
@@ -80,13 +80,13 @@ CLASS::CLASS()
 	fLog->fLog	<< "\t Log will be in " << fOutputLogName << endl << endl;
 	
 	
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 CLASS::CLASS(double abstime)
 {
-	DBGL;
+	
 	fNewTtree = true;
 	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
 	fAbsoluteTime = (cSecond)abstime;
@@ -119,23 +119,23 @@ CLASS::CLASS(double abstime)
 	fLog->fLog	<< "\t Log will be in " << fOutputLogName << endl << endl;
 	
 	
-	DBGL;
+	
 }
 
 
 	//________________________________________________________________________
 CLASS::~CLASS()
 {
-	DBGL;
+	
 #pragma omp single
 	{CloseOutputTree();}
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 void CLASS::AddPool(Pool* Pool)
 {
-	DBGL;
+	
 	
 	fPool.push_back(Pool);
 	fPool.back()->SetParc(this);
@@ -151,13 +151,13 @@ void CLASS::AddPool(Pool* Pool)
 		Pool_name += ".";		
 		fOutT->Branch(Pool_name.c_str(), "Pool", &fPool.back());
 	}
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 void CLASS::AddReactor(Reactor* reactor)
 {
-	DBGL;
+	
 	fReactor.push_back(reactor);
 	fReactor.back()->SetParc(this);
 	fReactor.back()->SetLog(fLog);
@@ -175,13 +175,13 @@ void CLASS::AddReactor(Reactor* reactor)
 		fOutT->Branch(Reactor_name.c_str(), "Reactor", &fReactor.back());
 	}
 
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 void CLASS::AddStorage(Storage* storage)
 {
-	DBGL;
+	
 	fStorage.push_back(storage);
 	fStorage.back()->SetParc(this);
 	fStorage.back()->SetDecayDataBase( (*this).GetDecayDataBase() );
@@ -196,12 +196,12 @@ void CLASS::AddStorage(Storage* storage)
 		fOutT->Branch(Storage_name.c_str(), "Storage", &fStorage.back());
 	}
 
-	DBGL;
+	
 }
 	//________________________________________________________________________
 void CLASS::AddFabricationPlant(FabricationPlant* fabricationplant)
 {
-	DBGL;
+	
 	fFabricationPlant.push_back(fabricationplant);
 	fFabricationPlant.back()->SetParc(this);
 	fFabricationPlant.back()->SetDecayDataBase( (*this).GetDecayDataBase() );
@@ -216,13 +216,13 @@ void CLASS::AddFabricationPlant(FabricationPlant* fabricationplant)
 		fOutT->Branch(FabricationPlant_name.c_str(), "FabricationPlant", &fFabricationPlant.back());
 	}
 
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 void CLASS::BuildTimeVector(cSecond t)
 {
-	DBGL;
+	
 	fTimeStep.clear();
 	fTimeStep.insert( pair<double ,int>(t,1) );
 	
@@ -366,7 +366,7 @@ void CLASS::BuildTimeVector(cSecond t)
 	for( it = fTimeStep.begin(); it != fTimeStep.end(); it++)
 		TimeStepfile << (double)((*it).first/3600/24./365.25) << " " << (*it).second << endl;
 	
-	DBGL;
+	
 }
 
 
@@ -377,37 +377,37 @@ void CLASS::BuildTimeVector(cSecond t)
 
 void CLASS::PoolEvolution()
 {
-	DBGL;
+	
 	for(int i = 0; i < (int) fPool.size();i++)
 		fPool[i]->Evolution(fAbsoluteTime);
 	
 	for(int i = 0; i < (int) fPool.size();i++)
 		fPool[i]->Dump();
-	DBGL;
+	
 }
 
 void CLASS::StorageEvolution()
 {
-	DBGL;
+	
 	for(int i = 0; i < (int) fStorage.size();i++)
 		fStorage[i]->Evolution(fAbsoluteTime);
 	
-	DBGL;
+	
 }
 
 void CLASS::FabricationPlantEvolution()
 {
-	DBGL;
+	
 	for(int i = 0; i < (int) fFabricationPlant.size();i++)
 		fFabricationPlant[i]->Evolution(fAbsoluteTime);
 	
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 void CLASS::ReactorEvolution()
 {
-	DBGL;
+	
 	fParcPower = 0;
 #pragma omp parallel for
 	for(int i = 0; i < (int)fReactor.size(); i++)
@@ -417,13 +417,13 @@ void CLASS::ReactorEvolution()
 	for(int i = 0; i < (int)fReactor.size(); i++)
 		fReactor[i]->Dump();
 	
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 void CLASS::Evolution(double t)
 {
-	DBGL;
+	
 	
 	BuildTimeVector( (cSecond)t );
 
@@ -504,12 +504,12 @@ void CLASS::Evolution(double t)
 	}
 	cout << endl;
 	
-	DBGL;
+	
 }
 
 void CLASS::ProgressPrintout(cSecond t)
 {
-	DBGL;
+	
 	double Time = (fAbsoluteTime-fStartingTime)/3600/24/365.25 ;
 	double Total = (t-fStartingTime)/3600/24/365.25;
 	
@@ -525,7 +525,7 @@ void CLASS::ProgressPrintout(cSecond t)
 	if (Time < 10) cout << " ";
 	if (Time < 100) cout << " ";
 	cout << (int)Time << " / " << (int)Total << " Years \r" << flush;
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
@@ -533,7 +533,7 @@ void CLASS::ProgressPrintout(cSecond t)
 	//________________________________________________________________________
 void CLASS::UpdateParc()
 {
-	DBGL;
+	
 	ResetQuantity();
 	
 	for (int i =0; i < (int)fFabricationPlant.size(); i++)
@@ -551,14 +551,14 @@ void CLASS::UpdateParc()
 	fIVTotal = fWaste + fTotalStorage + fTotalCooling + fFuelFabrication + fTotalInReactor;
 	fIVInCycleTotal = fTotalStorage + fTotalCooling + fFuelFabrication + fTotalInReactor;
 	
-	DBGL;
+	
 }
 
 
 
 void CLASS::ResetQuantity()
 {
-	DBGL;
+	
 	
 	fTotalInReactor.Clear();
 	fTotalStorage.Clear();
@@ -566,13 +566,13 @@ void CLASS::ResetQuantity()
 	fFuelFabrication.Clear();
 	fIVInCycleTotal.Clear();
 	fIVTotal.Clear();
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 void CLASS::OpenOutputTree()
 {
-	DBGL;
+	
 	
 	cout << "Opening OutPut File ...\t";
 	fLog->fLog << "Opening : " << fOutputFileName << " ...\t";
@@ -603,7 +603,7 @@ void CLASS::OpenOutputTree()
 }
 void CLASS::CloseOutputTree()
 {
-	DBGL;
+	
 	
 	fOutFile->ls();
 	cout << "Writing outTree " << fOutputFileName << endl;
@@ -627,7 +627,7 @@ void CLASS::CloseOutputTree()
 	//________________________________________________________________________
 void CLASS::OutAttach()
 {
-	DBGL;
+	
 	ResetQuantity();
 		//Branch Absolut Time
 	fOutT->Branch("AbsTime",&fAbsoluteTime,"AbsoluteTime/l");
@@ -682,22 +682,22 @@ void CLASS::OutAttach()
 		FP_name += ".";
 		fOutT->Branch(FP_name.c_str(), "FabricationPlant", &fFabricationPlant[i]);
 	}
-	DBGL;
+	
 }
 
 	//________________________________________________________________________
 void CLASS::Write()
 {
-	DBGL;
 	
 	
-	DBGL;
+	
+	
 }
 
 	//________________________________________________________________________
 void CLASS::Print()
 {
-	DBGL;
+	
 	for(int i = 0; i < (int) fPool.size();i++)
 	{
 		cout << "!!!!!!!!!STEP : " << fAbsoluteTime/(int)(3600*24*365.25) << endl;
@@ -711,5 +711,5 @@ void CLASS::Print()
 		cout << "Reactor" << endl;
 		fReactor[i]->GetIVReactor().Print();
 	}
-	DBGL;
+	
 }
