@@ -43,7 +43,7 @@ using namespace std;
  cout<<the<<endl<<temperature_is<<endl<<T<<endl;
  \endcode
  @author PTO
- @version 0.1
+ @version 2.01
 */
 
 class StringLine
