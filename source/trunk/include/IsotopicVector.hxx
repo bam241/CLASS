@@ -8,7 +8,7 @@
   The aim of this Class is to manage any kind of IsotopicVector, and any operation between them : sum, substraction....
   
  @author BaM, Marc
- @version 0.
+ @version 2.0
  */
 #include "ZAI.hxx"
 

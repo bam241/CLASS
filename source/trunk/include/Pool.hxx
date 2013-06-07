@@ -2,6 +2,18 @@
 #define __Pool_HXX__
 
 
+/*!
+ \file
+ \brief Header file for Pool class.
+ 
+ The aim of the Class is to manage evolution of all out reactor fuel. from Cooling to Waste or storage
+ 
+ 
+ @author BaM
+ @version 2.0
+ */
+
+
 
 
 #include "TNamed.h"
@@ -17,18 +29,6 @@ class CLASS;
 class LogFile;
 template <class T> 
 class DataBank;
-
-
-/*!
- \file
- \brief Header file for Pool class.
- 
- The aim of the Class is to manage evolution of all out reactor fuel. from Cooling to Waste
- 
- 
- @author BaM
- @version 0.
- */
 
 
 

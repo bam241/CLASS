@@ -9,7 +9,7 @@
 
  
  @author BaM
- @version 0.
+ @version 2.0
  */
 
 #include "IsotopicVector.hxx"

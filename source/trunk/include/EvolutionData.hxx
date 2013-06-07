@@ -6,8 +6,9 @@
  \brief Header file for EvolutionData classes. 
   The aim of this Class is to manage evolution of a system, such as a radioactiv nuclei or a reactor. It store the evolution of daughter nuclei proportion as the function of time of the 
  
+
  @author BaM
- @version 0.
+ @version 2.0
  */
 
 #include <string>
@@ -25,13 +26,6 @@ class LogFile;
 using namespace std;
 typedef long long int cSecond;
 
-///< A ZAIIDataBase defined a database which contain the evolution of faction of all product, subproduct (or sub(sub...sub)product) for a nucleus. 
-/*!
- The aim of this class is to handle the evolution all Information of all Nucleus product, subproduct (or sub(sub...sub)product) as the fonction of the time.
- 
- @author BaM
- @version 1.0
- */
 
 EvolutionData operator*(EvolutionData const& evol, double F);
 EvolutionData operator*(double F, EvolutionData const& evol);
