@@ -25,7 +25,7 @@ var classIsotopicVector =
     [ "Print", "d6/d85/classIsotopicVector.html#a17fde105b8c061d13230776bf4cbf2e7", null ],
     [ "Remove", "d6/d85/classIsotopicVector.html#afb929b3a6d85ad2fedb7d30f73c684d0", null ],
     [ "Remove", "d6/d85/classIsotopicVector.html#a99a35f70bcf47756b19631e6ab9c8936", null ],
-    [ "Write", "d6/d85/classIsotopicVector.html#a529c67defc51d9376c151f22f8e42028", null ],
+    [ "Write", "d6/d85/classIsotopicVector.html#aff99ebe7750d1efe19e545dde6d7a76c", null ],
     [ "fIsotopicQuantity", "d6/d85/classIsotopicVector.html#a7908d48ae0f78b1454eb8a0cc01cd621", null ],
     [ "fIsotopicQuantityNeeded", "d6/d85/classIsotopicVector.html#a00bb90a8b08db19d5eba9530c5133e32", null ]
 ];
