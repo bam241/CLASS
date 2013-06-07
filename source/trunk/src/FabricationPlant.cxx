@@ -7,7 +7,6 @@
 #include "DataBank.hxx"
 #include "IsotopicVector.hxx"
 #include "CLASS.hxx"
-#include "Defines.hxx"
 #include "LogFile.hxx"
 
 

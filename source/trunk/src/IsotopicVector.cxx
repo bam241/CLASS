@@ -1,7 +1,6 @@
 #include "IsotopicVector.hxx"
 
 #include "LogFile.hxx"
-#include "Defines.hxx"
 
 
 #include <cmath>

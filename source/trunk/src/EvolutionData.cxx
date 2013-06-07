@@ -7,7 +7,6 @@
 
 #include "IsotopicVector.hxx"
 #include "LogFile.hxx"
-#include "Defines.hxx"
 #include "StringLine.hxx"
 
 #include "TMatrixT.h"

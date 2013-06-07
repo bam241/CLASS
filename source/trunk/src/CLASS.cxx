@@ -4,7 +4,6 @@
 #include "Reactor.hxx"
 #include "Pool.hxx"
 #include "FabricationPlant.hxx"
-#include "Defines.hxx"
 #include "LogFile.hxx"
 
 #include <ctime>
