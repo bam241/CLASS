@@ -1,8 +1,11 @@
 var IsotopicVector_8hxx =
 [
     [ "IsotopicVector", "d6/d85/classIsotopicVector.html", "d6/d85/classIsotopicVector" ],
-    [ "Distance", "da/de7/IsotopicVector_8hxx.html#afaea8492ba2fd9f4a4c67b1922a17ca9", null ],
-    [ "Norme", "da/de7/IsotopicVector_8hxx.html#a1a033d007f432f80b3b7af6a230ba8db", null ],
+    [ "cSecond", "da/de7/IsotopicVector_8hxx.html#a97bb8e26e4a9de8c246240c32b980e6c", null ],
+    [ "Distance", "da/de7/IsotopicVector_8hxx.html#a84ea39facb5bcd1361b511dea0df7221", null ],
+    [ "DistanceAdjusted", "da/de7/IsotopicVector_8hxx.html#a132fefeb0846110eb660354f31693e6c", null ],
+    [ "DistanceStandard", "da/de7/IsotopicVector_8hxx.html#a6079956f02e8b8c0d67fbd78a103776a", null ],
+    [ "Norme", "da/de7/IsotopicVector_8hxx.html#a5b74fc3ddc5f0b66c9a1cb9501e8970d", null ],
     [ "operator*", "da/de7/IsotopicVector_8hxx.html#a98d6fc258a8355cde5c0435864641373", null ],
     [ "operator*", "da/de7/IsotopicVector_8hxx.html#a205f04059f4b10cff4660e8898b06bcb", null ],
     [ "operator*", "da/de7/IsotopicVector_8hxx.html#aa40cdcfa5aaa5ecd1210f10dfba21d87", null ],
