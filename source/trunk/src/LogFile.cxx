@@ -1,6 +1,5 @@
 
 #include "LogFile.hxx"
-#include "Defines.hxx"
 
 #include <iostream>
 #include <algorithm>

@@ -2,7 +2,6 @@
 
 #include "DataBank.hxx"
 #include "CLASS.hxx"
-#include "Defines.hxx"
 #include "LogFile.hxx"
 
 

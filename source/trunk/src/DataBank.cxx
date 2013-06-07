@@ -3,7 +3,6 @@
 #include "IsotopicVector.hxx"
 #include "EvolutionData.hxx"
 #include "LogFile.hxx"
-#include "Defines.hxx"
 #include "StringLine.hxx"
 
 #include <TGraph.h>

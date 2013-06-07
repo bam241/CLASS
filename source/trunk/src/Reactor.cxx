@@ -8,7 +8,6 @@
 #include "CLASS.hxx"
 
 #include "LogFile.hxx"
-#include "Defines.hxx"
 
 #include <iostream>
 #include <cmath>

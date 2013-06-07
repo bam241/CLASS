@@ -4,7 +4,6 @@
 #include "IsotopicVector.hxx"
 #include "Storage.hxx"
 #include "CLASS.hxx"
-#include "Defines.hxx"
 #include "LogFile.hxx"
 
 #include <sstream>
