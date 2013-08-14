@@ -16,7 +16,7 @@ using namespace std;
 
 LogFile::LogFile(string LogFileName )
 {
-
+	fLogFileName = LogFileName;
 
 	fLog.open(LogFileName.c_str());
 	if(!fLog)

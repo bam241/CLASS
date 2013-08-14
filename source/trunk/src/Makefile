@@ -10,11 +10,12 @@ ROOTCFLAGS    	= `root-config --cflags`
 ROOTLIBS	= `root-config --libs`
 ROOTGLIBS	= `root-config --glibs`
 
-
 ######### nothing to change from here #########
 INCLUDES	= $(LOCALINC)/*.hxx
 LIBNAME 	= CLASSpkg
 OBJS		= 	CLASS.o \
+			CLSSObject.o CLSSObjectDict.o\
+			CLSSFacility.o CLSSFacilityDict.o\
 			Storage.o StorageDict.o\
 			FabricationPlant.o FabricationPlantDict.o \
 			Pool.o PoolDict.o\
@@ -25,7 +26,9 @@ OBJS		= 	CLASS.o \
 			EvolutionData.o EvolutionDataDict.o \
 			LogFile.o
 
-ROOTOBJS	= 	Storage.o StorageDict.o\
+ROOTOBJS	= 	CLSSObject.o CLSSObjectDict.o\
+			CLSSFacility.o CLSSFacilityDict.o\
+			Storage.o StorageDict.o\
 			Pool.o PoolDict.o\
 			Reactor.o ReactorDict.o \
 			FabricationPlant.o FabricationPlantDict.o \
@@ -49,14 +52,22 @@ all:		$(OBJS)
 
 
 
+CLSSObjectDict.cxx:		$(LOCALINC)/CLSSObject.hxx
+				rootcint -f $@ -c $^
+
+CLSSFacilityDict.cxx:		$(LOCALINC)/CLSSFacility.hxx
+				rootcint -f $@ -c $^
 
 StorageDict.cxx:		$(LOCALINC)/Storage.hxx
 				rootcint -f $@ -c $^
 
 ReactorDict.cxx:		$(LOCALINC)/Reactor.hxx
 				rootcint -f $@ -c $^
+				
+FabricationPlantDict.cxx:	$(LOCALINC)/FabricationPlant.hxx
+				rootcint -f $@ -c $^
 
-PoolDict.cxx:	$(LOCALINC)/Pool.hxx
+PoolDict.cxx:			$(LOCALINC)/Pool.hxx
 				rootcint -f $@ -c $^
 
 IsotopicVectorDict.cxx:		$(LOCALINC)/IsotopicVector.hxx
@@ -65,10 +76,7 @@ IsotopicVectorDict.cxx:		$(LOCALINC)/IsotopicVector.hxx
 ZAIDict.cxx:			$(LOCALINC)/ZAI.hxx
 				rootcint -f $@ -c $^
 
-FabricationPlantDict.cxx:	$(LOCALINC)/FabricationPlant.hxx
-				rootcint -f $@ -c $^
-
-EvolutionDataDict.cxx:	$(LOCALINC)/EvolutionData.hxx
+EvolutionDataDict.cxx:		$(LOCALINC)/EvolutionData.hxx
 				rootcint -f $@ -c $^
 
 

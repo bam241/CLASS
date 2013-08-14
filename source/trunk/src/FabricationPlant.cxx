@@ -40,17 +40,14 @@ template <class T>  T random(T a, T b) //peak random numebr between a and b
 
 FabricationPlant::FabricationPlant()
 {
-	
-
-	
 }
 
 FabricationPlant::FabricationPlant(LogFile* log)
 {
 	
-	fLog = log;
+	SetLog(log);
 	fChronologicalTimePriority = false;
-	fFabricationTime = -1;
+	SetCycleTime(-1);
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
 	
@@ -60,9 +57,9 @@ FabricationPlant::FabricationPlant(LogFile* log)
 	cout	<< "\t Chronological Stock Priority set! "<< endl << endl;
 	cout	<< "!!WARNING!! !!!FabricationPlant!!! You need to set the different stock manually as well as the Fabrication Time Manualy !! " << endl;
 	
-	fLog->fLog	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
-	fLog->fLog	<< "\t Chronological Stock Priority set! "<< endl << endl;
-	fLog->fLog	<< "!!WARNING!! !!!FabricationPlant!!! You need to set the different stock manually as well as the Fabrication Time Manualy !! " << endl;
+	GetLog()->fLog	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
+	GetLog()->fLog	<< "\t Chronological Stock Priority set! "<< endl << endl;
+	GetLog()->fLog	<< "!!WARNING!! !!!FabricationPlant!!! You need to set the different stock manually as well as the Fabrication Time Manualy !! " << endl;
 	
 	
 }
@@ -70,24 +67,24 @@ FabricationPlant::FabricationPlant(LogFile* log)
 FabricationPlant::FabricationPlant(LogFile* log, Storage* storage, Storage* reusable, double fabircationtime)
 {
 	
-	fLog = log;
+	SetLog(log);
 	
 	fChronologicalTimePriority = false;
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
 	
-	fFabricationTime = (cSecond)fabircationtime;
+	SetCycleTime((cSecond)fabircationtime );
 	fStorage = storage;
 	fReUsable = reusable;
 	
 	
 	cout	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
 	cout	<< "\t Chronological Stock Priority has been set! "<< endl;
-	cout	<< "\t Fabrication time set to \t " << (double)(fFabricationTime/3600/24/365.25) << " year" << endl << endl;
+	cout	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/3600/24/365.25) << " year" << endl << endl;
 	
-	fLog->fLog	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
-	fLog->fLog	<< "\t Chronological Stock Priority has been set! "<< endl;
-	fLog->fLog	<< "\t Fabrication time set to \t " << (double)(fFabricationTime/3600/24/365.25) << " year" << endl << endl;
+	GetLog()->fLog	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
+	GetLog()->fLog	<< "\t Chronological Stock Priority has been set! "<< endl;
+	GetLog()->fLog	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/3600/24/365.25) << " year" << endl << endl;
 	
 	
 }
@@ -144,15 +141,15 @@ void FabricationPlant::FabricationPlantEvolution(cSecond t)
 	map<int ,cSecond >::iterator it;
 	for( it = fReactorNextStep.begin(); it!= fReactorNextStep.end(); it++ )
 	{
-		if( t + fFabricationTime >= fParc->GetReactor()[ (*it).first ]->GetCreationTime()
-		   && t + fFabricationTime < fParc->GetReactor()[ (*it).first ]->GetCreationTime() + fParc->GetReactor()[ (*it).first ]->GetLifeTime())
+		if( t + GetCycleTime() >= GetParc()->GetReactor()[ (*it).first ]->GetCreationTime()
+		   && t + GetCycleTime() < GetParc()->GetReactor()[ (*it).first ]->GetCreationTime() + GetParc()->GetReactor()[ (*it).first ]->GetLifeTime())
 		{
 			if( (*it).second == t )
 			{
 				BuildFuelForReactor( (*it).first );
-				(*it).second += fParc->GetReactor()[ (*it).first ]->GetCycleTime();
+				(*it).second += GetParc()->GetReactor()[ (*it).first ]->GetCycleTime();
 			}
-			else if ( (*it).second - fParc->GetReactor()[ (*it).first ]->GetCycleTime() + fFabricationTime > t )
+			else if ( (*it).second - GetParc()->GetReactor()[ (*it).first ]->GetCycleTime() + GetCycleTime() > t )
 			{
 				map<int ,IsotopicVector >::iterator it2 = fReactorFuturIV.find( (*it).first );
 				if (it2 != fReactorFuturIV.end())
@@ -171,13 +168,13 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 {
 	
 	
-	DataBank<IsotopicVector>* FuelType = fParc->GetReactor()[ReactorId]->GetFuelType();
+	DataBank<IsotopicVector>* FuelType = GetParc()->GetReactor()[ReactorId]->GetFuelType();
 	
 	
 	if(FuelType->GetFuelType() != "MOX")
 	{
 		cout << "!!Bad Trouble!! !!!FabricationPlant!!! Try to do MOX with a not MOXed DB "<< endl;
-		fLog->fLog << "!!Bad Trouble!! !!!FabricationPlant!!! Try to do MOX with a not MOXed DB" << endl;
+		GetLog()->fLog << "!!Bad Trouble!! !!!FabricationPlant!!! Try to do MOX with a not MOXed DB" << endl;
 		exit (1);
 	}
 	map<ZAI, double> ZAImass;
@@ -193,8 +190,8 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 	
 	double Na = 6.02214129e23;	//N Avogadro
 	
-	double HMmass = fParc->GetReactor()[ReactorId]->GetHeavyMetalMass();
-	double BU = fParc->GetReactor()[ReactorId]->GetBurnUp();
+	double HMmass = GetParc()->GetReactor()[ReactorId]->GetHeavyMetalMass();
+	double BU = GetParc()->GetReactor()[ReactorId]->GetBurnUp();
 	IsotopicVector FullUsedStock;
 	IsotopicVector stock;
 	
@@ -206,7 +203,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 		{
 			map<ZAI ,double>::iterator it;
 			
-			map<ZAI ,double> isotopicquantity = GetDecay( FullUsedStock , fFabricationTime).GetSpeciesComposition(94).GetIsotopicQuantity();
+			map<ZAI ,double> isotopicquantity = GetDecay( FullUsedStock , GetCycleTime()).GetSpeciesComposition(94).GetIsotopicQuantity();
 			for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 				nPu_0 += (*it).second;
 			
@@ -265,7 +262,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 			double Sum_AlphaI_nPuI0 = 0;
 			{
 				map<ZAI ,double>::iterator it;
-				map<ZAI ,double> isotopicquantity = GetDecay( stock , fFabricationTime).GetSpeciesComposition(94).GetIsotopicQuantity();
+				map<ZAI ,double> isotopicquantity = GetDecay( stock , GetCycleTime()).GetSpeciesComposition(94).GetIsotopicQuantity();
 				
 				for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 				{
@@ -283,7 +280,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 						MPu_1 += (*it).second * (ZAImass.find( (*it).first )->second)/Na*1e-6;
 					}
 				
-				isotopicquantity = GetDecay( FullUsedStock , fFabricationTime).GetSpeciesComposition(94).GetIsotopicQuantity();
+				isotopicquantity = GetDecay( FullUsedStock , GetCycleTime()).GetSpeciesComposition(94).GetIsotopicQuantity();
 				for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 					if ((*it).first.A() >= 238 && (*it).first.A() <= 242)
 					{
@@ -307,7 +304,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 			if(StockFactionToUse < 0)
 			{
 				cout << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use "<< endl;
-				fLog->fLog << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use" << endl;
+				GetLog()->fLog << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use" << endl;
 				exit (1);
 			}
 			
@@ -329,8 +326,8 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 				ZAI U5 = ZAI(92,235,0);
 				double U8_Quantity = (HMmass - (MPu_0+StockFactionToUse*MPu_1 ))/(ZAImass.find( ZAI(92,238,0) )->second*0.997 + ZAImass.find( ZAI(92,235,0) )->second*0.003 )*Na/1e-6;
 				
-				fParc->AddGodIncome( U8, U8_Quantity*0.997 );
-				fParc->AddGodIncome( U5, U8_Quantity*0.003 );
+				GetParc()->AddGodIncome( U8, U8_Quantity*0.997 );
+				GetParc()->AddGodIncome( U5, U8_Quantity*0.003 );
 				
 				for(int i = (int)fFractionToTake.size()-1; i >= 0; i--)
 				{
@@ -404,17 +401,17 @@ IsotopicVector FabricationPlant::GetDecay(IsotopicVector isotopicvector, cSecond
 EvolutionData FabricationPlant::BuildEvolutiveDB(int ReactorId,IsotopicVector isotopicvector)
 {
 	
-	DataBank<IsotopicVector>* evolutiondb = fParc->GetReactor()[ReactorId]->GetFuelType();
+	DataBank<IsotopicVector>* evolutiondb = GetParc()->GetReactor()[ReactorId]->GetFuelType();
 	
-	isotopicvector = GetDecay(isotopicvector, fFabricationTime);
+	isotopicvector = GetDecay(isotopicvector, GetCycleTime());
 	
 	EvolutionData EvolBuild;
 	/*
 	if( fUpdateReferenceDBatEachStep == true )
 	{
 		EvolutionData EvolBuild = evolutiondb->GenerateDB(isotopicvector,
-								  fParc->GetReactor()[ReactorId]->GetCycleTime(),
-								  fParc->GetReactor()[ReactorId]->GetPower());
+								  GetParc()->GetReactor()[ReactorId]->GetCycleTime(),
+								  GetParc()->GetReactor()[ReactorId]->GetPower());
 	}
 	else
 	{
@@ -424,8 +421,8 @@ EvolutionData FabricationPlant::BuildEvolutiveDB(int ReactorId,IsotopicVector is
 	}
 	 */
 	EvolBuild = evolutiondb->GenerateEvolutionData(isotopicvector,
-					    fParc->GetReactor()[ReactorId]->GetCycleTime(),
-					    fParc->GetReactor()[ReactorId]->GetPower());
+					    GetParc()->GetReactor()[ReactorId]->GetCycleTime(),
+					    GetParc()->GetReactor()[ReactorId]->GetPower());
 	 
 	return EvolBuild;
 	
