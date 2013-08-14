@@ -19,10 +19,6 @@
 using namespace std;
 typedef long long int cSecond;
 
-class IsotopicVector;
-
-
-
 
 
 class IsotopicVector : public TObject
@@ -88,7 +84,7 @@ public :
 	map<ZAI ,double>	fIsotopicQuantity;		///< Isotopic vector composition in Atome Number
 	map<ZAI ,double>	fIsotopicQuantityNeeded;	///< Isotopic vector request and not present
 
-	ClassDef(IsotopicVector,2);
+	ClassDef(IsotopicVector,1);
 };
 
 IsotopicVector operator/(IsotopicVector const& IVA, double F);

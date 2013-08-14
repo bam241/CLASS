@@ -27,9 +27,13 @@ public:
 
 	//!< Normal Destructor
 	~LogFile();
+	
+	string GetLogFileName() const { return fLogFileName; }
 
 	std::ofstream fLog;		//!< Log Stream
-
+	
+	private :
+	string fLogFileName;
 };
 
 #endif

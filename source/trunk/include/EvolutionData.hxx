@@ -13,9 +13,11 @@
 
 #include <string>
 #include <map>
-#include "IsotopicVector.hxx"
 
+#include "IsotopicVector.hxx"
+#include "CLSSObject.hxx"
 #include "ZAI.hxx"
+
 #include "TObject.h"
 #include "TMatrix.h"
 
@@ -33,7 +35,7 @@ EvolutionData operator/(EvolutionData const& evol, double F);
 
 
 
-class EvolutionData : public TObject
+class EvolutionData : public CLSSObject
 {
 	
 public :
@@ -56,12 +58,14 @@ public :
 	void	SetFlux(TGraph* flux )			{ fFlux = flux; }
 	
 //********* Get Method *********//
+#ifndef __CINT__
 	map<ZAI ,TGraph* >	GetEvolutionData()	const { return fEvolutionData; }	//!<
 	map<ZAI ,TGraph* >	GetFissionXS()		const { return fFissionXS; }		//!<
 	map<ZAI ,TGraph* >	GetCaptureXS()		const { return fCaptureXS; }		//!<
 	map<ZAI ,TGraph* >	Getn2nXS()		const { return fn2nXS; }		//!<
 	TGraph*			GetKeff()		const { return fKeff; }
 	TGraph*			GetFlux()		const { return fFlux; }
+#endif
 
 	double	GetCycleTime()		const { return fCycleTime; }
 	double	GetPower()		const { return fPower; }		//!<
@@ -87,18 +91,21 @@ public :
 	
 	
 //********* Get Method *********//
-	EvolutionData GenerateDBFor(IsotopicVector isotopicvector);	///< Build A DB from a close one
 
 
 protected :
 	
 	string	fDB_file;
-	map<ZAI ,TGraph* >	fEvolutionData;	//!< 
+	
+	
+#ifndef __CINT__
+	map<ZAI ,TGraph* >	fEvolutionData;	//!<
 	map<ZAI ,TGraph* >	fFissionXS;	//!< 
 	map<ZAI ,TGraph* >	fCaptureXS;	//!< 
-	map<ZAI ,TGraph* >	fn2nXS;	//!< 
+	map<ZAI ,TGraph* >	fn2nXS;		//!< 
 	TGraph*	fKeff;
 	TGraph*	fFlux;
+#endif
 	
 	cSecond	fFinalTime;
 	bool	fIsCrossSection;
@@ -126,7 +133,6 @@ protected :
 	double	Interpolate(double t, TGraph& EvolutionGraph);
 								///< Interpolating the value of EvolutionGraph at the t time
 	void	AddAsStable(ZAI zai);
-	LogFile*	fLog;
 
 	ClassDef(EvolutionData,0);
 };

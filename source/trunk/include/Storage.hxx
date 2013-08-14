@@ -12,10 +12,12 @@
  @version 2.0
  */
 
-#include "IsotopicVector.hxx"
 
 #include <vector>
-#include "TNamed.h"
+
+#include "CLSSFacility.hxx"
+#include "IsotopicVector.hxx"
+
 
 using namespace std;
 typedef long long int cSecond;
@@ -26,7 +28,7 @@ template <class T>
 class DataBank;
 
 
-class Storage : public TNamed
+class Storage : public  CLSSFacility
 {
 public :
 	///< Normal Constructor.
@@ -41,24 +43,16 @@ public :
 
 
 //********* Set Method *********//
-	void SetId(int id)				{ fId = id; }				//!< Set The Storage Parc'Id
-	void SetParc(CLASS* parc)			{ fParc = parc; }			//!< Set the Pointer to the Parc
-	void SetLog(LogFile* Log)			{ fLog = Log; }				//!< Set the Pointer to the Log
 
 	void SetDecayDataBase(DataBank<ZAI>* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
 	void SetStock(vector<IsotopicVector> IVsstock)	{ fIVStock = IVsstock; }		//!< Set The Storage isotopicVector
 
 //********* Get Method *********//
-	int 			GetId()		const		{ return fId; }			//!< Return the Storage Parc'Is
-	LogFile*		GetLog()	const		{ return fLog; }		//!< Return the Pointer to the Log
-	CLASS*			GetParc()	const		{ return fParc; }		//!< return the Pointer to the Parc
-
-	double GetInternalTime() const				{ return fInternalTime; }	//!< Return Creation Time
 	
 	//!<
-	DataBank<ZAI>* GeDecayDataBase() const		{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
+	DataBank<ZAI>* GeDecayDataBase()	const		{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
 	vector<IsotopicVector> GetStock()	const		{ return fIVStock; }		//!< Return the Storage IsotopicVector
-	IsotopicVector GetFullStock()		const		{ return fIVFullStock; }	//!< Return the Full Storage
+	IsotopicVector GetFullStock()		const		{ return GetInsideIV(); }	//!< Return the Full Storage
 
 //********* IsotopicVector Method *********//
 
@@ -69,8 +63,8 @@ public :
 	
 	void AddToStock(ZAI zai, double quantity)		{ AddToStock(zai*quantity); }		//!< Add a ZAI*quantity to the Storage
 	void AddToStock(IsotopicVector isotopicvector);							//!< Add an Isotopicvector to the Storage
-	void AddToFullStock(ZAI zai, double quantity)		{ fIVFullStock += zai*quantity; }	//!< Add a ZAI*quantity to the Storage
-	void AddToFullStock(IsotopicVector isotopicvector)	{ fIVFullStock += isotopicvector; }	//!< Add a IsotopicVector to the Storage
+	void AddToFullStock(ZAI zai, double quantity)		{ fInsideIV += zai*quantity; }	//!< Add a ZAI*quantity to the Storage
+	void AddToFullStock(IsotopicVector isotopicvector)	{ fInsideIV += isotopicvector; }	//!< Add a IsotopicVector to the Storage
 
 	void TakeFractionFromStock(int IVId,double fraction);						//!< Take a part from an IV in sotck;
 	void TakeFromStock(IsotopicVector isotopicvector);						//!<
@@ -81,22 +75,16 @@ public :
 	
 	
 protected :
-	int		fId;			//!< Identity of the Reactor inside the Parc
-	cSecond		fInternalTime;		///< Internal Clock
 	
 //********* Internal Parameter *********//
-	CLASS* 		fParc;			//!< Pointer to the Parc
-	LogFile*	fLog;			//!< Pointer to the Log
 
 	DataBank<ZAI>*	fDecayDataBase;	//!< Pointer to the Decay DataBase
-
 
 
 //********* Isotopic Quantity *********//
 
 //---------- Storage ----------//
 	vector<IsotopicVector>	fIVStock;	
-	IsotopicVector		fIVFullStock;	///< Full Storage conglomerat
 
 
 
@@ -107,7 +95,7 @@ protected :
 
 
 
-	ClassDef(Storage,1);
+	ClassDef(Storage,2);
 };
 
 #endif
