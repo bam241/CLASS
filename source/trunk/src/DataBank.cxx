@@ -84,7 +84,7 @@ template<>
 DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool olfreadmethod)
 {
 	
-	fLog = Log;
+	SetLog(Log);
 	fDataBaseIndex = DB_index_file;
 	
 	fOldReadMethod = olfreadmethod;
@@ -93,8 +93,8 @@ DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool olfreadmethod)
 	cout	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
 	cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
 	
-	fLog->fLog 	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
-	fLog->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
+	GetLog()->fLog 	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
+	GetLog()->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
 	
 	
 }
@@ -121,7 +121,7 @@ IsotopicVector	DataBank<ZAI>::Evolution(const ZAI& zai, double dt)
 		if( !DB_index)
 		{
 			cout << "!!!EVOLUTIVE DB!!!! Can't open \"" << fDataBaseIndex << "\"" << endl;
-			fLog->fLog << "!!!EVOLUTIVE DB!!!! Can't open \"" << fDataBaseIndex << "\"" << endl;
+			GetLog()->fLog << "!!!EVOLUTIVE DB!!!! Can't open \"" << fDataBaseIndex << "\"" << endl;
 			exit (1);
 		}
 		bool zaifind = false;
@@ -143,7 +143,7 @@ IsotopicVector	DataBank<ZAI>::Evolution(const ZAI& zai, double dt)
 			if(rZ == zai.Z() && rA == zai.A() && rI == zai.I() )
 			{
 				string file_name = StringLine::NextWord(line,start);
-				EvolutionData evolutionproduct = EvolutionData(fLog, file_name);
+				EvolutionData evolutionproduct = EvolutionData(GetLog(), file_name);
 #pragma omp critical(DBupdate)
 				{fDataBank.insert( pair<ZAI ,EvolutionData >(zai, evolutionproduct) );}
 				returnIV = evolutionproduct.GetIsotopicVectorAt(dt);
@@ -153,10 +153,10 @@ IsotopicVector	DataBank<ZAI>::Evolution(const ZAI& zai, double dt)
 		
 		if(zaifind == false)
 		{
-			fLog->fLog << "!!Warning!! !!!EVOLUTIVE DB!!! Oups... Can't Find the ZAI : " ;
-			fLog->fLog << zai.Z() << " " << zai.A() << " "	<< zai.I() << "!!! It will be considered as stable !!" << endl;
+			GetLog()->fLog << "!!Warning!! !!!EVOLUTIVE DB!!! Oups... Can't Find the ZAI : " ;
+			GetLog()->fLog << zai.Z() << " " << zai.A() << " "	<< zai.I() << "!!! It will be considered as stable !!" << endl;
 			
-			EvolutionData evolutionproduct = EvolutionData(fLog," " , false, zai);
+			EvolutionData evolutionproduct = EvolutionData(GetLog()," " , false, zai);
 			{fDataBank.insert( pair<ZAI, EvolutionData >(zai, evolutionproduct) );}
 			returnIV = evolutionproduct.GetIsotopicVectorAt(dt);
 			
@@ -223,8 +223,8 @@ DataBank<IsotopicVector>::DataBank()
 	// Warning
 	cout	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
 	
-	fLog = new LogFile("EvoluData_log");
-	fLog->fLog 	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
+	SetLog(new LogFile("EvoluData_log"));
+	GetLog()->fLog 	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
 	
 	
 	
@@ -236,7 +236,7 @@ template<>
 DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool olfreadmethod)
 {
 	
-	fLog = Log;
+	SetLog(Log);
 	fDataBaseIndex = DB_index_file;
 	fUpdateReferenceDBatEachStep = false;
 	fOldReadMethod = olfreadmethod;
@@ -249,9 +249,9 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool olfr
 	cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
 	cout	<< "\t " << fDataBank.size() << " EvolutionData have been read."<< endl << endl;
 	
-	fLog->fLog 	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
-	fLog->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
-	fLog->fLog	<< "\t " << fDataBank.size() << " EvolutionData have been read."<< endl << endl;
+	GetLog()->fLog 	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
+	GetLog()->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
+	GetLog()->fLog	<< "\t " << fDataBank.size() << " EvolutionData have been read."<< endl << endl;
 	
 	
 }
@@ -264,7 +264,7 @@ void DataBank<IsotopicVector>::ReadDataBase()
 	if(!DataDB)
 	{
 		cout << "!!Warning!! !!!DataBank!!! \n Can't open \"" << fDataBaseIndex << "\"\n" << endl;
-		fLog->fLog << "!!Warning!! !!!DataBank!!! \n Can't open \"" << fDataBaseIndex << "\"\n" << endl;
+		GetLog()->fLog << "!!Warning!! !!!DataBank!!! \n Can't open \"" << fDataBaseIndex << "\"\n" << endl;
 	}
 	vector<double> vTime;
 	vector<double> vTimeErr;
@@ -279,7 +279,7 @@ void DataBank<IsotopicVector>::ReadDataBase()
 	if( StringLine::NextWord(line, start, ' ') != "TYPE")
 	{
 		cout << "!!Bad Trouble!! !!!DataBank!!! Bad Database file : " <<  fDataBaseIndex << " Can't find the type of the DataBase"<< endl;
-		fLog->fLog << "!!Bad Trouble!! !!!DataBank!!! Bad Database file : " <<  fDataBaseIndex << " Can't find the type of the DataBase"<< endl;
+		GetLog()->fLog << "!!Bad Trouble!! !!!DataBank!!! Bad Database file : " <<  fDataBaseIndex << " Can't find the type of the DataBase"<< endl;
 		exit (1);
 	}
 	fFuelType = StringLine::NextWord(line, start, ' ');
@@ -289,7 +289,7 @@ void DataBank<IsotopicVector>::ReadDataBase()
 	if( StringLine::NextWord(line, start, ' ') != "PARAM")
 	{
 		cout << "!!Bad Trouble!! !!!DataBank!!! Bad Database file : " <<  fDataBaseIndex << " Can't find the Parameter of the DataBase"<< endl;
-		fLog->fLog << "!!Bad Trouble!! !!!DataBank!!! Bad Database file : " <<  fDataBaseIndex << " Can't find the Parameter of the DataBase"<< endl;
+		GetLog()->fLog << "!!Bad Trouble!! !!!DataBank!!! Bad Database file : " <<  fDataBaseIndex << " Can't find the Parameter of the DataBase"<< endl;
 		exit (1);
 	}
 	while(start < (int)line.size())
@@ -302,7 +302,7 @@ void DataBank<IsotopicVector>::ReadDataBase()
 		getline(DataDB, line);
 		if(line != "")
 		{
-			EvolutionData* evolutionproduct = new EvolutionData(fLog, line, fOldReadMethod);
+			EvolutionData* evolutionproduct = new EvolutionData(GetLog(), line, fOldReadMethod);
 			IsotopicVector ivtmp  = evolutionproduct->GetIsotopicVectorAt(0.).GetActinidesComposition();
 			fDataBank.insert( pair<IsotopicVector, EvolutionData >(ivtmp , (*evolutionproduct) ));
 		}
@@ -962,7 +962,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	}
 
 	
-	EvolutionData GeneratedDB = EvolutionData(fLog);
+	EvolutionData GeneratedDB = EvolutionData(GetLog());
 	double Flux[16];
 	for(int j = 0; j < 16; j++)
 		Flux[j] = SigmaPhi[index.size()*3][j];
@@ -1012,7 +1012,7 @@ void DataBank<IsotopicVector>::CalculateDistanceParameter()
 		cout << "!!Warning!! !!!CalculateDistanceParameter!!!"
 		<< " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
 		
-		fLog->fLog << "!!Warning!! !!!CalculateDistanceParameter!!!"
+		GetLog()->fLog << "!!Warning!! !!!CalculateDistanceParameter!!!"
 		<< " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
 	}
 	
@@ -1041,17 +1041,17 @@ void DataBank<IsotopicVector>::CalculateDistanceParameter()
 	fDistanceParameter.Multiply((double)1.0/NevolutionDatainDataBank);
 	
 	
-	fLog->fLog <<"!!INFO!! Distance Parameters "<<endl;
+	GetLog()->fLog <<"!!INFO!! Distance Parameters "<<endl;
 	map<ZAI ,double >::iterator it2;
 	for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
 	{
-		fLog->fLog << (*it2).first.Z() << " ";
-		fLog->fLog << (*it2).first.A() << " ";
-		fLog->fLog << (*it2).first.I() << " ";
-		fLog->fLog << ": " << (*it2).second;
-		fLog->fLog << endl;
+		GetLog()->fLog << (*it2).first.Z() << " ";
+		GetLog()->fLog << (*it2).first.A() << " ";
+		GetLog()->fLog << (*it2).first.I() << " ";
+		GetLog()->fLog << ": " << (*it2).second;
+		GetLog()->fLog << endl;
 	}
-	fLog->fLog << endl;
+	GetLog()->fLog << endl;
 	
 	
 	
@@ -1063,17 +1063,17 @@ void DataBank<IsotopicVector>::SetDistanceParameter(IsotopicVector DistanceParam
 	
 	fDistanceParameter=DistanceParameter;
 	
-	fLog->fLog <<"!!INFO!! Distance Parameters "<<endl;
+	GetLog()->fLog <<"!!INFO!! Distance Parameters "<<endl;
 	map<ZAI ,double >::iterator it2;
 	for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
 	{
-		fLog->fLog << (*it2).first.Z() << " ";
-		fLog->fLog << (*it2).first.A() << " ";
-		fLog->fLog << (*it2).first.I() << " ";
-		fLog->fLog << ": " << (*it2).second;
-		fLog->fLog << endl;
+		GetLog()->fLog << (*it2).first.Z() << " ";
+		GetLog()->fLog << (*it2).first.A() << " ";
+		GetLog()->fLog << (*it2).first.I() << " ";
+		GetLog()->fLog << ": " << (*it2).second;
+		GetLog()->fLog << endl;
 	}
-	fLog->fLog << endl;
+	GetLog()->fLog << endl;
 	
 }
 
@@ -1091,7 +1091,7 @@ void DataBank<IsotopicVector>::SetDistanceType(int DistanceType)
 		cout << "!!Warning!! !!!DistanceType!!!"
 		<< " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
 		
-		fLog->fLog << "!!Warning!! !!!DistanceType!!!"
+		GetLog()->fLog << "!!Warning!! !!!DistanceType!!!"
 		<< " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
 		exit(1);
 	}
@@ -1099,7 +1099,7 @@ void DataBank<IsotopicVector>::SetDistanceType(int DistanceType)
 		cout << "!!ERROR!! !!!DistanceType!!!"
 		<< " Distancetype defined by the user isn't recognized by the code"<<endl;
 		
-		fLog->fLog << "!!ERROR!! !!!DistanceType!!!"
+		GetLog()->fLog << "!!ERROR!! !!!DistanceType!!!"
 		<< " Distancetype defined by the user isn't recognized by the code"<<endl;
 		exit(1);
 	}

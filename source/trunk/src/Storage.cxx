@@ -23,32 +23,29 @@ ClassImp(Storage)
 
 Storage::Storage()
 {
-
-	
-
 }
 
 Storage::Storage(LogFile* log)
 {
 	
-	fLog = log;
+	SetLog(log);
 	
 	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 	
-	fLog->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
+	GetLog()->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 	
 }
 //________________________________________________________________________
 Storage::Storage(LogFile* log, DataBank<ZAI>* evolutivedb)
 {
 
-	fLog = log;
+	SetLog(log);
 	fInternalTime = 0;
 	fDecayDataBase = evolutivedb;
 	
 	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 	
-	fLog->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
+	GetLog()->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 
 
 }
@@ -89,7 +86,7 @@ void Storage::ClearStock()
 {
 
 	IsotopicVector EmptyIV;
-	fIVFullStock = EmptyIV;
+	fInsideIV = EmptyIV;
 	fIVStock.clear();
 
 }
@@ -98,7 +95,7 @@ void Storage::ClearStock()
 void Storage::AddToStock(IsotopicVector isotopicvector)
 {
 
-	if(fParc->GetStockManagement() == true)
+	if(GetParc()->GetStockManagement() == true)
 		fIVStock.push_back(isotopicvector);
 	AddToFullStock(isotopicvector);
 
@@ -108,17 +105,17 @@ void Storage::AddToStock(IsotopicVector isotopicvector)
 void Storage::TakeFractionFromStock(int IVId,double fraction)
 {
 
-	if(fParc->GetStockManagement() == true)
+	if(GetParc()->GetStockManagement() == true)
 	{
 		if(fraction > 1 || fraction < 0)
 		{
 			cout << fraction << endl;
 			cout << "!!Warning!! !!!Storage!!! You try to remove fraction superior than 1 or a negative one..." << endl;
-			fLog->fLog << "!!Warning!! !!!Storage!!! You try to remove fraction superior than 1 or a negative one..." << endl;
+			GetLog()->fLog << "!!Warning!! !!!Storage!!! You try to remove fraction superior than 1 or a negative one..." << endl;
 		}
 		else 
 		{
-			fIVFullStock -= fIVStock[IVId]*fraction;
+			fInsideIV -= fIVStock[IVId]*fraction;
 			fIVStock[IVId] = fIVStock[IVId]*(1-fraction);
 			
 		}
@@ -127,7 +124,7 @@ void Storage::TakeFractionFromStock(int IVId,double fraction)
 	else
 	{
 		cout << "!!Warning!! !!!Storage!!! TakeFractionFromStock can't be DEFINE without REAL stock management" << endl;
-		fLog->fLog << "!!Warning!! !!!Storage!!! TakeFractionFromStock can't be DEFINE without REAL stock management" << endl;
+		GetLog()->fLog << "!!Warning!! !!!Storage!!! TakeFractionFromStock can't be DEFINE without REAL stock management" << endl;
 		exit(1);
 
 	}
@@ -139,12 +136,12 @@ void Storage::TakeFractionFromStock(int IVId,double fraction)
 void Storage::TakeFromStock(IsotopicVector isotopicvector)
 {
 
-	if(fParc->GetStockManagement() == false)
-		fIVFullStock -= isotopicvector;
+	if(GetParc()->GetStockManagement() == false)
+		fInsideIV -= isotopicvector;
 	else
 	{
 		cout << "!!Warning!! !!!Storage!!! TakeFromStock can't be DEFINE WITH REAL stock management" << endl;
-		fLog->fLog << "!!Warning!! !!!Storage!!! TakeFromStock can't be DEFINE WITH REAL stock management" << endl;
+		GetLog()->fLog << "!!Warning!! !!!Storage!!! TakeFromStock can't be DEFINE WITH REAL stock management" << endl;
 		exit(1);
 	}
 
@@ -165,7 +162,7 @@ void Storage::StorageEvolution(cSecond t)
 
 	int EvolutionTime = t - fInternalTime;
 
-	fIVFullStock = 	GetDecay(fIVFullStock , EvolutionTime);
+	fInsideIV = 	GetDecay(fInsideIV , EvolutionTime);
 
 #pragma omp parallel for
 	for (int i=0; i <(int) fIVStock.size() ; i++)

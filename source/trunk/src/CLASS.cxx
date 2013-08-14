@@ -58,8 +58,7 @@ CLASS::CLASS()
 	fOutputFileName = "CLASS_Default.root";
 	fOutputTreeName = "Data";
 	
-	fOutputLogName = "CLASS.log";
-	fLog = new LogFile(fOutputLogName.c_str());
+	SetLog(new LogFile("CLASS.log"));
 	fParcPower = 0;
 	
 	
@@ -70,18 +69,54 @@ CLASS::CLASS()
 	cout	<< "\t Absolute Time set at " << (double)(fAbsoluteTime/3600/24/365.25) << " year" << endl;
 	cout	<< "\t StockManagement set at : true" << endl;
 	cout	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	cout	<< "\t Log will be in " << fOutputLogName << endl << endl;
+	cout	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl << endl;
 	
-	fLog->fLog 	<< "!!INFO!! !!!CLASS!!! Parc has been define :" << endl;
-	fLog->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
-	fLog->fLog	<< "\t StockManagement set at : true" << endl;
-	fLog->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	fLog->fLog	<< "\t Log will be in " << fOutputLogName << endl << endl;
+	GetLog()->fLog 	<< "!!INFO!! !!!CLASS!!! Parc has been define :" << endl;
+	GetLog()->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	GetLog()->fLog	<< "\t StockManagement set at : true" << endl;
+	GetLog()->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
+	GetLog()->fLog	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl << endl;
 	
 	
 	
 }
-
+	//________________________________________________________________________
+CLASS::CLASS(LogFile* Log)
+{
+	
+	
+	fNewTtree = true;
+	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
+	fAbsoluteTime = 0;
+	fStartingTime = 0;
+	
+	fStockManagement = true;
+	
+	fOutputFileName = "CLASS_Default.root";
+	fOutputTreeName = "Data";
+	
+	SetLog(Log);
+	fParcPower = 0;
+	
+	
+		// Warning
+	
+	cout	<< "!!INFO!! !!!CLASS!!! A Parc has been define :" << endl;
+	cout	<< "\t Print set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	cout	<< "\t Absolute Time set at " << (double)(fAbsoluteTime/3600/24/365.25) << " year" << endl;
+	cout	<< "\t StockManagement set at : true" << endl;
+	cout	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
+	cout	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl << endl;
+	
+	GetLog()->fLog 	<< "!!INFO!! !!!CLASS!!! Parc has been define :" << endl;
+	GetLog()->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	GetLog()->fLog	<< "\t StockManagement set at : true" << endl;
+	GetLog()->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
+	GetLog()->fLog	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl << endl;
+	
+	
+	
+}
 	//________________________________________________________________________
 CLASS::CLASS(double abstime)
 {
@@ -96,8 +131,7 @@ CLASS::CLASS(double abstime)
 	fOutputFileName = "CLASS_Default.root";
 	fOutputTreeName = "Data";
 	
-	fOutputLogName = "CLASS.log" ;
-	fLog = new LogFile(fOutputLogName.c_str());
+	SetLog(new LogFile("CLASS.log"));
 	fParcPower = 0;
 	
 	
@@ -109,13 +143,13 @@ CLASS::CLASS(double abstime)
 	cout	<< "\t Print set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
 	cout	<< "\t StockManagement set at : true" << endl;
 	cout	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	cout	<< "\t Log will be in " << fOutputLogName << endl;
+	cout	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl;
 	
-	fLog->fLog 	<< "!!INFO!! !!!CLASS!!! Parc has been define :" << endl;
-	fLog->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
-	fLog->fLog	<< "\t StockManagement set at : true" << endl;
-	fLog->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	fLog->fLog	<< "\t Log will be in " << fOutputLogName << endl << endl;
+	GetLog()->fLog 	<< "!!INFO!! !!!CLASS!!! Parc has been define :" << endl;
+	GetLog()->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	GetLog()->fLog	<< "\t StockManagement set at : true" << endl;
+	GetLog()->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
+	GetLog()->fLog	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl << endl;
 	
 	
 	
@@ -139,7 +173,7 @@ void CLASS::AddPool(Pool* Pool)
 	fPool.push_back(Pool);
 	fPool.back()->SetParc(this);
 	fPool.back()->SetDecayDataBase( (*this).GetDecayDataBase() );
-	fPool.back()->SetLog(fLog);
+	fPool.back()->SetLog(GetLog());
 	fPool.back()->SetId((int)fPool.size()-1);
 	
 	
@@ -159,7 +193,7 @@ void CLASS::AddReactor(Reactor* reactor)
 	
 	fReactor.push_back(reactor);
 	fReactor.back()->SetParc(this);
-	fReactor.back()->SetLog(fLog);
+	fReactor.back()->SetLog(GetLog());
 	fReactor.back()->SetId((int)fReactor.size()-1);
 	if(fReactor.back()->IsFuelFixed() == false)
 		fReactor.back()->GetFabricationPlant()->AddReactor( (int)fReactor.size()-1,fReactor.back()->GetCreationTime() );
@@ -184,7 +218,7 @@ void CLASS::AddStorage(Storage* storage)
 	fStorage.push_back(storage);
 	fStorage.back()->SetParc(this);
 	fStorage.back()->SetDecayDataBase( (*this).GetDecayDataBase() );
-	fStorage.back()->SetLog(fLog);
+	fStorage.back()->SetLog(GetLog());
 	fStorage.back()->SetId((int)fStorage.size()-1);
 
 	if(fNewTtree == false)
@@ -204,7 +238,7 @@ void CLASS::AddFabricationPlant(FabricationPlant* fabricationplant)
 	fFabricationPlant.push_back(fabricationplant);
 	fFabricationPlant.back()->SetParc(this);
 	fFabricationPlant.back()->SetDecayDataBase( (*this).GetDecayDataBase() );
-	fFabricationPlant.back()->SetLog(fLog);
+	fFabricationPlant.back()->SetLog(GetLog());
 	fFabricationPlant.back()->SetId((int)fStorage.size()-1);
 	
 	if(fNewTtree == false)
@@ -254,7 +288,7 @@ void CLASS::BuildTimeVector(cSecond t)
 		double fabricationstep = 0;
 		
 		if(fReactor[i]->IsFuelFixed() == false)
-			fabricationstep = fReactor[i]->GetFabricationPlant()->GetFabricationTime();
+			fabricationstep = fReactor[i]->GetFabricationPlant()->GetCycleTime();
 		
 		
 			//********* Reactor Evolution Step *********//
@@ -294,7 +328,7 @@ void CLASS::BuildTimeVector(cSecond t)
 			else if(step - fabricationstep < fStartingTime)
 			{
 				cout		<< "!!Warning!! !!!CLASS!!! Can't Build Fuel before Scenario's start\"\n" << endl;
-				fLog->fLog 	<< "!!Warning!! !!!CLASS!!! Can't Build Fuel before Scenario's start\"\n" << endl;
+				GetLog()->fLog 	<< "!!Warning!! !!!CLASS!!! Can't Build Fuel before Scenario's start\"\n" << endl;
 				exit(1);
 			}
 		}
@@ -359,7 +393,7 @@ void CLASS::BuildTimeVector(cSecond t)
 	if(!TimeStepfile)
 	{
 		cout		<< "!!Warning!! !!!CLASS!!! Can't open \" CLASS_TimeStep \"\n" << endl;
-		fLog->fLog 	<< "!!Warning!! !!!CLASS!!! Can't open \" CLASS_TimeStep \"\n" << endl;
+		GetLog()->fLog 	<< "!!Warning!! !!!CLASS!!! Can't open \" CLASS_TimeStep \"\n" << endl;
 	}
 	map<cSecond ,int >::iterator it;
 	for( it = fTimeStep.begin(); it != fTimeStep.end(); it++)
@@ -574,13 +608,13 @@ void CLASS::OpenOutputTree()
 	
 	
 	cout << "Opening OutPut File ...\t";
-	fLog->fLog << "Opening : " << fOutputFileName << " ...\t";
+	GetLog()->fLog << "Opening : " << fOutputFileName << " ...\t";
 	fOutFile = new TFile(fOutputFileName.c_str(),"UPDATE");
 	
 	if(!fOutFile)
 	{
 		cout << "\nCould not open " << fOutputFileName <<endl;
-		fLog->fLog << "\nCould not open " << fOutputFileName <<endl;
+		GetLog()->fLog << "\nCould not open " << fOutputFileName <<endl;
 		exit(-1);
 	}
 	cout << "\t ...OK!" << endl;
@@ -588,16 +622,16 @@ void CLASS::OpenOutputTree()
 	
 	fOutT = new TTree(fOutputTreeName.c_str(), "Data Tree");
 	cout << "Creating Data Tree ...\t";
-	fLog->fLog << "Creating Data Tree ...\t";
+	GetLog()->fLog << "Creating Data Tree ...\t";
 	if(!fOutT)
 	{
 		cout << "\nCould not create Data Tree in " << fOutputFileName << endl;
-		fLog->fLog << "\nCould not create Data Tree in " << fOutputFileName << endl;
+		GetLog()->fLog << "\nCould not create Data Tree in " << fOutputFileName << endl;
 		exit(-1);
 	}
 	fNewTtree = false;
 	cout << "\t ...OK!" << endl;
-	fLog->fLog <<  "\t ...OK!" << endl;
+	GetLog()->fLog <<  "\t ...OK!" << endl;
 	
 }
 void CLASS::CloseOutputTree()
@@ -606,20 +640,20 @@ void CLASS::CloseOutputTree()
 	
 	fOutFile->ls();
 	cout << "Writing outTree " << fOutputFileName << endl;
-	fLog->fLog << "Writing outTree " << fOutputFileName << endl;
+	GetLog()->fLog << "Writing outTree " << fOutputFileName << endl;
 	fOutFile->Write();
 	
 	if(fOutFile->IsOpen()) {
 		cout << "Deleting outTree : " << endl;
-		fLog->fLog << "Deleting outTree : " << endl;
+		GetLog()->fLog << "Deleting outTree : " << endl;
 		delete fOutT;
 		cout << "Closing file : " << fOutputFileName <<endl;
-		fLog->fLog << "Closing file : " << fOutputFileName <<endl;
+		GetLog()->fLog << "Closing file : " << fOutputFileName <<endl;
 		fOutFile-> Close();
 		delete fOutFile;
 	} else {
 		cout << "File was not opened " << fOutputFileName << endl;
-		fLog->fLog << "File was not opened " << fOutputFileName << endl;
+		GetLog()->fLog << "File was not opened " << fOutputFileName << endl;
 		exit(-1);
 	}
 }
