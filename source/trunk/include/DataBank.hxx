@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 
+#include "CLSSObject.hxx"
+
 using namespace std;
 typedef long long int cSecond;
 
@@ -27,7 +29,8 @@ class LogFile;
 
 
 template <class T> 
-class DataBank {
+class DataBank : public CLSSObject
+{
 
 public :
 //********* Constructor/Destructor Method *********//
@@ -40,8 +43,7 @@ public :
 	~DataBank();
 
 //********* Get Method *********//
-	LogFile*			GetLog()			{ return fLog; }			//!< Return the Pointer to Log
-	map<T ,EvolutionData >	GetDataBank()	const	{ return fDataBank; }		//!< Return the DataBank
+	map<T ,EvolutionData >		GetDataBank()		const	{ return fDataBank; }		//!< Return the DataBank
 	string 				GetDataBaseIndex()	const	{ return fDataBaseIndex; }		//!< Return the index Name
 	string				GetFuelType()		const	{ return fFuelType; }			//!< Return the fuel type of the DB
 	vector<double>			GetFuelParameter()	const	{ return fFuelParameter; }		//!< Return the Fuel parameter of the DB
@@ -49,7 +51,7 @@ public :
 	bool 				IsDefine(const T& key)	const;						//!< True the key is define, false unstead
 
 	map<double, EvolutionData>	GetDistancesTo(IsotopicVector isotopicvector, double t = 0) const;	//! Return a map containing the distance of each EvolutionData in the DataBase to the set IV at the t time
-	EvolutionData	GetClosest(IsotopicVector isotopicvector, double t = 0) const;	//! Return the closest
+	EvolutionData	GetClosest(IsotopicVector isotopicvector, double t = 0) const;	//! Return the closest EvolutionData from the DataBank.
 
 //********* Set Method *********//
 	
@@ -65,10 +67,13 @@ public :
 //********* Modification Method *********//
 	
 	IsotopicVector	Evolution(const T &key, double dt);	///< Return the Product IsotopicVector evolution from zai during a dt time
-	void		ReadDataBase();				///< ...
-	void		CalculateDistanceParameter();///< Calculate automaticly the weight for each ZAI in the distance calculation from the mean XS of the DataBank
-	void		SetDistanceParameter(IsotopicVector DistanceParameter);///< Define mannually the weight for each ZAI in the distance calculation 
-	void		SetDistanceType(int DistanceType);///< Define the way to decide if two isotopic vectors are close. 0 is for the standard norme, 1 for each ZAI weighted with its XS, 2 for each ZAI weighted with coefficient given by the user
+	void	ReadDataBase();				///< ...
+	void	CalculateDistanceParameter();		///< Calcul of the weight for each ZAI in the distance calculation from the mean XS of the DataBank
+	void	SetDistanceParameter(IsotopicVector DistanceParameter);///< Define mannually the weight for each ZAI in the distance calculation
+	void	SetDistanceType(int DistanceType);	///< Define the way to decide if two isotopic vectors are close :
+								///< 0 is for the standard norme,
+								///< 1 for each ZAI weighted with its XS,
+								///< 2 for each ZAI weighted with coefficient given by the user.
 
 
 //********* Printing Method *********//
@@ -77,20 +82,19 @@ public :
 protected :
 	
 	map<T, EvolutionData>	fDataBank;
- 	string				fDataBaseIndex;
- 	LogFile*			fLog;
+ 	string			fDataBaseIndex;
 
-	bool				fUpdateReferenceDBatEachStep;
-	bool				fOldReadMethod;
+	bool			fUpdateReferenceDBatEachStep;
+	bool			fOldReadMethod;
 
 
- 	string 				fFuelType;
- 	pair<double,double>		fBurnUpRange;
- 	vector<double>			fFuelParameter;
+ 	string 			fFuelType;
+ 	pair<double,double>	fBurnUpRange;
+ 	vector<double>		fFuelParameter;
 
-	int 	fDistanceType;		///< 0 is for the standard norme,
+	int 	fDistanceType;		///< 0 is for the standard norm (Default = 0),
 					///< 1 for each ZAI weighted with its XS,
-					///< 2 for each ZAI weighted with coefficient given by the user
+					///< 2 for each ZAI weighted with coefficient given by the user.
 	
 	T	fDistanceParameter;	///< weight for each ZAI in the distance calculation
 

@@ -11,6 +11,7 @@
  @author BaM, Marc
  @version 2.0
  */
+#include "CLSSObject.hxx"
 #include "IsotopicVector.hxx"
 
 #include <TFile.h>
@@ -28,14 +29,14 @@ template <class T> class DataBank;
 class FabricationPlant;
 class Reactor;
 class Pool;
-class LogFile;
 class Storage;
 
-class CLASS 
+class CLASS : public CLSSObject
 {
 public :
 	///< Normal Constructor.
 	CLASS();
+	CLASS(LogFile* Log);
 	CLASS(double abstime);
 	
 	///< Normal Destructor.
@@ -55,7 +56,6 @@ public :
 	bool				GetStockManagement()	{ return fStockManagement; }	///< Return the StockManagement method (True or False)
 	string				GetOutputFileName()	{ return fOutputFileName; }	///< Return the Output File name
 	string				GetOutputTreeName()	{ return fOutputTreeName; }	///< Return the Output File name
-	LogFile*			GetLog()		{ return fLog; }		///< Return the pointer to the log
 
 
 //********* Set Method *********//
@@ -113,9 +113,8 @@ public :
 	
 	
 protected :
-	LogFile*		fLog;			//!< Pointer to the Log
 	bool			fNewTtree;
-	bool			fStockManagement;	///< True if real StockManagement false unstead
+	bool			fStockManagement;	///< True if real StockManagement false unstead (Default = true)
 	
 	
 	cSecond			fPrintStep;		///< Time interval between two output update

@@ -14,15 +14,16 @@
 
 
 
+#include <vector>
+#include <map>
+
+#include "CLSSFacility.hxx"
 #include "IsotopicVector.hxx"
 #include "EvolutionData.hxx"
 
-#include <vector>
-#include <map>
-#include "TNamed.h"
-
 using namespace std;
 typedef long long int cSecond;
+
 
 class Storage;
 class CLASS;
@@ -36,7 +37,7 @@ class DataBank;
 
 
 
-class FabricationPlant : public TNamed
+class FabricationPlant : public CLSSFacility
 {
 
 public :
@@ -53,9 +54,6 @@ public :
 
 //********* Set Method *********//
 	void	SetUpdateReferenceDBatEachStep(bool val){ fUpdateReferenceDBatEachStep = val;}
-	void	SetId(int id)				{ fId = id; }				//!< Set The FB Parc'Id
-	void	SetParc(CLASS* parc)			{ fParc = parc; }			//!< Set the Pointer to the Parc
-	void	SetLog(LogFile* Log)			{ fLog = Log; }				//!< Set the Pointer to the Log
 	void	SetStorage(Storage* storage)		{ fStorage = storage; }			//!< Set the Pointer to the Storage
 	void	SetDecayDataBase(DataBank<ZAI>* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
 	
@@ -64,17 +62,13 @@ public :
 	void	SetSubstitutionFuel(EvolutionData fuel);
 	
 	void	AddReactor(int reactorid, double creationtime)
-			{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-fFabricationTime) ); }	//!< Add a new reactor
+			{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }	//!< Add a new reactor
 
 //********* Get Method *********//
 
-	LogFile*	GetLog()		{ return fLog; }		//!< Return the Pointer to the Log
-	CLASS*		GetParc()		{ return fParc; }		//!< Return the Pointer to the Parc
-	int		GetId()			{ return fId;}
 	Storage*	GetStorage()		{ return fStorage; }		//!< Return the Pointer to the Storage
 
-	cSecond	GetInternalTime() const		{ return fInternalTime; }	//!< Return Creation Time
-	cSecond	GetFabricationTime() const	{ return fFabricationTime; }	//!< Return the Fabrication Time
+		//	cSecond	GetFabricationTime() const	{ return fFabricationTime; }	//!< Return the Fabrication Time
 	
 	
 	map<int, IsotopicVector >	GetReactorFuturIncome() const
@@ -97,7 +91,7 @@ public :
 	IsotopicVector	GetStockToRecycle();								//!< Get the next stock to recycle
 	void 	DumpStock();										//!< Update the storage
 	EvolutionData	BuildEvolutiveDB(int ReactorId, IsotopicVector isotopicvector);		//!< Build the Evolution Database for the Reactir ReactorId Fuel
-	void	TakeReactorFuel(int Id) ;								//!< Remove the Fuel of reactor ReactorId
+	void	TakeReactorFuel(int ReactorId) ;								//!< Remove the Fuel of reactor ReactorId
 	
 
 
@@ -109,14 +103,9 @@ public :
 
 
 protected :
-	int		fId;			///< Identity of the FabricationPlant inside the Parc
-	cSecond		fInternalTime;		///< Internal Clock
 	bool		fUpdateReferenceDBatEachStep;
 
 //********* Internal Parameter *********//
-	CLASS* 		fParc;				//!< Pointer to the Parc
-	LogFile*	fLog;				//!< Pointer to the Log
-
 	map<ZAI ,double>	fValorisableIV;		///< The Valorisable Table
 	map<int, cSecond >	fReactorNextStep;	///< Next Time Step to Build a New Fuel
 
@@ -131,7 +120,7 @@ protected :
 
 	vector< pair<int, double> >	fFractionToTake;	//!< The Temporary Storage IsotopicVector
 
-	double		fFabricationTime;		///< Fabrication Duration Time
+		//	double		fFabricationTime;		///< Fabrication Duration Time
 	bool		fChronologicalTimePriority;	//!< Set the Chronological Priotity (for the Stock Management) or the anti-chronological one
 
 	bool		fSubstitutionFuel;
@@ -144,7 +133,7 @@ protected :
 	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);	//!< Make the Separation 
 						//!< return IV[0] -> To Stock / IV[1] -> To Waste
 
-	ClassDef(FabricationPlant,1);
+	ClassDef(FabricationPlant,2);
 
 };
 

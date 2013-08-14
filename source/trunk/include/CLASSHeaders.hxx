@@ -6,6 +6,8 @@
 
 //CLASS library
 #include "CLASS.hxx"
+#include "CLSSObject.hxx"
+#include "CLSSFacility.hxx"
 #include "Reactor.hxx"
 #include "Pool.hxx"
 #include "FabricationPlant.hxx"
