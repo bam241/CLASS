@@ -23,7 +23,6 @@
 
 
 
-
 using namespace std;
 typedef long long int cSecond;
 
