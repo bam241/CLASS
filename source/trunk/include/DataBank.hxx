@@ -27,6 +27,7 @@ class LogFile;
 
 
 
+
 template <class T> 
 class DataBank : public CLSSObject
 {
@@ -100,7 +101,7 @@ protected :
 	
 	TMatrixT<double>	fDecayMatrix;
 	void	BuildDecayMatrix();
-	TMatrixT<double> BuildBatemanReactionMatrix(EvolutionData EvolutionDataStep,double TStep)
+	TMatrixT<double> BuildBatemanReactionMatrix(EvolutionData EvolutionDataStep,double TStep);
 
 	map<ZAI, int> findex_inver;
 	map<int, ZAI> findex;
