@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "CLSSObject.hxx"
+#include "TMatrix.h"
 
 using namespace std;
 typedef long long int cSecond;
@@ -23,7 +24,6 @@ class IsotopicVector;
 class ZAI;
 class EvolutionData;
 class LogFile;
-
 
 
 
@@ -44,11 +44,11 @@ public :
 
 //********* Get Method *********//
 	map<T ,EvolutionData >		GetDataBank()		const	{ return fDataBank; }		//!< Return the DataBank
-	string 				GetDataBaseIndex()	const	{ return fDataBaseIndex; }		//!< Return the index Name
-	string				GetFuelType()		const	{ return fFuelType; }			//!< Return the fuel type of the DB
-	vector<double>			GetFuelParameter()	const	{ return fFuelParameter; }		//!< Return the Fuel parameter of the DB
-	pair<double,double>		GetBurnUpRange()	const	{ return fBurnUpRange;}			//!< Return the BurnUp range of the DB
-	bool 				IsDefine(const T& key)	const;						//!< True the key is define, false unstead
+	string 				GetDataBaseIndex()	const	{ return fDataBaseIndex; }	//!< Return the index Name
+	string				GetFuelType()		const	{ return fFuelType; }		//!< Return the fuel type of the DB
+	vector<double>			GetFuelParameter()	const	{ return fFuelParameter; }	//!< Return the Fuel parameter of the DB
+	pair<double,double>		GetBurnUpRange()	const	{ return fBurnUpRange;}		//!< Return the BurnUp range of the DB
+	bool 				IsDefine(const T& key)	const;					//!< True the key is define, false unstead
 
 	map<double, EvolutionData>	GetDistancesTo(IsotopicVector isotopicvector, double t = 0) const;	//! Return a map containing the distance of each EvolutionData in the DataBase to the set IV at the t time
 	EvolutionData	GetClosest(IsotopicVector isotopicvector, double t = 0) const;	//! Return the closest EvolutionData from the DataBank.
@@ -59,6 +59,7 @@ public :
 
 	void SetDataBaseIndex(string database) { fDataBaseIndex = database; }
 	EvolutionData GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power); //!< Genration of a New EvolutionData From the one already present
+	EvolutionData NewGenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power); //!< Genration of a New EvolutionData From the one already present
 	void SetUpdateReferenceDBatEachStep(bool val)	{fUpdateReferenceDBatEachStep = val;}
 
 	void SetOldReadMethod(bool val)			{ fOldReadMethod = val;}
@@ -91,13 +92,19 @@ protected :
  	string 			fFuelType;
  	pair<double,double>	fBurnUpRange;
  	vector<double>		fFuelParameter;
-
 	int 	fDistanceType;		///< 0 is for the standard norm (Default = 0),
 					///< 1 for each ZAI weighted with its XS,
 					///< 2 for each ZAI weighted with coefficient given by the user.
 	
 	T	fDistanceParameter;	///< weight for each ZAI in the distance calculation
 
+	
+	TMatrixT<double>	fDecayMatrix;
+	void	BuildDecayMatrix();
+	TMatrixT<double> BuildBatemanReactionMatrix(EvolutionData EvolutionDataStep,double TStep)
+
+	map<ZAI, int> findex_inver;
+	map<int, ZAI> findex;
 
 };
 
