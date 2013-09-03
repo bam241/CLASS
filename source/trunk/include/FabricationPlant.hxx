@@ -20,18 +20,15 @@
 #include "CLSSFacility.hxx"
 #include "IsotopicVector.hxx"
 #include "EvolutionData.hxx"
+#include "CLASS.hxx"
+#include "Storage.hxx"
+#include "Reactor.hxx"
+#include "DataBank.hxx"
+#include "LogFile.hxx"
+#include "ZAI.hxx"
 
 using namespace std;
 typedef long long int cSecond;
-
-
-class Storage;
-class CLASS;
-class LogFile;
-class ZAI;
-class IsotopicVector;		
-template <class T> 
-class DataBank;
 
 
 

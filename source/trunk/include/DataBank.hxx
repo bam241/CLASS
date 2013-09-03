@@ -10,21 +10,23 @@
  @version 2.0
  */
 
-#include <map>
-#include <string>
-#include <vector>
-
 #include "CLSSObject.hxx"
 #include "TMatrix.h"
+#include "IsotopicVector.hxx"
+
+#include <map>
+#include <vector>
+
 
 using namespace std;
 typedef long long int cSecond;
 
-class IsotopicVector;
 class ZAI;
 class EvolutionData;
 class LogFile;
 
+double ReactionRateWeightedDistance(IsotopicVector IV1, EvolutionData DB );
+double ReactionRateWeightedDistance(EvolutionData DB, IsotopicVector IV1  );
 
 
 template <class T> 
@@ -58,7 +60,7 @@ public :
 
 	void SetDataBaseIndex(string database) { fDataBaseIndex = database; }
 	EvolutionData GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power); //!< Genration of a New EvolutionData From the one already present
-	EvolutionData NewGenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power); //!< Genration of a New EvolutionData From the one already present
+	EvolutionData OldGenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power); //!< Genration of a New EvolutionData From the one already present
 	void SetUpdateReferenceDBatEachStep(bool val)	{fUpdateReferenceDBatEachStep = val;}
 
 	void SetOldReadMethod(bool val)			{ fOldReadMethod = val;}
@@ -75,7 +77,7 @@ public :
 								///< 1 for each ZAI weighted with its XS,
 								///< 2 for each ZAI weighted with coefficient given by the user.
 
-
+	void UseOldGeneration()		{fUseOldGeneration = true;}
 //********* Printing Method *********//
 	void Print() const;
 	
@@ -86,7 +88,7 @@ protected :
 
 	bool			fUpdateReferenceDBatEachStep;
 	bool			fOldReadMethod;
-
+	bool			fUseOldGeneration;
 
  	string 			fFuelType;
  	pair<double,double>	fBurnUpRange;
@@ -95,13 +97,16 @@ protected :
 					///< 1 for each ZAI weighted with its XS,
 					///< 2 for each ZAI weighted with coefficient given by the user.
 	
-	T	fDistanceParameter;	///< weight for each ZAI in the distance calculation
+	IsotopicVector	fDistanceParameter;	///< weight for each ZAI in the distance calculation
 
 	
 	TMatrixT<double>	fDecayMatrix;
 	void	BuildDecayMatrix();
 	TMatrixT<double> BuildBatemanReactionMatrix(EvolutionData EvolutionDataStep,double TStep);
+	TMatrixT<double> ExtractXS(EvolutionData EvolutionDataStep,double TStep);
 
+	
+	map<ZAI, map<ZAI, double> > fFastDecay;
 	map<ZAI, int> findex_inver;
 	map<int, ZAI> findex;
 

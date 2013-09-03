@@ -18,7 +18,6 @@
 #include "CLSSObject.hxx"
 #include "ZAI.hxx"
 
-#include "TObject.h"
 #include "TMatrix.h"
 
 class TGraph;
@@ -56,6 +55,9 @@ public :
 	void 	SetPower(double power)			{ fPower = power; }
 	void 	SetHMMass(double HMMass)		{ fHMMass = HMMass; }
 	void	SetFlux(TGraph* flux )			{ fFlux = flux; }
+	void	SetFissionXS(map<ZAI, TGraph*> maptoinsert)	{ fFissionXS = maptoinsert;}
+	void	SetCaptureXS(map<ZAI, TGraph*> maptoinsert)	{ fCaptureXS = maptoinsert;}
+	void	Setn2nXS(map<ZAI, TGraph*> maptoinsert)	{ fn2nXS = maptoinsert;}
 	
 //********* Get Method *********//
 #ifndef __CINT__
@@ -88,6 +90,8 @@ public :
 	bool FissionXSInsert(pair<ZAI, TGraph*> zaitoinsert);
 	bool CaptureXSInsert(pair<ZAI, TGraph*> zaitoinsert);
 	bool n2nXSInsert(pair<ZAI, TGraph*> zaitoinsert);
+	
+
 	
 	
 //********* Get Method *********//
