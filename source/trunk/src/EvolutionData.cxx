@@ -1,28 +1,16 @@
 #include "EvolutionData.hxx"
 
-/*! \class EvolutionData EvolutionData.hxx "../include/EvolutionData.hxx"
- *
- *  Docs for EvolutionData
- */
-
-#include "IsotopicVector.hxx"
 #include "LogFile.hxx"
 #include "StringLine.hxx"
 
-#include "TMatrixT.h"
 #include <TGraph.h>
 #include <TString.h>
 
-#include <string>
 #include <cmath>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-#include <map>
 
-	//#pragma link C++ class pair<ZAI,TGraph*>;
-
-using namespace std;
 	//________________________________________________________________________
 	//
 	//		EvolutionData
@@ -49,7 +37,8 @@ string tlc(string data)
 	return data;
 }
 
-ClassImp(EvolutionData)
+	//________________________________________________________________________
+	//________________________________________________________________________
 	//________________________________________________________________________
 EvolutionData operator*(EvolutionData const& evol, double F)
 {
@@ -94,6 +83,11 @@ EvolutionData operator/(EvolutionData const& evol, double F)
 
 	//________________________________________________________________________
 	//________________________________________________________________________
+
+
+ClassImp(EvolutionData)
+
+
 EvolutionData::EvolutionData()
 {
 }

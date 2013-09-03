@@ -14,13 +14,17 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-#include <map>
 #include <cmath>
 
 
-
-
-using namespace std;
+	//________________________________________________________________________
+	//
+	//		DataBank
+	//
+	//
+	//
+	//
+	//________________________________________________________________________
 
 double ReactionRateWeightedDistance(IsotopicVector IV1, EvolutionData DB )
 {
@@ -55,32 +59,16 @@ double ReactionRateWeightedDistance(EvolutionData DB, IsotopicVector IV1  )
 }
 
 
-	//________________________________________________________________________
-	//
-	//		DataBank
-	//
-	//
-	//
-	//
-	//________________________________________________________________________
-
-
-
-template<>
-void DataBank<IsotopicVector>::ReadDataBase();
-
-template<>
-DataBank<ZAI>::DataBank()
+template<class T>
+DataBank<T>::DataBank()
 {
-	
-	
-	
-		// Warning
-	
-	cout	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define." <<  endl << endl;
-	
-	
 }
+
+	//________________________________________________________________________
+	//________________________________________________________________________
+	//________________________________________________________________________
+	//________________________________________________________________________
+	//________________________________________________________________________
 
 template<>
 DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool olfreadmethod)
@@ -90,6 +78,8 @@ DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool olfreadmethod)
 	fDataBaseIndex = DB_index_file;
 	
 	fOldReadMethod = olfreadmethod;
+	fUseOldGeneration = false;
+
 		// Warning
 	
 	cout	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
@@ -106,8 +96,9 @@ template<>
 DataBank<ZAI>::~DataBank()
 {
 	
-	
 }
+
+	//________________________________________________________________________
 
 template<>
 IsotopicVector	DataBank<ZAI>::Evolution(const ZAI& zai, double dt)
@@ -188,16 +179,6 @@ bool DataBank<ZAI>::IsDefine(const ZAI& zai) const
 	//________________________________________________________________________
 	//________________________________________________________________________
 	//________________________________________________________________________
-	//________________________________________________________________________
-
-
-
-
-
-
-
-
-
 
 
 
@@ -209,29 +190,18 @@ bool DataBank<ZAI>::IsDefine(const ZAI& zai) const
 	//________________________________________________________________________
 	//________________________________________________________________________
 	//________________________________________________________________________
-
 template<>
-DataBank<IsotopicVector>::~DataBank()
-{
-	
-	
-}
-
+void DataBank<IsotopicVector>::ReadDataBase();
 template<>
-DataBank<IsotopicVector>::DataBank()
-{
-	
-	
-	// Warning
-	cout	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
-	
-	SetLog(new LogFile("EvoluData_log"));
-	GetLog()->fLog 	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl << endl;
-	
-	
-	
-	
-}
+TMatrixT<double> DataBank<IsotopicVector>::BuildBatemanReactionMatrix(EvolutionData EvolutionDataStep,double TStep);
+template<>
+TMatrixT<double> DataBank<IsotopicVector>::ExtractXS(EvolutionData EvolutionDataStep,double TStep);
+template<>
+void DataBank<IsotopicVector>::BuildDecayMatrix();
+template<>
+EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power);
+
+	//________________________________________________________________________
 
 
 template<>
@@ -242,7 +212,9 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool olfr
 	fDataBaseIndex = DB_index_file;
 	fUpdateReferenceDBatEachStep = false;
 	fOldReadMethod = olfreadmethod;
+	fUseOldGeneration = false;
 
+	BuildDecayMatrix();
 	ReadDataBase();
 	
 	
@@ -257,6 +229,15 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool olfr
 	
 	
 }
+
+template<>
+DataBank<IsotopicVector>::~DataBank()
+{
+}
+
+	//________________________________________________________________________
+
+
 
 template<>
 void DataBank<IsotopicVector>::ReadDataBase()
@@ -372,8 +353,839 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 	
 }
 
+
+
+
+
+	//________________________________________________________________________
+	//________________________________________________________________________
+
+template<>
+void DataBank<IsotopicVector>::CalculateDistanceParameter()
+{
+	
+	if(fDistanceType!=1){
+		cout << "!!Warning!! !!!CalculateDistanceParameter!!!"
+		<< " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
+		
+		GetLog()->fLog << "!!Warning!! !!!CalculateDistanceParameter!!!"
+		<< " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
+	}
+	
+	fDistanceParameter.Clear();
+	
+		//We calculate the weight for the distance calculation.
+	map<IsotopicVector ,EvolutionData >::iterator it;
+	map<IsotopicVector ,EvolutionData > databank = (*this).GetDataBank();
+	int NevolutionDatainDataBank=0;
+	
+	for( it = databank.begin(); it != databank.end(); it++ ){
+		NevolutionDatainDataBank++;
+		map<ZAI ,double>::iterator itit;
+		map<ZAI ,double> isovector=(*it).first.GetIsotopicQuantity();
+		for(itit=isovector.begin(); itit != isovector.end(); itit++){//Boucle sur ZAI
+			ZAI TmpZAI=(*itit).first;
+			double TmpXS=0;
+			for(int i=1;i<4;i++){		//Loop on Reactions 1==fission, 2==capture, 3==n2n
+				TmpXS+=	(*it).second.GetGetXSForAt(0,TmpZAI,i);
+			}
+			fDistanceParameter.Add(TmpZAI,TmpXS);
+		}
+		
+		
+	}
+	fDistanceParameter.Multiply((double)1.0/NevolutionDatainDataBank);
+	
+	
+	GetLog()->fLog <<"!!INFO!! Distance Parameters "<<endl;
+	map<ZAI ,double >::iterator it2;
+	for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
+	{
+		GetLog()->fLog << (*it2).first.Z() << " ";
+		GetLog()->fLog << (*it2).first.A() << " ";
+		GetLog()->fLog << (*it2).first.I() << " ";
+		GetLog()->fLog << ": " << (*it2).second;
+		GetLog()->fLog << endl;
+	}
+	GetLog()->fLog << endl;
+	
+	
+	
+}
+
+	//________________________________________________________________________
+template<>
+void DataBank<IsotopicVector>::SetDistanceParameter(IsotopicVector DistanceParameter){
+	
+	fDistanceParameter=DistanceParameter;
+	
+	GetLog()->fLog <<"!!INFO!! Distance Parameters "<<endl;
+	map<ZAI ,double >::iterator it2;
+	for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
+	{
+		GetLog()->fLog << (*it2).first.Z() << " ";
+		GetLog()->fLog << (*it2).first.A() << " ";
+		GetLog()->fLog << (*it2).first.I() << " ";
+		GetLog()->fLog << ": " << (*it2).second;
+		GetLog()->fLog << endl;
+	}
+	GetLog()->fLog << endl;
+	
+}
+
+	//________________________________________________________________________
+template<>
+void DataBank<IsotopicVector>::SetDistanceType(int DistanceType)
+{
+	
+	fDistanceType=DistanceType;
+	if(fDistanceType==1){
+		CalculateDistanceParameter();
+	}
+	else if(fDistanceType == 2 && Norme(fDistanceParameter)==0){
+			// This is so bad!! You will probably unsynchronize all the reactor....
+		cout << "!!Warning!! !!!DistanceType!!!"
+		<< " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
+		
+		GetLog()->fLog << "!!Warning!! !!!DistanceType!!!"
+		<< " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
+		exit(1);
+	}
+	else if (fDistanceType != 0 && fDistanceType != 1 && fDistanceType != 2 ){
+		cout << "!!ERROR!! !!!DistanceType!!!"
+		<< " Distancetype defined by the user isn't recognized by the code"<<endl;
+		
+		GetLog()->fLog << "!!ERROR!! !!!DistanceType!!!"
+		<< " Distancetype defined by the user isn't recognized by the code"<<endl;
+		exit(1);
+	}
+	
+}
+
+
+
+
 template<>
 EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power)
+{
+	
+	if(fUseOldGeneration)
+		return OldGenerateEvolutionData( isotopicvector,  cycletime, Power);
+	
+	string ReactorType;
+	double ReactorMass = 0;
+	
+		//-------------------------//
+		//--- Perform Evolution ---//
+		//-------------------------//
+	double timevector[17];
+	timevector[0] = 0.;
+	vector< TMatrixT<double> > NMatrix ;//  TMatrixT<double>(decayindex.size(),1))
+	{	// Filling the t=0 State;
+		map<ZAI, double > isotopicquantity = isotopicvector.GetIsotopicQuantity();
+		TMatrixT<double>  N_0Matrix =  TMatrixT<double>( findex.size(),1) ;
+		
+		map<ZAI, double >::iterator it ;
+		for(int i = 0; i < (int)findex.size(); i++)
+			N_0Matrix[i] = 0;
+		
+		for(it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+		{
+			
+			map<ZAI, int >::iterator it2;
+			
+			if( (*it).first.Z() < 90 )
+				it2 = findex_inver.find( ZAI(-2,-2,-2) );
+			else it2 = findex_inver.find( (*it).first );
+			
+			if(it2 == findex_inver.end() )		//If not in index should be TMP, can't be fast decay for new Fuel !!!
+				it2 = findex_inver.find( ZAI(-3,-3,-3) );
+			
+			N_0Matrix[ (*it2).second ][0] = (*it).second ;
+			
+			
+		}
+		NMatrix.push_back(N_0Matrix);
+	}
+	
+	
+	TMatrixT<double> SigmaPhi = TMatrixT<double>(findex.size()*3+1,16); // Store the XS and the flux trought the evolution calculation.
+	
+	EvolutionData EvolutionDataStep = GetClosest(isotopicvector.GetActinidesComposition(), 0.);	//GetCLosest at the begining of evolution
+	
+	ReactorType = EvolutionDataStep.GetReactorType();
+	
+	for(int i = 0; i < 16; i++)
+	{
+		
+		
+		double TStep = cycletime/16*i;
+		
+		IsotopicVector IVStep;
+		for(int k = 0; k < (int)findex.size(); k++)
+			IVStep += findex.find(k)->second * NMatrix.back()[k][0];
+		
+		
+		
+		double NormFactor = 1;
+		{
+			IsotopicVector WantedHMIV = isotopicvector.GetSpeciesComposition(90)
+			+ isotopicvector.GetSpeciesComposition(92)
+			+ isotopicvector.GetSpeciesComposition(93)
+			+ isotopicvector.GetSpeciesComposition(94)
+			+ isotopicvector.GetSpeciesComposition(95)
+			+ isotopicvector.GetSpeciesComposition(96);
+			
+			IsotopicVector DBHMIV = EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(90)
+			+ EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(92)
+			+ EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(93)
+			+ EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(94)
+			+ EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(95)
+			+ EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(96);
+			
+			NormFactor = Norme(WantedHMIV)/ Norme(DBHMIV);
+		}
+	
+		if(i==0)
+			ReactorMass = EvolutionDataStep.GetHMMass()*NormFactor;
+		
+		
+		if(fUpdateReferenceDBatEachStep)	//Updated At each Step
+		{
+			if(i != 0)			// Update closest
+				EvolutionDataStep = GetClosest(IVStep, TStep);
+			
+				//Extraxt XS (if the refecence is not updated will get it from the Evolution DataBase
+			TMatrixT<double> SigmaPhiTmp = ExtractXS(EvolutionDataStep, TStep);
+			
+			for(int j=0; j < (int)findex.size()*3; j++)	// Store it
+				SigmaPhi[j][i] = SigmaPhiTmp[j][0];
+			
+		}
+		
+			//Old flux calculation -> to Update
+		double Flux = EvolutionDataStep.GetFlux()->Eval(TStep)*Power/(EvolutionDataStep.GetPower()*NormFactor);
+		SigmaPhi[findex.size()*3][i] = Flux; //Update Flux
+		
+		
+		
+		// ----------------   Evolution
+		TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(findex.size(),1);
+		TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
+		TMatrixT<double> BatemanReactionMatrix = BuildBatemanReactionMatrix(EvolutionDataStep, TStep); //Feel the reaction Matrix
+		BatemanMatrix = BatemanReactionMatrix;
+		BatemanMatrix *= Flux;
+
+		BatemanMatrix += fDecayMatrix ;
+
+		double TStepMax = cycletime/16.;
+		timevector[i+1] = timevector[i] + TStepMax;
+		
+		BatemanMatrix *= TStepMax;
+		TMatrixT<double> IdMatrix = TMatrixT<double>(findex.size(),findex.size());
+		for(int j = 0; j < (int)findex.size(); j++)
+			for(int k = 0; k < (int)findex.size(); k++)
+			{
+				if(k == j)	IdMatrix[j][k] = 1;
+				else 		IdMatrix[j][k] = 0;
+			}
+		
+		
+		TMatrixT<double> BatemanMatrixDL = TMatrixT<double>(findex.size(),findex.size());   // Order 0 Term from the DL : Id
+		TMatrixT<double> BatemanMatrixDLTermN = TMatrixT<double>(findex.size(),findex.size());  // Addind it;
+		
+		{
+			BatemanMatrixDLTermN = IdMatrix;
+			BatemanMatrixDL = BatemanMatrixDLTermN;
+			int j = 1;
+			double NormN = 0;
+			
+			do
+			{
+
+				NormN = 0;
+				TMatrixT<double> BatemanMatrixDLTermtmp = TMatrixT<double>(findex.size(),findex.size());  // Adding it;
+				BatemanMatrixDLTermtmp = BatemanMatrixDLTermN;
+				BatemanMatrixDLTermN.Mult(BatemanMatrixDLTermtmp, BatemanMatrix );
+				
+				BatemanMatrixDLTermN *= 1./j;
+				BatemanMatrixDL += BatemanMatrixDLTermN;
+				
+				NormN = 0;
+				for(int m = 0; m < (int)findex.size(); m++)
+					for(int n = 0; n < (int)findex.size(); n++)
+						NormN += BatemanMatrixDLTermN[m][n]*BatemanMatrixDLTermN[m][n];
+				j++;
+				
+			} while ( NormN != 0 );
+		}
+
+		NEvolutionMatrix = BatemanMatrixDL * NMatrix.back() ;
+		NMatrix.push_back(NEvolutionMatrix);
+	}
+	
+	
+	EvolutionData GeneratedDB = EvolutionData(GetLog());
+	double Flux[16];
+	for(int j = 0; j < 16; j++)
+		Flux[j] = SigmaPhi[findex.size()*3][j];
+	GeneratedDB.SetFlux( new TGraph(16, timevector, Flux)  );
+	
+	for(int i = 0; i < (int)findex.size(); i++)
+	{
+		double ZAIQuantity[NMatrix.size()];
+		double FissionXS[16];
+		double CaptureXS[16];
+		double n2nXS[16];
+		for(int j = 0; j < (int)NMatrix.size(); j++)
+			ZAIQuantity[j] = (NMatrix[j])[i][0];
+		
+		for(int j = 0; j < 16; j++)
+		{
+			FissionXS[j]	= SigmaPhi[i][j];
+			CaptureXS[j]	= SigmaPhi[i + findex.size()][j];
+			n2nXS[j]	= SigmaPhi[i + findex.size() + findex.size()][j];
+		}
+		
+		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NMatrix.size(), timevector, ZAIQuantity)));
+		if(fUpdateReferenceDBatEachStep)
+		{
+			GeneratedDB.FissionXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(16, timevector, FissionXS)));
+			GeneratedDB.CaptureXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(16, timevector, CaptureXS)));
+			GeneratedDB.n2nXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(16, timevector, n2nXS)));
+		}
+		else
+		{
+			GeneratedDB.SetFissionXS(EvolutionDataStep.GetFissionXS());
+			GeneratedDB.SetCaptureXS(EvolutionDataStep.GetCaptureXS());
+			GeneratedDB.Setn2nXS(EvolutionDataStep.Getn2nXS());
+
+		}
+	}
+	
+	GeneratedDB.SetPower(Power );
+	GeneratedDB.SetFuelType(fFuelType );
+	GeneratedDB.SetReactorType(ReactorType );
+	GeneratedDB.SetHMMass(ReactorMass );
+	
+	
+	return GeneratedDB;
+	
+}
+
+
+	//________________________________________________________________________
+template<>
+TMatrixT<double> DataBank<IsotopicVector>::BuildBatemanReactionMatrix(EvolutionData EvolutionDataStep,double TStep)
+{
+	
+	map<ZAI, map<ZAI, double> > Capture;
+	{	// 241Am
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,242,0) , 0.086) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,242,1) , 0.914) );
+		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,241,0), toAdd ) );
+	}
+	{	// 242Am*
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,243,0) , 1) );
+		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,242,1), toAdd ) );
+	}
+	
+	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
+	
+	map<ZAI ,TGraph* >::iterator it;
+		// ----------------  A(n,.) X+Y
+	
+	map<ZAI ,TGraph* > FissionXS = EvolutionDataStep.GetFissionXS();
+	
+	for(it = FissionXS.begin() ; it != FissionXS.end(); it++)
+	{
+		
+		if( findex_inver.find( (*it).first ) != findex_inver.end() )
+		{
+			double y;
+			y = (*it).second->Eval(TStep);
+			
+			BatemanMatrix[ findex_inver.find( (*it).first )->second ][findex_inver.find( (*it).first )->second] += -y* 1e-24;
+			BatemanMatrix[1][ findex_inver.find( (*it).first )->second] += 2*y* 1e-24;
+		}
+		
+	}
+	
+		// ----------------  A(n,.)A+1
+	map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetCaptureXS();
+	for(it = CaptureXS.begin(); it != CaptureXS.end(); it++)
+	{
+		if( findex_inver.find( (*it).first ) != findex_inver.end() )
+		{
+			double y;
+			y = (*it).second->Eval(TStep);
+			
+			BatemanMatrix[findex_inver.find( (*it).first )->second][ findex_inver.find( (*it).first )->second ] += -y* 1e-24 ;
+			
+			map<ZAI, map<ZAI, double> >::iterator it3 = Capture.find( (*it).first );
+			
+			if( it3 == Capture.end() )
+			{
+				map<ZAI, int >::iterator it6 = findex_inver.find( ZAI( (*it).first.Z(), (*it).first.A()+1, (*it).first.I()) );
+				
+				if( it6 != findex_inver.end() )
+				{
+					BatemanMatrix[(*it6).second][findex_inver.find( (*it).first )->second] += y* 1e-24  ;
+				}
+				else
+				{
+					map<ZAI, map<ZAI, double> >::iterator it4 = fFastDecay.find(  ZAI( (*it).first.Z(), (*it).first.A()+1, (*it).first.I()) );
+					
+					if( it4 == fFastDecay.end() )
+					{
+						cout << "Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A()+1 << " " << (*it).first.I() << endl;
+						exit(1);
+					}
+					
+					map< ZAI, double >::iterator it5;
+					map< ZAI, double > decaylist2 = (*it4).second;
+					for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
+					{
+						it6 = findex_inver.find( (*it5).first );
+						if( it6 == findex_inver.end() )
+						{
+							cout << "Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A() << " " << (*it).first.I() << endl;
+							exit(1);
+						}
+						BatemanMatrix[(*it6).second][findex_inver.find( (*it).first )->second] += y* 1e-24  * (*it5).second;
+					}
+				}
+			}
+			else
+			{
+				map<ZAI, double>::iterator it4;
+				map<ZAI, double> CaptureList = (*it3).second;
+				for(it4 = CaptureList.begin(); it4 != CaptureList.end() ; it4++)
+				{
+					
+					map<ZAI, int >::iterator it6 = findex_inver.find( (*it4).first );
+					if( it6 != findex_inver.end() )
+						BatemanMatrix[(*it6).second][findex_inver.find( (*it).first )->second] += y* 1e-24  * (*it4).second ;
+					else
+					{
+						map<ZAI, map<ZAI, double> >::iterator it7 = fFastDecay.find( (*it4).first );
+						
+						if( it7 == fFastDecay.end() )
+						{
+							cout << "Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
+							exit(1);
+						}
+						
+						map< ZAI, double >::iterator it5;
+						map< ZAI, double > decaylist2 = (*it7).second;
+						for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
+						{
+							
+							it6 = findex_inver.find( (*it5).first );
+							if( it6 == findex_inver.end() )
+							{
+								cout << "Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
+								exit(1);
+							}
+
+							BatemanMatrix[(*it6).second][findex_inver.find( (*it).first )->second] += y * 1e-24 * (*it5).second * (*it4).second;
+						}
+					}
+					
+				}
+			}
+			
+			
+		}
+	}
+	
+		// ----------------  A(n,2n)A-1
+	map<ZAI ,TGraph* > n2nXS = EvolutionDataStep.Getn2nXS();
+	for(it = n2nXS.begin() ; it != n2nXS.end(); it++)
+	{
+		if( findex_inver.find( (*it).first ) != findex_inver.end() )
+		{
+			double y;
+			y = (*it).second->Eval(TStep);
+			BatemanMatrix[ findex_inver.find( (*it).first )->second ][findex_inver.find( (*it).first )->second] += -y* 1e-24 ;
+			
+			
+			map<ZAI, int>::iterator it3 = findex_inver.find( ZAI( (*it).first.Z(), (*it).first.A()-1, 0) );
+			
+			if( it3 != findex_inver.end() )
+				BatemanMatrix[(*it3).second][findex_inver.find( (*it).first )->second] += y* 1e-24 ;
+			else
+			{
+				
+				map<ZAI, map<ZAI, double> >::iterator it4 = fFastDecay.find( ZAI( (*it).first.Z(), (*it).first.A()-1, 0) );
+				
+				if( it4 == fFastDecay.end() )
+				{
+					it3 = findex_inver.find( ZAI( -3, -3, -3 ) );
+					BatemanMatrix[(*it3).second][findex_inver.find( (*it).first )->second] += y* 1e-24;
+				}
+				else
+				{
+					map< ZAI, double >::iterator it5;
+					map< ZAI, double > decaylist2 = (*it4).second;
+					for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
+					{
+						
+						it3 = findex_inver.find( (*it5).first );
+						if( it3 == findex_inver.end() )
+						{
+							cout << "Problem in FastDecay for nuclei " << (*it4).first.Z() << " " << (*it4).first.A() << " " << (*it4).first.I() << endl;
+							exit(1);
+						}
+						BatemanMatrix[(*it3).second][findex_inver.find( (*it).first )->second] += y* 1e-24 * (*it5).second ;
+					}
+				}
+			}
+		}
+	}
+	return BatemanMatrix;
+}
+
+
+template<>
+TMatrixT<double> DataBank<IsotopicVector>::ExtractXS(EvolutionData EvolutionDataStep,double TStep)
+{
+	
+	map<ZAI ,TGraph* >::iterator it;
+		// ----------------  A(n,.) X+Y
+	
+	map<ZAI ,TGraph* > FissionXS = EvolutionDataStep.GetFissionXS();
+	
+	TMatrixT<double> SigmaPhi = TMatrixT<double>(findex.size()*3+1,1);
+	for(it = FissionXS.begin() ; it != FissionXS.end(); it++)
+	{
+		
+		if( findex_inver.find( (*it).first ) != findex_inver.end() )
+		{
+			double y;
+			y = (*it).second->Eval(TStep);
+			SigmaPhi[findex_inver.find( (*it).first )->second][0] = y ;
+		}
+		
+	}
+	
+		// ----------------  A(n,.)A+1
+	map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetCaptureXS();
+	for(it = CaptureXS.begin(); it != CaptureXS.end(); it++)
+	{
+		if( findex_inver.find( (*it).first ) != findex_inver.end() )
+		{
+			double y;
+			y = (*it).second->Eval(TStep);
+			SigmaPhi[findex_inver.find( (*it).first )->second + findex.size() ][0] = y ;
+			
+		}
+	}
+	
+		// ----------------  A(n,2n)A-1
+	map<ZAI ,TGraph* > n2nXS = EvolutionDataStep.Getn2nXS();
+	for(it = n2nXS.begin() ; it != n2nXS.end(); it++)
+	{
+		if( findex_inver.find( (*it).first ) != findex_inver.end() )
+		{
+			double y;
+			y = (*it).second->Eval(TStep);
+			SigmaPhi[findex_inver.find( (*it).first )->second + findex.size() + findex.size()][0] = y ;
+			
+		}
+	}
+	return SigmaPhi;
+}
+	//________________________________________________________________________
+	//________________________________________________________________________
+
+
+template<>
+void DataBank<IsotopicVector>::BuildDecayMatrix()
+{
+		// List of Decay Time and Properties
+	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
+	
+	{	// TMP
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(-3,-3,-3), pair<double, map< ZAI, double > > ( 1e28 ,toAdd )) ) ;
+	}
+	{	// PF
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-2,-2,-2), 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(-2,-2,-2), pair<double, map< ZAI, double > > ( 1e28 ,toAdd )) ) ;
+	}
+	{	// 232Th
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(90,232,0), pair<double, map< ZAI, double > > ( 2.37944304000000000e+18 , toAdd ) ) );
+	}
+	{	// 233U
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,233,0), pair<double, map< ZAI, double > > ( 5.02396992000000000e+12, toAdd) ) );
+	}
+	{	// 234U
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,234,0), pair<double, map< ZAI, double > > ( 7.74739080000000000e+12, toAdd) ) );
+	}
+	{	// 235U
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,235,0), pair<double, map< ZAI, double > > ( 2.22165504000000000e+16, toAdd) ) );
+	}
+	{	// 236U
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(90,232,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,236,0), pair<double, map< ZAI, double > > ( 7.39078992000000000e+14, toAdd) ) );
+	}
+	{	// 238U
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,238,0), pair<double, map< ZAI, double > > ( 1.40999356800000000e+17, toAdd) ) );
+	}
+	{	// 237Np
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(91,233,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(93,237,0), pair<double, map< ZAI, double > > ( 6.76594944000000000e+13, toAdd) ) );
+	}
+	{	// 238Pu
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(92,234,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,238,0), pair<double, map< ZAI, double > > ( 2.76760152000000000e+09, toAdd) ) );
+	}
+	{	// 239Pu
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(92,235,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,239,0), pair<double, map< ZAI, double > > ( 7.60853736000000000e+11, toAdd) ) );
+	}
+	{	// 240Pu
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(92,236,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,240,0), pair<double, map< ZAI, double > > ( 2.07049413600000000e+11, toAdd) ) );
+	}
+	{	// 241Pu
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,241,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,241,0), pair<double, map< ZAI, double > > ( 4.52062620000000000e+08, toAdd) ) );
+	}
+	{	// 242Pu
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(92,238,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,242,0), pair<double, map< ZAI, double > > ( 1.18341000000000000e+13, toAdd) ) );
+	}
+	{	// 241Am
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(93,237,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(95,241,0), pair<double, map< ZAI, double > > ( 1.36518177600000000e+10, toAdd) ) );
+	}
+	{	// 242Am*
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(93,238,0) , 0.00459) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,242,0) , 0.99541) );
+		
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(95,242,1), pair<double, map< ZAI, double > > ( 4.44962160000000000e+09, toAdd) ) );
+	}
+	{	// 243Am
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,239,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(95,243,0), pair<double, map< ZAI, double > > ( 2.32579512000000000e+11, toAdd) ) );
+	}
+	{	// 242Cm
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,238,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,242,0), pair<double, map< ZAI, double > > ( 1.40659200000000000e+07 , toAdd) ) );
+	}
+	{	// 243Cm
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,239,0) , 0.9971) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,243,0) , 0.0029) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,243,0), pair<double, map< ZAI, double > > ( 9.18326160000000000e+08, toAdd) ) );
+	}
+	{	// 244Cm
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,240,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,244,0), pair<double, map< ZAI, double > > ( 5.71192560000000000e+08, toAdd) ) );
+	}
+	{	// 245Cm
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,241,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,245,0), pair<double, map< ZAI, double > > ( 2.65809664800000000e+11, toAdd) ) );
+	}
+	{	// 246Cm
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,242,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,246,0), pair<double, map< ZAI, double > > ( 1.48510065600000000e+11, toAdd) ) );
+	}
+	{	// 247Cm
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,243,0) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,247,0), pair<double, map< ZAI, double > > ( 4.92298560000000000e+14, toAdd) ) );
+	}
+	{	// 248Cm
+		map< ZAI, double > toAdd;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,248,0), pair<double, map< ZAI, double > > ( 1.09820448000000000e+13, toAdd) ) );
+	}
+	
+	{	// 231Th
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(90,231,0), toAdd ) );
+	}
+	{	// 233Th
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(92,233,0) , 1) );
+		
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(90,233,0), toAdd ) );
+	}
+	{	// 233Pa
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(92,233,0) , 1) );
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(91,233,0), toAdd ) );
+	}
+	{	// 237U
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(93,237,0) , 1) );
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(92,237,0), toAdd ) );
+	}
+	{	// 239U
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,239,0) , 1) );
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(92,239,0), toAdd ) );
+	}
+	{	// 238Np
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,238,0) , 1) );
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,238,0), toAdd ) );
+	}
+	{	// 239Np
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,239,0) , 1) );
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,239,0), toAdd ) );
+	}
+	{	// 240Np
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,240,0) , 1) );
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,240,0), toAdd ) );
+	}
+	{	// 241Np
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,241,0) , 1) );
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,241,0), toAdd ) );
+	}
+	{	// 237Pu
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(93,237,0) , 1) );
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(94,237,0), toAdd ) );
+	}
+	{	// 243Pu
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,243,0) , 1) );
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(94,243,0), toAdd ) );
+	}
+	{	// 240Am
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,240,0) , 1) );
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,240,0), toAdd ) );
+	}
+	{	// 242Am
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(96,242,0) , 0.827) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,242,0) , 0.173) );
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,242,0), toAdd ) );
+	}
+	{	// 244Am
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(96,244,0) , 1) );
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,244,0), toAdd ) );
+	}
+	{	// 245Am
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(96,245,0) , 1) );
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,245,0), toAdd ) );
+	}
+	{	// 249Cm
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ZAI(96,249,0), toAdd ) );
+	}
+	
+	
+		// Build Index avd reverse index, correspondance ZAI-nt (and int-ZAI)
+	{
+		int i = 0;
+		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
+		for(it = ZAIDecay.begin() ; it != ZAIDecay.end(); it++)
+		{
+			findex.insert( pair<int, ZAI > ( i, (*it).first ) );
+			findex_inver.insert( pair<ZAI, int > ( (*it).first , i ));
+			i++;
+		}
+	}
+
+	fDecayMatrix.ResizeTo(findex.size(),findex.size());
+	for(int i = 0; i < (int)findex.size(); i++)
+		for(int j = 0; j < (int)findex.size(); j++)
+			fDecayMatrix[i][j] = 0;
+	
+
+		// Fill the Decay Part of the Bateman Matrix Always the same !
+	{
+		int i = 0;
+		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
+		for(it = ZAIDecay.begin() ; it != ZAIDecay.end(); it++)
+		{
+			map< ZAI, double >::iterator it2;
+			map< ZAI, double > decaylist = (*it).second.second;
+			for(it2 = decaylist.begin(); it2!= decaylist.end(); it2++)
+			{
+				
+				map<ZAI, int >::iterator it3 = findex_inver.find( (*it2).first );
+				if( it3 != findex_inver.end() )
+					fDecayMatrix[(*it3).second][i] = log(2.)/(*it).second.first * (*it2).second;
+				else
+				{
+					map<ZAI, map<ZAI, double> >::iterator it4 = fFastDecay.find( (*it2).first );
+					
+					if( it4 == fFastDecay.end() )
+					{
+						cout << "Problem in FastDecay for nuclei " << (*it2).first.Z() << " " << (*it2).first.A() << " " << (*it2).first.I() << endl;
+						exit(1);
+					}
+					
+					map< ZAI, double >::iterator it5;
+					map< ZAI, double > decaylist2 = (*it4).second;
+					for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
+					{
+						it3 = findex_inver.find( (*it5).first );
+						if( it3 == findex_inver.end() )
+						{
+							cout << "Problem in FastDecay for nuclei " << (*it2).first.Z() << " " << (*it2).first.A() << " " << (*it2).first.I() << endl;
+							exit(1);
+						}
+						fDecayMatrix[(*it3).second][i] = log(2.)/(*it).second.first * (*it2).second * (*it5).second;
+					}
+					
+				}
+			}
+			fDecayMatrix[i][i] += -log(2.)/(*it).second.first;
+			i++;
+			
+			
+		}
+	}
+	
+}
+
+
+template<>
+EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power)
 {
 	
 	string ReactorType;
@@ -614,7 +1426,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			i++;
 		}
 	}
-
+	
 	TMatrixT<double> DecayMatrix = TMatrixT<double>(index.size(),index.size());
 	for(int i = 0; i < (int)index.size(); i++)
 		for(int j = 0; j < (int)index.size(); j++)
@@ -666,7 +1478,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			
 		}
 	}
-
+	
 	
 	
 	
@@ -703,7 +1515,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 		NMatrix.push_back(N_0Matrix);
 	}
 	
-
+	
 	TMatrixT<double> SigmaPhi = TMatrixT<double>(index.size()*3+1,16);
 	
 	EvolutionData EvolutionDataStep = GetClosest(isotopicvector.GetActinidesComposition(), 0.);	//GetCLosest at the begining of evolution
@@ -731,14 +1543,14 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 		
 		double NormFactor = 1;
 		{
-			IsotopicVector WantedHMIV = 	  isotopicvector.GetSpeciesComposition(90)
+			IsotopicVector WantedHMIV = isotopicvector.GetSpeciesComposition(90)
 			+ isotopicvector.GetSpeciesComposition(92)
 			+ isotopicvector.GetSpeciesComposition(93)
 			+ isotopicvector.GetSpeciesComposition(94)
 			+ isotopicvector.GetSpeciesComposition(95)
 			+ isotopicvector.GetSpeciesComposition(96);
 			
-			IsotopicVector DBHMIV =   EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(90)
+			IsotopicVector DBHMIV = EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(90)
 			+ EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(92)
 			+ EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(93)
 			+ EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(94)
@@ -775,7 +1587,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			}
 			
 		}
-
+		
 			// ----------------  A(n,.)A+1
 		map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetCaptureXS();
 		for(it = CaptureXS.begin(); it != CaptureXS.end(); it++)
@@ -865,7 +1677,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 				
 			}
 		}
-
+		
 			// ----------------  A(n,2n)A-1
 		map<ZAI ,TGraph* > n2nXS = EvolutionDataStep.Getn2nXS();
 		for(it = n2nXS.begin() ; it != n2nXS.end(); it++)
@@ -911,7 +1723,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 				}
 			}
 		}
-
+		
 			// ----------------   Evolution
 		TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(index.size(),1);
 		
@@ -919,7 +1731,6 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 		timevector[i+1] = timevector[i] + TStepMax;
 		
 		BatemanMatrix *= TStepMax;
-		
 		TMatrixT<double> IdMatrix = TMatrixT<double>(index.size(),index.size());
 		for(int j = 0; j < (int)index.size(); j++)
 			for(int k = 0; k < (int)index.size(); k++)
@@ -931,7 +1742,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 		
 		TMatrixT<double> BatemanMatrixDL = TMatrixT<double>(index.size(),index.size());   // Order 0 Term from the DL : Id
 		TMatrixT<double> BatemanMatrixDLTermN = TMatrixT<double>(index.size(),index.size());  // Addind it;
-
+		
 		{
 			BatemanMatrixDLTermN = IdMatrix;
 			BatemanMatrixDL = BatemanMatrixDLTermN;
@@ -942,7 +1753,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			
 			do
 			{
-
+				
 				NormN = 0;
 				TMatrixT<double> BatemanMatrixDLTermtmp = TMatrixT<double>(index.size(),index.size());  // Adding it;
 				BatemanMatrixDLTermtmp = BatemanMatrixDLTermN;
@@ -958,11 +1769,11 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 				j++;
 			} while ( NormN != 0 );
 		}
-
+		
 		NEvolutionMatrix = BatemanMatrixDL * NMatrix.back() ;
 		NMatrix.push_back(NEvolutionMatrix);
 	}
-
+	
 	
 	EvolutionData GeneratedDB = EvolutionData(GetLog());
 	double Flux[16];
@@ -997,585 +1808,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	GeneratedDB.SetReactorType(ReactorType );
 	GeneratedDB.SetHMMass(ReactorMass );
 	
-
-	return GeneratedDB;
-	
-}
-
-
-
-	//________________________________________________________________________
-	//________________________________________________________________________
-
-template<>
-void DataBank<IsotopicVector>::CalculateDistanceParameter()
-{
-	
-	if(fDistanceType!=1){
-		cout << "!!Warning!! !!!CalculateDistanceParameter!!!"
-		<< " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
-		
-		GetLog()->fLog << "!!Warning!! !!!CalculateDistanceParameter!!!"
-		<< " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
-	}
-	
-	fDistanceParameter.Clear();
-	
-		//We calculate the weight for the distance calculation.
-	map<IsotopicVector ,EvolutionData >::iterator it;
-	map<IsotopicVector ,EvolutionData > databank = (*this).GetDataBank();
-	int NevolutionDatainDataBank=0;
-	
-	for( it = databank.begin(); it != databank.end(); it++ ){
-		NevolutionDatainDataBank++;
-		map<ZAI ,double>::iterator itit;
-		map<ZAI ,double> isovector=(*it).first.GetIsotopicQuantity();
-		for(itit=isovector.begin(); itit != isovector.end(); itit++){//Boucle sur ZAI
-			ZAI TmpZAI=(*itit).first;
-			double TmpXS=0;
-			for(int i=1;i<4;i++){		//Loop on Reactions 1==fission, 2==capture, 3==n2n
-				TmpXS+=	(*it).second.GetGetXSForAt(0,TmpZAI,i);
-			}
-			fDistanceParameter.Add(TmpZAI,TmpXS);
-		}
-		
-		
-	}
-	fDistanceParameter.Multiply((double)1.0/NevolutionDatainDataBank);
-	
-	
-	GetLog()->fLog <<"!!INFO!! Distance Parameters "<<endl;
-	map<ZAI ,double >::iterator it2;
-	for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
-	{
-		GetLog()->fLog << (*it2).first.Z() << " ";
-		GetLog()->fLog << (*it2).first.A() << " ";
-		GetLog()->fLog << (*it2).first.I() << " ";
-		GetLog()->fLog << ": " << (*it2).second;
-		GetLog()->fLog << endl;
-	}
-	GetLog()->fLog << endl;
-	
-	
-	
-}
-
-	//________________________________________________________________________
-template<>
-void DataBank<IsotopicVector>::SetDistanceParameter(IsotopicVector DistanceParameter){
-	
-	fDistanceParameter=DistanceParameter;
-	
-	GetLog()->fLog <<"!!INFO!! Distance Parameters "<<endl;
-	map<ZAI ,double >::iterator it2;
-	for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
-	{
-		GetLog()->fLog << (*it2).first.Z() << " ";
-		GetLog()->fLog << (*it2).first.A() << " ";
-		GetLog()->fLog << (*it2).first.I() << " ";
-		GetLog()->fLog << ": " << (*it2).second;
-		GetLog()->fLog << endl;
-	}
-	GetLog()->fLog << endl;
-	
-}
-
-	//________________________________________________________________________
-template<>
-void DataBank<IsotopicVector>::SetDistanceType(int DistanceType)
-{
-	
-	fDistanceType=DistanceType;
-	if(fDistanceType==1){
-		CalculateDistanceParameter();
-	}
-	else if(fDistanceType==2&&Norme(fDistanceParameter)==0){
-			// This is so bad!! You will probably unsynchronize all the reactor....
-		cout << "!!Warning!! !!!DistanceType!!!"
-		<< " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
-		
-		GetLog()->fLog << "!!Warning!! !!!DistanceType!!!"
-		<< " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
-		exit(1);
-	}
-	else if (fDistanceType!=0&&fDistanceType!=1&&fDistanceType!=2){
-		cout << "!!ERROR!! !!!DistanceType!!!"
-		<< " Distancetype defined by the user isn't recognized by the code"<<endl;
-		
-		GetLog()->fLog << "!!ERROR!! !!!DistanceType!!!"
-		<< " Distancetype defined by the user isn't recognized by the code"<<endl;
-		exit(1);
-	}
-	
-}
-
-
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
-
-
-template<>
-EvolutionData DataBank<IsotopicVector>::NewGenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power)
-{
-	
-	string ReactorType;
-	double ReactorMass = 0;
-	
-		//-------------------------//
-		//--- Perform Evolution ---//
-		//-------------------------//
-	double timevector[17];
-	timevector[0] = 0.;
-	vector< TMatrixT<double> > NMatrix ;//  TMatrixT<double>(decayindex.size(),1))
-	{	// Filling the t=0 State;
-		map<ZAI, double > isotopicquantity = isotopicvector.GetIsotopicQuantity();
-		TMatrixT<double>  N_0Matrix =  TMatrixT<double>( findex.size(),1) ;
-		
-		map<ZAI, double >::iterator it ;
-		for(int i = 0; i < (int)findex.size(); i++)
-			N_0Matrix[i] = 0;
-		
-		for(it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
-		{
-			
-			map<ZAI, int >::iterator it2;
-			
-			if( (*it).first.Z() < 90 )
-				it2 = findex_inver.find( ZAI(-2,-2,-2) );
-			else it2 = findex_inver.find( (*it).first );
-			
-			if(it2 == findex_inver.end() )				//If not in index should be TMP, can't be fast decay for new Fuel !!!
-				it2 = findex_inver.find( ZAI(-3,-3,-3) );
-			
-			N_0Matrix[ (*it2).second ][0] = (*it).second ;
-			
-			
-		}
-		NMatrix.push_back(N_0Matrix);
-	}
-	
-	
-	TMatrixT<double> SigmaPhi = TMatrixT<double>(findex.size()*3+1,16);
-	
-	EvolutionData EvolutionDataStep = GetClosest(isotopicvector.GetActinidesComposition(), 0.);	//GetCLosest at the begining of evolution
-	
-		//return EvolutionDataStep.GenerateDBFor(isotopicvector);
-	
-	ReactorType = EvolutionDataStep.GetReactorType();
-	
-	for(int i = 0; i < 16; i++)
-	{
-		
-		
-		double TStep = cycletime/16*i;
-		
-		TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
-		BatemanMatrix = fDecayMatrix ;
-		
-		
-		IsotopicVector IVStep;
-		for(int k = 0; k < (int)findex.size(); k++)
-			IVStep += findex.find(k)->second * NMatrix.back()[k][0];
-		
-		if(fUpdateReferenceDBatEachStep && i != 0);		//GetCLosest at the each of evolution step (begining already done...)
-		EvolutionDataStep = GetClosest(IVStep, TStep);
-		
-		double NormFactor = 1;
-		{
-			IsotopicVector WantedHMIV = 	  isotopicvector.GetSpeciesComposition(90)
-			+ isotopicvector.GetSpeciesComposition(92)
-			+ isotopicvector.GetSpeciesComposition(93)
-			+ isotopicvector.GetSpeciesComposition(94)
-			+ isotopicvector.GetSpeciesComposition(95)
-			+ isotopicvector.GetSpeciesComposition(96);
-			
-			IsotopicVector DBHMIV =   EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(90)
-			+ EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(92)
-			+ EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(93)
-			+ EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(94)
-			+ EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(95)
-			+ EvolutionDataStep.GetIsotopicVectorAt(0).GetSpeciesComposition(96);
-			
-			NormFactor = Norme(WantedHMIV)/ Norme(DBHMIV);
-		}
-		if(i==0)
-			ReactorMass = EvolutionDataStep.GetHMMass()*NormFactor;
-		
-		
-		double Flux = EvolutionDataStep.GetFlux()->Eval(TStep)*Power/(EvolutionDataStep.GetPower()*NormFactor);
-		SigmaPhi[findex.size()*3][i] = Flux;
-		
-		
-		map<ZAI ,TGraph* >::iterator it;
-			// ----------------  A(n,.) X+Y
-		TMatrixT<double> BatemanReactionMatrix = BuildBatemanReactionMatrix(EvolutionDataStep, TStep);
-		
-		map<ZAI ,TGraph* > FissionXS = EvolutionDataStep.GetFissionXS();
-		
-		for(it = FissionXS.begin() ; it != FissionXS.end(); it++)
-		{
-			
-			if( findex_inver.find( (*it).first ) != findex_inver.end() )
-			{
-				double y;
-				y = (*it).second->Eval(TStep);
-				
-				BatemanMatrix[ findex_inver.find( (*it).first )->second ][findex_inver.find( (*it).first )->second] += -y* 1e-24 *Flux;
-				BatemanMatrix[1][ findex_inver.find( (*it).first )->second] += 2*y* 1e-24 *Flux;
-				
-				SigmaPhi[findex_inver.find( (*it).first )->second][i] = y ;
-			}
-			
-		}
-		
-			// ----------------  A(n,.)A+1
-		map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetCaptureXS();
-		for(it = CaptureXS.begin(); it != CaptureXS.end(); it++)
-		{
-			if( findex_inver.find( (*it).first ) != findex_inver.end() )
-			{
-				double y;
-				y = (*it).second->Eval(TStep);
-				BatemanMatrix[ findex_inver.find( (*it).first )->second ][findex_inver.find( (*it).first )->second] += -y* 1e-24 *Flux;
-				SigmaPhi[findex_inver.find( (*it).first )->second + findex.size() + findex.size()][i] = y ;
-				
-				
-				map<ZAI, int>::iterator it3 = findex_inver.find( ZAI( (*it).first.Z(), (*it).first.A()+1, 0) );
-				
-				if( it3 == findex_inver.end() )
-				{
-					cout << "Problem Capture Reaction for nuclei " << (*it).first.Z() << " " << (*it).first.A()+1 << " " << (*it).first.I() << endl;
-					exit(1);
-				}
-				else
-					BatemanMatrix[(*it3).second][findex_inver.find( (*it).first )->second] += y* 1e-24 *Flux;
-				
-			}
-		}
-		
-			// ----------------  A(n,2n)A-1
-		map<ZAI ,TGraph* > n2nXS = EvolutionDataStep.Getn2nXS();
-		for(it = n2nXS.begin() ; it != n2nXS.end(); it++)
-		{
-			if( findex_inver.find( (*it).first ) != findex_inver.end() )
-			{
-				double y;
-				y = (*it).second->Eval(TStep);
-				BatemanMatrix[ findex_inver.find( (*it).first )->second ][findex_inver.find( (*it).first )->second] += -y* 1e-24 *Flux;
-				SigmaPhi[findex_inver.find( (*it).first )->second + findex.size() + findex.size()][i] = y ;
-				
-				
-				map<ZAI, int>::iterator it3 = findex_inver.find( ZAI( (*it).first.Z(), (*it).first.A()-1, 0) );
-				
-				if( it3 == findex_inver.end() )
-				{
-					cout << "Problem (n,2n) Reaction for nuclei " << (*it).first.Z() << " " << (*it).first.A()+1 << " " << (*it).first.I() << endl;
-					exit(1);
-				}
-				else
-					BatemanMatrix[(*it3).second][findex_inver.find( (*it).first )->second] += y* 1e-24 *Flux;
-				
-			}
-		}
-		
-			// ----------------   Evolution
-		TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(findex.size(),1);
-		
-		double TStepMax = cycletime/16.;
-		timevector[i+1] = timevector[i] + TStepMax;
-		
-		BatemanMatrix *= TStepMax;
-		
-		TMatrixT<double> IdMatrix = TMatrixT<double>(findex.size(),findex.size());
-		for(int j = 0; j < (int)findex.size(); j++)
-			for(int k = 0; k < (int)findex.size(); k++)
-			{
-				if(k == j)	IdMatrix[j][k] = 1;
-				else 		IdMatrix[j][k] = 0;
-			}
-		
-		
-		TMatrixT<double> BatemanMatrixDL = TMatrixT<double>(findex.size(),findex.size());   // Order 0 Term from the DL : Id
-		TMatrixT<double> BatemanMatrixDLTermN = TMatrixT<double>(findex.size(),findex.size());  // Addind it;
-		
-		{
-			BatemanMatrixDLTermN = IdMatrix;
-			BatemanMatrixDL = BatemanMatrixDLTermN;
-			
-			
-			int j = 1;
-			double NormN = 0;
-			
-			do
-			{
-				
-				NormN = 0;
-				TMatrixT<double> BatemanMatrixDLTermtmp = TMatrixT<double>(findex.size(),findex.size());  // Adding it;
-				BatemanMatrixDLTermtmp = BatemanMatrixDLTermN;
-				BatemanMatrixDLTermN.Mult(BatemanMatrixDLTermtmp, BatemanMatrix );
-				
-				BatemanMatrixDLTermN *= 1./j;
-				BatemanMatrixDL += BatemanMatrixDLTermN;
-				
-				NormN = 0;
-				for(int m = 0; m < (int)findex.size(); m++)
-					for(int n = 0; n < (int)findex.size(); n++)
-						NormN += BatemanMatrixDLTermN[m][n]*BatemanMatrixDLTermN[m][n];
-				j++;
-			} while ( NormN != 0 );
-		}
-		
-		NEvolutionMatrix = BatemanMatrixDL * NMatrix.back() ;
-		NMatrix.push_back(NEvolutionMatrix);
-	}
-	
-	
-	EvolutionData GeneratedDB = EvolutionData(GetLog());
-	double Flux[16];
-	for(int j = 0; j < 16; j++)
-		Flux[j] = SigmaPhi[findex.size()*3][j];
-	GeneratedDB.SetFlux( new TGraph(16, timevector, Flux)  );
-	
-	for(int i = 0; i < (int)findex.size(); i++)
-	{
-		double ZAIQuantity[NMatrix.size()];
-		double FissionXS[16];
-		double CaptureXS[16];
-		double n2nXS[16];
-		for(int j = 0; j < (int)NMatrix.size(); j++)
-			ZAIQuantity[j] = (NMatrix[j])[i][0];
-		
-		for(int j = 0; j < 16; j++)
-		{
-			FissionXS[j]	= SigmaPhi[i][j];
-			CaptureXS[j]	= SigmaPhi[i + findex.size()][j];
-			n2nXS[j]	= SigmaPhi[i + findex.size() + findex.size()][j];
-		}
-		
-		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NMatrix.size(), timevector, ZAIQuantity) ) );
-		GeneratedDB.FissionXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(16, timevector, FissionXS) ) );
-		GeneratedDB.CaptureXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(16, timevector, CaptureXS) ) );
-		GeneratedDB.n2nXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(16, timevector, n2nXS) ) );
-	}
-	
-	GeneratedDB.SetPower(Power );
-	GeneratedDB.SetFuelType(fFuelType );
-	GeneratedDB.SetReactorType(ReactorType );
-	GeneratedDB.SetHMMass(ReactorMass );
-	
 	
 	return GeneratedDB;
 	
 }
-
-template<>
-void DataBank<IsotopicVector>::BuildDecayMatrix()
-{
-	
-	
-		// List of Decay Time and Properties
-	
-	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
-	
-	{	// TMP
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(-3,-3,-3), pair<double, map< ZAI, double > > ( 1e28 ,toAdd )) ) ;
-	}
-	{	// PF
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-2,-2,-2), 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(-2,-2,-2), pair<double, map< ZAI, double > > ( 1e28 ,toAdd )) ) ;
-	}
-	{	// 231Th
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(90,232,0), pair<double, map< ZAI, double > > ( 9.18720000000000000e+04 , toAdd ) ) );
-	}
-	{	// 232Th
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(90,232,0), pair<double, map< ZAI, double > > ( 4.41806400000000000e+17 , toAdd ) ) );
-	}
-	{	// 233U
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,233,0), pair<double, map< ZAI, double > > ( 5.02396992000000000e+12, toAdd) ) );
-	}
-	{	// 234U
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,234,0), pair<double, map< ZAI, double > > ( 7.74739080000000000e+12, toAdd) ) );
-	}
-	{	// 235U
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,235,0), pair<double, map< ZAI, double > > ( 2.22165504000000000e+16, toAdd) ) );
-	}
-	{	// 236U
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(90,232,0) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,236,0), pair<double, map< ZAI, double > > ( 7.39078992000000000e+14, toAdd) ) );
-	}
-	{	// 238U
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(92,238,0), pair<double, map< ZAI, double > > ( 1.40999356800000000e+17, toAdd) ) );
-	}
-	{	// 237Np
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(91,233,0) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(93,237,0), pair<double, map< ZAI, double > > ( 6.76594944000000000e+13, toAdd) ) );
-	}
-	{	// 238Pu
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(92,234,0) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,238,0), pair<double, map< ZAI, double > > ( 2.76760152000000000e+09, toAdd) ) );
-	}
-	{	// 239Pu
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(92,235,0) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,239,0), pair<double, map< ZAI, double > > ( 7.60853736000000000e+11, toAdd) ) );
-	}
-	{	// 240Pu
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(92,236,0) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,240,0), pair<double, map< ZAI, double > > ( 2.07049413600000000e+11, toAdd) ) );
-	}
-	{	// 241Pu
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(95,241,0) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,241,0), pair<double, map< ZAI, double > > ( 4.52062620000000000e+08, toAdd) ) );
-	}
-	{	// 242Pu
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(92,238,0) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,242,0), pair<double, map< ZAI, double > > ( 1.18341000000000000e+13, toAdd) ) );
-	}
-	{	// 241Am
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(93,237,0) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(95,241,0), pair<double, map< ZAI, double > > ( 1.36518177600000000e+10, toAdd) ) );
-	}
-	{	// 242Am
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(96,242,0) , 0.827) );
-		toAdd.insert(pair<ZAI, double> ( ZAI(94,242,0) , 0.173) );
-		
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(95,242,0), pair<double, map< ZAI, double > > ( 5.76720000000000000e+04, toAdd) ) );
-	}
-	{	// 242Am*
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(93,238,0) , 0.00459) );
-		toAdd.insert(pair<ZAI, double> ( ZAI(95,242,0) , 0.99541) );
-		
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(95,242,1), pair<double, map< ZAI, double > > ( 4.44962160000000000e+09, toAdd) ) );
-	}
-	{	// 243Am
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(94,239,0) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(95,243,0), pair<double, map< ZAI, double > > ( 2.32579512000000000e+11, toAdd) ) );
-	}
-	{	// 242Cm
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(94,238,0) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,242,0), pair<double, map< ZAI, double > > ( 1.40659200000000000e+07 , toAdd) ) );
-	}
-	{	// 243Cm
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(94,239,0) , 0.9971) );
-		toAdd.insert(pair<ZAI, double> ( ZAI(95,243,0) , 0.0029) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,243,0), pair<double, map< ZAI, double > > ( 9.18326160000000000e+08, toAdd) ) );
-	}
-	{	// 244Cm
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(94,240,0) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,244,0), pair<double, map< ZAI, double > > ( 5.71192560000000000e+08, toAdd) ) );
-	}
-	{	// 245Cm
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(94,241,0) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,245,0), pair<double, map< ZAI, double > > ( 2.65809664800000000e+11, toAdd) ) );
-	}
-	{	// 246Cm
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(94,242,0) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,246,0), pair<double, map< ZAI, double > > ( 1.48510065600000000e+11, toAdd) ) );
-	}
-	{	// 247Cm
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(94,243,0) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,247,0), pair<double, map< ZAI, double > > ( 4.92298560000000000e+14, toAdd) ) );
-	}
-	{	// 248Cm
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,248,0), pair<double, map< ZAI, double > > ( 1.09820448000000000e+13, toAdd) ) );
-	}
-	
-	{	// 249Cm
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,249,0), pair<double, map< ZAI, double > > ( 3.84900000000000045e+03, toAdd) ) );
-	}
-
-	
-		// Build Index avd reverse index, correspondance ZAI-nt (and int-ZAI)
-	{
-		int i = 0;
-		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
-		for(it = ZAIDecay.begin() ; it != ZAIDecay.end(); it++)
-		{
-			findex.insert( pair<int, ZAI > ( i, (*it).first ) );
-			findex_inver.insert( pair<ZAI, int > ( (*it).first , i ));
-			i++;
-		}
-	}
-
-	fDecayMatrix = TMatrixT<double>(findex.size(),findex.size());
-	for(int i = 0; i < (int)findex.size(); i++)
-		for(int j = 0; j < (int)findex.size(); j++)
-			fDecayMatrix[i][j] = 0;
-	
-	
-		// Fill the Decay Part of the Bateman Matrix Always the same !
-	{
-		int i = 0;
-		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
-		for(it = ZAIDecay.begin() ; it != ZAIDecay.end(); it++)
-		{
-			map< ZAI, double >::iterator it2;
-			map< ZAI, double > decaylist = (*it).second.second;
-			for(it2 = decaylist.begin(); it2!= decaylist.end(); it2++)
-			{
-				map<ZAI, int >::iterator it3 = findex_inver.find( (*it2).first );
-				if( it3 == findex_inver.end() )
-				{
-					cout << "Problem in FastDecay for nuclei " << (*it2).first.Z() << " " << (*it2).first.A() << " " << (*it2).first.I() << endl;
-					exit(1);
-				}
-				else 
-					fDecayMatrix[(*it3).second][i] = log(2.)/(*it).second.first * (*it2).second;
-			}
-			fDecayMatrix[i][i] += -log(2.)/(*it).second.first;
-			i++;
-			
-			
-		}
-	}
-	
-}
-
-	//________________________________________________________________________
-	//________________________________________________________________________
-
-
-
-

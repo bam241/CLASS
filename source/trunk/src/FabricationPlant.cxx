@@ -1,7 +1,6 @@
 #include "FabricationPlant.hxx"
 
 #include "Storage.hxx"
-#include "FabricationPlant.hxx"
 #include "Reactor.hxx"
 #include "EvolutionData.hxx"
 #include "DataBank.hxx"
@@ -21,6 +20,8 @@
 #include <algorithm>
 
 	//________________________________________________________________________
+	//________________________________________________________________________
+	//________________________________________________________________________
 	//
 	//		FabricationPlant
 	//
@@ -28,14 +29,16 @@
 	//
 	//
 	//________________________________________________________________________
-ClassImp(FabricationPlant)
-
+	//________________________________________________________________________
 template <class T>  T random(T a, T b) //peak random numebr between a and b
 {
 	double range = pow(2., 31);
 	srand(time(NULL)); //initialize the srand
 	return (T)a + (T)(b-a)*rand()/range;
 }
+
+ClassImp(FabricationPlant)
+
 
 
 FabricationPlant::FabricationPlant()
@@ -362,6 +365,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 	
 }
 
+
 void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel)
 {
 	
@@ -406,24 +410,10 @@ EvolutionData FabricationPlant::BuildEvolutiveDB(int ReactorId,IsotopicVector is
 	isotopicvector = GetDecay(isotopicvector, GetCycleTime());
 	
 	EvolutionData EvolBuild;
-	/*
-	if( fUpdateReferenceDBatEachStep == true )
-	{
-		EvolutionData EvolBuild = evolutiondb->GenerateDB(isotopicvector,
-								  GetParc()->GetReactor()[ReactorId]->GetCycleTime(),
-								  GetParc()->GetReactor()[ReactorId]->GetPower());
-	}
-	else
-	{
-		map<double, EvolutionData> distances = evolutiondb->GetDistancesTo(isotopicvector);
-		EvolBuild = distances.begin()->second.GenerateDBFor(isotopicvector);
-		
-	}
-	 */
-	EvolBuild = evolutiondb->GenerateEvolutionData(isotopicvector,
+
+			EvolBuild = evolutiondb->GenerateEvolutionData(isotopicvector,
 					    GetParc()->GetReactor()[ReactorId]->GetCycleTime(),
 					    GetParc()->GetReactor()[ReactorId]->GetPower());
-	 
 	return EvolBuild;
 	
 }
