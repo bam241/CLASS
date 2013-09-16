@@ -21,6 +21,9 @@
 //
 //
 //________________________________________________________________________
+
+
+
 ClassImp(Reactor)
 
 Reactor::Reactor()
@@ -79,7 +82,6 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 	GetLog()->fLog	<< "\t Life time (Operating's Duration) set at \t " << (double)(GetLifeTime()/3600/24/365.25) << " year" << endl << endl;
 	GetLog()->fLog	<< "!!WARNING!! !!!Reactor!!! You need to set Burn-up/Power/CycleTime (2 of 3) & Heavy Metal Mass Manualy !! " << endl;
 
-	
 }
 
 Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB, FabricationPlant* fabricationplant, Pool* Pool,
@@ -133,7 +135,15 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB, Fabricatio
 	GetLog()->fLog 	<< "\t The corresponding Cycle Time is\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
 	GetLog()->fLog 	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 	
-	
+	fZAImass.insert( pair< ZAI,double >( ZAI(92,238,0), 238050788.247e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(92,235,0), 235043929.918e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,238,0), 238049559.894e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,239,0), 239052163.381e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,240,0), 240053813.545e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,241,0), 241056851.456e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,242,0), 242058742.611e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(95,241,0), 241056829.144e-6 ) );
+
 }
 
 Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
@@ -186,7 +196,16 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 	GetLog()->fLog	<< "\t The corresponding Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW" << endl;
 	GetLog()->fLog	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 	
-	
+
+	fZAImass.insert( pair< ZAI,double >( ZAI(92,238,0), 238050788.247e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(92,235,0), 235043929.918e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,238,0), 238049559.894e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,239,0), 239052163.381e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,240,0), 240053813.545e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,241,0), 241056851.456e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,242,0), 242058742.611e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(95,241,0), 241056829.144e-6 ) );
+
 }
 
 
@@ -205,10 +224,6 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
 	
 		
 
-	
-	
-
-
 	fFixedFuel = true;
 	fIsStorage = false;
 	
@@ -223,22 +238,22 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
 	
 	fHeavyMetalMass = HMMass;
 	
-	map<ZAI, double> ZAImass;
-	ZAImass.insert( pair< ZAI,double >( ZAI(92,238,0), 238050788.247e-6 ) );
-	ZAImass.insert( pair< ZAI,double >( ZAI(92,235,0), 235043929.918e-6 ) );
-	ZAImass.insert( pair< ZAI,double >( ZAI(94,238,0), 238049559.894e-6 ) );
-	ZAImass.insert( pair< ZAI,double >( ZAI(94,239,0), 239052163.381e-6 ) );
-	ZAImass.insert( pair< ZAI,double >( ZAI(94,240,0), 240053813.545e-6 ) );
-	ZAImass.insert( pair< ZAI,double >( ZAI(94,241,0), 241056851.456e-6 ) );
-	ZAImass.insert( pair< ZAI,double >( ZAI(94,242,0), 242058742.611e-6 ) );
-	ZAImass.insert( pair< ZAI,double >( ZAI(95,241,0), 241056829.144e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(92,238,0), 238050788.247e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(92,235,0), 235043929.918e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,238,0), 238049559.894e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,239,0), 239052163.381e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,240,0), 240053813.545e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,241,0), 241056851.456e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,242,0), 242058742.611e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(95,241,0), 241056829.144e-6 ) );
+
 	
 	double Na = 6.02214129e23;	//N Avogadro
 	map<ZAI ,double>::iterator it;
 	map<ZAI ,double> isotopicquantity = evolutivedb.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
 	double M0 = 0;
 	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-		M0 += (*it).second*ZAImass.find( (*it).first )->second/Na*1e-6;
+		M0 += (*it).second*fZAImass.find( (*it).first )->second/Na*1e-6;
 	
 	fEvolutionDB = evolutivedb * (fHeavyMetalMass/M0);
 	
@@ -309,8 +324,14 @@ void Reactor::SetPower(double Power)
 //________________________________________________________________________
 void Reactor::SetEvolutionDB(EvolutionData evolutionDB)
 {
-	
-	fEvolutionDB = evolutionDB;
+	double Na = 6.02214129e23;	//N Avogadro
+	map<ZAI ,double>::iterator it;
+	map<ZAI ,double> isotopicquantity = evolutionDB.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
+	double M0 = 0;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
+		M0 += (*it).second*fZAImass.find( (*it).first )->second/Na*1e-6;
+	fEvolutionDB = evolutionDB * (fHeavyMetalMass/M0);
+
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
 
