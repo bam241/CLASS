@@ -65,6 +65,15 @@ FabricationPlant::FabricationPlant(LogFile* log)
 	GetLog()->fLog	<< "!!WARNING!! !!!FabricationPlant!!! You need to set the different stock manually as well as the Fabrication Time Manualy !! " << endl;
 	
 	
+	fZAImass.insert( pair< ZAI,double >( ZAI(92,238,0), 238050788.247e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(92,235,0), 235043929.918e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,238,0), 238049559.894e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,239,0), 239052163.381e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,240,0), 240053813.545e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,241,0), 241056851.456e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,242,0), 242058742.611e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(95,241,0), 241056829.144e-6 ) );
+
 }
 
 FabricationPlant::FabricationPlant(LogFile* log, Storage* storage, Storage* reusable, double fabircationtime)
@@ -90,6 +99,15 @@ FabricationPlant::FabricationPlant(LogFile* log, Storage* storage, Storage* reus
 	GetLog()->fLog	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/3600/24/365.25) << " year" << endl << endl;
 	
 	
+	fZAImass.insert( pair< ZAI,double >( ZAI(92,238,0), 238050788.247e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(92,235,0), 235043929.918e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,238,0), 238049559.894e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,239,0), 239052163.381e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,240,0), 240053813.545e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,241,0), 241056851.456e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(94,242,0), 242058742.611e-6 ) );
+	fZAImass.insert( pair< ZAI,double >( ZAI(95,241,0), 241056829.144e-6 ) );
+
 }
 
 
@@ -370,8 +388,14 @@ void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel)
 {
 	
 	fSubstitutionFuel = true;
-	fSubstitutionEvolutionData = fuel / fuel.GetHMMass();
-	
+	double Na = 6.02214129e23;	//N Avogadro
+	map<ZAI ,double>::iterator it;
+	map<ZAI ,double> isotopicquantity = fuel.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
+	double M0 = 0;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
+		M0 += (*it).second*fZAImass.find( (*it).first )->second/Na*1e-6;
+	fSubstitutionEvolutionData = fuel / M0;
+
 }
 
 

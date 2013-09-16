@@ -590,10 +590,6 @@ void EvolutionData::ReadInfo()
 		double NormFactor = atof(StringLine::NextWord(line, start, ' ').c_str());
 		fPower = fPower * NormFactor;
 	}
-	start = 0;
-	getline(InfoDB, line);
-	if ( tlc(StringLine::NextWord(line, start, ' ')) == "finalheavymetalmass")
-		fHMMass =  atof(StringLine::NextWord(line, start, ' ').c_str());
 }
 
 void EvolutionData::OldReadDB(string DBfile)
@@ -851,11 +847,6 @@ void EvolutionData::OldReadDB(string DBfile)
 			
 			fFlux = new TGraph(vTime.size()-1, Time, Flux);
 		}
-		start = 0;
-		getline(InfoDB, line);
-		if (StringLine::NextWord(line, start, ' ') == "FinalHeavyMetalMass")
-			fHMMass =  atof(StringLine::NextWord(line, start, ' ').c_str());
-		
 	}
 	
 }
