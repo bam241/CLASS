@@ -53,7 +53,6 @@ public :
 	void 	SetReactorType(string reactortype)	{ fReactorType = reactortype; }
 	void	SetFuelType(string fueltype)		{ fFuelType = fueltype; }
 	void 	SetPower(double power)			{ fPower = power; }
-	void 	SetHMMass(double HMMass)		{ fHMMass = HMMass; }
 	void	SetFlux(TGraph* flux )			{ fFlux = flux; }
 	void	SetFissionXS(map<ZAI, TGraph*> maptoinsert)	{ fFissionXS = maptoinsert;}
 	void	SetCaptureXS(map<ZAI, TGraph*> maptoinsert)	{ fCaptureXS = maptoinsert;}
@@ -71,7 +70,6 @@ public :
 
 	double	GetCycleTime()		const { return fCycleTime; }
 	double	GetPower()		const { return fPower; }		//!<
-	double	GetHMMass()		const { return fHMMass; }
 	string	GetDB_file()		const { return fDB_file; }
 	string	GetReactorType()	const { return fReactorType; }
 	TGraph*	GetEvolutionTGraph(const ZAI& zai); 
@@ -120,7 +118,6 @@ protected :
 	string	fFuelType;
 	double	fPower;
 	double	fCycleTime;
-	double 	fHMMass;
 	
     
 	void	OldReadDB(string DBfile);

@@ -63,10 +63,7 @@ public :
 
 //********* Get Method *********//
 
-	Storage*	GetStorage()		{ return fStorage; }		//!< Return the Pointer to the Storage
-
-		//	cSecond	GetFabricationTime() const	{ return fFabricationTime; }	//!< Return the Fabrication Time
-	
+	Storage*	GetStorage()		{ return fStorage; }		//!< Return the Pointer to the Storage	
 	
 	map<int, IsotopicVector >	GetReactorFuturIncome() const
 						{ return fReactorFuturIV;}	//!< Return the List of the Futur Fuel IV
@@ -129,6 +126,7 @@ protected :
 	void	FabricationPlantEvolution(cSecond t);				//!< Deal the FabricationPlant Evolution
 	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);	//!< Make the Separation 
 						//!< return IV[0] -> To Stock / IV[1] -> To Waste
+	map<ZAI, double> fZAImass;
 
 	ClassDef(FabricationPlant,2);
 

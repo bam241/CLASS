@@ -123,7 +123,8 @@ protected :
 	IsotopicVector	fIVBeginCycle;		///< Fuel IV at the Beginning of a Cycle
 	IsotopicVector	fIVInCycle;		///< IVBegin add at the Beginning of the Cycle
 	IsotopicVector	fIVOutCycle;		///< IV wich get out at the End of a Cycle
-	
+	map<ZAI, double> fZAImass;
+
 
 //********* Unfixed Fuel Parameter *********//
 
