@@ -64,8 +64,10 @@ public :
 	void SetUpdateReferenceDBatEachStep(bool val)	{fUpdateReferenceDBatEachStep = val;}
 
 	void SetOldReadMethod(bool val)			{ fOldReadMethod = val;}
-	
-	
+	void SetFissionEnergy(string FissionEnergyFile);
+	void SetFissionEnergy(ZAI zai, double E);
+	void SetFissionEnergy(int Z, int A, int I, double E )   { SetFissionEnergy(ZAI(Z,A,I), E);}
+
 //********* Modification Method *********//
 	
 	IsotopicVector	Evolution(const T &key, double dt);	///< Return the Product IsotopicVector evolution from zai during a dt time
@@ -82,7 +84,7 @@ public :
 	void Print() const;
 	
 protected :
-	
+
 	map<T, EvolutionData>	fDataBank;
  	string			fDataBaseIndex;
 
@@ -97,16 +99,20 @@ protected :
 					///< 1 for each ZAI weighted with its XS,
 					///< 2 for each ZAI weighted with coefficient given by the user.
 	
-	IsotopicVector	fDistanceParameter;	///< weight for each ZAI in the distance calculation
-
+	IsotopicVector		fDistanceParameter;	///< weight for each ZAI in the distance calculation
 	
 	TMatrixT<double>	fDecayMatrix;
 	void	BuildDecayMatrix();
-	TMatrixT<double> BuildBatemanReactionMatrix(EvolutionData EvolutionDataStep,double TStep);
+	TMatrixT<double> GetFissionXsMatrix(EvolutionData EvolutionDataStep,double TStep);
+	TMatrixT<double> GetCaptureXsMatrix(EvolutionData EvolutionDataStep,double TStep);
+	TMatrixT<double> Getn2nXsMatrix(EvolutionData EvolutionDataStep,double TStep);
+	
+	
+	
 	TMatrixT<double> ExtractXS(EvolutionData EvolutionDataStep,double TStep);
 
-	
-	map<ZAI, map<ZAI, double> > fFastDecay;
+	map<ZAI, double >		fFissionEnergy; ///< Store the Energy per fission use for the flux normalisation.
+	map<ZAI, map<ZAI, double> >	fFastDecay;
 	map<ZAI, int> findex_inver;
 	map<int, ZAI> findex;
 
