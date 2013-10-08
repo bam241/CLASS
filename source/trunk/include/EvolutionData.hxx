@@ -68,6 +68,7 @@ public :
 	TGraph*			GetFlux()		const { return fFlux; }
 #endif
 
+	double	GetFinalTime()		const { return fFinalTime; }
 	double	GetCycleTime()		const { return fCycleTime; }
 	double	GetPower()		const { return fPower; }		//!<
 	string	GetDB_file()		const { return fDB_file; }

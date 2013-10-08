@@ -38,7 +38,7 @@ public :
 	///< Normal Constructor.
 	DataBank();
 	
-	DataBank(LogFile* Log, string DB_index_file, bool olfreadmethod = true );
+	DataBank(LogFile* Log, string DB_index_file, bool setlog = true, bool olfreadmethod = true );
 	
 	///< Normal Destructor.
 	~DataBank();
