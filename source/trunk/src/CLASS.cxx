@@ -182,7 +182,7 @@ void CLASS::AddPool(Pool* Pool)
 	{
 		string Pool_name = "Pool";
 		Pool_name += dtoa(fPool.back()->GetId());
-		Pool_name += ".";		
+		Pool_name += ".";
 		fOutT->Branch(Pool_name.c_str(), "Pool", &fPool.back());
 	}
 	
@@ -198,7 +198,7 @@ void CLASS::AddReactor(Reactor* reactor)
 	fReactor.back()->SetId((int)fReactor.size()-1);
 	if(fReactor.back()->IsFuelFixed() == false)
 		fReactor.back()->GetFabricationPlant()->AddReactor( (int)fReactor.size()-1,fReactor.back()->GetCreationTime() );
-
+	
 	
 	
 	if(fNewTtree == false)
@@ -208,7 +208,7 @@ void CLASS::AddReactor(Reactor* reactor)
 		Reactor_name += ".";
 		fOutT->Branch(Reactor_name.c_str(), "Reactor", &fReactor.back());
 	}
-
+	
 	
 }
 
@@ -221,7 +221,7 @@ void CLASS::AddStorage(Storage* storage)
 	fStorage.back()->SetDecayDataBase( (*this).GetDecayDataBase() );
 	fStorage.back()->SetLog(GetLog());
 	fStorage.back()->SetId((int)fStorage.size()-1);
-
+	
 	if(fNewTtree == false)
 	{
 		string Storage_name = "Storage";
@@ -229,7 +229,7 @@ void CLASS::AddStorage(Storage* storage)
 		Storage_name += ".";
 		fOutT->Branch(Storage_name.c_str(), "Storage", &fStorage.back());
 	}
-
+	
 	
 }
 	//________________________________________________________________________
@@ -249,17 +249,15 @@ void CLASS::AddFabricationPlant(FabricationPlant* fabricationplant)
 		FabricationPlant_name += ".";
 		fOutT->Branch(FabricationPlant_name.c_str(), "FabricationPlant", &fFabricationPlant.back());
 	}
-
+	
 	
 }
 
 	//________________________________________________________________________
 void CLASS::BuildTimeVector(cSecond t)
 {
-	
 	fTimeStep.clear();
 	fTimeStep.insert( pair<double ,int>(t,1) );
-	
 		//********* Printing Step *********//
 	{
 		cSecond step = 0;
@@ -337,35 +335,38 @@ void CLASS::BuildTimeVector(cSecond t)
 		
 			//********* Reactor related Step *********//
 		step += fReactor[i]->GetCycleTime();
-		do
+		if (fReactor[i]->GetCycleTime() !=0)
 		{
-			
-			
-				//********* FabricationPlant Evolution Step *********//
-			if(fReactor[i]->IsFuelFixed() == false)
-				if(step > fAbsoluteTime && step - fabricationstep <= t && step < fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime())
-				{						// Set End of reactor cycle
-					pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step -fabricationstep,16) );
-					if( IResult.second == false ) IResult.first->second  |= 16;
-				}
-			
-			
-				//********* End/Start Of Reactor Cycle Step *********//
-			if(step > fAbsoluteTime && step <= t && step < fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime())
-			{						// Set End of reactor cycle
-				pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step,4) );
-				if( IResult.second == false ) IResult.first->second  |= 4;
-			}
-			
-				//********* End of Cooling Step *********//
-			if(step >= fAbsoluteTime && step + coolingstep <= t)			// Set End of Cooling
+			do
 			{
-				pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step+coolingstep,8) );
-				if( IResult.second == false ) IResult.first->second |= 8;
+				
+				
+					//********* FabricationPlant Evolution Step *********//
+				if(fReactor[i]->IsFuelFixed() == false)
+					if(step > fAbsoluteTime && step - fabricationstep <= t && step < fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime())
+					{						// Set End of reactor cycle
+						pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step -fabricationstep,16) );
+						if( IResult.second == false ) IResult.first->second  |= 16;
+					}
+				
+				
+					//********* End/Start Of Reactor Cycle Step *********//
+				if(step > fAbsoluteTime && step <= t && step < fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime())
+				{						// Set End of reactor cycle
+					pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step,4) );
+					if( IResult.second == false ) IResult.first->second  |= 4;
+				}
+				
+					//********* End of Cooling Step *********//
+				if(step >= fAbsoluteTime && step + coolingstep <= t)			// Set End of Cooling
+				{
+					pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step+coolingstep,8) );
+					if( IResult.second == false ) IResult.first->second |= 8;
+				}
+				step += fReactor[i]->GetCycleTime();
 			}
-			step += fReactor[i]->GetCycleTime();
+			while(step <= t && step <= fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime() );
 		}
-		while(step <= t && step <= fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime() );
 	}
 	
 	
@@ -399,8 +400,7 @@ void CLASS::BuildTimeVector(cSecond t)
 	map<cSecond ,int >::iterator it;
 	for( it = fTimeStep.begin(); it != fTimeStep.end(); it++)
 		TimeStepfile << (double)((*it).first/3600/24./365.25) << " " << (*it).second << endl;
-	
-	
+		
 }
 
 
@@ -460,14 +460,14 @@ void CLASS::Evolution(double t)
 	
 	
 	BuildTimeVector( (cSecond)t );
-
+	
 	if(fNewTtree == true)
 	{
 		OpenOutputTree();
 		OutAttach();
 		fOutT->Fill();
 	}
-
+	
 	map<cSecond ,int >::iterator it;
 	for(it = fTimeStep.begin(); it != fTimeStep.end(); it++)
 	{
@@ -559,6 +559,12 @@ void CLASS::ProgressPrintout(cSecond t)
 	if (Time < 10) cout << " ";
 	if (Time < 100) cout << " ";
 	cout << (int)Time << " / " << (int)Total << " Years \r" << flush;
+	
+	
+	GetLog()->fLog 	<< "Proccessed";
+	if (Time < 10) GetLog()->fLog << " ";
+	if (Time < 100) GetLog()->fLog << " ";
+	GetLog()->fLog << (int)Time << " / " << (int)Total << " Years \r" << endl;
 	
 }
 
