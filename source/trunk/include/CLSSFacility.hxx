@@ -29,7 +29,7 @@ class CLSSFacility : public CLSSObject
 {
 public :
 		///< Normal Constructor.
-	CLSSFacility();
+		//CLSSFacility();
 	
 		//********* Get Method *********//
 	int 		GetId()			const	{ return fId; }			//!< Return the Facility Parc'Is
