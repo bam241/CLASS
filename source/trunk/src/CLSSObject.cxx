@@ -22,7 +22,3 @@ CLSSObject::CLSSObject()
 }
 
 
-CLSSObject::CLSSObject(LogFile* log)
-{
-	fLog = log;
-}

@@ -71,23 +71,25 @@ DataBank<T>::DataBank()
 	//________________________________________________________________________
 
 template<>
-DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool olfreadmethod)
+DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool setlog, bool olfreadmethod)
 {
 	
 	SetLog(Log);
+	IsLog(setlog);
 	fDataBaseIndex = DB_index_file;
 	
 	fOldReadMethod = olfreadmethod;
 	fUseOldGeneration = false;
 
 		// Warning
-	
+	if(PrintLog())
+	{
 	cout	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
 	cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
 	
 	GetLog()->fLog 	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
 	GetLog()->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
-	
+	}
 	
 }
 
@@ -209,19 +211,22 @@ EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector 
 
 
 template<>
-DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool olfreadmethod)
+DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool setlog, bool olfreadmethod)
 {
 	
 	SetLog(Log);
+	IsLog(setlog);
+
 	fDataBaseIndex = DB_index_file;
 	fUpdateReferenceDBatEachStep = false;
 	fOldReadMethod = olfreadmethod;
 	fUseOldGeneration = false;
-
+	fDistanceType = 0;
 	BuildDecayMatrix();
 	ReadDataBase();
 	
-	
+	if(PrintLog())
+	{
 		// Warning
 	cout	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
 	cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
@@ -230,7 +235,7 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool olfr
 	GetLog()->fLog 	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
 	GetLog()->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
 	GetLog()->fLog	<< "\t " << fDataBank.size() << " EvolutionData have been read."<< endl << endl;
-	
+	}
 	
 }
 
