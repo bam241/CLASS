@@ -510,9 +510,26 @@ template<>
 EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power)
 {
 	
-	if(fUseOldGeneration)
-		return OldGenerateEvolutionData( isotopicvector,  cycletime, Power);
 	
+	/*{
+		map<IsotopicVector, EvolutionData>::iterator it;
+		for( it = fDataBankCalculated.begin(); it != fDataBankCalculated.end(); it++)
+		{
+			if (Distance(isotopicvector, (*it).first) == 0
+			    && cycletime == (*it).second.GetCycleTime()
+			    && Power == (*it).second.GetPower() ) {
+				return (*it).second;
+			}
+		}
+	}*/
+	
+	if(fUseOldGeneration)
+	{
+		EvolutionData GeneratedDB = OldGenerateEvolutionData( isotopicvector,  cycletime, Power);
+		fDataBankCalculated.insert( pair< IsotopicVector, EvolutionData > ( GeneratedDB.GetIsotopicVectorAt(0.), GeneratedDB) );
+		return GeneratedDB;
+	
+	}
 	string ReactorType;
 	
 		//-------------------------//
@@ -709,14 +726,16 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	GeneratedDB.SetPower(Power );
 	GeneratedDB.SetFuelType(fFuelType );
 	GeneratedDB.SetReactorType(ReactorType );
+	GeneratedDB.SetCycleTime(cycletime);
 	
-	
+	fDataBankCalculated.insert( pair< IsotopicVector, EvolutionData > ( GeneratedDB.GetIsotopicVectorAt(0.), GeneratedDB) );
 	return GeneratedDB;
 	
 }
 
 
 	//________________________________________________________________________
+
 template<>
 TMatrixT<double> DataBank<IsotopicVector>::GetFissionXsMatrix(EvolutionData EvolutionDataStep,double TStep)
 {
@@ -1868,7 +1887,8 @@ EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector 
 	GeneratedDB.SetPower(Power );
 	GeneratedDB.SetFuelType(fFuelType );
 	GeneratedDB.SetReactorType(ReactorType );
-	
+	GeneratedDB.SetCycleTime(cycletime);
+
 	
 	return GeneratedDB;
 	

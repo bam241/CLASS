@@ -51,6 +51,8 @@ public :
 	void SetCreationTime(double creationtime)	{ fCreationTime = (cSecond)creationtime;}
 	void SetLifeTime(double lifetime)		{ fLifeTime = (cSecond)lifetime; }	//!< Set the life time of the facility
 	virtual void SetCycleTime(double cycletime)	{ fCycleTime = (cSecond)cycletime; }	//!< Set the cycle time (Cycle of the loading Plan)
+	void SetInCycleTime(double incycletime)		{ fInCycleTime = (cSecond)incycletime; fIsStarted = true; }	//!< Set the cycle time (Cycle of the loading Plan)
+	void SetInternalTime(double internaltime)	{ fInternalTime = (cSecond)internaltime; }	//!< Set the cycle time (Cycle of the loading Plan)
 	
 	
 		//********* Modification Method *********//
@@ -69,6 +71,7 @@ protected :
 	cSecond		fCycleTime;		///< Cycle Time
 
 	IsotopicVector	fInsideIV;		///< All IV in the Facility (fuel for reactor, total for all others...)
+	
 
 		//********* Internal Parameter *********//
 private :

@@ -126,7 +126,6 @@ protected :
 	void	FabricationPlantEvolution(cSecond t);				//!< Deal the FabricationPlant Evolution
 	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);	//!< Make the Separation 
 						//!< return IV[0] -> To Stock / IV[1] -> To Waste
-	map<ZAI, double> fZAImass;
 
 	ClassDef(FabricationPlant,2);
 

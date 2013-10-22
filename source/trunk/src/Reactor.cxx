@@ -6,6 +6,7 @@
 #include "FabricationPlant.hxx"
 #include "Storage.hxx"
 #include "CLASS.hxx"
+#include "CLASSHeaders.hxx"
 
 #include "LogFile.hxx"
 
@@ -135,14 +136,7 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB, Fabricatio
 	GetLog()->fLog 	<< "\t The corresponding Cycle Time is\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
 	GetLog()->fLog 	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 	
-	fZAImass.insert( pair< ZAI,double >( ZAI(92,238,0), 238050788.247e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(92,235,0), 235043929.918e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,238,0), 238049559.894e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,239,0), 239052163.381e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,240,0), 240053813.545e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,241,0), 241056851.456e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,242,0), 242058742.611e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(95,241,0), 241056829.144e-6 ) );
+
 
 }
 
@@ -197,14 +191,6 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 	GetLog()->fLog	<< "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 	
 
-	fZAImass.insert( pair< ZAI,double >( ZAI(92,238,0), 238050788.247e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(92,235,0), 235043929.918e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,238,0), 238049559.894e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,239,0), 239052163.381e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,240,0), 240053813.545e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,241,0), 241056851.456e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,242,0), 242058742.611e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(95,241,0), 241056829.144e-6 ) );
 
 }
 
@@ -237,23 +223,13 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
 	fPower = power * ChargeFactor;
 	
 	fHeavyMetalMass = HMMass;
-	
-	fZAImass.insert( pair< ZAI,double >( ZAI(92,238,0), 238050788.247e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(92,235,0), 235043929.918e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,238,0), 238049559.894e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,239,0), 239052163.381e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,240,0), 240053813.545e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,241,0), 241056851.456e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,242,0), 242058742.611e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(95,241,0), 241056829.144e-6 ) );
-
-	
+		
 	double Na = 6.02214129e23;	//N Avogadro
 	map<ZAI ,double>::iterator it;
 	map<ZAI ,double> isotopicquantity = evolutivedb.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
 	double M0 = 0;
 	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-		M0 += (*it).second*fZAImass.find( (*it).first )->second/Na*1e-6;
+		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
 	
 	fEvolutionDB = evolutivedb * (fHeavyMetalMass/M0);
 	
@@ -298,6 +274,7 @@ void Reactor::SetCycleTime(double cycletime)
 	{
 		fCycleTime = (cSecond)cycletime;
 		fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt(fCycleTime/fEvolutionDB.GetPower()*fPower);
+		fBurnUp = fPower*fCycleTime/3600./24./fHeavyMetalMass;
 	}
 	else
 	{
@@ -329,7 +306,7 @@ void Reactor::SetEvolutionDB(EvolutionData evolutionDB)
 	map<ZAI ,double> isotopicquantity = evolutionDB.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
 	double M0 = 0;
 	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-		M0 += (*it).second*fZAImass.find( (*it).first )->second/Na*1e-6;
+		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
 	fEvolutionDB = evolutionDB * (fHeavyMetalMass/M0);
 
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
@@ -364,7 +341,8 @@ void Reactor::Evolution(cSecond t)
 	}
 
 	
-	if( t == fInternalTime && t!=0 ) return; 
+	if( t == fInternalTime && t!=0 ) return;
+	if( t < fInternalTime ) return;
 	
 	
 

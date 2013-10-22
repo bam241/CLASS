@@ -109,7 +109,6 @@ void Storage::TakeFractionFromStock(int IVId,double fraction)
 	{
 		if(fraction > 1 || fraction < 0)
 		{
-			cout << fraction << endl;
 			cout << "!!Warning!! !!!Storage!!! You try to remove fraction superior than 1 or a negative one..." << endl;
 			GetLog()->fLog << "!!Warning!! !!!Storage!!! You try to remove fraction superior than 1 or a negative one..." << endl;
 		}

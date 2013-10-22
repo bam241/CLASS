@@ -447,6 +447,19 @@ IsotopicVector	IsotopicVector::GetSpeciesComposition(int z) const
 	
 }
 
+vector<ZAI> IsotopicVector::GetZAIList() const
+{
+	
+	map<ZAI ,double > IsotopicQuantity = GetIsotopicQuantity();
+	map<ZAI ,double >::iterator it;
+	vector<ZAI> zailist;
+	for( it = IsotopicQuantity.begin(); it != IsotopicQuantity.end(); it++)
+		zailist.push_back( (*it).first );
+	
+	return zailist;
+	
+}
+
 IsotopicVector	IsotopicVector::GetActinidesComposition() const
 {
 	
