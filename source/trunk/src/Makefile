@@ -21,6 +21,7 @@ OBJS		= 	CLASS.o \
 			Pool.o PoolDict.o\
 			Reactor.o ReactorDict.o \
 			IsotopicVector.o IsotopicVectorDict.o \
+			ZAIMass.o \
 			ZAI.o ZAIDict.o \
 			DataBank.o \
 			EvolutionData.o EvolutionDataDict.o \
@@ -33,6 +34,7 @@ ROOTOBJS	= 	CLSSObject.o CLSSObjectDict.o\
 			Reactor.o ReactorDict.o \
 			FabricationPlant.o FabricationPlantDict.o \
 			IsotopicVector.o IsotopicVectorDict.o \
+			ZAIMass.o \
 			ZAI.o ZAIDict.o \
 			DataBank.o \
 			EvolutionData.o EvolutionDataDict.o \

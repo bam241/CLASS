@@ -20,6 +20,9 @@
 #include "DataBank.hxx"
 #include "StringLine.hxx"
 
+#include "ZAIMass.hxx"
+
+const ZAIMass cZAIMass;
 
 
 #endif

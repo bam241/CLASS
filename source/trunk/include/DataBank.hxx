@@ -86,6 +86,8 @@ public :
 protected :
 
 	map<T, EvolutionData>	fDataBank;
+	map<T, EvolutionData>	fDataBankCalculated;
+	
  	string			fDataBaseIndex;
 
 	bool			fUpdateReferenceDBatEachStep;

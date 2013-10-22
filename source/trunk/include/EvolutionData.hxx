@@ -57,6 +57,9 @@ public :
 	void	SetFissionXS(map<ZAI, TGraph*> maptoinsert)	{ fFissionXS = maptoinsert;}
 	void	SetCaptureXS(map<ZAI, TGraph*> maptoinsert)	{ fCaptureXS = maptoinsert;}
 	void	Setn2nXS(map<ZAI, TGraph*> maptoinsert)	{ fn2nXS = maptoinsert;}
+	void	SetCycleTime(cSecond cycletime)		{ fCycleTime = cycletime; }
+
+	
 	
 //********* Get Method *********//
 #ifndef __CINT__

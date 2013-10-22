@@ -465,6 +465,7 @@ void CLASS::Evolution(double t)
 	{
 		OpenOutputTree();
 		OutAttach();
+		UpdateParc();
 		fOutT->Fill();
 	}
 	
@@ -477,6 +478,7 @@ void CLASS::Evolution(double t)
 		{
 			if( (*it).second & 1 )
 				StorageEvolution();
+			
 			PoolEvolution();
 			FabricationPlantEvolution();
 			ReactorEvolution();
@@ -496,6 +498,7 @@ void CLASS::Evolution(double t)
 		{
 			StorageEvolution();
 			PoolEvolution();
+			FabricationPlantEvolution();
 			ReactorEvolution();
 			
 			(*it).second ^= 4;

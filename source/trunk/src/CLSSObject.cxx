@@ -15,10 +15,7 @@ using namespace std;
 
 ClassImp(CLSSObject)
 
-
-
 CLSSObject::CLSSObject()
 {
+	
 }
-
-

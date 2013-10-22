@@ -43,13 +43,11 @@ Pool::Pool(LogFile* log)
 	
 	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
 	cout	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
-	cout	<< "\t Life time (Operating's Duration) set at \t " << (double)(GetLifeTime()/3600/24/365.25) << " year" << endl << endl;
 	cout	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
 	cout	<< "!!WARNING!! !!!Pool!!! All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
 	
 	GetLog()->fLog	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
 	GetLog()->fLog	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
-	GetLog()->fLog	<< "\t Life time (Operating's Duration) set at \t" << (double)(GetLifeTime()/3600/24/365.25) << " year" << endl << endl;
 	GetLog()->fLog	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
 	GetLog()->fLog	<< "!!WARNING!! !!!Pool!!! All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
 	
@@ -70,13 +68,11 @@ Pool::Pool(LogFile* log, double creation,
 	
 	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
 	cout	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
-	cout	<< "\t Life time (Operating's Duration) set at \t " << (double)(GetLifeTime()/3600/24/365.25) << " year" << endl << endl;
 	cout	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
 	cout	<< "!!WARNING!! !!!Pool!!! All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
 	
 	GetLog()->fLog	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
 	GetLog()->fLog	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
-	GetLog()->fLog	<< "\t Life time (Operating's Duration) set at \t " << (double)(GetLifeTime()/3600/24/365.25) << " year" << endl << endl;
 	GetLog()->fLog	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
 	GetLog()->fLog	<< "!!WARNING!! !!!Pool!!! All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
 

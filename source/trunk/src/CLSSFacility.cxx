@@ -16,8 +16,3 @@ ClassImp(CLSSFacility)
 
 
 
-/*CLSSFacility::CLSSFacility()
-{
-	
-}*/
-

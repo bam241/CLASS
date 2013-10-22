@@ -38,12 +38,13 @@ public :
 	map<ZAI ,double>	GetIsotopicQuantity() const { return fIsotopicQuantity; }			//!< Return the IVQuantity map 
 	map<ZAI ,double>	GetIsotopicQuantityNeeded() const { return fIsotopicQuantityNeeded; }	//!< Return the IVQuantityNeeded map
 	IsotopicVector		GetSpeciesComposition(int z) const;					//!< Return the Species composition of the "z" atom
+	vector<ZAI>		GetZAIList() const;					//!< Return the list of ZAI present in the IV
 	IsotopicVector		GetActinidesComposition() const;					//!< Return the Actinides composition of the "z" atom
 	double	GetZAIIsotopicQuantity(const ZAI& zai) const;						///< Return the composition of the IsotopicVector
 	double	GetZAIIsotopicQuantity(const int z, const int a, const int i) const;			///< Return the composition of the IsotopicVector
 
 	vector<int>		GetChemicalSpecies() const;						//!< Return the Species Species contained
-
+	int	GetZAIQuantity()		{return  fIsotopicQuantity.size(); }
 	
 //********* Modification Method *********//
 	void 	Clear();					//!< Empty all the IV 

@@ -6,6 +6,7 @@
 #include "DataBank.hxx"
 #include "IsotopicVector.hxx"
 #include "CLASS.hxx"
+#include "CLASSHeaders.hxx"
 #include "LogFile.hxx"
 
 
@@ -54,25 +55,15 @@ FabricationPlant::FabricationPlant(LogFile* log)
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
 	
-		// Warning
 	
 	cout	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
 	cout	<< "\t Chronological Stock Priority set! "<< endl << endl;
 	cout	<< "!!WARNING!! !!!FabricationPlant!!! You need to set the different stock manually as well as the Fabrication Time Manualy !! " << endl;
-	
 	GetLog()->fLog	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
 	GetLog()->fLog	<< "\t Chronological Stock Priority set! "<< endl << endl;
 	GetLog()->fLog	<< "!!WARNING!! !!!FabricationPlant!!! You need to set the different stock manually as well as the Fabrication Time Manualy !! " << endl;
 	
 	
-	fZAImass.insert( pair< ZAI,double >( ZAI(92,238,0), 238050788.247e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(92,235,0), 235043929.918e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,238,0), 238049559.894e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,239,0), 239052163.381e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,240,0), 240053813.545e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,241,0), 241056851.456e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,242,0), 242058742.611e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(95,241,0), 241056829.144e-6 ) );
 
 }
 
@@ -99,14 +90,7 @@ FabricationPlant::FabricationPlant(LogFile* log, Storage* storage, Storage* reus
 	GetLog()->fLog	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/3600/24/365.25) << " year" << endl << endl;
 	
 	
-	fZAImass.insert( pair< ZAI,double >( ZAI(92,238,0), 238050788.247e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(92,235,0), 235043929.918e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,238,0), 238049559.894e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,239,0), 239052163.381e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,240,0), 240053813.545e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,241,0), 241056851.456e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(94,242,0), 242058742.611e-6 ) );
-	fZAImass.insert( pair< ZAI,double >( ZAI(95,241,0), 241056829.144e-6 ) );
+
 
 }
 
@@ -198,16 +182,6 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 		GetLog()->fLog << "!!Bad Trouble!! !!!FabricationPlant!!! Try to do MOX with a not MOXed DB" << endl;
 		exit (1);
 	}
-	map<ZAI, double> ZAImass;
-	ZAImass.insert( pair< ZAI,double >( ZAI(92,238,0), 238050788.247e-6 ) );
-	ZAImass.insert( pair< ZAI,double >( ZAI(92,235,0), 235043929.918e-6 ) );
-	ZAImass.insert( pair< ZAI,double >( ZAI(94,238,0), 238049559.894e-6 ) );
-	ZAImass.insert( pair< ZAI,double >( ZAI(94,239,0), 239052163.381e-6 ) );
-	ZAImass.insert( pair< ZAI,double >( ZAI(94,240,0), 240053813.545e-6 ) );
-	ZAImass.insert( pair< ZAI,double >( ZAI(94,241,0), 241056851.456e-6 ) );
-	ZAImass.insert( pair< ZAI,double >( ZAI(94,242,0), 242058742.611e-6 ) );
-	ZAImass.insert( pair< ZAI,double >( ZAI(95,241,0), 241056829.144e-6 ) );
-	
 	
 	double Na = 6.02214129e23;	//N Avogadro
 	
@@ -230,11 +204,10 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 			
 			isotopicquantity = FullUsedStock.GetSpeciesComposition(94).GetIsotopicQuantity();
 			for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-				MPu_0 += (*it).second*ZAImass.find( (*it).first )->second/Na*1e-6;
+				MPu_0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
 		}
 		
 		stock = GetStockToRecycle();
-		
 		if( stock.GetZAIIsotopicQuantity(ZAI(-1,-1,-1)) == 1 ) // Not enought stock to build the needed fuel
 		{
 			if (!fSubstitutionFuel)
@@ -298,7 +271,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 				for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 					if ((*it).first.A() >= 238 && (*it).first.A() <= 242)
 					{
-						MPu_1 += (*it).second * (ZAImass.find( (*it).first )->second)/Na*1e-6;
+						MPu_1 += (*it).second * (cZAIMass.fZAIMass.find( (*it).first )->second)/Na*1e-6;
 					}
 				
 				isotopicquantity = GetDecay( FullUsedStock , GetCycleTime()).GetSpeciesComposition(94).GetIsotopicQuantity();
@@ -311,27 +284,30 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 			
 			double StockFactionToUse = 0;
 			
-			double NT = HMmass*1e6 * Na / (ZAImass.find( ZAI(92,238,0) )->second*0.997 + ZAImass.find( ZAI(92,235,0) )->second*0.003 );
+			double NT = HMmass*1e6 * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997 + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 );
 			
 			double N1 = (BU - FuelType->GetFuelParameter()[6]) * NT;
 			double N2 = -Sum_AlphaI_nPuI0;
-			double N3 = -FuelType->GetFuelParameter()[0] * Na / (ZAImass.find( ZAI(92,238,0) )->second*0.997 + ZAImass.find( ZAI(92,235,0) )->second*0.003 ) * (HMmass*1e6 - MPu_0*1e6);
+			double N3 = -FuelType->GetFuelParameter()[0] * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997 + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 ) * (HMmass*1e6 - MPu_0*1e6);
 			
 			double D1 = Sum_AlphaI_nPuI;
-			double D2 = -FuelType->GetFuelParameter()[0] * MPu_1*1e6 * Na / (ZAImass.find( ZAI(92,238,0) )->second*0.997 + ZAImass.find( ZAI(92,235,0) )->second*0.003 ) ;
+			double D2 = -FuelType->GetFuelParameter()[0] * MPu_1*1e6 * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997 + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 ) ;
 			
 			StockFactionToUse = (N1 + N2 + N3) / (D1 + D2);
 			
 			if(StockFactionToUse < 0)
 			{
+				stock.GetActinidesComposition().Print();
+
 				cout << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use "<< endl;
 				GetLog()->fLog << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use" << endl;
-				exit (1);
-			}
-			
-			if( StockFactionToUse > 1 )
-			{
+				RecycleStock(0.);
+				FuelBuild = false;
 				
+			}
+			else if( StockFactionToUse > 1 )
+			{
+
 				FullUsedStock += stock;
 				RecycleStock(1);
 				FuelBuild = false;
@@ -345,7 +321,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 				
 				ZAI U8 = ZAI(92,238,0);
 				ZAI U5 = ZAI(92,235,0);
-				double U8_Quantity = (HMmass - (MPu_0+StockFactionToUse*MPu_1 ))/(ZAImass.find( ZAI(92,238,0) )->second*0.997 + ZAImass.find( ZAI(92,235,0) )->second*0.003 )*Na/1e-6;
+				double U8_Quantity = (HMmass - (MPu_0+StockFactionToUse*MPu_1 ))/(cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997 + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 )*Na/1e-6;
 				
 				GetParc()->AddGodIncome( U8, U8_Quantity*0.997 );
 				GetParc()->AddGodIncome( U5, U8_Quantity*0.003 );
@@ -393,7 +369,7 @@ void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel)
 	map<ZAI ,double> isotopicquantity = fuel.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
 	double M0 = 0;
 	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-		M0 += (*it).second*fZAImass.find( (*it).first )->second/Na*1e-6;
+		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
 	fSubstitutionEvolutionData = fuel / M0;
 
 }
