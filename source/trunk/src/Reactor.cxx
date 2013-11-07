@@ -349,7 +349,7 @@ void Reactor::Evolution(cSecond t)
 	if(fInternalTime == 0 && fIsStarted == false) // Start of the Reactor
 	{
 		fEndOfCycle = true;
-		fInsideIV  = fIVBeginCycle;
+		fInsideIV  = fIVBeginCycle; ///useless ??
 		fInternalTime = t;
 		
 	}
