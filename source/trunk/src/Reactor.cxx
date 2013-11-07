@@ -213,6 +213,7 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
 	fFixedFuel = true;
 	fIsStorage = false;
 	
+	fFabricationPlant = 0;
 	fAssociedPool = Pool;
 	
 	fInternalTime = 0;
