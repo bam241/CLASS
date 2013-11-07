@@ -13,7 +13,7 @@
 //________________________________________________________________________
 ClassImp(ZAI)
 
-ZAI& ZAI::operator=(ZAI& IVa)
+ZAI ZAI::operator=(ZAI IVa)
 {
 	fZ = IVa.Z();
 	fA = IVa.A();

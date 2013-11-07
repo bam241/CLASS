@@ -55,7 +55,7 @@ class ZAI : public TObject
 	double GetMass();			///< get the mass of a ZAI
 
 
-	ZAI& operator=(ZAI& IVa);		//!< ...
+	ZAI operator=(ZAI IVa);		//!< ...
 	bool operator <(const ZAI& zai) const	{ return (fZ != zai.Z())?  
 							(fZ < zai.Z()) : ( (fA != zai.A())?
 								 (fA < zai.A()) : (fI < zai.I()) ); }

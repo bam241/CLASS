@@ -163,7 +163,8 @@ void FabricationPlant::FabricationPlantEvolution(cSecond t)
 		}
 	}
 	
-	
+	fInsideIV = GetFullFabrication();
+
 	
 }
 
@@ -195,6 +196,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 	{
 		double nPu_0 = 0;
 		double MPu_0 = 0;
+		
 		{
 			map<ZAI ,double>::iterator it;
 			
@@ -328,9 +330,14 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 				
 				for(int i = (int)fFractionToTake.size()-1; i >= 0; i--)
 				{
-					IVBeginCycle += fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*( fFractionToTake[i].second );					
-					fReUsable->AddToStock(fStorage->GetStock()[fFractionToTake[i].first]*(fFractionToTake[i].second)
-							      - fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*(fFractionToTake[i].second));
+					IVBeginCycle += fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*( fFractionToTake[i].second );
+					IsotopicVector UnusedIV = fStorage->GetStock()[fFractionToTake[i].first]*(fFractionToTake[i].second)
+					- fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*(fFractionToTake[i].second) ;
+					
+					pair<IsotopicVector, IsotopicVector> SepatationIV = Separation(UnusedIV);
+					
+					fReUsable->AddToStock( SepatationIV.first );
+					GetParc()->AddWaste( SepatationIV.second );
 					
 					fStorage->TakeFractionFromStock(fFractionToTake[i].first,fFractionToTake[i].second);			
 					
@@ -411,9 +418,9 @@ EvolutionData FabricationPlant::BuildEvolutiveDB(int ReactorId,IsotopicVector is
 	
 	EvolutionData EvolBuild;
 
-			EvolBuild = evolutiondb->GenerateEvolutionData(isotopicvector,
-					    GetParc()->GetReactor()[ReactorId]->GetCycleTime(),
-					    GetParc()->GetReactor()[ReactorId]->GetPower());
+	EvolBuild = evolutiondb->GenerateEvolutionData(isotopicvector,
+						       GetParc()->GetReactor()[ReactorId]->GetCycleTime(),
+						       GetParc()->GetReactor()[ReactorId]->GetPower());
 	return EvolBuild;
 	
 }
@@ -485,7 +492,6 @@ void FabricationPlant::RecycleStock(double fraction)
 	fFractionToTake.back().second = fraction;
 	
 }
-
 
 
 	//________________________________________________________________________
