@@ -169,7 +169,9 @@ void Read(TTree *T, TString IV, int Z, int A, int I, char* opt = "L*")
 
 	IsotopicVector *IVIn;
 	TString IVname = IV +".";
-
+	
+	
+	cout << IVname << endl;
 	T->SetBranchStatus(IVname,1);
 	T->SetBranchAddress(IVname, &IVIn);
 
@@ -201,7 +203,7 @@ void Read(TTree *T, TString IV, int Z, int A, int I, char* opt = "L*")
 	}
 
 	BranchName = BranchName + ":AbsTime/3600/24/365.25";
-	Data->Draw(BranchName,"",opt);
+	T->Draw(BranchName,"",opt);
 	TGraph *T_g = (TGraph*)gPad->GetPrimitive("Graph");
 	TH2F   *htemp = (TH2F*)gPad->GetPrimitive("htemp"); // empty, but has axes
 
@@ -257,7 +259,7 @@ void Read(TTree *T, TString IV, char* opt = "L*")
 	}
 
 	BranchName = BranchName + ":AbsTime/3600/24/365.25";
-	Data->Draw(BranchName,"",opt);
+	T->Draw(BranchName,"",opt);
 	TGraph *T_g = (TGraph*)gPad->GetPrimitive("Graph");
 	TH2F   *htemp = (TH2F*)gPad->GetPrimitive("htemp"); // empty, but has axes
 
@@ -318,7 +320,7 @@ void ReadReactor(TTree *T, int ReactorId, int Z, int A, int I, char* opt = "L*")
 	}
 
 	BranchName = BranchName + ":AbsTime/3600/24/365.25";
-	Data->Draw(BranchName,"",opt);
+	T->Draw(BranchName,"",opt);
 	TGraph *T_g = (TGraph*)gPad->GetPrimitive("Graph");
 	TH2F   *htemp = (TH2F*)gPad->GetPrimitive("htemp"); // empty, but has axes
 
@@ -412,7 +414,7 @@ void ReadStorage(TTree *T, int StorageId, int Z, int A, int I, char* opt = "L*")
 	}
 
 	BranchName = BranchName + ":AbsTime/3600/24/365.25";
-	Data->Draw(BranchName,"",opt);
+	T->Draw(BranchName,"",opt);
 	TGraph *T_g = (TGraph*)gPad->GetPrimitive("Graph");
 	TH2F   *htemp = (TH2F*)gPad->GetPrimitive("htemp"); // empty, but has axes
 
@@ -481,7 +483,7 @@ void ReadStorage(TTree *T, int StorageId, char* opt = "L*")
 	}
 
 	BranchName = BranchName + ":AbsTime/3600/24/365.25";
-	Data->Draw(BranchName,"",opt);
+	T->Draw(BranchName,"",opt);
 	TGraph *T_g = (TGraph*)gPad->GetPrimitive("Graph");
 	TH2F   *htemp = (TH2F*)gPad->GetPrimitive("htemp"); // empty, but has axes
 
@@ -542,7 +544,7 @@ void ReadCooling(TTree *T, int CoolingId, int Z, int A, int I, char* opt = "L*")
 	}
 
 	BranchName = BranchName + ":AbsTime/3600/24/365.25";
-	Data->Draw(BranchName,"",opt);
+	T->Draw(BranchName,"",opt);
 	TGraph *T_g = (TGraph*)gPad->GetPrimitive("Graph");
 	TH2F   *htemp = (TH2F*)gPad->GetPrimitive("htemp"); // empty, but has axes
 
@@ -613,7 +615,7 @@ void ReadCooling(TTree *T, int CoolingId, char* opt = "L*")
 	}
 
 	BranchName = BranchName + ":AbsTime/3600/24/365.25";
-	Data->Draw(BranchName,"",opt);
+	T->Draw(BranchName,"",opt);
 	TGraph *T_g = (TGraph*)gPad->GetPrimitive("Graph");
 	TH2F   *htemp = (TH2F*)gPad->GetPrimitive("htemp"); // empty, but has axes
 
@@ -673,7 +675,7 @@ void ReadFabrication(TTree *T, int FabricationId, int Z, int A, int I, char* opt
 	}
 
 	BranchName = BranchName + ":AbsTime/3600/24/365.25";
-	Data->Draw(BranchName,"",opt);
+	T->Draw(BranchName,"",opt);
 	TGraph *T_g = (TGraph*)gPad->GetPrimitive("Graph");
 	TH2F   *htemp = (TH2F*)gPad->GetPrimitive("htemp"); // empty, but has axes
 
@@ -743,7 +745,7 @@ void ReadFabrication(TTree *T, int FabricationId, char* opt = "L*")
 	}
 
 	BranchName = BranchName + ":AbsTime/3600/24/365.25";
-	Data->Draw(BranchName,"",opt);
+	T->Draw(BranchName,"",opt);
 	TGraph *T_g = (TGraph*)gPad->GetPrimitive("Graph");
 	TH2F   *htemp = (TH2F*)gPad->GetPrimitive("htemp"); // empty, but has axes
 
