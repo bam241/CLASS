@@ -278,8 +278,10 @@ void IsotopicVector::Multiply(double factor)
 	map<ZAI ,double >::iterator it;
 	for( it = fIsotopicQuantity.begin(); it != fIsotopicQuantity.end(); it++)
 		(*it).second = (*it).second * factor;
-	
-	
+	for( it = fIsotopicQuantityNeeded.begin(); it != fIsotopicQuantityNeeded.end(); it++)
+	(*it).second = (*it).second * factor;
+
+
 }
 
 	//________________________________________________________________________
