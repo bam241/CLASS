@@ -79,7 +79,9 @@ public :
 								///< 1 for each ZAI weighted with its XS,
 								///< 2 for each ZAI weighted with coefficient given by the user.
 
-	void UseOldGeneration()		{fUseOldGeneration = true;}
+	void UseDBTimeStep(bool oldmethod = true)		{fUseDBTimeStep = oldmethod;}
+	
+	void UseOldGeneration(bool oldmethod = true)		{fUseOldGeneration = oldmethod;}
 //********* Printing Method *********//
 	void Print() const;
 	
@@ -93,7 +95,8 @@ protected :
 	bool			fUpdateReferenceDBatEachStep;
 	bool			fOldReadMethod;
 	bool			fUseOldGeneration;
-
+	bool			fUseDBTimeStep;
+	
  	string 			fFuelType;
  	pair<double,double>	fBurnUpRange;
  	vector<double>		fFuelParameter;
@@ -103,7 +106,7 @@ protected :
 	
 	IsotopicVector		fDistanceParameter;	///< weight for each ZAI in the distance calculation
 	
-	TMatrixT<double>	fDecayMatrix;
+	TMatrixT<double>	fDecayMatrix;		///< Matrix with half life of each nuclei
 	void	BuildDecayMatrix();
 	TMatrixT<double> GetFissionXsMatrix(EvolutionData EvolutionDataStep,double TStep);
 	TMatrixT<double> GetCaptureXsMatrix(EvolutionData EvolutionDataStep,double TStep);
@@ -117,6 +120,30 @@ protected :
 	map<ZAI, map<ZAI, double> >	fFastDecay;
 	map<ZAI, int> findex_inver;
 	map<int, ZAI> findex;
+	//0 TMP
+	//1 PF
+	//2 232Th
+	//3 233U
+	//4 234U
+	//5 235U
+	//6 236U
+	//7 238U
+	//8 237Np
+	//9 238Pu
+	//10 239Pu
+	//11 240Pu
+	//12 241Pu
+	//13 242Pu
+	//14 241Am
+	//15 242Am*
+	//16 243Am
+	//17 242Cm
+	//18 243Cm
+	//19 244Cm
+	//20 245Cm
+	//21 246Cm
+	//22 247Cm
+	//23 248Cm
 
 };
 

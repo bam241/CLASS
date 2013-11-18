@@ -17,14 +17,14 @@
 #include <cmath>
 
 
-	//________________________________________________________________________
-	//
-	//		DataBank
-	//
-	//
-	//
-	//
-	//________________________________________________________________________
+//________________________________________________________________________
+//
+//		DataBank
+//
+//
+//
+//
+//________________________________________________________________________
 
 double ReactionRateWeightedDistance(IsotopicVector IV1, EvolutionData DB )
 {
@@ -64,11 +64,11 @@ DataBank<T>::DataBank()
 {
 }
 
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
 
 template<>
 DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool setlog, bool olfreadmethod)
@@ -80,27 +80,27 @@ DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool setlog, bool ol
 	
 	fOldReadMethod = olfreadmethod;
 	fUseOldGeneration = false;
-
-		// Warning
+	
+	// Warning
 	if(PrintLog())
 	{
-	cout	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
-	cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
-	
-	GetLog()->fLog 	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
-	GetLog()->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
+		cout	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
+		cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
+		
+		GetLog()->fLog 	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
+		GetLog()->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
 	}
 	
 }
 
-	//________________________________________________________________________
+//________________________________________________________________________
 template<>
 DataBank<ZAI>::~DataBank()
 {
 	
 }
 
-	//________________________________________________________________________
+//________________________________________________________________________
 
 template<>
 IsotopicVector	DataBank<ZAI>::Evolution(const ZAI& zai, double dt)
@@ -176,22 +176,22 @@ bool DataBank<ZAI>::IsDefine(const ZAI& zai) const
 		return false;
 	
 }
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
 
 
 
 
 
 
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
 template<>
 void DataBank<IsotopicVector>::ReadDataBase();
 template<>
@@ -207,7 +207,17 @@ void DataBank<IsotopicVector>::BuildDecayMatrix();
 template<>
 EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power);
 
-	//________________________________________________________________________
+//________________________________________________________________________
+template<>
+DataBank<IsotopicVector>::DataBank()
+{
+	fUpdateReferenceDBatEachStep = false;
+	fOldReadMethod = true;
+	fUseOldGeneration = false;
+	fUseDBTimeStep = false;
+	fDistanceType = 0;
+	BuildDecayMatrix();
+}
 
 
 template<>
@@ -216,11 +226,12 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool setl
 	
 	SetLog(Log);
 	IsLog(setlog);
-
+	
 	fDataBaseIndex = DB_index_file;
 	fUpdateReferenceDBatEachStep = false;
 	fOldReadMethod = olfreadmethod;
 	fUseOldGeneration = false;
+	fUseDBTimeStep = false;
 	fDistanceType = 0;
 	BuildDecayMatrix();
 	ReadDataBase();
@@ -228,13 +239,13 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool setl
 	if(PrintLog())
 	{
 		// Warning
-	cout	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
-	cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
-	cout	<< "\t " << fDataBank.size() << " EvolutionData have been read."<< endl << endl;
-	
-	GetLog()->fLog 	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
-	GetLog()->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
-	GetLog()->fLog	<< "\t " << fDataBank.size() << " EvolutionData have been read."<< endl << endl;
+		cout	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
+		cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
+		cout	<< "\t " << fDataBank.size() << " EvolutionData have been read."<< endl << endl;
+		
+		GetLog()->fLog 	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
+		GetLog()->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
+		GetLog()->fLog	<< "\t " << fDataBank.size() << " EvolutionData have been read."<< endl << endl;
 	}
 	
 }
@@ -244,7 +255,7 @@ DataBank<IsotopicVector>::~DataBank()
 {
 }
 
-	//________________________________________________________________________
+//________________________________________________________________________
 
 template<>
 void DataBank<IsotopicVector>::SetFissionEnergy(ZAI zai, double E)
@@ -253,7 +264,7 @@ void DataBank<IsotopicVector>::SetFissionEnergy(ZAI zai, double E)
 	IResult = fFissionEnergy.insert( pair<ZAI ,double>(zai, E));
 	if(IResult.second == false)
 		IResult.first->second = E;
-
+	
 }
 
 template<>
@@ -265,7 +276,7 @@ void DataBank<IsotopicVector>::SetFissionEnergy(string FissionEnergyFile)
 		cout << "!!Warning!! !!!DataBank!!! \n Can't open \"" << FissionFile << "\"\n" << endl;
 		GetLog()->fLog << "!!Warning!! !!!DataBank!!! \n Can't open \"" << FissionFile << "\"\n" << endl;
 	}
-
+	
 	do {
 		int Z = 0;
 		int A = 0;
@@ -276,7 +287,7 @@ void DataBank<IsotopicVector>::SetFissionEnergy(string FissionEnergyFile)
 	} while (!FissionFile.eof());
 }
 
-	//________________________________________________________________________
+//________________________________________________________________________
 
 
 
@@ -298,7 +309,7 @@ void DataBank<IsotopicVector>::ReadDataBase()
 	
 	
 	
-		// First Get Fuel Type
+	// First Get Fuel Type
 	getline(DataDB, line);
 	if( StringLine::NextWord(line, start, ' ') != "TYPE")
 	{
@@ -307,7 +318,7 @@ void DataBank<IsotopicVector>::ReadDataBase()
 		exit (1);
 	}
 	fFuelType = StringLine::NextWord(line, start, ' ');
-		// First Get Fuel Parameter
+	// First Get Fuel Parameter
 	getline(DataDB, line);
 	start = 0;
 	if( StringLine::NextWord(line, start, ' ') != "PARAM")
@@ -319,7 +330,7 @@ void DataBank<IsotopicVector>::ReadDataBase()
 	while(start < (int)line.size())
 		fFuelParameter.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
 	
-		//Then Get All the Database
+	//Then Get All the Database
 	
 	while (!DataDB.eof())
 	{
@@ -333,7 +344,7 @@ void DataBank<IsotopicVector>::ReadDataBase()
 	}
 	
 }
-	//________________________________________________________________________
+//________________________________________________________________________
 
 
 
@@ -381,7 +392,7 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 		double D = Distance(isotopicvector.GetActinidesComposition(),
 				    (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition()
 				    / Norme( (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition() )
-				    * Norme(isotopicvector.GetActinidesComposition()),
+				    * Norme( isotopicvector.GetActinidesComposition()),
 				    fDistanceType, fDistanceParameter);
 		if (D< distance)
 		{
@@ -398,8 +409,8 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 
 
 
-	//________________________________________________________________________
-	//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
 
 template<>
 void DataBank<IsotopicVector>::CalculateDistanceParameter()
@@ -415,7 +426,7 @@ void DataBank<IsotopicVector>::CalculateDistanceParameter()
 	
 	fDistanceParameter.Clear();
 	
-		//We calculate the weight for the distance calculation.
+	//We calculate the weight for the distance calculation.
 	map<IsotopicVector ,EvolutionData >::iterator it;
 	map<IsotopicVector ,EvolutionData > databank = (*this).GetDataBank();
 	int NevolutionDatainDataBank=0;
@@ -454,7 +465,7 @@ void DataBank<IsotopicVector>::CalculateDistanceParameter()
 	
 }
 
-	//________________________________________________________________________
+//________________________________________________________________________
 template<>
 void DataBank<IsotopicVector>::SetDistanceParameter(IsotopicVector DistanceParameter){
 	
@@ -474,7 +485,7 @@ void DataBank<IsotopicVector>::SetDistanceParameter(IsotopicVector DistanceParam
 	
 }
 
-	//________________________________________________________________________
+//________________________________________________________________________
 template<>
 void DataBank<IsotopicVector>::SetDistanceType(int DistanceType)
 {
@@ -484,7 +495,7 @@ void DataBank<IsotopicVector>::SetDistanceType(int DistanceType)
 		CalculateDistanceParameter();
 	}
 	else if(fDistanceType == 2 && Norme(fDistanceParameter)==0){
-			// This is so bad!! You will probably unsynchronize all the reactor....
+		// This is so bad!! You will probably unsynchronize all the reactor....
 		cout << "!!Warning!! !!!DistanceType!!!"
 		<< " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
 		
@@ -509,33 +520,32 @@ void DataBank<IsotopicVector>::SetDistanceType(int DistanceType)
 template<>
 EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power)
 {
-	
-	
 	/*{
-		map<IsotopicVector, EvolutionData>::iterator it;
-		for( it = fDataBankCalculated.begin(); it != fDataBankCalculated.end(); it++)
-		{
-			if (Distance(isotopicvector, (*it).first) == 0
-			    && cycletime == (*it).second.GetCycleTime()
-			    && Power == (*it).second.GetPower() ) {
-				return (*it).second;
-			}
-		}
-	}*/
+	 map<IsotopicVector, EvolutionData>::iterator it;
+	 for( it = fDataBankCalculated.begin(); it != fDataBankCalculated.end(); it++)
+	 {
+	 if (Distance(isotopicvector, (*it).first) == 0
+	 && cycletime == (*it).second.GetCycleTime()
+	 && Power == (*it).second.GetPower() ) {
+	 return (*it).second;
+	 }
+	 }
+	 }*/
 	
 	if(fUseOldGeneration)
 	{
 		EvolutionData GeneratedDB = OldGenerateEvolutionData( isotopicvector,  cycletime, Power);
 		fDataBankCalculated.insert( pair< IsotopicVector, EvolutionData > ( GeneratedDB.GetIsotopicVectorAt(0.), GeneratedDB) );
 		return GeneratedDB;
-	
+		
 	}
 	string ReactorType;
 	
-		//-------------------------//
-		//--- Perform Evolution ---//
-		//-------------------------//
-	double timevector[17];
+	//-------------------------//
+	//--- Perform Evolution ---//
+	//-------------------------//
+	int NStep = 80.;
+	double timevector[NStep+1];
 	timevector[0] = 0.;
 	vector< TMatrixT<double> > NMatrix ;//  TMatrixT<double>(decayindex.size(),1))
 	{	// Filling the t=0 State;
@@ -565,12 +575,11 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 		NMatrix.push_back(N_0Matrix);
 	}
 	
-	
-	TMatrixT<double> SigmaPhi = TMatrixT<double>(findex.size()*3+1,16); // Store the XS and the flux trought the evolution calculation.
-	
+	TMatrixT<double> SigmaPhi = TMatrixT<double>(findex.size()*3+1,NStep); // Store the XS and the flux trought the evolution calculation.
 	EvolutionData EvolutionDataStep = GetClosest(isotopicvector.GetActinidesComposition(), 0.);	//GetCLosest at the begining of evolution
 	
 	ReactorType = EvolutionDataStep.GetReactorType();
+
 	TMatrixT<double> FissionEnergy = TMatrixT<double>(findex.size(),1);
 	{
 		map< ZAI, int >::iterator it;
@@ -578,20 +587,28 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 		{
 			map< ZAI, double >::iterator it2 = fFissionEnergy.find(it->first);
 			if(it2 == fFissionEnergy.end())
-				FissionEnergy[it->second][0] = 200.e6;
+			{
+				if(it->first.A() > 90)
+					FissionEnergy[it->second][0] = 1.9679e6*it->first.A()-2.601e8; // //simple linear fit to known values ;extrapolation to unknown isotopes
+				else FissionEnergy[it->second][0] = 0;
+			}
 			else
 				FissionEnergy[it->second][0] = it2->second;
+			
+			
 		}
 	}
-	
+
+
+
 	vector< TMatrixT<double> > FissionXSMatrix; //The Fisison XS Matrix
 	vector< TMatrixT<double> > CaptureXSMatrix; //The Capture XS Matrix
 	vector< TMatrixT<double> > n2nXSMatrix;     //The n2N XS Matrix
-	double  Flux[16];
-	for(int i = 0; i < 16; i++)
+	double  Flux[NStep];
+	for(int i = 0; i < NStep; i++)
 	{
 		
-		double TStep = cycletime/16*i;
+		double TStep = cycletime/NStep*i;
 		
 		if(fUpdateReferenceDBatEachStep)	//Updated At each Step
 		{
@@ -602,29 +619,43 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			if(i != 0)			// Update closest
 				EvolutionDataStep = GetClosest(IVStep, TStep);
 			
-				//Extraxt XS (if the refecence is not updated will get it from the Evolution DataBase
+			//Extraxt XS (if the refecence is not updated will get it from the Evolution DataBase
 			TMatrixT<double> SigmaPhiTmp = ExtractXS(EvolutionDataStep, TStep);
 			
 			for(int j=0; j < (int)findex.size()*3; j++)	// Store it
 				SigmaPhi[j][i] = SigmaPhiTmp[j][0];
-			
 		}
-		
+
+
 		TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(findex.size(),1);
 		NEvolutionMatrix = NMatrix.back();
 		
+		double TStepForXS = 0;
 
-		FissionXSMatrix.push_back(GetFissionXsMatrix(EvolutionDataStep, TStep)); //Feel the reaction Matrix
-		CaptureXSMatrix.push_back(Getn2nXsMatrix(EvolutionDataStep, TStep)); //Feel the reaction Matrix
-		n2nXSMatrix.push_back(GetCaptureXsMatrix(EvolutionDataStep, TStep)); //Feel the reaction Matrix
+		if( fUseDBTimeStep)
+		{
+			double DBStepTime = EvolutionDataStep.GetFinalTime()/(EvolutionDataStep.GetFissionXS().begin()->second->GetN() -1);
+			while( (TStepForXS + DBStepTime) < TStep)
+				TStepForXS += DBStepTime;
 
+		}
+		else
+			TStepForXS =TStep ;
+		
+		
+		
+		FissionXSMatrix.push_back(GetFissionXsMatrix(EvolutionDataStep, TStepForXS)); //Feel the reaction Matrix
+		CaptureXSMatrix.push_back(Getn2nXsMatrix(EvolutionDataStep, TStepForXS)); //Feel the reaction Matrix
+		n2nXSMatrix.push_back(GetCaptureXsMatrix(EvolutionDataStep, TStepForXS)); //Feel the reaction Matrix
+		
 		double ESigmaN = 0;
 		
 		for (int j = 0; j < (int)findex.size() ; j++)
-			ESigmaN -= FissionXSMatrix[i][j][j]*NEvolutionMatrix[j][0]*1.60217653e-19*FissionEnergy[j][0];
+			ESigmaN -= FissionXSMatrix.back()[j][j]*NEvolutionMatrix[j][0]*1.60217653e-19*FissionEnergy[j][0];
 		
-			// Update Flux
-		Flux[i] = Power/ESigmaN;
+		// Update Flux
+		Flux[i] = Power/ESigmaN ;///(1+ 4*(2.e-10*TStepForXS/3600./24.*TStepForXS/3600./24. + 2.e-7*TStepForXS/3600./24. + 4.e-6));
+//		cout << Flux[i] << endl;
 		
 		
 		// ----------------   Evolution
@@ -637,10 +668,10 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 		
 		BatemanMatrix = BatemanReactionMatrix;
 		BatemanMatrix *= Flux[i];
-
+		
 		BatemanMatrix += fDecayMatrix ;
-
-		double TStepMax = cycletime/16.;
+		
+		double TStepMax = cycletime/(NStep);
 		timevector[i+1] = timevector[i] + TStepMax;
 		
 		BatemanMatrix *= TStepMax;
@@ -651,7 +682,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 				if(k == j)	IdMatrix[j][k] = 1;
 				else 		IdMatrix[j][k] = 0;
 			}
-
+		
 		
 		TMatrixT<double> BatemanMatrixDL = TMatrixT<double>(findex.size(),findex.size());   // Order 0 Term from the DL : Id
 		TMatrixT<double> BatemanMatrixDLTermN = TMatrixT<double>(findex.size(),findex.size());  // Addind it;
@@ -660,14 +691,13 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			BatemanMatrixDLTermN = IdMatrix;
 			BatemanMatrixDL = BatemanMatrixDLTermN;
 			int j = 1;
-			double NormN = 0;
+			double NormN;
 			
 			do
 			{
-
-				NormN = 0;
 				TMatrixT<double> BatemanMatrixDLTermtmp = TMatrixT<double>(findex.size(),findex.size());  // Adding it;
 				BatemanMatrixDLTermtmp = BatemanMatrixDLTermN;
+
 				BatemanMatrixDLTermN.Mult(BatemanMatrixDLTermtmp, BatemanMatrix );
 				
 				BatemanMatrixDLTermN *= 1./j;
@@ -681,7 +711,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 				
 			} while ( NormN != 0 );
 		}
-
+		
 		NEvolutionMatrix = BatemanMatrixDL * NMatrix.back() ;
 		NMatrix.push_back(NEvolutionMatrix);
 	}
@@ -689,18 +719,18 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	
 	EvolutionData GeneratedDB = EvolutionData(GetLog());
 	
-	GeneratedDB.SetFlux( new TGraph(16, timevector, Flux)  );
+	GeneratedDB.SetFlux( new TGraph(NStep, timevector, Flux)  );
 	
 	for(int i = 0; i < (int)findex.size(); i++)
 	{
 		double ZAIQuantity[NMatrix.size()];
-		double FissionXS[16];
-		double CaptureXS[16];
-		double n2nXS[16];
+		double FissionXS[NStep];
+		double CaptureXS[NStep];
+		double n2nXS[NStep];
 		for(int j = 0; j < (int)NMatrix.size(); j++)
 			ZAIQuantity[j] = (NMatrix[j])[i][0];
 		
-		for(int j = 0; j < 16; j++)
+		for(int j = 0; j < NStep; j++)
 		{
 			FissionXS[j]	= FissionXSMatrix[j][i][i];
 			CaptureXS[j]	= CaptureXSMatrix[j][i][i];
@@ -710,16 +740,16 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NMatrix.size(), timevector, ZAIQuantity)));
 		if(fUpdateReferenceDBatEachStep)
 		{
-			GeneratedDB.FissionXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(16, timevector, FissionXS)));
-			GeneratedDB.CaptureXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(16, timevector, CaptureXS)));
-			GeneratedDB.n2nXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(16, timevector, n2nXS)));
+			GeneratedDB.FissionXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NStep, timevector, FissionXS)));
+			GeneratedDB.CaptureXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NStep, timevector, CaptureXS)));
+			GeneratedDB.n2nXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NStep, timevector, n2nXS)));
 		}
 		else
 		{
 			GeneratedDB.SetFissionXS(EvolutionDataStep.GetFissionXS());
 			GeneratedDB.SetCaptureXS(EvolutionDataStep.GetCaptureXS());
 			GeneratedDB.Setn2nXS(EvolutionDataStep.Getn2nXS());
-
+			
 		}
 	}
 	
@@ -729,12 +759,13 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	GeneratedDB.SetCycleTime(cycletime);
 	
 	fDataBankCalculated.insert( pair< IsotopicVector, EvolutionData > ( GeneratedDB.GetIsotopicVectorAt(0.), GeneratedDB) );
+	
 	return GeneratedDB;
 	
 }
 
 
-	//________________________________________________________________________
+//________________________________________________________________________
 
 template<>
 TMatrixT<double> DataBank<IsotopicVector>::GetFissionXsMatrix(EvolutionData EvolutionDataStep,double TStep)
@@ -743,35 +774,34 @@ TMatrixT<double> DataBank<IsotopicVector>::GetFissionXsMatrix(EvolutionData Evol
 	map<ZAI ,TGraph* >::iterator it;
 	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
 	
-		// ----------------  A(n,.) X+Y
+	// ----------------  A(n,.) X+Y
 	
 	map<ZAI ,TGraph* > FissionXS = EvolutionDataStep.GetFissionXS();
 	
 	for(it = FissionXS.begin() ; it != FissionXS.end(); it++)
 	{
-		
-		if( findex_inver.find( (*it).first ) != findex_inver.end() )
+		map<ZAI, int>::iterator findex_inver_it = findex_inver.find( (*it).first );
+		if( findex_inver_it != findex_inver.end() )
 		{
-			double y;
-			y = (*it).second->Eval(TStep);
+			double y = (*it).second->Eval(TStep);
 			
-			BatemanMatrix[ findex_inver.find( (*it).first )->second ][findex_inver.find( (*it).first )->second] += -y* 1e-24;
-			BatemanMatrix[1][ findex_inver.find( (*it).first )->second] += 2*y* 1e-24;
+			BatemanMatrix[ findex_inver_it->second ][ findex_inver_it->second ] += -y* 1e-24;
+			BatemanMatrix[1][ findex_inver_it->second ] += 2*y* 1e-24;
 		}
 		
 	}
 	
 	return BatemanMatrix;
-
+	
 }
-	//________________________________________________________________________
+//________________________________________________________________________
 template<>
 TMatrixT<double> DataBank<IsotopicVector>::GetCaptureXsMatrix(EvolutionData EvolutionDataStep,double TStep)
 
 {
 	map<ZAI ,TGraph* >::iterator it;
 	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
-
+	
 	map<ZAI, map<ZAI, double> > Capture;
 	{	// 241Am
 		map<ZAI, double> toAdd ;
@@ -785,8 +815,8 @@ TMatrixT<double> DataBank<IsotopicVector>::GetCaptureXsMatrix(EvolutionData Evol
 		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,242,1), toAdd ) );
 	}
 	
-
-		// ----------------  A(n,.)A+1
+	
+	// ----------------  A(n,.)A+1
 	map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetCaptureXS();
 	for(it = CaptureXS.begin(); it != CaptureXS.end(); it++)
 	{
@@ -862,7 +892,7 @@ TMatrixT<double> DataBank<IsotopicVector>::GetCaptureXsMatrix(EvolutionData Evol
 								cout << "Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
 								exit(1);
 							}
-
+							
 							BatemanMatrix[(*it6).second][findex_inver.find( (*it).first )->second] += y * 1e-24 * (*it5).second * (*it4).second;
 						}
 					}
@@ -874,19 +904,19 @@ TMatrixT<double> DataBank<IsotopicVector>::GetCaptureXsMatrix(EvolutionData Evol
 		}
 	}
 	return BatemanMatrix;
-
+	
 }
 
 
-	//________________________________________________________________________
+//________________________________________________________________________
 
 template<>
 TMatrixT<double> DataBank<IsotopicVector>::Getn2nXsMatrix(EvolutionData EvolutionDataStep,double TStep)
 {
 	map<ZAI ,TGraph* >::iterator it;
 	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
-
-		// ----------------  A(n,2n)A-1
+	
+	// ----------------  A(n,2n)A-1
 	map<ZAI ,TGraph* > n2nXS = EvolutionDataStep.Getn2nXS();
 	for(it = n2nXS.begin() ; it != n2nXS.end(); it++)
 	{
@@ -939,7 +969,7 @@ TMatrixT<double> DataBank<IsotopicVector>::ExtractXS(EvolutionData EvolutionData
 {
 	
 	map<ZAI ,TGraph* >::iterator it;
-		// ----------------  A(n,.) X+Y
+	// ----------------  A(n,.) X+Y
 	
 	map<ZAI ,TGraph* > FissionXS = EvolutionDataStep.GetFissionXS();
 	
@@ -956,7 +986,7 @@ TMatrixT<double> DataBank<IsotopicVector>::ExtractXS(EvolutionData EvolutionData
 		
 	}
 	
-		// ----------------  A(n,.)A+1
+	// ----------------  A(n,.)A+1
 	map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetCaptureXS();
 	for(it = CaptureXS.begin(); it != CaptureXS.end(); it++)
 	{
@@ -969,7 +999,7 @@ TMatrixT<double> DataBank<IsotopicVector>::ExtractXS(EvolutionData EvolutionData
 		}
 	}
 	
-		// ----------------  A(n,2n)A-1
+	// ----------------  A(n,2n)A-1
 	map<ZAI ,TGraph* > n2nXS = EvolutionDataStep.Getn2nXS();
 	for(it = n2nXS.begin() ; it != n2nXS.end(); it++)
 	{
@@ -983,14 +1013,14 @@ TMatrixT<double> DataBank<IsotopicVector>::ExtractXS(EvolutionData EvolutionData
 	}
 	return SigmaPhi;
 }
-	//________________________________________________________________________
-	//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
 
 
 template<>
 void DataBank<IsotopicVector>::BuildDecayMatrix()
 {
-		// List of Decay Time and Properties
+	// List of Decay Time and Properties
 	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
 	
 	{	// TMP
@@ -1006,7 +1036,7 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 	{	// 232Th
 		map< ZAI, double > toAdd;
 		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(90,232,0), pair<double, map< ZAI, double > > ( 2.37944304000000000e+18 , toAdd ) ) );
+		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(90,232,0), pair<double, map< ZAI, double > > ( 4.41806400000000000e+17 , toAdd ) ) );
 	}
 	{	// 233U
 		map< ZAI, double > toAdd;
@@ -1055,7 +1085,8 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 	}
 	{	// 241Pu
 		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(95,241,0) , 1) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,241,0) , (1-2.5e-5)) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(92,237,0) , 2.5e-5) );
 		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(94,241,0), pair<double, map< ZAI, double > > ( 4.52062620000000000e+08, toAdd) ) );
 	}
 	{	// 242Pu
@@ -1103,7 +1134,8 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 	}
 	{	// 246Cm
 		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(94,242,0) , 1) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,242,0) , 0.9997) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(-2,-2,-2) , 0.0003) );
 		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,246,0), pair<double, map< ZAI, double > > ( 1.48510065600000000e+11, toAdd) ) );
 	}
 	{	// 247Cm
@@ -1113,7 +1145,8 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 	}
 	{	// 248Cm
 		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 0.9161) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(-2,-2,-2) , 0.0839) );
 		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(96,248,0), pair<double, map< ZAI, double > > ( 1.09820448000000000e+13, toAdd) ) );
 	}
 	
@@ -1202,7 +1235,7 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 	}
 	
 	
-		// Build Index avd reverse index, correspondance ZAI-nt (and int-ZAI)
+	// Build Index avd reverse index, correspondance ZAI-nt (and int-ZAI)
 	{
 		int i = 0;
 		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
@@ -1213,14 +1246,14 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 			i++;
 		}
 	}
-
+	
 	fDecayMatrix.ResizeTo(findex.size(),findex.size());
 	for(int i = 0; i < (int)findex.size(); i++)
 		for(int j = 0; j < (int)findex.size(); j++)
 			fDecayMatrix[i][j] = 0;
 	
-
-		// Fill the Decay Part of the Bateman Matrix Always the same !
+	
+	// Fill the Decay Part of the Bateman Matrix Always the same !
 	{
 		int i = 0;
 		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
@@ -1517,7 +1550,7 @@ EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector 
 			DecayMatrix[i][j] = 0;
 	
 	
-		// Fill the Decay Part of the Bateman Matrix
+	// Fill the Decay Part of the Bateman Matrix
 	{
 		int i = 0;
 		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
@@ -1566,9 +1599,9 @@ EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector 
 	
 	
 	
-		//-------------------------//
-		//--- Perform Evolution ---//
-		//-------------------------//
+	//-------------------------//
+	//--- Perform Evolution ---//
+	//-------------------------//
 	double timevector[17];
 	timevector[0] = 0.;
 	vector< TMatrixT<double> > NMatrix ;//  TMatrixT<double>(decayindex.size(),1))
@@ -1604,8 +1637,7 @@ EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector 
 	
 	EvolutionData EvolutionDataStep = GetClosest(isotopicvector.GetActinidesComposition(), 0.);	//GetCLosest at the begining of evolution
 	
-		//return EvolutionDataStep.GenerateDBFor(isotopicvector);
-	
+
 	ReactorType = EvolutionDataStep.GetReactorType();
 	
 	for(int i = 0; i < 16; i++)
@@ -1643,13 +1675,13 @@ EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector 
 			
 			NormFactor = Norme(WantedHMIV)/ Norme(DBHMIV);
 		}
-			
+		
 		double Flux = EvolutionDataStep.GetFlux()->Eval(TStep)*Power/(EvolutionDataStep.GetPower()*NormFactor);
 		SigmaPhi[index.size()*3][i] = Flux;
 		
 		
 		map<ZAI ,TGraph* >::iterator it;
-			// ----------------  A(n,.) X+Y
+		// ----------------  A(n,.) X+Y
 		
 		map<ZAI ,TGraph* > FissionXS = EvolutionDataStep.GetFissionXS();
 		
@@ -1669,7 +1701,7 @@ EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector 
 			
 		}
 		
-			// ----------------  A(n,.)A+1
+		// ----------------  A(n,.)A+1
 		map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetCaptureXS();
 		for(it = CaptureXS.begin(); it != CaptureXS.end(); it++)
 		{
@@ -1717,7 +1749,7 @@ EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector 
 				}
 				else
 				{
-						//if( (*it3).first.Z() == 90 && (*it3).first.A() == 232) cout << y* 1e-24 *Flux << endl;
+					//if( (*it3).first.Z() == 90 && (*it3).first.A() == 232) cout << y* 1e-24 *Flux << endl;
 					map<ZAI, double>::iterator it4;
 					map<ZAI, double> CaptureList = (*it3).second;
 					for(it4 = CaptureList.begin(); it4 != CaptureList.end() ; it4++)
@@ -1747,7 +1779,7 @@ EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector 
 									cout << "Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
 									exit(1);
 								}
-									//if( (*it6).first.Z() == 92 && (*it6).first.A() == 233) cout << y* 1e-24 *Flux * (*it5).second << endl;
+								//if( (*it6).first.Z() == 92 && (*it6).first.A() == 233) cout << y* 1e-24 *Flux * (*it5).second << endl;
 								BatemanMatrix[(*it6).second][index_inver.find( (*it).first )->second] += y * 1e-24 * Flux * (*it5).second * (*it4).second;
 							}
 						}
@@ -1759,7 +1791,7 @@ EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector 
 			}
 		}
 		
-			// ----------------  A(n,2n)A-1
+		// ----------------  A(n,2n)A-1
 		map<ZAI ,TGraph* > n2nXS = EvolutionDataStep.Getn2nXS();
 		for(it = n2nXS.begin() ; it != n2nXS.end(); it++)
 		{
@@ -1805,7 +1837,7 @@ EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector 
 			}
 		}
 		
-			// ----------------   Evolution
+		// ----------------   Evolution
 		TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(index.size(),1);
 		
 		double TStepMax = cycletime/16.;
@@ -1888,7 +1920,7 @@ EvolutionData DataBank<IsotopicVector>::OldGenerateEvolutionData(IsotopicVector 
 	GeneratedDB.SetFuelType(fFuelType );
 	GeneratedDB.SetReactorType(ReactorType );
 	GeneratedDB.SetCycleTime(cycletime);
-
+	
 	
 	return GeneratedDB;
 	
