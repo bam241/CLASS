@@ -122,7 +122,8 @@ protected :
 	string	fFuelType;
 	double	fPower;
 	double	fCycleTime;
-	
+	double	fNormFactor;
+
     
 	void	OldReadDB(string DBfile);
 	void	ReadDB(string DBfile, bool oldread = false);

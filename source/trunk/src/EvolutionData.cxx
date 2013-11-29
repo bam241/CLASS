@@ -98,6 +98,10 @@ EvolutionData::EvolutionData(LogFile* Log)
 	
 	SetLog(Log);
 	fIsCrossSection = false;
+	fPower = 0;
+	fCycleTime = 0;
+	fNormFactor = 0;
+
 	
 }
 
@@ -108,6 +112,9 @@ EvolutionData::EvolutionData(LogFile* Log, string DB_file, bool oldread, ZAI zai
 	SetLog(Log);
 	fIsCrossSection = false;
 	fDB_file = DB_file;
+	fPower = 0;
+	fCycleTime = 0;
+	fNormFactor = 0;
 	
 	if(zai != ZAI(0,0,0))
 		AddAsStable(zai);
@@ -265,6 +272,7 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 		OldReadDB(DBfile);
 		return;
 	}
+	ReadInfo();							// Read the .info associeted
 
 	ifstream DecayDB(DBfile.c_str());	// Open the File
 	if(!DecayDB)				//check if file is correctly open
@@ -348,7 +356,7 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 		
 	}while ( !DecayDB.eof() );
 		
-		
+
 		
 }
 
@@ -374,7 +382,7 @@ void EvolutionData::ReadKeff(string line, double* time, int NTimeStep)
 		i++;
 	}
 	
-	fFlux = new TGraph(NTimeStep, time, Keff);			// Add the TGraph
+	fKeff = new TGraph(NTimeStep, time, Keff);			// Add the TGraph
 	
 	
 	
@@ -406,7 +414,6 @@ void EvolutionData::ReadFlux(string line, double* time, int NTimeStep)
 	
 	fFlux = new TGraph(NTimeStep, time, Flux);			// Add the TGraph
 	
-	ReadInfo();							// Read the .info associeted
 
 	
 }
@@ -435,7 +442,7 @@ void	EvolutionData::ReadInv(string line, double* time, int NTimeStep)
 		int i = 0;
 		while(start < (int)line.size() && i < NTimeStep )	// Read the Data
 		{
-			Inv[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
+			Inv[i] = atof(StringLine::NextWord(line, start, ' ').c_str())*fNormFactor ;
 			i++;
 		}
 			// Add the TGraph
@@ -587,8 +594,8 @@ void EvolutionData::ReadInfo()
 	getline(InfoDB, line);
 	if ( tlc(StringLine::NextWord(line, start, ' ')) == "normalizationfactor")
 	{
-		double NormFactor = atof(StringLine::NextWord(line, start, ' ').c_str());
-		fPower = fPower * NormFactor;
+		fNormFactor = atof(StringLine::NextWord(line, start, ' ').c_str());
+		fPower = fPower * fNormFactor;
 	}
 }
 

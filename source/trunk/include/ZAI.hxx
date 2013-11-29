@@ -60,7 +60,8 @@ class ZAI : public TObject
 							(fZ < zai.Z()) : ( (fA != zai.A())?
 								 (fA < zai.A()) : (fI < zai.I()) ); }
 						//!< ZAI Comparator
-	bool operator !=(const ZAI& zai) const	{ return ( fZ != zai.Z() ) || ( fA != zai.A() ) || ( fI < zai.I() ); }
+	bool operator !=(const ZAI& zai) const	{ return ( fZ != zai.Z() ) || ( fA != zai.A() ) || ( fI != zai.I() ); }
+	bool operator ==(const ZAI& zai) const	{ return ( fZ == zai.Z()  && fA == zai.A() &&  fI == zai.I()); }
 						//!< ZAI Comparator
 	void Print() const	{ cout << fZ << " " << fA << " " << fI << endl;}
 	protected :
