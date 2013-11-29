@@ -80,10 +80,11 @@ CLASSRead::CLASSRead(TString filename)
 {
 	fFileIn = TFile::Open(filename);
 	
-	for( int i =0; i < fFileIn->GetNkeys(); i++)
-	{
-		fData.push_back( (TTree*)gDirectory->Get(fFileIn->GetListOfKeys()->At(i)->GetName() ) );
-	}
+//	for( int i =0; i < fFileIn->GetNkeys(); i++)
+//	{
+		//cout<<"KeyNum "<<i<<endl;
+		fData.push_back( (TTree*)gDirectory->Get(fFileIn->GetListOfKeys()->At(fFileIn->GetNkeys()-1)->GetName() ) );
+//	}
 	
 	fCNuclei = 0;
 	fGraph = 0;
