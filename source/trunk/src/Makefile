@@ -23,9 +23,9 @@ OBJS		= 	CLASS.o \
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAIMass.o \
 			ZAI.o ZAIDict.o \
-			DataBank.o \
+			DataBank.o DynamicalSystem.o \
 			EvolutionData.o EvolutionDataDict.o \
-			LogFile.o
+            LogFile.o
 
 ROOTOBJS	= 	CLSSObject.o CLSSObjectDict.o\
 			CLSSFacility.o CLSSFacilityDict.o\
@@ -36,7 +36,7 @@ ROOTOBJS	= 	CLSSObject.o CLSSObjectDict.o\
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAIMass.o \
 			ZAI.o ZAIDict.o \
-			DataBank.o \
+			DataBank.o DynamicalSystem.o\
 			EvolutionData.o EvolutionDataDict.o \
 			LogFile.o
 
@@ -80,7 +80,6 @@ ZAIDict.cxx:			$(LOCALINC)/ZAI.hxx
 
 EvolutionDataDict.cxx:		$(LOCALINC)/EvolutionData.hxx
 				rootcint -f $@ -c $^
-
 
 
 

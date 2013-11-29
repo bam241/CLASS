@@ -213,7 +213,6 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
 	fFixedFuel = true;
 	fIsStorage = false;
 	
-	fFabricationPlant = 0;
 	fAssociedPool = Pool;
 	
 	fInternalTime = 0;
@@ -350,7 +349,7 @@ void Reactor::Evolution(cSecond t)
 	if(fInternalTime == 0 && fIsStarted == false) // Start of the Reactor
 	{
 		fEndOfCycle = true;
-		fInsideIV  = fIVBeginCycle; ///useless ??
+		fInsideIV  = fIVBeginCycle;
 		fInternalTime = t;
 		
 	}

@@ -13,6 +13,7 @@
 #include "CLSSObject.hxx"
 #include "TMatrix.h"
 #include "IsotopicVector.hxx"
+#include "DynamicalSystem.hxx"
 
 #include <map>
 #include <vector>
@@ -30,7 +31,7 @@ double ReactionRateWeightedDistance(EvolutionData DB, IsotopicVector IV1  );
 
 
 template <class T> 
-class DataBank : public CLSSObject
+class DataBank : public CLSSObject, DynamicalSystem
 {
 
 public :
@@ -54,19 +55,32 @@ public :
 	map<double, EvolutionData>	GetDistancesTo(IsotopicVector isotopicvector, double t = 0) const;	//! Return a map containing the distance of each EvolutionData in the DataBase to the set IV at the t time
 	EvolutionData	GetClosest(IsotopicVector isotopicvector, double t = 0) const;	//! Return the closest EvolutionData from the DataBank.
 
+
+	string	GetDataFileName()	const { return fDataFileName; }
+	string	GetDataDirectoryName()  const { return fDataDirectoryName; }
+
+	double  GetShorstestHalflife()	const { return fShorstestHalflife; }
+
+
+
+
 //********* Set Method *********//
 	
-	void SetDataBank(map<T ,EvolutionData > mymap)	{ fDataBank = mymap; } 
+	void SetDataBank(map<T ,EvolutionData > mymap)	{ fDataBank = mymap; }
 
 	void SetDataBaseIndex(string database) { fDataBaseIndex = database; }
 	EvolutionData GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power); //!< Genration of a New EvolutionData From the one already present
 	EvolutionData OldGenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power); //!< Genration of a New EvolutionData From the one already present
-	void SetUpdateReferenceDBatEachStep(bool val)	{fUpdateReferenceDBatEachStep = val;}
 
 	void SetOldReadMethod(bool val)			{ fOldReadMethod = val;}
 	void SetFissionEnergy(string FissionEnergyFile);
 	void SetFissionEnergy(ZAI zai, double E);
 	void SetFissionEnergy(int Z, int A, int I, double E )   { SetFissionEnergy(ZAI(Z,A,I), E);}
+
+	void SetDataFileName(string name)	{ fDataFileName = name;}
+	void SetDataDirectoryName(string name)	{ fDataDirectoryName = name;}
+	void SetShartestHalfLife(double halflife)	{ fShorstestHalflife = halflife; BuildDecayMatrix(); ReadDataBase();}
+
 
 //********* Modification Method *********//
 	
@@ -79,24 +93,51 @@ public :
 								///< 1 for each ZAI weighted with its XS,
 								///< 2 for each ZAI weighted with coefficient given by the user.
 
-	void UseDBTimeStep(bool oldmethod = true)		{fUseDBTimeStep = oldmethod;}
-	
+	void	BuildDecayMatrix();
+
 	void UseOldGeneration(bool oldmethod = true)		{fUseOldGeneration = oldmethod;}
+	void UseRK4EvolutionMethod(bool usemethod = true)	{fUseRK4EvolutionMethod = usemethod;}
+
+	
+	using DynamicalSystem::RungeKutta;
+	//!	Pre-treatment Runge-Kutta method.
+	/*!
+     // This method does initialisation and then call DynamicalSystem::RungeKutta
+     // \param t1: initial time
+     // \param t2: final time
+     */
+   	void BuildEqns(double t, double *N, double *dNdt);
+	void SetTheMatrixToZero();			//!< Initialize the evolution Matrix
+	void ResetTheMatrix();
+	void SetTheMatrix(TMatrixT<double> BatemanMatrix);	//!< Set the Evolution Matrix (Bateman equations)
+	TMatrixT<double> GetTheMatrix();		//!< return the Evolution Matrix (Bateman equations)
+
+	void SetTheNucleiVectorToZero();			//!< Initialize the evolution Matrix
+	void ResetTheNucleiVector();
+	void SetTheNucleiVector(TMatrixT<double> NEvolutionMatrix);	//!< Set the Evolution Matrix (Bateman equations)
+	TMatrixT<double> GetTheNucleiVector();		//!< return the Evolution Matrix (Bateman equations)
+
+    
+    
 //********* Printing Method *********//
 	void Print() const;
 	
 protected :
+
+	double  fShorstestHalflife;
+
+	string			fDataFileName;
+	string			fDataDirectoryName;
 
 	map<T, EvolutionData>	fDataBank;
 	map<T, EvolutionData>	fDataBankCalculated;
 	
  	string			fDataBaseIndex;
 
-	bool			fUpdateReferenceDBatEachStep;
+	bool			fUseRK4EvolutionMethod;
 	bool			fOldReadMethod;
 	bool			fUseOldGeneration;
-	bool			fUseDBTimeStep;
-	
+
  	string 			fFuelType;
  	pair<double,double>	fBurnUpRange;
  	vector<double>		fFuelParameter;
@@ -106,44 +147,33 @@ protected :
 	
 	IsotopicVector		fDistanceParameter;	///< weight for each ZAI in the distance calculation
 	
-	TMatrixT<double>	fDecayMatrix;		///< Matrix with half life of each nuclei
-	void	BuildDecayMatrix();
+
 	TMatrixT<double> GetFissionXsMatrix(EvolutionData EvolutionDataStep,double TStep);
 	TMatrixT<double> GetCaptureXsMatrix(EvolutionData EvolutionDataStep,double TStep);
 	TMatrixT<double> Getn2nXsMatrix(EvolutionData EvolutionDataStep,double TStep);
 	
-	
-	
 	TMatrixT<double> ExtractXS(EvolutionData EvolutionDataStep,double TStep);
+	void	OldBuildDecayMatrix();
 
+	string GetDecay(string DecayModes, double &BR,int &Iso, int &StartPos);
+
+	TMatrixT<double>		fDecayMatrix;		///< Matrix with half life of each nuclei
 	map<ZAI, double >		fFissionEnergy; ///< Store the Energy per fission use for the flux normalisation.
 	map<ZAI, map<ZAI, double> >	fFastDecay;
+
+	double	*fTheNucleiVector;	//!< The evolving atoms copied from Material proportions.
+	double 	**fTheMatrix;  		//!< The evolution Matrix
+
+	int	fNVar;		 //!< The size of the composition vector and /or number of ZAIs involved.
+	double	fPrecision;	//!< Precision of the RungeKutta
+	double	fHestimate;	//!< RK Step estimation.
+	double	fHmin;		//!< RK minimum Step.
+	double	fMaxHdid;	//!< store the effective RK max step
+	double	fMinHdid;	//!< store the effective RK min step
+	bool	fIsNegativeValueAllowed; //!< whether or not negative value are physical.
+
 	map<ZAI, int> findex_inver;
 	map<int, ZAI> findex;
-	//0 TMP
-	//1 PF
-	//2 232Th
-	//3 233U
-	//4 234U
-	//5 235U
-	//6 236U
-	//7 238U
-	//8 237Np
-	//9 238Pu
-	//10 239Pu
-	//11 240Pu
-	//12 241Pu
-	//13 242Pu
-	//14 241Am
-	//15 242Am*
-	//16 243Am
-	//17 242Cm
-	//18 243Cm
-	//19 244Cm
-	//20 245Cm
-	//21 246Cm
-	//22 247Cm
-	//23 248Cm
 
 };
 

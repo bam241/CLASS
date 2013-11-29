@@ -45,7 +45,9 @@ public :
 
 	vector<int>		GetChemicalSpecies() const;						//!< Return the Species Species contained
 	int	GetZAIQuantity()		{return  fIsotopicQuantity.size(); }
-	
+
+	double GetSumOfAll();
+
 //********* Modification Method *********//
 	void 	Clear();					//!< Empty all the IV 
 	void 	ClearNeed();					//!< Empty Need componant of the IV 

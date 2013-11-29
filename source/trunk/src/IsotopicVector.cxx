@@ -284,6 +284,18 @@ void IsotopicVector::Multiply(double factor)
 
 }
 
+//________________________________________________________________________
+
+double IsotopicVector::GetSumOfAll()
+{
+	double Sum = 0;
+	map<ZAI ,double >::iterator it;
+	for( it = fIsotopicQuantity.begin(); it != fIsotopicQuantity.end(); it++)
+		Sum += (*it).second;
+
+	return Sum;
+
+}
 	//________________________________________________________________________
 void IsotopicVector::Add(const ZAI& zai, double quantity)
 {
@@ -297,7 +309,7 @@ void IsotopicVector::Add(const ZAI& zai, double quantity)
 	{
 		pair<map<ZAI, double>::iterator, bool> IResult;
 		IResult = fIsotopicQuantity.insert( pair<ZAI ,double>(zai, quantity));
-		if(IResult.second == false)
+		if(!IResult.second)
 			IResult.first->second += quantity;
 	}
 	
@@ -337,10 +349,6 @@ void IsotopicVector::Remove(const ZAI& zai, double quantity)
 	map<ZAI ,double>::iterator it;
 	it = fIsotopicQuantity.find(zai);
 	
-	if( ceil(quantity*1e25) - quantity*1e25 >  quantity*1e25 - floor(quantity*1e25) )
-		quantity = floor(quantity*1e25)*1/1e25;
-	else	quantity = ceil(quantity*1e25)*1/1e25;
-	
 	if(quantity > 0)
 	{
 		if ( it != fIsotopicQuantity.end() )
@@ -376,12 +384,6 @@ void IsotopicVector::Remove(const IsotopicVector& isotopicvector)
 	//________________________________________________________________________
 void IsotopicVector::Need(const ZAI& zai, double quantity)
 {
-	
-	if( ceil(quantity*1e25) - quantity*1e25 >  quantity*1e25 - floor(quantity*1e25) )
-		quantity = floor(quantity*1e25)*1/1e25;
-	else	quantity = ceil(quantity*1e25)*1/1e25;
-	
-	
 	pair<map<ZAI, double>::iterator, bool> IResult;
 	if(quantity > 0)
 	{
