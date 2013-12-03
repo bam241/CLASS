@@ -253,6 +253,7 @@ DataBank<IsotopicVector>::DataBank():DynamicalSystem()
 
 	fOldReadMethod = true;
 	fUseOldGeneration = false;
+	fUseRK4EvolutionMethod = true;
 	fDistanceType = 0;
 	fShorstestHalflife = 3600.;
 	
@@ -284,6 +285,8 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool setl
 	
 	fDataBaseIndex = DB_index_file;
 	fOldReadMethod = olfreadmethod;
+	fUseRK4EvolutionMethod = true;
+
 	fUseOldGeneration = false;
 	fDistanceType = 0;
 	
