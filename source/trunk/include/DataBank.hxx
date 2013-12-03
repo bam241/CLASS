@@ -79,7 +79,7 @@ public :
 
 	void SetDataFileName(string name)	{ fDataFileName = name;}
 	void SetDataDirectoryName(string name)	{ fDataDirectoryName = name;}
-	void SetShartestHalfLife(double halflife)	{ fShorstestHalflife = halflife; BuildDecayMatrix(); ReadDataBase();}
+	void SetShartestHalfLife(double halflife)	{ fShorstestHalflife = halflife; BuildDecayMatrix();}
 
 
 //********* Modification Method *********//
