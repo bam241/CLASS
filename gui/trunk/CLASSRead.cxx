@@ -80,11 +80,11 @@ CLASSRead::CLASSRead(TString filename)
 {
 	fFileIn = TFile::Open(filename);
 	
-//	for( int i =0; i < fFileIn->GetNkeys(); i++)
-//	{
-		//cout<<"KeyNum "<<i<<endl;
+	for( int i =0; i < fFileIn->GetNkeys(); i++)
+	{
+		cout<<"KeyNum "<<i<<endl;
 		fData.push_back( (TTree*)gDirectory->Get(fFileIn->GetListOfKeys()->At(fFileIn->GetNkeys()-1)->GetName() ) );
-//	}
+	}
 	
 	fCNuclei = 0;
 	fGraph = 0;
@@ -119,6 +119,7 @@ void CLASSRead::AddFile(TString filename)
 
 void CLASSRead::ReadName()
 {
+
 	for (int j = 0; j < (int)fData.size() ; j++)
 	{
 		vector<TString>	ReactorName;
@@ -175,12 +176,12 @@ void CLASSRead::ReadName()
 	}
 	
 	
-	
 }
 
 
 void CLASSRead::ReadZAI()
 {
+
 	IsotopicVector IVTot;
 	for (int i = 0; i < (int)fData.size() ; i++)
 	{
@@ -196,6 +197,7 @@ void CLASSRead::ReadZAI()
 		fData[i]->ResetBranchAddresses();
 	}
 	fZAIvector = IVTot.GetZAIList();
+
 	
 }
 
@@ -261,7 +263,7 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 		fGraphPower[i] = 0;
 		fLegendPower[i] = 0;
 	}
-	
+
 	vector<CLASSPlotElement> toplotTTree[fData.size()];
 	
 	fNumberGraphPowerIterator = 0;
@@ -273,8 +275,12 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 	string out = opt;
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
+		cout << toplot.size() << endl;
+
 		if(i == 1) out += " SAME";
 		PlotTTreePower(toplotTTree[i], out);
+		cout << toplot.size() << endl;
+
 		fNumberGraphPowerIterator++;
 	}
 	
@@ -530,7 +536,10 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 {
 	
-	
+	fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
+	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
+	fData[toplot[0].fTreeId]->SetBranchStatus("ParcPower", 1);
+
 	if(!gROOT->FindObject("fCPower"))
 	fCPower = new TCanvas("fCPower","Power",50,110,400,300);
 	fCPower->cd();
@@ -546,8 +555,8 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 	fData[toplot[0].fTreeId]->SetBranchAddress("ParcPower", &Power);
 
 		
-	vector< double > vTime;
-	vector< double > vPower;
+	double  vTime[nentries];
+	double  vPower[nentries];
 	
 	
 	double Xmin = +1.e36;
@@ -555,31 +564,29 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 	double Ymin = 1.e36;
 	double Ymax = -1.e36;
 
+	cout << nentries << endl;
 	for (Long64_t  j = 0; j < nentries; j++)
 	{
 		fData[toplot[0].fTreeId]->GetEntry(j);
 		
-		vTime.push_back(Time/3600./24./365.25);
-		vPower.push_back(Power/1.e9);
+		vTime[j] = Time/3600./24./365.25;
+		vPower[j] = Power/1.e9;
 
 		if(j == 0)
 		{
-			Xmin = vTime.back();
-			Xmax = vTime.back();
+			Xmin = vTime[j];
+			Xmax = vTime[j];
 			
-			Ymin = vPower.back();
-			Ymax = vPower.back();
+			Ymin = vPower[j];
+			Ymax = vPower[j];
 			
 		}
 		
-		if(Xmin>vTime.back()) Xmin = vTime.back();
-		if(Xmax<vTime.back()) Xmax = vTime.back();
+		if(Xmin>vTime[j]) Xmin = vTime[j];
+		if(Xmax<vTime[j]) Xmax = vTime[j];
 		
-		if(Ymin>vPower.back()) Ymin = vPower.back();
-		if(Ymax<vPower.back()) Ymax = vPower.back();
-
-		
-		
+		if(Ymin>vPower[j]) Ymin = vPower[j];
+		if(Ymax<vPower[j]) Ymax = vPower[j];
 	}
 
 	TH1F *hr = fCPower->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
@@ -591,7 +598,7 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 	hr->GetYaxis()->CenterTitle();
 	hr->GetYaxis()->SetTitleOffset(1.25);
 	
-	fGraphPower[fNumberGraphIterator] = new TGraph(vTime.size(), &vTime[0], &vPower[0]);
+	fGraphPower[fNumberGraphIterator] = new TGraph(nentries, vTime, vPower);
 	fGraphPower[fNumberGraphIterator]->SetName(GetTittleOutName(toplot[0]).c_str());
 	fGraphPower[fNumberGraphIterator]->SetTitle(GetTittleOutName(toplot[0]).c_str());
 	fGraphPower[fNumberGraphIterator]->SetLineColor(CurveColor(fNumberGraphIterator));
@@ -601,7 +608,7 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 	fGraphPower[fNumberGraphIterator]->SetLineColor(CurveColor(fNumberGraphIterator));
 	fGraphPower[fNumberGraphIterator]->SetMarkerColor(CurveColor(fNumberGraphIterator));
 	
-	fLegendPower[fNumberGraphIterator] = new TLatex(0.7*vTime[vTime.size()-1],1.05*vPower[vTime.size()-1],GetLegendOutName(toplot[0]).c_str());
+	fLegendPower[fNumberGraphIterator] = new TLatex(0.7*vTime[nentries-1],1.05*vPower[nentries-1],GetLegendOutName(toplot[0]).c_str());
 	fLegendPower[fNumberGraphIterator]->SetTextSize(0.05);
 	fLegendPower[fNumberGraphIterator]->SetTextFont(132);
 	fLegendPower[fNumberGraphIterator]->SetTextColor(CurveColor(fNumberGraphIterator));
