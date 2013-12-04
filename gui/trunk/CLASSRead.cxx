@@ -237,6 +237,7 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
 		if(i == 1) out += " SAME";
+		if(toplotTTree[i].size() !=0)
 		PlotTTree(toplotTTree[i], out);
 	}
 	
@@ -275,11 +276,10 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 	string out = opt;
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
-		cout << toplot.size() << endl;
 
 		if(i == 1) out += " SAME";
-		PlotTTreePower(toplotTTree[i], out);
-		cout << toplot.size() << endl;
+		if(toplotTTree[i].size() !=0)
+			PlotTTreePower(toplotTTree[i], out);
 
 		fNumberGraphPowerIterator++;
 	}
@@ -290,7 +290,9 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 {
 	
-	
+	fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
+	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
+
 
 	if(!gROOT->FindObject("c_Nuclei"))
 		fCNuclei =new TCanvas("c_Nuclei","Nuclei",50,110,400,300);
@@ -336,6 +338,7 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 			{
 				fData[toplot[i].fTreeId]->SetBranchStatus(InBranchName.c_str(),1);
 				fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &IV[toplot[i].fFacylityNumber]);
+
 			}
 		}
 		
@@ -564,7 +567,6 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 	double Ymin = 1.e36;
 	double Ymax = -1.e36;
 
-	cout << nentries << endl;
 	for (Long64_t  j = 0; j < nentries; j++)
 	{
 		fData[toplot[0].fTreeId]->GetEntry(j);
