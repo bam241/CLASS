@@ -290,7 +290,7 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 {
 	
-	fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
+	//fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
 	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
 
 
