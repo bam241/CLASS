@@ -523,11 +523,9 @@ void MainWin::Plot()
 			toplotPower.push_back( CLASSPlotElement(i, -2, -2, -2,-2,-2) );
 
 	}
-	cout << "toto" << endl;
 
 	if(toplotPower.size() != 0)
 		fDATA->PlotPower(toplotPower);
-	cout << "toto2" << endl;
 
 	for(int i=0; i < fNumberOfParc; i++)
 	{
