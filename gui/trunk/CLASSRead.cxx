@@ -290,7 +290,7 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 {
 	
-	//fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
+	fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
 	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
 
 
@@ -334,38 +334,37 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 		
 		if(toplot[i].fFacilityId == 0)
 		{
-			if(fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
+			if(!fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
 			{
 				fData[toplot[i].fTreeId]->SetBranchStatus(InBranchName.c_str(),1);
 				fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &IV[toplot[i].fFacylityNumber]);
-
 			}
 		}
 		
 		else if(toplot[i].fFacilityId == 1)
 		{
-			if(fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
+			if(!fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
 			{
 				fData[toplot[i].fTreeId]->SetBranchStatus(InBranchName.c_str(),1);
 				fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &reactor[toplot[i].fFacylityNumber]);
 			}
 		}else if(toplot[i].fFacilityId == 2)
 		{
-			if(fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
+			if(!fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
 			{
 				fData[toplot[i].fTreeId]->SetBranchStatus(InBranchName.c_str(),1);
 				fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &stock[toplot[i].fFacylityNumber]);
 			}
 		}else if(toplot[i].fFacilityId == 3)
 		{
-			if(fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
+			if(!fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
 			{
 				fData[toplot[i].fTreeId]->SetBranchStatus(InBranchName.c_str(),1);
 				fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &pool[toplot[i].fFacylityNumber]);
 			}
 		}else if(toplot[i].fFacilityId == 4)
 		{
-			if(fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
+			if(!fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
 			{
 				fData[toplot[i].fTreeId]->SetBranchStatus(InBranchName.c_str(),1);
 				fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &fabricationplant[toplot[i].fFacylityNumber]);
