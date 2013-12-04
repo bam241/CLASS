@@ -293,7 +293,6 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 	fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
 	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
 
-
 	if(!gROOT->FindObject("c_Nuclei"))
 		fCNuclei =new TCanvas("c_Nuclei","Nuclei",50,110,400,300);
 	fCNuclei->cd();
@@ -331,46 +330,22 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 	{
 		
 		string InBranchName = GetBranchInName(toplot[i]);
-		
+
+		string ActiveInBranchName = InBranchName + "*";
+		fData[toplot[0].fTreeId]->SetBranchStatus(ActiveInBranchName.c_str(),1);
+
 		if(toplot[i].fFacilityId == 0)
-		{
-			if(!fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
-			{
-				fData[toplot[i].fTreeId]->SetBranchStatus(InBranchName.c_str(),1);
-				fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &IV[toplot[i].fFacylityNumber]);
-			}
-		}
-		
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &IV[toplot[i].fFacylityNumber]);
 		else if(toplot[i].fFacilityId == 1)
-		{
-			if(!fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
-			{
-				fData[toplot[i].fTreeId]->SetBranchStatus(InBranchName.c_str(),1);
-				fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &reactor[toplot[i].fFacylityNumber]);
-			}
-		}else if(toplot[i].fFacilityId == 2)
-		{
-			if(!fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
-			{
-				fData[toplot[i].fTreeId]->SetBranchStatus(InBranchName.c_str(),1);
-				fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &stock[toplot[i].fFacylityNumber]);
-			}
-		}else if(toplot[i].fFacilityId == 3)
-		{
-			if(!fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
-			{
-				fData[toplot[i].fTreeId]->SetBranchStatus(InBranchName.c_str(),1);
-				fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &pool[toplot[i].fFacylityNumber]);
-			}
-		}else if(toplot[i].fFacilityId == 4)
-		{
-			if(!fData[toplot[i].fTreeId]->GetBranchStatus(InBranchName.c_str()) )
-			{
-				fData[toplot[i].fTreeId]->SetBranchStatus(InBranchName.c_str(),1);
-				fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &fabricationplant[toplot[i].fFacylityNumber]);
-			}
-		}
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &reactor[toplot[i].fFacylityNumber]);
+		else if(toplot[i].fFacilityId == 2)
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &stock[toplot[i].fFacylityNumber]);
+		else if(toplot[i].fFacilityId == 3)
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &pool[toplot[i].fFacylityNumber]);
+		else if(toplot[i].fFacilityId == 4)
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &fabricationplant[toplot[i].fFacylityNumber]);
 	}
+
 	double Xmin = +1.e36;
 	double Xmax =  -1.e36;
 	double Ymin = 1.e36;
@@ -398,7 +373,7 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
 				int I = toplot[i].fZAI.I();
-				double ZAIQuantity = IV[toplot[i].fFacylityNumber]->GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				double ZAIQuantity = IV[toplot[0].fFacylityNumber]->GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				vQuantity[i].push_back(ZAIQuantity);
 				
 				if(j == 0 && i == 0)
