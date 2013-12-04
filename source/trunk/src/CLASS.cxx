@@ -672,7 +672,7 @@ void CLASS::OutAttach()
 	
 	ResetQuantity();
 		//Branch Absolut Time
-	fOutT->Branch("AbsTime",&fAbsoluteTime,"AbsoluteTime/l");
+	fOutT->Branch("AbsTime",&fAbsoluteTime,"AbsoluteTime/L");
 		//Branch The Power installed in the Parc
 	fOutT->Branch("ParcPower",&fParcPower,"ParcPower/D");
 	
