@@ -79,7 +79,7 @@ MainWin::~MainWin()
 //_____________________________________________________________________________________________
 void MainWin::Start()
 {
-	
+
 	//
 	// Set the line width for all graph: for PPT presentation a value of 2 is probably better
 	//
@@ -100,7 +100,7 @@ void MainWin::Start()
 	if (!fontB)
 		fontB = gClient->GetResourcePool()->GetDefaultFont();
 	fLabelFontB = fontB->GetFontStruct();
-	
+
 	
 	/*****************************/
 	//Compteur d'objet selectionné
@@ -121,7 +121,7 @@ void MainWin::Start()
 		fNumberOfPool[i] = fDATA->GetPoolName()[i].size();
 		fNumberOfFab[i] = fDATA->GetFabricationName()[i].size();
 	}
-	
+
 	/*Compteurs d'objets selectionné dans chaque parc****/
 	//exemple fNselectedReac[i][j]=1 -> alors le reacteur numero j du parc i a été seléctionné
 	// les valeurs de ces matrices sont soit 0 soit 1
@@ -165,7 +165,7 @@ void MainWin::Start()
 	gStyle->SetTitleFont(22);
 	gStyle->SetLabelFont(22,"xyz");
 	gStyle->SetHistLineWidth(1);
-	
+
 	
 	//first define Layaout (left, rigth, top, bottom margins)
 	TGLayoutHints* fL5555 = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX , 5, 5, 5, 5);
@@ -187,7 +187,7 @@ void MainWin::Start()
 	tmp.str("");
 	tmp << "CLASSGui " << "@@@NOM_Du_SCENAR";
 	this->SetWindowName(tmp.str().c_str());
-	
+
 	
 	/***************** LES Differents Parcs  ***********************/
 	
@@ -202,7 +202,7 @@ void MainWin::Start()
 		string ParcName = "Park ";
 		fParcTabFoil[i] = fParcTab->AddTab(ParcName.c_str());
 	}
-	
+
 	
 	/*************Les differentes Facilities Tab****/
 	fFacilitiesTab = new TGTab*[fNumberOfParc];
@@ -214,7 +214,7 @@ void MainWin::Start()
 		fFacilitiesTab[i]->Associate(this);
 		
 	}
-	
+
 	fFacilitiesTabFoil = new TGCompositeFrame**[fNumberOfParc];
 	//1 jeu de facility tab par Parc
 	for(int i = 0; i < fNumberOfParc; i++)
@@ -236,12 +236,11 @@ void MainWin::Start()
 	
 	
 	//1 jeu d'ItemTab par facility tab
-	
+
 	fItemTab = new TGTab**[fNumberOfParc];
-	
+
 	for(int i = 0; i < fNumberOfParc; i++)
 	{
-		
 		fItemTab[i] = new TGTab*[5];
 		for(int j = 0; j < 5; j++)
 		{
@@ -249,11 +248,14 @@ void MainWin::Start()
 			fFacilitiesTabFoil[i][j]->AddFrame(fItemTab[i][j]);
 			fItemTab[i][j]->Associate(this);
 			//construire les foils en fonction du nombre de item possible par foil
-			FillItemTab(j);
+
 		}
 		
 	}
-	
+	for(int j = 0; j < 5; j++)
+	FillItemTab(j);
+
+
 	
 	//1 jeu de NucleusTab pour tous
 	
@@ -264,7 +266,7 @@ void MainWin::Start()
 	fGeneF0->AddFrame(fTabNuc,fL2222);
 	fTabNuc->Associate(this);
 	FillNucTab();
-	
+
 	// The Plot, Save, Macro and Quit buttons
 	//
 	fPlotSaveQuitFrame = new TGHorizontalFrame(fGeneF0, 400, 50 );
@@ -341,6 +343,7 @@ void MainWin::Start()
 	fMainWidth=fGeneF0->GetWidth();
 	
 	Resize(550,750  ); 					// fit to the exact size
+
 
 }
 //_____________________________________________________________________________________________
@@ -520,8 +523,11 @@ void MainWin::Plot()
 			toplotPower.push_back( CLASSPlotElement(i, -2, -2, -2,-2,-2) );
 
 	}
+	cout << "toto" << endl;
+
 	if(toplotPower.size() != 0)
 		fDATA->PlotPower(toplotPower);
+	cout << "toto2" << endl;
 
 	for(int i=0; i < fNumberOfParc; i++)
 	{
@@ -577,6 +583,7 @@ void MainWin::Plot()
 				}
 		}
 	}
+
 	if(toplot.size() != 0)
 		fDATA->Plot(toplot);
 	
@@ -763,13 +770,14 @@ void MainWin::FillReactorTab()
 	
 	for (int i=0 ; i<fNumberOfParc;i++)
 	{
+
 		NTab[i]=fNumberOfReactor[i]/(Nline*Ncol)+1;
 		fTabFoilReactor[i]= new TGCompositeFrame*[NTab[i]];
 		fCheckArrayReactor[i]= new TGCheckButton*[fNumberOfReactor[i]];
-		
+
+
 	}
-	
-	
+
 	for (int p=0;p<fNumberOfParc;p++)
 	{
 		string TabName[NTab[p]];
@@ -778,10 +786,10 @@ void MainWin::FillReactorTab()
 		{
 			stringstream tmp;
 			tmp.str("");
-			//tmp<<"Reac "<<l;
 			TabName[l]=tmp.str();
 			//cout<<l<<" "<<TabName[l]<<endl;
-			fTabFoilReactor[p][l]=fItemTab[p][1]->AddTab(TabName[l].c_str());
+
+			fTabFoilReactor[p][l] = fItemTab[p][1]->AddTab(TabName[l].c_str());
 			fTabFoilReactor[p][l]->SetLayoutManager(new TGMatrixLayout(fTabFoilReactor[p][l], Nline, 0, 5));
 		}
 		
