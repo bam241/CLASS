@@ -31,6 +31,13 @@ map<string,int> PoolIndex;
 map<string,int> StorageIndex;
 map<string,int> FabricationPlantIndex;
 
+string itoa(int num)
+{
+	ostringstream os(ostringstream::out);
+	os<<setprecision(3)<<num;
+	return os.str();
+}
+
 void ReadPower(TTree *T, char* opt = "L*")
 {
 
@@ -167,15 +174,17 @@ void PrintNames(TTree *T, string option, bool PrintResult=true)
 void Read(TTree *T, TString IV, int Z, int A, int I, char* opt = "L*")
 {
 
+	T->SetBranchStatus("*", 0);
+	T->SetBranchStatus("AbsTime", 1);
+
 	IsotopicVector *IVIn;
 	TString IVname = IV +".";
+	TString IVnameStatus = IV +".*";
 	
-	
-	cout << IVname << endl;
 	T->SetBranchStatus(IVname,1);
-	T->SetBranchAddress(IVname, &IVIn);
+	T->SetBranchAddress(IVnameStatus, &IVIn);
 
-	ULong64_t Time;
+	Long64_t Time;
 	T->SetBranchAddress("AbsTime", &Time);
 	Long64_t nentries = T->GetEntries();
 	Double_t ZAIQ;
@@ -218,13 +227,17 @@ void Read(TTree *T, TString IV, int Z, int A, int I, char* opt = "L*")
 void Read(TTree *T, TString IV, char* opt = "L*")
 {
 
+	T->SetBranchStatus("*", 0);
+	T->SetBranchStatus("AbsTime", 1);
+
 	IsotopicVector *IVIn;
 	TString IVname = IV +".";
+	TString IVnameStatus = IV +".*";
 
 	T->SetBranchStatus(IVname,1);
-	T->SetBranchAddress(IVname, &IVIn);
+	T->SetBranchAddress(IVnameStatus, &IVIn);
 
-	ULong64_t Time;
+	Long64_t Time;
 	T->SetBranchAddress("AbsTime", &Time);
 	Long64_t nentries = T->GetEntries();
 	Double_t ZAIQ;
@@ -281,14 +294,18 @@ void ReadReactor(TTree *T, string ReactorName, int Z, int A, int I, char* opt = 
 void ReadReactor(TTree *T, int ReactorId, int Z, int A, int I, char* opt = "L*")
 {
 
+	T->SetBranchStatus("*", 0);
+	T->SetBranchStatus("AbsTime", 1);
+
 	Reactor *reactor;
-	TString Rname;
-	Rname.Form("Reactor%d.",ReactorId);
 
-	T->SetBranchStatus(Rname,1);
-	T->SetBranchAddress(Rname, &reactor);
+	string Rname = "Reactor" + itoa(ReactorId) + ".";
+	string RnameStatus = Rname+"*";
+	
+	T->SetBranchStatus(RnameStatus.c_str(),1);
+	T->SetBranchAddress(Rname.c_str(), &reactor);
 
-	ULong64_t Time;
+	Long64_t Time;
 	T->SetBranchAddress("AbsTime", &Time);
 	Long64_t nentries = T->GetEntries();
 	Double_t ZAIQ;
@@ -375,14 +392,18 @@ void ReadStorage(TTree *T, string StorageName, int Z, int A, int I, char* opt = 
 void ReadStorage(TTree *T, int StorageId, int Z, int A, int I, char* opt = "L*")
 {
 
+	T->SetBranchStatus("*", 0);
+	T->SetBranchStatus("AbsTime", 1);
+
 	Storage *storage;
-	TString Rname;
-	Rname.Form("Storage%d.",StorageId);
+	
+	string Rname = "Storage" + itoa(StorageId) + ".";
+	string RnameStatus = Rname+"*";
+	
+	T->SetBranchStatus(RnameStatus.c_str(),1);
+	T->SetBranchAddress(Rname.c_str(), &storage);
 
-	T->SetBranchStatus(Rname,1);
-	T->SetBranchAddress(Rname, &storage);
-
-	ULong64_t Time;
+	Long64_t Time;
 	T->SetBranchAddress("AbsTime", &Time);
 	Long64_t nentries = T->GetEntries();
 	Double_t ZAIQ;
@@ -436,14 +457,18 @@ void ReadStorage(TTree *T, string StorageName, char* opt = "L*")
 void ReadStorage(TTree *T, int StorageId, char* opt = "L*")
 {
 
+	T->SetBranchStatus("*", 0);
+	T->SetBranchStatus("AbsTime", 1);
+
 	Storage *storage;
-	TString Rname;
-	Rname.Form("Storage%d.",StorageId);
+	
+	string Rname = "Storage" + itoa(StorageId) + ".";
+	string RnameStatus = Rname+"*";
+	
+	T->SetBranchStatus(RnameStatus.c_str(),1);
+	T->SetBranchAddress(Rname.c_str(), &storage);
 
-	T->SetBranchStatus(Rname,1);
-	T->SetBranchAddress(Rname, &storage);
-
-	ULong64_t Time;
+	Long64_t Time;
 	T->SetBranchAddress("AbsTime", &Time);
 	Long64_t nentries = T->GetEntries();
 	Double_t ZAIQ;
@@ -464,9 +489,9 @@ void ReadStorage(TTree *T, int StorageId, char* opt = "L*")
 
   	TBranch *newBranch = T->Branch(BranchName, &ZAIQ, Branchdescription);
 	T->SetTitle(TitleName);
+	int time_tmp=-4;
 	for (Long64_t i = 0; i < nentries; i++)
 	{
-
 		T->GetEntry(i);
 		ZAIQ = 0;
 		for(int z = 90; z < 98; z++)
@@ -478,6 +503,12 @@ void ReadStorage(TTree *T, int StorageId, char* opt = "L*")
 					ZAIQ += storage->GetFullStock().GetZAIIsotopicQuantity(z,a,j)*a/6.02e23*1e-3;
 				}
 			}
+		}
+		
+		if( ((Time/365.25/24./3600.)==time_tmp) )
+		{
+			cout << Time/365.25/24./3600. << " " << ZAIQ*1e-3 << endl;;
+			time_tmp++;
 		}
 			newBranch->Fill();
 	}
@@ -505,14 +536,19 @@ void ReadCooling(TTree *T, string PoolName, int Z, int A, int I, char* opt = "L*
 void ReadCooling(TTree *T, int CoolingId, int Z, int A, int I, char* opt = "L*")
 {
 
+	T->SetBranchStatus("*", 0);
+	T->SetBranchStatus("AbsTime", 1);
+
 	Pool *cooling;
-	TString Rname;
-	Rname.Form("Pool%d.",CoolingId);
-
-	T->SetBranchStatus(Rname,1);
-	T->SetBranchAddress(Rname, &cooling);
-
-	ULong64_t Time;
+	
+	string Rname = "Pool" + itoa(CoolingId) + ".";
+	string RnameStatus = Rname+"*";
+	
+	T->SetBranchStatus(RnameStatus.c_str(),1);
+	T->SetBranchAddress(Rname.c_str(), &cooling);
+	
+	
+	Long64_t Time;
 	T->SetBranchAddress("AbsTime", &Time);
 	Long64_t nentries = T->GetEntries();
 	Double_t ZAIQ;
@@ -568,14 +604,18 @@ void ReadCooling(TTree *T, string PoolName, char* opt = "L*")
 void ReadCooling(TTree *T, int CoolingId, char* opt = "L*")
 {
 
+	T->SetBranchStatus("*", 0);
+	T->SetBranchStatus("AbsTime", 1);
+
 	Pool *cooling;
-	TString Rname;
-	Rname.Form("Pool%d.",CoolingId);
+	
+	string Rname = "Pool" + itoa(CoolingId) + ".";
+	string RnameStatus = Rname+"*";
+	
+	T->SetBranchStatus(RnameStatus.c_str(),1);
+	T->SetBranchAddress(Rname.c_str(), &cooling);
 
-	T->SetBranchStatus(Rname,1);
-	T->SetBranchAddress(Rname, &cooling);
-
-	ULong64_t Time;
+	Long64_t Time;
 	T->SetBranchAddress("AbsTime", &Time);
 	Long64_t nentries = T->GetEntries();
 	Double_t ZAIQ;
@@ -596,6 +636,7 @@ void ReadCooling(TTree *T, int CoolingId, char* opt = "L*")
 
   	TBranch *newBranch = T->Branch(BranchName, &ZAIQ, Branchdescription);
 	T->SetTitle(TitleName);
+	int time_tmp=-4;
 	for (Long64_t i = 0; i < nentries; i++)
 	{
 
@@ -610,6 +651,11 @@ void ReadCooling(TTree *T, int CoolingId, char* opt = "L*")
 					ZAIQ += cooling->GetFullCooling().GetZAIIsotopicQuantity(z,a,j)*a/6.02e23*1e-3;
 				}
 			}
+		}
+		if( ((Time/365.25/24./3600.)==time_tmp) )
+		{
+			cout << Time/365.25/24./3600. << " " << ZAIQ*1e-3 << endl;;
+			time_tmp++;
 		}
 		newBranch->Fill();
 	}
@@ -637,14 +683,18 @@ void ReadFabrication(TTree *T, string FabricationName, int Z, int A, int I, char
 void ReadFabrication(TTree *T, int FabricationId, int Z, int A, int I, char* opt = "L*")
 {
 
+	T->SetBranchStatus("*", 0);
+	T->SetBranchStatus("AbsTime", 1);
+
 	FabricationPlant *fabrication;
-	TString Rname;
-	Rname.Form("FabricationPlant%d.",FabricationId);
+	
+	string Rname = "FabricationPlant" + itoa(FabricationId) + ".";
+	string RnameStatus = Rname+"*";
+	
+	T->SetBranchStatus(RnameStatus.c_str(),1);
+	T->SetBranchAddress(Rname.c_str(), &fabrication);
 
-	T->SetBranchStatus(Rname,1);
-	T->SetBranchAddress(Rname, &fabrication);
-
-	ULong64_t Time;
+	Long64_t Time;
 	T->SetBranchAddress("AbsTime", &Time);
 	Long64_t nentries = T->GetEntries();
 	Double_t ZAIQ;
@@ -698,14 +748,18 @@ void ReadFabrication(TTree *T, string FabricationName, char* opt = "L*")
 void ReadFabrication(TTree *T, int FabricationId, char* opt = "L*")
 {
 
+	T->SetBranchStatus("*", 0);
+	T->SetBranchStatus("AbsTime", 1);
+
 	FabricationPlant *fabrication;
-	TString Rname;
-	Rname.Form("FabricationPlant%d.",FabricationId);
+	
+	string Rname = "FabricationPlant" + itoa(FabricationId) + ".";
+	string RnameStatus = Rname+"*";
+	
+	T->SetBranchStatus(RnameStatus.c_str(),1);
+	T->SetBranchAddress(Rname.c_str(), &fabrication);
 
-	T->SetBranchStatus(Rname,1);
-	T->SetBranchAddress(Rname, &fabrication);
-
-	ULong64_t Time;
+	Long64_t Time;
 	T->SetBranchAddress("AbsTime", &Time);
 	Long64_t nentries = T->GetEntries();
 	Double_t ZAIQ;
@@ -760,14 +814,18 @@ void ReadFabrication(TTree *T, int FabricationId, char* opt = "L*")
 void GetStockAt(TTree *T, int StorageId, int date)
 {
 
+	T->SetBranchStatus("*", 0);
+	T->SetBranchStatus("AbsTime", 1);
+
 	Storage *storage;
-	TString Rname;
-	Rname.Form("Storage%d.",StorageId);
+	
+	string Rname = "Storage" + itoa(StorageId) + ".";
+	string RnameStatus = Rname+"*";
+	
+	T->SetBranchStatus(RnameStatus.c_str(),1);
+	T->SetBranchAddress(Rname.c_str(), &storage);
 
-	T->SetBranchStatus(Rname,1);
-	T->SetBranchAddress(Rname, &storage);
-
-	ULong64_t Time;
+	Long64_t Time;
 	T->SetBranchAddress("AbsTime", &Time);
 	Long64_t nentries = T->GetEntries();
 	Double_t ZAIQ;
