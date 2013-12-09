@@ -38,10 +38,30 @@ string itoa(int num)
 	return os.str();
 }
 
+
+vector<ZAI> PrintZAIList(TTree *T)
+{
+	IsotopicVector IVTot;
+
+	IsotopicVector *IVIn=0;
+	T->SetBranchStatus("TOTAL.",1);
+	T->SetBranchAddress("TOTAL.", &IVIn);
+
+	Long64_t nentries = T->GetEntries();
+
+	T->GetEntry(nentries-1);
+	IVTot = (*IVIn);
+
+
+	vector<ZAI> ZAIvector = IVTot.GetZAIList();
+	return ZAIvector;
+}
+
+
 void ReadPower(TTree *T, char* opt = "L*")
 {
 
-	T->Draw("ParcPower*1e-9:AbsTime/3600./24./365.25","",opt);
+	T->Draw("ParcPower*1e-9:AbsTime/3600./24./365.25","AbsTime/3600./24./365.25 < 1e3",opt);
 	TGraph *T_g = (TGraph*)gPad->GetPrimitive("Graph");
 	TH2F   *htemp = (TH2F*)gPad->GetPrimitive("htemp"); // empty, but has axes
 
@@ -254,10 +274,11 @@ void Read(TTree *T, TString IV, char* opt = "L*")
 
   	TBranch *newBranch = T->Branch(BranchName, &ZAIQ, Branchdescription);
 	T->SetTitle(TitleName);
-	for (Long64_t i = 0; i < nentries; i++)
+	for (Long64_t i = 1; i < nentries-1; i++)
 	{
 
 		T->GetEntry(i);
+		cout << Time << endl;
 		ZAIQ = 0;
 		for(int z = 90; z < 98; z++)
 		{
@@ -848,7 +869,7 @@ void GetStockAt(TTree *T, int StorageId, int date)
 	T->SetTitle(TitleName);
 	int CorrectEntrie = 0;
 	long long int TimeDiff = abs(date*365.25*3600*24);
-	for (Long64_t i = 0; i < nentries; i++)
+	for (Long64_t i = 1; i < nentries-1; i++)
 	{
 		T->GetEntry(i);
 		if(TimeDiff > abs(date*365.25*3600*24 - Time) )
