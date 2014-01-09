@@ -533,7 +533,7 @@ void DataBank<IsotopicVector>::CalculateDistanceParameter()
 template<>
 void DataBank<IsotopicVector>::SetDistanceParameter(IsotopicVector DistanceParameter){
 	
-	fDistanceParameter=DistanceParameter;
+	fDistanceParameter = DistanceParameter;
 	
 	GetLog()->fLog <<"!!INFO!! Distance Parameters "<<endl;
 	map<ZAI ,double >::iterator it2;
@@ -608,7 +608,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 		
 		for(it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		{
-			
+/// Need TO change with FP managment
 			map<ZAI, int >::iterator it2;
 			
 			if( (*it).first.Z() < 90 )
@@ -1205,6 +1205,7 @@ template<>
 void DataBank<IsotopicVector>::BuildDecayMatrix()
 {
 	// List of Decay Time and Properties
+/// Need TO change with FP managment
 	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
 	{	// TMP
 		map< ZAI, double > toAdd;
@@ -1216,7 +1217,13 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 		toAdd.insert(pair<ZAI, double> ( ZAI(-2,-2,-2), 1) );
 		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(-2,-2,-2), pair<double, map< ZAI, double > > ( 1e28 ,toAdd )) ) ;
 	}
-	
+	/// Need TO change with FP managment
+	/// Need TO change with FP managment
+	/// Need TO change with FP managment
+	/// Need TO change with FP managment
+	/// Need TO change with FP managment
+	/// Need TO change with FP managment
+
 	string DataFullPathName = GetDataDirectoryName()+ GetDataFileName();
 	ifstream infile(DataFullPathName.c_str());
 	
@@ -1318,6 +1325,12 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 						}
 						else if( DM <= 18)
 						{
+							/// Need TO change with FP managment
+							/// Need TO change with FP managment
+							/// Need TO change with FP managment
+							/// Need TO change with FP managment
+							/// Need TO change with FP managment
+							/// Need TO change with FP managment
 							pair<map<ZAI, double>::iterator, bool> IResult;
 							IResult = DaughtersMap.insert(pair<ZAI, double> (ZAI(-2,-2,-2) , 2*BR) );
 							if( !IResult.second)
@@ -1341,6 +1354,12 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 				if(branch_test+branch_test_f>0)
 					for(  DM_it = DaughtersMap.begin();  DM_it != DaughtersMap.end(); DM_it++)
 					{
+						/// Need TO change with FP managment
+						/// Need TO change with FP managment
+						/// Need TO change with FP managment
+						/// Need TO change with FP managment
+						/// Need TO change with FP managment
+
 						if ( (*DM_it).first != ZAI(-2,-2,-2) )
 							(*DM_it).second *= 1./(branch_test+branch_test_f);
 						else
@@ -1432,7 +1451,7 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 			
 		}
 		
-		FastDecayValidation =true;
+		FastDecayValidation = true;
 		for(FD_it = fFastDecay.begin(); FD_it != fFastDecay.end(); FD_it++)
 		{
 			map<ZAI, double>::iterator BR_it;
@@ -1510,6 +1529,63 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 	//exit(1);
 	
 }
+
+
+
+
+template<>
+void DataBank<IsotopicVector>::LoadFPYield(string SponfaneusYield, string ReactionYield)
+{
+
+	fSpontaneusYield = ReadFPYield(SponfaneusYield);
+	fReactionYield = ReadFPYield(ReactionYield);
+
+
+	BuildDecayMatrix();
+}
+
+
+
+template<>
+map< ZAI,IsotopicVector > DataBank<IsotopicVector>::ReadFPYield(string Yield)
+{
+
+	map< ZAI,IsotopicVector >  Yield;
+	ifstream infile(Yield.c_str());
+	if(!infile)
+	{
+		cout << "!!Warning!! !!!DataBank!!! \n Can't open \"" << Yield << "\"\n" << endl;
+		GetLog()->fLog << "!!Warning!! !!!DataBank!!! \n Can't open \"" << Yield<< "\"\n" << endl;
+	}
+
+
+	string line;
+	int start = 0;
+
+	getline(infile, line);
+	vector<ZAI> ZAIF;	//ZAI that fission
+
+	while(start < (int)line.size())
+	{
+		int Z = atof(StringLine::NextWord(line, start, ' ').c_str());
+		int A = atof(StringLine::NextWord(line, start, ' ').c_str());
+		int I =
+		ZAIF.push_back( atof(StringLine::NextWord(line, start, ' ').c_str()), atof(StringLine::NextWord(line, start, ' ').c_str()), atof(StringLine::NextWord(line, start, ' ').c_str()) );
+	}
+
+	do
+	{
+
+
+
+
+	} while (!infile.eof());
+
+	return Yield;
+}
+
+
+
 
 
 template<>

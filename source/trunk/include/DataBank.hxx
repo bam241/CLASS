@@ -80,6 +80,7 @@ public :
 	void SetDataFileName(string name)	{ fDataFileName = name;}
 	void SetDataDirectoryName(string name)	{ fDataDirectoryName = name;}
 	void SetShartestHalfLife(double halflife)	{ fShorstestHalflife = halflife; BuildDecayMatrix();}
+	void LoadFPYield(string SponfaneusYield, string ReactionYield);			//Build Fision Yields maps;
 
 
 //********* Modification Method *********//
@@ -160,6 +161,9 @@ protected :
 	TMatrixT<double>		fDecayMatrix;		///< Matrix with half life of each nuclei
 	map<ZAI, double >		fFissionEnergy; ///< Store the Energy per fission use for the flux normalisation.
 	map<ZAI, map<ZAI, double> >	fFastDecay;
+	map<ZAI, IsotopicVector>	fSpontaneusYield;
+	map<ZAI, IsotopicVector>	fReactionYield;
+
 
 	double	*fTheNucleiVector;	//!< The evolving atoms copied from Material proportions.
 	double 	**fTheMatrix;  		//!< The evolution Matrix
@@ -174,6 +178,9 @@ protected :
 
 	map<ZAI, int> findex_inver;
 	map<int, ZAI> findex;
+
+	map< ZAI,IsotopicVector > ReadFPYield(string Yield);
+
 
 };
 
