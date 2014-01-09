@@ -393,7 +393,6 @@ void IsotopicVector::Need(const ZAI& zai, double quantity)
 	}
 	
 	
-	
 }
 
 	//________________________________________________________________________
@@ -558,6 +557,33 @@ void IsotopicVector::Print(string option) const
 }
 
 
+void IsotopicVector::PrintList(string option) const
+{
+	bool QuantityPrint = false;
+	bool DBPrint = false;
+
+	QuantityPrint = true;
+
+	if(QuantityPrint)
+	{
+		map<ZAI ,double> IsotopicQuantity = GetIsotopicQuantity();
+		map<ZAI ,double >::iterator it;
+		for(it = IsotopicQuantity.begin();it != IsotopicQuantity.end(); it++)
+		{
+			cout << (*it).first.Z() << " ";
+			cout << (*it).first.A() << " ";
+			cout << (*it).first.I() << " ";
+			cout << endl;
+		}
+		cout << endl;
+
+	}
+	if(DBPrint)
+	{
+		cout << "****Isotopic Vector DB****" << endl;
+	}
+
+}
 
 
 
