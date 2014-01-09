@@ -563,9 +563,15 @@ void EvolutionData::ReadInfo()
 	ifstream InfoDB(InfoDBFile.c_str());				// Open the File
 	if(!InfoDB)
 	{
-		cout << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
-		GetLog()->fLog << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
-		exit(1);
+		InfoDBFile  = InfoDBFile.erase(InfoDBFile.size()-4,InfoDBFile.size());
+		InfoDBFile += "info";
+		ifstream InfoDB(InfoDBFile.c_str());				// Open the File
+		if(!InfoDB)
+		{
+			cout << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
+			GetLog()->fLog << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
+			exit(1);
+		}
 	}
 	
 	int start = 0;

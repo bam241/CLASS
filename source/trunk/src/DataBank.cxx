@@ -242,6 +242,9 @@ template<>
 void DataBank<IsotopicVector>::SetTheNucleiVector(TMatrixT<double> NEvolutionMatrix);
 
 template<>
+void DataBank<IsotopicVector>::OldBuildDecayMatrix();
+
+template<>
 TMatrixT<double> DataBank<IsotopicVector>::GetTheNucleiVector();
 
 //________________________________________________________________________
@@ -255,7 +258,7 @@ DataBank<IsotopicVector>::DataBank():DynamicalSystem()
 	fUseOldGeneration = false;
 	fUseRK4EvolutionMethod = true;
 	fDistanceType = 0;
-	fShorstestHalflife = 3600.;
+	fShorstestHalflife = 3600.*24*2.;
 	
 	fDataDirectoryName = getenv("CLASS_PATH");
 	fDataDirectoryName += "/source/data/";
@@ -290,7 +293,7 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool setl
 	fUseOldGeneration = false;
 	fDistanceType = 0;
 	
-	fShorstestHalflife = 3600.;
+	fShorstestHalflife = 3600.*24*2.;
 	
 	BuildDecayMatrix();
 	ReadDataBase();
@@ -585,6 +588,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	
 	if(fUseOldGeneration)
 	{
+		OldBuildDecayMatrix();
 		EvolutionData GeneratedDB = OldGenerateEvolutionData( isotopicvector,  cycletime, Power);
 		fDataBankCalculated.insert( pair< IsotopicVector, EvolutionData > ( GeneratedDB.GetIsotopicVectorAt(0.), GeneratedDB) );
 		return GeneratedDB;
@@ -809,10 +813,10 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 
 	EvolutionData GeneratedDB = EvolutionData(GetLog());
 
-
 	double ESigmaN = 0;
 	for (int j = 0; j < (int)findex.size() ; j++)
-		ESigmaN -= FissionXSMatrix[NStep-1][j][j]*NMatrix.back()[j][0]*1.6e-19*FissionEnergy[j][0];
+		ESigmaN -= FissionXSMatrix.back()[j][j]*NMatrix.back()[j][0]*1.6e-19*FissionEnergy[j][0];
+
 	Flux[NStep-1] = Power/ESigmaN;
 
 	GeneratedDB.SetFlux( new TGraph(NStep, timevector, Flux)  );
@@ -846,7 +850,6 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	
 	fDataBankCalculated.insert( pair< IsotopicVector, EvolutionData > ( GeneratedDB.GetIsotopicVectorAt(0.), GeneratedDB) );
 
-	//exit(1);
 	ResetTheMatrix();
 	ResetTheNucleiVector();
 	return GeneratedDB;
