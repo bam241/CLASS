@@ -70,16 +70,15 @@ public :
 
 	void SetDataBaseIndex(string database) { fDataBaseIndex = database; }
 	EvolutionData GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power); //!< Genration of a New EvolutionData From the one already present
-	EvolutionData OldGenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power); //!< Genration of a New EvolutionData From the one already present
 
-	void SetOldReadMethod(bool val)			{ fOldReadMethod = val;}
-	void SetFissionEnergy(string FissionEnergyFile);
-	void SetFissionEnergy(ZAI zai, double E);
-	void SetFissionEnergy(int Z, int A, int I, double E )   { SetFissionEnergy(ZAI(Z,A,I), E);}
+	void SetOldReadMethod(bool val)			{ fOldReadMethod = val;}			// use the old reading method
+	void SetFissionEnergy(string FissionEnergyFile);						// set Fission Energy using a file
+	void SetFissionEnergy(ZAI zai, double E);							// set Fission Energy for a ZAI
+	void SetFissionEnergy(int Z, int A, int I, double E )   { SetFissionEnergy(ZAI(Z,A,I), E);}	// set Fission Energy for a ZAI
 
-	void SetDataFileName(string name)	{ fDataFileName = name;}
-	void SetDataDirectoryName(string name)	{ fDataDirectoryName = name;}
-	void SetShartestHalfLife(double halflife)	{ fShorstestHalflife = halflife; BuildDecayMatrix();}
+	void SetDataFileName(string name)		{ fDataFileName = name;}		// Set the name of the reaction file
+	void SetDataDirectoryName(string name)		{ fDataDirectoryName = name;}		// Set the Path to the reaction file
+	void SetShartestHalfLife(double halflife)	{ fShorstestHalflife = halflife;}	// Set the Half Life cut
 	void LoadFPYield(string SponfaneusYield, string ReactionYield);			//Build Fision Yields maps;
 
 
@@ -96,17 +95,16 @@ public :
 
 	void	BuildDecayMatrix();
 
-	void UseOldGeneration(bool oldmethod = true)		{fUseOldGeneration = oldmethod;}
-	void UseRK4EvolutionMethod(bool usemethod = true)	{fUseRK4EvolutionMethod = usemethod;}
+	void	UseRK4EvolutionMethod(bool usemethod = true)	{fUseRK4EvolutionMethod = usemethod;}
 
 	
-	using DynamicalSystem::RungeKutta;
+	using	DynamicalSystem::RungeKutta;
 	//!	Pre-treatment Runge-Kutta method.
 	/*!
-     // This method does initialisation and then call DynamicalSystem::RungeKutta
-     // \param t1: initial time
-     // \param t2: final time
-     */
+	// This method does initialisation and then call DynamicalSystem::RungeKutta
+	// \param t1: initial time
+	// \param t2: final time
+	*/
    	void BuildEqns(double t, double *N, double *dNdt);
 	void SetTheMatrixToZero();			//!< Initialize the evolution Matrix
 	void ResetTheMatrix();
@@ -137,7 +135,6 @@ protected :
 
 	bool			fUseRK4EvolutionMethod;
 	bool			fOldReadMethod;
-	bool			fUseOldGeneration;
 
  	string 			fFuelType;
  	pair<double,double>	fBurnUpRange;
@@ -154,7 +151,6 @@ protected :
 	TMatrixT<double> Getn2nXsMatrix(EvolutionData EvolutionDataStep,double TStep);
 	
 	TMatrixT<double> ExtractXS(EvolutionData EvolutionDataStep,double TStep);
-	void	OldBuildDecayMatrix();
 
 	string GetDecay(string DecayModes, double &BR,int &Iso, int &StartPos);
 
