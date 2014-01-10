@@ -124,6 +124,7 @@ public :
 protected :
 
 	double  fShorstestHalflife;
+	int	fZAIThreshold;	//!< Highest Mass deal bye the evolution (default 90)
 
 	string			fDataFileName;
 	string			fDataDirectoryName;
