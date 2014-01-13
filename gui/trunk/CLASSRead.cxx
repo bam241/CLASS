@@ -236,9 +236,9 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 	string out = opt;
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
-		if(i == 1) out += " SAME";
+		if(i == 1) out += " same";
 		if(toplotTTree[i].size() !=0)
-		PlotTTree(toplotTTree[i], out);
+			PlotTTree(toplotTTree[i], out);
 	}
 	
 }
@@ -277,7 +277,7 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
 
-		if(i == 1) out += " SAME";
+		if(i != 0) out += " SAME";
 		if(toplotTTree[i].size() !=0)
 			PlotTTreePower(toplotTTree[i], out);
 
@@ -300,7 +300,7 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 	string out = opt;
 	Long64_t nentries = fData[toplot[0].fTreeId]->GetEntries();
 	
-	ULong64_t Time = 0;
+	Long64_t Time = 0;
 	fData[toplot[0].fTreeId]->SetBranchAddress("AbsTime", &Time);
 	
 	Reactor* reactor[fReactorName[toplot[0].fTreeId].size()];
@@ -373,7 +373,7 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
 				int I = toplot[i].fZAI.I();
-				double ZAIQuantity = IV[toplot[0].fFacylityNumber]->GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				double ZAIQuantity = IV[toplot[i].fFacylityNumber]->GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				vQuantity[i].push_back(ZAIQuantity);
 				
 				if(j == 0 && i == 0)
@@ -472,7 +472,7 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 	
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
-		if( fNumberGraphIterator == 1 ) out += " same";
+		if( fNumberGraphIterator !=0 ) out += " same";
 		fGraph[fNumberGraphIterator] = new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]);
 		fGraph[fNumberGraphIterator]->SetName(GetTittleOutName(toplot[i]).c_str());
 		fGraph[fNumberGraphIterator]->SetTitle(GetTittleOutName(toplot[i]).c_str());
@@ -525,7 +525,7 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 	Long64_t nentries = fData[toplot[0].fTreeId]->GetEntries();
 	
 	
-	ULong64_t Time = 0;
+	Long64_t Time = 0;
 	fData[toplot[0].fTreeId]->SetBranchAddress("AbsTime", &Time);
 	double Power = 0;
 
