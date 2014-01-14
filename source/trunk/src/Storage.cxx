@@ -24,6 +24,7 @@ ClassImp(Storage)
 Storage::Storage()
 {
 	fDecayDataBase = 0;
+
 }
 
 Storage::Storage(LogFile* log)
@@ -31,7 +32,6 @@ Storage::Storage(LogFile* log)
 	
 	SetLog(log);
 	fDecayDataBase = 0;
-
 	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 	
 	GetLog()->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
@@ -42,7 +42,6 @@ Storage::Storage(LogFile* log, DataBank<ZAI>* evolutivedb)
 {
 
 	SetLog(log);
-	fInternalTime = 0;
 	fDecayDataBase = evolutivedb;
 	
 	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
