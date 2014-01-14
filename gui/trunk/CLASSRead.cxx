@@ -82,7 +82,7 @@ CLASSRead::CLASSRead(TString filename)
 	
 	for( int i =0; i < fFileIn->GetNkeys(); i++)
 	{
-		cout<<"KeyNum "<<i<<endl;
+		//cout<<"KeyNum "<<i<<endl;
 		fData.push_back( (TTree*)gDirectory->Get(fFileIn->GetListOfKeys()->At(fFileIn->GetNkeys()-1)->GetName() ) );
 	}
 	

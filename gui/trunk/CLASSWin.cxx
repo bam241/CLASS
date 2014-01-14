@@ -63,10 +63,10 @@ const double Xlogmin = 1.0/365.25/24./3600.; // minimum time = 1s after core exi
 const double Ylogmin = 1.0e-16;
 const int WIDE = 0;
 
-MainWin::MainWin(CLASSRead * DATA)
+MainWin::MainWin(CLASSRead * DATA,vector<string> VFileName)
 {
 	fDATA=DATA;
-	Start();
+	Start( VFileName);
 }
 
 
@@ -77,7 +77,7 @@ MainWin::~MainWin()
 
 
 //_____________________________________________________________________________________________
-void MainWin::Start()
+void MainWin::Start(vector<string> VFileName)
 {
 
 	//
@@ -185,7 +185,10 @@ void MainWin::Start()
 	getcwd(cDir, MAXPATHLEN);
 	stringstream tmp;
 	tmp.str("");
-	tmp << "CLASSGui " << "@@@NOM_Du_SCENAR";
+	tmp << "CLASSGui " ;
+	for(int i=0;i<VFileName.size();i++)
+		tmp <<VFileName[i]<<" " ;
+
 	this->SetWindowName(tmp.str().c_str());
 
 	
@@ -199,8 +202,9 @@ void MainWin::Start()
 	for(int i = 0; i < fNumberOfParc; i++)
 	{
 		fParcTabFoil[i] = new TGCompositeFrame;
-		string ParcName = "Park ";
-		fParcTabFoil[i] = fParcTab->AddTab(ParcName.c_str());
+		stringstream ParcName;
+		ParcName<<"Park "<<i;
+		fParcTabFoil[i] = fParcTab->AddTab(ParcName.str().c_str());
 	}
 
 	
@@ -783,7 +787,7 @@ void MainWin::FillReactorTab()
 		for(int l=0; l<NTab[p] ; l++)
 		{
 			stringstream tmp;
-			tmp.str("");
+			tmp<<"Reactor "<<l;
 			TabName[l]=tmp.str();
 			//cout<<l<<" "<<TabName[l]<<endl;
 

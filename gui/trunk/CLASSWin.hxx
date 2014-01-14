@@ -64,12 +64,12 @@ class MainWin :  public  TGMainFrame
 {
 public:
 
-	MainWin(CLASSRead *DATA); 
+	MainWin(CLASSRead *DATA,vector<string> VFileName); 
 	MainWin(){}
 	~MainWin();		//@- destructor
 	
 	
-	void Start();
+	void Start(vector<string> VFileName);
 	bool ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2); //@- widget signal handler method
 	void CloseWindow();			//@- destroy the main window
 	void Plot();				//@- general Plot method
