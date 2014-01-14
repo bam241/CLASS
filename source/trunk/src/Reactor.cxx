@@ -68,8 +68,6 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* fueltypeDB,
 
 	fFuelTypeDB = fueltypeDB;
 
-	fInternalTime = 0;
-	fInCycleTime = 0;
 	fPower = -1.;
 	fCycleTime = -1.;	 //BU in GWd/t
 
@@ -112,8 +110,6 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* fueltypeDB, Fabrication
 
 	fFuelTypeDB = fueltypeDB;
 
-	fInternalTime = 0;
-	fInCycleTime = 0;
 
 	fBurnUp = BurnUp;
 	fHeavyMetalMass = HMMass;
@@ -173,8 +169,6 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 
 	fFuelTypeDB = fueltypeDB;
 
-	fInternalTime = 0;
-	fInCycleTime = 0;
 	fCycleTime = (cSecond)cycletime;
 	SetCreationTime( (cSecond)creationtime );
 	SetLifeTime( (cSecond)lifetime );
@@ -228,8 +222,6 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
 
 	fAssociedPool = Pool;
 
-	fInternalTime = 0;
-	fInCycleTime = 0;
 	SetCreationTime( (cSecond)creationtime );
 	SetLifeTime( (cSecond)lifetime );
 

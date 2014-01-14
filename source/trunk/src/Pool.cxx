@@ -36,7 +36,6 @@ Pool::Pool(LogFile* log)
 	
 	fIsStarted = false;
 	fPutToWaste = true;
-	fInternalTime = 0 ;
 	SetCreationTime( 0 );
 	fCoolingLastIndex = 0;
 
@@ -62,7 +61,6 @@ Pool::Pool(LogFile* log, double creation, double coolingtime)
 
 	SetLog(log);
 	fCycleTime = (cSecond)coolingtime;
-	fInternalTime = 0;
 	SetCreationTime( (cSecond)creation );
 	fIsStarted = false;
 	fPutToWaste = true;
@@ -91,7 +89,6 @@ Pool::Pool(LogFile* log, Storage* storage, double creation, double coolingtime)
 
 	SetLog(log);
 	fCycleTime = (cSecond)coolingtime;
-	fInternalTime = 0;
 	fStorage = storage;
 	SetCreationTime( (cSecond)creation );
 	fIsStarted = false;
