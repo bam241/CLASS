@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 	
 	argc=1; //avoid to change directory by root TApplication...
 	TApplication theApp("App", &argc, argv);
-	MainWin *win=new MainWin(DataRead);
+	MainWin *win=new MainWin(DataRead,VFileName);
 
 	
 	theApp.Run();
