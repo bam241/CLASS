@@ -63,8 +63,6 @@ double ReactionRateWeightedDistance(EvolutionData DB, IsotopicVector IV1  )
 template<class T>
 DataBank<T>::DataBank()
 {
-	fTheNucleiVector = 0;
-	fTheMatrix = 0;
 }
 
 //________________________________________________________________________
@@ -83,9 +81,6 @@ DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool setlog, bool ol
 
 	fOldReadMethod = olfreadmethod;
 
-	fTheNucleiVector = 0;
-	fTheMatrix = 0;
-
 	// Warning
 	if(PrintLog())
 	{
@@ -102,25 +97,6 @@ DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool setlog, bool ol
 template<>
 DataBank<ZAI>::~DataBank()
 {
-
-	if(fTheMatrix)
-	{
-		for(int i= 0; i<fNVar; i++)
-			delete [] fTheMatrix[i];
-		delete [] fTheMatrix;
-	}
-	if(fTheNucleiVector)
-	{
-		delete fTheNucleiVector;
-	}
-
-
-	map<ZAI ,EvolutionData >::iterator it_del;
-	for( it_del = fDataBank.begin(); it_del != fDataBank.end(); it_del++)
-		(*it_del).second.DeleteEvolutionData();
-
-	for( it_del = fDataBankCalculated.begin(); it_del != fDataBankCalculated.end(); it_del++)
-		(*it_del).second.DeleteEvolutionData();
 
 }
 
@@ -240,9 +216,6 @@ DataBank<IsotopicVector>::DataBank():DynamicalSystem()
 	fDataDirectoryName += "/source/data/";
 	fDataFileName = "chart.JEF3T";
 
-	fTheNucleiVector = 0;
-	fTheMatrix = 0;
-
 	SetForbidNegativeValue();
 
 }
@@ -251,7 +224,6 @@ DataBank<IsotopicVector>::DataBank():DynamicalSystem()
 template<>
 DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool setlog, bool olfreadmethod):DynamicalSystem()
 {
-
 	SetLog(Log);
 	IsLog(setlog);
 
@@ -271,9 +243,6 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool setl
 	fShorstestHalflife = 3600.*24*2.;
 	fZAIThreshold = 90;
 
-	fTheNucleiVector = 0;
-	fTheMatrix = 0;
-
 	ReadDataBase();
 
 	SetForbidNegativeValue();
@@ -290,12 +259,12 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool setl
 		GetLog()->fLog	<< "\t " << fDataBank.size() << " EvolutionData have been read."<< endl << endl;
 	}
 
+
 }
 
 template<>
 DataBank<IsotopicVector>::~DataBank()
 {
-
 	if(fTheMatrix)
 	{
 		for(int i= 0; i<fNVar; i++)
@@ -315,6 +284,55 @@ DataBank<IsotopicVector>::~DataBank()
 		(*it_del).second.DeleteEvolutionData();
 
 }
+
+template<>
+void DataBank<IsotopicVector>::Clear()
+{
+	if(fTheMatrix)
+	{
+		for(int i= 0; i<fNVar; i++)
+			delete [] fTheMatrix[i];
+		delete [] fTheMatrix;
+	}
+	if(fTheNucleiVector)
+	{
+		delete fTheNucleiVector;
+	}
+
+	fDataBank.clear();
+	fDataBankCalculated.clear();
+	fFissionEnergy.clear();
+	fFastDecay.clear();
+	fSpontaneusYield.clear();
+	fReactionYield.clear();
+	findex_inver.clear();
+	findex.clear();
+
+
+	fTheNucleiVector = 0;
+	fTheMatrix = 0;
+	fNVar = 0;
+
+	fOldReadMethod = true;
+	fUseRK4EvolutionMethod = true;
+	fDistanceType = 0;
+	fShorstestHalflife = 3600.*24*2.;
+	fZAIThreshold = 90;
+
+
+	fDataDirectoryName = getenv("CLASS_PATH");
+	fDataDirectoryName += "/source/data/";
+	fDataFileName = "chart.JEF3T";
+
+	SetForbidNegativeValue();
+
+
+	fDecayMatrix.Clear();
+
+
+
+}
+
 
 //________________________________________________________________________
 template<>
@@ -858,6 +876,9 @@ TMatrixT<double> DataBank<IsotopicVector>::GetFissionXsMatrix(EvolutionData Evol
 
 	map<ZAI ,TGraph* >::iterator it;
 	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
+	for(int i = 0; i < (int)findex.size(); i++)
+		for(int j = 0; j < (int)findex.size(); j++)
+			BatemanMatrix[i][j] = 0;
 
 	// ----------------  A(n,.) X+Y
 
@@ -939,6 +960,9 @@ TMatrixT<double> DataBank<IsotopicVector>::GetCaptureXsMatrix(EvolutionData Evol
 
 	map<ZAI ,TGraph* >::iterator it;
 	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
+	for(int i = 0; i < (int)findex.size(); i++)
+		for(int j = 0; j < (int)findex.size(); j++)
+			BatemanMatrix[i][j] = 0;
 
 	map<ZAI, map<ZAI, double> > Capture;
 	{	// 241Am
@@ -1058,6 +1082,9 @@ TMatrixT<double> DataBank<IsotopicVector>::Getn2nXsMatrix(EvolutionData Evolutio
 
 	map<ZAI ,TGraph* >::iterator it;
 	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
+	for(int i = 0; i < (int)findex.size(); i++)
+		for(int j = 0; j < (int)findex.size(); j++)
+			BatemanMatrix[i][j] = 0;
 
 	map<ZAI, map<ZAI, double> > n2n;
 	{	// 237Np
@@ -1411,7 +1438,6 @@ void DataBank<IsotopicVector>::SetTheMatrixToZero()
 	for(int i= 0; i < fNVar; i++)
 		fTheMatrix[i] = new double[fNVar];
 
-#pragma omp parallel for
 	for(int i = 0; i < fNVar; i++)
 		for(int k = 0; k < fNVar; k++)
 		{
@@ -1477,7 +1503,6 @@ void DataBank<IsotopicVector>::BuildEqns(double t, double *N, double *dNdt)
 template<>
 void DataBank<IsotopicVector>::SetTheMatrix(TMatrixT<double> BatemanMatrix)
 {
-#pragma omp parallel for
 	for (int k = 0; k < (int)fNVar; k++)
 		for (int l = 0; l < (int)findex_inver.size(); l++)
 			fTheMatrix[l][k] = BatemanMatrix[l][k];
@@ -1488,7 +1513,6 @@ template<>
 TMatrixT<double> DataBank<IsotopicVector>::GetTheMatrix()
 {
 	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
-#pragma omp parallel for
 	for (int k = 0; k < (int)fNVar; k++)
 		for (int l = 0; l < (int)findex_inver.size(); l++)
 			BatemanMatrix[l][k] = fTheMatrix[l][k];
@@ -1500,7 +1524,6 @@ TMatrixT<double> DataBank<IsotopicVector>::GetTheMatrix()
 template<>
 void DataBank<IsotopicVector>::SetTheNucleiVector(TMatrixT<double> NEvolutionMatrix)
 {
-#pragma omp parallel for
 	for (int k = 0; k < (int)fNVar; k++)
 		fTheNucleiVector[k] = NEvolutionMatrix[k][0];
 }
@@ -1510,7 +1533,6 @@ template<>
 TMatrixT<double> DataBank<IsotopicVector>::GetTheNucleiVector()
 {
 	TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(findex.size(),1);
-#pragma omp parallel for
 	for (int k = 0; k < (int)fNVar; k++)
 		NEvolutionMatrix[k][0] = fTheNucleiVector[k];
 
@@ -1530,7 +1552,6 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 		fNVar = findex_inver.size();
 	}
 
-
 	SetTheMatrixToZero();
 	SetTheNucleiVectorToZero();
 
@@ -1541,6 +1562,8 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	{	// Filling the t=0 State;
 		map<ZAI, double > isotopicquantity = isotopicvector.GetIsotopicQuantity();
 		TMatrixT<double>  N_0Matrix =  TMatrixT<double>( findex.size(),1) ;
+		for(int i = 0; i < (int)findex.size(); i++)
+				N_0Matrix[i] = 0;
 
 		map<ZAI, double >::iterator it ;
 		for(int i = 0; i < (int)findex.size(); i++)
@@ -1602,8 +1625,14 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	double  Flux[NStep];
 
 	TMatrixT<double> SigmaPhi = TMatrixT<double>(findex.size()*3+1,NStep); // Store the XS and the flux trought the evolution calculation.
+	for(int i = 0; i < (int)findex.size()*3+1; i++)
+		for(int j = 0; j < (int)NStep; j++)
+			SigmaPhi[i][j] = 0;
 
 	TMatrixT<double> FissionEnergy = TMatrixT<double>(findex.size(),1);
+	for(int i = 0; i < (int)findex.size(); i++)
+		FissionEnergy[i] = 0;
+
 	{
 		map< ZAI, int >::iterator it;
 		for(it = findex_inver.begin(); it != findex_inver.end(); it++)
@@ -1792,6 +1821,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 
 	ResetTheMatrix();
 	ResetTheNucleiVector();
+
 	return GeneratedDB;
 
 }
