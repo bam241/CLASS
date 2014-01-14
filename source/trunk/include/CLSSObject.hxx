@@ -29,7 +29,6 @@ public :
 	CLSSObject();
 	virtual CLSSObject* Clone()	{ return new CLSSObject(*this); } //!< Correct way to copy a CLSSObject in case of derivation
 
-	virtual ~CLSSObject(){}			//!< destructor
 
 	void		SetLog(LogFile* log)	{ fLog = log; }
 	void		IsLog(bool islog)	{ fNoLog = islog; }

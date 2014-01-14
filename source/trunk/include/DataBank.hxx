@@ -164,8 +164,8 @@ protected :
 
 	double	*fTheNucleiVector;	//!< The evolving atoms copied from Material proportions.
 	double 	**fTheMatrix;  		//!< The evolution Matrix
-
 	int	fNVar;		 //!< The size of the composition vector and /or number of ZAIs involved.
+
 	double	fPrecision;	//!< Precision of the RungeKutta
 	double	fHestimate;	//!< RK Step estimation.
 	double	fHmin;		//!< RK minimum Step.

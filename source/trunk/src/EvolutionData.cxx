@@ -90,6 +90,12 @@ ClassImp(EvolutionData)
 
 EvolutionData::EvolutionData()
 {
+	fIsCrossSection = false;
+	fPower = 0;
+	fCycleTime = 0;
+	fNormFactor = 0;
+	fKeff = 0;
+	fFlux = 0;
 }
 
 	//________________________________________________________________________
@@ -101,6 +107,8 @@ EvolutionData::EvolutionData(LogFile* Log)
 	fPower = 0;
 	fCycleTime = 0;
 	fNormFactor = 0;
+	fKeff = 0;
+	fFlux = 0;
 
 	
 }
@@ -115,6 +123,8 @@ EvolutionData::EvolutionData(LogFile* Log, string DB_file, bool oldread, ZAI zai
 	fPower = 0;
 	fCycleTime = 0;
 	fNormFactor = 0;
+	fKeff = 0;
+	fFlux = 0;
 	
 	if(zai != ZAI(0,0,0))
 		AddAsStable(zai);
@@ -129,8 +139,47 @@ EvolutionData::EvolutionData(LogFile* Log, string DB_file, bool oldread, ZAI zai
 	//________________________________________________________________________
 EvolutionData::~EvolutionData()
 {
-	
-	
+
+}
+//________________________________________________________________________
+void EvolutionData::DeleteEvolutionData()
+{
+
+	map<ZAI ,TGraph* >::iterator it_del;
+
+	for( it_del = fEvolutionData.begin(); it_del != fEvolutionData.end(); it_del++)
+	{
+		delete (*it_del).second;
+		(*it_del).second = 0;
+	}
+	for( it_del = fFissionXS.begin(); it_del != fFissionXS.end(); it_del++)
+	{
+		delete (*it_del).second;
+		(*it_del).second = 0;
+	}
+	for( it_del = fCaptureXS.begin(); it_del != fCaptureXS.end(); it_del++)
+	{
+		delete (*it_del).second;
+		(*it_del).second = 0;
+	}
+	for( it_del = fn2nXS.begin(); it_del != fn2nXS.end(); it_del++)
+	{
+		delete (*it_del).second;
+		(*it_del).second = 0;
+	}
+
+
+	delete	fKeff;
+	delete	fFlux;
+
+	fEvolutionData.clear();
+	fFissionXS.clear();
+	fCaptureXS.clear();
+	fn2nXS.clear();
+
+	fFlux = 0;
+	fKeff = 0;
+
 }
 
 

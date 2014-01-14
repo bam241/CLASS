@@ -44,6 +44,9 @@ ClassImp(FabricationPlant)
 
 FabricationPlant::FabricationPlant()
 {
+	fDecayDataBase = 0;
+	fStorage = 0;
+	fReUsable = 0;
 }
 
 FabricationPlant::FabricationPlant(LogFile* log)
@@ -54,8 +57,10 @@ FabricationPlant::FabricationPlant(LogFile* log)
 	SetCycleTime(-1);
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
-	
-	
+	fDecayDataBase = 0;
+	fStorage = 0;
+	fReUsable = 0;
+
 	cout	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
 	cout	<< "\t Chronological Stock Priority set! "<< endl << endl;
 	cout	<< "!!WARNING!! !!!FabricationPlant!!! You need to set the different stock manually as well as the Fabrication Time Manualy !! " << endl;
@@ -75,7 +80,9 @@ FabricationPlant::FabricationPlant(LogFile* log, Storage* storage, Storage* reus
 	fChronologicalTimePriority = false;
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
-	
+	fDecayDataBase = 0;
+
+
 	SetCycleTime((cSecond)fabircationtime );
 	fStorage = storage;
 	fReUsable = reusable;
@@ -151,7 +158,8 @@ void FabricationPlant::FabricationPlantEvolution(cSecond t)
 		{
 			if( (*it).second == t )
 			{
-				BuildFuelForReactor( (*it).first );
+#pragma omp critical(FuelBuild)
+				{BuildFuelForReactor( (*it).first );}
 				(*it).second += GetParc()->GetReactor()[ (*it).first ]->GetCycleTime();
 			}
 			else if ( (*it).second - GetParc()->GetReactor()[ (*it).first ]->GetCycleTime() + GetCycleTime() > t )

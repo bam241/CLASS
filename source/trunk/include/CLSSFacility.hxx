@@ -29,11 +29,11 @@ class CLSSFacility : public CLSSObject
 {
 public :
 		///< Normal Constructor.
-		//CLSSFacility();
+	CLSSFacility();
 	
 		//********* Get Method *********//
 	int 		GetId()			const	{ return fId; }			//!< Return the Facility Parc'Is
-	virtual IsotopicVector 	GetInsideIV()	const	{ return fInsideIV; } 		//!< Return the IV contain in the Facility
+	IsotopicVector 	GetInsideIV()		const	{ return fInsideIV; } 		//!< Return the IV contain in the Facility
 
 	cSecond	GetInternalTime() const		{ return fInternalTime; }	//!< Return Creation Time
 

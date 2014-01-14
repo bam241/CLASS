@@ -108,7 +108,6 @@ protected :
 
 	DataBank<ZAI>*		fDecayDataBase;	//!< Pointer to the Decay DataBase
 
-
 	Storage*	fStorage;			//!< Pointer to the Storage to recycle
 	Storage*	fReUsable;			//!< Pointer to the Storage using for recycling unused Product
 

@@ -24,9 +24,8 @@ ClassImp(Pool)
 
 Pool::Pool()
 {
-
-
-
+	fStorage = 0;
+	fDecayDataBase = 0;
 }
 
 Pool::Pool(LogFile* log)
@@ -40,6 +39,10 @@ Pool::Pool(LogFile* log)
 	fInternalTime = 0 ;
 	SetCreationTime( 0 );
 	fCoolingLastIndex = 0;
+
+	fStorage = 0;
+	fDecayDataBase = 0;
+
 	
 	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
 	cout	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
@@ -54,8 +57,7 @@ Pool::Pool(LogFile* log)
 	
 }
 	//________________________________________________________________________
-Pool::Pool(LogFile* log, double creation,
-				   double coolingtime)
+Pool::Pool(LogFile* log, double creation, double coolingtime)
 {
 
 	SetLog(log);
@@ -65,6 +67,10 @@ Pool::Pool(LogFile* log, double creation,
 	fIsStarted = false;
 	fPutToWaste = true;
 	fCoolingLastIndex = 0;
+
+	fStorage = 0;
+	fDecayDataBase = 0;
+
 	
 	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
 	cout	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
@@ -80,9 +86,7 @@ Pool::Pool(LogFile* log, double creation,
 }
 
 //________________________________________________________________________
-Pool::Pool(LogFile* log, Storage* storage,
-				   double creation,
-				   double coolingtime)
+Pool::Pool(LogFile* log, Storage* storage, double creation, double coolingtime)
 {
 
 	SetLog(log);
@@ -93,7 +97,9 @@ Pool::Pool(LogFile* log, Storage* storage,
 	fIsStarted = false;
 	fPutToWaste = false;
 	fCoolingLastIndex = 0;
-	
+
+	fDecayDataBase = 0;
+
 	
 	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
 	cout	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
@@ -149,6 +155,7 @@ void Pool::AddIVCooling(IsotopicVector IV)
 { 
 
 	fIVCooling.push_back(IV);
+	fInsideIV += IV;
 	fCoolingStartingTime.push_back(fInternalTime);
 	fCoolingLastIndex++;
 	fCoolingIndex.push_back(fCoolingLastIndex);
@@ -165,17 +172,6 @@ void Pool::RemoveIVCooling(int i)		//!< Remove a Cooling IsotopicVector
 
 }
 
-IsotopicVector Pool::GetFullCooling()
-{
-
-	IsotopicVector tmp = 0*ZAI(0,0,0);
-	
-	for(int i =0; i< (int)fIVCooling.size(); i++)
-		tmp += fIVCooling[i];
-	fInsideIV = tmp;
-	return fInsideIV;
-
-}
 
 
 
@@ -196,6 +192,9 @@ void Pool::CoolingEvolution(cSecond t)
 	if(t == fInternalTime && t!=0) return;
 	int RemainingCoolingTime;
 	cSecond EvolutionTime = t - fInternalTime;
+
+	fInsideIV = IsotopicVector();
+
 #pragma omp parallel for
 	for ( int i = 0 ; i < (int)fIVCooling.size() ; i++)
 	{
@@ -215,6 +214,7 @@ void Pool::CoolingEvolution(cSecond t)
 			//Cooling Decay
 			fIVCooling[i] = GetDecay( fIVCooling[i], RemainingCoolingTime);
 
+
 #pragma omp critical(DeleteCoolingIVPB)
 			{fCoolingEndOfCycle.push_back(i);}
 
@@ -222,6 +222,7 @@ void Pool::CoolingEvolution(cSecond t)
 		else if ( fCoolingStartingTime[i] != t )
 		{
 			fIVCooling[i] = GetDecay( fIVCooling[i] , EvolutionTime);
+			fInsideIV += fIVCooling[i];
 		}
 	}
 #pragma omp critical(DeleteCoolingIVPB)
@@ -271,7 +272,6 @@ void Pool::Dump()
 		
 		fCoolingEndOfCycle.erase(fCoolingEndOfCycle.begin()+i);	// Remove index entry
 		RemoveIVCooling(idx);					// Remove IVcooling
-
 	}
 	
 	if((int)fCoolingEndOfCycle.size() != 0 )// Control
