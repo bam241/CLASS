@@ -61,6 +61,7 @@ public :
 
 	double  GetShorstestHalflife()	const { return fShorstestHalflife; }
 
+	void Clear();
 
 
 
@@ -145,15 +146,6 @@ protected :
 					///< 2 for each ZAI weighted with coefficient given by the user.
 	
 	IsotopicVector		fDistanceParameter;	///< weight for each ZAI in the distance calculation
-	
-
-	TMatrixT<double> GetFissionXsMatrix(EvolutionData EvolutionDataStep,double TStep);
-	TMatrixT<double> GetCaptureXsMatrix(EvolutionData EvolutionDataStep,double TStep);
-	TMatrixT<double> Getn2nXsMatrix(EvolutionData EvolutionDataStep,double TStep);
-	
-	TMatrixT<double> ExtractXS(EvolutionData EvolutionDataStep,double TStep);
-
-	string GetDecay(string DecayModes, double &BR,int &Iso, int &StartPos);
 
 	TMatrixT<double>		fDecayMatrix;		///< Matrix with half life of each nuclei
 	map<ZAI, double >		fFissionEnergy; ///< Store the Energy per fission use for the flux normalisation.
@@ -175,6 +167,15 @@ protected :
 
 	map<ZAI, int> findex_inver;
 	map<int, ZAI> findex;
+
+
+	TMatrixT<double> GetFissionXsMatrix(EvolutionData EvolutionDataStep,double TStep);
+	TMatrixT<double> GetCaptureXsMatrix(EvolutionData EvolutionDataStep,double TStep);
+	TMatrixT<double> Getn2nXsMatrix(EvolutionData EvolutionDataStep,double TStep);
+
+	TMatrixT<double> ExtractXS(EvolutionData EvolutionDataStep,double TStep);
+
+	string GetDecay(string DecayModes, double &BR,int &Iso, int &StartPos);
 
 	map< ZAI,IsotopicVector > ReadFPYield(string Yield);
 
