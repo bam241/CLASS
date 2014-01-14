@@ -419,9 +419,12 @@ EvolutionData FabricationPlant::BuildEvolutiveDB(int ReactorId,IsotopicVector is
 	
 	EvolutionData EvolBuild;
 
-			EvolBuild = evolutiondb->GenerateEvolutionData(isotopicvector,
-					    GetParc()->GetReactor()[ReactorId]->GetCycleTime(),
-					    GetParc()->GetReactor()[ReactorId]->GetPower());
+#pragma omp single
+	{
+		EvolBuild = evolutiondb->GenerateEvolutionData(isotopicvector,
+							       GetParc()->GetReactor()[ReactorId]->GetCycleTime(),
+							       GetParc()->GetReactor()[ReactorId]->GetPower());
+	}
 	return EvolBuild;
 	
 }
