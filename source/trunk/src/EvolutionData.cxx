@@ -318,9 +318,11 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 	
 	if(oldread)
 	{
+
 		OldReadDB(DBfile);
 		return;
 	}
+
 	ReadInfo();							// Read the .info associeted
 
 	ifstream DecayDB(DBfile.c_str());	// Open the File
@@ -365,7 +367,6 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 	keyword_map["inv"] = Inv;
 
 	getline(DecayDB, line);
-
 	do
 	{
 		start = 0;
@@ -609,25 +610,30 @@ void EvolutionData::ReadInfo()
 {
 	string InfoDBFile  = fDB_file.erase(fDB_file.size()-3,fDB_file.size());
 	InfoDBFile += "Info";
-	ifstream InfoDB(InfoDBFile.c_str());				// Open the File
-	if(!InfoDB)
+	ifstream InfoDB_tmp(InfoDBFile.c_str());				// Open the File
+
+	if(!InfoDB_tmp)
 	{
 		InfoDBFile  = InfoDBFile.erase(InfoDBFile.size()-4,InfoDBFile.size());
 		InfoDBFile += "info";
-		ifstream InfoDB(InfoDBFile.c_str());				// Open the File
-		if(!InfoDB)
-		{
-			cout << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
-			GetLog()->fLog << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
-			exit(1);
-		}
+
 	}
-	
+	InfoDB_tmp.close();
+
+	ifstream InfoDB(InfoDBFile.c_str());				// Open the File
+	if(!InfoDB)
+	{
+		cout << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
+		GetLog()->fLog << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
+		exit(1);
+	}
+
 	int start = 0;
 	string line;
 	getline(InfoDB, line);
 	if ( tlc(StringLine::NextWord(line, start, ' ')) == "reactor")
 		fReactorType =  StringLine::NextWord(line, start, ' ');
+
 	start = 0;
 	getline(InfoDB, line);
 	if (tlc(StringLine::NextWord(line, start, ' ')) == "fueltype")
