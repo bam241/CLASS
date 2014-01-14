@@ -63,6 +63,8 @@ double ReactionRateWeightedDistance(EvolutionData DB, IsotopicVector IV1  )
 template<class T>
 DataBank<T>::DataBank()
 {
+	fTheNucleiVector = 0;
+	fTheMatrix = 0;
 }
 
 //________________________________________________________________________
@@ -81,6 +83,9 @@ DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool setlog, bool ol
 
 	fOldReadMethod = olfreadmethod;
 
+	fTheNucleiVector = 0;
+	fTheMatrix = 0;
+
 	// Warning
 	if(PrintLog())
 	{
@@ -97,6 +102,25 @@ DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool setlog, bool ol
 template<>
 DataBank<ZAI>::~DataBank()
 {
+
+	if(fTheMatrix)
+	{
+		for(int i= 0; i<fNVar; i++)
+			delete [] fTheMatrix[i];
+		delete [] fTheMatrix;
+	}
+	if(fTheNucleiVector)
+	{
+		delete fTheNucleiVector;
+	}
+
+
+	map<ZAI ,EvolutionData >::iterator it_del;
+	for( it_del = fDataBank.begin(); it_del != fDataBank.end(); it_del++)
+		(*it_del).second.DeleteEvolutionData();
+
+	for( it_del = fDataBankCalculated.begin(); it_del != fDataBankCalculated.end(); it_del++)
+		(*it_del).second.DeleteEvolutionData();
 
 }
 
@@ -216,6 +240,9 @@ DataBank<IsotopicVector>::DataBank():DynamicalSystem()
 	fDataDirectoryName += "/source/data/";
 	fDataFileName = "chart.JEF3T";
 
+	fTheNucleiVector = 0;
+	fTheMatrix = 0;
+
 	SetForbidNegativeValue();
 
 }
@@ -244,6 +271,9 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool setl
 	fShorstestHalflife = 3600.*24*2.;
 	fZAIThreshold = 90;
 
+	fTheNucleiVector = 0;
+	fTheMatrix = 0;
+
 	ReadDataBase();
 
 	SetForbidNegativeValue();
@@ -265,6 +295,25 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool setl
 template<>
 DataBank<IsotopicVector>::~DataBank()
 {
+
+	if(fTheMatrix)
+	{
+		for(int i= 0; i<fNVar; i++)
+			delete [] fTheMatrix[i];
+		delete [] fTheMatrix;
+	}
+	if(fTheNucleiVector)
+	{
+		delete fTheNucleiVector;
+	}
+
+	map<IsotopicVector ,EvolutionData >::iterator it_del;
+	for( it_del = fDataBank.begin(); it_del != fDataBank.end(); it_del++)
+		(*it_del).second.DeleteEvolutionData();
+
+	for( it_del = fDataBankCalculated.begin(); it_del != fDataBankCalculated.end(); it_del++)
+		(*it_del).second.DeleteEvolutionData();
+
 }
 
 //________________________________________________________________________
@@ -368,7 +417,6 @@ template<>
 void DataBank<IsotopicVector>::BuildDecayMatrix()
 {
 	// List of Decay Time and Properties
-
 	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
 
 	{	// TMP
@@ -471,7 +519,8 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 						daughter_A = daughter_Z = Iso = -3;
 					// not spontaneous fission
 					ZAI DaughterZAI = ZAI(daughter_Z,daughter_A,Iso);
-					if((BR>1e-10) && (!stable))
+
+						if((BR>1e-10) && (!stable))
 					{
 						if(DM <= 15)
 						{
@@ -484,7 +533,7 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 							{
 								DaughtersMap += 2*BR * ZAI(-2,-2,-2);
 
-								branch_test_f += 2*BR;
+								branch_test_f += BR;
 							}
 							else
 							{
@@ -493,7 +542,7 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 								if(it_yield != fSpontaneusYield.end())
 								{
 									DaughtersMap += (BR* (*it_yield).second );
-									branch_test_f += (*it_yield).second.GetSumOfAll() / 2.;
+									branch_test_f += BR* (*it_yield).second.GetSumOfAll() / 2.;
 
 								}
 								else
@@ -558,7 +607,6 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 
 			FD_it_Origin = fFastDecay.find(FD_it->first);
 
-
 			map<ZAI, double> BR = (*FD_it).second;
 			map<ZAI, double>::iterator BR_it;
 
@@ -570,33 +618,40 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 				if( it_index == findex_inver.end() )
 				{
 					map<ZAI, map<ZAI, double> >::iterator FD2_it = FastDecayCopy.find((*BR_it).first);
-					if( FD2_it == fFastDecay.end() )
-					{
-						(*FD_it_Origin).second.erase((*BR_it).first);
-						pair<map<ZAI, double>::iterator, bool> IResult;
-						IResult = (*FD_it_Origin).second.insert( pair<ZAI, double> ( ZAI(-3,-3,-3), (*BR_it).second) );
-						if( !IResult.second)
-							(*IResult.first).second += (*BR_it).second ;
-					}
-					else
+					if( FD2_it != FastDecayCopy.end() )
 					{
 						map<ZAI, double>::iterator BR2_it;
 						(*FD_it_Origin).second.erase((*BR_it).first);
 
 						for (BR2_it = (*FD2_it).second.begin(); BR2_it != (*FD2_it).second.end(); BR2_it++)
 						{
+
 							pair<map<ZAI, double>::iterator, bool> IResult;
 							IResult = (*FD_it_Origin).second.insert( pair<ZAI, double> ( (*BR2_it).first, (*BR_it).second * (*BR2_it).second ) );
+
 							if( !IResult.second)
 								(*IResult.first).second += (*BR_it).second * (*BR2_it).second ;
-						}
 
+							
+						}
+						
 					}
+					else
+					{
+						(*FD_it_Origin).second.erase( (*BR_it).first );
+						pair< map<ZAI, double>::iterator, bool> IResult;
+						IResult = (*FD_it_Origin).second.insert( pair<ZAI, double> ( ZAI(-3,-3,-3), (*BR_it).second) );
+						if( !IResult.second)
+							(*IResult.first).second += (*BR_it).second ;
+					}
+
+
 
 				}
 			}
 
 		}
+
 
 		FastDecayValidation = true;
 		for(FD_it = fFastDecay.begin(); FD_it != fFastDecay.end(); FD_it++)
@@ -673,6 +728,7 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 
 		}
 	}
+
 	//exit(1);
 
 }
@@ -762,7 +818,7 @@ map< ZAI,IsotopicVector > DataBank<IsotopicVector>::ReadFPYield(string Yield)
 			{
 				cout << "!!Error!! !!!DataBank!!! Many accurance of the PF " << Z << " " << A;
 				cout << " in " << Yield << " file!! Please Check it";
-				cout << "(Number of yiled does not match the number of ZAI that fission !!!" << endl;
+				cout << "(Number of yield does not match the number of ZAI that fission !!!" << endl;
 				exit(1);
 
 			}
@@ -777,7 +833,6 @@ map< ZAI,IsotopicVector > DataBank<IsotopicVector>::ReadFPYield(string Yield)
 
 
 	} while (!infile.eof());
-
 	return Yield_map;
 }
 
@@ -821,22 +876,27 @@ TMatrixT<double> DataBank<IsotopicVector>::GetFissionXsMatrix(EvolutionData Evol
 			else
 			{
 				map<ZAI, IsotopicVector>::iterator it_yield = fReactionYield.find( (*it).first );
+
 				if( it_yield != fReactionYield.end())
 				{
 					map<ZAI ,double>::iterator it_IVQ;
-					for( it_IVQ = (*it_yield).second.GetIsotopicQuantity().begin(); it_IVQ != (*it_yield).second.GetIsotopicQuantity().end(); it_IVQ++ )
+					map<ZAI ,double> IVQ = (*it_yield).second.GetIsotopicQuantity();
+
+					for( it_IVQ = IVQ.begin(); it_IVQ != IVQ.end(); it_IVQ++ )
 					{
 						map<ZAI, int>::iterator findex_it_PF = findex_inver.find( (*it_IVQ).first );
+
 						if(findex_it_PF != findex_inver.end() )
 							BatemanMatrix[(*findex_it_PF).second][ (*findex_inver_it).second ] += (*it_IVQ).second*y* 1e-24;
 						else
 						{
 							map<ZAI, map<ZAI, double> >::iterator it_FD = fFastDecay.find( (*it_IVQ).first);
+
 							if( it_FD == fFastDecay.end() )
 							{
-								cout << "Capture Problem in FastDecay for nuclei " << (*it_IVQ).first.Z() << " " << (*it_IVQ).first.A() << " " << (*it_IVQ).first.I() << endl;
+								//cout << "Fission Problem in FastDecay for nuclei " << (*it_IVQ).first.Z() << " " << (*it_IVQ).first.A() << " " << (*it_IVQ).first.I() << endl;
 
-								BatemanMatrix[0][findex_it_PF->second] += (*it_IVQ).second * y * 1e-24  ;
+								BatemanMatrix[1][ (*findex_inver_it).second ] += (*it_IVQ).second * y * 1e-24  ;
 							}
 							else
 							{
@@ -924,8 +984,8 @@ TMatrixT<double> DataBank<IsotopicVector>::GetCaptureXsMatrix(EvolutionData Evol
 					if( it4 == fFastDecay.end() )
 					{
 						cout << "Capture Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A()+1 << " " << (*it).first.I() << endl;
-
 						BatemanMatrix[0][Index_it->second] += y* 1e-24  ;
+
 					}
 					else
 					{
@@ -1351,13 +1411,12 @@ void DataBank<IsotopicVector>::SetTheMatrixToZero()
 	for(int i= 0; i < fNVar; i++)
 		fTheMatrix[i] = new double[fNVar];
 
+#pragma omp parallel for
 	for(int i = 0; i < fNVar; i++)
-	{
 		for(int k = 0; k < fNVar; k++)
 		{
 			fTheMatrix[i][k]=0.0;
 		}
-	}
 
 }
 
@@ -1418,6 +1477,7 @@ void DataBank<IsotopicVector>::BuildEqns(double t, double *N, double *dNdt)
 template<>
 void DataBank<IsotopicVector>::SetTheMatrix(TMatrixT<double> BatemanMatrix)
 {
+#pragma omp parallel for
 	for (int k = 0; k < (int)fNVar; k++)
 		for (int l = 0; l < (int)findex_inver.size(); l++)
 			fTheMatrix[l][k] = BatemanMatrix[l][k];
@@ -1428,6 +1488,7 @@ template<>
 TMatrixT<double> DataBank<IsotopicVector>::GetTheMatrix()
 {
 	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
+#pragma omp parallel for
 	for (int k = 0; k < (int)fNVar; k++)
 		for (int l = 0; l < (int)findex_inver.size(); l++)
 			BatemanMatrix[l][k] = fTheMatrix[l][k];
@@ -1439,6 +1500,7 @@ TMatrixT<double> DataBank<IsotopicVector>::GetTheMatrix()
 template<>
 void DataBank<IsotopicVector>::SetTheNucleiVector(TMatrixT<double> NEvolutionMatrix)
 {
+#pragma omp parallel for
 	for (int k = 0; k < (int)fNVar; k++)
 		fTheNucleiVector[k] = NEvolutionMatrix[k][0];
 }
@@ -1448,6 +1510,7 @@ template<>
 TMatrixT<double> DataBank<IsotopicVector>::GetTheNucleiVector()
 {
 	TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(findex.size(),1);
+#pragma omp parallel for
 	for (int k = 0; k < (int)fNVar; k++)
 		NEvolutionMatrix[k][0] = fTheNucleiVector[k];
 
@@ -1461,7 +1524,6 @@ TMatrixT<double> DataBank<IsotopicVector>::GetTheNucleiVector()
 template<>
 EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power)
 {
-
 	if(fFastDecay.size() == 0)
 	{
 		BuildDecayMatrix();

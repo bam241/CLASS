@@ -57,7 +57,9 @@ CLASS::CLASS()
 	
 	fOutputFileName = "CLASS_Default.root";
 	fOutputTreeName = "Data";
-	
+	fOutFile = 0;
+	fOutT = 0;
+
 	SetLog(new LogFile("CLASS.log"));
 	fParcPower = 0;
 	
@@ -94,7 +96,9 @@ CLASS::CLASS(LogFile* Log)
 	
 	fOutputFileName = "CLASS_Default.root";
 	fOutputTreeName = "Data";
-	
+	fOutFile = 0;
+	fOutT = 0;
+
 	SetLog(Log);
 	fParcPower = 0;
 	
@@ -130,7 +134,9 @@ CLASS::CLASS(double abstime)
 	
 	fOutputFileName = "CLASS_Default.root";
 	fOutputTreeName = "Data";
-	
+	fOutFile = 0;
+	fOutT = 0;
+
 	SetLog(new LogFile("CLASS.log"));
 	fParcPower = 0;
 	
@@ -162,6 +168,7 @@ CLASS::~CLASS()
 	
 #pragma omp single
 	{CloseOutputTree();}
+
 	
 }
 
@@ -411,6 +418,7 @@ void CLASS::BuildTimeVector(cSecond t)
 void CLASS::PoolEvolution()
 {
 	
+#pragma omp parallel for
 	for(int i = 0; i < (int) fPool.size();i++)
 		fPool[i]->Evolution(fAbsoluteTime);
 	
@@ -422,6 +430,7 @@ void CLASS::PoolEvolution()
 void CLASS::StorageEvolution()
 {
 	
+#pragma omp parallel for
 	for(int i = 0; i < (int) fStorage.size();i++)
 		fStorage[i]->Evolution(fAbsoluteTime);
 	
@@ -431,6 +440,7 @@ void CLASS::StorageEvolution()
 void CLASS::FabricationPlantEvolution()
 {
 	
+#pragma omp parallel for
 	for(int i = 0; i < (int) fFabricationPlant.size();i++)
 		fFabricationPlant[i]->Evolution(fAbsoluteTime);
 	
@@ -473,61 +483,21 @@ void CLASS::Evolution(double t)
 	{
 		
 		fAbsoluteTime = (*it).first;
-		if( (*it).second & 2 || (*it).second & 1 )
-		{
-			if( (*it).second & 1 )
-				StorageEvolution();
-			
+
+
+		if( (*it).second & 1 || (*it).second & 4 || (*it).second & 8 || (*it).second & 16 )
+			StorageEvolution();
+
+		if( (*it).second & 1 || (*it).second & 2 || (*it).second & 4 || (*it).second & 8 || (*it).second & 16 )
 			PoolEvolution();
+
+		if( (*it).second & 1 || (*it).second & 2 || (*it).second & 4 || (*it).second & 16 )
 			FabricationPlantEvolution();
+
+		if( (*it).second & 1 || (*it).second & 2 || (*it).second & 4 )
 			ReactorEvolution();
-			
-			if((*it).second & 2 )
-				(*it).second ^= 2;
-			if((*it).second & 4 )
-				(*it).second ^= 4;
-			if((*it).second & 8 )
-				(*it).second ^= 8;
-			if((*it).second & 16 )
-				(*it).second ^= 16;
-		}
-		
-		
-		if( (*it).second & 4 )
-		{
-			StorageEvolution();
-			PoolEvolution();
-			FabricationPlantEvolution();
-			ReactorEvolution();
-			
-			(*it).second ^= 4;
-			if((*it).second & 8 )
-				(*it).second ^= 8;
-		}
-		
-		if( (*it).second & 16 )
-		{
-			StorageEvolution();
-			PoolEvolution();
-			FabricationPlantEvolution();
-			
-			(*it).second ^= 16;
-			if((*it).second & 8 )
-				(*it).second ^= 8;
-		}
-		
-		
-		if( (*it).second & 8 )
-		{
-			StorageEvolution();
-			PoolEvolution();
-			
-			(*it).second ^= 8;
-		}
-		
-		
-		
-		if( (*it).second & 1 || (*it).first == (*fTimeStep.begin()).first )
+
+		if( (*it).second & 1 || it == fTimeStep.begin() )
 		{
 #pragma omp single
 			{
@@ -578,7 +548,7 @@ void CLASS::UpdateParc()
 	
 	ResetQuantity();
 	
-	for (int i =0; i < (int)fFabricationPlant.size(); i++)
+	for(int i =0; i < (int)fFabricationPlant.size(); i++)
 		fFuelFabrication += fFabricationPlant[i]->GetFullFabrication();
 	
 	for(int i = 0; i < (int) fPool.size();i++)

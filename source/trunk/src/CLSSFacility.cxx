@@ -15,4 +15,7 @@ using namespace std;
 ClassImp(CLSSFacility)
 
 
-
+CLSSFacility::CLSSFacility()
+{
+	fParc = 0;
+}

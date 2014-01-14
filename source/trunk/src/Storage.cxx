@@ -23,13 +23,15 @@ ClassImp(Storage)
 
 Storage::Storage()
 {
+	fDecayDataBase = 0;
 }
 
 Storage::Storage(LogFile* log)
 {
 	
 	SetLog(log);
-	
+	fDecayDataBase = 0;
+
 	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 	
 	GetLog()->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
@@ -153,7 +155,7 @@ void Storage::StorageEvolution(cSecond t)
 
 	if(t == fInternalTime && t !=0 ) return;
 
-	for(int i = (int)fIVStock.size()-1 ; i >=0; i--)
+	for(int i = (int)fIVStock.size()-1 ; i >=0; i--) //Removing empty Stock
 		if(Norme(fIVStock[i]) == 0)
 			fIVStock.erase(fIVStock.begin()+i); 
 	

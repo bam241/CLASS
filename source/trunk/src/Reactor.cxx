@@ -29,17 +29,24 @@ ClassImp(Reactor)
 
 Reactor::Reactor()
 {
-
+	fAssociedPool = 0;
+	fStorage = 0;
+	fFuelTypeDB = 0;
+	fFabricationPlant = 0;
 }
 
 Reactor::Reactor(LogFile* log)
 {
 
 	SetLog(log);
+	fAssociedPool = 0;
+	fStorage = 0;
+	fFuelTypeDB = 0;
+	fFabricationPlant = 0;
 
 }
 
-Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
+Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 Pool* Pool,
  		 double creationtime, double lifetime)
@@ -55,6 +62,7 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 	fFixedFuel = false;
 	fBurnUp = -1.;
 	fHeavyMetalMass = -1.;
+	fStorage = 0;
 
 	fAssociedPool = Pool;
 
@@ -85,13 +93,14 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 
 }
 
-Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB, FabricationPlant* fabricationplant, Pool* Pool,
+Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* fueltypeDB, FabricationPlant* fabricationplant, Pool* Pool,
  		 double creationtime, double lifetime,
  		 double Power, double HMMass, double BurnUp, double ChargeFactor)
 {
 
 	SetLog(log);
 
+	fStorage = 0;
 	fIsStarted = false;
 	fShutDown = false;
 	fEndOfCycle = false;
@@ -153,6 +162,8 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 	fShutDown = false;
 	fEndOfCycle = false;
 
+	fStorage = 0;
+
 	fFabricationPlant = fabricationplant;
 	fFixedFuel = false;
 	fBurnUp = BurnUp;
@@ -208,7 +219,9 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
 	fShutDown = false;
 	fEndOfCycle = false;
 
-
+	fStorage = 0;
+	fFuelTypeDB = 0;
+	fFabricationPlant = 0;
 
 	fFixedFuel = true;
 	fIsStorage = false;

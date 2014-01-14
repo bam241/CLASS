@@ -49,6 +49,9 @@ public :
 	///< Normal Destructor.
 	~EvolutionData();
 
+	void DeleteEvolutionData();
+
+
 //********* Set Method *********//
 	void 	SetReactorType(string reactortype)	{ fReactorType = reactortype; }
 	void	SetFuelType(string fueltype)		{ fFuelType = fueltype; }

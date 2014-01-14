@@ -64,7 +64,9 @@ class ZAI : public TObject
 	bool operator ==(const ZAI& zai) const	{ return ( fZ == zai.Z()  && fA == zai.A() &&  fI == zai.I()); }
 						//!< ZAI Comparator
 	void Print() const	{ cout << fZ << " " << fA << " " << fI << endl;}
-	protected :
+
+
+protected :
  	
  	string 	fName;		///< Name of the ZAI
 	short	fZ;		///< number of protons
