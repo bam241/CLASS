@@ -1289,12 +1289,13 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 				   * isotopicvector.GetActinidesComposition().GetSumOfAll(),
 				   fDistanceType, fDistanceParameter);
 
-	EvolutionData CloseEvolData = evolutiondb.begin()->second ;
+
+	map<IsotopicVector, EvolutionData >::iterator it_close = evolutiondb.begin();
+
 
 	map<IsotopicVector, EvolutionData >::iterator it;
 	for( it = evolutiondb.begin(); it != evolutiondb.end(); it++ )
 	{
-		pair<map<double, EvolutionData>::iterator, bool> IResult;
 		double D = Distance(isotopicvector.GetActinidesComposition(),
 				    (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition()
 				    /  (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
@@ -1303,10 +1304,10 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 		if (D< distance)
 		{
 			distance = D;
-			CloseEvolData = (*it).second;
+			it_close = it;
 		}
 	}
-	return CloseEvolData;
+	return (*it_close).second;
 
 }
 
@@ -1773,6 +1774,10 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 
 		timevector[i+1] = timevector[i] + TStepMax;
 
+		BatemanMatrix.Clear();
+		BatemanReactionMatrix.Clear();
+		NEvolutionMatrix.Clear();
+
 
 	}
 	FissionXSMatrix.push_back(GetFissionXsMatrix(EvolutionDataStep, DBTimeStep[NStep-1])); //Feel the reaction Matrix
@@ -1817,10 +1822,20 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	GeneratedDB.SetReactorType(ReactorType );
 	GeneratedDB.SetCycleTime(cycletime);
 
-	fDataBankCalculated.insert( pair< IsotopicVector, EvolutionData > ( GeneratedDB.GetIsotopicVectorAt(0.), GeneratedDB) );
+//	fDataBankCalculated.insert( pair< IsotopicVector, EvolutionData > ( GeneratedDB.GetIsotopicVectorAt(0.), GeneratedDB) );
 
 	ResetTheMatrix();
 	ResetTheNucleiVector();
+
+	for (int i = 0; i < (int) FissionXSMatrix.size(); i++)
+	{
+		FissionXSMatrix[i].Clear();
+		CaptureXSMatrix[i].Clear();
+		n2nXSMatrix[i].Clear();
+	}
+	FissionXSMatrix.clear();
+	CaptureXSMatrix.clear();
+	n2nXSMatrix.clear();
 
 	return GeneratedDB;
 
