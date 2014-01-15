@@ -1007,7 +1007,7 @@ TMatrixT<double> DataBank<IsotopicVector>::GetCaptureXsMatrix(EvolutionData Evol
 
 					if( it4 == fFastDecay.end() )
 					{
-						cout << "Capture Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A()+1 << " " << (*it).first.I() << endl;
+						//cout << "Capture Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A()+1 << " " << (*it).first.I() << endl;
 						BatemanMatrix[0][Index_it->second] += y* 1e-24  ;
 
 					}
@@ -1127,7 +1127,7 @@ TMatrixT<double> DataBank<IsotopicVector>::Getn2nXsMatrix(EvolutionData Evolutio
 
 					if( it4 == fFastDecay.end() )
 					{
-						cout << "n2n Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A()-1 << " " << (*it).first.I() << endl;
+						//cout << "n2n Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A()-1 << " " << (*it).first.I() << endl;
 
 						BatemanMatrix[0][Index_it->second] += y* 1e-24  ;
 					}
