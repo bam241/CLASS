@@ -440,7 +440,6 @@ void CLASS::StorageEvolution()
 void CLASS::FabricationPlantEvolution()
 {
 	
-#pragma omp parallel for
 	for(int i = 0; i < (int) fFabricationPlant.size();i++)
 		fFabricationPlant[i]->Evolution(fAbsoluteTime);
 	
