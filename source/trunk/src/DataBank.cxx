@@ -434,6 +434,8 @@ string DataBank<IsotopicVector>::GetDecay(string DecayModes, double &BR,int &Iso
 template<>
 void DataBank<IsotopicVector>::BuildDecayMatrix()
 {
+	fDecayMatrix.Clear();
+
 	// List of Decay Time and Properties
 	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
 
@@ -1427,10 +1429,24 @@ void DataBank<IsotopicVector>::SetDistanceType(int DistanceType)
 //________________________________________________________________________
 /*				RK4 Stuff			*/
 //________________________________________________________________________
+//________________________________________________________________________
+template<>
+void DataBank<IsotopicVector>::ResetTheMatrix()
+{
+
+	if(fTheMatrix)
+	{
+		for(int i= 0; i<fNVar; i++)
+			delete [] fTheMatrix[i];
+		delete [] fTheMatrix;
+	}
+	fTheMatrix = 0;
+}
+
 template<>
 void DataBank<IsotopicVector>::SetTheMatrixToZero()
 {
-	//ResetTheMatrix();
+	ResetTheMatrix();
 
 	fNVar = findex.size();
 	fTheMatrix = new double*[fNVar];
@@ -1445,20 +1461,6 @@ void DataBank<IsotopicVector>::SetTheMatrixToZero()
 			fTheMatrix[i][k]=0.0;
 		}
 
-}
-
-//________________________________________________________________________
-template<>
-void DataBank<IsotopicVector>::ResetTheMatrix()
-{
-
-	if(fTheMatrix)
-	{
-		for(int i= 0; i<fNVar; i++)
-			delete [] fTheMatrix[i];
-		delete [] fTheMatrix;
-	}
-	fTheMatrix = 0;
 }
 
 //________________________________________________________________________
