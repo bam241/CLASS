@@ -405,14 +405,16 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 
 		
 	}while ( !DecayDB.eof() );
-		
+
+	DecayDB.close();
 
 		
 }
 
 void EvolutionData::ReadKeff(string line, double* time, int NTimeStep)
 {
-	
+	if(fKeff != 0)
+		delete fKeff;
 
 	int start = 0;
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "keff" )	// Check the keyword
@@ -431,7 +433,8 @@ void EvolutionData::ReadKeff(string line, double* time, int NTimeStep)
 		Keff[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
 		i++;
 	}
-	
+
+
 	fKeff = new TGraph(NTimeStep, time, Keff);			// Add the TGraph
 	
 	
@@ -442,7 +445,9 @@ void EvolutionData::ReadKeff(string line, double* time, int NTimeStep)
 void EvolutionData::ReadFlux(string line, double* time, int NTimeStep)
 {
 	
-	
+	if(fFlux != 0)
+		delete fFlux;
+
 	int start = 0;
 	
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "flux" )	// Check the keyword
@@ -608,7 +613,7 @@ void	EvolutionData::ReadXSn2n(string line, double* time, int NTimeStep)
 
 void EvolutionData::ReadInfo()
 {
-	string InfoDBFile  = fDB_file.erase(fDB_file.size()-3,fDB_file.size());
+	string InfoDBFile = fDB_file.erase(fDB_file.size()-3,fDB_file.size());
 	InfoDBFile += "Info";
 	ifstream InfoDB_tmp(InfoDBFile.c_str());				// Open the File
 
@@ -658,265 +663,266 @@ void EvolutionData::ReadInfo()
 		fNormFactor = atof(StringLine::NextWord(line, start, ' ').c_str());
 		fPower = fPower * fNormFactor;
 	}
+	InfoDB.close();
 }
 
 void EvolutionData::OldReadDB(string DBfile)
 {
-	
+
+
+	ifstream DecayDB(DBfile.c_str());							// Open the File
+	if(!DecayDB)
 	{
-		ifstream DecayDB(DBfile.c_str());							// Open the File
-		if(!DecayDB)
-		{
-			cout << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
-			GetLog()->fLog << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
-		}
-		vector<double> vTime;
-		vector<double> vTimeErr;
-		
-		string line;
-		int start = 0;
-		
-		getline(DecayDB, line);
-		if( StringLine::NextWord(line, start, ' ') != "time")
-		{
-			cout << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
-			GetLog()->fLog << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
-			exit (1);
-		}
-		
+		cout << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
+		GetLog()->fLog << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
+	}
+	vector<double> vTime;
+	vector<double> vTimeErr;
+
+	string line;
+	int start = 0;
+
+	getline(DecayDB, line);
+	if( StringLine::NextWord(line, start, ' ') != "time")
+	{
+		cout << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
+		GetLog()->fLog << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
+		exit (1);
+	}
+
+	while(start < (int)line.size())
+		vTime.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
+
+	fFinalTime = vTime.back();
+	double Time[vTime.size()];
+	for(int i=0; i < (int)vTime.size();i++)
+		Time[i] = vTime[i];
+	vector<double> vFlux;
+	start = 0;
+	getline(DecayDB, line);
+	string tmp = StringLine::NextWord(line, start, ' ');
+	if ( tmp == "keff"  || tmp == "Keff" )
+	{
+		vector<double> vKeff;
 		while(start < (int)line.size())
-			vTime.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
-		
-		fFinalTime = vTime.back();
-		double Time[vTime.size()];
-		for(int i=0; i < (int)vTime.size();i++)
-			Time[i] = vTime[i];
-		vector<double> vFlux;
+			vKeff.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
+
+		double Keff[vKeff.size()];
+		for(int i=0; i < (int)vKeff.size();i++)
+			Keff[i] = vKeff[i];
+
+		fKeff = new TGraph(vTime.size(), Time, Keff);
+
 		start = 0;
 		getline(DecayDB, line);
-		string tmp = StringLine::NextWord(line, start, ' ');
-		if ( tmp == "keff"  || tmp == "Keff" )
+		if (StringLine::NextWord(line, start, ' ') == "flux")
 		{
-			vector<double> vKeff;
+
+
 			while(start < (int)line.size())
-				vKeff.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
-			
-			double Keff[vKeff.size()];
-			for(int i=0; i < (int)vKeff.size();i++)
-				Keff[i] = vKeff[i];
-			
-			fKeff = new TGraph(vTime.size(), Time, Keff);
-			
-			start = 0;
-			getline(DecayDB, line);
-			if (StringLine::NextWord(line, start, ' ') == "flux")
-			{
-				
-				
-				while(start < (int)line.size())
-					vFlux.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
-				
-				double Flux[vFlux.size()];
-				for(int i=0; i < (int)vFlux.size();i++)
-					Flux[i] = vFlux[i];
-				
-				fFlux = new TGraph(vTime.size(), Time, Flux);
-				
-			}
+				vFlux.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
+
+			double Flux[vFlux.size()];
+			for(int i=0; i < (int)vFlux.size();i++)
+				Flux[i] = vFlux[i];
+
+			fFlux = new TGraph(vTime.size(), Time, Flux);
+
 		}
-		
-		
-		do
+	}
+
+
+	do
+	{
+
+
+		start = 0;
+		int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
+		int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
+		int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
+
+		if(A!=0 && Z!=0)
 		{
-			
-			
-			start = 0;
-			int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
-			int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
-			int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
-			
-			if(A!=0 && Z!=0)
+			double DPQuantity[vTime.size()];
+			for(int k = 0; k < (int)vTime.size(); k++ )
+				DPQuantity[k] = 0;
+
+
+			ZAI zaitmp(Z, A, I);
+			int i=0;
+			while(start < (int)line.size())
+			{
+				double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
+				DPQuantity[i] = (double)DPQuantityTmp;
+				i++;
+
+			}
+			TGraph* tgraphtmp = new TGraph((int)vTime.size()-1, Time, DPQuantity);
+			fEvolutionData.insert(pair<ZAI ,TGraph* >(zaitmp, tgraphtmp) );
+		}
+
+		getline(DecayDB, line);
+		if(line == "" || line == "CrossSection" ) break;
+	}while (!DecayDB.eof() );
+
+	if(line == "CrossSection")
+	{
+		fIsCrossSection = true;
+		getline(DecayDB, line);
+
+		if (line == "Fission")
+		{
+			getline(DecayDB, line);
+
+			do
 			{
 				double DPQuantity[vTime.size()];
 				for(int k = 0; k < (int)vTime.size(); k++ )
 					DPQuantity[k] = 0;
-				
-				
-				ZAI zaitmp(Z, A, I);
-				int i=0;
-				while(start < (int)line.size())
+
+				start = 0;
+				int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
+				int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
+				int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
+				if(A!=0 && Z!=0)
 				{
-					double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
-					DPQuantity[i] = (double)DPQuantityTmp;
-					i++;
-					
+
+
+					ZAI zaitmp(Z, A, I);
+					int i=0;
+					while(start < (int)line.size())
+					{
+						long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
+						DPQuantity[i] = (double)DPQuantityTmp;
+						i++;
+
+					}
+					fFissionXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
 				}
-				fEvolutionData.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph((int)vTime.size()-1, Time, DPQuantity) ) );
-			}
-			
-			getline(DecayDB, line);
-			if(line == "" || line == "CrossSection" ) break;
-		}while (!DecayDB.eof() );
-		
-		if(line == "CrossSection")
-		{
-			fIsCrossSection = true;
-			getline(DecayDB, line);
-			
-			if (line == "Fission")
-			{
 				getline(DecayDB, line);
-				
-				do
-				{
-					double DPQuantity[vTime.size()];
-					for(int k = 0; k < (int)vTime.size(); k++ )
-						DPQuantity[k] = 0;
-					
-					start = 0;
-					int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					if(A!=0 && Z!=0)
-					{
-						
-						
-						ZAI zaitmp(Z, A, I);
-						int i=0;
-						while(start < (int)line.size())
-						{
-							long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
-							DPQuantity[i] = (double)DPQuantityTmp;
-							i++;
-							
-						}
-						fFissionXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
-					}
-					getline(DecayDB, line);
-					if(line == "" || line == "Capture" ) break;
-				}while (  !DecayDB.eof() );
-			}
-			
-			if (line == "Capture")
-			{
-				getline(DecayDB, line); // Nuclei is given with "A Z"
-				
-				do
-				{
-					double DPQuantity[vTime.size()];
-					for(int k = 0; k < (int)vTime.size(); k++ )
-						DPQuantity[k] = 0;
-					
-					
-					start = 0;
-					int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					
-					if(A!=0 && Z!=0)
-					{
-						
-						
-						ZAI zaitmp(Z, A, I);
-						int i=0;
-						while(start < (int)line.size())
-						{
-							long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
-							DPQuantity[i] = (double)DPQuantityTmp;
-							i++;
-							
-						}
-						fCaptureXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
-					}
-					getline(DecayDB, line); // Nuclei is given with "A Z"
-					if(line == "" || line == "n2n" ) break;
-				}while ( !DecayDB.eof() );
-				
-			}
-			
-			if (line == "n2n")
-			{
-				
-				getline(DecayDB, line); // Nuclei is given with "A Z"
-				
-				do
-				{
-					double DPQuantity[vTime.size()];
-					for(int k = 0; k < (int)vTime.size(); k++ )
-						DPQuantity[k] = 0;
-					
-					start = 0;
-					int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
-					
-					if(A!=0 && Z!=0)
-					{
-						
-						
-						ZAI zaitmp(Z, A, I);
-						int i=0;
-						while(start < (int)line.size())
-						{
-							long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
-							DPQuantity[i] = (double)DPQuantityTmp;
-							i++;
-							
-						}
-						fn2nXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
-					}
-					getline(DecayDB, line); // Nuclei is given with "A Z"
-					if(line == "" ) break;
-					
-				}while ( !DecayDB.eof() );
-			}
-			
+				if(line == "" || line == "Capture" ) break;
+			}while (  !DecayDB.eof() );
 		}
-		DecayDB.close();
-		start = 0;
-		
-		string InfoDBFile  = DBfile.erase(DBfile.size()-3,DBfile.size());
-		InfoDBFile += "info";
-		ifstream InfoDB(InfoDBFile.c_str());							// Open the File
-		if(!InfoDB)
+
+		if (line == "Capture")
 		{
-			GetLog()->fLog << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
-			return;
+			getline(DecayDB, line); // Nuclei is given with "A Z"
+
+			do
+			{
+				double DPQuantity[vTime.size()];
+				for(int k = 0; k < (int)vTime.size(); k++ )
+					DPQuantity[k] = 0;
+
+
+				start = 0;
+				int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
+				int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
+				int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
+
+				if(A!=0 && Z!=0)
+				{
+
+
+					ZAI zaitmp(Z, A, I);
+					int i=0;
+					while(start < (int)line.size())
+					{
+						long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
+						DPQuantity[i] = (double)DPQuantityTmp;
+						i++;
+
+					}
+					fCaptureXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
+				}
+				getline(DecayDB, line); // Nuclei is given with "A Z"
+				if(line == "" || line == "n2n" ) break;
+			}while ( !DecayDB.eof() );
+
 		}
-		
-		start = 0;
-		getline(InfoDB, line);
-		if (StringLine::NextWord(line, start, ' ') == "Reactor")
-			fReactorType =  StringLine::NextWord(line, start, ' ');
-		start = 0;
-		getline(InfoDB, line);
-		if (StringLine::NextWord(line, start, ' ') == "Fueltype")
-			fFuelType =  StringLine::NextWord(line, start, ' ');
-		start = 0;
-		getline(InfoDB, line);
-		if (StringLine::NextWord(line, start, ' ') == "CycleTime")
-			fCycleTime =  atof(StringLine::NextWord(line, start, ' ').c_str());;
-		getline(InfoDB, line); // Assembly HM Mass
-		start = 0;
-		getline(InfoDB, line);
-		if (StringLine::NextWord(line, start, ' ') == "ConstantPower")
-			fPower =  atof(StringLine::NextWord(line, start, ' ').c_str());
-		getline(InfoDB, line); // cutoff
-		getline(InfoDB, line); // NUmber of Nuclei
-		start = 0;
-		getline(InfoDB, line);
-		if (StringLine::NextWord(line, start, ' ') == "NormalizationFactor")
+
+		if (line == "n2n")
 		{
-			double NormFactor = atof(StringLine::NextWord(line, start, ' ').c_str());
-			fPower = fPower * NormFactor;
-			double Flux[vFlux.size()];
-			for(int i=0; i < (int)vFlux.size();i++)
-				Flux[i] = vFlux[i];
-			
-			fFlux = new TGraph(vTime.size()-1, Time, Flux);
+
+			getline(DecayDB, line); // Nuclei is given with "A Z"
+
+			do
+			{
+				double DPQuantity[vTime.size()];
+				for(int k = 0; k < (int)vTime.size(); k++ )
+					DPQuantity[k] = 0;
+
+				start = 0;
+				int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
+				int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
+				int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
+
+				if(A!=0 && Z!=0)
+				{
+
+
+					ZAI zaitmp(Z, A, I);
+					int i=0;
+					while(start < (int)line.size())
+					{
+						long double DPQuantityTmp = atof(StringLine::NextWord(line, start, ' ').c_str());
+						DPQuantity[i] = (double)DPQuantityTmp;
+						i++;
+
+					}
+					fn2nXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
+				}
+				getline(DecayDB, line); // Nuclei is given with "A Z"
+				if(line == "" ) break;
+
+			}while ( !DecayDB.eof() );
 		}
+
 	}
-	
+	DecayDB.close();
+	start = 0;
+
+	string InfoDBFile  = DBfile.erase(DBfile.size()-3,DBfile.size());
+	InfoDBFile += "info";
+	ifstream InfoDB(InfoDBFile.c_str());							// Open the File
+	if(!InfoDB)
+	{
+		GetLog()->fLog << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
+		return;
+	}
+
+	start = 0;
+	getline(InfoDB, line);
+	if (StringLine::NextWord(line, start, ' ') == "Reactor")
+		fReactorType =  StringLine::NextWord(line, start, ' ');
+	start = 0;
+	getline(InfoDB, line);
+	if (StringLine::NextWord(line, start, ' ') == "Fueltype")
+		fFuelType =  StringLine::NextWord(line, start, ' ');
+	start = 0;
+	getline(InfoDB, line);
+	if (StringLine::NextWord(line, start, ' ') == "CycleTime")
+		fCycleTime =  atof(StringLine::NextWord(line, start, ' ').c_str());;
+	getline(InfoDB, line); // Assembly HM Mass
+	start = 0;
+	getline(InfoDB, line);
+	if (StringLine::NextWord(line, start, ' ') == "ConstantPower")
+		fPower =  atof(StringLine::NextWord(line, start, ' ').c_str());
+	getline(InfoDB, line); // cutoff
+	getline(InfoDB, line); // NUmber of Nuclei
+	start = 0;
+	getline(InfoDB, line);
+	if (StringLine::NextWord(line, start, ' ') == "NormalizationFactor")
+	{
+		double NormFactor = atof(StringLine::NextWord(line, start, ' ').c_str());
+		fPower = fPower * NormFactor;
+		double Flux[vFlux.size()];
+		for(int i=0; i < (int)vFlux.size();i++)
+			Flux[i] = vFlux[i];
+
+		fFlux = new TGraph(vTime.size()-1, Time, Flux);
+	}
+	InfoDB.close();
 }
 
 
