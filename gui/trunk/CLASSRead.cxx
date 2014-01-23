@@ -215,7 +215,12 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 		for(int i=0; i < fNumberGraphIterator;i++) delete fLegend[i];
 		delete [] fLegend;
 	}
-	
+	if(fCNuclei)
+		delete fCNuclei;
+
+
+	fCNuclei = new TCanvas("c_Nuclei","Nuclei",50,110,400,300);
+
 
 	fGraph = new TGraph*[toplot.size()];
 	fLegend = new TLatex*[toplot.size()];
@@ -226,7 +231,14 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 	}
 
 	vector<CLASSPlotElement> toplotTTree[fData.size()];
-	
+
+
+
+	Xmin = +1.e36;
+	Xmax =  -1.e36;
+	Ymin = 1.e36;
+	Ymax = -1.e36;
+
 	fNumberGraphIterator = 0;
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
@@ -239,8 +251,49 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 		if(i == 1) out += " same";
 		if(toplotTTree[i].size() !=0)
 			PlotTTree(toplotTTree[i], out);
+
 	}
-	
+	fCNuclei->cd();
+
+
+	TH1F *hr = fCNuclei->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
+	string Xtitle="Time [year]";
+	string Ytitle="Mass [kg]";
+	hr->SetXTitle(Xtitle.c_str());
+	hr->SetYTitle(Ytitle.c_str());
+	hr->GetXaxis()->CenterTitle();
+	hr->GetYaxis()->CenterTitle();
+	hr->GetYaxis()->SetTitleOffset(1.25);
+
+	for (int i = 0; i < (int)fNumberGraphIterator; i++)
+	{
+		if( i !=0 ) out += " same";
+
+		fGraph[i]->SetName(GetTittleOutName(toplot[i]).c_str());
+		cout << GetTittleOutName(toplot[i]).c_str() << endl;
+		cout << GetTittleOutName(toplot[i]).c_str() << endl;
+		fGraph[i]->SetTitle(GetTittleOutName(toplot[i]).c_str());
+		fGraph[i]->SetLineColor(CurveColor(i));
+		fGraph[i]->SetMarkerColor(CurveColor(i));
+		fGraph[i]->SetMarkerStyle(10);
+		fGraph[i]->Draw(out.c_str());
+		fGraph[i]->SetLineColor(CurveColor(i));
+		fGraph[i]->SetMarkerColor(CurveColor(i));
+
+		double x;
+		double y;
+		fGraph[i]->GetPoint(fGraph[i]->GetN()-1, x, y);
+
+		fLegend[i] = new TLatex(0.7*(x),1.05*(y),GetLegendOutName(toplot[i]).c_str());
+		fLegend[i]->SetTextSize(0.05);
+		fLegend[i]->SetTextFont(132);
+		fLegend[i]->SetTextColor(CurveColor(i));
+		fLegend[i]->Draw();
+	}
+
+	fCNuclei->Update();
+
+
 }
 
 void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
@@ -255,10 +308,16 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 		for(int i=0; i < fNumberGraphPowerIterator;i++) delete fLegendPower[i];
 		delete [] fLegendPower;
 	}
-	
-	
+
+	if(fCPower)
+		delete fCPower;
+
+
+	fCPower = new TCanvas("fCPower","Power",50,110,400,300);
 	fGraphPower = new TGraph*[fData.size()];
 	fLegendPower = new TLatex*[fData.size()];
+
+
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
 		fGraphPower[i] = 0;
@@ -268,6 +327,14 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 	vector<CLASSPlotElement> toplotTTree[fData.size()];
 	
 	fNumberGraphPowerIterator = 0;
+	Xmin = +1.e36;
+	Xmax =  -1.e36;
+	Ymin = 1.e36;
+	Ymax = -1.e36;
+
+
+	
+
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
 		toplotTTree[toplot[i].fTreeId].push_back(toplot[i]);
@@ -277,13 +344,50 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
 
-		if(i != 0) out += " SAME";
+		if(i != 0) out += " same";
 		if(toplotTTree[i].size() !=0)
 			PlotTTreePower(toplotTTree[i], out);
 
-		fNumberGraphPowerIterator++;
+
 	}
-	
+
+	fCPower->cd();
+
+	TH1F *hr = fCPower->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
+	string Xtitle="Time [year]";
+	string Ytitle="Total Thermal Power [GW]";
+	hr->SetXTitle(Xtitle.c_str());
+	hr->SetYTitle(Ytitle.c_str());
+	hr->GetXaxis()->CenterTitle();
+	hr->GetYaxis()->CenterTitle();
+	hr->GetYaxis()->SetTitleOffset(1.25);
+
+	for (int i = 0; i < (int)fNumberGraphPowerIterator; i++)
+	{
+		if( i !=0 ) out += " same";
+
+		fGraphPower[i]->SetName(GetTittleOutName(toplot[i]).c_str());
+		fGraphPower[i]->SetTitle(GetTittleOutName(toplot[i]).c_str());
+		fGraphPower[i]->SetLineColor(CurveColor(i));
+		fGraphPower[i]->SetMarkerColor(CurveColor(i));
+		fGraphPower[i]->SetMarkerStyle(10);
+		fGraphPower[i]->Draw(out.c_str());
+		fGraphPower[i]->SetLineColor(CurveColor(i));
+		fGraphPower[i]->SetMarkerColor(CurveColor(i));
+
+
+		double x;
+		double y;
+		fGraphPower[i]->GetPoint(fGraphPower[i]->GetN()-1, x, y);
+
+		fLegendPower[i] = new TLatex(0.7*x,1.05*y,GetLegendOutName(toplot[0]).c_str());
+		fLegendPower[i]->SetTextSize(0.05);
+		fLegendPower[i]->SetTextFont(132);
+		fLegendPower[i]->SetTextColor(CurveColor(i));
+		fLegendPower[i]->Draw();
+	}
+	fCPower->Update();
+
 }
 
 
@@ -293,10 +397,8 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 	fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
 	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
 
-	if(!gROOT->FindObject("c_Nuclei"))
-		fCNuclei =new TCanvas("c_Nuclei","Nuclei",50,110,400,300);
-	fCNuclei->cd();
-	
+
+
 	string out = opt;
 	Long64_t nentries = fData[toplot[0].fTreeId]->GetEntries();
 	
@@ -346,22 +448,13 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &fabricationplant[toplot[i].fFacylityNumber]);
 	}
 
-	double Xmin = +1.e36;
-	double Xmax =  -1.e36;
-	double Ymin = 1.e36;
-	double Ymax = -1.e36;
-	
+
 	for (Long64_t  j = 0; j < nentries; j++)
 	{
 		fData[toplot[0].fTreeId]->GetEntry(j);
 
 		vTime.push_back(Time/3600./24./365.25);
-		if(j == 0)
-		{
-			Xmin = vTime.back();
-			Xmax = vTime.back();
-		}
-		
+
 		if(Xmin>vTime.back()) Xmin = vTime.back();
 		if(Xmax<vTime.back()) Xmax = vTime.back();
 		
@@ -376,12 +469,7 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				double ZAIQuantity = IV[toplot[i].fFacylityNumber]->GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				vQuantity[i].push_back(ZAIQuantity);
 				
-				if(j == 0 && i == 0)
-				{
-					Ymin = ZAIQuantity;
-					Ymax = ZAIQuantity;
-				}
-				
+
 				
 				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
@@ -395,11 +483,7 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 
 				double ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				vQuantity[i].push_back(ZAIQuantity);
-				if(j == 0 && i == 0)
-				{
-					Ymin = ZAIQuantity;
-					Ymax = ZAIQuantity;
-				}
+
 				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
 
@@ -413,11 +497,7 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				double ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				vQuantity[i].push_back(ZAIQuantity);
 
-				if(j == 0 && i == 0)
-				{
-					Ymin = ZAIQuantity;
-					Ymax = ZAIQuantity;
-				}
+
 				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
 				
@@ -430,11 +510,7 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				
 				double ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				vQuantity[i].push_back(ZAIQuantity);
-				if(j == 0 && i == 0)
-				{
-					Ymin = ZAIQuantity;
-					Ymax = ZAIQuantity;
-				}
+
 				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
 
@@ -447,11 +523,7 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				
 				double ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				vQuantity[i].push_back(ZAIQuantity);
-				if(j == 0 && i == 0)
-				{
-					Ymin = ZAIQuantity;
-					Ymax = ZAIQuantity;
-				}
+
 				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
 				
@@ -461,33 +533,11 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 		
 	}
 	
-	TH1F *hr = fCNuclei->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
-	string Xtitle="Time [year]";
-	string Ytitle="Mass [kg]";
-	hr->SetXTitle(Xtitle.c_str());
-	hr->SetYTitle(Ytitle.c_str());
-	hr->GetXaxis()->CenterTitle();
-	hr->GetYaxis()->CenterTitle();
-	hr->GetYaxis()->SetTitleOffset(1.25);
+
 	
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
-		if( fNumberGraphIterator !=0 ) out += " same";
 		fGraph[fNumberGraphIterator] = new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]);
-		fGraph[fNumberGraphIterator]->SetName(GetTittleOutName(toplot[i]).c_str());
-		fGraph[fNumberGraphIterator]->SetTitle(GetTittleOutName(toplot[i]).c_str());
-		fGraph[fNumberGraphIterator]->SetLineColor(CurveColor(fNumberGraphIterator));
-  		fGraph[fNumberGraphIterator]->SetMarkerColor(CurveColor(fNumberGraphIterator));
-		fGraph[fNumberGraphIterator]->SetMarkerStyle(10);
-		fGraph[fNumberGraphIterator]->Draw(out.c_str());
-		fGraph[fNumberGraphIterator]->SetLineColor(CurveColor(i));
-		fGraph[fNumberGraphIterator]->SetMarkerColor(CurveColor(i));
-		
-		fLegend[fNumberGraphIterator] = new TLatex(0.7*vTime[vTime.size()-1],1.05*vQuantity[i][vTime.size()-1],GetLegendOutName(toplot[i]).c_str());
-		fLegend[fNumberGraphIterator]->SetTextSize(0.05);
-		fLegend[fNumberGraphIterator]->SetTextFont(132);
-		fLegend[fNumberGraphIterator]->SetTextColor(CurveColor(i));
-		fLegend[fNumberGraphIterator]->Draw();
 		fNumberGraphIterator++;
 	}
 	
@@ -502,8 +552,6 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 		for(int i=0; i< (int)fStockName[toplot[0].fTreeId].size(); i++) delete stock[i];
 		for(int i=0; i< 8; i++) delete IV[i];
 	}
-	
-	fCNuclei->Update();
 }
 
 
@@ -517,9 +565,6 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
 	fData[toplot[0].fTreeId]->SetBranchStatus("ParcPower", 1);
 
-	if(!gROOT->FindObject("fCPower"))
-	fCPower = new TCanvas("fCPower","Power",50,110,400,300);
-	fCPower->cd();
 
 	string out = opt;
 	Long64_t nentries = fData[toplot[0].fTreeId]->GetEntries();
@@ -536,10 +581,6 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 	double  vPower[nentries];
 	
 	
-	double Xmin = +1.e36;
-	double Xmax =  -1.e36;
-	double Ymin = 1.e36;
-	double Ymax = -1.e36;
 
 	for (Long64_t  j = 0; j < nentries; j++)
 	{
@@ -548,16 +589,6 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 		vTime[j] = Time/3600./24./365.25;
 		vPower[j] = Power/1.e9;
 
-		if(j == 0)
-		{
-			Xmin = vTime[j];
-			Xmax = vTime[j];
-			
-			Ymin = vPower[j];
-			Ymax = vPower[j];
-			
-		}
-		
 		if(Xmin>vTime[j]) Xmin = vTime[j];
 		if(Xmax<vTime[j]) Xmax = vTime[j];
 		
@@ -565,34 +596,14 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 		if(Ymax<vPower[j]) Ymax = vPower[j];
 	}
 
-	TH1F *hr = fCPower->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
-	string Xtitle="Time [year]";
-	string Ytitle="Total Thermal Power [GW]";
-	hr->SetXTitle(Xtitle.c_str());
-	hr->SetYTitle(Ytitle.c_str());
-	hr->GetXaxis()->CenterTitle();
-	hr->GetYaxis()->CenterTitle();
-	hr->GetYaxis()->SetTitleOffset(1.25);
-	
-	fGraphPower[fNumberGraphIterator] = new TGraph(nentries, vTime, vPower);
-	fGraphPower[fNumberGraphIterator]->SetName(GetTittleOutName(toplot[0]).c_str());
-	fGraphPower[fNumberGraphIterator]->SetTitle(GetTittleOutName(toplot[0]).c_str());
-	fGraphPower[fNumberGraphIterator]->SetLineColor(CurveColor(fNumberGraphIterator));
-  	fGraphPower[fNumberGraphIterator]->SetMarkerColor(CurveColor(fNumberGraphIterator));
-	fGraphPower[fNumberGraphIterator]->SetMarkerStyle(10);
-	fGraphPower[fNumberGraphIterator]->Draw(out.c_str());
-	fGraphPower[fNumberGraphIterator]->SetLineColor(CurveColor(fNumberGraphIterator));
-	fGraphPower[fNumberGraphIterator]->SetMarkerColor(CurveColor(fNumberGraphIterator));
-	
-	fLegendPower[fNumberGraphIterator] = new TLatex(0.7*vTime[nentries-1],1.05*vPower[nentries-1],GetLegendOutName(toplot[0]).c_str());
-	fLegendPower[fNumberGraphIterator]->SetTextSize(0.05);
-	fLegendPower[fNumberGraphIterator]->SetTextFont(132);
-	fLegendPower[fNumberGraphIterator]->SetTextColor(CurveColor(fNumberGraphIterator));
-	fLegendPower[fNumberGraphIterator]->Draw();
-	
+
+	fGraphPower[fNumberGraphPowerIterator] = new TGraph(nentries, vTime, vPower);
+
 	fData[toplot[0].fTreeId]->ResetBranchAddresses();
 
-	fCPower->Update();
+
+	fNumberGraphPowerIterator++;
+
 }
 
 

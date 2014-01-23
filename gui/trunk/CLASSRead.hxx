@@ -84,6 +84,13 @@ private :
 	TGraph**  fGraphPower;
 	TLatex** fLegendPower;
 	int fNumberGraphPowerIterator;
+
+
+	double Xmin;
+	double Xmax;
+	double Ymin;
+	double Ymax;
+
 	
 };
 
