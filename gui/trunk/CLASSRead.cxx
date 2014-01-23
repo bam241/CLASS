@@ -270,8 +270,6 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 		if( i !=0 ) out += " same";
 
 		fGraph[i]->SetName(GetTittleOutName(toplot[i]).c_str());
-		cout << GetTittleOutName(toplot[i]).c_str() << endl;
-		cout << GetTittleOutName(toplot[i]).c_str() << endl;
 		fGraph[i]->SetTitle(GetTittleOutName(toplot[i]).c_str());
 		fGraph[i]->SetLineColor(CurveColor(i));
 		fGraph[i]->SetMarkerColor(CurveColor(i));
