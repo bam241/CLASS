@@ -378,7 +378,7 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 		double y;
 		fGraphPower[i]->GetPoint(fGraphPower[i]->GetN()-1, x, y);
 
-		fLegendPower[i] = new TLatex(0.7*x,1.05*y,GetLegendOutName(toplot[0]).c_str());
+		fLegendPower[i] = new TLatex(0.7*x,1.05*y,GetLegendOutName(toplot[i]).c_str());
 		fLegendPower[i]->SetTextSize(0.05);
 		fLegendPower[i]->SetTextFont(132);
 		fLegendPower[i]->SetTextColor(CurveColor(i));
