@@ -215,10 +215,10 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 		for(int i=0; i < fNumberGraphIterator;i++) delete fLegend[i];
 		delete [] fLegend;
 	}
-	if(fCNuclei)
-		delete fCNuclei;
-
-
+	if(fCNuclei && gROOT->FindObject("c_Nuclei"))
+	{	delete fCNuclei;
+		fCNuclei=0;
+	}	
 	fCNuclei = new TCanvas("c_Nuclei","Nuclei",50,110,400,300);
 
 
@@ -307,8 +307,10 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 		delete [] fLegendPower;
 	}
 
-	if(fCPower)
-		delete fCPower;
+	if(fCPower && gROOT->FindObject("fCPower"))
+	{	delete fCPower;
+		fCPower=0;
+	}	
 
 
 	fCPower = new TCanvas("fCPower","Power",50,110,400,300);
