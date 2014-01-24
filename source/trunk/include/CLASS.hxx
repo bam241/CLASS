@@ -148,6 +148,8 @@ protected :
 	IsotopicVector	fTotalCooling;		///< Sum of all IV in Cooling IV
 	IsotopicVector	fFuelFabrication;	///< Sum of all IV in Fabrication IV
 	IsotopicVector	fTotalInReactor;	///< Sum of all IV in Reactor IV
+
+
 	IsotopicVector	fIVInCycleTotal;	///< Summ of all IV in the cycle (without Waste) IV
 	IsotopicVector	fIVTotal;		///< Summ of all IV in the parc (including Waste) IV
 	double		fParcPower;		///< Summ of the Power of all reactor in the parc

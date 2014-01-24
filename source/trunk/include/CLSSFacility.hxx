@@ -41,7 +41,9 @@ public :
 	cSecond 	GetCreationTime()	const	{ return fCreationTime; }	//!< Return the creation time of the Facility
 	cSecond 	GetLifeTime()		const	{ return fLifeTime; }		//!< Return the life time of the Facility
 	CLASS*		GetParc()			{ return fParc; }
-		
+	IsotopicVector GetCumulativeIVIn(IsotopicVector IV) { return fCumulativeIVIn;}
+	IsotopicVector GetCumulativeIVOut(IsotopicVector IV) { return fCumulativeIVOut;}
+
 	
 		//********* Set Method *********//
 	void SetId(int id)			{ fId = id; }				//!< Set The Facility Parc'Id
@@ -54,7 +56,9 @@ public :
 	void SetInCycleTime(double incycletime)		{ fInCycleTime = (cSecond)incycletime; fIsStarted = true; }	//!< Set the cycle time (Cycle of the loading Plan)
 	void SetInternalTime(double internaltime)	{ fInternalTime = (cSecond)internaltime; }	//!< Set the cycle time (Cycle of the loading Plan)
 	
-	
+	void AddCumulativeIVIn(IsotopicVector IV) { fCumulativeIVIn += IV;}
+	void AddCumulativeIVOut(IsotopicVector IV) { fCumulativeIVOut += IV;}
+
 		//********* Modification Method *********//
 	virtual void Evolution(cSecond t)	{ }	//!< Performe the Evolution to the Time t
 	virtual void Dump()			{ }			//!< Write Modification (IV In/Out, filling the TF...)
@@ -71,7 +75,9 @@ protected :
 	cSecond		fCycleTime;		///< Cycle Time
 
 	IsotopicVector	fInsideIV;		///< All IV in the Facility (fuel for reactor, total for all others...)
-	
+	IsotopicVector	fCumulativeIVIn;		///< All IV in the Facility (fuel for reactor, total for all others...)
+	IsotopicVector	fCumulativeIVOut;		///< All IV in the Facility (fuel for reactor, total for all others...)
+
 
 		//********* Internal Parameter *********//
 private :
