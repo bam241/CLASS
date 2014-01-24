@@ -117,11 +117,10 @@ void Storage::TakeFractionFromStock(int IVId,double fraction)
 		}
 		else 
 		{
+			AddCumulativeIVOut(fIVStock[IVId]*fraction);
+
 			fInsideIV -= fIVStock[IVId]*fraction;
 			fIVStock[IVId] = fIVStock[IVId]*(1-fraction);
-
-			AddCumulativeIVOut(fIVStock[IVId]*fraction);
-			
 		}
 
 	}

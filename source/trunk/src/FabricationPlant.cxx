@@ -148,8 +148,10 @@ void FabricationPlant::Evolution(cSecond t)
 void FabricationPlant::FabricationPlantEvolution(cSecond t)
 {
 	
-	
-	
+	IsotopicVector EmptyIV;
+	fInsideIV = EmptyIV;
+
+
 	map<int ,cSecond >::iterator it;
 	for( it = fReactorNextStep.begin(); it!= fReactorNextStep.end(); it++ )
 	{
@@ -167,6 +169,8 @@ void FabricationPlant::FabricationPlantEvolution(cSecond t)
 				map<int ,IsotopicVector >::iterator it2 = fReactorFuturIV.find( (*it).first );
 				if (it2 != fReactorFuturIV.end())
 					(*it2).second = GetDecay((*it2).second, t - fInternalTime );
+
+				fInsideIV += (*it2).second;
 			}
 		}
 	}
@@ -361,6 +365,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 						IResult.first->second = IVBeginCycle;
 
 					AddCumulativeIVIn(IVBeginCycle);
+					fInsideIV += IVBeginCycle;
 
 
 				}
@@ -441,6 +446,8 @@ void FabricationPlant::TakeReactorFuel(int Id)
 	IsotopicVector IV;
 	map<int ,IsotopicVector >::iterator it2 = fReactorFuturIV.find( Id );
 	AddCumulativeIVOut(it2->second);
+	fInsideIV -= (*it2).second;
+
 
 	if (it2 != fReactorFuturIV.end())
 		(*it2).second = IV;
