@@ -568,12 +568,12 @@ void MainWin::Plot()
 		{
 			if(fCheckArrayReactor[i][j]->GetState()==kButtonDown)
 			{	
-				for(int l =0;l<3;l++)
+				for(int l=0;l<3;l++)
 					if (fCheckIVPlot[l]->GetState()==kButtonDown)
 				for(int k=0; k < Nnucleus; k++)
-				{
+				{	
 					if(fCheckArrayNuc[k]->GetState()==kButtonDown)
-						toplot.push_back( CLASSPlotElement(i, 1, j,l, fDATA->GetZAIvector()[k]));
+						toplot.push_back( CLASSPlotElement(i,1,j,l, fDATA->GetZAIvector()[k]));
 				}
 			}	
 		}
