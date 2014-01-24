@@ -146,7 +146,7 @@ IsotopicVector Pool::GetDecay(IsotopicVector isotopicvector, cSecond t)
 //________________________________________________________________________
 //	Add Temporary IV : 
 //		Cooling
-//		Separation
+//		
 //________________________________________________________________________
 void Pool::AddIVCooling(IsotopicVector IV)
 { 
@@ -156,12 +156,16 @@ void Pool::AddIVCooling(IsotopicVector IV)
 	fCoolingStartingTime.push_back(fInternalTime);
 	fCoolingLastIndex++;
 	fCoolingIndex.push_back(fCoolingLastIndex);
+
+	AddCumulativeIVIn(IV);
+
 }
 
 
 //________________________________________________________________________
 void Pool::RemoveIVCooling(int i)		//!< Remove a Cooling IsotopicVector
 {
+	AddCumulativeIVOut(fIVCooling[i]);
 
 	fIVCooling.erase(fIVCooling.begin()+i);
 	fCoolingStartingTime.erase(fCoolingStartingTime.begin()+i);
@@ -266,7 +270,7 @@ void Pool::Dump()
 			fStorage->AddToStock(fIVCooling[idx]);
 		else
 			GetParc()->AddWaste(fIVCooling[idx]);
-		
+
 		fCoolingEndOfCycle.erase(fCoolingEndOfCycle.begin()+i);	// Remove index entry
 		RemoveIVCooling(idx);					// Remove IVcooling
 	}

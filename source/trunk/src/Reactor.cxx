@@ -418,7 +418,10 @@ void Reactor::Dump()
 			fEndOfCycle = false;
 
 			if(fIsStarted == true )					// A Cycle has already been done
+			{
 				fAssociedPool->AddIVCooling(fInsideIV);
+				GetCumulativeIVOut(fInsideIV);
+			}
 			else fIsStarted = true;					// Just start the first cycle
 
 			if(GetParc()->GetStockManagement() == false && fIsStorage == true)
@@ -441,12 +444,15 @@ void Reactor::Dump()
 			else	GetParc()->AddGod(fIVInCycle);
 
 			fInsideIV  = fIVBeginCycle;
+			AddCumulativeIVIn(fIVBeginCycle);
+
 			fInCycleTime = 0;
 		}
 		else if (fEndOfCycle == true && fShutDown == true)		//shutdown at end of Cycle
 		{
 
 			fAssociedPool->AddIVCooling(fIVOutCycle);
+			GetCumulativeIVOut(fIVOutCycle);
 			fInsideIV.Clear();
 			fInCycleTime = 0;
 			fIsStarted = false;		// shut down the Reactor
@@ -454,6 +460,7 @@ void Reactor::Dump()
 		else if (fEndOfCycle == false && fShutDown == true) 					//shutdown during Cycle
 		{
 			fAssociedPool->AddIVCooling(fInsideIV);
+			GetCumulativeIVOut(fInsideIV);
 			fInsideIV.Clear();
 			fInCycleTime = 0;
 			fIsStarted = false;		// shut down the Reactor
@@ -476,6 +483,7 @@ void Reactor::Dump()
 			if(fIsStarted == true )					// A Cycle has already been done
 			{
 				fAssociedPool->AddIVCooling(fIVOutCycle);
+				GetCumulativeIVOut(fIVOutCycle);
 			}
 			else fIsStarted = true;					// Just start the first cycle
 
@@ -484,12 +492,15 @@ void Reactor::Dump()
 
 
 			fInsideIV  = fIVBeginCycle;
+			AddCumulativeIVIn(fIVBeginCycle);
+
 			fInCycleTime = 0;
 
 		}
 		else if (fEndOfCycle == true && fShutDown == true)		//shutdown at end of Cycle
 		{
 			fAssociedPool->AddIVCooling(fIVOutCycle);
+			GetCumulativeIVOut(fIVOutCycle);
 			fInsideIV.Clear();
 			fInCycleTime = 0;
 			fIsStarted = false;		// shut down the Reactor
@@ -497,6 +508,7 @@ void Reactor::Dump()
 		else if (fEndOfCycle == false && fShutDown == true) 					//shutdown during Cycle
 		{
 			fAssociedPool->AddIVCooling(fInsideIV);
+			GetCumulativeIVOut(fInsideIV);
 			fInsideIV.Clear();
 			fInCycleTime = 0;
 			fIsStarted = false;		// shut down the Reactor

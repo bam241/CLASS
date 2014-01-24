@@ -96,6 +96,8 @@ void Storage::ClearStock()
 void Storage::AddToStock(IsotopicVector isotopicvector)
 {
 
+	AddCumulativeIVIn(isotopicvector);
+
 	if(GetParc()->GetStockManagement() == true)
 		fIVStock.push_back(isotopicvector);
 	AddToFullStock(isotopicvector);
@@ -117,6 +119,8 @@ void Storage::TakeFractionFromStock(int IVId,double fraction)
 		{
 			fInsideIV -= fIVStock[IVId]*fraction;
 			fIVStock[IVId] = fIVStock[IVId]*(1-fraction);
+
+			AddCumulativeIVOut(fIVStock[IVId]*fraction);
 			
 		}
 
@@ -137,7 +141,11 @@ void Storage::TakeFromStock(IsotopicVector isotopicvector)
 {
 
 	if(GetParc()->GetStockManagement() == false)
+	{
+
+		AddCumulativeIVOut(isotopicvector);
 		fInsideIV -= isotopicvector;
+	}
 	else
 	{
 		cout << "!!Warning!! !!!Storage!!! TakeFromStock can't be DEFINE WITH REAL stock management" << endl;

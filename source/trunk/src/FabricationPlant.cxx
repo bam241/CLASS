@@ -359,6 +359,10 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 					IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId,IVBeginCycle) );
 					if(IResult.second == false)
 						IResult.first->second = IVBeginCycle;
+
+					AddCumulativeIVIn(IVBeginCycle);
+
+
 				}
 			}
 		}
@@ -436,9 +440,11 @@ void FabricationPlant::TakeReactorFuel(int Id)
 	
 	IsotopicVector IV;
 	map<int ,IsotopicVector >::iterator it2 = fReactorFuturIV.find( Id );
+	AddCumulativeIVOut(it2->second);
+
 	if (it2 != fReactorFuturIV.end())
 		(*it2).second = IV;
-	
+
 }
 
 	//________________________________________________________________________
