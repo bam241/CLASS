@@ -772,43 +772,36 @@ string CLASSRead::GetLegendOutName(CLASSPlotElement toplot)
 			case 1:
 				name = "P_{" + itoa(toplot.fTreeId) + "} INcl ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
-				return name;
 				break;
 
 			case 2:
 				name = "P_{" + itoa(toplot.fTreeId) + "} Wst ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
-				return name;
 				break;
 
 			case 3:
 				name = "P_{" + itoa(toplot.fTreeId) + "} GOD ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
-				return name;
 				break;
 
 			case 4:
 				name = "P_{" + itoa(toplot.fTreeId) + "} R_{tot} ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
-				return name;
 				break;
 
 			case 5:
 				name = "P_{" + itoa(toplot.fTreeId) + "} Pl_{tot} ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
-				return name;
 				break;
 
 			case 6:
 				name = "P_{" + itoa(toplot.fTreeId) + "} Stk_{tot} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
-				return name;
 				break;
 
 			case 7:
 				name = "P_{" + itoa(toplot.fTreeId) + "} FP_{tot} ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
-				return name;
 				break;
 
 			default:
