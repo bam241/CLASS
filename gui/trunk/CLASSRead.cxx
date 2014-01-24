@@ -484,11 +484,11 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 
 				double ZAIQuantity = 0;
 
-				if( toplot.fIVNumber == 0 )
+				if( toplot[i].fIVNumber == 0 )
 					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot.fIVNumber == 1 )
+				else if( toplot[i].fIVNumber == 1 )
 					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot.fIVNumber == 2 )
+				else if( toplot[i].fIVNumber == 2 )
 					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				else
 				{
@@ -510,11 +510,11 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 
 				double ZAIQuantity = 0;
 
-				if( toplot.fIVNumber == 0 )
+				if( toplot[i].fIVNumber == 0 )
 					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot.fIVNumber == 1 )
+				else if( toplot[i].fIVNumber == 1 )
 					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot.fIVNumber == 2 )
+				else if( toplot[i].fIVNumber == 2 )
 					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				else
 				{
@@ -537,11 +537,11 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				
 				double ZAIQuantity = 0;
 
-				if( toplot.fIVNumber == 0 )
+				if( toplot[i].fIVNumber == 0 )
 					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot.fIVNumber == 1 )
+				else if( toplot[i].fIVNumber == 1 )
 					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot.fIVNumber == 2 )
+				else if( toplot[i].fIVNumber == 2 )
 					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				else
 				{
@@ -564,11 +564,11 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				
 				double ZAIQuantity = 0;
 
-				if( toplot.fIVNumber == 0 )
+				if( toplot[i].fIVNumber == 0 )
 					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot.fIVNumber == 1 )
+				else if( toplot[i].fIVNumber == 1 )
 					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot.fIVNumber == 2 )
+				else if( toplot[i].fIVNumber == 2 )
 					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				else
 				{
