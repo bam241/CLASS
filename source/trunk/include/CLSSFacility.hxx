@@ -41,8 +41,8 @@ public :
 	cSecond 	GetCreationTime()	const	{ return fCreationTime; }	//!< Return the creation time of the Facility
 	cSecond 	GetLifeTime()		const	{ return fLifeTime; }		//!< Return the life time of the Facility
 	CLASS*		GetParc()			{ return fParc; }
-	IsotopicVector GetCumulativeIVIn(IsotopicVector IV) { return fCumulativeIVIn;}
-	IsotopicVector GetCumulativeIVOut(IsotopicVector IV) { return fCumulativeIVOut;}
+	IsotopicVector GetCumulativeIVIn() { return fCumulativeIVIn;}
+	IsotopicVector GetCumulativeIVOut() { return fCumulativeIVOut;}
 
 	
 		//********* Set Method *********//
