@@ -13,7 +13,7 @@ CLASSPlotElement::CLASSPlotElement(int treeId, int facilityId, int facylitynumbe
 	fTreeId = treeId;
 	fFacilityId = facilityId;
 	fFacylityNumber = facylitynumber;
-	fIVNumber = facylitynumber;
+	fIVNumber = IVNumber;
 	fZAI = zai;
 	
 }
@@ -25,7 +25,7 @@ CLASSPlotElement::CLASSPlotElement(int treeId, int facilityId, int facylitynumbe
 	fTreeId = treeId;
 	fFacilityId = facilityId;
 	fFacylityNumber = facylitynumber;
-	fIVNumber = facylitynumber;
+	fIVNumber = IVNumber;
 	fZAI = ZAI(Z,A,I);
 	
 }
