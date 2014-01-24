@@ -467,6 +467,7 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				int A = toplot[i].fZAI.A();
 				int I = toplot[i].fZAI.I();
 				double ZAIQuantity = IV[toplot[i].fFacylityNumber]->GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+
 				vQuantity[i].push_back(ZAIQuantity);
 				
 
@@ -481,7 +482,20 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				int A = toplot[i].fZAI.A();
 				int I = toplot[i].fZAI.I();
 
-				double ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				double ZAIQuantity = 0;
+
+				if( toplot.fIVNumber == 0 )
+					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot.fIVNumber == 1 )
+					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot.fIVNumber == 2 )
+					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else
+				{
+					cout << "Bad IVNumber" << endl;
+					break;
+				}
+
 				vQuantity[i].push_back(ZAIQuantity);
 
 				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
@@ -494,7 +508,20 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				int A = toplot[i].fZAI.A();
 				int I = toplot[i].fZAI.I();
 
-				double ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				double ZAIQuantity = 0;
+
+				if( toplot.fIVNumber == 0 )
+					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot.fIVNumber == 1 )
+					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot.fIVNumber == 2 )
+					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else
+				{
+					cout << "Bad IVNumber" << endl;
+					break;
+				}
+
 				vQuantity[i].push_back(ZAIQuantity);
 
 
@@ -508,8 +535,22 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				int A = toplot[i].fZAI.A();
 				int I = toplot[i].fZAI.I();
 				
-				double ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				double ZAIQuantity = 0;
+
+				if( toplot.fIVNumber == 0 )
+					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot.fIVNumber == 1 )
+					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot.fIVNumber == 2 )
+					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else
+				{
+					cout << "Bad IVNumber" << endl;
+					break;
+				}
+
 				vQuantity[i].push_back(ZAIQuantity);
+
 
 				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
@@ -521,7 +562,20 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				int A = toplot[i].fZAI.A();
 				int I = toplot[i].fZAI.I();
 				
-				double ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				double ZAIQuantity = 0;
+
+				if( toplot.fIVNumber == 0 )
+					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot.fIVNumber == 1 )
+					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot.fIVNumber == 2 )
+					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else
+				{
+					cout << "Bad IVNumber" << endl;
+					break;
+				}
+
 				vQuantity[i].push_back(ZAIQuantity);
 
 				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
@@ -695,92 +749,114 @@ string CLASSRead::GetBranchInName(CLASSPlotElement toplot)
 string CLASSRead::GetLegendOutName(CLASSPlotElement toplot)
 {
 	string name;
-	
+
 	switch (toplot.fFacilityId)
 	{
 		case -2:
 			name = "P_{" + itoa(toplot.fTreeId) + "} POWER ";
 			return name;
-		break;
-		
+			break;
+
 		case 0:
 			switch (toplot.fFacylityNumber)
 		{
-			
-			
+
+
 
 			case 0:
 				name = "P_{" + itoa(toplot.fTreeId) + "} TOT ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 				return name;
 				break;
-				
+
 			case 1:
 				name = "P_{" + itoa(toplot.fTreeId) + "} INcl ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 				return name;
 				break;
-				
+
 			case 2:
 				name = "P_{" + itoa(toplot.fTreeId) + "} Wst ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 				return name;
 				break;
-				
+
 			case 3:
 				name = "P_{" + itoa(toplot.fTreeId) + "} GOD ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 				return name;
 				break;
-				
+
 			case 4:
 				name = "P_{" + itoa(toplot.fTreeId) + "} R_{tot} ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 				return name;
 				break;
-				
+
 			case 5:
 				name = "P_{" + itoa(toplot.fTreeId) + "} Pl_{tot} ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 				return name;
 				break;
-				
+
 			case 6:
 				name = "P_{" + itoa(toplot.fTreeId) + "} Stk_{tot} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 				return name;
 				break;
-				
+
 			case 7:
 				name = "P_{" + itoa(toplot.fTreeId) + "} FP_{tot} ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 				return name;
 				break;
-				
+
 			default:
 				break;
 		}
+			switch (toplot.fIVNumber)
+		{
+
+			case 0:
+				name+= " Inside";
+				return name;
+				break;
+
+			case 1:
+				name+= " CumuIN";
+				return name;
+				break;
+
+			case 2:
+				name+= " CumuOUT";
+				return name;
+				break;
+
+			default:
+				break;
+
+		}
 			break;
-			
+
 		case 1:
-			 name = "P_{" + itoa(toplot.fTreeId) + "} R_{" + itoa(toplot.fFacylityNumber)+ "} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
+			name = "P_{" + itoa(toplot.fTreeId) + "} R_{" + itoa(toplot.fFacylityNumber)+ "} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
 			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 			return name;
 			break;
-			
+
 		case 2:
 			name = "P_{" + itoa(toplot.fTreeId) + "} Stk_{" + itoa(toplot.fFacylityNumber) + "} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
 			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 			return name;
 			break;
-			
+
 		case 3:
 			name = "P_{" + itoa(toplot.fTreeId) + "} Pl_{" + itoa(toplot.fFacylityNumber) + "} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
 			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 			return name;
-			
+
 			break;
-			
+
 		case 4:
 			name = "P_{" + itoa(toplot.fTreeId) + "} FP_{" + itoa(toplot.fFacylityNumber) + "} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
 			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
@@ -791,6 +867,10 @@ string CLASSRead::GetLegendOutName(CLASSPlotElement toplot)
 		default:
 			break;
 	}
+	
+
+
+
 	return name;
 	
 }
