@@ -176,7 +176,7 @@ void MainWin::Start(vector<string> VFileName)
 	// the Main frame where all will be insert
 	//
 	
-	fGeneF0 = new TGVerticalFrame(this, 200, 150);
+	fGeneF0 = new TGVerticalFrame(this, 250, 150);
 	AddFrame(fGeneF0, fL5555);
 	SetHeight(220);
 	SetWidth(160);
@@ -259,8 +259,27 @@ void MainWin::Start(vector<string> VFileName)
 	for(int j = 0; j < 5; j++)
 	FillItemTab(j);
 
+	fMiscenalanus = new TGHorizontalFrame(fGeneF0, 400, 50 );
+	fGeneF0->AddFrame(fMiscenalanus,fL5555);
 
-	
+	fCheckIVPlot = new TGCheckButton*[3];
+
+	fCheckIVPlot[0] = new TGCheckButton(fMiscenalanus,"Inside");
+	fCheckIVPlot[0]->SetFont(fLabelFontS);
+	fMiscenalanus->AddFrame(fCheckIVPlot[0],fL2222);
+	fCheckIVPlot[0]->Associate(this);
+
+
+	fCheckIVPlot[1] = new TGCheckButton(fMiscenalanus,"Cumul In");
+	fCheckIVPlot[1]->SetFont(fLabelFontS);
+	fMiscenalanus->AddFrame(fCheckIVPlot[1],fL2222);
+	fCheckIVPlot[1]->Associate(this);
+
+	fCheckIVPlot[2] = new TGCheckButton(fMiscenalanus,"Cumul out");
+	fCheckIVPlot[2]->SetFont(fLabelFontS);
+	fMiscenalanus->AddFrame(fCheckIVPlot[2],fL2222);
+	fCheckIVPlot[2]->Associate(this);
+
 	//1 jeu de NucleusTab pour tous
 	
 	//
@@ -346,7 +365,7 @@ void MainWin::Start(vector<string> VFileName)
 	Move(410,30);
 	fMainWidth=fGeneF0->GetWidth();
 	
-	Resize(550,750  ); 					// fit to the exact size
+	Resize(550,780); 					// fit to the exact size
 
 
 }
@@ -520,11 +539,12 @@ void MainWin::Plot()
 	vector<CLASSPlotElement> toplot;
 	vector<CLASSPlotElement> toplotPower;
 
+
 	//Power
 	for(int i=0; i < fNumberOfParc; i++)
 	{
 		if(fCheckArrayTotal[i][fNumberOfTOT-1]->GetState()==kButtonDown)
-			toplotPower.push_back( CLASSPlotElement(i, -2, -2, -2,-2,-2) );
+			toplotPower.push_back( CLASSPlotElement(i, -2, -2, -2,-2,-2,-2) );
 
 	}
 
@@ -540,48 +560,57 @@ void MainWin::Plot()
 				for(int k=0; k < Nnucleus; k++)
 				{
 					if(fCheckArrayNuc[k]->GetState()==kButtonDown)
-						toplot.push_back( CLASSPlotElement(i, 0, j, fDATA->GetZAIvector()[k]));
+						toplot.push_back( CLASSPlotElement(i, 0, j,0, fDATA->GetZAIvector()[k]));
 				}
 		}
 		
 		for(int j=0; j < fNumberOfReactor[i]; j++)
 		{
 			if(fCheckArrayReactor[i][j]->GetState()==kButtonDown)
+			{	
+				for(int l =0;l<3;l++)
+					if (fCheckIVPlot[l]->GetState()==kButtonDown)
 				for(int k=0; k < Nnucleus; k++)
 				{
 					if(fCheckArrayNuc[k]->GetState()==kButtonDown)
-						toplot.push_back( CLASSPlotElement(i, 1, j, fDATA->GetZAIvector()[k]));
+						toplot.push_back( CLASSPlotElement(i, 1, j,l, fDATA->GetZAIvector()[k]));
 				}
-
+			}	
 		}
 		
 		for(int j=0; j < fNumberOfStock[i]; j++)
 		{
 			if(fCheckArrayStock[i][j]->GetState()==kButtonDown)
+				for(int l =0;l<3;l++)
+					if (fCheckIVPlot[l]->GetState()==kButtonDown)
 				for(int k=0; k < Nnucleus; k++)
 				{
 					if(fCheckArrayNuc[k]->GetState()==kButtonDown)
-						toplot.push_back( CLASSPlotElement(i, 2, j, fDATA->GetZAIvector()[k]));
+						toplot.push_back( CLASSPlotElement(i, 2, j,l, fDATA->GetZAIvector()[k]));
 				}
 		}
 		
 		for(int j=0; j < fNumberOfPool[i]; j++)
 		{
 			if(fCheckArrayPool[i][j]->GetState()==kButtonDown)
+				for(int l =0;l<3;l++)
+					if (fCheckIVPlot[l]->GetState()==kButtonDown)
 				for(int k=0; k < Nnucleus; k++)
 				{
 					if(fCheckArrayNuc[k]->GetState()==kButtonDown)
-						toplot.push_back( CLASSPlotElement(i, 3, j, fDATA->GetZAIvector()[k]));
+						toplot.push_back( CLASSPlotElement(i, 3, j,l, fDATA->GetZAIvector()[k]));
 				}
 		}
 		
 		for(int j=0; j < fNumberOfFab[i]; j++)
 		{
 			if(fCheckArrayFab[i][j]->GetState()==kButtonDown)
+				for(int l =0;l<3;l++)
+					if (fCheckIVPlot[l]->GetState()==kButtonDown)
 				for(int k=0; k < Nnucleus; k++)
 				{
 					if(fCheckArrayNuc[k]->GetState()==kButtonDown)
-						toplot.push_back( CLASSPlotElement(i, 4, j, fDATA->GetZAIvector()[k]));
+						toplot.push_back( CLASSPlotElement(i, 4, j,l, fDATA->GetZAIvector()[k]));
 				}
 		}
 	}
