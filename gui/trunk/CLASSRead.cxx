@@ -66,7 +66,7 @@ int CurveColor(int graph_num)
 	int ColorTable[]={1,kBlue,kRed,kGreen+1,kMagenta,kCyan+2,kOrange-3,kRed+2,kBlue-2,
 		kSpring+9,kGreen+3,kAzure+8,kMagenta+2,kYellow+2,kBlue-9,kOrange+2};
 	return ColorTable[graph_num%16];
-	
+
 }
 
 string itoa(int num)
@@ -79,13 +79,13 @@ string itoa(int num)
 CLASSRead::CLASSRead(TString filename)
 {
 	fFileIn = TFile::Open(filename);
-	
+
 	for( int i =0; i < fFileIn->GetNkeys(); i++)
 	{
 		//cout<<"KeyNum "<<i<<endl;
 		fData.push_back( (TTree*)gDirectory->Get(fFileIn->GetListOfKeys()->At(fFileIn->GetNkeys()-1)->GetName() ) );
 	}
-	
+
 	fCNuclei = 0;
 	fGraph = 0;
 	fLegend = 0;
@@ -106,9 +106,9 @@ CLASSRead::~CLASSRead()
 
 void CLASSRead::AddFile(TString filename)
 {
-	
+
 	fFileIn = TFile::Open(filename);
-	
+
 	for( int i =0; i < fFileIn->GetNkeys(); i++)
 	{
 		fData.push_back( (TTree*)gDirectory->Get(fFileIn->GetListOfKeys()->At(i)->GetName() ) );
@@ -126,7 +126,7 @@ void CLASSRead::ReadName()
 		vector<TString>	PoolName;
 		vector<TString>	FabricationName;
 		vector<TString>	StockName;
-		
+
 		Int_t nBranches = fData[j]->GetNbranches();
 		int place_reactor=0;
 		int place_pool=0;
@@ -141,7 +141,7 @@ void CLASSRead::ReadName()
 			string TypeName_1000 = Name;
 			string TypeName_10000 = Name;
 			string TypeName_100000 = Name;
-			
+
 			TypeName = TypeName.substr(0,TypeName.size()-2);
 			TypeName_100 = TypeName_100.substr(0,TypeName_100.size()-2);
 			TypeName_1000 = TypeName_1000.substr(0,TypeName_1000.size()-3);
@@ -151,22 +151,22 @@ void CLASSRead::ReadName()
 			if(TypeName=="Reactor"||TypeName_100=="Reactor"||TypeName_1000=="Reactor"||TypeName_10000=="Reactor"||TypeName_100000=="Reactor")
 			{
 				ReactorName.push_back(Name);
-				
+
 			}
 			else if(TypeName=="Pool"||TypeName_100=="Pool"||TypeName_1000=="Pool"||TypeName_10000=="Pool"||TypeName_100000=="Pool")
 			{
 				PoolName.push_back(Name);
-				
+
 			}
 			else if(TypeName=="Storage"||TypeName_100=="Storage"||TypeName_1000=="Storage"||TypeName_10000=="Storage"||TypeName_100000=="Storage")
 			{
 				StockName.push_back(Name);
-				
+
 			}
 			else if(TypeName=="FabricationPlant"||TypeName_100=="FabricationPlant"||TypeName_1000=="FabricationPlant"||TypeName_10000=="FabricationPlant"||TypeName_100000=="FabricationPlant")
 			{
 				FabricationName.push_back(Name);
-				
+
 			}
 		}
 		fReactorName.push_back(ReactorName);
@@ -174,8 +174,8 @@ void CLASSRead::ReadName()
 		fFabricationName.push_back(FabricationName);
 		fStockName.push_back(StockName);
 	}
-	
-	
+
+
 }
 
 
@@ -188,23 +188,23 @@ void CLASSRead::ReadZAI()
 		IsotopicVector *IVIn=0;
 		fData[i]->SetBranchStatus("TOTAL.",1);
 		fData[i]->SetBranchAddress("TOTAL.", &IVIn);
-		
+
 		Long64_t nentries = fData[i]->GetEntries();
-		
+
 		fData[i]->GetEntry(nentries-1);
 		IVTot += (*IVIn);
-		
+
 		fData[i]->ResetBranchAddresses();
 	}
 	fZAIvector = IVTot.GetZAIList();
 
-	
+
 }
 
 
 void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 {
-	
+
 	if(fGraph)
 	{
 		for(int i=0; i < fNumberGraphIterator;i++) delete fGraph[i];
@@ -218,7 +218,7 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 	if(fCNuclei && gROOT->FindObject("c_Nuclei"))
 	{	delete fCNuclei;
 		fCNuclei=0;
-	}	
+	}
 	fCNuclei = new TCanvas("c_Nuclei","Nuclei",50,110,400,300);
 
 
@@ -244,7 +244,7 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 	{
 		toplotTTree[toplot[i].fTreeId].push_back(toplot[i]);
 	}
-	
+
 	string out = opt;
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
@@ -310,7 +310,7 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 	if(fCPower && gROOT->FindObject("fCPower"))
 	{	delete fCPower;
 		fCPower=0;
-	}	
+	}
 
 
 	fCPower = new TCanvas("fCPower","Power",50,110,400,300);
@@ -325,7 +325,7 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 	}
 
 	vector<CLASSPlotElement> toplotTTree[fData.size()];
-	
+
 	fNumberGraphPowerIterator = 0;
 	Xmin = +1.e36;
 	Xmax =  -1.e36;
@@ -333,13 +333,13 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 	Ymax = -1.e36;
 
 
-	
+
 
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
 		toplotTTree[toplot[i].fTreeId].push_back(toplot[i]);
 	}
-	
+
 	string out = opt;
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
@@ -393,7 +393,7 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 
 void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 {
-	
+
 	fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
 	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
 
@@ -401,36 +401,36 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 
 	string out = opt;
 	Long64_t nentries = fData[toplot[0].fTreeId]->GetEntries();
-	
+
 	Long64_t Time = 0;
 	fData[toplot[0].fTreeId]->SetBranchAddress("AbsTime", &Time);
-	
+
 	Reactor* reactor[fReactorName[toplot[0].fTreeId].size()];
 	for(int i = 0; i < (int)fReactorName[toplot[0].fTreeId].size(); i++ )
 		reactor[i] = 0;
-	
+
 	Pool* pool[fPoolName[toplot[0].fTreeId].size()];
 	for(int i = 0; i < (int)fPoolName[toplot[0].fTreeId].size(); i++ )
 		pool[i] = 0;
-	
+
 	FabricationPlant* fabricationplant[fFabricationName[toplot[0].fTreeId].size()];
 	for(int i = 0; i < (int)fFabricationName[toplot[0].fTreeId].size(); i++ )
 		fabricationplant[i] = 0;
-	
+
 	Storage* stock[fStockName[toplot[0].fTreeId].size()];
 	for(int i = 0; i < (int)fStockName[toplot[0].fTreeId].size(); i++ )
 		stock[i] = 0;
-	
+
 	IsotopicVector* IV[8];
 	for(int i = 0; i < 8; i++ )
 		IV[i] = 0;
-	
+
 	vector< double > vTime;
 	vector< double > vQuantity[toplot.size()];
-	
+
 	for (int i=0; i < (int)toplot.size(); i++)
 	{
-		
+
 		string InBranchName = GetBranchInName(toplot[i]);
 
 		string ActiveInBranchName = InBranchName + "*";
@@ -457,10 +457,10 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 
 		if(Xmin>vTime.back()) Xmin = vTime.back();
 		if(Xmax<vTime.back()) Xmax = vTime.back();
-		
+
 		for (int i=0; i < (int)toplot.size(); i++)
 		{
-			
+
 			if(toplot[i].fFacilityId == 0)
 			{
 				int Z = toplot[i].fZAI.Z();
@@ -469,9 +469,9 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				double ZAIQuantity = IV[toplot[i].fFacylityNumber]->GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 
 				vQuantity[i].push_back(ZAIQuantity);
-				
 
-				
+
+
 				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
 
@@ -527,14 +527,14 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 
 				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
-				
+
 			}
 			else if(toplot[i].fFacilityId == 3)
 			{
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
 				int I = toplot[i].fZAI.I();
-				
+
 				double ZAIQuantity = 0;
 
 				if( toplot[i].fIVNumber == 0 )
@@ -561,7 +561,7 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
 				int I = toplot[i].fZAI.I();
-				
+
 				double ZAIQuantity = 0;
 
 				if( toplot[i].fIVNumber == 0 )
@@ -580,29 +580,29 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 
 				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
-				
+
 			}
 		}
-		
-		
-	}
-	
 
-	
+
+	}
+
+
+
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
 		fGraph[fNumberGraphIterator] = new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]);
 		fNumberGraphIterator++;
 	}
-	
+
 	fData[toplot[0].fTreeId]->ResetBranchAddresses();
 	{
 		for(int i=0; i< (int)fReactorName[toplot[0].fTreeId].size(); i++) delete reactor[i];
-		
+
 		for(int i=0; i< (int)fPoolName[toplot[0].fTreeId].size(); i++) delete pool[i];
-		
+
 		for(int i=0; i< (int)fFabricationName[toplot[0].fTreeId].size(); i++) delete fabricationplant[i];
-		
+
 		for(int i=0; i< (int)fStockName[toplot[0].fTreeId].size(); i++) delete stock[i];
 		for(int i=0; i< 8; i++) delete IV[i];
 	}
@@ -614,7 +614,7 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 
 void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 {
-	
+
 	fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
 	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
 	fData[toplot[0].fTreeId]->SetBranchStatus("ParcPower", 1);
@@ -622,30 +622,30 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 
 	string out = opt;
 	Long64_t nentries = fData[toplot[0].fTreeId]->GetEntries();
-	
-	
+
+
 	Long64_t Time = 0;
 	fData[toplot[0].fTreeId]->SetBranchAddress("AbsTime", &Time);
 	double Power = 0;
 
 	fData[toplot[0].fTreeId]->SetBranchAddress("ParcPower", &Power);
 
-		
+
 	double  vTime[nentries];
 	double  vPower[nentries];
-	
-	
+
+
 
 	for (Long64_t  j = 0; j < nentries; j++)
 	{
 		fData[toplot[0].fTreeId]->GetEntry(j);
-		
+
 		vTime[j] = Time/3600./24./365.25;
 		vPower[j] = Power/1.e9;
 
 		if(Xmin>vTime[j]) Xmin = vTime[j];
 		if(Xmax<vTime[j]) Xmax = vTime[j];
-		
+
 		if(Ymin>vPower[j]) Ymin = vPower[j];
 		if(Ymax<vPower[j]) Ymax = vPower[j];
 	}
@@ -675,73 +675,73 @@ string CLASSRead::GetBranchInName(CLASSPlotElement toplot)
 				return name;
 				break;
 				break;
-				
+
 			case 1:
 				name = "INCYCLE.";
 				return name;
 				break;
-				
+
 			case 2:
 				name = "WASTE.";
 				return name;
 				break;
-				
+
 			case 3:
 				name = "GOD.";
 				return name;
 				break;
-				
+
 			case 4:
 				name = "REACTOR.";
 				return name;
 				break;
-				
+
 			case 5:
 				name = "COOLING.";
 				return name;
 				break;
-				
+
 			case 6:
 				name = "STOCK.";
 				return name;
 				break;
-				
+
 			case 7:
 				name = "FUELFABRICATION.";
 				return name;
 				break;
-				
+
 			default:
 				break;
 		}
 			break;
-			
+
 		case 1:
 			name = "Reactor" + itoa(toplot.fFacylityNumber) + ".";
 			return name;
 			break;
-			
+
 		case 2:
 			name = "Storage" + itoa(toplot.fFacylityNumber) + ".";
 			return name;
 			break;
-			
+
 		case 3:
 			name = "Pool" + itoa(toplot.fFacylityNumber) + ".";
 			return name;
-			
+
 			break;
-			
+
 		case 4:
 			name = "FabricationPlant" + itoa(toplot.fFacylityNumber) + ".";
 			return name;
 			break;
-			
-			
+
+
 		default:
 			break;
 	}
-	
+
 	return name;
 }
 
@@ -772,11 +772,13 @@ string CLASSRead::GetLegendOutName(CLASSPlotElement toplot)
 			case 1:
 				name = "P_{" + itoa(toplot.fTreeId) + "} INcl ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+				return name;
 				break;
 
 			case 2:
 				name = "P_{" + itoa(toplot.fTreeId) + "} Wst ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+				return name;
 				break;
 
 			case 3:
@@ -792,6 +794,7 @@ string CLASSRead::GetLegendOutName(CLASSPlotElement toplot)
 			case 5:
 				name = "P_{" + itoa(toplot.fTreeId) + "} Pl_{tot} ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+				return name;
 				break;
 
 			case 6:
@@ -802,76 +805,73 @@ string CLASSRead::GetLegendOutName(CLASSPlotElement toplot)
 			case 7:
 				name = "P_{" + itoa(toplot.fTreeId) + "} FP_{tot} ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
-				break;
-
-			default:
-				break;
-		}
-			switch (toplot.fIVNumber)
-		{
-
-			case 0:
-				name+= " Inside";
-				return name;
-				break;
-
-			case 1:
-				name+= " CumuIN";
-				return name;
-				break;
-
-			case 2:
-				name+= " CumuOUT";
 				return name;
 				break;
 
 			default:
 				break;
-
 		}
 			break;
 
 		case 1:
 			name = "P_{" + itoa(toplot.fTreeId) + "} R_{" + itoa(toplot.fFacylityNumber)+ "} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
 			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
-			return name;
 			break;
 
 		case 2:
 			name = "P_{" + itoa(toplot.fTreeId) + "} Stk_{" + itoa(toplot.fFacylityNumber) + "} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
 			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
-			return name;
 			break;
 
 		case 3:
 			name = "P_{" + itoa(toplot.fTreeId) + "} Pl_{" + itoa(toplot.fFacylityNumber) + "} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
 			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
-			return name;
 
 			break;
 
 		case 4:
 			name = "P_{" + itoa(toplot.fTreeId) + "} FP_{" + itoa(toplot.fFacylityNumber) + "} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
 			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
-			return name;
 			break;
-			
-			
+
+
 		default:
 			break;
 	}
-	
+
+	switch (toplot.fIVNumber)
+	{
+
+		case 0:
+			name+= " Inside";
+			return name;
+			break;
+
+		case 1:
+			name+= " CumuIN";
+			return name;
+			break;
+
+		case 2:
+			name+= " CumuOUT";
+			return name;
+			break;
+
+		default:
+			break;
+
+	}
 
 
 
 	return name;
-	
+
 }
 
 string CLASSRead::GetTittleOutName(CLASSPlotElement toplot)
 {
 	string name;
-	
+
 	switch (toplot.fFacilityId)
 	{
 		case 0:
@@ -882,63 +882,63 @@ string CLASSRead::GetTittleOutName(CLASSPlotElement toplot)
 				return name;
 				break;
 				break;
-				
+
 			case 1:
 				name = "PARC "+ itoa(toplot.fTreeId) +  "INCYCLE " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
-				
+
 			case 2:
 				name = "PARC "+ itoa(toplot.fTreeId) +  "WASTE " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
-				
+
 			case 3:
 				name = "PARC "+ itoa(toplot.fTreeId) +  "GOD " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
-				
+
 			case 4:
 				name = "PARC "+ itoa(toplot.fTreeId) +  "REACTOR " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
-				
+
 			case 5:
 				name = "PARC "+ itoa(toplot.fTreeId) +  "COOLING " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
-				
+
 			case 6:
 				name = "PARC "+ itoa(toplot.fTreeId) +  "STOCK " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
-				
+
 			case 7:
 				name = "PARC "+ itoa(toplot.fTreeId) +  "FUELFABRICATION " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
-				
+
 			default:
 				break;
 		}
 			break;
-			
+
 		case 1:
 			name = "PARC "+ itoa(toplot.fTreeId) +  "Reactor " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 			return name;
 			break;
-			
+
 		case 2:
 			name = "PARC "+ itoa(toplot.fTreeId) +  "Storage " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 			return name;
 			break;
-			
+
 		case 3:
 			name = "PARC "+ itoa(toplot.fTreeId) +  "Cooling " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 			return name;
-			
+
 			break;
-			
+
 		case 4:
 			name = "PARC "+ itoa(toplot.fTreeId) +  "Fabrication " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 			return name;
