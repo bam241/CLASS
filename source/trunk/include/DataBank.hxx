@@ -79,7 +79,7 @@ public :
 
 	void SetDataFileName(string name)		{ fDataFileName = name;}		// Set the name of the reaction file
 	void SetDataDirectoryName(string name)		{ fDataDirectoryName = name;}		// Set the Path to the reaction file
-	void SetShartestHalfLife(double halflife)	{ fShorstestHalflife = halflife;}	// Set the Half Life cut
+	void SetShortestHalfLife(double halflife)	{ fShorstestHalflife = halflife;}	// Set the Half Life cut
 	void LoadFPYield(string SponfaneusYield, string ReactionYield);			//Build Fision Yields maps;
 
 
