@@ -18,8 +18,8 @@ class CLASSPlotElement
 {
 	public :
 	
-	CLASSPlotElement(int treeId, int facilityId, int facylitynumber, ZAI zai);
-	CLASSPlotElement(int treeId, int facilityId, int facylitynumber, int Z, int A, int I);
+	CLASSPlotElement(int treeId, int facilityId, int facylitynumber, int IVNumber, ZAI zai);
+	CLASSPlotElement(int treeId, int facilityId, int facylitynumber, int IVNumber, int Z, int A, int I);
 	
 	virtual ~CLASSPlotElement(){}		//@- destructor
 	
@@ -30,7 +30,12 @@ class CLASSPlotElement
 				// 2 Stock
 				// 3 Pool
 				// 4 FabricationPlant
-		
+
+	int fIVNumber;	// Id of IsotopicVector
+			// 0 Incycle
+			// 1 CumulativeIN
+			// 2 CulumativeOUT
+
 	int fFacylityNumber;	// Id of Facility
 				// For General :
 				// 0 TOTAL
