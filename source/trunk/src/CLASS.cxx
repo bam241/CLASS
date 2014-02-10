@@ -417,7 +417,7 @@ void CLASS::BuildTimeVector(cSecond t)
 
 void CLASS::PoolEvolution()
 {
-	
+
 #pragma omp parallel for
 	for(int i = 0; i < (int) fPool.size();i++)
 		fPool[i]->Evolution(fAbsoluteTime);
@@ -429,27 +429,28 @@ void CLASS::PoolEvolution()
 
 void CLASS::StorageEvolution()
 {
-	
+
 #pragma omp parallel for
 	for(int i = 0; i < (int) fStorage.size();i++)
 		fStorage[i]->Evolution(fAbsoluteTime);
 	
-	
+
 }
 
 void CLASS::FabricationPlantEvolution()
 {
-	
+
+//#pragma omp parallel for
 	for(int i = 0; i < (int) fFabricationPlant.size();i++)
 		fFabricationPlant[i]->Evolution(fAbsoluteTime);
 	
-	
+
 }
 
 	//________________________________________________________________________
 void CLASS::ReactorEvolution()
 {
-	
+
 	fParcPower = 0;
 #pragma omp parallel for
 	for(int i = 0; i < (int)fReactor.size(); i++)
@@ -459,7 +460,7 @@ void CLASS::ReactorEvolution()
 	for(int i = 0; i < (int)fReactor.size(); i++)
 		fReactor[i]->Dump();
 	
-	
+
 }
 
 	//________________________________________________________________________
