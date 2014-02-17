@@ -287,11 +287,11 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 		for (int i = 0; i < (int)fNumberGraphIterator; i++)
 		{
 
-			for(int j = 0; j < fGraph[0]->GetN())
+			for(int j = 0; j < fGraph[i]->GetN(); j++)
 			{
 				double x;
 				double y;
-				fGraph[i]->GetPoint(fGraph[0]->GetN()-1, x, y);
+				fGraph[i]->GetPoint(fGraph[i]->GetN()-1, x, y);
 				if(i == 0)
 					X_Sum[j] = x;
 
