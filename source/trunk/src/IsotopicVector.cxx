@@ -248,7 +248,8 @@ IsotopicVector::IsotopicVector()
 	//________________________________________________________________________
 IsotopicVector::~IsotopicVector()
 {
-	
+	fIsotopicQuantity.clear();
+	fIsotopicQuantityNeeded.clear();
 }
 
 
