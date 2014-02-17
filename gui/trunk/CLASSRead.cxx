@@ -290,7 +290,9 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 			double y;
 			fGraph[i]->GetPoint(fGraph[0]->GetN()-1, x, y);
 			X_Sum[i] += x;
-			Y_Sum[i] += y;
+			
+			if(i == 0)
+				Y_Sum[i] = y;
 		}
 
 
