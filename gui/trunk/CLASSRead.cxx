@@ -90,10 +90,16 @@ CLASSRead::CLASSRead(TString filename)
 	fGraph = 0;
 	fLegend = 0;
 	fNumberGraphIterator = 0;
+	fhr = 0;
+	fGraphSumOfSelected = 0;
+	fLegendSumOfSelected = 0;
+
 
 	fCPower = 0;
 	fGraphPower = 0;
 	fLegendPower = 0;
+	fhrPower = 0;
+
 	fNumberGraphPowerIterator = 0;
 }
 
@@ -210,6 +216,13 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 		for(int i=0; i < fNumberGraphIterator;i++) delete fGraph[i];
 		delete [] fGraph;
 	}
+	if(fhr)
+	   delete fhr;
+	if(fLegendSumOfSelected)
+		delete fLegendSumOfSelected;
+	if(fGraphSumOfSelected)
+		delete fGraphSumOfSelected;
+
 	if(fLegend)
 	{
 		for(int i=0; i < fNumberGraphIterator;i++) delete fLegend[i];
@@ -240,6 +253,14 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 	Ymax = -1.e36;
 
 	fNumberGraphIterator = 0;
+	bool SumOfSelected = false;
+
+	if(toplot[0].fTreeId == -1 )
+	{
+		SumOfSelected = true;
+		toplot.erase(toplot.begin());
+	}
+
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
 		toplotTTree[toplot[i].fTreeId].push_back(toplot[i]);
@@ -255,19 +276,71 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 	}
 	fCNuclei->cd();
 
+	double X_Sum[fGraph[0]->GetN()];
+	double Y_Sum[fGraph[0]->GetN()];
 
-	TH1F *hr = fCNuclei->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
+	if(SumOfSelected)
+	{
+		for (int i = 0; i < (int)fNumberGraphIterator; i++)
+		{
+			double x;
+			double y;
+			fGraph[i]->GetPoint(fGraph[0]->GetN()-1, x, y);
+			X_Sum[i] += x;
+			Y_Sum[i] += y;
+		}
+
+
+		for (int i =0; i < fGraph[0]->GetN(); i++)
+		{
+			if(X_Sum[i] > Xmax) Xmax = X_Sum[i];
+			if(X_Sum[i] < Xmin) Xmin = X_Sum[i];
+			if(X_Sum[i] > Ymax) Ymax = X_Sum[i];
+			if(X_Sum[i] < Ymin) Xmin = X_Sum[i];
+		}
+	}
+
+
+
+	fhr = fCNuclei->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
 	string Xtitle="Time [year]";
 	string Ytitle="Mass [kg]";
-	hr->SetXTitle(Xtitle.c_str());
-	hr->SetYTitle(Ytitle.c_str());
-	hr->GetXaxis()->CenterTitle();
-	hr->GetYaxis()->CenterTitle();
-	hr->GetYaxis()->SetTitleOffset(1.25);
+	fhr->SetXTitle(Xtitle.c_str());
+	fhr->SetYTitle(Ytitle.c_str());
+	fhr->GetXaxis()->CenterTitle();
+	fhr->GetYaxis()->CenterTitle();
+	fhr->GetYaxis()->SetTitleOffset(1.25);
+
+
+	if(SumOfSelected)
+	{
+		fGraphSumOfSelected = new TGraph(fGraph[0]->GetN(), X_Sum, Y_Sum );
+		fGraphSumOfSelected->SetName("Sum_Of_Selected");
+		fGraphSumOfSelected->SetTitle("Sum Of Selected");
+		fGraphSumOfSelected->SetLineColor(CurveColor(fNumberGraphIterator));
+		fGraphSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphIterator));
+		fGraphSumOfSelected->SetMarkerStyle(10);
+		fGraphSumOfSelected->Draw(out.c_str());
+		fGraphSumOfSelected->SetLineColor(CurveColor(fNumberGraphIterator));
+		fGraphSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphIterator));
+
+		double x;
+		double y;
+		fGraphSumOfSelected->GetPoint(fGraphSumOfSelected->GetN()-1, x, y);
+
+		fLegendSumOfSelected = new TLatex(0.7*(x),1.05*(y),"Sum_Of_Selected");
+		fLegendSumOfSelected->SetTextSize(0.05);
+		fLegendSumOfSelected->SetTextFont(132);
+		fLegendSumOfSelected->SetTextColor(CurveColor(fNumberGraphIterator));
+		fLegendSumOfSelected->Draw();
+
+
+	}
+
 
 	for (int i = 0; i < (int)fNumberGraphIterator; i++)
 	{
-		if( i !=0 ) out += " same";
+		if( i !=0 || SumOfSelected) out += " same";
 
 		fGraph[i]->SetName(GetTittleOutName(toplot[i]).c_str());
 		fGraph[i]->SetTitle(GetTittleOutName(toplot[i]).c_str());
@@ -292,6 +365,8 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 	fCNuclei->Update();
 
 
+
+
 }
 
 void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
@@ -301,6 +376,9 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 		for(int i=0; i < fNumberGraphPowerIterator;i++) delete fGraphPower[i];
 		delete [] fGraphPower;
 	}
+	if(fhrPower)
+		delete fhrPower;
+
 	if(fLegendPower)
 	{
 		for(int i=0; i < fNumberGraphPowerIterator;i++) delete fLegendPower[i];
@@ -353,14 +431,14 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 
 	fCPower->cd();
 
-	TH1F *hr = fCPower->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
+	fhrPower= fCPower->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
 	string Xtitle="Time [year]";
 	string Ytitle="Total Thermal Power [GW]";
-	hr->SetXTitle(Xtitle.c_str());
-	hr->SetYTitle(Ytitle.c_str());
-	hr->GetXaxis()->CenterTitle();
-	hr->GetYaxis()->CenterTitle();
-	hr->GetYaxis()->SetTitleOffset(1.25);
+	fhrPower->SetXTitle(Xtitle.c_str());
+	fhrPower->SetYTitle(Ytitle.c_str());
+	fhrPower->GetXaxis()->CenterTitle();
+	fhrPower->GetYaxis()->CenterTitle();
+	fhrPower->GetYaxis()->SetTitleOffset(1.25);
 
 	for (int i = 0; i < (int)fNumberGraphPowerIterator; i++)
 	{
@@ -387,6 +465,8 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 		fLegendPower[i]->Draw();
 	}
 	fCPower->Update();
+
+	
 
 }
 
