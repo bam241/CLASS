@@ -90,7 +90,6 @@ CLASSRead::CLASSRead(TString filename)
 	fGraph = 0;
 	fLegend = 0;
 	fNumberGraphIterator = 0;
-	fhr = 0;
 	fGraphSumOfSelected = 0;
 	fLegendSumOfSelected = 0;
 
@@ -98,7 +97,6 @@ CLASSRead::CLASSRead(TString filename)
 	fCPower = 0;
 	fGraphPower = 0;
 	fLegendPower = 0;
-	fhrPower = 0;
 
 	fNumberGraphPowerIterator = 0;
 }
@@ -388,8 +386,6 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 		delete [] fGraphPower;
 	}
 
-	if(fhrPower)
-		delete fhrPower;
 
 	if(fLegendPower)
 	{
@@ -443,7 +439,7 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 
 	fCPower->cd();
 
-	fhrPower= fCPower->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
+	TH1F*	  fhrPower= fCPower->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
 	string Xtitle="Time [year]";
 	string Ytitle="Total Thermal Power [GW]";
 	fhrPower->SetXTitle(Xtitle.c_str());
