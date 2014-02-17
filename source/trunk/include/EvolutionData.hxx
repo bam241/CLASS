@@ -146,4 +146,8 @@ protected :
 	ClassDef(EvolutionData,0);
 };
 
+double 	Distance(IsotopicVector IV1, EvolutionData Evd1 );
+double 	Distance(EvolutionData Evd1, IsotopicVector IV1 );
+
+
 #endif

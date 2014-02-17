@@ -80,8 +80,9 @@ public :
 	void SetDataFileName(string name)		{ fDataFileName = name;}		// Set the name of the reaction file
 	void SetDataDirectoryName(string name)		{ fDataDirectoryName = name;}		// Set the Path to the reaction file
 	void SetShortestHalfLife(double halflife)	{ fShorstestHalflife = halflife;}	// Set the Half Life cut
-	void LoadFPYield(string SponfaneusYield, string ReactionYield);			//Build Fision Yields maps;
+	void LoadFPYield(string SponfaneusYield, string ReactionYield);				// Build Fision Yields maps;
 
+	void SetWeightedDistanceCalculation(bool val=true) { fWeightedDistance = val;}		// Set weighted Distance calculation
 
 //********* Modification Method *********//
 	
@@ -135,8 +136,10 @@ protected :
 	
  	string			fDataBaseIndex;
 
-	bool			fUseRK4EvolutionMethod;
-	bool			fOldReadMethod;
+	bool			fUseRK4EvolutionMethod; ///< if true use RK4 calculation, mtriciel unstead
+	bool			fOldReadMethod;		///< use old DB format
+	bool			fWeightedDistance;	///< USe XS weighted distance calculation
+
 
  	string 			fFuelType;
  	pair<double,double>	fBurnUpRange;
