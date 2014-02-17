@@ -37,6 +37,49 @@ string tlc(string data)
 	return data;
 }
 
+
+
+double 	Distance(IsotopicVector IV1, EvolutionData Evd1 )
+{
+
+	double d2=0;
+	IsotopicVector IV2 = Evd1.GetIsotopicVectorAt(0.);
+
+	IsotopicVector IVtmp = IV1 + IV2;
+	map<ZAI ,double> IVtmpIsotopicQuantity = IVtmp.GetIsotopicQuantity();
+	map<ZAI ,double >::iterator it;
+
+	double SumOfXs = 0;
+	for( it = IVtmpIsotopicQuantity.begin(); it != IVtmpIsotopicQuantity.end(); it++)
+	{
+
+		SumOfXs += Evd1.GetXSForAt(0., (*it).first, 1);
+		SumOfXs += Evd1.GetXSForAt(0., (*it).first, 2);
+		SumOfXs += Evd1.GetXSForAt(0., (*it).first, 3);
+
+	}
+
+
+
+
+	for( it = IVtmpIsotopicQuantity.begin(); it != IVtmpIsotopicQuantity.end(); it++)
+	{
+		double Z1 = IV1.GetZAIIsotopicQuantity( (*it).first );
+		double Z2 = IV2.GetZAIIsotopicQuantity( (*it).first );
+		double XS = Evd1.GetXSForAt(0., (*it).first, 1)
+			  + Evd1.GetXSForAt(0., (*it).first, 2)
+			  + Evd1.GetXSForAt(0., (*it).first, 3);
+
+		d2 += pow(Z1-Z2 , 2 ) * pow(XS,2);
+	}
+	return sqrt(d2)/SumOfXs;
+
+}
+
+double 	Distance(EvolutionData Evd1, IsotopicVector IV1 )
+{
+	return Distance(IV1,Evd1);
+}
 	//________________________________________________________________________
 	//________________________________________________________________________
 	//________________________________________________________________________

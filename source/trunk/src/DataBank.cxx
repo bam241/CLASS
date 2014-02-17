@@ -1284,13 +1284,23 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 {
 
 	map<IsotopicVector, EvolutionData > evolutiondb = fDataBank;
+	double distance = 0;
 
-	double distance = Distance(isotopicvector.GetActinidesComposition(),
+	if(fWeightedDistance)
+	{
+		distance = Distance(isotopicvector.GetActinidesComposition(),
+				   evolutiondb.begin()->second
+				   / evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
+				   * isotopicvector.GetActinidesComposition().GetSumOfAll());
+	}
+	else
+	{
+		distance = Distance(isotopicvector.GetActinidesComposition(),
 				   evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition()
 				   / evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
 				   * isotopicvector.GetActinidesComposition().GetSumOfAll(),
 				   fDistanceType, fDistanceParameter);
-
+	}
 
 	map<IsotopicVector, EvolutionData >::iterator it_close = evolutiondb.begin();
 
@@ -1298,11 +1308,24 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 	map<IsotopicVector, EvolutionData >::iterator it;
 	for( it = evolutiondb.begin(); it != evolutiondb.end(); it++ )
 	{
-		double D = Distance(isotopicvector.GetActinidesComposition(),
-				    (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition()
-				    /  (*it).second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
-				    * isotopicvector.GetActinidesComposition().GetSumOfAll(),
-				    fDistanceType, fDistanceParameter);
+		double D = 0;
+
+
+		if(fWeightedDistance)
+		{
+			D = Distance(isotopicvector.GetActinidesComposition(),
+					    evolutiondb.begin()->second
+					    / evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
+					    * isotopicvector.GetActinidesComposition().GetSumOfAll());
+		}
+		else
+		{
+			D = Distance(isotopicvector.GetActinidesComposition(),
+					    evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition()
+					    / evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
+					    * isotopicvector.GetActinidesComposition().GetSumOfAll(),
+					    fDistanceType, fDistanceParameter);
+		}
 		if (D< distance)
 		{
 			distance = D;
