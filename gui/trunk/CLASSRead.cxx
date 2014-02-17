@@ -216,12 +216,12 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 		for(int i=0; i < fNumberGraphIterator;i++) delete fGraph[i];
 		delete [] fGraph;
 	}
-	if(fhr)
+/*	if(fhr)
 	{
 		delete fhr;
 		fhr = 0;
 	}
-	if(fLegendSumOfSelected)
+*/	if(fLegendSumOfSelected)
 		delete fLegendSumOfSelected;
 	if(fGraphSumOfSelected)
 		delete fGraphSumOfSelected;
@@ -313,7 +313,7 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 
 
 
-	fhr = fCNuclei->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
+	TH1F*	  fhr = fCNuclei->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
 	string Xtitle="Time [year]";
 	string Ytitle="Mass [kg]";
 	fhr->SetXTitle(Xtitle.c_str());
