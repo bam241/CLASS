@@ -72,6 +72,8 @@ double 	Distance(IsotopicVector IV1, EvolutionData Evd1 )
 
 		d2 += pow(Z1-Z2 , 2 ) * pow(XS,2);
 	}
+	
+
 	return sqrt(d2)/SumOfXs;
 
 }

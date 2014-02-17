@@ -205,6 +205,8 @@ DataBank<IsotopicVector>::DataBank():DynamicalSystem()
 	fTheNucleiVector = 0;
 	fTheMatrix = 0;
 
+	fWeightedDistance = false;
+
 	fOldReadMethod = true;
 	fUseRK4EvolutionMethod = true;
 	fDistanceType = 0;
@@ -227,6 +229,7 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool setl
 	SetLog(Log);
 	IsLog(setlog);
 
+	fWeightedDistance = false;
 	fTheNucleiVector = 0;
 	fTheMatrix = 0;
 
@@ -282,6 +285,14 @@ DataBank<IsotopicVector>::~DataBank()
 
 	for( it_del = fDataBankCalculated.begin(); it_del != fDataBankCalculated.end(); it_del++)
 		(*it_del).second.DeleteEvolutionData();
+
+	fFissionEnergy.clear();
+	fFastDecay.clear();
+	fSpontaneusYield.clear();
+	fReactionYield.clear();
+	findex_inver.clear();
+	findex.clear();
+	fDecayMatrix.Clear();
 
 }
 
@@ -1288,10 +1299,10 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 
 	if(fWeightedDistance)
 	{
-		distance = Distance(isotopicvector.GetActinidesComposition(),
-				   evolutiondb.begin()->second
-				   / evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
-				   * isotopicvector.GetActinidesComposition().GetSumOfAll());
+		Distance(isotopicvector.GetActinidesComposition()
+			 * evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
+			 / isotopicvector.GetActinidesComposition().GetSumOfAll(),
+			 evolutiondb.begin()->second);
 	}
 	else
 	{
@@ -1313,10 +1324,10 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 
 		if(fWeightedDistance)
 		{
-			D = Distance(isotopicvector.GetActinidesComposition(),
-					    evolutiondb.begin()->second
-					    / evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
-					    * isotopicvector.GetActinidesComposition().GetSumOfAll());
+			D = Distance(isotopicvector.GetActinidesComposition()
+					* evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
+					/ isotopicvector.GetActinidesComposition().GetSumOfAll(),
+				     evolutiondb.begin()->second);
 		}
 		else
 		{
@@ -1610,7 +1621,11 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 
 
 		}
+
+		isotopicquantity.clear();
+
 		NMatrix.push_back(N_0Matrix);
+		N_0Matrix.Clear();
 
 	}
 
@@ -1637,6 +1652,8 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 			M_ref += EvolutionDataStep.GetIsotopicVectorAt(0.).GetActinidesComposition().GetZAIIsotopicQuantity( (*it).first )*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
 			M += isotopicvector.GetActinidesComposition().GetZAIIsotopicQuantity( (*it).first )*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
 		}
+		isotopicquantity.clear();
+
 	}
 
 	int DBTimeStepN = EvolutionDataStep.GetFissionXS().begin()->second->GetN();
