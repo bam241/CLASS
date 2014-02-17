@@ -115,7 +115,7 @@ private:
 	//main tab
 	TGCompositeFrame *	fGeneF0;		//@- Common widget frame
 	TGCompositeFrame *	fPlotSaveQuitFrame;
-	TGCompositeFrame*  fMiscenalanus;
+	TGCompositeFrame*  fMiscenalanus, *fMiscenalanus0,*fMiscenalanus1;
 	
 	TGCompositeFrame **	fParcTabFoil;
 	TGTab *			fParcTab; //Parc table
@@ -138,7 +138,7 @@ private:
 	
 
 	TGCheckButton ** fCheckIVPlot ;
-	
+	TGCheckButton *fCheckSumOfSelected;
 	
 	TGTextButton *	fButtonPlot;		//@- Press buttons to Plot,Save,...
 	TGTextButton *	fButtonSave;
