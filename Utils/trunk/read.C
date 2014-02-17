@@ -252,10 +252,10 @@ void Read(TTree *T, TString IV, char* opt = "L*")
 
 	IsotopicVector *IVIn;
 	TString IVname = IV +".";
-	TString IVnameStatus = IV +".*";
+	TString IVnameStatus = IV +"*";
 
-	T->SetBranchStatus(IVname,1);
-	T->SetBranchAddress(IVnameStatus, &IVIn);
+	T->SetBranchStatus(IVnameStatus,1);
+	T->SetBranchAddress(IVname, &IVIn);
 
 	Long64_t Time;
 	T->SetBranchAddress("AbsTime", &Time);
@@ -278,9 +278,8 @@ void Read(TTree *T, TString IV, char* opt = "L*")
 	{
 
 		T->GetEntry(i);
-		cout << Time << endl;
 		ZAIQ = 0;
-		for(int z = 90; z < 98; z++)
+		for(int z = 96; z < 97; z++)
 		{
 			for(int a = 230; a < 260; a++)
 			{
@@ -289,7 +288,11 @@ void Read(TTree *T, TString IV, char* opt = "L*")
 					ZAIQ += IVIn->GetZAIIsotopicQuantity(z,a,j)*a/6.02e23*1e-3;
 				}
 			}
-		}		newBranch->Fill();
+
+		}
+
+		cout << Time/365.25/24./3600. << " " << ZAIQ*1e-3 << endl;;
+		newBranch->Fill();
 	}
 
 	BranchName = BranchName + ":AbsTime/3600/24/365.25";
@@ -510,14 +513,15 @@ void ReadStorage(TTree *T, int StorageId, char* opt = "L*")
 
   	TBranch *newBranch = T->Branch(BranchName, &ZAIQ, Branchdescription);
 	T->SetTitle(TitleName);
-	int time_tmp=-4;
 	for (Long64_t i = 0; i < nentries; i++)
 	{
 		T->GetEntry(i);
 		ZAIQ = 0;
-		for(int z = 90; z < 98; z++)
+		//if(Time/365.25/24./3600.==(int)(Time/365.25/24./3600.))
 		{
-			for(int a = 230; a < 260; a++)
+		for(int z = 10; z < 100; z++)
+		{
+			for(int a = 0; a < 260; a++)
 			{
 				for (int j=0; j < 2; j++)
 				{
@@ -525,13 +529,12 @@ void ReadStorage(TTree *T, int StorageId, char* opt = "L*")
 				}
 			}
 		}
-		
-		if( ((Time/365.25/24./3600.)==time_tmp) )
-		{
-			cout << Time/365.25/24./3600. << " " << ZAIQ*1e-3 << endl;;
-			time_tmp++;
+
+		ZAIQ += storage->GetFullStock().GetZAIIsotopicQuantity(-2,-2,-2)*239/2./6.02e23*1e-3;
+
+		cout << Time/365.25/24./3600. << " " << ZAIQ*1e-3 << endl;;
 		}
-			newBranch->Fill();
+		newBranch->Fill();
 	}
 
 	BranchName = BranchName + ":AbsTime/3600/24/365.25";
@@ -657,7 +660,6 @@ void ReadCooling(TTree *T, int CoolingId, char* opt = "L*")
 
   	TBranch *newBranch = T->Branch(BranchName, &ZAIQ, Branchdescription);
 	T->SetTitle(TitleName);
-	int time_tmp=-4;
 	for (Long64_t i = 0; i < nentries; i++)
 	{
 
@@ -673,11 +675,13 @@ void ReadCooling(TTree *T, int CoolingId, char* opt = "L*")
 				}
 			}
 		}
-		if( ((Time/365.25/24./3600.)==time_tmp) )
-		{
+
+
+		ZAIQ += cooling->GetFullCooling().GetZAIIsotopicQuantity(-2,-2,-2)*239/2./6.02e23*1e-3;
+
+
+
 			cout << Time/365.25/24./3600. << " " << ZAIQ*1e-3 << endl;;
-			time_tmp++;
-		}
 		newBranch->Fill();
 	}
 
