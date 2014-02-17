@@ -80,7 +80,7 @@ private :
 	TGraph** fGraph;
 	TGraph* fGraphSumOfSelected;
 
-	TH1F*	  fhr;
+//	TH1F*	  fhr;
 	TLatex** fLegend;
 	TLatex* fLegendSumOfSelected;
 	int fNumberGraphIterator;
