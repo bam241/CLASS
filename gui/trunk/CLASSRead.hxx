@@ -78,10 +78,15 @@ private :
 	TFile*	fFileIn;
 
 	TGraph** fGraph;
+	TGraph* fGraphSumOfSelected;
+
+	TH1F*	  fhr;
 	TLatex** fLegend;
+	TLatex* fLegendSumOfSelected;
 	int fNumberGraphIterator;
 
 	TGraph**  fGraphPower;
+	TH1F*	  fhrPower;
 	TLatex** fLegendPower;
 	int fNumberGraphPowerIterator;
 
