@@ -186,7 +186,7 @@ void MainWin::Start(vector<string> VFileName)
 	stringstream tmp;
 	tmp.str("");
 	tmp << "CLASSGui " ;
-	for(int i=0;i<VFileName.size();i++)
+	for(int i=0; i < (int)VFileName.size();i++)
 		tmp <<VFileName[i]<<" " ;
 
 	this->SetWindowName(tmp.str().c_str());
