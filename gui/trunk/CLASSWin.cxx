@@ -552,7 +552,7 @@ void MainWin::Plot()
 
 	if(fCheckSumOfSelected->GetState()==kButtonDown)
 	{
-		toplotPower.push_back( CLASSPlotElement(-1, -1, -1, -1,-1,-1,-1) );
+		toplot.push_back( CLASSPlotElement(-1, -1, -1, -1,-1,-1,-1) );
 	}
 	//Power
 	for(int i=0; i < fNumberOfParc; i++)
