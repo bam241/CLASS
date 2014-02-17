@@ -186,7 +186,7 @@ void MainWin::Start(vector<string> VFileName)
 	stringstream tmp;
 	tmp.str("");
 	tmp << "CLASSGui " ;
-	for(int i=0; i < (int)VFileName.size();i++)
+	for(int i=0;i<int(VFileName.size());i++)
 		tmp <<VFileName[i]<<" " ;
 
 	this->SetWindowName(tmp.str().c_str());
@@ -194,7 +194,7 @@ void MainWin::Start(vector<string> VFileName)
 	
 	/***************** LES Differents Parcs  ***********************/
 	
-	fParcTab = new TGTab(fGeneF0,200,150);
+	fParcTab = new TGTab(fGeneF0,250,150);
 	fGeneF0->AddFrame(fParcTab,fL2222);
 	fParcTab->Associate(this);
 	
@@ -262,24 +262,35 @@ void MainWin::Start(vector<string> VFileName)
 	fMiscenalanus = new TGHorizontalFrame(fGeneF0, 400, 50 );
 	fGeneF0->AddFrame(fMiscenalanus,fL5555);
 
+	fMiscenalanus0 = new TGVerticalFrame(fMiscenalanus, 400, 50 );
+	fMiscenalanus->AddFrame(fMiscenalanus0,fL5555);
+
 	fCheckIVPlot = new TGCheckButton*[3];
-
-	fCheckIVPlot[0] = new TGCheckButton(fMiscenalanus,"Inside");
+	fCheckIVPlot[0] = new TGCheckButton(fMiscenalanus0,"Inside");
 	fCheckIVPlot[0]->SetFont(fLabelFontS);
-	fMiscenalanus->AddFrame(fCheckIVPlot[0],fL2222);
+	fMiscenalanus0->AddFrame(fCheckIVPlot[0],fL2222);
 	fCheckIVPlot[0]->Associate(this);
+	fCheckIVPlot[0]->SetState(kButtonDown);
 
 
-	fCheckIVPlot[1] = new TGCheckButton(fMiscenalanus,"Cumul In");
+
+	fCheckIVPlot[1] = new TGCheckButton(fMiscenalanus0,"Cumul In");
 	fCheckIVPlot[1]->SetFont(fLabelFontS);
-	fMiscenalanus->AddFrame(fCheckIVPlot[1],fL2222);
+	fMiscenalanus0->AddFrame(fCheckIVPlot[1],fL2222);
 	fCheckIVPlot[1]->Associate(this);
 
-	fCheckIVPlot[2] = new TGCheckButton(fMiscenalanus,"Cumul out");
+	fCheckIVPlot[2] = new TGCheckButton(fMiscenalanus0,"Cumul out");
 	fCheckIVPlot[2]->SetFont(fLabelFontS);
-	fMiscenalanus->AddFrame(fCheckIVPlot[2],fL2222);
+	fMiscenalanus0->AddFrame(fCheckIVPlot[2],fL2222);
 	fCheckIVPlot[2]->Associate(this);
 
+	fMiscenalanus1 = new TGVerticalFrame(fMiscenalanus, 400, 50 );
+	fMiscenalanus->AddFrame(fMiscenalanus1,fL5555);
+
+	fCheckSumOfSelected = new TGCheckButton(fMiscenalanus1,"Sum Of Selected");
+	fCheckSumOfSelected->SetFont(fLabelFontS);
+	fMiscenalanus1->AddFrame(fCheckSumOfSelected,fL2222);
+	fCheckSumOfSelected->Associate(this);
 	//1 jeu de NucleusTab pour tous
 	
 	//
@@ -365,7 +376,7 @@ void MainWin::Start(vector<string> VFileName)
 	Move(410,30);
 	fMainWidth=fGeneF0->GetWidth();
 	
-	Resize(550,780); 					// fit to the exact size
+	Resize(550,820); 					// fit to the exact size
 
 
 }
@@ -539,7 +550,10 @@ void MainWin::Plot()
 	vector<CLASSPlotElement> toplot;
 	vector<CLASSPlotElement> toplotPower;
 
-
+	if(fCheckSumOfSelected->GetState()==kButtonDown)
+	{
+		toplotPower.push_back( CLASSPlotElement(-1, -1, -1, -1,-1,-1,-1) );
+	}
 	//Power
 	for(int i=0; i < fNumberOfParc; i++)
 	{
