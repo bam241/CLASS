@@ -217,7 +217,10 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 		delete [] fGraph;
 	}
 	if(fhr)
-	   delete fhr;
+	{
+		delete fhr;
+		fhr = 0;
+	}
 	if(fLegendSumOfSelected)
 		delete fLegendSumOfSelected;
 	if(fGraphSumOfSelected)
@@ -376,6 +379,7 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 		for(int i=0; i < fNumberGraphPowerIterator;i++) delete fGraphPower[i];
 		delete [] fGraphPower;
 	}
+
 	if(fhrPower)
 		delete fhrPower;
 
