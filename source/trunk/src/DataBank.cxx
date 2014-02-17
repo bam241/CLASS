@@ -42,7 +42,7 @@ double ReactionRateWeightedDistance(IsotopicVector IV1, EvolutionData DB )
 		double XS = 0;
 
 		for(int i = 1; i < 4 ; i++)
-			XS += DB.GetGetXSForAt(0., (*it).first, i);
+			XS += DB.GetXSForAt(0., (*it).first, i);
 
 		double Z1 = IV1.GetZAIIsotopicQuantity( (*it).first );
 		double Z2 = IV2.GetZAIIsotopicQuantity( (*it).first );
@@ -1342,7 +1342,7 @@ void DataBank<IsotopicVector>::CalculateDistanceParameter()
 			ZAI TmpZAI=(*itit).first;
 			double TmpXS=0;
 			for(int i=1;i<4;i++){		//Loop on Reactions 1==fission, 2==capture, 3==n2n
-				TmpXS+=	(*it).second.GetGetXSForAt(0,TmpZAI,i);
+				TmpXS+=	(*it).second.GetXSForAt(0,TmpZAI,i);
 			}
 			fDistanceParameter.Add(TmpZAI,TmpXS);
 		}
