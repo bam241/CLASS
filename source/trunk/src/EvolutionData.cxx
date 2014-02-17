@@ -269,7 +269,7 @@ IsotopicVector	EvolutionData::GetIsotopicVectorAt(double t)
 }
 
 	//________________________________________________________________________
-double	EvolutionData::GetGetXSForAt(double t, ZAI zai, int ReactionId)
+double	EvolutionData::GetXSForAt(double t, ZAI zai, int ReactionId)
 {
 	
 	map<ZAI ,TGraph* > XSEvol;

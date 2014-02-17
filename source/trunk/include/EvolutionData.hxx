@@ -83,10 +83,10 @@ public :
 								///< Return the A,Z product proportion evolution TGraph
 	IsotopicVector	GetIsotopicVectorAt(double t); 		///< Return the Product IsotopicVector at t time
 	
-	double	GetGetXSForAt(double t, ZAI zai, int ReactionId); 		///< Return the XS for a reactionId on zai at t time
-										///< ReactionId : 1 Fission,
-										///<		2 Capture,
-										///<		3 (n, 2n) ,
+	double	GetXSForAt(double t, ZAI zai, int ReactionId); 		///< Return the XS for a reactionId on zai at t time
+										/// ReactionId : 1 Fission,
+										///		2 Capture,
+										///		3 (n, 2n) ,
 
 
 
