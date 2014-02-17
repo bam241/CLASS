@@ -291,11 +291,13 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 			{
 				double x;
 				double y;
-				fGraph[i]->GetPoint(fGraph[i]->GetN()-1, x, y);
+				fGraph[i]->GetPoint(j, x, y);
 				if(i == 0)
 					X_Sum[j] = x;
-
-				Y_Sum[j] += y;
+				if(i == 0)
+					Y_Sum[j] = y;
+				else
+					Y_Sum[j] += y;
 			}
 		}
 
@@ -304,8 +306,8 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 		{
 			if(X_Sum[i] > Xmax) Xmax = X_Sum[i];
 			if(X_Sum[i] < Xmin) Xmin = X_Sum[i];
-			if(X_Sum[i] > Ymax) Ymax = X_Sum[i];
-			if(X_Sum[i] < Ymin) Xmin = X_Sum[i];
+			if(Y_Sum[i] > Ymax) Ymax = Y_Sum[i];
+			if(Y_Sum[i] < Ymin) Ymin = Y_Sum[i];
 		}
 	}
 
