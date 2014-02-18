@@ -206,6 +206,9 @@ DataBank<IsotopicVector>::DataBank():DynamicalSystem()
 	fTheMatrix = 0;
 
 	fWeightedDistance = false;
+	fEvolutionDataInterpolation = false;
+
+
 
 	fOldReadMethod = true;
 	fUseRK4EvolutionMethod = true;
@@ -230,6 +233,9 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool setl
 	IsLog(setlog);
 
 	fWeightedDistance = false;
+	fEvolutionDataInterpolation = false;
+
+
 	fTheNucleiVector = 0;
 	fTheMatrix = 0;
 
@@ -1297,12 +1303,59 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 	map<IsotopicVector, EvolutionData > evolutiondb = fDataBank;
 	double distance = 0;
 
+	map<IsotopicVector, EvolutionData >::iterator it_close = evolutiondb.begin();
+
+
+	map<IsotopicVector, EvolutionData >::iterator it;
+
+
 	if(fWeightedDistance)
 	{
 		Distance(isotopicvector.GetActinidesComposition()
 			 * evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
 			 / isotopicvector.GetActinidesComposition().GetSumOfAll(),
 			 evolutiondb.begin()->second);
+
+
+		for( it = evolutiondb.begin(); it != evolutiondb.end(); it++ )
+		{
+			double D = 0;
+			D = Distance(isotopicvector.GetActinidesComposition()
+				     * evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
+				     / isotopicvector.GetActinidesComposition().GetSumOfAll(),
+				     evolutiondb.begin()->second);
+
+
+			if (D< distance)
+			{
+				distance = D;
+				it_close = it;
+			}
+		}
+
+		return (*it_close).second;
+	}
+	else if (fEvolutionDataInterpolation)
+	{
+		map<double, EvolutionData> distance_map;
+		map<double, EvolutionData>::iterator it_distance;
+		int NClose = 64;
+		int Nstep = 0;
+		EvolutionData EvolInterpolate;
+		double SumOfDistance = 0;
+		for( it_distance = distance_map.begin(); Nstep < NClose; it_distance++)
+		{
+			if(Nstep == 0)
+				EvolInterpolate = 1./(*it_distance).first * (*it_distance).second;
+			else
+				EvolInterpolate = EvolInterpolate + 1./(*it_distance).first * (*it_distance).second;
+
+			SumOfDistance += 1./(*it_distance).first;
+			Nstep++;
+
+		}
+		return 1/SumOfDistance * EvolInterpolate;
+
 	}
 	else
 	{
@@ -1311,39 +1364,26 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 				   / evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
 				   * isotopicvector.GetActinidesComposition().GetSumOfAll(),
 				   fDistanceType, fDistanceParameter);
-	}
-
-	map<IsotopicVector, EvolutionData >::iterator it_close = evolutiondb.begin();
 
 
-	map<IsotopicVector, EvolutionData >::iterator it;
-	for( it = evolutiondb.begin(); it != evolutiondb.end(); it++ )
-	{
 		double D = 0;
 
 
-		if(fWeightedDistance)
-		{
-			D = Distance(isotopicvector.GetActinidesComposition()
-					* evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
-					/ isotopicvector.GetActinidesComposition().GetSumOfAll(),
-				     evolutiondb.begin()->second);
-		}
-		else
-		{
-			D = Distance(isotopicvector.GetActinidesComposition(),
-					    evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition()
-					    / evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
-					    * isotopicvector.GetActinidesComposition().GetSumOfAll(),
-					    fDistanceType, fDistanceParameter);
-		}
+		D = Distance(isotopicvector.GetActinidesComposition(),
+			     evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition()
+			     / evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
+			     * isotopicvector.GetActinidesComposition().GetSumOfAll(),
+			     fDistanceType, fDistanceParameter);
+
 		if (D< distance)
 		{
 			distance = D;
 			it_close = it;
 		}
+		return (*it_close).second;
+
 	}
-	return (*it_close).second;
+
 
 }
 
@@ -1366,24 +1406,26 @@ void DataBank<IsotopicVector>::CalculateDistanceParameter()
 	//We calculate the weight for the distance calculation.
 	map<IsotopicVector ,EvolutionData >::iterator it;
 	map<IsotopicVector ,EvolutionData > databank = (*this).GetDataBank();
-	int NevolutionDatainDataBank=0;
+	int NevolutionDatainDataBank = 0;
 
-	for( it = databank.begin(); it != databank.end(); it++ ){
+	for( it = databank.begin(); it != databank.end(); it++ )
+	{
 		NevolutionDatainDataBank++;
 		map<ZAI ,double>::iterator itit;
 		map<ZAI ,double> isovector=(*it).first.GetIsotopicQuantity();
-		for(itit=isovector.begin(); itit != isovector.end(); itit++){//Boucle sur ZAI
-			ZAI TmpZAI=(*itit).first;
+		for(itit=isovector.begin(); itit != isovector.end(); itit++) //Boucle sur ZAI
+		{
 			double TmpXS=0;
-			for(int i=1;i<4;i++){		//Loop on Reactions 1==fission, 2==capture, 3==n2n
-				TmpXS+=	(*it).second.GetXSForAt(0,TmpZAI,i);
-			}
-			fDistanceParameter.Add(TmpZAI,TmpXS);
+
+			for( int i=1; i<4; i++ ) //Loop on Reactions 1==fission, 2==capture, 3==n2n
+				TmpXS+=	(*it).second.GetXSForAt(0, (*itit).first, i);
+
+			fDistanceParameter.Add((*itit).first,TmpXS);
 		}
 
 
 	}
-	fDistanceParameter.Multiply((double)1.0/NevolutionDatainDataBank);
+	fDistanceParameter.Multiply( (double)1.0/NevolutionDatainDataBank );
 
 
 	GetLog()->fLog <<"!!INFO!! Distance Parameters "<<endl;

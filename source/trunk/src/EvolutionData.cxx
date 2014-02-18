@@ -110,6 +110,130 @@ EvolutionData operator*(EvolutionData const& evol, double F)
 	return evoltmp;
 	
 }
+EvolutionData operator+(EvolutionData const& evol1, EvolutionData const& evol2)
+{
+
+
+	EvolutionData EvolSum = evol1;
+	map<ZAI ,TGraph* > EvolutionData1 = evol1.GetEvolutionData();
+	map<ZAI ,TGraph* > EvolutionData2 = evol2.GetEvolutionData();
+	map<ZAI ,TGraph* >::iterator it;
+
+	for(it = EvolutionData2.begin(); it != EvolutionData2.end(); it++)
+	{
+		pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+
+		IResult  = EvolutionData1.insert( pair<ZAI, TGraph*> ( *it ) );
+
+		if(!(IResult.second) )
+		{
+			double X[(*it).second->GetN()];
+			double Y[(*it).second->GetN()];
+			map<ZAI ,TGraph* >::iterator it2 = EvolutionData1.find( (*it).first );
+
+
+			for(int i = 0; i < (*it).second->GetN(); i++)
+			{
+				double y;
+				(*it).second->GetPoint( i, X[i], y );
+				Y[i] = y + (*it2).second->Eval(X[i]);
+			}
+			(*it).second = new TGraph((*it).second->GetN(), X, Y);
+		}
+	}
+
+	EvolSum.SetEvolutionData(EvolutionData1);
+
+
+	EvolutionData1 = evol1.GetFissionXS();
+	EvolutionData2 = evol2.GetFissionXS();
+
+	for(it = EvolutionData2.begin(); it != EvolutionData2.end(); it++)
+	{
+		pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+
+		IResult  = EvolutionData1.insert( pair<ZAI, TGraph*> ( *it ) );
+
+		if(!(IResult.second) )
+		{
+			double X[(*it).second->GetN()];
+			double Y[(*it).second->GetN()];
+			map<ZAI ,TGraph* >::iterator it2 = EvolutionData1.find( (*it).first );
+
+
+			for(int i = 0; i < (*it).second->GetN(); i++)
+			{
+				double y;
+				(*it).second->GetPoint( i, X[i], y );
+				Y[i] = y + (*it2).second->Eval(X[i]);
+			}
+			(*it).second = new TGraph((*it).second->GetN(), X, Y);
+		}
+	}
+	EvolSum.SetFissionXS(EvolutionData1);
+
+
+
+	EvolutionData1 = evol1.GetCaptureXS();
+	EvolutionData2 = evol2.GetCaptureXS();
+
+	for(it = EvolutionData2.begin(); it != EvolutionData2.end(); it++)
+	{
+		pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+
+		IResult  = EvolutionData1.insert( pair<ZAI, TGraph*> ( *it ) );
+
+		if(!(IResult.second) )
+		{
+			double X[(*it).second->GetN()];
+			double Y[(*it).second->GetN()];
+			map<ZAI ,TGraph* >::iterator it2 = EvolutionData1.find( (*it).first );
+
+
+			for(int i = 0; i < (*it).second->GetN(); i++)
+			{
+				double y;
+				(*it).second->GetPoint( i, X[i], y );
+				Y[i] = y + (*it2).second->Eval(X[i]);
+			}
+			(*it).second = new TGraph((*it).second->GetN(), X, Y);
+		}
+	}
+	EvolSum.SetCaptureXS(EvolutionData1);
+
+
+
+	EvolutionData1 = evol1.Getn2nXS();
+	EvolutionData2 = evol2.Getn2nXS();
+
+	for(it = EvolutionData2.begin(); it != EvolutionData2.end(); it++)
+	{
+		pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+
+		IResult  = EvolutionData1.insert( pair<ZAI, TGraph*> ( *it ) );
+
+		if(!(IResult.second) )
+		{
+			double X[(*it).second->GetN()];
+			double Y[(*it).second->GetN()];
+			map<ZAI ,TGraph* >::iterator it2 = EvolutionData1.find( (*it).first );
+
+
+			for(int i = 0; i < (*it).second->GetN(); i++)
+			{
+				double y;
+				(*it).second->GetPoint( i, X[i], y );
+				Y[i] = y + (*it2).second->Eval(X[i]);
+			}
+			(*it).second = new TGraph((*it).second->GetN(), X, Y);
+		}
+	}
+	EvolSum.Setn2nXS(EvolutionData1);
+
+
+	return EvolSum;
+}
+
 
 	//________________________________________________________________________
 EvolutionData operator*(double F, EvolutionData const& evol)
