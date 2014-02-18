@@ -31,8 +31,10 @@ typedef long long int cSecond;
 EvolutionData operator*(EvolutionData const& evol, double F);
 EvolutionData operator*(double F, EvolutionData const& evol);
 EvolutionData operator/(EvolutionData const& evol, double F);
+EvolutionData operator+(EvolutionData const& evol1, EvolutionData const& evol2);
 
-
+double 	Distance(IsotopicVector IV1, EvolutionData Evd1 );
+double 	Distance(EvolutionData Evd1, IsotopicVector IV1 );
 
 class EvolutionData : public CLSSObject
 {
@@ -57,6 +59,9 @@ public :
 	void	SetFuelType(string fueltype)		{ fFuelType = fueltype; }
 	void 	SetPower(double power)			{ fPower = power; }
 	void	SetFlux(TGraph* flux )			{ fFlux = flux; }
+
+
+	void	SetEvolutionData(map<ZAI, TGraph*> maptoinsert)	{ fEvolutionData = maptoinsert;}
 	void	SetFissionXS(map<ZAI, TGraph*> maptoinsert)	{ fFissionXS = maptoinsert;}
 	void	SetCaptureXS(map<ZAI, TGraph*> maptoinsert)	{ fCaptureXS = maptoinsert;}
 	void	Setn2nXS(map<ZAI, TGraph*> maptoinsert)	{ fn2nXS = maptoinsert;}
@@ -146,8 +151,7 @@ protected :
 	ClassDef(EvolutionData,0);
 };
 
-double 	Distance(IsotopicVector IV1, EvolutionData Evd1 );
-double 	Distance(EvolutionData Evd1, IsotopicVector IV1 );
+
 
 
 #endif

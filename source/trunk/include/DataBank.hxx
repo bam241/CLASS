@@ -83,6 +83,7 @@ public :
 	void LoadFPYield(string SponfaneusYield, string ReactionYield);				// Build Fision Yields maps;
 
 	void SetWeightedDistanceCalculation(bool val=true) { fWeightedDistance = val;}		// Set weighted Distance calculation
+	void SetEvolutionDataInterpolation(bool val=true) { fEvolutionDataInterpolation = val;}		// Set weighted Distance calculation
 
 //********* Modification Method *********//
 	
@@ -139,6 +140,7 @@ protected :
 	bool			fUseRK4EvolutionMethod; ///< if true use RK4 calculation, mtriciel unstead
 	bool			fOldReadMethod;		///< use old DB format
 	bool			fWeightedDistance;	///< USe XS weighted distance calculation
+	bool			fEvolutionDataInterpolation;	///< USe XS weighted distance calculation
 
 
  	string 			fFuelType;
