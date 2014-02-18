@@ -45,7 +45,7 @@ double 	Distance(IsotopicVector IV1, EvolutionData Evd1 )
 	double d2=0;
 	IsotopicVector IV2 = Evd1.GetIsotopicVectorAt(0.);
 
-	IsotopicVector IVtmp = IV1 + IV2;
+	IsotopicVector IVtmp = IV1;
 	map<ZAI ,double> IVtmpIsotopicQuantity = IVtmp.GetIsotopicQuantity();
 	map<ZAI ,double >::iterator it;
 
