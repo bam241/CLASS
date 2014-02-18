@@ -1921,6 +1921,9 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	CaptureXSMatrix.clear();
 	n2nXSMatrix.clear();
 
+	if(fEvolutionDataInterpolation)
+		EvolutionDataStep.DeleteEvolutionData();
+
 	return GeneratedDB;
 
 }
