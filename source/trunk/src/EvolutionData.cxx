@@ -60,8 +60,6 @@ double 	Distance(IsotopicVector IV1, EvolutionData Evd1 )
 	}
 
 
-
-
 	for( it = IVtmpIsotopicQuantity.begin(); it != IVtmpIsotopicQuantity.end(); it++)
 	{
 		double Z1 = IV1.GetZAIIsotopicQuantity( (*it).first );
@@ -71,9 +69,9 @@ double 	Distance(IsotopicVector IV1, EvolutionData Evd1 )
 			  + Evd1.GetXSForAt(0., (*it).first, 3);
 
 		d2 += pow(Z1-Z2 , 2 ) * pow(XS,2);
+
 	}
 	
-
 	return sqrt(d2)/SumOfXs;
 
 }
@@ -107,10 +105,118 @@ EvolutionData operator*(EvolutionData const& evol, double F)
 		
 	}
 	evoltmp.SetPower(evol.GetPower()*F);
+	evoltmp.SetFissionXS(evol.GetFissionXS());
+	evoltmp.SetCaptureXS(evol.GetCaptureXS());
+	evoltmp.Setn2nXS(evol.Getn2nXS());
+
+
 	return evoltmp;
 	
 }
-EvolutionData operator+(EvolutionData const& evol1, EvolutionData const& evol2)
+//________________________________________________________________________
+EvolutionData operator*(double F, EvolutionData const& evol)
+{
+
+	return evol*F;
+
+}
+//________________________________________________________________________
+EvolutionData operator/(EvolutionData const& evol, double F)
+{
+
+	return evol*(1./F);
+
+}
+
+EvolutionData Multiply(EvolutionData const& evol, double F)
+{
+
+	EvolutionData evoltmp;
+
+	map<ZAI ,TGraph* > EvolutionData = evol.GetEvolutionData();
+	map<ZAI ,TGraph* >::iterator it;
+	for(it = EvolutionData.begin(); it != EvolutionData.end(); it++)
+	{
+		double X[(*it).second->GetN()];
+		double Y[(*it).second->GetN()];
+
+		for(int i = 0; i < (*it).second->GetN(); i++)
+		{
+			double y;
+			(*it).second->GetPoint( i, X[i], y );
+			Y[i] = y*F;
+		}
+		evoltmp.NucleiInsert( pair<ZAI, TGraph*> ( (*it).first,new TGraph((*it).second->GetN(), X, Y) ) );
+
+	}
+
+
+	EvolutionData = evol.GetFissionXS();
+	for(it = EvolutionData.begin(); it != EvolutionData.end(); it++)
+	{
+		double X[(*it).second->GetN()];
+		double Y[(*it).second->GetN()];
+
+		for(int i = 0; i < (*it).second->GetN(); i++)
+		{
+			double y;
+			(*it).second->GetPoint( i, X[i], y );
+			Y[i] = y*F;
+		}
+		evoltmp.FissionXSInsert( pair<ZAI, TGraph*> ( (*it).first,new TGraph((*it).second->GetN(), X, Y) ) );
+
+	}
+
+	EvolutionData = evol.GetCaptureXS();
+	for(it = EvolutionData.begin(); it != EvolutionData.end(); it++)
+	{
+		double X[(*it).second->GetN()];
+		double Y[(*it).second->GetN()];
+
+		for(int i = 0; i < (*it).second->GetN(); i++)
+		{
+			double y;
+			(*it).second->GetPoint( i, X[i], y );
+			Y[i] = y*F;
+		}
+		evoltmp.CaptureXSInsert( pair<ZAI, TGraph*> ( (*it).first,new TGraph((*it).second->GetN(), X, Y) ) );
+		
+	}
+	EvolutionData = evol.Getn2nXS();
+	for(it = EvolutionData.begin(); it != EvolutionData.end(); it++)
+	{
+		double X[(*it).second->GetN()];
+		double Y[(*it).second->GetN()];
+
+		for(int i = 0; i < (*it).second->GetN(); i++)
+		{
+			double y;
+			(*it).second->GetPoint( i, X[i], y );
+			Y[i] = y*F;
+		}
+		evoltmp.n2nXSInsert( pair<ZAI, TGraph*> ( (*it).first,new TGraph((*it).second->GetN(), X, Y) ) );
+
+	}
+
+
+
+	evoltmp.SetPower(evol.GetPower()*F);
+
+
+
+	return evoltmp;
+
+}
+
+//________________________________________________________________________
+EvolutionData Multiply(double F, EvolutionData const& evol)
+{
+
+	return Multiply(evol,F);
+
+}
+
+EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 {
 
 
@@ -235,20 +341,7 @@ EvolutionData operator+(EvolutionData const& evol1, EvolutionData const& evol2)
 }
 
 
-	//________________________________________________________________________
-EvolutionData operator*(double F, EvolutionData const& evol)
-{
-	
-	return evol*F;
-	
-}
-	//________________________________________________________________________
-EvolutionData operator/(EvolutionData const& evol, double F)
-{
-	
-	return evol*(1./F);
-	
-}
+
 
 	//________________________________________________________________________
 	//________________________________________________________________________

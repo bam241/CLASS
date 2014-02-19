@@ -31,7 +31,10 @@ typedef long long int cSecond;
 EvolutionData operator*(EvolutionData const& evol, double F);
 EvolutionData operator*(double F, EvolutionData const& evol);
 EvolutionData operator/(EvolutionData const& evol, double F);
-EvolutionData operator+(EvolutionData const& evol1, EvolutionData const& evol2);
+//EvolutionData operator+(EvolutionData const& evol1, EvolutionData const& evol2);
+EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2);
+EvolutionData Multiply(EvolutionData const& evol, double F);
+EvolutionData Multiply(double F, EvolutionData const& evol);
 
 double 	Distance(IsotopicVector IV1, EvolutionData Evd1 );
 double 	Distance(EvolutionData Evd1, IsotopicVector IV1 );
