@@ -132,7 +132,6 @@ EvolutionData Multiply(EvolutionData const& evol, double F)
 {
 
 	EvolutionData evoltmp;
-
 	map<ZAI ,TGraph* > EvolutionData = evol.GetEvolutionData();
 	map<ZAI ,TGraph* >::iterator it;
 	for(it = EvolutionData.begin(); it != EvolutionData.end(); it++)
@@ -198,8 +197,6 @@ EvolutionData Multiply(EvolutionData const& evol, double F)
 
 	}
 
-
-
 	evoltmp.SetPower(evol.GetPower()*F);
 
 
@@ -218,10 +215,8 @@ EvolutionData Multiply(double F, EvolutionData const& evol)
 
 EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 {
-
-
 	EvolutionData EvolSum = evol1;
-	map<ZAI ,TGraph* > EvolutionData1 = evol1.GetEvolutionData();
+	map<ZAI ,TGraph* > EvolutionData1 = EvolSum.GetEvolutionData();
 	map<ZAI ,TGraph* > EvolutionData2 = evol2.GetEvolutionData();
 	map<ZAI ,TGraph* >::iterator it;
 
@@ -230,7 +225,6 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 		pair<map<ZAI, TGraph*>::iterator, bool> IResult;
 
 		IResult  = EvolutionData1.insert( pair<ZAI, TGraph*> ( *it ) );
-
 		if(!(IResult.second) )
 		{
 			double X[(*it).second->GetN()];
@@ -244,10 +238,11 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 				(*it).second->GetPoint( i, X[i], y );
 				Y[i] = y + (*it2).second->Eval(X[i]);
 			}
-			(*it).second = new TGraph((*it).second->GetN(), X, Y);
+			IResult.first->second = new TGraph((*it).second->GetN(), X, Y);
+			
 		}
-	}
 
+	}
 	EvolSum.SetEvolutionData(EvolutionData1);
 
 
@@ -273,14 +268,13 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 				(*it).second->GetPoint( i, X[i], y );
 				Y[i] = y + (*it2).second->Eval(X[i]);
 			}
-			(*it).second = new TGraph((*it).second->GetN(), X, Y);
+			IResult.first->second = new TGraph((*it).second->GetN(), X, Y);
 		}
 	}
 	EvolSum.SetFissionXS(EvolutionData1);
 
 
-
-	EvolutionData1 = evol1.GetCaptureXS();
+	EvolutionData1 = EvolSum.GetCaptureXS();
 	EvolutionData2 = evol2.GetCaptureXS();
 
 	for(it = EvolutionData2.begin(); it != EvolutionData2.end(); it++)
@@ -302,14 +296,13 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 				(*it).second->GetPoint( i, X[i], y );
 				Y[i] = y + (*it2).second->Eval(X[i]);
 			}
-			(*it).second = new TGraph((*it).second->GetN(), X, Y);
+			IResult.first->second = new TGraph((*it).second->GetN(), X, Y);
 		}
 	}
 	EvolSum.SetCaptureXS(EvolutionData1);
 
 
-
-	EvolutionData1 = evol1.Getn2nXS();
+	EvolutionData1 = EvolSum.Getn2nXS();
 	EvolutionData2 = evol2.Getn2nXS();
 
 	for(it = EvolutionData2.begin(); it != EvolutionData2.end(); it++)
@@ -331,11 +324,10 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 				(*it).second->GetPoint( i, X[i], y );
 				Y[i] = y + (*it2).second->Eval(X[i]);
 			}
-			(*it).second = new TGraph((*it).second->GetN(), X, Y);
+			IResult.first->second = new TGraph((*it).second->GetN(), X, Y);
 		}
 	}
 	EvolSum.Setn2nXS(EvolutionData1);
-
 
 	return EvolSum;
 }

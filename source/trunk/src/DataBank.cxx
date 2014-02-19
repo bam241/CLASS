@@ -766,8 +766,6 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 		}
 	}
 
-	//exit(1);
-
 }
 
 //________________________________________________________________________
@@ -934,8 +932,6 @@ TMatrixT<double> DataBank<IsotopicVector>::GetFissionXsMatrix(EvolutionData Evol
 
 							if( it_FD == fFastDecay.end() )
 							{
-								//cout << "Fission Problem in FastDecay for nuclei " << (*it_IVQ).first.Z() << " " << (*it_IVQ).first.A() << " " << (*it_IVQ).first.I() << endl;
-
 								BatemanMatrix[1][ (*findex_inver_it).second ] += (*it_IVQ).second * y * 1e-24  ;
 							}
 							else
@@ -1026,9 +1022,7 @@ TMatrixT<double> DataBank<IsotopicVector>::GetCaptureXsMatrix(EvolutionData Evol
 
 					if( it4 == fFastDecay.end() )
 					{
-						//cout << "Capture Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A()+1 << " " << (*it).first.I() << endl;
 						BatemanMatrix[0][Index_it->second] += y* 1e-24  ;
-
 					}
 					else
 					{
@@ -1146,8 +1140,6 @@ TMatrixT<double> DataBank<IsotopicVector>::Getn2nXsMatrix(EvolutionData Evolutio
 
 					if( it4 == fFastDecay.end() )
 					{
-						//cout << "n2n Problem in FastDecay for nuclei " << (*it).first.Z() << " " << (*it).first.A()-1 << " " << (*it).first.I() << endl;
-
 						BatemanMatrix[0][Index_it->second] += y* 1e-24  ;
 					}
 					else
@@ -1337,16 +1329,15 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 	else if (fEvolutionDataInterpolation)
 	{
 
-		map<double, EvolutionData> distance_map;
+		map<double, EvolutionData> distance_map = GetDistancesTo(isotopicvector, t);
 		map<double, EvolutionData>::iterator it_distance;
 		int NClose = 64;
 		int Nstep = 0;
 		EvolutionData EvolInterpolate;
 		double SumOfDistance = 0;
-		for( it_distance = distance_map.begin(); Nstep < NClose; it_distance++)
+		for( it_distance = distance_map.begin(); it_distance != distance_map.end(); it_distance++)
 		{
 
-			cout << (*it_distance).first << endl;
 			if((*it_distance).first == 0 )
 			{
 				EvolInterpolate = Multiply(1,(*it_distance).second);
@@ -1355,14 +1346,30 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 			if(Nstep == 0)
 				EvolInterpolate = Multiply(1./(*it_distance).first, (*it_distance).second);
 			else
-				EvolInterpolate = Sum(EvolInterpolate,  Multiply(1./(*it_distance).first, (*it_distance).second));
+			{
+
+				EvolutionData Evoltmp = EvolInterpolate;
+				EvolutionData Evoltmp2 = Multiply(1./(*it_distance).first, (*it_distance).second);
+
+				EvolInterpolate = Sum(Evoltmp,  Evoltmp2);
+				Evoltmp.DeleteEvolutionData();
+				Evoltmp2.DeleteEvolutionData();
+
+
+			}
 
 			SumOfDistance += 1./(*it_distance).first;
 			Nstep++;
+			if(Nstep == NClose) break;
 
 		}
-		EvolInterpolate = Multiply(1/SumOfDistance, EvolInterpolate);
 
+		EvolutionData Evoltmp = EvolInterpolate;
+		EvolInterpolate.Clear();
+
+		EvolInterpolate = Multiply(1/SumOfDistance, Evoltmp);
+
+		Evoltmp.DeleteEvolutionData();
 		return EvolInterpolate;
 
 	}
@@ -1932,8 +1939,8 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	CaptureXSMatrix.clear();
 	n2nXSMatrix.clear();
 
-//	if(fEvolutionDataInterpolation)
-//		EvolutionDataStep.DeleteEvolutionData();
+	if(fEvolutionDataInterpolation)
+		EvolutionDataStep.DeleteEvolutionData();
 
 	return GeneratedDB;
 
