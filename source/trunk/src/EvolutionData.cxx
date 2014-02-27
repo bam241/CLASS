@@ -347,7 +347,7 @@ EvolutionData::EvolutionData()
 	fIsCrossSection = false;
 	fPower = 0;
 	fCycleTime = 0;
-	fNormFactor = 0;
+	fNormFactor = 1;
 	fKeff = 0;
 	fFlux = 0;
 }
@@ -360,7 +360,7 @@ EvolutionData::EvolutionData(LogFile* Log)
 	fIsCrossSection = false;
 	fPower = 0;
 	fCycleTime = 0;
-	fNormFactor = 0;
+	fNormFactor = 1;
 	fKeff = 0;
 	fFlux = 0;
 
@@ -376,7 +376,7 @@ EvolutionData::EvolutionData(LogFile* Log, string DB_file, bool oldread, ZAI zai
 	fDB_file = DB_file;
 	fPower = 0;
 	fCycleTime = 0;
-	fNormFactor = 0;
+	fNormFactor = 1;
 	fKeff = 0;
 	fFlux = 0;
 	
