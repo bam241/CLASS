@@ -61,6 +61,7 @@ string ReadNucleusName[] = {
 	"Tl_nat","Pb_nat","Bi_nat","Po_nat","At_nat","Rn_nat","Fr_nat","Ra_nat","Ac_nat","Th_nat",
 	"Pa_nat","U_nat","Np_nat","Pu_nat","Am_nat","Cm_nat","Bk_nat","Cf_nat","Es_nat","Fm_nat"
 };
+
 int CurveColor(int graph_num)
 {
 	int ColorTable[]={1,kBlue,kRed,kGreen+1,kMagenta,kCyan+2,kOrange-3,kRed+2,kBlue-2,
@@ -458,8 +459,6 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 		fGraphPower[i]->SetMarkerColor(CurveColor(i));
 		fGraphPower[i]->SetMarkerStyle(10);
 		fGraphPower[i]->Draw(out.c_str());
-		fGraphPower[i]->SetLineColor(CurveColor(i));
-		fGraphPower[i]->SetMarkerColor(CurveColor(i));
 
 
 		double x;
