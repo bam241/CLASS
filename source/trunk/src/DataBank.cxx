@@ -822,21 +822,25 @@ map< ZAI,IsotopicVector > DataBank<IsotopicVector>::ReadFPYield(string Yield)
 
 	getline(infile, line);
 
-	while(start < (int)line.size())
+	do
 	{
 		int Z = atof(StringLine::NextWord(line, start, ' ').c_str());
 		int A = atof(StringLine::NextWord(line, start, ' ').c_str());
 		int I = 0;
-		pair<map<ZAI, IsotopicVector>::iterator, bool> IResult;
-		IResult = Yield_map.insert(pair<ZAI,IsotopicVector>(ZAI(Z,A,I),EmptyIV) );
-		if (IResult.second == false)
-		{
-			cout << "!!Error!! !!!DataBank!!! Many accurance of ZAI " << Z << " " << A;
-			cout << " in " << Yield << " file!! Please Check it !!!" << endl;
-			exit(1);
 
+//		if(Z!=0 && A!=0)
+		{
+			pair<map<ZAI, IsotopicVector>::iterator, bool> IResult;
+			IResult = Yield_map.insert(pair<ZAI,IsotopicVector>(ZAI(Z,A,I),EmptyIV) );
+			if (IResult.second == false)
+			{
+				cout << "!!Error!! !!!DataBank!!! Many accurance of ZAI " << Z << " " << A;
+				cout << " in " << Yield << " file!! Please Check it !!!" << endl;
+				exit(1);
+
+			}
 		}
-	}
+	}while(start < (int)line.size()-1);
 
 	do
 	{
@@ -847,7 +851,7 @@ map< ZAI,IsotopicVector > DataBank<IsotopicVector>::ReadFPYield(string Yield)
 		int A = atof(StringLine::NextWord(line, start, ' ').c_str());
 		int I = atof(StringLine::NextWord(line, start, ' ').c_str());
 		map<ZAI, IsotopicVector>::iterator it = Yield_map.begin();
-		while(start < (int)line.size())
+		do
 		{
 			if (it == Yield_map.end())
 			{
@@ -862,12 +866,19 @@ map< ZAI,IsotopicVector > DataBank<IsotopicVector>::ReadFPYield(string Yield)
 			(*it).second +=  Yield_values * ZAI(Z,A,I);
 
 			it++;
-		}
+		}while(start < (int)line.size()-1);
 
 
 
 
 	} while (!infile.eof());
+	map<ZAI ,IsotopicVector >::iterator it;
+	for(it = Yield_map.begin() ; it != Yield_map.end(); it++)
+	{
+		cout<<(*it).first.Z()<<" "<<(*it).first.A() <<" "<<(*it).second.GetSumOfAll()<<endl;
+
+	}
+	exit(1);
 	return Yield_map;
 }
 
