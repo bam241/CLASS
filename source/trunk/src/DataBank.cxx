@@ -872,13 +872,6 @@ map< ZAI,IsotopicVector > DataBank<IsotopicVector>::ReadFPYield(string Yield)
 
 
 	} while (!infile.eof());
-	map<ZAI ,IsotopicVector >::iterator it;
-	for(it = Yield_map.begin() ; it != Yield_map.end(); it++)
-	{
-		cout<<(*it).first.Z()<<" "<<(*it).first.A() <<" "<<(*it).second.GetSumOfAll()<<endl;
-
-	}
-	exit(1);
 	return Yield_map;
 }
 
