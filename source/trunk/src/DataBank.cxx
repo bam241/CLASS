@@ -1307,7 +1307,7 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 
 	if(fWeightedDistance)
 	{
-		Distance(isotopicvector.GetActinidesComposition()
+		distance = Distance(isotopicvector.GetActinidesComposition()
 			 * evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
 			 / isotopicvector.GetActinidesComposition().GetSumOfAll(),
 			 evolutiondb.begin()->second);
