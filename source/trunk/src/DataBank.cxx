@@ -530,7 +530,7 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 				//				FPDistribution *FP=0;
 				string decay_name = GetDecay(DecayModes, BR, Iso, start);
 
-				if (decay_name == "s")	{DM=0;}
+				if (decay_name == "s")	{DM=0;daughter_N=(A-Z);	daughter_Z=Z;BR=1;}
 				if (decay_name == "b-")	{DM=1;stable=false;	daughter_N=(A-Z)-1;	daughter_Z=Z+1;}
 				if (decay_name == "n")	{DM=2;stable=false;	daughter_N=(A-Z)-1;	daughter_Z=Z;}
 				if (decay_name == "nn")	{DM=3;stable=false;	daughter_N=(A-Z)-2;	daughter_Z=Z;}
@@ -557,7 +557,7 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 					// not spontaneous fission
 					ZAI DaughterZAI = ZAI(daughter_Z,daughter_A,Iso);
 
-						if((BR>1e-10) && (!stable))
+					if((BR>1e-10) && (!stable))
 					{
 						if(DM <= 15)
 						{
@@ -566,7 +566,7 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 						}
 						else if( DM <= 18)
 						{
-							if(fSpontaneusYield.size() == 0 || fReactionYield.size() == 0)
+							if(fSpontaneusYield.size() == 0 || fReactionYield.size() == 0 || DM == 17 || DM == 18)
 							{
 								DaughtersMap += 2*BR * ZAI(-2,-2,-2);
 
@@ -605,13 +605,19 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 
 
 
-			if (HalfLife < fShorstestHalflife)
+			if (HalfLife < fShorstestHalflife && !stable)
 				fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ParentZAI, DaughtersMap.GetIsotopicQuantity() ) );
-			
+			else if (stable)
+			{
+				IsotopicVector StableIV = ParentZAI *1;
+				ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >
+						(ParentZAI, pair<double, map< ZAI, double > >
+						 ( 1e36, StableIV.GetIsotopicQuantity()) ) );
+			}
 			else
 				ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >
-						 (ParentZAI, pair<double, map< ZAI, double > >
-							     ( HalfLife, DaughtersMap.GetIsotopicQuantity()) ) );
+						(ParentZAI, pair<double, map< ZAI, double > >
+						 ( HalfLife, DaughtersMap.GetIsotopicQuantity()) ) );
 
 
 		}
@@ -669,9 +675,9 @@ void DataBank<IsotopicVector>::BuildDecayMatrix()
 							if( !IResult.second)
 								(*IResult.first).second += (*BR_it).second * (*BR2_it).second ;
 
-							
+
 						}
-						
+
 					}
 					else
 					{
@@ -828,7 +834,7 @@ map< ZAI,IsotopicVector > DataBank<IsotopicVector>::ReadFPYield(string Yield)
 		int A = atof(StringLine::NextWord(line, start, ' ').c_str());
 		int I = 0;
 
-//		if(Z!=0 && A!=0)
+		//		if(Z!=0 && A!=0)
 		{
 			pair<map<ZAI, IsotopicVector>::iterator, bool> IResult;
 			IResult = Yield_map.insert(pair<ZAI,IsotopicVector>(ZAI(Z,A,I),EmptyIV) );
@@ -882,7 +888,6 @@ void DataBank<IsotopicVector>::LoadFPYield(string SponfaneusYield, string Reacti
 
 	fSpontaneusYield = ReadFPYield(SponfaneusYield);
 	fReactionYield = ReadFPYield(ReactionYield);
-
 	fZAIThreshold = 0;
 }
 
@@ -1380,10 +1385,10 @@ EvolutionData DataBank<IsotopicVector>::GetClosest(IsotopicVector isotopicvector
 	else
 	{
 		distance = Distance(isotopicvector.GetActinidesComposition(),
-				   evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition()
-				   / evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
-				   * isotopicvector.GetActinidesComposition().GetSumOfAll(),
-				   fDistanceType, fDistanceParameter);
+				    evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition()
+				    / evolutiondb.begin()->second.GetIsotopicVectorAt(t).GetActinidesComposition().GetSumOfAll()
+				    * isotopicvector.GetActinidesComposition().GetSumOfAll(),
+				    fDistanceType, fDistanceParameter);
 		for( it = evolutiondb.begin(); it != evolutiondb.end(); it++ )
 		{
 
@@ -1664,7 +1669,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 		map<ZAI, double > isotopicquantity = isotopicvector.GetIsotopicQuantity();
 		TMatrixT<double>  N_0Matrix =  TMatrixT<double>( findex.size(),1) ;
 		for(int i = 0; i < (int)findex.size(); i++)
-				N_0Matrix[i] = 0;
+			N_0Matrix[i] = 0;
 
 		map<ZAI, double >::iterator it ;
 		for(int i = 0; i < (int)findex.size(); i++)
@@ -1928,7 +1933,7 @@ EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector iso
 	GeneratedDB.SetReactorType(ReactorType );
 	GeneratedDB.SetCycleTime(cycletime);
 
-//	fDataBankCalculated.insert( pair< IsotopicVector, EvolutionData > ( GeneratedDB.GetIsotopicVectorAt(0.), GeneratedDB) );
+	//	fDataBankCalculated.insert( pair< IsotopicVector, EvolutionData > ( GeneratedDB.GetIsotopicVectorAt(0.), GeneratedDB) );
 
 	ResetTheMatrix();
 	ResetTheNucleiVector();
