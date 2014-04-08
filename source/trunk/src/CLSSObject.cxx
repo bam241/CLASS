@@ -18,5 +18,6 @@ ClassImp(CLSSObject)
 CLSSObject::CLSSObject()
 {
 	fLog = 0;
+	fIsLog = false;
 }
 

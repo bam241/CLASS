@@ -5,8 +5,7 @@
 /*!
  \file
  \brief Header file for IsotopicVector class. 
-  The aim of this Class is to manage any kind of IsotopicVector, and any operation between them : sum, substraction....
-  
+
  @author BaM, Marc
  @version 2.0
  */
@@ -19,6 +18,16 @@
 using namespace std;
 typedef long long int cSecond;
 
+//-----------------------------------------------------------------------------//
+/*!
+ Define a Isotopicvector.
+ The aim of this Class is to manage any kind of IsotopicVector, and any operation between them : sum, substraction....
+
+ @author BaM
+ @version 2.0
+ */
+//________________________________________________________________________
+
 
 
 class IsotopicVector : public TObject
@@ -26,30 +35,54 @@ class IsotopicVector : public TObject
 public :
 
 //********* Constructor/Destructor Method *********//
-	///< Normal Constructor.
- 	IsotopicVector();
- 	
- 	///< Normal Destructor.
- 	~IsotopicVector();	 
 
-	
+	/*!
+	 \name Constructor/Desctructor
+	 */
+	//@{
+
+	IsotopicVector();	///< Normal Constructor.
+
+
+ 	~IsotopicVector();	///< Normal Destructor.
+
+	//@}
+
+
 //********* Get Method *********//
+
+	/*!
+	 \name Get Method
+	 */
+	//@{
 
 	map<ZAI ,double>	GetIsotopicQuantity() const { return fIsotopicQuantity; }			//!< Return the IVQuantity map 
 	map<ZAI ,double>	GetIsotopicQuantityNeeded() const { return fIsotopicQuantityNeeded; }	//!< Return the IVQuantityNeeded map
 	IsotopicVector		GetSpeciesComposition(int z) const;					//!< Return the Species composition of the "z" atom
 	vector<ZAI>		GetZAIList() const;					//!< Return the list of ZAI present in the IV
-	IsotopicVector		GetActinidesComposition() const;					//!< Return the Actinides composition of the "z" atom
-	double	GetZAIIsotopicQuantity(const ZAI& zai) const;						///< Return the composition of the IsotopicVector
-	double	GetZAIIsotopicQuantity(const int z, const int a, const int i) const;			///< Return the composition of the IsotopicVector
+	IsotopicVector		GetActinidesComposition() const;			//!< Return the Actinides composition of the "z" atom
+	double	GetZAIIsotopicQuantity(const ZAI& zai) const;				///< Return the quantity of the ZAI
+	double	GetZAIIsotopicQuantity(const int z, const int a, const int i) const;	///< Return the quantity of the ZAI
 
-	vector<int>		GetChemicalSpecies() const;						//!< Return the Species Species contained
-	int	GetZAIQuantity()		{return  fIsotopicQuantity.size(); }
+	vector<int>		GetChemicalSpecies() const;				//!< Return the Species Species contained
+	int	GetZAIQuantity()		{return  fIsotopicQuantity.size(); }	//!< Return the number of different ZAI in the IsotopicVector
 
-	double GetSumOfAll();
+	double GetSumOfAll();								//!< Return the Sum of nuclei in the IsotopicVector
 
-//********* Modification Method *********//
-	void 	Clear();					//!< Empty all the IV 
+	//@}
+
+
+
+
+//*********  Internal Operation Method *********//
+
+	/*!
+	 \name Internal Operation Method
+	 */
+	//@{
+
+
+	void 	Clear();					//!< Empty all the IV
 	void 	ClearNeed();					//!< Empty Need componant of the IV 
 
 	void	Add(const ZAI& zai, double quantity); 		//!< Add Quantity gramme of the ZAI Element
@@ -65,20 +98,30 @@ public :
 	void	Remove(const IsotopicVector& isotopicvector); 	//!< Remove IsotopicVector to the existing IsotopicVector
 
 	void 	Multiply(double factor);			//!< Multiply the IV by a Factor
-	
-	void	Write(string filename, cSecond time = -1 ) const;	///< Write the Content of the IV in the filename file
 
-	void	Print(string o =" ") const ;			///< Print the composition of the IV
-	void	PrintList(string o =" ") const ;			///< Print the composition of the IV
-
-
-	
-	
-//******* Set Operator between IsotopicVector *******//
 
 	IsotopicVector& operator+=(IsotopicVector const& IVb);	//!<....
 	IsotopicVector& operator-=(IsotopicVector const& IVb);	//!<....
 	bool operator <(const IsotopicVector& isotopicvector) const;	//!< IsotopicVector Comparator
+
+	//@}
+
+
+
+//********* In/Out related Method *********//
+
+	/*!
+	 \name  In/Out Method
+	 */
+	//@{
+
+	void	Write(string filename, cSecond time = -1 ) const;	///< Write the Content of the IV in the filename file
+
+	void	Print(string o =" ") const ;				///< Print the composition of the IV
+	void	PrintList(string o =" ") const ;			///< Print the composition of the IV
+
+	//@}
+	
 
 //***************************************************///< 
 

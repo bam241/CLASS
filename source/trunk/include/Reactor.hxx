@@ -4,11 +4,6 @@
 /*!
  \file
  \brief Header file for reactor classes. 
-  Define a reactor.
- 
- 
- @author BaM
- @version 2.0
  */
 
 #include <string>
@@ -31,36 +26,129 @@ class FabricationPlant;
 class Storage;
 class LogFile;
 
+//-----------------------------------------------------------------------------//
+/*!
+ Define a reactor.
+ The aim of this class is to deal the evolution of the fuel inside a reactor.
+ The fuel state of the reactor is describe in the IsotopicVector. Its evolution is contain in the EvolutionData
+
+ @author BaM
+ @version 2.0
+ */
+//________________________________________________________________________
+
+
+
 class Reactor : public CLSSFacility
 {
 public :
-	///< Normal Constructor.
-	Reactor();
+
+
+//********* Constructor/Destructor Method *********//
+
+	/*!
+	 \name Constructor/Desctructor
+	 */
+	//@{
+
+	Reactor();		///< Normal Constructor.
+
+	//{
+	/// LogFile Constructor.
+	/*!
+	 Use create an empty Reactor loading a LogFile
+	 \param LogFile LogFile used for the log...
+	 */
 	Reactor(LogFile* log);
-	///< Advbanced Constructor.
+	//}
+
+	//{
+	/// Special Constructor for reprocessed fuel.
+	/*!
+	 Make a new reactor
+	 \param LogFile LogFile used for the log...
+	 \param fueltypeDB Databank describing the evolution of the fuel
+	 \param Pool Pool used for the cooling of the fuel after iradiation
+	 \param creationtime creation time
+	 \param lifetime working time duration.
+	 */
 	Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 		FabricationPlant* fabricationplant, Pool* Pool,
-		double creationtime , double lifetime);				//!<
-	
+		double creationtime , double lifetime);
+	//}
+
+	//{
+	 /// Special Constructor for reprocessed fuel using cycletime and Burn-Up.
+	 /*!
+	  Make a new reactor
+	 \param LogFile LogFile used for the log...
+	 \param fueltypeDB Databank describing the evolution of the fuel
+	 \param Pool Pool used for the cooling of the fuel after iradiation
+	 \param creationtime creation time
+	 \param lifetime working time duration.
+	 \param cycletime duration of a cycle
+	 \param HMMass Mass of Heavy Metal in the Reactor
+	 \param BurnUp Burnup reach by the fuel at the end of the cycle
+	 */
 	Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 		FabricationPlant* fabricationplant, Pool* Pool,
 		double creationtime , double lifetime, double cycletime,
-		double HMMass, double BurnUp);					//!<
-	
+		double HMMass, double BurnUp);
+	//}
+
+	//{
+	/// Special Constructor for reprocessed fuel using Power and Burn-Up.
+	/*!
+	 Make a new reactor
+	 \param LogFile LogFile used for the log...
+	 \param fueltypeDB Databank describing the evolution of the fuel
+	 \param Pool Pool used for the cooling of the fuel after iradiation
+	 \param creationtime creation time
+	 \param lifetime working time duration.
+	 \param Power Thermal power of the reactor
+	 \param HMMass Mass of Heavy Metal in the Reactor
+	 \param BurnUp Burnup reach by the fuel at the end of the cycle
+	 \param ChargeFactor effective charge of the reactor.
+	 */
 	Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 		FabricationPlant* fabricationplant, Pool* Pool,
 		double creationtime , double lifetime,
-		double Power, double HMMass, double BurnUp, double ChargeFactor);	//!<
+		double Power, double HMMass, double BurnUp, double ChargeFactor = 1);
+	//}
 
+	//{
+	/// Special Constructor for fixed fuel using Power and Burn-Up.
+	/*!
+	 Make a new reactor
+	 \param LogFile LogFile used for the log...
+	 \param evolutivedb EvolutionData describing the evolution of the fuel
+	 \param Pool Pool used for the cooling of the fuel after iradiation
+	 \param creationtime creation time
+	 \param lifetime working time duration.
+	 \param Power Thermal power of the reactor
+	 \param HMMass Mass of Heavy Metal in the Reactor
+	 \param BurnUp Burnup reach by the fuel at the end of the cycle
+	 \param ChargeFactor effective charge of the reactor.
+	 */
 	Reactor(LogFile* log, EvolutionData evolutivedb, Pool* Pool,
 		double creationtime, double lifetime,
-		double power, double HMMass, double BurnUp, double ChargeFactor);
+		double power, double HMMass, double BurnUp, double ChargeFactor = 1);
+	//}
 
-	///< Normal Destructor
-	~Reactor();
-	
+	~Reactor();	///< Normal Destructor
+
+	//@}
+
+
+
 
 //********* Get Method *********//
+
+	/*!
+	 \name Get Method
+	 */
+	//@{
+	
 	IsotopicVector 	GetIVReactor()		const	{ return GetInsideIV(); } 	//!< Return the IV contain in the Reactor
 	IsotopicVector	GetIVBeginCycle()	const	{ return fIVBeginCycle; }	//!< Return the Starting Cycle IV
 											//!< (Note : IVBegin != IVIn, only if using charging plan)
@@ -81,8 +169,18 @@ public :
 	double	GetBurnUp()		const	{ return fBurnUp; }		//!< Return the Burn Up of the Fuel at the end of the cycle
 	double	GetPower()		const	{ return fPower; } 		//!< Return the cycle time of the Reactor
 
+	//@}
+
+
+
 
 //********* Set Method *********//
+
+	/*!
+	 \name Set Method
+	 */
+	//@{
+	
 	void SetStorage(Storage* storage)	{ fStorage = storage; fIsStorage = true;}	//!< Set the Pointer to the Storage
 
 	void SetIVReactor(IsotopicVector isotopicvector)	{ fInsideIV = isotopicvector; }	//!< Set the IV inside the Reactor Core
@@ -96,20 +194,30 @@ public :
 	void SetPower(double Power);						//!< Set the Power
 	void SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}	//!< Set the HeavyMetal Mass in the Core at the begining of the cycle
 	void SetBurnUp(double BU)		{fBurnUp = BU;}			//!< Set the the Burn Up of the Fuel at the end of the cycle
+	//@}
 
-//********* Modification Method *********//
+
+
+
+//********* Evolution & Modification Method *********//
+
+	/*!
+	 \name Evolution & Modification Method
+	 */
+	//@{
+	
 	void Evolution(cSecond t);						//!< Performe the Evolution until the Time t
 	void Dump();								//!< Write Modification (IV In/Out, filling the TF...)
 	void SetNewFuel(EvolutionData ivdb);					//!< Change the Evolutive DB of the Reactor
 	
-	
-//********* Other Method *********//
-	
-	
+	//@}
+
+
+
 protected :
 	
-	bool		fFixedFuel;
-	bool		fIsStorage;
+	bool		fFixedFuel;		//!< true if the fuel is fixed (not reprocessed)
+	bool		fIsStorage;		//!< true if a storage has been define (to approximate the reprocessing using fixed fuel)
 	
 //********* Internal Parameter *********//
 	Pool*		fAssociedPool;		//!< Pointer to the TF which collect the spend fuel

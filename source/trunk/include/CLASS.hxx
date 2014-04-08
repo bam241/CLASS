@@ -1,16 +1,10 @@
 #ifndef _CLASS_HXX_
 #define _CLASS_HXX_
-
 /*!
  \file
  \brief Header file for CLASS classes. 
- Define a CLASS Parc.
- The aim of thes Class is to manage the parc, store reactor, Pool, process the evolution, build Isotopic vector
-
- 
- @author BaM, Marc
- @version 2.0
  */
+
 #include "CLSSObject.hxx"
 #include "IsotopicVector.hxx"
 
@@ -32,19 +26,56 @@ class Reactor;
 class Pool;
 class Storage;
 
+//-----------------------------------------------------------------------------//
+/*!
+Define a CLASS Parc.
+The aim of these class is to manage the parc and its evolution and to lead all Storage, FabricationPlant, Reactor, Pool.
+
+
+ @author BaM
+ @author Marc
+ @version 2.0
+ */
+//________________________________________________________________________
+
+
 class CLASS : public CLSSObject
 {
 public :
-	///< Normal Constructor.
-	CLASS();
-	CLASS(LogFile* Log);
-	CLASS(double abstime);
-	
-	///< Normal Destructor.
-	~CLASS();
+
+//********* Constructor/Destructor Method *********//
+
+	/*!
+	 \name Constructor/Desctructor
+	 */
+	//@{
+
+	CLASS();		///< Normal Constructor.
+
+
+
+	CLASS(LogFile* Log);	///< Log Constructor.
+ 	/*!
+	 Use to load a LogFile
+	 \param LogFile: LogFile used for the log...
+	 */
+
+
+	CLASS(double abstime);	///< Time Constructor.
+ 	/*!
+	 Use to set the starting time of the Parc
+	 \param abstime: Starting time of the Parc in second
+	 */
+
+	~CLASS();	///< Normal Destructor.
+	//@}
 
 
 //********* Get Method *********//
+	/*!
+	 \name Get Function
+	 */
+	//@{
 	cSecond				GetAbsoluteTime()	{ return fAbsoluteTime; }	///< Return the Absolute Clock
 	map<cSecond, int>		GetTimeStep()		{ return fTimeStep; }		///< Return the Time Step Vector
 	vector<Reactor*>		GetReactor()		{ return fReactor; }		///< Return the Reactor Vector
@@ -56,40 +87,112 @@ public :
 	cSecond				GetPrintSet()		{ return fPrintStep; }		///< Return the Print Step Periodicity
 	bool				GetStockManagement()	{ return fStockManagement; }	///< Return the StockManagement method (True or False)
 	string				GetOutputFileName()	{ return fOutputFileName; }	///< Return the Output File name
-	string				GetOutputTreeName()	{ return fOutputTreeName; }	///< Return the Output File name
+	string				GetOutputTreeName()	{ return fOutputTreeName; }	///< Return the Output ROOT TTree name
+	//@}
+
+
 
 
 //********* Set Method *********//
-	void	SetTimeStep(double timestep) 				{ fPrintStep = (cSecond)timestep; }	///< Set the Printing Step periodicity
-	void	SetStockManagement(bool val)				{ fStockManagement = val; }		//!< Set the StockManagement method (True or false)
-	void	SetDecayDataBase(DataBank<ZAI>* decaydatabase) { fDecayDataBase = decaydatabase; }	//!< Set the Pointer to the Decay DataBase
-	
-	void	SetOutputFileName(string name)	{ fOutputFileName = name; }		//!< Set the Output File Name
-	void	SetOutputTreeName(string name)	{ fOutputTreeName = name; }		//!< Set the Output File Name
+	/*!
+	 \name Set Function
+	 */
+	//@{
+
+	//{
+	/// Set the Printing Step periodicity
+	/*!
+	 Use to set the periodicity of the output
+	 \param timestep: periodicity of outpout in second
+	 */
+	void	SetTimeStep(cSecond timestep) 				{ fPrintStep = timestep; }
+	//}
+
+	//{
+	/// Set the StockManagement method
+	/*!
+	 Use to define the stock managment method : true all fuel are stored individualy and false all fuel are mixed in a stock, and one can separate each isotope as needed
+	 \param val: true or false depending on the stock management method used
+	 */
+	void	SetStockManagement(bool val)				{ fStockManagement = val; }
+	//}
+
+	//{
+	/// Set the Decay DataBank
+	/*!
+	 Use to define Decay DataBank to be used
+	 \param decaydatabase: a Databank<ZAI> which should contain the evolution of each nuclei of the chart
+	 */
+	void	SetDecayDataBase(DataBank<ZAI>* decaydatabase) { fDecayDataBase = decaydatabase; }
+	//}
+
+	//{
+	/// Set the Output File Name
+	/*!
+	 Use to define name of the output file
+	 \param name: a string which correspond to the output file name
+	 */
+	void	SetOutputFileName(string name)	{ fOutputFileName = name; }
+	//}
+
+
+	//{
+	/// Set the Output TTree Name
+	/*!
+	 Use to define name of the output ROOT TTree
+	 \param name: a string which correspond to the output ROOT TTree name
+	 */
+	void	SetOutputTreeName(string name)	{ fOutputTreeName = name; }
+	//}
+	//@}
 
 
 //********* Add Method *********//
+	/*!
+	 \name Adding Facilities
+	 */
+	//@{
+
 	void	AddPool(Pool* Pool);						///< Add A TF to the Park
 	void	AddReactor(Reactor* reactor);					///< Add a Reactor to the Park 
 	void 	AddStorage(Storage* storage);					///< Add a Storage to the Park
 	void 	AddFabricationPlant(FabricationPlant* fabricationplant);	///< Add a Storage to the Park
 	
-	
-	
-	
+
+	//@}
+
 	
  	
 //********* Evolution Method *********//
-	void	BuildTimeVector(cSecond t);		///< Build the Time Evolution Vector
-	void	Evolution(double t);			///< Do the Evolution
-	void	PoolEvolution();			///< Do TF Evolution
-	void	ReactorEvolution();			///< Do the Reactor Evolution
-	void	FabricationPlantEvolution();		///< Do the FabricationPlant Evolution
-	void	StorageEvolution();			///< Do the Storage Evolution
+	/*!
+	 \name Evolution Method
+	 */
+	//@{
+
+	void	BuildTimeVector(cSecond t);		///< Build the Time Evolution Vector where :
+							/// \li 1 printing,
+							/// \li 2 reactor Studown
+							/// \li 4 start/End of reactor cycle,
+							/// \li 8 end of Cooling,
+							/// \li 16 fuel Fabrication
+
+	void	Evolution(double t);			///< Perform the Evolution
+	void	PoolEvolution();			///< Perform TF Evolution
+	void	ReactorEvolution();			///< Perform the Reactor Evolution
+	void	FabricationPlantEvolution();		///< Perform the FabricationPlant Evolution
+	void	StorageEvolution();			///< Perform the Storage Evolution
+
+	//@}
 
 
 
 //-------- IsotopicVector --------//
+
+	/*!
+	 \name  IsotopicVector Sum
+	 */
+	//@{
+
 
 	IsotopicVector		GetGod() const		{ return fGod; }		//!< Return the God Providings IsotopicVector
 	void AddGodIncome(ZAI zai, double quantity)	{ AddGod(zai*quantity); }	//!< Add a ZAI*quantity to GodIncome
@@ -98,23 +201,34 @@ public :
 	void AddWaste(IsotopicVector isotopicvector)	{ fWaste.Add(isotopicvector); }	//!< Add a isotopicVector to Waste
 	void AddToPower(double power)			{ fParcPower += power;}		//!< Add power to the installed power in the Parc
 
+	//@}
+
+
 
 //********* In/Out related Method *********//
-	void	ProgressPrintout(cSecond t);
+
+	/*!
+	 \name  In/Out Method
+	 */
+	//@{
+
+
+	void	ProgressPrintout(cSecond t);		//!< Update the prompt output to the time t
 	
-	void	Print();
-	void	Write();
-	void	UpdateParc();
-	void	OpenOutputTree();
-	void	CloseOutputTree();
-	void	OutAttach();
-	void	ResetQuantity();
+	void	Print();				//!< Print some information about the Parc
+	void	Write();				//!< Write information in a file
+	void	UpdateParc();				//!< Update the Global IsotopicVector
+	void	OpenOutputTree();			//!< Open and define the Ouput ROOT TTree
+	void	CloseOutputTree();			//!< Close and delete the Ouput ROOT TTree
+	void	OutAttach();				//!< Attach the Branch to the Ouput ROOT TTree
+	void	ResetQuantity();			//!< Reset the values of the GLobal IsotopicVector
 	
-	
+	//@}
+
 	
 	
 protected :
-	bool			fNewTtree;
+	bool			fNewTtree;		//!< Tru if we want to define a new TTree in the output File
 	bool			fStockManagement;	///< True if real StockManagement false unstead (Default = true)
 	
 	
@@ -122,11 +236,11 @@ protected :
 	cSecond			fAbsoluteTime;		///< Absolute Clock
 	cSecond			fStartingTime;		///< Starting Time
 	map<cSecond, int>	fTimeStep;		///< Time Step Vector for the evolution :
-							///< 1 Printing, 
-							///< 2 Reactor Studown
-							///< 4 Start/End of reactor cycle,
-							///< 8 End of Cooling,
-							///< 16 Fuel Fabrication 
+							/// \li 1 printing,
+							/// \li 2 reactor Studown
+							/// \li 4 start/End of reactor cycle,
+							/// \li 8 end of Cooling,
+							/// \li 16 fuel Fabrication
 
 	
 	vector<Storage*>		fStorage;		///< Vector of Storages
@@ -150,9 +264,9 @@ protected :
 	IsotopicVector	fTotalInReactor;	///< Sum of all IV in Reactor IV
 
 
-	IsotopicVector	fIVInCycleTotal;	///< Summ of all IV in the cycle (without Waste) IV
-	IsotopicVector	fIVTotal;		///< Summ of all IV in the parc (including Waste) IV
-	double		fParcPower;		///< Summ of the Power of all reactor in the parc
+	IsotopicVector	fIVInCycleTotal;	///< Sum of all IV in the cycle (without Waste) IV
+	IsotopicVector	fIVTotal;		///< Sum of all IV in the parc (including Waste) IV
+	double		fParcPower;		///< Sum of the Power of all reactor in the parc
 
 };
 

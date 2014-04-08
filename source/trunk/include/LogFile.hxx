@@ -6,8 +6,7 @@
 /*!
  \file 
  \brief Header file for LogFile class. 
-  The aim of this Class is to centralize the all CLASS software message inside a file.
- 
+
  
  @author BaM
  @version 2.0
@@ -18,22 +17,53 @@
 #include "stdlib.h"
 using namespace std;
 
+//-----------------------------------------------------------------------------//
+/*!
+ Define a LogFile.
+ The aim of this class is to centralize the all CLASS software message inside a file.
+
+
+ @author BaM
+ @version 2.0
+ */
+//________________________________________________________________________
+
+
 
 class LogFile
 {
 public:
-	//!< Normal Constructor
-	LogFile(string LogFileName );
 
-	//!< Normal Destructor
-	~LogFile();
-	
-	string GetLogFileName() const { return fLogFileName; }
+	//********* Constructor/Destructor Method *********//
+
+	/*!
+	 \name Constructor/Desctructor
+	 */
+	//@{
+
+
+	LogFile(string LogFileName );	//!< Normal Constructor
+
+	~LogFile();	//!< Normal Destructor
+
+	//@}
+
+	//********* In/Out Method *********//
+
+	/*!
+	 \name In/Out
+	 */
+	//@{
+
+	string GetLogFileName() const { return fLogFileName; }	//!w return the logfile name
 
 	std::ofstream fLog;		//!< Log Stream
-	
+
+	//@}
+
 	private :
-	string fLogFileName;
+
+	string fLogFileName;		//!< Log File name
 };
 
 #endif
