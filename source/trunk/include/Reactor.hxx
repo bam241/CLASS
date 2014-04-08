@@ -113,7 +113,7 @@ public :
 	Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
 		FabricationPlant* fabricationplant, Pool* Pool,
 		double creationtime , double lifetime,
-		double Power, double HMMass, double BurnUp, double ChargeFactor = 1);
+		double Power, double HMMass, double BurnUp, double ChargeFactor);
 	//}
 
 	//{
