@@ -4,11 +4,6 @@
 /*!
  \file
  \brief Header file for ZAI classes. 
- Define a nuclei as : Z A I.
-
- 
- @author BaM
- @version 2.0
  */
 
 #include <string>
@@ -17,20 +12,33 @@
 
 using namespace std;
 
-
-
-
-///< A ZAI defined for a Nucleus. 
+//-----------------------------------------------------------------------------//
 /*!
+ Define a nuclei as : Z A I.
+ The aim of this class is to discribe each ZAI.
 
-*/
+ @author BaM
+ @version 2.0
+ */
+//________________________________________________________________________
+
+
+
 class ZAI : public TObject
 {
-	
-	
- public:
-	///< Default constructor
-	ZAI();
+public:
+
+
+//********* Constructor/Destructor Method *********//
+
+	/*!
+	 \name Constructor/Desctructor
+	 */
+	//@{
+
+	ZAI();	///< Default constructor
+
+	//{
  	///< Normal Constructor. 
  	/*!
  	 Default: No parent
@@ -38,9 +46,13 @@ class ZAI : public TObject
  	 \param A : number of nucleons (A=0 means natural isotopes) 
  	*/
 	ZAI(int Z, int A, int I=0);
+	//}
 
-	///< Normal Destructor.
-	~ZAI(); 
+
+	~ZAI();	///< Normal Destructor.
+
+
+//********* ZAI main attributes Method *********//
 
 	/*!
 	\name ZAI main attributes 
@@ -53,6 +65,8 @@ class ZAI : public TObject
 		
 	void SetMass(double m)	{ fMass=m; }	///< set the mass of a ZAI
 	double GetMass();			///< get the mass of a ZAI
+	//@}
+
 
 
 	ZAI operator=(ZAI IVa);		//!< ...

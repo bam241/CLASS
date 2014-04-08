@@ -6,10 +6,7 @@
 /*!
  \file
  \brief Header file for CLSSFacility class.
- 
- 
- @author BaM
- @version 2.0
+
  */
 
 #include <string>
@@ -25,6 +22,20 @@ typedef long long int cSecond;
 
 class CLASS;
 
+//-----------------------------------------------------------------------------//
+/*!
+ Define a CLASS Facility.
+ The aim of these class is synthetyse all the commum properties of the nuclear facilities.
+
+
+ @author BaM
+ @version 2.0
+ */
+//________________________________________________________________________
+
+
+
+
 class CLSSFacility : public CLSSObject
 {
 public :
@@ -32,6 +43,11 @@ public :
 	CLSSFacility();
 	
 		//********* Get Method *********//
+	/*!
+	 \name Get Function
+	 */
+	//@{
+
 	int 		GetId()			const	{ return fId; }			//!< Return the Facility Parc'Is
 	IsotopicVector 	GetInsideIV()		const	{ return fInsideIV; } 		//!< Return the IV contain in the Facility
 
@@ -43,9 +59,13 @@ public :
 	CLASS*		GetParc()			{ return fParc; }
 	IsotopicVector GetCumulativeIVIn() { return fCumulativeIVIn;}
 	IsotopicVector GetCumulativeIVOut() { return fCumulativeIVOut;}
-
+	//@}
 	
 		//********* Set Method *********//
+	/*!
+	 \name Set Function
+	 */
+	//@{
 	void SetId(int id)			{ fId = id; }				//!< Set The Facility Parc'Id
 	void SetParc(CLASS* parc)		{ fParc = parc; }			//!< Set the Pointer to the Parc
 	
@@ -55,28 +75,33 @@ public :
 	virtual void SetCycleTime(double cycletime)	{ fCycleTime = (cSecond)cycletime; }	//!< Set the cycle time (Cycle of the loading Plan)
 	void SetInCycleTime(double incycletime)		{ fInCycleTime = (cSecond)incycletime; fIsStarted = true; }	//!< Set the cycle time (Cycle of the loading Plan)
 	void SetInternalTime(double internaltime)	{ fInternalTime = (cSecond)internaltime; }	//!< Set the cycle time (Cycle of the loading Plan)
-	
-	void AddCumulativeIVIn(IsotopicVector IV) { fCumulativeIVIn += IV;}
-	void AddCumulativeIVOut(IsotopicVector IV) { fCumulativeIVOut += IV;}
+	//@}
 
-		//********* Modification Method *********//
+
+	/*!
+	 \name Evolution Method
+	 */
+	//@{
+
+	void AddCumulativeIVIn(IsotopicVector IV) { fCumulativeIVIn += IV;}		//!< Add the Input IsotopicVector the The cumulative IV IN
+	void AddCumulativeIVOut(IsotopicVector IV) { fCumulativeIVOut += IV;}		//!< Add the Input IsotopicVector the The cumulative IV OUT
 	virtual void Evolution(cSecond t)	{ }	//!< Performe the Evolution to the Time t
-	virtual void Dump()			{ }			//!< Write Modification (IV In/Out, filling the TF...)
+	virtual void Dump()			{ }	//!< Write Modification (IV In/Out, filling the TF...)
 		
-		
+	//@}
 protected :
 	bool		fIsStarted;		///< True if Running, False Otherwise
-	bool		fShutDown;		///< True if ShutDown
+	bool		fShutDown;		///< True if the facility is stoped, False Otherwise
 	bool		fEndOfCycle;		///< True if Reaching the End of a Facility Cycle
 
 		
 	cSecond		fInternalTime;		///< Internal Clock
 	cSecond		fInCycleTime;		///< Time spend since the beginning of the last Cycle
-	cSecond		fCycleTime;		///< Cycle Time
+	cSecond		fCycleTime;		///< Cycle duration Time
 
 	IsotopicVector	fInsideIV;		///< All IV in the Facility (fuel for reactor, total for all others...)
-	IsotopicVector	fCumulativeIVIn;		///< All IV in the Facility (fuel for reactor, total for all others...)
-	IsotopicVector	fCumulativeIVOut;		///< All IV in the Facility (fuel for reactor, total for all others...)
+	IsotopicVector	fCumulativeIVIn;	///< All IV in the Facility (fuel for reactor, total for all others...)
+	IsotopicVector	fCumulativeIVOut;	///< All IV in the Facility (fuel for reactor, total for all others...)
 
 
 		//********* Internal Parameter *********//

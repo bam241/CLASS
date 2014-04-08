@@ -76,13 +76,12 @@ DataBank<ZAI>::DataBank(LogFile* Log, string DB_index_file, bool setlog, bool ol
 {
 
 	SetLog(Log);
-	IsLog(setlog);
 	fDataBaseIndex = DB_index_file;
 
 	fOldReadMethod = olfreadmethod;
 
 	// Warning
-	if(PrintLog())
+	if(IsLog())
 	{
 		cout	<< "!!INFO!! !!!DataBank<ZAI>!!! A EvolutionData<ZAI> has been define :" << endl;
 		cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
@@ -230,8 +229,6 @@ template<>
 DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool setlog, bool olfreadmethod):DynamicalSystem()
 {
 	SetLog(Log);
-	IsLog(setlog);
-
 	fWeightedDistance = false;
 	fEvolutionDataInterpolation = false;
 
@@ -256,7 +253,7 @@ DataBank<IsotopicVector>::DataBank(LogFile* Log, string DB_index_file, bool setl
 
 	SetForbidNegativeValue();
 
-	if(PrintLog())
+	if(IsLog())
 	{
 		// Warning
 		cout	<< "!!INFO!! !!!DataBank<IsotopicVector>!!! A EvolutionData<ZAI> has been define :" << endl;
@@ -1211,60 +1208,6 @@ TMatrixT<double> DataBank<IsotopicVector>::Getn2nXsMatrix(EvolutionData Evolutio
 	}
 	return BatemanMatrix;
 }
-
-//________________________________________________________________________
-template<>
-TMatrixT<double> DataBank<IsotopicVector>::ExtractXS(EvolutionData EvolutionDataStep,double TStep)
-{
-
-
-	map<ZAI ,TGraph* >::iterator it;
-	// ----------------  A(n,.) X+Y
-
-	map<ZAI ,TGraph* > FissionXS = EvolutionDataStep.GetFissionXS();
-
-	TMatrixT<double> SigmaPhi = TMatrixT<double>(findex.size()*3+1,1);
-	for(it = FissionXS.begin() ; it != FissionXS.end(); it++)
-	{
-
-		if( findex_inver.find( (*it).first ) != findex_inver.end() )
-		{
-			double y;
-			y = (*it).second->Eval(TStep);
-			SigmaPhi[findex_inver.find( (*it).first )->second][0] = y ;
-		}
-
-	}
-
-	// ----------------  A(n,.)A+1
-	map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetCaptureXS();
-	for(it = CaptureXS.begin(); it != CaptureXS.end(); it++)
-	{
-		if( findex_inver.find( (*it).first ) != findex_inver.end() )
-		{
-			double y;
-			y = (*it).second->Eval(TStep);
-			SigmaPhi[findex_inver.find( (*it).first )->second + findex.size() ][0] = y ;
-
-		}
-	}
-
-	// ----------------  A(n,2n)A-1
-	map<ZAI ,TGraph* > n2nXS = EvolutionDataStep.Getn2nXS();
-	for(it = n2nXS.begin() ; it != n2nXS.end(); it++)
-	{
-		if( findex_inver.find( (*it).first ) != findex_inver.end() )
-		{
-			double y;
-			y = (*it).second->Eval(TStep);
-			SigmaPhi[findex_inver.find( (*it).first )->second + findex.size() + findex.size()][0] = y ;
-
-		}
-	}
-	return SigmaPhi;
-}
-
-
 
 
 
