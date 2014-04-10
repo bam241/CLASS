@@ -285,9 +285,11 @@ DataBank<IsotopicVector>::~DataBank()
 	map<IsotopicVector ,EvolutionData >::iterator it_del;
 	for( it_del = fDataBank.begin(); it_del != fDataBank.end(); it_del++)
 		(*it_del).second.DeleteEvolutionData();
+	fDataBank.clear();
 
 	for( it_del = fDataBankCalculated.begin(); it_del != fDataBankCalculated.end(); it_del++)
 		(*it_del).second.DeleteEvolutionData();
+	fDataBankCalculated.clear();
 
 	fFissionEnergy.clear();
 	fFastDecay.clear();
@@ -352,6 +354,25 @@ void DataBank<IsotopicVector>::Clear()
 template<>
 void DataBank<IsotopicVector>::ReadDataBase()
 {
+
+	if(fDataBank.size() != 0)
+	{
+		map<IsotopicVector ,EvolutionData >::iterator it_del;
+		for( it_del = fDataBank.begin(); it_del != fDataBank.end(); it_del++)
+			(*it_del).second.DeleteEvolutionData();
+		fDataBank.clear();
+	}
+
+	if(fDataBankCalculated.size() != 0)
+	{
+		map<IsotopicVector ,EvolutionData >::iterator it_del;
+		for( it_del = fDataBankCalculated.begin(); it_del != fDataBankCalculated.end(); it_del++)
+			(*it_del).second.DeleteEvolutionData();
+		fDataBankCalculated.clear();
+	}
+
+
+
 
 	ifstream DataDB(fDataBaseIndex.c_str());							// Open the File
 	if(!DataDB)
@@ -1595,6 +1616,7 @@ TMatrixT<double> DataBank<IsotopicVector>::GetTheNucleiVector()
 template<>
 EvolutionData DataBank<IsotopicVector>::GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power)
 {
+
 	if(fFastDecay.size() == 0)
 	{
 		BuildDecayMatrix();

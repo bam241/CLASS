@@ -131,11 +131,11 @@ public :
 
 	void SetDataBank(map<T ,EvolutionData > mymap)	{ fDataBank = mymap; }	//!< Set the Databank map
 
-	void SetDataBaseIndex(string database) { fDataBaseIndex = database; }	//!< Set the Name of the database index
+	void SetDataBaseIndex(string database) { fDataBaseIndex = database;; ReadDataBase(); }	//!< Set the Name of the database index
 
 	EvolutionData GenerateEvolutionData(IsotopicVector isotopicvector, double cycletime, double Power); //!< Generation of a New EvolutionData From the one already present
 
-	void SetOldReadMethod(bool val)			{ fOldReadMethod = val;}			///< use the old reading method
+	void SetOldReadMethod(bool val)			{ fOldReadMethod = val; ReadDataBase();}			///< use the old reading method
 
 	//{
 	/// set Fission Energy using a file
