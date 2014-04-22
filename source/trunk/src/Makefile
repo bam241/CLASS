@@ -18,6 +18,8 @@ OBJS		= 	CLASS.o \
 			CLSSFacility.o CLSSFacilityDict.o\
 			Storage.o StorageDict.o\
 			FabricationPlant.o FabricationPlantDict.o \
+			PWR_THU_FabricationPlant.o \
+			PWR_THPU_FabricationPlant.o \
 			Pool.o PoolDict.o\
 			Reactor.o ReactorDict.o \
 			IsotopicVector.o IsotopicVectorDict.o \
