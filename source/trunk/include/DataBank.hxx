@@ -204,7 +204,7 @@ public :
 
 	IsotopicVector	Evolution(const T &key, double dt);	///< Return the Product IsotopicVector evolution from zai during a dt time
 	void	CalculateDistanceParameter();		///< Calcul of the weight for each ZAI in the distance calculation from the mean XS of the DataBank
-	void	BuildDecayMatrix();
+	void	BuildDecayMatrix();			///w Build the Decay Matrix for the futur evolution...
 
 
 	

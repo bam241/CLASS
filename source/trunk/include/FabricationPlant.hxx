@@ -2,13 +2,8 @@
 #define __FabricationPlant_HXX__
 
 /*!
- \file 
+ \file
  \brief Header file for FabricationPlant class.
-
- The aim of the Class is to manage evolution of FabricationPlant
-
- 
- @author BaM, Marc
  @version 2.0
  */
 
@@ -30,7 +25,20 @@
 using namespace std;
 typedef long long int cSecond;
 
+//-----------------------------------------------------------------------------//
+/*!
+ Define a FabricationPLant.
+ The aim of these class is describe the deal all the reprocessed fuel.
+ It includes the fabrication of the fuel from a stock of used fuel, using the aproprieted algrorythm, and the storage of this fuel before putting it into a reactor.
+ The parameter used for the fuel fabrication are recover from the DataBank.
+ The Databank MUST include an equivalence model to build the fuel. This model is not necessary provided, each user need to put his own. By default a equivalence model is provided for PWR MOX fuel.
 
+ The FabricationPlant once the fuel is builded, also store the corresponding EvolutionData generated using the DataBank.
+
+ @author BaM
+ @version 2.0
+ */
+//________________________________________________________________________
 
 
 
@@ -38,68 +46,116 @@ class FabricationPlant : public CLSSFacility
 {
 
 public :
-	///< Normal constructor
-	FabricationPlant();
+
+//********* Constructor/Destructor Method *********//
+
+	/*!
+	 \name Constructor/Desctructor
+	 */
+	//@{
+
+	FabricationPlant();	///< Normal constructor
+
+
+	//{
+	/// LogFile Constructor.
+	/*!
+	 Use create an empty FabricationPlant loading a LogFile
+	 \param LogFile LogFile used for the log...
+	 */
 	FabricationPlant(LogFile* log);
-	
+	//}
+
+
+	//{
+	/// Special Constructor.
+	/*!
+	 Make a new FabricationPlant evolution
+	 \param LogFile LogFile used for the log...
+	 \param storage storage used to build the reprocessed fuel
+	 \param reusable storage used to store all separated material not used in the fabrication process
+	 \param fabricationtime duration of the fabrication process (2 years by default).
+	 */
 	FabricationPlant(LogFile* log, Storage* storage, Storage* reusable, double fabricationtime = 365.25*24*3600*2);
-	///< Normal Destructor.
-	~FabricationPlant();
+	//}
+
+	~FabricationPlant(); 	///< Normal Destructor.
+
+	//@}
 
 
 
-
+	
 //********* Set Method *********//
-	void	SetUpdateReferenceDBatEachStep(bool val){ fUpdateReferenceDBatEachStep = val;}
+
+	/*!
+	 \name Set Method
+	 */
+	//@{
+
+	void	SetUpdateReferenceDBatEachStep(bool val){ fUpdateReferenceDBatEachStep = val;}	//!< Set fUpdateReferenceDBatEachStep variable
 	void	SetStorage(Storage* storage)		{ fStorage = storage; }			//!< Set the Pointer to the Storage
 	void	SetDecayDataBase(DataBank<ZAI>* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
 	
 	void	SetChronologicalTimePriority(bool bval)	{ fChronologicalTimePriority = bval;}	//!< Set the chronological priority (true for chronological, false unstead)
 	
-	void	SetSubstitutionFuel(EvolutionData fuel);
+	void	SetSubstitutionFuel(EvolutionData fuel);				//!< To use a subtition fuel if the fabrication fail (not enough material in stock)
 	
 	void	AddReactor(int reactorid, double creationtime)
 			{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }	//!< Add a new reactor
+	//@}
+
+
+
 
 //********* Get Method *********//
 
-	Storage*	GetStorage()		{ return fStorage; }		//!< Return the Pointer to the Storage	
+	/*!
+	 \name Get Method
+	 */
+	//@{
+	
+	Storage*	GetStorage()		{ return fStorage; }		//!< Return the Pointer to the Storage
 	
 	map<int, IsotopicVector >	GetReactorFuturIncome() const
 						{ return fReactorFuturIV;}	//!< Return the List of the Futur Fuel IV
+
 	DataBank<ZAI>* 	GeDecayDataBase() const
 						{ return fDecayDataBase; }	//!< Return the pointer to the DecayDB
 
-	IsotopicVector GetFullFabrication();
+	IsotopicVector GetFullFabrication();					//!< Return the Sum of all Fuel waiting to be put in a reator
 
 	EvolutionData GetReactorEvolutionDB(int ReactorId);			//!< Return the EvolutionData of Reactor ReactorId
 
-	
+	//@}
 
-//---------- FabricationPlant ----------//
+
+
+
+
+//********* Fabrication & Evolution Method *********//
+
+	/*!
+	 \name Fabrication & Evolution Method
+	 */
+	//@{
 
 	void	AddValorisableIV(ZAI zai, double factor);						///< Add Valorisable Element
 	void	Evolution(cSecond t);									//!< Perform the Evolution
-///	void	BuildFuelForReactor(int ReactorId);							//!< Build a Fuel for the reactor ReactorId
-	virtual void	BuildFuelForReactor(int ReactorId);						//!< Build a Fuel for the reactor ReactorId
-	// { cout<<"WARNING : This is a generic FabricationPlant"<<endl<<"Use specific FabricationPlant to Build the fuel"<<endl;};	//!<Build a Fuel for the reactor ReactorId
+	virtual void	BuildFuelForReactor(int ReactorId);							//!< Build a Fuel for the reactor ReactorId
 	void	RecycleStock(double fraction);								//!< Take a franction of the current stock
 	IsotopicVector	GetStockToRecycle();								//!< Get the next stock to recycle
 	void 	DumpStock();										//!< Update the storage
 	EvolutionData	BuildEvolutiveDB(int ReactorId, IsotopicVector isotopicvector);		//!< Build the Evolution Database for the Reactir ReactorId Fuel
 	void	TakeReactorFuel(int ReactorId) ;								//!< Remove the Fuel of reactor ReactorId
 	
-
-
-//********* Other Method *********//
-
-
+	//@}
 
 
 
 
 protected :
-	bool		fUpdateReferenceDBatEachStep;
+	bool		fUpdateReferenceDBatEachStep;	///< Set to true if the Reference Evolution Product must be updated at each calculation step (in the DataBank calculation)
 
 //********* Internal Parameter *********//
 	map<ZAI ,double>	fValorisableIV;		///< The Valorisable Table
@@ -118,16 +174,23 @@ protected :
 		//	double		fFabricationTime;		///< Fabrication Duration Time
 	bool		fChronologicalTimePriority;	//!< Set the Chronological Priotity (for the Stock Management) or the anti-chronological one
 
-	bool		fSubstitutionFuel;
-	EvolutionData	fSubstitutionEvolutionData;
+	bool		fSubstitutionFuel;		//!< true if a subtitution fuel as been set
+	EvolutionData	fSubstitutionEvolutionData;	//!< EvolutionData of the subtitution fuel
 	
 
 //********* Private Method *********//
 	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
 	void	FabricationPlantEvolution(cSecond t);				//!< Deal the FabricationPlant Evolution
-	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);	//!< Make the Separation 
-						//!< return IV[0] -> To Stock / IV[1] -> To Waste
 
+	//{
+	/// Separation Method
+	/*!
+	 Make the Separation
+		\li IV[0] -> To Stock
+		\li IV[1] -> To Waste
+	 */
+	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);
+	//}
 	ClassDef(FabricationPlant,2);
 
 };
