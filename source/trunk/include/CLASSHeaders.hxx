@@ -11,6 +11,8 @@
 #include "Reactor.hxx"
 #include "Pool.hxx"
 #include "FabricationPlant.hxx"
+#include "PWR_THU_FabricationPlant.hxx"
+#include "PWR_THPU_FabricationPlant.hxx"
 #include "Storage.hxx"
 #include "IsotopicVector.hxx"
 #include "ZAI.hxx"
