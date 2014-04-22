@@ -1418,19 +1418,19 @@ void DataBank<IsotopicVector>::CalculateDistanceParameter()
 	}
 	fDistanceParameter.Multiply( (double)1.0/NevolutionDatainDataBank );
 
-
-	GetLog()->fLog <<"!!INFO!! Distance Parameters "<<endl;
-	map<ZAI ,double >::iterator it2;
-	for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
-	{
-		GetLog()->fLog << (*it2).first.Z() << " ";
-		GetLog()->fLog << (*it2).first.A() << " ";
-		GetLog()->fLog << (*it2).first.I() << " ";
-		GetLog()->fLog << ": " << (*it2).second;
+	if(GetLog()){
+		GetLog()->fLog <<"!!INFO!! Distance Parameters "<<endl;
+		map<ZAI ,double >::iterator it2;
+		for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
+		{
+			GetLog()->fLog << (*it2).first.Z() << " ";
+			GetLog()->fLog << (*it2).first.A() << " ";
+			GetLog()->fLog << (*it2).first.I() << " ";
+			GetLog()->fLog << ": " << (*it2).second;
+			GetLog()->fLog << endl;
+		}
 		GetLog()->fLog << endl;
 	}
-	GetLog()->fLog << endl;
-
 
 
 }
