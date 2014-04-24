@@ -23,15 +23,12 @@ using namespace std;
 	//	CLASSRead is a class that allows to retrieve results in Binary or Ascii Data
 	// 	files written by CLASS. By default binary files are read.
 	//
-	// @author FMS
+	// Thank to Francisco, Guerin, Louard, Shi for their participation to the XML ouput implementation
+	// @author BLG
+	// @author BAM
+	// @version 1.0
 	// @version 0.1
 	//
-	//      Modifications: @author RC
-	//       - The module XSGUI: has been developped in the lattice code DRAGON to format the result in the same format as ASCII file  DATA_
-	//         The consequences in CLASSGui are basicly introduction of new nuclei corresponding to chemical element (same Z different A).
-	//          artificial Z,A number has been assigned to this nuclei:
-	//                           Z_nat=Z+200
-	//                           A_nat=A_moy+400 (where A_avg correspond to the most abondant isotope)
 	//@}
 	//________________________________________________________________________
 class CLASSRead
