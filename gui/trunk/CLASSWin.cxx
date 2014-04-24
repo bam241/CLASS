@@ -79,6 +79,7 @@ MainWin::~MainWin()
 //_____________________________________________________________________________________________
 void MainWin::Start(vector<string> VFileName)
 {
+	cout << "toto" << endl;
 
 	//
 	// Set the line width for all graph: for PPT presentation a value of 2 is probably better
@@ -121,35 +122,8 @@ void MainWin::Start(vector<string> VFileName)
 		fNumberOfPool[i] = fDATA->GetPoolName()[i].size();
 		fNumberOfFab[i] = fDATA->GetFabricationName()[i].size();
 	}
+	cout << "toto1" << endl;
 
-	/*Compteurs d'objets selectionné dans chaque parc****/
-	//exemple fNselectedReac[i][j]=1 -> alors le reacteur numero j du parc i a été seléctionné
-	// les valeurs de ces matrices sont soit 0 soit 1
-	
-	/*	fNselectedTOT=new int*[NumberOfParc];
-	 fNselectedReac=new int*[NumberOfParc];
-	 fNselectedStock=new int*[NumberOfParc];
-	 fNselectedPool=new int*[NumberOfParc];
-	 fNselectedFab=new int*[NumberOfParc];
-	 
-	 for (int i=0;i<NumberOfParc;i++)
-	 {	for (int j=0;j<NumberOfReactor[i];j++)
-	 fNselectedReac[i][j]=0;
-	 for (int j=0;j<NumberOfStock[i];j++)
-	 fNselectedStock[i][j]=0;
-	 for (int j=0;j<NumberOfReactor[i];j++)
-	 NumberOfPool[i][j]=0;
-	 for (int j=0;j<NumberOfFab[i];j++)
-	 fNselectedFab[i][j]=0;
-	 for (int j=0;j<NumberOfTOT;j++)
-	 fNselectedTOT[i][j]=0;
-	 }
-	 
-	 */
-	//....
-	//
-	//  The canvas (plotting window)
-	//
 	// Canvas Style
 	gStyle->SetOptStat(000);
 	gStyle->SetFrameFillColor(10);
@@ -175,7 +149,8 @@ void MainWin::Start(vector<string> VFileName)
 	//
 	// the Main frame where all will be insert
 	//
-	
+	cout << "toto2" << endl;
+
 	fGeneF0 = new TGVerticalFrame(this, 250, 150);
 	AddFrame(fGeneF0, fL5555);
 	SetHeight(220);
@@ -207,7 +182,8 @@ void MainWin::Start(vector<string> VFileName)
 		fParcTabFoil[i] = fParcTab->AddTab(ParcName.str().c_str());
 	}
 
-	
+	cout << "toto3" << endl;
+
 	/*************Les differentes Facilities Tab****/
 	fFacilitiesTab = new TGTab*[fNumberOfParc];
 	
@@ -237,27 +213,36 @@ void MainWin::Start(vector<string> VFileName)
 		fFacilitiesTabFoil[i][4] = new TGCompositeFrame;
 		fFacilitiesTabFoil[i][4] = fFacilitiesTab[i]->AddTab("Fabrication Plant(s)");
 	}
-	
+	cout << "toto4" << endl;
+
 	
 	//1 jeu d'ItemTab par facility tab
 
 	fItemTab = new TGTab**[fNumberOfParc];
+	cout << "toto4a" << endl;
 
 	for(int i = 0; i < fNumberOfParc; i++)
 	{
+		cout << "toto4b" << endl;
 		fItemTab[i] = new TGTab*[5];
 		for(int j = 0; j < 5; j++)
 		{
+			cout << "toto4c" << endl;
 			fItemTab[i][j] = new TGTab(fFacilitiesTabFoil[i][j],200,150);//@@ hxx non défini
 			fFacilitiesTabFoil[i][j]->AddFrame(fItemTab[i][j]);
 			fItemTab[i][j]->Associate(this);
 			//construire les foils en fonction du nombre de item possible par foil
+			cout << "toto4d" << endl;
 
 		}
-		
+		cout << "toto4e" << endl;
+
 	}
+	cout << "toto4f" << endl;
+
 	for(int j = 0; j < 5; j++)
-	FillItemTab(j);
+		FillItemTab(j);
+	cout << "toto5" << endl;
 
 	fMiscenalanus = new TGHorizontalFrame(fGeneF0, 400, 50 );
 	fGeneF0->AddFrame(fMiscenalanus,fL5555);
@@ -300,6 +285,7 @@ void MainWin::Start(vector<string> VFileName)
 	fGeneF0->AddFrame(fTabNuc,fL2222);
 	fTabNuc->Associate(this);
 	FillNucTab();
+	cout << "toto6" << endl;
 
 	// The Plot, Save, Macro and Quit buttons
 	//
@@ -315,61 +301,7 @@ void MainWin::Start(vector<string> VFileName)
 	fButtonPlot->Associate(this);
 	fButtonSave->Associate(this);
 	fButtonQuit->Associate(this);
-	//------------------------------------------------------------------------
-	//The Nucleus Foil
-	//------------------------------------------------------------------------
-	
-	//
-	//	The Miscellaneous part (AM check box, ...)
-	//
-	/*	fMiscGrpFNuc = new TGGroupFrame(fGeneF0,"Miscellaneous", kVerticalFrame );
-	 ((TGGroupFrame*)fMiscGrpFNuc)->SetTextFont(fLabelFontB);
-	 fGeneF0->AddFrame(fMiscGrpFNuc,fL2222);
-	 
-	 fMiscHzFrame1=new TGHorizontalFrame(fMiscGrpFNuc,400, 50 );
-	 fMiscGrpFNuc->AddFrame(fMiscHzFrame1,fL2222);
-	 //misc check buttons
-	 fCheckSumNuc=new TGCheckButton(fMiscHzFrame1,"Sum of Selected",M_CHECK_SUM_NUC);
-	 fCheckSumNuc->SetFont(fLabelFontS);
-	 fMiscHzFrame1->AddFrame(fCheckSumNuc,fL2222);
-	 fCheckSumNuc->Associate(this);
-	 */
-	/***En mol ou en masse?**/
-	/*	fRadioMol=new TGRadioButton(fMiscHzFrame1,"Mol",M_RADIO_MOL);
-	 fRadioMol->SetFont(fLabelFontS);
-	 fMiscHzFrame1->AddFrame(fRadioMol,fL2222);
-	 fRadioMol->Associate(this);
-	 
-	 fRadioMass=new TGRadioButton(fMiscHzFrame1, "Mass",M_RADIO_MASS);
-	 fRadioMass->SetFont(fLabelFontS);
-	 fMiscHzFrame1->AddFrame(fRadioMass,fL2222);
-	 fRadioMass->Associate(this);
-	 
-	 fRadioMol->SetState(kButtonDown);
-	 */
-	/*********Choix du vecteur Temps************/
-	
-	/*	fTimeScale=new TGComboBox(fMiscHzFrame1,M_CB_TIMESCALE_NUC);
-	 fMiscHzFrame1->AddFrame(fTimeScale,fL2222);
-	 fTimeScale->Resize(80,17);
-	 fTimeScale->AddEntry("years",1);
-	 fTimeScale->AddEntry("months",2);
-	 fTimeScale->AddEntry("days",3);
-	 fTimeScale->AddEntry("seconds",4);
-	 fTimeScale->Select(1);
-	 fTimeScale->Associate(this);
-	 fAxisHzFrame->Resize(350, 40);
-	 
-	 
-	 //
-	 // apply the correct unit to all X axis combo box
-	 //
-	 fOldTimeUnits=4;
-	 */
-	//
-	// Final part: this allows the effective display of widgets
-	//
-	
+
 	MapSubwindows();						// Map all sub windows that are part of the composite frame
 	MapWindow();
 	Resize(GetDefaultSize()); 					// fit to the exact size
@@ -377,6 +309,7 @@ void MainWin::Start(vector<string> VFileName)
 	fMainWidth=fGeneF0->GetWidth();
 	
 	Resize(550,820); 					// fit to the exact size
+	cout << "toto7" << endl;
 
 
 }
@@ -407,129 +340,21 @@ bool MainWin::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 					}
 					
 					nsw = new SubWin("SaveAs", fClient->GetRoot(), this, 200, 200);
-					if(fSaveFileName != "")
+					if(fSaveFileName != "" /*&& fSaveFileFormat !=""*/)
 					{	//si plusieur canvas ouvert sauver l'actif exemple :
-						//	string PadName=gPad->GetName();
-						//	if(PadName=="c_Gam")
-						//	{
-						//		Save(0);
-						//	}
-						
+						string PadName=gPad->GetName();
+						if(PadName=="c_Nuclei")
+							//fDATA->Write(fSaveFileName, fSaveFileFormat);
+							fDATA->Write(fSaveFileName, "ASCII");
+//						else if (PadName="")
+//							fDATA->Write(fSaveFileName, fSaveFileFormat);
+
+
 					}
 					break;
 			}
 				
 				break;
-				/*	case kCM_COMBOBOX:
-				 switch (parm1)
-				 {
-				 case M_CB_TIMESCALE:
-				 int code=fTimeScale->GetSelected();
-				 cout<<"user want time scale code :"<<code<<endl;
-				 break;
-				 }
-				 break;
-				 */
-				/*				case kCM_RADIOBUTTON:
-				 switch (parm1)
-				 {
-				 case M_RADIO_MOL:
-				 fRadioMol->SetState(kButtonDown);
-				 fRadioMass->SetState(kButtonUp);
-				 cout<<"user want results in mol"<<endl;
-				 break;
-				 case M_RADIO_MASS:
-				 fRadioMol->SetState(kButtonUp);
-				 fRadioMass->SetState(kButtonDown);
-				 cout<<"user want results in kg"<<endl;
-				 break;
-				 }
-				 break;
-				 case kCM_CHECKBUTTON:
-				 switch (parm1)
-				 {
-				 default:
-				 //Noyaux
-				 if(parm1>M_CHECK_PLOTALL)
-				 {	int l=parm1-M_CHECK_PLOTALL-1;
-				 if(fNAddedCheck[l]>1)
-				 {
-				 //bool shit: a "same" button can be in more than one category
-				 //in fact it is not the same button thus find all the correponding button
-				 //and change all of them
-				 EButtonState WantedState;
-				 bool IsMainBut=true;
-				 if(parm2==Long_t(fCheckArrayNuc[l]->GetUserData()))
-				 {
-				 WantedState=fCheckArrayNuc[l]->GetState();
-				 }
-				 else
-				 {
-				 IsMainBut=false;
-				 if(fCheckArrayNuc[l]->GetState()==kButtonDown)
-				 WantedState=kButtonUp;
-				 else
-				 WantedState=kButtonDown;
-				 }
-				 for(int i=0; i<int(fSaveCheckButton.size());i++)
-				 {
-				 if(int(parm1)==fSaveCheckButton[i]->WidgetId())
-				 fSaveCheckButton[i]->SetState(WantedState);
-				 }
-				 fCheckArrayNuc[l]->SetState(WantedState);
-				 }
-				 if(fCheckArrayNuc[l]->GetState()==kButtonDown)
-				 fNselectedNucleus++;
-				 if(fCheckArrayNuc[l]->GetState()==kButtonUp)
-				 fNselectedNucleus--;
-				 }
-				 //total
-				 if(parm1>M_CHECK_PLOTALL && fFacilitiesTab->GetCurrent()==0)
-				 {
-				 int l=parm1-M_CHECK_PLOTALL-1-1000;
-				 if(fCheckArrayTOT[l]->GetState()==kButtonDown)
-				 fNselectedTOT[fParcTab->GetCurrent()]++;
-				 if(fCheckArrayTOT[l]->GetState()==kButtonUp)
-				 fNselectedTOT[fParcTab->GetCurrent()]--;
-				 }
-				 //Reacteurs
-				 if(parm1>M_CHECK_PLOTALL && fFacilitiesTab->GetCurrent()==1)
-				 {
-				 int l=parm1-M_CHECK_PLOTALL-1-5000;
-				 if(fCheckArrayReac[l]->GetState()==kButtonDown)
-				 fNselectedReac[fParcTab->GetCurrent()]++;
-				 if(fCheckArrayReac[l]->GetState()==kButtonUp)
-				 fNselectedReac[fParcTab->GetCurrent()]--;
-				 }
-				 //Stock
-				 if(parm1>M_CHECK_PLOTALL && fFacilitiesTab->GetCurrent()==2)
-				 {
-				 int l=parm1-M_CHECK_PLOTALL-1-9000;
-				 if(fCheckArrayStock[l]->GetState()==kButtonDown)
-				 fNselectedStock[fParcTab->GetCurrent()]++;
-				 if(fCheckArrayStock[l]->GetState()==kButtonUp)
-				 fNselectedStock[fParcTab->GetCurrent()]--;
-				 }
-				 //Pooling
-				 if(parm1>M_CHECK_PLOTALL && fFacilitiesTab->GetCurrent()==3)
-				 {
-				 int l=parm1-M_CHECK_PLOTALL-1-13000;
-				 if(fCheckArrayPool[l]->GetState()==kButtonDown)
-				 fNselectedPool[fParcTab->GetCurrent()]++;
-				 if(fCheckArrayPool[l]->GetState()==kButtonUp)
-				 fNselectedPool[fParcTab->GetCurrent()]--;
-				 }
-				 //Fabrication Plant
-				 if(parm1>M_CHECK_PLOTALL && fFacilitiesTab->GetCurrent()==4)
-				 {
-				 int l=parm1-M_CHECK_PLOTALL-1-17000;
-				 if(fCheckArrayFab[l]->GetState()==kButtonDown)
-				 fNselectedFab[fParcTab->GetCurrent()]++;
-				 if(fCheckArrayFab[l]->GetState()==kButtonUp)
-				 fNselectedFab[fParcTab->GetCurrent()]--;
-				 }
-				 
-				 }*/
 		}
 			break;
 	}
@@ -546,7 +371,7 @@ void MainWin::CloseWindow()
 void MainWin::Plot()
 {
 	int Nnucleus = fDATA->GetZAIvector().size();
-	
+
 	vector<CLASSPlotElement> toplot;
 	vector<CLASSPlotElement> toplotPower;
 
@@ -567,7 +392,7 @@ void MainWin::Plot()
 
 	for(int i=0; i < fNumberOfParc; i++)
 	{
-		
+
 		for(int j=0; j < fNumberOfTOT-1; j++) //fNumberOfTOT -1 ?? ->All except power
 		{
 			if(fCheckArrayTotal[i][j]->GetState()==kButtonDown)
@@ -577,55 +402,55 @@ void MainWin::Plot()
 						toplot.push_back( CLASSPlotElement(i, 0, j,0, fDATA->GetZAIvector()[k]));
 				}
 		}
-		
+
 		for(int j=0; j < fNumberOfReactor[i]; j++)
 		{
 			if(fCheckArrayReactor[i][j]->GetState()==kButtonDown)
-			{	
+			{
 				for(int l=0;l<3;l++)
 					if (fCheckIVPlot[l]->GetState()==kButtonDown)
-				for(int k=0; k < Nnucleus; k++)
-				{	
-					if(fCheckArrayNuc[k]->GetState()==kButtonDown)
-						toplot.push_back( CLASSPlotElement(i,1,j,l, fDATA->GetZAIvector()[k]));
-				}
-			}	
+						for(int k=0; k < Nnucleus; k++)
+						{
+							if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+								toplot.push_back( CLASSPlotElement(i,1,j,l, fDATA->GetZAIvector()[k]));
+						}
+			}
 		}
-		
+
 		for(int j=0; j < fNumberOfStock[i]; j++)
 		{
 			if(fCheckArrayStock[i][j]->GetState()==kButtonDown)
 				for(int l =0;l<3;l++)
 					if (fCheckIVPlot[l]->GetState()==kButtonDown)
-				for(int k=0; k < Nnucleus; k++)
-				{
-					if(fCheckArrayNuc[k]->GetState()==kButtonDown)
-						toplot.push_back( CLASSPlotElement(i, 2, j,l, fDATA->GetZAIvector()[k]));
-				}
+						for(int k=0; k < Nnucleus; k++)
+						{
+							if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+								toplot.push_back( CLASSPlotElement(i, 2, j,l, fDATA->GetZAIvector()[k]));
+						}
 		}
-		
+
 		for(int j=0; j < fNumberOfPool[i]; j++)
 		{
 			if(fCheckArrayPool[i][j]->GetState()==kButtonDown)
 				for(int l =0;l<3;l++)
 					if (fCheckIVPlot[l]->GetState()==kButtonDown)
-				for(int k=0; k < Nnucleus; k++)
-				{
-					if(fCheckArrayNuc[k]->GetState()==kButtonDown)
-						toplot.push_back( CLASSPlotElement(i, 3, j,l, fDATA->GetZAIvector()[k]));
-				}
+						for(int k=0; k < Nnucleus; k++)
+						{
+							if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+								toplot.push_back( CLASSPlotElement(i, 3, j,l, fDATA->GetZAIvector()[k]));
+						}
 		}
-		
+
 		for(int j=0; j < fNumberOfFab[i]; j++)
 		{
 			if(fCheckArrayFab[i][j]->GetState()==kButtonDown)
 				for(int l =0;l<3;l++)
 					if (fCheckIVPlot[l]->GetState()==kButtonDown)
-				for(int k=0; k < Nnucleus; k++)
-				{
-					if(fCheckArrayNuc[k]->GetState()==kButtonDown)
-						toplot.push_back( CLASSPlotElement(i, 4, j,l, fDATA->GetZAIvector()[k]));
-				}
+						for(int k=0; k < Nnucleus; k++)
+						{
+							if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+								toplot.push_back( CLASSPlotElement(i, 4, j,l, fDATA->GetZAIvector()[k]));
+						}
 		}
 	}
 
@@ -693,8 +518,6 @@ void MainWin::FillNucTab()		// fill the Inventory Tab foil
 		fTabFoilNuc[l]->Layout();
 	}
 	//select the second foil then the first foil to avoid "save char in back ground storage"
-	//	fTabNuc->SetTab(TabName[1].c_str()) ;
-	//	fTabNuc->SetTab(TabName[0].c_str()) ;
 	first=false;
 	
 }
@@ -754,6 +577,7 @@ void MainWin::FillNucFoil(int n_item, int Ncol,int Nline)
 //_____________________________________________________________________________________________
 void MainWin::FillItemTab(int current)
 {
+	cout << "tott " << current << endl;
 	if (current==0)
 		FillTotalTab();
 	if (current==1)
@@ -767,6 +591,8 @@ void MainWin::FillItemTab(int current)
 	
 	if(current>5 || current<0)
 	{cout<<"BUG"<<endl; exit(0);}
+	cout << "tott" << endl;
+
 	
 }
 
@@ -806,6 +632,7 @@ void MainWin::FillTotalTab()
 //_____________________________________________________________________________________________
 void MainWin::FillReactorTab()
 {
+	cout << "titi" << endl;
 	int Nline=15-WIDE;
 	int Ncol=6+WIDE;
 	
@@ -813,6 +640,7 @@ void MainWin::FillReactorTab()
 	fCheckArrayReactor= new TGCheckButton**[fNumberOfParc];
 	int *NTab=new int[fNumberOfParc];
 	
+	cout << "titi 1" << endl;
 	for (int i=0 ; i<fNumberOfParc;i++)
 	{
 
@@ -823,6 +651,7 @@ void MainWin::FillReactorTab()
 
 	}
 
+	cout << "titi 2" << endl;
 	for (int p=0;p<fNumberOfParc;p++)
 	{
 		string TabName[NTab[p]];
@@ -840,15 +669,18 @@ void MainWin::FillReactorTab()
 		
 	}
 	
+	cout << "titi 3" << endl;
 	for (int p=0;p<fNumberOfParc;p++)
 	{
-		
+		cout << "titi 3a" << endl;
+
 		int current_foil=0;
 		int current_item=0;
 		int current_item_in_the_foil=0;
 		for(int n=0;n<fNumberOfReactor[p];n++)
 		{
-			
+			cout << "titi 3b " << p << " " << n << endl;
+
 			fCheckArrayReactor[p][current_item]= new TGCheckButton(fTabFoilReactor[p][current_foil],fDATA->GetReactorName()[p][n]);
 			fCheckArrayReactor[p][current_item]->SetFont(fLabelFontS);
 			
@@ -862,10 +694,14 @@ void MainWin::FillReactorTab()
 				current_item_in_the_foil=0;
 				current_foil++;
 			}
-			
+			cout << "titi 3c" << endl;
+
 			
 		}
+		cout << "titi 3d" << endl;
+
 	}
+	cout << "titi 4" << endl;
 }
 //_____________________________________________________________________________________________
 void MainWin::FillStockTab()
@@ -1102,7 +938,7 @@ TGTransientFrame(p, main, w, h, options)
 	
 }
 //_____________________________________________________________________________________________
-/*void SubWin::SaveAs()
+void SubWin::SaveAs()
  {
  fLmsg=new TGLabel(fSH1, new TGString("File Name:"));
  fSH1->AddFrame(fLmsg, new TGLayoutHints(kLHintsTop | kLHintsLeft, 2, 2, 2, 2));
@@ -1115,7 +951,7 @@ TGTransientFrame(p, main, w, h, options)
  
  SetWindowName("Saving Plotted Data");
  
- }*/
+ }
 //_____________________________________________________________________________________________
 SubWin::~SubWin()
 {

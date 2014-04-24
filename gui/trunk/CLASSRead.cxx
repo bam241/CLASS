@@ -1,7 +1,5 @@
 #include "CLASSRead.hxx"
 
-
-
 #include <TApplication.h>
 #include <TGTableLayout.h>
 #include <iostream>
@@ -29,6 +27,10 @@ using namespace std;
 // for gcc3.2.3 only
 char* operator+( std::streampos&, char* );
 //end of gcc3.2.3
+
+
+
+//________________________________________________________________________
 string ReadNucleusName[] = {
 	"n","H","He","Li","Be","B","C","N","O","F","Ne",			// List of nucleus used
 	"Na","Mg","Al","Si","P","S","Cl","Ar","K","Ca",
@@ -77,6 +79,11 @@ string itoa(int num)
 	return os.str();
 }
 
+
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
 CLASSRead::CLASSRead(TString filename)
 {
 	fFileIn = TFile::Open(filename);
@@ -102,6 +109,7 @@ CLASSRead::CLASSRead(TString filename)
 	fNumberGraphPowerIterator = 0;
 }
 
+//________________________________________________________________________
 CLASSRead::~CLASSRead()
 {
 	for(int i=fData.size()-1; i !=0; i--)
@@ -109,6 +117,10 @@ CLASSRead::~CLASSRead()
 	delete fFileIn;
 }
 
+
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
 void CLASSRead::AddFile(TString filename)
 {
 
@@ -120,8 +132,7 @@ void CLASSRead::AddFile(TString filename)
 	}
 }
 
-
-
+//________________________________________________________________________
 void CLASSRead::ReadName()
 {
 
@@ -183,7 +194,7 @@ void CLASSRead::ReadName()
 
 }
 
-
+//________________________________________________________________________
 void CLASSRead::ReadZAI()
 {
 
@@ -203,10 +214,13 @@ void CLASSRead::ReadZAI()
 	}
 	fZAIvector = IVTot.GetZAIList();
 
-
 }
 
 
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
 void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 {
 
@@ -379,105 +393,7 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 
 }
 
-void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
-{
-	if(fGraphPower)
-	{
-		for(int i=0; i < fNumberGraphPowerIterator;i++) delete fGraphPower[i];
-		delete [] fGraphPower;
-	}
-
-
-	if(fLegendPower)
-	{
-		for(int i=0; i < fNumberGraphPowerIterator;i++) delete fLegendPower[i];
-		delete [] fLegendPower;
-	}
-
-	if(fCPower && gROOT->FindObject("fCPower"))
-	{	delete fCPower;
-		fCPower=0;
-	}
-
-
-	fCPower = new TCanvas("fCPower","Power",50,110,400,300);
-	fGraphPower = new TGraph*[fData.size()];
-	fLegendPower = new TLatex*[fData.size()];
-
-
-	for (int i = 0; i < (int)fData.size(); i++)
-	{
-		fGraphPower[i] = 0;
-		fLegendPower[i] = 0;
-	}
-
-	vector<CLASSPlotElement> toplotTTree[fData.size()];
-
-	fNumberGraphPowerIterator = 0;
-	Xmin = +1.e36;
-	Xmax =  -1.e36;
-	Ymin = 1.e36;
-	Ymax = -1.e36;
-
-
-
-
-	for (int i = 0; i < (int)toplot.size(); i++)
-	{
-		toplotTTree[toplot[i].fTreeId].push_back(toplot[i]);
-	}
-
-	string out = opt;
-	for (int i = 0; i < (int)fData.size(); i++)
-	{
-
-		if(i != 0) out += " same";
-		if(toplotTTree[i].size() !=0)
-			PlotTTreePower(toplotTTree[i], out);
-
-
-	}
-
-	fCPower->cd();
-
-	TH1F*	  fhrPower= fCPower->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
-	string Xtitle="Time [year]";
-	string Ytitle="Total Thermal Power [GW]";
-	fhrPower->SetXTitle(Xtitle.c_str());
-	fhrPower->SetYTitle(Ytitle.c_str());
-	fhrPower->GetXaxis()->CenterTitle();
-	fhrPower->GetYaxis()->CenterTitle();
-	fhrPower->GetYaxis()->SetTitleOffset(1.25);
-
-	for (int i = 0; i < (int)fNumberGraphPowerIterator; i++)
-	{
-		if( i !=0 ) out += " same";
-
-		fGraphPower[i]->SetName(GetTittleOutName(toplot[i]).c_str());
-		fGraphPower[i]->SetTitle(GetTittleOutName(toplot[i]).c_str());
-		fGraphPower[i]->SetLineColor(CurveColor(i));
-		fGraphPower[i]->SetMarkerColor(CurveColor(i));
-		fGraphPower[i]->SetMarkerStyle(10);
-		fGraphPower[i]->Draw(out.c_str());
-
-
-		double x;
-		double y;
-		fGraphPower[i]->GetPoint(fGraphPower[i]->GetN()-1, x, y);
-
-		fLegendPower[i] = new TLatex(0.7*x,1.05*y,GetLegendOutName(toplot[i]).c_str());
-		fLegendPower[i]->SetTextSize(0.05);
-		fLegendPower[i]->SetTextFont(132);
-		fLegendPower[i]->SetTextColor(CurveColor(i));
-		fLegendPower[i]->Draw();
-	}
-	fCPower->Update();
-
-	
-
-}
-
-
+//________________________________________________________________________
 void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 {
 
@@ -696,9 +612,107 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 }
 
 
+//________________________________________________________________________
+//________________________________________________________________________
+void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
+{
+	if(fGraphPower)
+	{
+		for(int i=0; i < fNumberGraphPowerIterator;i++) delete fGraphPower[i];
+		delete [] fGraphPower;
+	}
+
+
+	if(fLegendPower)
+	{
+		for(int i=0; i < fNumberGraphPowerIterator;i++) delete fLegendPower[i];
+		delete [] fLegendPower;
+	}
+
+	if(fCPower && gROOT->FindObject("fCPower"))
+	{	delete fCPower;
+		fCPower=0;
+	}
+
+
+	fCPower = new TCanvas("fCPower","Power",50,110,400,300);
+	fGraphPower = new TGraph*[fData.size()];
+	fLegendPower = new TLatex*[fData.size()];
+
+
+	for (int i = 0; i < (int)fData.size(); i++)
+	{
+		fGraphPower[i] = 0;
+		fLegendPower[i] = 0;
+	}
+
+	vector<CLASSPlotElement> toplotTTree[fData.size()];
+
+	fNumberGraphPowerIterator = 0;
+	Xmin = +1.e36;
+	Xmax =  -1.e36;
+	Ymin = 1.e36;
+	Ymax = -1.e36;
 
 
 
+
+	for (int i = 0; i < (int)toplot.size(); i++)
+	{
+		toplotTTree[toplot[i].fTreeId].push_back(toplot[i]);
+	}
+
+	string out = opt;
+	for (int i = 0; i < (int)fData.size(); i++)
+	{
+
+		if(i != 0) out += " same";
+		if(toplotTTree[i].size() !=0)
+			PlotTTreePower(toplotTTree[i], out);
+
+
+	}
+
+	fCPower->cd();
+
+	TH1F*	  fhrPower= fCPower->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
+	string Xtitle="Time [year]";
+	string Ytitle="Total Thermal Power [GW]";
+	fhrPower->SetXTitle(Xtitle.c_str());
+	fhrPower->SetYTitle(Ytitle.c_str());
+	fhrPower->GetXaxis()->CenterTitle();
+	fhrPower->GetYaxis()->CenterTitle();
+	fhrPower->GetYaxis()->SetTitleOffset(1.25);
+
+	for (int i = 0; i < (int)fNumberGraphPowerIterator; i++)
+	{
+		if( i !=0 ) out += " same";
+
+		fGraphPower[i]->SetName(GetTittleOutName(toplot[i]).c_str());
+		fGraphPower[i]->SetTitle(GetTittleOutName(toplot[i]).c_str());
+		fGraphPower[i]->SetLineColor(CurveColor(i));
+		fGraphPower[i]->SetMarkerColor(CurveColor(i));
+		fGraphPower[i]->SetMarkerStyle(10);
+		fGraphPower[i]->Draw(out.c_str());
+
+
+		double x;
+		double y;
+		fGraphPower[i]->GetPoint(fGraphPower[i]->GetN()-1, x, y);
+
+		fLegendPower[i] = new TLatex(0.7*x,1.05*y,GetLegendOutName(toplot[i]).c_str());
+		fLegendPower[i]->SetTextSize(0.05);
+		fLegendPower[i]->SetTextFont(132);
+		fLegendPower[i]->SetTextColor(CurveColor(i));
+		fLegendPower[i]->Draw();
+	}
+	fCPower->Update();
+	
+	
+	
+}
+
+//________________________________________________________________________
 void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 {
 
@@ -748,7 +762,483 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 }
 
 
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+void CLASSRead::Write(string filename, string fileformat)
+{
+	if(fileformat == "ASCII")
+		ASCIIWrite(filename);
 
+}
+void CLASSRead::ASCIIWrite(string filename)
+{
+
+	ofstream outfile;
+	outfile.open(filename.c_str());
+	if(!outfile)
+	{
+		cout << "Could not open : " << filename << " !" << endl;
+		exit(-1);
+	}
+
+	cout << "WARNING!! not working if using many CLASS.root file with diffenret timestep!!!"<<endl;
+
+	if (fGraph)
+	{
+		double* X = fGraph[0]->GetX();
+
+		outfile << "time";
+		for(int i= 0; i < fGraph[0]->GetN(); i++)
+			outfile << "\t" << X[i];
+
+		outfile << endl;
+	}
+
+
+	if (fGraphSumOfSelected) {
+
+		outfile << fGraphSumOfSelected->GetTitle();
+		double* Y = fGraphSumOfSelected->GetY();
+		for(int j= 0; j < fGraphSumOfSelected->GetN(); j++)
+			outfile << "\t" << Y[j];
+		outfile << endl;
+	}
+
+
+	for(int i = 0; i < fNumberGraphIterator; i++)
+	{
+		outfile << fGraph[i]->GetTitle();
+		double* Y = fGraph[i]->GetY();
+		for(int j= 0; j < fGraph[i]->GetN(); j++)
+			outfile << "\t" << Y[j];
+		outfile << endl;
+	}
+
+
+}
+
+
+
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string opt)
+{
+
+
+
+	fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
+	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
+
+
+
+	string out = opt;
+	Long64_t nentries = fData[toplot[0].fTreeId]->GetEntries();
+
+
+	ULong64_t Time = 0;
+	fData[toplot[0].fTreeId]->SetBranchAddress("AbsTime", &Time);
+
+	Reactor* reactor[fReactorName[toplot[0].fTreeId].size()];
+	for(int i = 0; i < (int)fReactorName[toplot[0].fTreeId].size(); i++ )
+		reactor[i] = 0;
+
+	Pool* pool[fPoolName[toplot[0].fTreeId].size()];
+	for(int i = 0; i < (int)fPoolName[toplot[0].fTreeId].size(); i++ )
+		pool[i] = 0;
+
+	FabricationPlant* fabricationplant[fFabricationName[toplot[0].fTreeId].size()];
+	for(int i = 0; i < (int)fFabricationName[toplot[0].fTreeId].size(); i++ )
+		fabricationplant[i] = 0;
+
+	Storage* stock[fStockName[toplot[0].fTreeId].size()];
+	for(int i = 0; i < (int)fStockName[toplot[0].fTreeId].size(); i++ )
+		stock[i] = 0;
+
+	IsotopicVector* IV[8];
+	for(int i = 0; i < 8; i++ )
+		IV[i] = 0;
+
+	vector< double > vTime;
+	vector< double > vQuantity[toplot.size()];
+
+	for (int i=0; i < (int)toplot.size(); i++)
+	{
+
+		string InBranchName = GetBranchInName(toplot[i]);
+
+		string ActiveInBranchName = InBranchName + "*";
+		fData[toplot[0].fTreeId]->SetBranchStatus(ActiveInBranchName.c_str(),1);
+
+		if(toplot[i].fFacilityId == 0)
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &IV[toplot[i].fFacylityNumber]);
+		else if(toplot[i].fFacilityId == 1)
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &reactor[toplot[i].fFacylityNumber]);
+		else if(toplot[i].fFacilityId == 2)
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &stock[toplot[i].fFacylityNumber]);
+		else if(toplot[i].fFacilityId == 3)
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &pool[toplot[i].fFacylityNumber]);
+		else if(toplot[i].fFacilityId == 4)
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &fabricationplant[toplot[i].fFacylityNumber]);
+	}
+
+
+	for (Long64_t  j = 0; j < nentries; j++)
+	{
+		fData[toplot[0].fTreeId]->GetEntry(j);
+
+		vTime.push_back(Time/3600./24./365.25);
+
+		if(Xmin>vTime.back()) Xmin = vTime.back();
+		if(Xmax<vTime.back()) Xmax = vTime.back();
+
+		for (int i=0; i < (int)toplot.size(); i++)
+		{
+
+			if(toplot[i].fFacilityId == 0)
+			{
+				int Z = toplot[i].fZAI.Z();
+				int A = toplot[i].fZAI.A();
+				int I = toplot[i].fZAI.I();
+				double ZAIQuantity = IV[toplot[i].fFacylityNumber]->GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+
+				vQuantity[i].push_back(ZAIQuantity);
+
+
+
+				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
+				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
+
+			}
+			else if(toplot[i].fFacilityId == 1)
+			{
+				int Z = toplot[i].fZAI.Z();
+				int A = toplot[i].fZAI.A();
+				int I = toplot[i].fZAI.I();
+
+				double ZAIQuantity = 0;
+
+				if( toplot[i].fIVNumber == 0 )
+					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot[i].fIVNumber == 1 )
+					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot[i].fIVNumber == 2 )
+					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else
+				{
+					cout << "Bad IVNumber" << endl;
+					break;
+				}
+
+				vQuantity[i].push_back(ZAIQuantity);
+
+				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
+				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
+
+			}
+			else if(toplot[i].fFacilityId == 2)
+			{
+				int Z = toplot[i].fZAI.Z();
+				int A = toplot[i].fZAI.A();
+				int I = toplot[i].fZAI.I();
+
+				double ZAIQuantity = 0;
+
+				if( toplot[i].fIVNumber == 0 )
+					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot[i].fIVNumber == 1 )
+					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot[i].fIVNumber == 2 )
+					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else
+				{
+					cout << "Bad IVNumber" << endl;
+					break;
+				}
+
+				vQuantity[i].push_back(ZAIQuantity);
+
+
+				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
+				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
+
+			}
+			else if(toplot[i].fFacilityId == 3)
+			{
+				int Z = toplot[i].fZAI.Z();
+				int A = toplot[i].fZAI.A();
+				int I = toplot[i].fZAI.I();
+
+				double ZAIQuantity = 0;
+
+				if( toplot[i].fIVNumber == 0 )
+					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot[i].fIVNumber == 1 )
+					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot[i].fIVNumber == 2 )
+					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else
+				{
+					cout << "Bad IVNumber" << endl;
+					break;
+				}
+
+				vQuantity[i].push_back(ZAIQuantity);
+
+
+				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
+				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
+
+			}
+			else if(toplot[i].fFacilityId == 4)
+			{
+				int Z = toplot[i].fZAI.Z();
+				int A = toplot[i].fZAI.A();
+				int I = toplot[i].fZAI.I();
+
+				double ZAIQuantity = 0;
+
+				if( toplot[i].fIVNumber == 0 )
+					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot[i].fIVNumber == 1 )
+					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else if( toplot[i].fIVNumber == 2 )
+					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				else
+				{
+					cout << "Bad IVNumber" << endl;
+					break;
+				}
+
+				vQuantity[i].push_back(ZAIQuantity);
+
+				if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
+				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
+
+			}
+		}
+
+
+	}
+
+
+
+
+
+
+
+	// Beginning of the document XML
+	ofstream f ("test.xml");
+	cout << f.is_open();
+	if (!f.is_open())
+		cout << "Impossible d'ouvrir le fichier en ecriture !" << endl;
+	else
+	{
+		f << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << endl;
+		f << "<file filename = \"test.xml\" created=\" \""<<endl;
+		f << "<unit time=\"years\"  Masse=\"kg\" power=\"MW\" />"<<endl;
+                f << "<material matid=\" \">"<<endl;
+		f << "\t<time>" << endl;
+
+
+		//Print all information about time(always the same for 0 to 20 yeaur) and the module involved
+
+
+		for (int i =0; i < (int)vTime.size(); i++) {
+
+			f << "\t\t<timestamp tid=\"" << i <<"\"  time=\""<< vTime[i] << "\" />" << endl;
+		}
+		f << "\t</time>" << endl;
+
+
+		f<<"\t\t<Massehistory>"<<endl;
+
+
+
+
+		//Print information about the masse(kg) of isotope in facility chossen
+
+
+
+		for (int i =0; i < (int)vTime.size(); i++)
+		{
+
+			f << "\t\t\t<compositiondata tid=\""<< i <<"\">"<<endl;
+			f << "\t\t\t\t<composition>"<<endl;
+
+
+
+			for (int j =0; j< (int)toplot.size(); j++)
+                        {
+
+				string name;
+				switch (toplot[j].fFacilityId)
+				{
+					case 0:
+						switch (toplot[j].fFacylityNumber)
+					{
+						case 0:
+							name = "TOTAL.";
+
+
+							break;
+
+						case 1:
+							name = "INCYCLE.";
+
+
+							break;
+
+						case 2:
+							name = "WASTE.";
+
+
+							break;
+
+						case 3:
+							name = "GOD.";
+
+
+
+							break;
+
+						case 4:
+							name = "REACTOR.";
+
+
+
+							break;
+
+						case 5:
+							name = "COOLING.";
+
+
+
+							break;
+
+						case 6:
+							name = "STOCK.";
+
+
+
+							break;
+
+						case 7:
+							name = "FUELFABRICATION.";
+
+
+
+							break;
+
+						default:
+							break;
+					}
+						break;
+
+					case 1:
+						name = "Reactor" + itoa(toplot[j].fFacylityNumber) + ".";
+
+
+
+						break;
+
+					case 2:
+						name = "Storage" + itoa(toplot[j].fFacylityNumber) + ".";
+
+
+
+						break;
+
+					case 3:
+						name = "Pool" + itoa(toplot[j].fFacylityNumber) + ".";
+
+
+
+
+						break;
+
+					case 4:
+						name = "FabricationPlant" + itoa(toplot[j].fFacylityNumber) + ".";
+
+
+
+						break;
+
+
+					default:
+						break;
+				}
+
+
+				f<<"\t\t\t\t\t<isotope zamid=\""<< itoa(toplot[j].fZAI.Z())<<itoa(toplot[j].fZAI.A())<<"\">"<<endl;
+				f<<"\t\t\t\t\t\t<facility "<< name <<">"<<"<masse>"<<vQuantity[j][i]<<"</masse>"<<"</facility>"<<endl;
+
+
+				f<<"\t\t\t\t\t</isotope>"<<endl;
+
+			}
+
+			f << "\t\t\t\t</composition>"<<endl;
+			f << "\t\t\t</compositiondata>"<<endl;
+
+		}
+
+		f <<"\t\t</Massehistory>" << endl;
+		f <<"</material>"<<endl;
+		//------------------------------------------------------------------End of document XML
+
+		f.close();
+		cout << "  Your conversion is successful" << endl;
+	};
+
+
+	fData[toplot[0].fTreeId]->ResetBranchAddresses();
+	{
+		for(int i=0; i< (int)fReactorName[toplot[0].fTreeId].size(); i++) delete reactor[i];
+
+		for(int i=0; i< (int)fPoolName[toplot[0].fTreeId].size(); i++) delete pool[i];
+
+		for(int i=0; i< (int)fFabricationName[toplot[0].fTreeId].size(); i++) delete fabricationplant[i];
+
+		for(int i=0; i< (int)fStockName[toplot[0].fTreeId].size(); i++) delete stock[i];
+		for(int i=0; i< 8; i++) delete IV[i];
+	}
+	
+	
+	
+	
+}
+
+//________________________________________________________________________
+void CLASSRead::ConvertXmlMass(vector<CLASSPlotElement> toplot, string opt)
+{
+	
+	vector<CLASSPlotElement> toplotTTree[fData.size()];
+	
+	
+	
+	fNumberGraphIterator = 0;
+	for (int i = 0; i < (int)toplot.size(); i++)
+	{
+		toplotTTree[toplot[i].fTreeId].push_back(toplot[i]);
+	}
+	
+	string out = opt;
+	for (int i = 0; i < (int)fData.size(); i++)
+	{
+		if(i == 1) out += " same";
+		if(toplotTTree[i].size() !=0)
+			ConvertxmlTTreeMass(toplotTTree[i], out);
+		
+	}
+}
+//________________________________________________________________________
+
+//________________________________________________________________________
+
+//________________________________________________________________________
 string CLASSRead::GetBranchInName(CLASSPlotElement toplot)
 {
 	string name;
@@ -1038,6 +1528,20 @@ string CLASSRead::GetTittleOutName(CLASSPlotElement toplot)
 	return name;
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

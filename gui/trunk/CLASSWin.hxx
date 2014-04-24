@@ -86,6 +86,7 @@ public:
 	void FillNucFoil(int NCheck,int Ncol,int Nline);
 
 	string fSaveFileName;
+	string fSaveFileFormat;
 	
 private:
 	
@@ -179,6 +180,7 @@ public :
 	
 	Bool_t ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2); //@- widget signal handler method
 	void CloseWindow(){delete this;}		//@- Close windows
+	void SaveAs();
 
 	
 private:
