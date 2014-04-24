@@ -837,7 +837,7 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 	Long64_t nentries = fData[toplot[0].fTreeId]->GetEntries();
 
 
-	ULong64_t Time = 0;
+	Long64_t Time = 0;
 	fData[toplot[0].fTreeId]->SetBranchAddress("AbsTime", &Time);
 
 	Reactor* reactor[fReactorName[toplot[0].fTreeId].size()];
