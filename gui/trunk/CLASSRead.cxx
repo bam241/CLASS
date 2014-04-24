@@ -1036,7 +1036,7 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 	else
 	{
 		f << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << endl;
-		f << "<file filename = \"test.xml\" created=\" \""<<endl;
+		f << "<file filename = \""<< filename << "\" created=\" \""<<endl;
 		f << "<unit time=\"years\"  Masse=\"kg\" power=\"MW\" />"<<endl;
                 f << "<material matid=\" \">"<<endl;
 		f << "\t<time>" << endl;
@@ -1452,43 +1452,43 @@ string CLASSRead::GetTittleOutName(CLASSPlotElement toplot)
 			switch (toplot.fFacylityNumber)
 		{
 			case 0:
-				name = "PARC "+ itoa(toplot.fTreeId) + "TOTAL " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+				name = "PARC "+ itoa(toplot.fTreeId) + " TOTAL " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
 				break;
 
 			case 1:
-				name = "PARC "+ itoa(toplot.fTreeId) +  "INCYCLE " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+				name = "PARC "+ itoa(toplot.fTreeId) +  " INCYCLE " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
 
 			case 2:
-				name = "PARC "+ itoa(toplot.fTreeId) +  "WASTE " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+				name = "PARC "+ itoa(toplot.fTreeId) +  " WASTE " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
 
 			case 3:
-				name = "PARC "+ itoa(toplot.fTreeId) +  "GOD " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+				name = "PARC "+ itoa(toplot.fTreeId) +  " GOD " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
 
 			case 4:
-				name = "PARC "+ itoa(toplot.fTreeId) +  "REACTOR " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+				name = "PARC "+ itoa(toplot.fTreeId) +  " REACTOR " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
 
 			case 5:
-				name = "PARC "+ itoa(toplot.fTreeId) +  "COOLING " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+				name = "PARC "+ itoa(toplot.fTreeId) +  " COOLING " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
 
 			case 6:
-				name = "PARC "+ itoa(toplot.fTreeId) +  "STOCK " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+				name = "PARC "+ itoa(toplot.fTreeId) +  " STOCK " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
 
 			case 7:
-				name = "PARC "+ itoa(toplot.fTreeId) +  "FUELFABRICATION " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+				name = "PARC "+ itoa(toplot.fTreeId) +  " FUELFABRICATION " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
 
@@ -1498,23 +1498,23 @@ string CLASSRead::GetTittleOutName(CLASSPlotElement toplot)
 			break;
 
 		case 1:
-			name = "PARC "+ itoa(toplot.fTreeId) +  "Reactor " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+			name = "PARC "+ itoa(toplot.fTreeId) +  " Reactor " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 			return name;
 			break;
 
 		case 2:
-			name = "PARC "+ itoa(toplot.fTreeId) +  "Storage " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+			name = "PARC "+ itoa(toplot.fTreeId) +  " Storage " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 			return name;
 			break;
 
 		case 3:
-			name = "PARC "+ itoa(toplot.fTreeId) +  "Cooling " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+			name = "PARC "+ itoa(toplot.fTreeId) +  " Cooling " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 			return name;
 
 			break;
 
 		case 4:
-			name = "PARC "+ itoa(toplot.fTreeId) +  "Fabrication " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+			name = "PARC "+ itoa(toplot.fTreeId) +  " Fabrication " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 			return name;
 			break;
 			
