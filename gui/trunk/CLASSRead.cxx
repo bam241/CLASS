@@ -824,7 +824,7 @@ void CLASSRead::ASCIIWrite(string filename)
 //________________________________________________________________________
 //________________________________________________________________________
 //________________________________________________________________________
-void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string opt)
+void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string filename)
 {
 
 
@@ -834,7 +834,6 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string opt)
 
 
 
-	string out = opt;
 	Long64_t nentries = fData[toplot[0].fTreeId]->GetEntries();
 
 
@@ -1030,7 +1029,7 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string opt)
 
 
 	// Beginning of the document XML
-	ofstream f ("test.xml");
+	ofstream f (filename.c_str());
 	cout << f.is_open();
 	if (!f.is_open())
 		cout << "Impossible d'ouvrir le fichier en ecriture !" << endl;
@@ -1212,7 +1211,7 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string opt)
 }
 
 //________________________________________________________________________
-void CLASSRead::ConvertXmlMass(vector<CLASSPlotElement> toplot, string opt)
+void CLASSRead::ConvertXmlMass(vector<CLASSPlotElement> toplot, string filename)
 {
 	
 	vector<CLASSPlotElement> toplotTTree[fData.size()];
@@ -1225,12 +1224,10 @@ void CLASSRead::ConvertXmlMass(vector<CLASSPlotElement> toplot, string opt)
 		toplotTTree[toplot[i].fTreeId].push_back(toplot[i]);
 	}
 	
-	string out = opt;
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
-		if(i == 1) out += " same";
 		if(toplotTTree[i].size() !=0)
-			ConvertxmlTTreeMass(toplotTTree[i], out);
+			ConvertxmlTTreeMass(toplotTTree[i], filename);
 		
 	}
 }

@@ -444,6 +444,82 @@ void MainWin::Plot()
 		fDATA->Plot(toplot);
 	
 }
+void MainWin::Conversionxml()
+{
+	int Nnucleus = fDATA->GetZAIvector().size();
+
+	vector<CLASSPlotElement> toplot;
+	vector<CLASSPlotElement> toplotPower;
+
+	for(int i=0; i < fNumberOfParc; i++)
+	{
+
+		for(int j=0; j < fNumberOfTOT-1; j++) //fNumberOfTOT -1 ?? ->All except power
+		{
+			if(fCheckArrayTotal[i][j]->GetState()==kButtonDown)
+				for(int k=0; k < Nnucleus; k++)
+				{
+					if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+						toplot.push_back( CLASSPlotElement(i, 0, j,0, fDATA->GetZAIvector()[k]));
+				}
+		}
+
+		for(int j=0; j < fNumberOfReactor[i]; j++)
+		{
+			if(fCheckArrayReactor[i][j]->GetState()==kButtonDown)
+			{
+				for(int l =0;l<3;l++)
+					if (fCheckIVPlot[l]->GetState()==kButtonDown)
+						for(int k=0; k < Nnucleus; k++)
+						{
+							if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+								toplot.push_back( CLASSPlotElement(i, 1, j,l, fDATA->GetZAIvector()[k]));
+						}
+			}
+		}
+
+		for(int j=0; j < fNumberOfStock[i]; j++)
+		{
+			if(fCheckArrayStock[i][j]->GetState()==kButtonDown)
+				for(int l =0;l<3;l++)
+					if (fCheckIVPlot[l]->GetState()==kButtonDown)
+						for(int k=0; k < Nnucleus; k++)
+						{
+							if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+								toplot.push_back( CLASSPlotElement(i, 2, j,l, fDATA->GetZAIvector()[k]));
+						}
+		}
+
+		for(int j=0; j < fNumberOfPool[i]; j++)
+		{
+			if(fCheckArrayPool[i][j]->GetState()==kButtonDown)
+				for(int l =0;l<3;l++)
+					if (fCheckIVPlot[l]->GetState()==kButtonDown)
+						for(int k=0; k < Nnucleus; k++)
+						{
+							if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+								toplot.push_back( CLASSPlotElement(i, 3, j,l, fDATA->GetZAIvector()[k]));
+						}
+		}
+
+		for(int j=0; j < fNumberOfFab[i]; j++)
+		{
+			if(fCheckArrayFab[i][j]->GetState()==kButtonDown)
+				for(int l =0;l<3;l++)
+					if (fCheckIVPlot[l]->GetState()==kButtonDown)
+						for(int k=0; k < Nnucleus; k++)
+						{
+							if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+								toplot.push_back( CLASSPlotElement(i, 4, j,l, fDATA->GetZAIvector()[k]));
+						}
+		}
+	}
+
+	if(toplot.size() != 0)
+		fDATA->ConvertXmlMass(toplot);
+	
+}
+
 //_____________________________________________________________________________________________
 void MainWin::FillNucTab()		// fill the Inventory Tab foil
 {

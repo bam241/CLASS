@@ -60,7 +60,7 @@ public :
 	void PlotPower(vector<CLASSPlotElement> toplot, string opt = "L");
 	void PlotTTreePower(vector<CLASSPlotElement> toplot, string opt = "L");
 
-	void ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string opt = "L");
+	void ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string filename);
 	void ConvertXmlMass(vector<CLASSPlotElement> toplot, string opt = "L");           
 	void ConvertxmlTTreePower(vector<CLASSPlotElement> toplotPower, string opt = "L");
 	void ConvertXmlPower(vector<CLASSPlotElement> toplotPower, string opt = "L");     
