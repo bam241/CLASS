@@ -57,7 +57,9 @@ enum CommandId{
 	M_BUTTON_QUIT,
 	M_BUT_OK,
 	M_BUT_CANCEL,
-	M_CHECK_PLOTALL};
+	M_CHECK_PLOTALL,
+	M_RADIO_XML_SAVE,
+	M_RADIO_ASCII_SAVE};
 			  
 			  
 class MainWin :  public  TGMainFrame   
@@ -201,6 +203,9 @@ private:
  	TGTextEntry *		TEExtract[11];		//@- the extract nuclei
 	
 	MainWin	*		fParent; 		//@- parent of the sub win (i.e. MainWin)
+
+	TGRadioButton *fRadioASCIISave;
+	TGRadioButton *fRadioXMLSave;
 	   
   };
 

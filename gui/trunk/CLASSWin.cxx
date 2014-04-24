@@ -999,6 +999,14 @@ void SubWin::SaveAs()
  TEName->Resize(200, TEName->GetDefaultHeight());
  fSH1->AddFrame(TEName, fL0);
  TEName->Associate(this);
+
+ fRadioASCIISave=new TGRadioButton(fSH1,"ASCII ou APIED (hihi)",M_RADIO_ASCII_SAVE);	
+ fRadioXMLSave=new TGRadioButton(fSH1,"XML",M_RADIO_XML_SAVE);
+ fRadioASCIISave->SetState(kButtonDown);
+ fRadioASCIISave->Associate(this); 
+ fRadioXMLSave->Associate(this); 
+ fSH1->AddFrame(fRadioASCIISave);
+ fSH1->AddFrame(fRadioXMLSave);
  
  SetWindowName("Saving Plotted Data");
  
@@ -1031,8 +1039,22 @@ Bool_t SubWin::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 		}
 			break;
 		case kC_COMMAND:
-			switch (GET_SUBMSG(msg))
-		{
+		switch (GET_SUBMSG(msg))
+			{	
+			case kCM_RADIOBUTTON:
+				switch (parm1)
+				{
+					case M_RADIO_ASCII_SAVE:
+						fRadioASCIISave->SetState(kButtonUp);
+						fRadioXMLSave->SetState(kButtonDown);
+						fParent->fSaveFileFormat="ASCII";
+					break;
+					case M_RADIO_XML_SAVE:
+						fRadioASCIISave->SetState(kButtonDown);
+						fRadioXMLSave->SetState(kButtonUp);
+						fParent->fSaveFileFormat="XML";
+					break;
+				}
 			case kCM_BUTTON:
 				switch (parm1)
 			{
