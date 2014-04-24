@@ -73,6 +73,7 @@ public:
 	bool ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2); //@- widget signal handler method
 	void CloseWindow();			//@- destroy the main window
 	void Plot();				//@- general Plot method
+        void Conversionxml();                   //@- general Conversionxml method
 
 
 	void FillItemTab(int i);
