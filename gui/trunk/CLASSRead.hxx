@@ -61,9 +61,9 @@ public :
 	void PlotTTreePower(vector<CLASSPlotElement> toplot, string opt = "L");
 
 	void ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string filename);
-	void ConvertXmlMass(vector<CLASSPlotElement> toplot, string opt = "L");           
-	void ConvertxmlTTreePower(vector<CLASSPlotElement> toplotPower, string opt = "L");
-	void ConvertXmlPower(vector<CLASSPlotElement> toplotPower, string opt = "L");     
+	void ConvertXmlMass(vector<CLASSPlotElement> toplot, string opt);           
+	void ConvertxmlTTreePower(vector<CLASSPlotElement> toplotPower, string opt);
+	void ConvertXmlPower(vector<CLASSPlotElement> toplotPower, string opt );
 
 	void Write(string filename, string fileformat="ASCII");
 	void ASCIIWrite(string filename = "ASCII");

@@ -515,7 +515,7 @@ void MainWin::Conversionxml()
 	}
 
 	if(toplot.size() != 0)
-		fDATA->ConvertXmlMass(toplot);
+		fDATA->ConvertXmlMass(toplot, fSaveFileName);
 	
 }
 
@@ -999,7 +999,7 @@ void SubWin::SaveAs()
  fSH1->AddFrame(TEName, fL0);
  TEName->Associate(this);
 
- fRadioASCIISave=new TGRadioButton(fSH1,"ASCII ou APIED (hihi)",M_RADIO_ASCII_SAVE);	
+ fRadioASCIISave=new TGRadioButton(fSH1,"ASCII",M_RADIO_ASCII_SAVE);	
  fRadioXMLSave=new TGRadioButton(fSH1,"XML",M_RADIO_XML_SAVE);
  fRadioASCIISave->SetState(kButtonDown);
  fRadioASCIISave->Associate(this); 
