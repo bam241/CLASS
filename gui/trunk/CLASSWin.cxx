@@ -79,7 +79,6 @@ MainWin::~MainWin()
 //_____________________________________________________________________________________________
 void MainWin::Start(vector<string> VFileName)
 {
-	cout << "toto" << endl;
 
 	//
 	// Set the line width for all graph: for PPT presentation a value of 2 is probably better
@@ -122,7 +121,6 @@ void MainWin::Start(vector<string> VFileName)
 		fNumberOfPool[i] = fDATA->GetPoolName()[i].size();
 		fNumberOfFab[i] = fDATA->GetFabricationName()[i].size();
 	}
-	cout << "toto1" << endl;
 
 	// Canvas Style
 	gStyle->SetOptStat(000);
@@ -149,7 +147,6 @@ void MainWin::Start(vector<string> VFileName)
 	//
 	// the Main frame where all will be insert
 	//
-	cout << "toto2" << endl;
 
 	fGeneF0 = new TGVerticalFrame(this, 250, 150);
 	AddFrame(fGeneF0, fL5555);
@@ -182,7 +179,6 @@ void MainWin::Start(vector<string> VFileName)
 		fParcTabFoil[i] = fParcTab->AddTab(ParcName.str().c_str());
 	}
 
-	cout << "toto3" << endl;
 
 	/*************Les differentes Facilities Tab****/
 	fFacilitiesTab = new TGTab*[fNumberOfParc];
@@ -213,36 +209,28 @@ void MainWin::Start(vector<string> VFileName)
 		fFacilitiesTabFoil[i][4] = new TGCompositeFrame;
 		fFacilitiesTabFoil[i][4] = fFacilitiesTab[i]->AddTab("Fabrication Plant(s)");
 	}
-	cout << "toto4" << endl;
 
 	
 	//1 jeu d'ItemTab par facility tab
 
 	fItemTab = new TGTab**[fNumberOfParc];
-	cout << "toto4a" << endl;
 
 	for(int i = 0; i < fNumberOfParc; i++)
 	{
-		cout << "toto4b" << endl;
 		fItemTab[i] = new TGTab*[5];
 		for(int j = 0; j < 5; j++)
 		{
-			cout << "toto4c" << endl;
 			fItemTab[i][j] = new TGTab(fFacilitiesTabFoil[i][j],200,150);//@@ hxx non défini
 			fFacilitiesTabFoil[i][j]->AddFrame(fItemTab[i][j]);
 			fItemTab[i][j]->Associate(this);
 			//construire les foils en fonction du nombre de item possible par foil
-			cout << "toto4d" << endl;
 
 		}
-		cout << "toto4e" << endl;
 
 	}
-	cout << "toto4f" << endl;
 
 	for(int j = 0; j < 5; j++)
 		FillItemTab(j);
-	cout << "toto5" << endl;
 
 	fMiscenalanus = new TGHorizontalFrame(fGeneF0, 400, 50 );
 	fGeneF0->AddFrame(fMiscenalanus,fL5555);
@@ -285,7 +273,6 @@ void MainWin::Start(vector<string> VFileName)
 	fGeneF0->AddFrame(fTabNuc,fL2222);
 	fTabNuc->Associate(this);
 	FillNucTab();
-	cout << "toto6" << endl;
 
 	// The Plot, Save, Macro and Quit buttons
 	//
@@ -309,7 +296,6 @@ void MainWin::Start(vector<string> VFileName)
 	fMainWidth=fGeneF0->GetWidth();
 	
 	Resize(550,820); 					// fit to the exact size
-	cout << "toto7" << endl;
 
 
 }
@@ -577,7 +563,6 @@ void MainWin::FillNucFoil(int n_item, int Ncol,int Nline)
 //_____________________________________________________________________________________________
 void MainWin::FillItemTab(int current)
 {
-	cout << "tott " << current << endl;
 	if (current==0)
 		FillTotalTab();
 	if (current==1)
@@ -591,7 +576,6 @@ void MainWin::FillItemTab(int current)
 	
 	if(current>5 || current<0)
 	{cout<<"BUG"<<endl; exit(0);}
-	cout << "tott" << endl;
 
 	
 }
@@ -632,7 +616,6 @@ void MainWin::FillTotalTab()
 //_____________________________________________________________________________________________
 void MainWin::FillReactorTab()
 {
-	cout << "titi" << endl;
 	int Nline=15-WIDE;
 	int Ncol=6+WIDE;
 	
@@ -640,7 +623,6 @@ void MainWin::FillReactorTab()
 	fCheckArrayReactor= new TGCheckButton**[fNumberOfParc];
 	int *NTab=new int[fNumberOfParc];
 	
-	cout << "titi 1" << endl;
 	for (int i=0 ; i<fNumberOfParc;i++)
 	{
 
@@ -651,7 +633,6 @@ void MainWin::FillReactorTab()
 
 	}
 
-	cout << "titi 2" << endl;
 	for (int p=0;p<fNumberOfParc;p++)
 	{
 		string TabName[NTab[p]];
@@ -669,17 +650,14 @@ void MainWin::FillReactorTab()
 		
 	}
 	
-	cout << "titi 3" << endl;
 	for (int p=0;p<fNumberOfParc;p++)
 	{
-		cout << "titi 3a" << endl;
 
 		int current_foil=0;
 		int current_item=0;
 		int current_item_in_the_foil=0;
 		for(int n=0;n<fNumberOfReactor[p];n++)
 		{
-			cout << "titi 3b " << p << " " << n << endl;
 
 			fCheckArrayReactor[p][current_item]= new TGCheckButton(fTabFoilReactor[p][current_foil],fDATA->GetReactorName()[p][n]);
 			fCheckArrayReactor[p][current_item]->SetFont(fLabelFontS);
@@ -694,14 +672,11 @@ void MainWin::FillReactorTab()
 				current_item_in_the_foil=0;
 				current_foil++;
 			}
-			cout << "titi 3c" << endl;
 
 			
 		}
-		cout << "titi 3d" << endl;
 
 	}
-	cout << "titi 4" << endl;
 }
 //_____________________________________________________________________________________________
 void MainWin::FillStockTab()
