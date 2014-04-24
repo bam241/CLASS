@@ -44,9 +44,12 @@ using namespace std;
 //		MainWin is the main window with Tab (1 for inventory, 1 for cross-section
 //		and 1 for fluxes). SubWin is used for small windows that appears when
 //		some buttons are pressed (e.g. Save As button, Exec Macro button, ...)
-// @author PTO
+
+// Thank to Francisco, Guerin, Louard, Shi for their participation to the XML ouput implementation
+// @author BLG
+// @author BAM
 // @version 1.0
-// @modified PG,RC,BL
+
 //@}
 
 //Here is the widget code: it correspond to signal emitted when a widget is activated 
