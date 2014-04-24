@@ -66,6 +66,7 @@ const int WIDE = 0;
 MainWin::MainWin(CLASSRead * DATA,vector<string> VFileName)
 {
 	fDATA=DATA;
+	fSaveFileFormat = "ASCII";
 	Start( VFileName);
 }
 
@@ -326,17 +327,15 @@ bool MainWin::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 					}
 					
 					nsw = new SubWin("SaveAs", fClient->GetRoot(), this, 200, 200);
-					if(fSaveFileName != "" /*&& fSaveFileFormat !=""*/)
-					{	//si plusieur canvas ouvert sauver l'actif exemple :
-						string PadName=gPad->GetName();
-						if(PadName=="c_Nuclei")
-							//fDATA->Write(fSaveFileName, fSaveFileFormat);
-							fDATA->Write(fSaveFileName, "ASCII");
-//						else if (PadName="")
-//							fDATA->Write(fSaveFileName, fSaveFileFormat);
-
-
-					}
+					if (fSaveFileFormat == "XML")
+						Conversionxml();
+					else
+						if(fSaveFileName != "" /*&& fSaveFileFormat !=""*/)
+						{	//si plusieur canvas ouvert sauver l'actif exemple :
+							string PadName=gPad->GetName();
+							if(PadName=="c_Nuclei")
+								fDATA->Write(fSaveFileName, fSaveFileFormat);
+						}
 					break;
 			}
 				
