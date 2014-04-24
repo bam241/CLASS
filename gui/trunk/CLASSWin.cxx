@@ -1044,13 +1044,13 @@ Bool_t SubWin::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 				switch (parm1)
 				{
 					case M_RADIO_ASCII_SAVE:
-						fRadioASCIISave->SetState(kButtonUp);
-						fRadioXMLSave->SetState(kButtonDown);
+						fRadioASCIISave->SetState(kButtonDown);
+						fRadioXMLSave->SetState(kButtonUp);
 						fParent->fSaveFileFormat="ASCII";
 					break;
 					case M_RADIO_XML_SAVE:
-						fRadioASCIISave->SetState(kButtonDown);
-						fRadioXMLSave->SetState(kButtonUp);
+						fRadioASCIISave->SetState(kButtonUp);
+						fRadioXMLSave->SetState(kButtonDown);
 						fParent->fSaveFileFormat="XML";
 					break;
 				}
