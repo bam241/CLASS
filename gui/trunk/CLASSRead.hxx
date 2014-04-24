@@ -59,6 +59,16 @@ public :
 	void Plot(vector<CLASSPlotElement> toplot, string opt = "L");
 	void PlotPower(vector<CLASSPlotElement> toplot, string opt = "L");
 	void PlotTTreePower(vector<CLASSPlotElement> toplot, string opt = "L");
+
+	void ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string opt = "L");
+	void ConvertXmlMass(vector<CLASSPlotElement> toplot, string opt = "L");           
+	void ConvertxmlTTreePower(vector<CLASSPlotElement> toplotPower, string opt = "L");
+	void ConvertXmlPower(vector<CLASSPlotElement> toplotPower, string opt = "L");     
+
+	void Write(string filename, string fileformat="ASCII");
+	void ASCIIWrite(string filename = "ASCII");
+
+
 	void AddFile(TString filemname);
 	TCanvas* fCNuclei;
 	TCanvas* fCPower;
