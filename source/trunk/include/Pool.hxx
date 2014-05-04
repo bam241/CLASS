@@ -17,8 +17,7 @@ typedef long long int cSecond;
 class Storage;
 class CLASS;
 class LogFile;
-template <class T> 
-class DataBank;
+class DecayDataBank;
 
 //-----------------------------------------------------------------------------//
 /*!
@@ -102,7 +101,7 @@ public :
 	void SetStorage(Storage* storage)	{ fStorage = storage; fPutToWaste = true; }		//!< Set the Pointer to the Storage
 	void SetPutToWaste(bool val)		{ fPutToWaste = val; }		//!< Set True if IV goes to waste after cooling false instead
 
-	void SetDecayDataBase(DataBank<ZAI>* ddb)	{ fDecayDataBase = ddb; }		//!< Set the pointer to the Decay DataBase
+	void SetDecayDataBase(DecayDataBank* ddb)	{ fDecayDataBase = ddb; }		//!< Set the pointer to the Decay DataBase
 
 	void SetCoolingTime(double time) 		{ SetCycleTime((cSecond)time); }			//!< Set Cooling Time
 
@@ -124,7 +123,7 @@ public :
 	cSecond GetCoolingTime() const		{ return GetCycleTime(); }	//!< Return the Cooling Time
 
 	
-	DataBank<ZAI>* 	GeDecayDataBase() const	{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
+	DecayDataBank* 	GeDecayDataBase() const	{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
 
 	//@}
 
@@ -171,7 +170,7 @@ protected :
 	Storage*		fStorage;	//!< Pointer to the Stock
 	bool			fPutToWaste;	//!< True if IV goes to waste after cooling false instead
 
-	DataBank<ZAI>*	fDecayDataBase;		//!< Pointer to the Decay DataBase
+	DecayDataBank*	fDecayDataBase;		//!< Pointer to the Decay DataBase
 
 
 //********* Isotopic Quantity *********//

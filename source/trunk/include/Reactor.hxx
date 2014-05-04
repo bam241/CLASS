@@ -20,8 +20,7 @@ typedef long long int cSecond;
 class CLASS;
 class Pool;
 class EvolutionData;
-template <class T> 
-class DataBank;
+class FuelDataBank;
 class FabricationPlant;
 class Storage;
 class LogFile;
@@ -72,7 +71,7 @@ public :
 	 \param creationtime creation time
 	 \param lifetime working time duration.
 	 */
-	Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
+	Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 		FabricationPlant* fabricationplant, Pool* Pool,
 		double creationtime , double lifetime);
 	//}
@@ -90,7 +89,7 @@ public :
 	 \param HMMass Mass of Heavy Metal in the Reactor
 	 \param BurnUp Burnup reach by the fuel at the end of the cycle
 	 */
-	Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
+	Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 		FabricationPlant* fabricationplant, Pool* Pool,
 		double creationtime , double lifetime, double cycletime,
 		double HMMass, double BurnUp);
@@ -110,7 +109,7 @@ public :
 	 \param BurnUp Burnup reach by the fuel at the end of the cycle
 	 \param ChargeFactor effective charge of the reactor.
 	 */
-	Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
+	Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 		FabricationPlant* fabricationplant, Pool* Pool,
 		double creationtime , double lifetime,
 		double Power, double HMMass, double BurnUp, double ChargeFactor);
@@ -159,7 +158,7 @@ public :
 	
 
 	EvolutionData	GetEvolutionDB()		const	{ return fEvolutionDB; }	//!< Return the Evolution database of the Fuel
-	DataBank<IsotopicVector>*	GetFuelType()	const	{ return fFuelTypeDB; }		//!< Return the Fuel Type DB of the reactor
+	FuelDataBank*	GetFuelType()	const	{ return fFuelTypeDB; }		//!< Return the Fuel Type DB of the reactor
 
 	Pool*			GetAssociedPool()	const	{ return fAssociedPool; }	//!< Return the pointer to Associeted TF
 	FabricationPlant*	GetFabricationPlant()	const	{ return fFabricationPlant; }	//!< Return the Pointer to the FabricationPlant
@@ -224,7 +223,7 @@ protected :
 	Storage*	fStorage;		//!< Pointer to the Stock
 						
 	EvolutionData	fEvolutionDB;			//!< Pointer to the Evolution DataBase
-	DataBank<IsotopicVector>* 	fFuelTypeDB;	//! Pointer to a Fuel Type Database
+	FuelDataBank* 	fFuelTypeDB;	//! Pointer to a Fuel Type Database
 	
 	double 		fPower;			///< Power (in Watt)
 	

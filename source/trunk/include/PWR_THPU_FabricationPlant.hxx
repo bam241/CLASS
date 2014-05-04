@@ -17,15 +17,7 @@
 #include <vector>
 #include <map>
 
-#include "CLSSFacility.hxx"
-#include "IsotopicVector.hxx"
-#include "EvolutionData.hxx"
-#include "CLASS.hxx"
-#include "Storage.hxx"
-#include "Reactor.hxx"
-#include "DataBank.hxx"
-#include "LogFile.hxx"
-#include "ZAI.hxx"
+#include "FabricationPlant.hxx"
 
 using namespace std;
 typedef long long int cSecond;

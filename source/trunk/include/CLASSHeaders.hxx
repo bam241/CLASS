@@ -19,7 +19,8 @@
 #include "LogFile.hxx"
 
 #include "EvolutionData.hxx"
-#include "DataBank.hxx"
+#include "DecayDataBank.hxx"
+#include "FuelDataBank.hxx"
 #include "StringLine.hxx"
 
 #include "ZAIMass.hxx"

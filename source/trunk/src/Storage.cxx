@@ -1,6 +1,6 @@
 #include "Storage.hxx"
 
-#include "DataBank.hxx"
+#include "DecayDataBank.hxx"
 #include "CLASS.hxx"
 #include "LogFile.hxx"
 
@@ -38,7 +38,7 @@ Storage::Storage(LogFile* log)
 	
 }
 //________________________________________________________________________
-Storage::Storage(LogFile* log, DataBank<ZAI>* evolutivedb)
+Storage::Storage(LogFile* log, DecayDataBank* evolutivedb)
 {
 
 	SetLog(log);

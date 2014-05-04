@@ -1,9 +1,9 @@
-#include "FabricationPlant.hxx"
 #include "PWR_THPU_FabricationPlant.hxx"
 #include "Storage.hxx"
 #include "Reactor.hxx"
 #include "EvolutionData.hxx"
-#include "DataBank.hxx"
+#include "FuelDataBank.hxx"
+#include "DecayDataBank.hxx"
 #include "IsotopicVector.hxx"
 #include "CLASS.hxx"
 #include "CLASSHeaders.hxx"
@@ -112,7 +112,7 @@ PWR_THPU_FabricationPlant::~PWR_THPU_FabricationPlant()
 void PWR_THPU_FabricationPlant::BuildFuelForReactor(int ReactorId)
 {
 	//cout<<"INFO : This is a specific FabricationPlant"<<endl<<"GOOD JOB!!!"<<endl;
-	DataBank<IsotopicVector>* FuelType = GetParc()->GetReactor()[ReactorId]->GetFuelType();
+	FuelDataBank* FuelType = GetParc()->GetReactor()[ReactorId]->GetFuelType();
 	string ReactorType ="PWR";	
 	if(FuelType->GetFuelType() != "THPU" || ReactorType !="PWR")//Check if the reactor is the right type and use the right type of fuel
 	{

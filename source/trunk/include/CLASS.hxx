@@ -20,7 +20,7 @@
 using namespace std;
 typedef long long int cSecond;
 
-template <class T> class DataBank;
+class DecayDataBank;
 class FabricationPlant;
 class Reactor;
 class Pool;
@@ -82,7 +82,7 @@ public :
 	vector<Storage*>		GetStorage()		{ return fStorage; }		///< Return the Storage Vector
 	vector<Pool*>			GetPool()		{ return fPool; }		///< Return the Pool Vector
 	vector<FabricationPlant*>	GetFabricationPlant()	{ return fFabricationPlant; }	///< Return the FabricationPlant Vector
-	DataBank<ZAI>*			GetDecayDataBase() 	{ return fDecayDataBase; }	//!< Return the Pointer to the Decay DataBase
+	DecayDataBank*			GetDecayDataBase() 	{ return fDecayDataBase; }	//!< Return the Pointer to the Decay DataBase
 
 	cSecond				GetPrintSet()		{ return fPrintStep; }		///< Return the Print Step Periodicity
 	bool				GetStockManagement()	{ return fStockManagement; }	///< Return the StockManagement method (True or False)
@@ -121,9 +121,9 @@ public :
 	/// Set the Decay DataBank
 	/*!
 	 Use to define Decay DataBank to be used
-	 \param decaydatabase: a Databank<ZAI> which should contain the evolution of each nuclei of the chart
+	 \param decaydatabase: a DecayDataBank which should contain the evolution of each nuclei of the chart
 	 */
-	void	SetDecayDataBase(DataBank<ZAI>* decaydatabase) { fDecayDataBase = decaydatabase; }
+	void	SetDecayDataBase(DecayDataBank* decaydatabase) { fDecayDataBase = decaydatabase; }
 	//}
 
 	//{
@@ -247,7 +247,7 @@ protected :
 	vector<Pool*>			fPool;			///< Vector of Pool
 	vector<Reactor*>		fReactor;		///< Vector of Reactor
 	vector<FabricationPlant*>	fFabricationPlant;	///< Vector of FabricationPlant
-	DataBank<ZAI>*			fDecayDataBase;		//!< Pointer to the Decay DataBase
+	DecayDataBank*			fDecayDataBase;		//!< Pointer to the Decay DataBase
 
 	
 	TFile*		fOutFile;		///< Pointer to the Root Output File

@@ -1,7 +1,7 @@
 #include "Reactor.hxx"
 
 #include "EvolutionData.hxx"
-#include "DataBank.hxx"
+#include "FuelDataBank.hxx"
 #include "Pool.hxx"
 #include "FabricationPlant.hxx"
 #include "Storage.hxx"
@@ -46,7 +46,7 @@ Reactor::Reactor(LogFile* log)
 
 }
 
-Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* fueltypeDB,
+Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 Pool* Pool,
  		 double creationtime, double lifetime)
@@ -91,7 +91,7 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* fueltypeDB,
 
 }
 
-Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* fueltypeDB, FabricationPlant* fabricationplant, Pool* Pool,
+Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB, FabricationPlant* fabricationplant, Pool* Pool,
  		 double creationtime, double lifetime,
  		 double Power, double HMMass, double BurnUp, double ChargeFactor)
 {
@@ -145,7 +145,7 @@ Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* fueltypeDB, Fabrication
 
 }
 
-Reactor::Reactor(LogFile* log, DataBank<IsotopicVector>* 	fueltypeDB,
+Reactor::Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 Pool* Pool,
  		 double creationtime, double lifetime, double cycletime,

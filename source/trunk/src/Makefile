@@ -25,7 +25,8 @@ OBJS		= 	CLASS.o \
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAIMass.o \
 			ZAI.o ZAIDict.o \
-			DataBank.o DynamicalSystem.o \
+			FuelDataBank.o DecayDataBank.o \
+			DynamicalSystem.o\
 			EvolutionData.o EvolutionDataDict.o \
             LogFile.o
 
@@ -38,7 +39,8 @@ ROOTOBJS	= 	CLSSObject.o CLSSObjectDict.o\
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAIMass.o \
 			ZAI.o ZAIDict.o \
-			DataBank.o DynamicalSystem.o\
+			FuelDataBank.o DecayDataBank.o \
+			DynamicalSystem.o\
 			EvolutionData.o EvolutionDataDict.o \
 			LogFile.o
 

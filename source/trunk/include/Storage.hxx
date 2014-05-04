@@ -18,8 +18,7 @@ typedef long long int cSecond;
 
 class CLASS;
 class LogFile;
-template <class T> 
-class DataBank;
+class DecayDataBank;
 
 //-----------------------------------------------------------------------------//
 /*!
@@ -64,7 +63,7 @@ public :
 	 \param LogFile LogFile used for the log...
 	 \param evolutivedb DataBank for decay management
 	 */
-	Storage(LogFile* log, DataBank<ZAI>* evolutivedb);
+	Storage(LogFile* log, DecayDataBank* evolutivedb);
 	//}
 
 
@@ -82,7 +81,7 @@ public :
 	 */
 	//@{
 	
-	void SetDecayDataBase(DataBank<ZAI>* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
+	void SetDecayDataBase(DecayDataBank* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
 	void SetStock(vector<IsotopicVector> IVsstock)	{ fIVStock = IVsstock; }		//!< Set The Storage isotopicVector
 
 	//@}
@@ -97,7 +96,7 @@ public :
 	 */
 	//@{
 	
-	DataBank<ZAI>* GeDecayDataBase()	const		{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
+	DecayDataBank* GeDecayDataBase()	const		{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
 	vector<IsotopicVector> GetStock()	const		{ return fIVStock; }		//!< Return the Storage IsotopicVector
 	IsotopicVector GetFullStock()		const		{ return GetInsideIV(); }	//!< Return the Full Storage
 
@@ -165,7 +164,7 @@ protected :
 	
 //********* Internal Parameter *********//
 
-	DataBank<ZAI>*	fDecayDataBase;	//!< Pointer to the Decay DataBase
+	DecayDataBank*	fDecayDataBase;	//!< Pointer to the Decay DataBase
 
 
 //********* Isotopic Quantity *********//
