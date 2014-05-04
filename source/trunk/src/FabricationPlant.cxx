@@ -3,7 +3,8 @@
 #include "Storage.hxx"
 #include "Reactor.hxx"
 #include "EvolutionData.hxx"
-#include "DataBank.hxx"
+#include "DecayDataBank.hxx"
+#include "FuelDataBank.hxx"
 #include "IsotopicVector.hxx"
 #include "CLASS.hxx"
 #include "CLASSHeaders.hxx"
@@ -184,7 +185,7 @@ void FabricationPlant::FabricationPlantEvolution(cSecond t)
 
 void FabricationPlant::BuildFuelForReactor(int ReactorId)
 {
-	DataBank<IsotopicVector>* FuelType = GetParc()->GetReactor()[ReactorId]->GetFuelType();
+	FuelDataBank* FuelType = GetParc()->GetReactor()[ReactorId]->GetFuelType();
 	string ReactorType ="PWR";	
 	if(FuelType->GetFuelType() != "MOX" || ReactorType !="PWR")//Check if the reactor is the right type and use the right type of fuel
 	{
@@ -416,7 +417,7 @@ IsotopicVector FabricationPlant::GetDecay(IsotopicVector isotopicvector, cSecond
 EvolutionData FabricationPlant::BuildEvolutiveDB(int ReactorId,IsotopicVector isotopicvector)
 {
 	
-	DataBank<IsotopicVector>* evolutiondb = GetParc()->GetReactor()[ReactorId]->GetFuelType();
+	FuelDataBank* evolutiondb = GetParc()->GetReactor()[ReactorId]->GetFuelType();
 	
 	isotopicvector = GetDecay(isotopicvector, GetCycleTime());
 	

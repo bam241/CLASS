@@ -18,7 +18,6 @@
 #include "CLASS.hxx"
 #include "Storage.hxx"
 #include "Reactor.hxx"
-#include "DataBank.hxx"
 #include "LogFile.hxx"
 #include "ZAI.hxx"
 
@@ -40,6 +39,8 @@ typedef long long int cSecond;
  */
 //________________________________________________________________________
 
+class DecayDataBank;
+class FuelDataBank;
 
 
 class FabricationPlant : public CLSSFacility
@@ -95,7 +96,7 @@ public :
 
 	void	SetUpdateReferenceDBatEachStep(bool val){ fUpdateReferenceDBatEachStep = val;}	//!< Set fUpdateReferenceDBatEachStep variable
 	void	SetStorage(Storage* storage)		{ fStorage = storage; }			//!< Set the Pointer to the Storage
-	void	SetDecayDataBase(DataBank<ZAI>* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
+	void	SetDecayDataBase(DecayDataBank* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
 	
 	void	SetChronologicalTimePriority(bool bval)	{ fChronologicalTimePriority = bval;}	//!< Set the chronological priority (true for chronological, false unstead)
 	
@@ -120,7 +121,7 @@ public :
 	map<int, IsotopicVector >	GetReactorFuturIncome() const
 						{ return fReactorFuturIV;}	//!< Return the List of the Futur Fuel IV
 
-	DataBank<ZAI>* 	GeDecayDataBase() const
+	DecayDataBank* 	GeDecayDataBase() const
 						{ return fDecayDataBase; }	//!< Return the pointer to the DecayDB
 
 	IsotopicVector GetFullFabrication();					//!< Return the Sum of all Fuel waiting to be put in a reator
@@ -164,7 +165,7 @@ protected :
 	map< int,EvolutionData >	fReactorFuturDB; ///< List of the Futur EvolutionData use in the reactor
 	map< int,IsotopicVector >	fReactorFuturIV; ///< List of the Futur Fuel Isotopic Vector used in the reactor
 
-	DataBank<ZAI>*		fDecayDataBase;	//!< Pointer to the Decay DataBase
+	DecayDataBank*		fDecayDataBase;	//!< Pointer to the Decay DataBase
 
 	Storage*	fStorage;			//!< Pointer to the Storage to recycle
 	Storage*	fReUsable;			//!< Pointer to the Storage using for recycling unused Product

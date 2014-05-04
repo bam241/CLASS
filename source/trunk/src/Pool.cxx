@@ -1,6 +1,6 @@
 #include "Pool.hxx"
 
-#include "DataBank.hxx"
+#include "DecayDataBank.hxx"
 #include "IsotopicVector.hxx"
 #include "Storage.hxx"
 #include "CLASS.hxx"
