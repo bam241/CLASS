@@ -101,8 +101,6 @@ public :
 	void SetStorage(Storage* storage)	{ fStorage = storage; fPutToWaste = true; }		//!< Set the Pointer to the Storage
 	void SetPutToWaste(bool val)		{ fPutToWaste = val; }		//!< Set True if IV goes to waste after cooling false instead
 
-	void SetDecayDataBase(DecayDataBank* ddb)	{ fDecayDataBase = ddb; }		//!< Set the pointer to the Decay DataBase
-
 	void SetCoolingTime(double time) 		{ SetCycleTime((cSecond)time); }			//!< Set Cooling Time
 
 	//@}
@@ -121,9 +119,6 @@ public :
 	bool		GetPutToWaste()	const	{ return fPutToWaste; }		//!< Return True if IV goes to waste after cooling false instead
 
 	cSecond GetCoolingTime() const		{ return GetCycleTime(); }	//!< Return the Cooling Time
-
-	
-	DecayDataBank* 	GeDecayDataBase() const	{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
 
 	//@}
 
@@ -170,8 +165,6 @@ protected :
 	Storage*		fStorage;	//!< Pointer to the Stock
 	bool			fPutToWaste;	//!< True if IV goes to waste after cooling false instead
 
-	DecayDataBank*	fDecayDataBase;		//!< Pointer to the Decay DataBase
-
 
 //********* Isotopic Quantity *********//
 //--------- Cooling ---------//
@@ -183,7 +176,6 @@ protected :
 
 
 //********* Private Method *********//
-	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
 	void	CoolingEvolution(cSecond t);					//!< Deal the cooling and then send it to Separation
 
 

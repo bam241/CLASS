@@ -179,7 +179,7 @@ void CLASS::AddPool(Pool* Pool)
 	
 	fPool.push_back(Pool);
 	fPool.back()->SetParc(this);
-	fPool.back()->SetDecayDataBase( (*this).GetDecayDataBase() );
+	fPool.back()->SetDecayDataBank( (*this).GetDecayDataBase() );
 	fPool.back()->SetLog(GetLog());
 	fPool.back()->SetId((int)fPool.size()-1);
 	
@@ -224,7 +224,7 @@ void CLASS::AddStorage(Storage* storage)
 	
 	fStorage.push_back(storage);
 	fStorage.back()->SetParc(this);
-	fStorage.back()->SetDecayDataBase( (*this).GetDecayDataBase() );
+	fStorage.back()->SetDecayDataBank( (*this).GetDecayDataBase() );
 	fStorage.back()->SetLog(GetLog());
 	fStorage.back()->SetId((int)fStorage.size()-1);
 	
@@ -244,7 +244,7 @@ void CLASS::AddFabricationPlant(FabricationPlant* fabricationplant)
 	
 	fFabricationPlant.push_back(fabricationplant);
 	fFabricationPlant.back()->SetParc(this);
-	fFabricationPlant.back()->SetDecayDataBase( (*this).GetDecayDataBase() );
+	fFabricationPlant.back()->SetDecayDataBank( (*this).GetDecayDataBase() );
 	fFabricationPlant.back()->SetLog(GetLog());
 	fFabricationPlant.back()->SetId((int)fStorage.size()-1);
 	

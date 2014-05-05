@@ -80,8 +80,6 @@ public :
 	 \name Set Method
 	 */
 	//@{
-	
-	void SetDecayDataBase(DecayDataBank* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
 	void SetStock(vector<IsotopicVector> IVsstock)	{ fIVStock = IVsstock; }		//!< Set The Storage isotopicVector
 
 	//@}
@@ -96,7 +94,6 @@ public :
 	 */
 	//@{
 	
-	DecayDataBank* GeDecayDataBase()	const		{ return fDecayDataBase; }	//!< Return the pointer to the Decay DataBase
 	vector<IsotopicVector> GetStock()	const		{ return fIVStock; }		//!< Return the Storage IsotopicVector
 	IsotopicVector GetFullStock()		const		{ return GetInsideIV(); }	//!< Return the Full Storage
 
@@ -162,11 +159,6 @@ public :
 
 protected :
 	
-//********* Internal Parameter *********//
-
-	DecayDataBank*	fDecayDataBase;	//!< Pointer to the Decay DataBase
-
-
 //********* Isotopic Quantity *********//
 
 //---------- Storage ----------//
@@ -175,7 +167,6 @@ protected :
 
 
 //********* Private Method *********//
-	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
 	void	StorageEvolution(cSecond t);					//!< Deal the Storage Decay Evolution
 
 
