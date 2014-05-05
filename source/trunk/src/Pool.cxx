@@ -25,7 +25,6 @@ ClassImp(Pool)
 Pool::Pool()
 {
 	fStorage = 0;
-	fDecayDataBase = 0;
 }
 
 Pool::Pool(LogFile* log)
@@ -40,7 +39,6 @@ Pool::Pool(LogFile* log)
 	fCoolingLastIndex = 0;
 
 	fStorage = 0;
-	fDecayDataBase = 0;
 
 	
 	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
@@ -67,7 +65,6 @@ Pool::Pool(LogFile* log, double creation, double coolingtime)
 	fCoolingLastIndex = 0;
 
 	fStorage = 0;
-	fDecayDataBase = 0;
 
 	
 	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
@@ -95,8 +92,6 @@ Pool::Pool(LogFile* log, Storage* storage, double creation, double coolingtime)
 	fPutToWaste = false;
 	fCoolingLastIndex = 0;
 
-	fDecayDataBase = 0;
-
 	
 	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
 	cout	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
@@ -119,28 +114,6 @@ Pool::~Pool()
 }
 
 
-
-
-//________________________________________________________________________
-//	Get Decay
-//________________________________________________________________________
-IsotopicVector Pool::GetDecay(IsotopicVector isotopicvector, cSecond t)
-{
-
-	IsotopicVector IV;
-	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
-	map<ZAI ,double >::iterator it;
-	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
-	{
-		if((*it).second > 0)
-		{
- 			IsotopicVector ivtmp = fDecayDataBase->Evolution(it->first, t) * (*it).second ;
-			IV += ivtmp;
-		}
-	}
-
-	return IV;
-}
 
 
 //________________________________________________________________________

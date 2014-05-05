@@ -5,8 +5,6 @@
 /*!
  \file
  \brief Header file for IsotopicVector class. 
-
- @author BaM, Marc
  @version 2.0
  */
 #include "ZAI.hxx"
@@ -23,7 +21,7 @@ typedef long long int cSecond;
  Define a Isotopicvector.
  The aim of this Class is to manage any kind of IsotopicVector, and any operation between them : sum, substraction....
 
- @author BaM
+ @author BaM, MArc
  @version 2.0
  */
 //________________________________________________________________________

@@ -45,7 +45,6 @@ ClassImp(FabricationPlant)
 
 FabricationPlant::FabricationPlant()
 {
-	fDecayDataBase = 0;
 	fStorage = 0;
 	fReUsable = 0;
 }
@@ -58,7 +57,6 @@ FabricationPlant::FabricationPlant(LogFile* log)
 	SetCycleTime(-1);
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
-	fDecayDataBase = 0;
 	fStorage = 0;
 	fReUsable = 0;
 
@@ -81,7 +79,6 @@ FabricationPlant::FabricationPlant(LogFile* log, Storage* storage, Storage* reus
 	fChronologicalTimePriority = false;
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
-	fDecayDataBase = 0;
 
 
 	SetCycleTime((cSecond)fabircationtime );
@@ -384,30 +381,6 @@ void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel)
 		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
 	fSubstitutionEvolutionData = fuel / M0;
 
-}
-
-
-	//________________________________________________________________________
-	//_________________________________ Decay ________________________________
-	//________________________________________________________________________
-IsotopicVector FabricationPlant::GetDecay(IsotopicVector isotopicvector, cSecond t)
-{
-	
-	IsotopicVector IV;
-	
-	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
-	
-	map<ZAI ,double >::iterator it;
-	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-	{
-		if((*it).second > 0)
-		{
- 			IsotopicVector ivtmp = fDecayDataBase->Evolution(it->first, t) * (*it).second ;
-			IV += ivtmp;
-		}
-	}
-	
-	return IV;
 }
 
 

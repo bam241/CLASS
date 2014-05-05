@@ -14,6 +14,7 @@
 
 #include "CLSSObject.hxx"
 #include "IsotopicVector.hxx"
+#include "DecayDataBank.hxx"
 
 #include "TNamed.h"
 
@@ -56,7 +57,10 @@ public :
 	cSecond		GetCycleTime()		const	{ return fCycleTime; } 		//!< Return the cycle time of the Facility
 	cSecond 	GetCreationTime()	const	{ return fCreationTime; }	//!< Return the creation time of the Facility
 	cSecond 	GetLifeTime()		const	{ return fLifeTime; }		//!< Return the life time of the Facility
-	CLASS*		GetParc()			{ return fParc; }
+	CLASS*		GetParc()			{ return fParc; }		//! retiurn the pointer to the Park
+	DecayDataBank*	GetDecayDataBank()		{ return fDecayDataBase;}	//!< Return the pointer to the decay DataBank
+
+
 	IsotopicVector GetCumulativeIVIn() { return fCumulativeIVIn;}
 	IsotopicVector GetCumulativeIVOut() { return fCumulativeIVOut;}
 	//@}
@@ -75,6 +79,8 @@ public :
 	virtual void SetCycleTime(double cycletime)	{ fCycleTime = (cSecond)cycletime; }	//!< Set the cycle time (Cycle of the loading Plan)
 	void SetInCycleTime(double incycletime)		{ fInCycleTime = (cSecond)incycletime; fIsStarted = true; }	//!< Set the cycle time (Cycle of the loading Plan)
 	void SetInternalTime(double internaltime)	{ fInternalTime = (cSecond)internaltime; }	//!< Set the cycle time (Cycle of the loading Plan)
+
+	void SetDecayDataBank(DecayDataBank* decayDB) {fDecayDataBase = decayDB;} //! Set the Decay DataBank
 	//@}
 
 
@@ -104,12 +110,15 @@ protected :
 	IsotopicVector	fCumulativeIVOut;	///< All IV in the Facility (fuel for reactor, total for all others...)
 
 
+	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
+
 		//********* Internal Parameter *********//
 private :
 	int		fId;			//!< Identity of the Facility inside the Parc
 		
 	CLASS*		fParc;			//!< Pointer to the main Parc
-	
+	DecayDataBank*	fDecayDataBase;		//!< Pointer to the Decay DataBase
+
 	cSecond		fCreationTime;		///< CLASS Universal Time of Creation
 	cSecond		fLifeTime;		///< LifeTime Of the Reactor (Operating's Duration)
 

@@ -37,11 +37,10 @@ template <class T>  T random(T a, T b) //peak random numebr between a and b
 	srand(time(NULL)); //initialize the srand
 	return (T)a + (T)(b-a)*rand()/range;
 }
+
 PWR_THU_FabricationPlant::PWR_THU_FabricationPlant()
 {
-	fDecayDataBase = 0;
-	fStorage = 0;
-	fReUsable = 0;
+
 }
 
 PWR_THU_FabricationPlant::PWR_THU_FabricationPlant(LogFile* log)
@@ -52,7 +51,6 @@ PWR_THU_FabricationPlant::PWR_THU_FabricationPlant(LogFile* log)
 	SetCycleTime(-1);
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
-	fDecayDataBase = 0;
 	fStorage = 0;
 	fReUsable = 0;
 
@@ -75,7 +73,6 @@ PWR_THU_FabricationPlant::PWR_THU_FabricationPlant(LogFile* log, Storage* storag
 	fChronologicalTimePriority = false;
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
-	fDecayDataBase = 0;
 
 
 	SetCycleTime((cSecond)fabircationtime );

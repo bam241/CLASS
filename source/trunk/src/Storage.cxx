@@ -23,15 +23,12 @@ ClassImp(Storage)
 
 Storage::Storage()
 {
-	fDecayDataBase = 0;
-
 }
 
 Storage::Storage(LogFile* log)
 {
 	
 	SetLog(log);
-	fDecayDataBase = 0;
 	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 	
 	GetLog()->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
@@ -42,7 +39,7 @@ Storage::Storage(LogFile* log, DecayDataBank* evolutivedb)
 {
 
 	SetLog(log);
-	fDecayDataBase = evolutivedb;
+	SetDecayDataBank(evolutivedb);
 	
 	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 	
@@ -55,30 +52,6 @@ Storage::Storage(LogFile* log, DecayDataBank* evolutivedb)
 Storage::~Storage()
 {
 
-
-}
-
-
-//________________________________________________________________________
-//	Get Decay
-//________________________________________________________________________
-IsotopicVector Storage::GetDecay(IsotopicVector isotopicvector, cSecond t)
-{
-
-	IsotopicVector IV;
-
-	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
-	map<ZAI ,double >::iterator it;
-	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
-	{
-		if((*it).second > 0)
-		{
- 			IsotopicVector ivtmp = fDecayDataBase->Evolution(it->first, t) * (*it).second ;
-			IV += ivtmp;
-		}
-	}
-
-	return IV;
 
 }
 

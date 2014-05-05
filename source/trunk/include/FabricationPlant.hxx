@@ -96,7 +96,6 @@ public :
 
 	void	SetUpdateReferenceDBatEachStep(bool val){ fUpdateReferenceDBatEachStep = val;}	//!< Set fUpdateReferenceDBatEachStep variable
 	void	SetStorage(Storage* storage)		{ fStorage = storage; }			//!< Set the Pointer to the Storage
-	void	SetDecayDataBase(DecayDataBank* ddb)	{ fDecayDataBase = ddb; }	//!< Set the pointer to the Decay DataBase
 	
 	void	SetChronologicalTimePriority(bool bval)	{ fChronologicalTimePriority = bval;}	//!< Set the chronological priority (true for chronological, false unstead)
 	
@@ -120,9 +119,6 @@ public :
 	
 	map<int, IsotopicVector >	GetReactorFuturIncome() const
 						{ return fReactorFuturIV;}	//!< Return the List of the Futur Fuel IV
-
-	DecayDataBank* 	GeDecayDataBase() const
-						{ return fDecayDataBase; }	//!< Return the pointer to the DecayDB
 
 	IsotopicVector GetFullFabrication();					//!< Return the Sum of all Fuel waiting to be put in a reator
 
@@ -165,8 +161,6 @@ protected :
 	map< int,EvolutionData >	fReactorFuturDB; ///< List of the Futur EvolutionData use in the reactor
 	map< int,IsotopicVector >	fReactorFuturIV; ///< List of the Futur Fuel Isotopic Vector used in the reactor
 
-	DecayDataBank*		fDecayDataBase;	//!< Pointer to the Decay DataBase
-
 	Storage*	fStorage;			//!< Pointer to the Storage to recycle
 	Storage*	fReUsable;			//!< Pointer to the Storage using for recycling unused Product
 
@@ -180,14 +174,13 @@ protected :
 	
 
 //********* Private Method *********//
-	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
 	void	FabricationPlantEvolution(cSecond t);				//!< Deal the FabricationPlant Evolution
 
 	//{
 	/// Separation Method
 	/*!
 	 Make the Separation
-		\li IV[0] -> To Stock
+		\li IV[0] -> To Keep
 		\li IV[1] -> To Waste
 	 */
 	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);
