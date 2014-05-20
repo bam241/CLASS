@@ -6,8 +6,8 @@
 
 //CLASS library
 #include "CLASS.hxx"
-#include "CLSSObject.hxx"
-#include "CLSSFacility.hxx"
+#include "CLASSObject.hxx"
+#include "CLASSFacility.hxx"
 #include "Reactor.hxx"
 #include "Pool.hxx"
 #include "FabricationPlant.hxx"
@@ -27,5 +27,7 @@
 
 const ZAIMass cZAIMass;
 
+const string cCLASSDirectoryName = getenv("CLASS_PATH");
+const string cDataDirectoryName = cCLASSDirectoryName + "/source/data/";
 
 #endif
