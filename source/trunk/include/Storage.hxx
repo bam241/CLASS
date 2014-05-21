@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "CLSSFacility.hxx"
+#include "CLASSBackEnd.hxx"
 #include "IsotopicVector.hxx"
 
 
@@ -32,7 +32,7 @@ class DecayDataBank;
 
 
 
-class Storage : public  CLSSFacility
+class Storage : public CLASSBackEnd
 {
 public :
 
@@ -80,11 +80,7 @@ public :
 	 \name Set Method
 	 */
 	//@{
-	void SetStock(vector<IsotopicVector> IVsstock)	{ fIVStock = IVsstock; }		//!< Set The Storage isotopicVector
-
 	//@}
-
-
 
 
 //********* Get Method *********//
@@ -93,10 +89,6 @@ public :
 	 \name Get Method
 	 */
 	//@{
-	
-	vector<IsotopicVector> GetStock()	const		{ return fIVStock; }		//!< Return the Storage IsotopicVector
-	IsotopicVector GetFullStock()		const		{ return GetInsideIV(); }	//!< Return the Full Storage
-
 	//@}
 
 
@@ -108,16 +100,14 @@ public :
 	 \name Storage specific Method
 	 */
 	//@{
-	
-	void ClearStock();										//!< Empty the stock removing all fuel stored
-	
-	void AddToStock(ZAI zai, double quantity)		{ AddToStock(zai*quantity); }		//!< Add a ZAI*quantity to the Storage
-	void AddToStock(IsotopicVector isotopicvector);							//!< Add an Isotopicvector to the Storage
-	void AddToFullStock(ZAI zai, double quantity)		{ fInsideIV += zai*quantity; }		//!< Add a ZAI*quantity to the Storage
+		
 	void AddToFullStock(IsotopicVector isotopicvector)	{ fInsideIV += isotopicvector; }	//!< Add a IsotopicVector to the Storage
 
 	void TakeFractionFromStock(int IVId,double fraction);						//!< Take a part from an IV in sotck;
 	void TakeFromStock(IsotopicVector isotopicvector);						//!<
+
+
+	void AddIV(IsotopicVector isotopicvector);			//!< Add an Isotopicvector to the IVArray
 
 	//@}
 
@@ -134,9 +124,6 @@ public :
 	void Evolution(cSecond t);		//!< Performe the evolution until the Time t
 
 	//@}
-
-
-
 
 	//********* In/Out Method *********//
 
@@ -160,9 +147,6 @@ public :
 protected :
 	
 //********* Isotopic Quantity *********//
-
-//---------- Storage ----------//
-	vector<IsotopicVector>	fIVStock;		///< Vector containning all the fuel stored.
 
 
 

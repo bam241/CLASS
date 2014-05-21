@@ -11,7 +11,7 @@
 #include <map>
 
 #include "IsotopicVector.hxx"
-#include "CLSSObject.hxx"
+#include "CLASSObject.hxx"
 #include "ZAI.hxx"
 
 #include "TMatrix.h"
@@ -49,7 +49,7 @@ double 	Distance(EvolutionData Evd1, IsotopicVector IV1 );
 
 
 
-class EvolutionData : public CLSSObject
+class EvolutionData : public CLASSObject
 {
 	
 public :

@@ -7,7 +7,7 @@
  @version 2.0
  */
 
-#include "CLSSObject.hxx"
+#include "CLASSObject.hxx"
 #include "TMatrix.h"
 #include "EvolutionData.hxx"
 #include "IsotopicVector.hxx"
@@ -42,7 +42,7 @@ double ReactionRateWeightedDistance(EvolutionData DB, IsotopicVector IV1  );
 
 
 
-class DecayDataBank : public CLSSObject, DynamicalSystem
+class DecayDataBank : public CLASSObject
 {
 	
 	public :

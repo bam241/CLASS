@@ -136,10 +136,10 @@ void  DynamicalSystem::RK4(double *y, double *dydx, double x, double h, double *
 		yout[i]=y[i]+h6*(dydx[i]+dyt[i]+2.0*dym[i]);
 		if(!fIsNegativeValueAllowed && yout[i]<0)
 		{
-			cout << "Material composition is negative "
-			<<"i="<<i<<" ("/*<<fEvolvingMaterial->GetComposition()[i]->GetZAI()->PrintName()
-					*/<<") old proportion="<<y[i]<<" new="<<yout[i]
-			<<". Setting to 0." << endl;
+			//cout << "Material composition is negative "
+			//<<"i="<<i<<" ("/*<<fEvolvingMaterial->GetComposition()[i]->GetZAI()->PrintName()
+			//		*/<<") old proportion="<<y[i]<<" new="<<yout[i]
+			//<<". Setting to 0." << endl;
 			yout[i]=0.;
 		}
 	}

@@ -342,7 +342,7 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 ClassImp(EvolutionData)
 
 
-EvolutionData::EvolutionData()
+EvolutionData::EvolutionData():CLASSObject()
 {
 	fIsCrossSection = false;
 	fPower = 0;

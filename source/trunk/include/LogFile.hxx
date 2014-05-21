@@ -54,7 +54,6 @@ public:
 	 \name In/Out
 	 */
 	//@{
-
 	string GetLogFileName() const { return fLogFileName; }	//!w return the logfile name
 
 	std::ofstream fLog;		//!< Log Stream

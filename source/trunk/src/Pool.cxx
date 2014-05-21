@@ -22,14 +22,17 @@
 //________________________________________________________________________
 ClassImp(Pool)
 
-Pool::Pool()
+Pool::Pool():CLASSBackEnd()
 {
-	fStorage = 0;
+	fOutBackEndFacility = 0;
+	SetFacilityType(8);
 }
 
 Pool::Pool(LogFile* log)
 {
-	
+
+	SetFacilityType(8);
+
 	SetLog(log);
 	fCycleTime = 5*3600.*24.*365.25;
 	
@@ -38,7 +41,7 @@ Pool::Pool(LogFile* log)
 	SetCreationTime( 0 );
 	fCoolingLastIndex = 0;
 
-	fStorage = 0;
+	fOutBackEndFacility = 0;
 
 	
 	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
@@ -57,6 +60,8 @@ Pool::Pool(LogFile* log)
 Pool::Pool(LogFile* log, double creation, double coolingtime)
 {
 
+	SetFacilityType(8);
+
 	SetLog(log);
 	fCycleTime = (cSecond)coolingtime;
 	SetCreationTime( (cSecond)creation );
@@ -64,7 +69,7 @@ Pool::Pool(LogFile* log, double creation, double coolingtime)
 	fPutToWaste = true;
 	fCoolingLastIndex = 0;
 
-	fStorage = 0;
+	fOutBackEndFacility = 0;
 
 	
 	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
@@ -81,12 +86,16 @@ Pool::Pool(LogFile* log, double creation, double coolingtime)
 }
 
 //________________________________________________________________________
-Pool::Pool(LogFile* log, Storage* storage, double creation, double coolingtime)
+Pool::Pool(LogFile* log, CLASSBackEnd* storage, double creation, double coolingtime)
 {
+
+	SetFacilityType(8);
 
 	SetLog(log);
 	fCycleTime = (cSecond)coolingtime;
-	fStorage = storage;
+	fOutBackEndFacility = storage;
+	SetIsStorageType(false);
+
 	SetCreationTime( (cSecond)creation );
 	fIsStarted = false;
 	fPutToWaste = false;
@@ -113,18 +122,31 @@ Pool::~Pool()
 
 }
 
+//________________________________________________________________________
+//________________________________________________________________________
+void Pool::SetIVArray(vector<IsotopicVector> ivarray)
+{
+	cout << "this method as no effect !!!" << endl;
+	cout << "Use SetIVArray(vector<IsotopicVector> ivarray, vector<cSecond>n timearray) unstead!!!!"<<endl;
+}
 
 
+//________________________________________________________________________
+void Pool::SetIVArray(vector<IsotopicVector> ivarray, vector<cSecond> timearray)
+{
+	fIVArray = ivarray;
+	fCoolingStartingTime =  timearray;
 
+}
 //________________________________________________________________________
 //	Add Temporary IV : 
 //		Cooling
 //		
 //________________________________________________________________________
-void Pool::AddIVCooling(IsotopicVector IV)
+void Pool::AddIV(IsotopicVector IV)
 { 
 
-	fIVCooling.push_back(IV);
+	fIVArray.push_back(IV);
 	fInsideIV += IV;
 	fCoolingStartingTime.push_back(fInternalTime);
 	fCoolingLastIndex++;
@@ -138,9 +160,9 @@ void Pool::AddIVCooling(IsotopicVector IV)
 //________________________________________________________________________
 void Pool::RemoveIVCooling(int i)		//!< Remove a Cooling IsotopicVector
 {
-	AddCumulativeIVOut(fIVCooling[i]);
+	AddCumulativeIVOut(fIVArray[i]);
 
-	fIVCooling.erase(fIVCooling.begin()+i);
+	fIVArray.erase(fIVArray.begin()+i);
 	fCoolingStartingTime.erase(fCoolingStartingTime.begin()+i);
 	fCoolingIndex.erase(fCoolingIndex.begin()+i); 
 
@@ -170,7 +192,7 @@ void Pool::CoolingEvolution(cSecond t)
 	fInsideIV = IsotopicVector();
 
 #pragma omp parallel for
-	for ( int i = 0 ; i < (int)fIVCooling.size() ; i++)
+	for ( int i = 0 ; i < (int)fIVArray.size() ; i++)
 	{
 		if ( abs(t - fCoolingStartingTime[i] - fCycleTime) < 3600 ) // ">" should not append, only "=" is normal...
 		{
@@ -186,7 +208,7 @@ void Pool::CoolingEvolution(cSecond t)
    
 			RemainingCoolingTime = fCycleTime - (fInternalTime - fCoolingStartingTime[i]);
 			//Cooling Decay
-			fIVCooling[i] = GetDecay( fIVCooling[i], RemainingCoolingTime);
+			fIVArray[i] = GetDecay( fIVArray[i], RemainingCoolingTime);
 
 
 #pragma omp critical(DeleteCoolingIVPB)
@@ -195,8 +217,8 @@ void Pool::CoolingEvolution(cSecond t)
 		}
 		else if ( fCoolingStartingTime[i] != t )
 		{
-			fIVCooling[i] = GetDecay( fIVCooling[i] , EvolutionTime);
-			fInsideIV += fIVCooling[i];
+			fIVArray[i] = GetDecay( fIVArray[i] , EvolutionTime);
+			fInsideIV += fIVArray[i];
 		}
 	}
 #pragma omp critical(DeleteCoolingIVPB)
@@ -213,7 +235,7 @@ void Pool::Evolution(cSecond t)
 	if(t<GetCreationTime()) return;
 	if(t == fInternalTime && t!=0) return;
 	
-	if(fInternalTime == 0 && fIsStarted == false)
+	if(fInternalTime == 0 && !fIsStarted)
 	{
 		fInternalTime = GetCreationTime();
 		fIsStarted = true;
@@ -239,10 +261,10 @@ void Pool::Dump()
 	
 		int idx = fCoolingEndOfCycle[i];			// Get Index number
 		
-		if(fPutToWaste == false)
-			fStorage->AddToStock(fIVCooling[idx]);
+		if(!fPutToWaste)
+			fOutBackEndFacility->AddIV(fIVArray[idx]);
 		else
-			GetParc()->AddWaste(fIVCooling[idx]);
+			GetParc()->AddWaste(fIVArray[idx]);
 
 		fCoolingEndOfCycle.erase(fCoolingEndOfCycle.begin()+i);	// Remove index entry
 		RemoveIVCooling(idx);					// Remove IVcooling

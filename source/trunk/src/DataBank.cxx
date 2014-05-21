@@ -145,7 +145,7 @@ IsotopicVector	DataBank<ZAI>::Evolution(const ZAI& zai, double dt)
 			}
 		}
 
-		if(zaifind == false)
+		if(!zaifind)
 		{
 			GetLog()->fLog << "!!Warning!! !!!EVOLUTIVE DB!!! Oups... Can't Find the ZAI : " ;
 			GetLog()->fLog << zai.Z() << " " << zai.A() << " "	<< zai.I() << "!!! It will be considered as stable !!" << endl;
@@ -800,7 +800,7 @@ void DataBank<IsotopicVector>::SetFissionEnergy(ZAI zai, double E)
 {
 	pair<map<ZAI, double>::iterator, bool> IResult;
 	IResult = fFissionEnergy.insert( pair<ZAI ,double>(zai, E));
-	if(IResult.second == false)
+	if(!IResult.second)
 		IResult.first->second = E;
 
 }
@@ -856,7 +856,7 @@ map< ZAI,IsotopicVector > DataBank<IsotopicVector>::ReadFPYield(string Yield)
 		{
 			pair<map<ZAI, IsotopicVector>::iterator, bool> IResult;
 			IResult = Yield_map.insert(pair<ZAI,IsotopicVector>(ZAI(Z,A,I),EmptyIV) );
-			if (IResult.second == false)
+			if(!IResult.second)
 			{
 				cout << "!!Error!! !!!DataBank!!! Many accurance of ZAI " << Z << " " << A;
 				cout << " in " << Yield << " file!! Please Check it !!!" << endl;
