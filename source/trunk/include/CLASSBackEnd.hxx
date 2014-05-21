@@ -52,7 +52,7 @@ class CLASSBackEnd : public CLASSFacility
 	DecayDataBank*	GetDecayDataBank()		{ return fDecayDataBase;}	//!< Return the pointer to the decay DataBank
 	vector<IsotopicVector> GetIVArray()	const	{ return fIVArray; }		//!< Return the IsotopicVector Array
 	bool		GetStorageType()	const	{ return fIsStorageType;}	//!< Return the storageType
-	CLASSBackEnd*	GetOutBackEndFacility()		{ return fOutBackEndFacility;}
+	CLASSBackEnd*	GetOutBackEndFacility()	const	{ return fOutBackEndFacility;}	//!<Return the pointer to the OUtBackEndFacility
 	//@}
 
 	//********* Set Method *********//
@@ -60,10 +60,11 @@ class CLASSBackEnd : public CLASSFacility
 	 \name Set Function
 	 */
 	//@{
-	void		SetIsStorageType(bool val = true)	{ fIsStorageType = val;}	//! 
+	void		SetIsStorageType(bool val = true)		{ fIsStorageType = val;}	//! Set the fIsStorage bool
 	void		SetDecayDataBank(DecayDataBank* decayDB)	{ fDecayDataBase = decayDB;}	//! Set the Decay DataBank
-	virtual	void	SetIVArray(vector<IsotopicVector> ivarray)	{ fIVArray = ivarray; }	//!< Set The isotopicVector Array
-	virtual void	SetOutBackEndFacility(CLASSBackEnd* befacility)	{ fOutBackEndFacility = befacility; }
+	virtual	void	SetIVArray(vector<IsotopicVector> ivarray)	{ fIVArray = ivarray; }		//!< Set The isotopicVector Array
+	virtual void	SetOutBackEndFacility(CLASSBackEnd* befacility)	{ fOutBackEndFacility = befacility;
+									  fIsStorageType = true; } //! Set a Out Facility for the fuel
 	//@}
 
 
@@ -71,20 +72,19 @@ class CLASSBackEnd : public CLASSFacility
 	 \name BackEndFacility specific Method
 	 */
 	//@{
-	virtual void AddIV(IsotopicVector isotopicvector);	//!< Add an Isotopicvector to the IVArray
-	void ClearIVArray();					//!< Empty the IVArray removing all fuel stored
+	virtual void	AddIV(IsotopicVector isotopicvector);	//!< Add an Isotopicvector to the IVArray
+	void		ClearIVArray();					//!< Empty the IVArray removing all fuel stored
 
 	//@}
 
 
 	protected :
-	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
+	IsotopicVector		GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
 	vector<IsotopicVector>	fIVArray;					///< Vector containning all the fuel stored.
-	CLASSBackEnd*	fOutBackEndFacility;
+	CLASSBackEnd*		fOutBackEndFacility;					//!< Facility getting the fuel at the end of the cycle
 
 	//********* Internal Parameter *********//
 	private :
-	int		fBackEndType;
 	bool		fIsStorageType;		//!< True if there is not OutBAckEndFacility (like a storage...)
 	DecayDataBank*	fDecayDataBase;		//!< Pointer to the Decay DataBase
 

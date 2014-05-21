@@ -140,14 +140,15 @@ public :
 	 */
 	//@{
 
-	void	AddValorisableIV(ZAI zai, double factor);					///< Add Valorisable Element
-	void	Evolution(cSecond t);								//!< Perform the Evolution
-	virtual void	BuildFuelForReactor(int ReactorId);					//!< Build a Fuel for the reactor ReactorId
-	void	RecycleStock(double fraction);							//!< Take a franction of the current stock
-	IsotopicVector	GetStockToRecycle();							//!< Get the next stock to recycle
-	void 	DumpStock();									//!< Update the Stock status after building process
-	EvolutionData	BuildEvolutiveDB(int ReactorId, IsotopicVector isotopicvector);		//!< Build the Evolution Database for the Reactir ReactorId Fuel
-	void	TakeReactorFuel(int ReactorId) ;						//!< Remove the Fuel of reactor ReactorId
+	void		AddValorisableIV(ZAI zai, double factor);		///< Add Valorisable Element
+	void		Evolution(cSecond t);					//!< Perform the Evolution
+	virtual void	BuildFuelForReactor(int ReactorId);			//!< Build a Fuel for the reactor ReactorId
+	void		RecycleStock(double fraction);				//!< Take a franction of the current stock
+	IsotopicVector	GetStockToRecycle();					//!< Get the next stock to recycle
+	void		DumpStock();						//!< Update the Stock status after building process
+	EvolutionData	BuildEvolutiveDB(int ReactorId, IsotopicVector isotopicvector);
+										//!< Build the Evolution Database for the Reactir ReactorId Fuel
+	void	TakeReactorFuel(int ReactorId) ;				//!< Remove the Fuel of reactor ReactorId
 	
 	//@}
 
@@ -169,16 +170,15 @@ protected :
 
 	vector< pair<int, double> >	fFractionToTake;	//!< The Temporary Storage IsotopicVector
 
-		//	double		fFabricationTime;		///< Fabrication Duration Time
 	bool		fChronologicalTimePriority;	//!< Set the Chronological Priotity (for the Stock Management) or the anti-chronological one
 
 	bool		fSubstitutionFuel;		//!< true if a subtitution fuel as been set
 	EvolutionData	fSubstitutionEvolutionData;	//!< EvolutionData of the subtitution fuel
 	
-	DecayDataBank*	fDecayDataBase;		//!< Pointer to the Decay DataBase
+	DecayDataBank*	fDecayDataBase;			//!< Pointer to the Decay DataBase
 
 //********* Private Method *********//
-	void	FabricationPlantEvolution(cSecond t);				//!< Deal the FabricationPlant Evolution
+	void	FabricationPlantEvolution(cSecond t);	//!< Deal the FabricationPlant Evolution
 
 	//{
 	/// Separation Method

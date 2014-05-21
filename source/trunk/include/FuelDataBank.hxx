@@ -98,7 +98,7 @@ class FuelDataBank : public CLASSObject, DynamicalSystem
 	 \name Get Method
 	 */
 	//@{
-	map<IsotopicVector ,EvolutionData >		GetFuelDataBank()		const	{ return fFuelDataBank; }		//!< Return the FuelDataBank
+	map<IsotopicVector ,EvolutionData >	GetFuelDataBank()	const	{ return fFuelDataBank; }	//!< Return the FuelDataBank
 	string 				GetDataBaseIndex()	const	{ return fDataBaseIndex; }	//!< Return the index Name
 	string				GetFuelType()		const	{ return fFuelType; }		//!< Return the fuel type of the DB
 	vector<double>			GetFuelParameter()	const	{ return fFuelParameter; }	//!< Return the Fuel parameter of the DB

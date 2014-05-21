@@ -58,10 +58,10 @@ public:
 	\name ZAI main attributes 
 	*/
 	//@{
-	int  Z()const{ return fZ; } //!< returns the number of protons
-	int  A()const{ return fA; } //!< returns the number of nucleons
-	int  I()const{ return fI; } //!< returns the Isomeric State
-	int  N()const{ return fA-fZ; } //!< returns the number of neutrons
+	int  Z()	const	{ return fZ; } //!< returns the number of protons
+	int  A()	const	{ return fA; } //!< returns the number of nucleons
+	int  I()	const	{ return fI; } //!< returns the Isomeric State
+	int  N()	const	{ return fA-fZ; } //!< returns the number of neutrons
 		
 	void SetMass(double m)	{ fMass=m; }	///< set the mass of a ZAI
 	double GetMass();			///< get the mass of a ZAI
@@ -70,14 +70,13 @@ public:
 
 
 	ZAI operator=(ZAI IVa);		//!< ...
-	bool operator <(const ZAI& zai) const	{ return (fZ != zai.Z())?  
+	bool operator <(const ZAI& zai)		const	{ return (fZ != zai.Z())?
 							(fZ < zai.Z()) : ( (fA != zai.A())?
 								 (fA < zai.A()) : (fI < zai.I()) ); }
-						//!< ZAI Comparator
-	bool operator !=(const ZAI& zai) const	{ return ( fZ != zai.Z() ) || ( fA != zai.A() ) || ( fI != zai.I() ); }
-	bool operator ==(const ZAI& zai) const	{ return ( fZ == zai.Z()  && fA == zai.A() &&  fI == zai.I()); }
-						//!< ZAI Comparator
-	void Print() const	{ cout << fZ << " " << fA << " " << fI << endl;}
+
+	bool operator !=(const ZAI& zai)	const	{ return ( fZ != zai.Z() ) || ( fA != zai.A() ) || ( fI != zai.I() ); }
+	bool operator ==(const ZAI& zai)	const	{ return ( fZ == zai.Z()  && fA == zai.A() &&  fI == zai.I()); }
+	void Print()				const	{ cout << fZ << " " << fA << " " << fI << endl;}
 
 
 protected :
@@ -87,6 +86,7 @@ protected :
 	short	fA;		///< number of nucleons (A=0 means natural isotopes) 
 	short	fI;		///< Isomeric state
 	double	fMass;		///< Mass of a ZAI (from the BaseSummary.dat file
+	
 	ClassDef(ZAI,1);
 };
 
