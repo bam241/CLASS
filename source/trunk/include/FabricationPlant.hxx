@@ -12,7 +12,7 @@
 #include <vector>
 #include <map>
 
-#include "CLSSFacility.hxx"
+#include "CLASSFacility.hxx"
 #include "IsotopicVector.hxx"
 #include "EvolutionData.hxx"
 #include "CLASS.hxx"
@@ -43,7 +43,7 @@ class DecayDataBank;
 class FuelDataBank;
 
 
-class FabricationPlant : public CLSSFacility
+class FabricationPlant : public CLASSFacility
 {
 
 public :
@@ -94,6 +94,8 @@ public :
 	 */
 	//@{
 
+	void SetDecayDataBank(DecayDataBank* decayDB) {fDecayDataBase = decayDB;}	//! Set the Decay DataBank
+
 	void	SetUpdateReferenceDBatEachStep(bool val){ fUpdateReferenceDBatEachStep = val;}	//!< Set fUpdateReferenceDBatEachStep variable
 	void	SetStorage(Storage* storage)		{ fStorage = storage; }			//!< Set the Pointer to the Storage
 	
@@ -123,6 +125,7 @@ public :
 	IsotopicVector GetFullFabrication();					//!< Return the Sum of all Fuel waiting to be put in a reator
 
 	EvolutionData GetReactorEvolutionDB(int ReactorId);			//!< Return the EvolutionData of Reactor ReactorId
+	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
 
 	//@}
 
@@ -137,14 +140,14 @@ public :
 	 */
 	//@{
 
-	void	AddValorisableIV(ZAI zai, double factor);						///< Add Valorisable Element
-	void	Evolution(cSecond t);									//!< Perform the Evolution
-	virtual void	BuildFuelForReactor(int ReactorId);							//!< Build a Fuel for the reactor ReactorId
-	void	RecycleStock(double fraction);								//!< Take a franction of the current stock
-	IsotopicVector	GetStockToRecycle();								//!< Get the next stock to recycle
-	void 	DumpStock();										//!< Update the storage
+	void	AddValorisableIV(ZAI zai, double factor);					///< Add Valorisable Element
+	void	Evolution(cSecond t);								//!< Perform the Evolution
+	virtual void	BuildFuelForReactor(int ReactorId);					//!< Build a Fuel for the reactor ReactorId
+	void	RecycleStock(double fraction);							//!< Take a franction of the current stock
+	IsotopicVector	GetStockToRecycle();							//!< Get the next stock to recycle
+	void 	DumpStock();									//!< Update the Stock status after building process
 	EvolutionData	BuildEvolutiveDB(int ReactorId, IsotopicVector isotopicvector);		//!< Build the Evolution Database for the Reactir ReactorId Fuel
-	void	TakeReactorFuel(int ReactorId) ;								//!< Remove the Fuel of reactor ReactorId
+	void	TakeReactorFuel(int ReactorId) ;						//!< Remove the Fuel of reactor ReactorId
 	
 	//@}
 
@@ -172,6 +175,7 @@ protected :
 	bool		fSubstitutionFuel;		//!< true if a subtitution fuel as been set
 	EvolutionData	fSubstitutionEvolutionData;	//!< EvolutionData of the subtitution fuel
 	
+	DecayDataBank*	fDecayDataBase;		//!< Pointer to the Decay DataBase
 
 //********* Private Method *********//
 	void	FabricationPlantEvolution(cSecond t);				//!< Deal the FabricationPlant Evolution

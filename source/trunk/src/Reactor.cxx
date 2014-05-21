@@ -29,34 +29,37 @@ ClassImp(Reactor)
 
 Reactor::Reactor()
 {
-	fAssociedPool = 0;
+	fOutBackEndFacility = 0;
 	fStorage = 0;
 	fFuelTypeDB = 0;
 	fFabricationPlant = 0;
+	SetFacilityType(4);
 }
 
 Reactor::Reactor(LogFile* log)
 {
 
 	SetLog(log);
-	fAssociedPool = 0;
+	fOutBackEndFacility = 0;
 	fStorage = 0;
 	fFuelTypeDB = 0;
 	fFabricationPlant = 0;
+	SetFacilityType(4);
 
 }
 
 Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB,
 		 FabricationPlant* fabricationplant,
- 		 Pool* Pool,
+ 		 CLASSBackEnd* Pool,
  		 double creationtime, double lifetime)
 {
+	SetFacilityType(4);
 
 	SetLog(log);
 
 	fIsStarted = false;
-	fShutDown = false;
-	fEndOfCycle = false;
+	fIsShutDown = false;
+	fIsAtEndOfCycle = false;
 
 	fFabricationPlant = fabricationplant;
 	fFixedFuel = false;
@@ -64,7 +67,7 @@ Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB,
 	fHeavyMetalMass = -1.;
 	fStorage = 0;
 
-	fAssociedPool = Pool;
+	fOutBackEndFacility = Pool;
 
 	fFuelTypeDB = fueltypeDB;
 
@@ -91,22 +94,23 @@ Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB,
 
 }
 
-Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB, FabricationPlant* fabricationplant, Pool* Pool,
+Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB, FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
  		 double creationtime, double lifetime,
  		 double Power, double HMMass, double BurnUp, double ChargeFactor)
 {
+	SetFacilityType(4);
 
 	SetLog(log);
 
 	fStorage = 0;
 	fIsStarted = false;
-	fShutDown = false;
-	fEndOfCycle = false;
+	fIsShutDown = false;
+	fIsAtEndOfCycle = false;
 
 	fFabricationPlant = fabricationplant;
 	fFixedFuel = false;
 
-	fAssociedPool = Pool;
+	fOutBackEndFacility = Pool;
 
 	fFuelTypeDB = fueltypeDB;
 
@@ -147,16 +151,17 @@ Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB, FabricationPlant* fabri
 
 Reactor::Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 		 FabricationPlant* fabricationplant,
- 		 Pool* Pool,
+ 		 CLASSBackEnd* Pool,
  		 double creationtime, double lifetime, double cycletime,
  		 double HMMass, double BurnUp)
 {
+	SetFacilityType(4);
 
 	SetLog(log);
 
 	fIsStarted = false;
-	fShutDown = false;
-	fEndOfCycle = false;
+	fIsShutDown = false;
+	fIsAtEndOfCycle = false;
 
 	fStorage = 0;
 
@@ -165,7 +170,7 @@ Reactor::Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 	fBurnUp = BurnUp;
 	fHeavyMetalMass = HMMass;
 
-	fAssociedPool = Pool;
+	fOutBackEndFacility = Pool;
 
 	fFuelTypeDB = fueltypeDB;
 
@@ -201,17 +206,18 @@ Reactor::Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 
 
 Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
- 		 Pool* Pool,
+ 		 CLASSBackEnd* Pool,
  		 double creationtime,
  		 double lifetime,
  		 double power, double HMMass, double BurnUp, double ChargeFactor )
 {
+	SetFacilityType(4);
 
 	SetLog(log);
 
 	fIsStarted = false;
-	fShutDown = false;
-	fEndOfCycle = false;
+	fIsShutDown = false;
+	fIsAtEndOfCycle = false;
 
 	fStorage = 0;
 	fFuelTypeDB = 0;
@@ -220,7 +226,7 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
 	fFixedFuel = true;
 	fIsStorage = false;
 
-	fAssociedPool = Pool;
+	fOutBackEndFacility = Pool;
 
 	SetCreationTime( (cSecond)creationtime );
 	SetLifeTime( (cSecond)lifetime );
@@ -333,7 +339,7 @@ void Reactor::Evolution(cSecond t)
 {
 
 
-	if( fShutDown == true || t < GetCreationTime() ) return; // Reactor stop or not started...
+	if( fIsShutDown  || t < GetCreationTime() ) return; // Reactor stop or not started...
 
 	if(Norme(fInsideIV)!=0)
 	{
@@ -353,28 +359,28 @@ void Reactor::Evolution(cSecond t)
 
 
 
-	if(fInternalTime == 0 && fIsStarted == false) // Start of the Reactor
+	if(fInternalTime == 0 && !fIsStarted) // Start of the Reactor
 	{
-		fEndOfCycle = true;
+		fIsAtEndOfCycle = true;
 		fInsideIV  = fIVBeginCycle;
 		fInternalTime = t;
 
 	}
 
 	// Check if the Reactor if started ...
-	if(fIsStarted == false) return;			// If the reactor just start don't need to make Fuel evolution
+	if(!fIsStarted) return;			// If the reactor just start don't need to make Fuel evolution
 
 
 	cSecond EvolutionTime = t - fInternalTime; // Calculation of the evolution time (relativ)
 
 	if( EvolutionTime + fInCycleTime == fCycleTime )		//End of Cycle
 	{
-		fEndOfCycle = true;
+		fIsAtEndOfCycle = true;
 		fInternalTime += EvolutionTime; 				// Update Internal Time
 		fInCycleTime += EvolutionTime;					// Update InCycleTime
 
 		if(t >=  GetCreationTime() + GetLifeTime())				// if the Next Cycle don't 'Exist...
-			fShutDown = true;
+			fIsShutDown = true;
 
 	}
 	else if(EvolutionTime + fInCycleTime < fCycleTime )			// During Cycle
@@ -384,7 +390,7 @@ void Reactor::Evolution(cSecond t)
 		fInCycleTime += EvolutionTime;					// Update InCycleTime
 
 		fInsideIV = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fInCycleTime/fEvolutionDB.GetPower()*fPower) );	// update the fuel composition
-		if(t>=GetCreationTime() + GetLifeTime())	fShutDown = true;
+		if(t>=GetCreationTime() + GetLifeTime())	fIsShutDown = true;
 	}
 	else
 	{
@@ -408,29 +414,29 @@ void Reactor::Dump()
 
 
 	if(fInternalTime < GetCreationTime()) return;
-	if(fShutDown == true && fIsStarted == false) return; // Reactor stopped...
+	if(fIsShutDown  && !fIsStarted) return; // Reactor stopped...
 
-	if(fFixedFuel == true)
+	if(fFixedFuel )
 	{
 
-		if(fEndOfCycle == true && fShutDown == false )
+		if(fIsAtEndOfCycle  && !fIsShutDown )
 		{
-			fEndOfCycle = false;
+			fIsAtEndOfCycle = false;
 
-			if(fIsStarted == true )					// A Cycle has already been done
+			if(fIsStarted  )					// A Cycle has already been done
 			{
-				fAssociedPool->AddIVCooling(fInsideIV);
+				fOutBackEndFacility->AddIV(fInsideIV);
 				AddCumulativeIVOut(fInsideIV);
 			}
 			else fIsStarted = true;					// Just start the first cycle
 
-			if(GetParc()->GetStockManagement() == false && fIsStorage == true)
+			if(!GetParc()->GetStockManagement() && fIsStorage )
 			{
 				IsotopicVector BuildIVtmp ;
 				IsotopicVector GodPart;
 
 				//Get The Storage Compostion
-				BuildIVtmp.Add(fStorage->GetFullStock().GetIsotopicQuantity());
+				BuildIVtmp.Add(fStorage->GetInsideIV().GetIsotopicQuantity());
 				//Get the rest after IVIn creation
 				BuildIVtmp -= fIVInCycle;
 				//Get the God part form this rest
@@ -448,18 +454,18 @@ void Reactor::Dump()
 
 			fInCycleTime = 0;
 		}
-		else if (fEndOfCycle == true && fShutDown == true)		//shutdown at end of Cycle
+		else if (fIsAtEndOfCycle  && fIsShutDown )		//shutdown at end of Cycle
 		{
 
-			fAssociedPool->AddIVCooling(fIVOutCycle);
+			fOutBackEndFacility->AddIV(fIVOutCycle);
 			AddCumulativeIVOut(fIVOutCycle);
 			fInsideIV.Clear();
 			fInCycleTime = 0;
 			fIsStarted = false;		// shut down the Reactor
 		}
-		else if (fEndOfCycle == false && fShutDown == true) 					//shutdown during Cycle
+		else if (!fIsAtEndOfCycle && fIsShutDown ) 					//shutdown during Cycle
 		{
-			fAssociedPool->AddIVCooling(fInsideIV);
+			fOutBackEndFacility->AddIV(fInsideIV);
 			AddCumulativeIVOut(fInsideIV);
 			fInsideIV.Clear();
 			fInCycleTime = 0;
@@ -468,7 +474,7 @@ void Reactor::Dump()
 	}
 	else
 	{
-		if(GetParc()->GetStockManagement() == false)
+		if(!GetParc()->GetStockManagement())
 		{
 			cout << "!!Warning!! !!!Reactor!!! Can't have unfixedFuel without stock management'" << endl;
 			GetLog()->fLog << "!!Warning!! !!!Reactor!!! Can't have unfixedFuel without stock management" << endl;
@@ -476,13 +482,13 @@ void Reactor::Dump()
 		}
 
 
-		if(fEndOfCycle == true && fShutDown == false )
+		if(fIsAtEndOfCycle  && !fIsShutDown )
 		{
-			fEndOfCycle = false;
+			fIsAtEndOfCycle = false;
 
-			if(fIsStarted == true )					// A Cycle has already been done
+			if(fIsStarted  )					// A Cycle has already been done
 			{
-				fAssociedPool->AddIVCooling(fIVOutCycle);
+				fOutBackEndFacility->AddIV(fIVOutCycle);
 				AddCumulativeIVOut(fIVOutCycle);
 			}
 			else fIsStarted = true;					// Just start the first cycle
@@ -497,17 +503,17 @@ void Reactor::Dump()
 			fInCycleTime = 0;
 
 		}
-		else if (fEndOfCycle == true && fShutDown == true)		//shutdown at end of Cycle
+		else if (fIsAtEndOfCycle  && fIsShutDown )		//shutdown at end of Cycle
 		{
-			fAssociedPool->AddIVCooling(fIVOutCycle);
+			fOutBackEndFacility->AddIV(fIVOutCycle);
 			AddCumulativeIVOut(fIVOutCycle);
 			fInsideIV.Clear();
 			fInCycleTime = 0;
 			fIsStarted = false;		// shut down the Reactor
 		}
-		else if (fEndOfCycle == false && fShutDown == true) 					//shutdown during Cycle
+		else if (!fIsAtEndOfCycle && fIsShutDown ) 					//shutdown during Cycle
 		{
-			fAssociedPool->AddIVCooling(fInsideIV);
+			fOutBackEndFacility->AddIV(fInsideIV);
 			AddCumulativeIVOut(fInsideIV);
 			fInsideIV.Clear();
 			fInCycleTime = 0;

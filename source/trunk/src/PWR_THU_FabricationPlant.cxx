@@ -38,14 +38,15 @@ template <class T>  T random(T a, T b) //peak random numebr between a and b
 	return (T)a + (T)(b-a)*rand()/range;
 }
 
-PWR_THU_FabricationPlant::PWR_THU_FabricationPlant()
+PWR_THU_FabricationPlant::PWR_THU_FabricationPlant():FabricationPlant()
 {
 
 }
 
 PWR_THU_FabricationPlant::PWR_THU_FabricationPlant(LogFile* log)
 {
-	
+	SetFacilityType(16);
+
 	SetLog(log);
 	fChronologicalTimePriority = false;
 	SetCycleTime(-1);
@@ -67,7 +68,8 @@ PWR_THU_FabricationPlant::PWR_THU_FabricationPlant(LogFile* log)
 
 PWR_THU_FabricationPlant::PWR_THU_FabricationPlant(LogFile* log, Storage* storage, Storage* reusable, double fabircationtime)
 {
-	
+	SetFacilityType(16);
+
 	SetLog(log);
 	
 	fChronologicalTimePriority = false;
@@ -150,14 +152,14 @@ void PWR_THU_FabricationPlant::BuildFuelForReactor(int ReactorId)
 					EvolutionData evolutiondb;
 					pair<map<int, EvolutionData>::iterator, bool> IResult;
 					IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,evolutiondb) );
-					if(IResult.second == false)
+					if(!IResult.second)
 						IResult.first->second = evolutiondb;
 				}
 				{
 					IsotopicVector EmptyIV;
 					pair<map<int, IsotopicVector>::iterator, bool> IResult;
 					IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId,EmptyIV) );
-					if(IResult.second == false)
+					if(!IResult.second)
 						IResult.first->second = EmptyIV;
 				}
 			}
@@ -167,14 +169,14 @@ void PWR_THU_FabricationPlant::BuildFuelForReactor(int ReactorId)
 					EvolutionData evolutiondb = fSubstitutionEvolutionData* HMmass;
 					pair<map<int, EvolutionData>::iterator, bool> IResult;
 					IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,evolutiondb) );
-					if(IResult.second == false)
+					if(!IResult.second)
 						IResult.first->second = evolutiondb;
 				}
 				{
 					IsotopicVector IV = fSubstitutionEvolutionData.GetIsotopicVectorAt(0)* HMmass;
 					pair<map<int, IsotopicVector>::iterator, bool> IResult;
 					IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId, IV) );
-					if(IResult.second == false)
+					if(!IResult.second)
 						IResult.first->second = IV;
 				}
 				
@@ -265,9 +267,9 @@ void PWR_THU_FabricationPlant::BuildFuelForReactor(int ReactorId)
 				
 				for(int i = (int)fFractionToTake.size()-1; i >= 0; i--)
 				{
-					IVBeginCycle += fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(92)*( fFractionToTake[i].second );					
-					fReUsable->AddToStock(fStorage->GetStock()[fFractionToTake[i].first]*(fFractionToTake[i].second)
-							      - fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(92)*(fFractionToTake[i].second));
+					IVBeginCycle += fStorage->GetIVArray()[fFractionToTake[i].first].GetSpeciesComposition(92)*( fFractionToTake[i].second );					
+					fReUsable->AddIV(fStorage->GetIVArray()[fFractionToTake[i].first]*(fFractionToTake[i].second)
+							      - fStorage->GetIVArray()[fFractionToTake[i].first].GetSpeciesComposition(92)*(fFractionToTake[i].second));
 					
 					fStorage->TakeFractionFromStock(fFractionToTake[i].first,fFractionToTake[i].second);			
 					
@@ -280,13 +282,13 @@ void PWR_THU_FabricationPlant::BuildFuelForReactor(int ReactorId)
 				{
 					pair<map<int, EvolutionData>::iterator, bool> IResult;
 					IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,evolutiondb) );
-					if(IResult.second == false)
+					if(!IResult.second)
 						IResult.first->second = evolutiondb;
 				}
 				{
 					pair<map<int, IsotopicVector>::iterator, bool> IResult;
 					IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId,IVBeginCycle) );
-					if(IResult.second == false)
+					if(!IResult.second)
 						IResult.first->second = IVBeginCycle;
 
 					AddCumulativeIVIn(IVBeginCycle);

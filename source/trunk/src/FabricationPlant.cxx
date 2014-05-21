@@ -45,13 +45,15 @@ ClassImp(FabricationPlant)
 
 FabricationPlant::FabricationPlant()
 {
+	SetFacilityType(16);
 	fStorage = 0;
 	fReUsable = 0;
 }
 
 FabricationPlant::FabricationPlant(LogFile* log)
 {
-	
+	SetFacilityType(16);
+
 	SetLog(log);
 	fChronologicalTimePriority = false;
 	SetCycleTime(-1);
@@ -73,7 +75,8 @@ FabricationPlant::FabricationPlant(LogFile* log)
 
 FabricationPlant::FabricationPlant(LogFile* log, Storage* storage, Storage* reusable, double fabircationtime)
 {
-	
+	SetFacilityType(16);
+
 	SetLog(log);
 	
 	fChronologicalTimePriority = false;
@@ -119,7 +122,7 @@ void	FabricationPlant::AddValorisableIV(ZAI zai, double factor)
 	if(factor > 0)
 	{
 		IResult = fValorisableIV.insert( pair<ZAI ,double>(zai, factor));
-		if(IResult.second == false)
+		if(!IResult.second)
 			IResult.first->second = factor;
 	}
 	
@@ -223,14 +226,14 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 					EvolutionData evolutiondb;
 					pair<map<int, EvolutionData>::iterator, bool> IResult;
 					IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,evolutiondb) );
-					if(IResult.second == false)
+					if(!IResult.second)
 						IResult.first->second = evolutiondb;
 				}
 				{
 					IsotopicVector EmptyIV;
 					pair<map<int, IsotopicVector>::iterator, bool> IResult;
 					IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId,EmptyIV) );
-					if(IResult.second == false)
+					if(!IResult.second)
 						IResult.first->second = EmptyIV;
 				}
 			}
@@ -240,14 +243,14 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 					EvolutionData evolutiondb = fSubstitutionEvolutionData* HMmass;
 					pair<map<int, EvolutionData>::iterator, bool> IResult;
 					IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,evolutiondb) );
-					if(IResult.second == false)
+					if(!IResult.second)
 						IResult.first->second = evolutiondb;
 				}
 				{
 					IsotopicVector IV = fSubstitutionEvolutionData.GetIsotopicVectorAt(0)* HMmass;
 					pair<map<int, IsotopicVector>::iterator, bool> IResult;
 					IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId, IV) );
-					if(IResult.second == false)
+					if(!IResult.second)
 						IResult.first->second = IV;
 				}
 				
@@ -298,7 +301,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 			double N3 = -FuelType->GetFuelParameter()[0] * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997 + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 ) * (HMmass*1e6 - MPu_0*1e6);
 			
 			double D1 = Sum_AlphaI_nPuI;
-			double D2 = -FuelType->GetFuelParameter()[0] * MPu_1*1e6 * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997 + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 ) ;
+			double D2 = - FuelType->GetFuelParameter()[0] * MPu_1*1e6 * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997 + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 ) ;
 			
 			StockFactionToUse = (N1 + N2 + N3) / (D1 + D2);
 			
@@ -332,31 +335,28 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 				
 				GetParc()->AddGodIncome( U8, U8_Quantity*0.997 );
 				GetParc()->AddGodIncome( U5, U8_Quantity*0.003 );
-				
+
+
 				for(int i = (int)fFractionToTake.size()-1; i >= 0; i--)
 				{
-					IVBeginCycle += fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*( fFractionToTake[i].second );					
-					fReUsable->AddToStock(fStorage->GetStock()[fFractionToTake[i].first]*(fFractionToTake[i].second)
-							      - fStorage->GetStock()[fFractionToTake[i].first].GetSpeciesComposition(94)*(fFractionToTake[i].second));
-					
-					fStorage->TakeFractionFromStock(fFractionToTake[i].first,fFractionToTake[i].second);			
-					
+					IVBeginCycle += fStorage->GetIVArray()[fFractionToTake[i].first].GetSpeciesComposition(94)*( fFractionToTake[i].second );
 				}
-				fFractionToTake.clear();
-				
+
+				DumpStock();
+
 				IVBeginCycle += U8_Quantity*U8*0.997 + U8_Quantity*U5*0.003;
 				EvolutionData evolutiondb = BuildEvolutiveDB(ReactorId, IVBeginCycle);
 				
 				{
 					pair<map<int, EvolutionData>::iterator, bool> IResult;
 					IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,evolutiondb) );
-					if(IResult.second == false)
+					if(!IResult.second)
 						IResult.first->second = evolutiondb;
 				}
 				{
 					pair<map<int, IsotopicVector>::iterator, bool> IResult;
 					IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId,IVBeginCycle) );
-					if(IResult.second == false)
+					if(!IResult.second)
 						IResult.first->second = IVBeginCycle;
 
 					AddCumulativeIVIn(IVBeginCycle);
@@ -453,13 +453,14 @@ IsotopicVector FabricationPlant::GetStockToRecycle()
 	IsotopicVector NextStock;
 	int IdToTake = -1;
 	
-	if(fChronologicalTimePriority == true)
+	if(fChronologicalTimePriority )
 		IdToTake = (int)( fFractionToTake.size() );
 	else
-		IdToTake = (int)( fStorage->GetStock().size() -1 - fFractionToTake.size() );
-	if(0 <= IdToTake && IdToTake <= (int)fStorage->GetStock().size()-1)
+		IdToTake = (int)( fStorage->GetIVArray().size() -1 - fFractionToTake.size() );
+
+	if(0 <= IdToTake && IdToTake < (int)fStorage->GetIVArray().size())
 	{
-		NextStock = fStorage->GetStock()[IdToTake];
+		NextStock = fStorage->GetIVArray()[IdToTake];
 		fFractionToTake.push_back( pair<int,double>(IdToTake,0.) );
 	}
 	else NextStock += ZAI(-1,-1,-1) *1;
@@ -481,10 +482,31 @@ void FabricationPlant::RecycleStock(double fraction)
 	//________________________________________________________________________
 void FabricationPlant::DumpStock()
 {
-	
-	
-	
-	
+
+	for(int i = (int)fFractionToTake.size()-1; i >= 0; i--)
+	{
+
+		pair<IsotopicVector, IsotopicVector> SeparatedIV;
+		IsotopicVector IV_in_Stock_i = fStorage->GetIVArray()[fFractionToTake[i].first];
+		double Fraction_Taken_from_Stock_i = fFractionToTake[i].second ;
+
+		SeparatedIV = Separation( Fraction_Taken_from_Stock_i * ( IV_in_Stock_i - IV_in_Stock_i.GetSpeciesComposition(94) ) );
+
+		fReUsable->AddIV(SeparatedIV.first);
+		GetParc()->AddWaste(SeparatedIV.second);
+
+
+
+
+		fStorage->TakeFractionFromStock(fFractionToTake[i].first,fFractionToTake[i].second);
+
+
+	}
+	fFractionToTake.clear();
+
+
+
+
 }
 
 	//________________________________________________________________________
@@ -505,7 +527,11 @@ pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector
 			IVTmp.first.Add(	(*it).first, (*it).second * (*it2).second );		//re-use
 			IVTmp.second.Add(	(*it).first, (*it).second * (1-(*it2).second) );	//waste
 		}
-		else IVTmp.second.Add(	(*it).first, (*it).second );	//waste
+		else
+		{
+			IVTmp.first.Add(	(*it).first, (*it).second );	//re-use
+//			IVTmp.second.Add(	(*it).first, (*it).second * (1-(*it2).second) );	//waste -> Empty
+		}
 	}
 	
 	return IVTmp;
@@ -513,6 +539,28 @@ pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector
 
 
 
+//________________________________________________________________________
+//	Get Decay
+//________________________________________________________________________
+IsotopicVector FabricationPlant::GetDecay(IsotopicVector isotopicvector, cSecond t)
+{
+
+	IsotopicVector IV;
+
+	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
+	map<ZAI ,double >::iterator it;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+	{
+		if((*it).second > 0)
+		{
+ 			IsotopicVector ivtmp = fDecayDataBase->Evolution(it->first, t) * (*it).second ;
+			IV += ivtmp;
+		}
+	}
+
+	return IV;
+	
+}
 
 
 

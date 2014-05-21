@@ -26,7 +26,7 @@
 //
 //________________________________________________________________________
 
-DecayDataBank::DecayDataBank()
+DecayDataBank::DecayDataBank():CLASSObject()
 {
 }
 
@@ -106,7 +106,7 @@ IsotopicVector	DecayDataBank::Evolution(const ZAI& zai, double dt)
 			}
 		}
 		
-		if(zaifind == false)
+		if(!zaifind)
 		{
 			GetLog()->fLog << "!!Warning!! !!!EVOLUTIVE DB!!! Oups... Can't Find the ZAI : " ;
 			GetLog()->fLog << zai.Z() << " " << zai.A() << " "	<< zai.I() << "!!! It will be considered as stable !!" << endl;

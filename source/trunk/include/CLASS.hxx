@@ -5,7 +5,7 @@
  \brief Header file for CLASS classes. 
  */
 
-#include "CLSSObject.hxx"
+#include "CLASSObject.hxx"
 #include "IsotopicVector.hxx"
 
 #include <TFile.h>
@@ -39,7 +39,7 @@ The aim of these class is to manage the parc and its evolution and to lead all S
 //________________________________________________________________________
 
 
-class CLASS : public CLSSObject
+class CLASS : public CLASSObject
 {
 public :
 
@@ -88,6 +88,9 @@ public :
 	bool				GetStockManagement()	{ return fStockManagement; }	///< Return the StockManagement method (True or False)
 	string				GetOutputFileName()	{ return fOutputFileName; }	///< Return the Output File name
 	string				GetOutputTreeName()	{ return fOutputTreeName; }	///< Return the Output ROOT TTree name
+
+	map<cSecond,int>		GetTheBackEndTimePath(Reactor* reactor);		///< BUild and return the time path of a iradiated fuel
+
 	//@}
 
 
@@ -168,6 +171,8 @@ public :
 	 \name Evolution Method
 	 */
 	//@{
+	void	OldBuildTimeVector(cSecond t);
+
 
 	void	BuildTimeVector(cSecond t);		///< Build the Time Evolution Vector where :
 							/// \li 1 printing,

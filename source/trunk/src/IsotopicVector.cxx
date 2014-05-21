@@ -389,7 +389,7 @@ void IsotopicVector::Need(const ZAI& zai, double quantity)
 	if(quantity > 0)
 	{
 		IResult = fIsotopicQuantityNeeded.insert( pair<ZAI ,double>(zai, quantity));
-		if(IResult.second == false)
+		if(!IResult.second)
 			IResult.first->second += quantity;
 	}
 	

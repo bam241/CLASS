@@ -7,7 +7,7 @@
  @version 2.0
  */
 
-#include "CLSSObject.hxx"
+#include "CLASSObject.hxx"
 #include "TMatrix.h"
 #include "IsotopicVector.hxx"
 #include "DynamicalSystem.hxx"
@@ -45,7 +45,7 @@ double ReactionRateWeightedDistance(EvolutionData DB, IsotopicVector IV1  );
 
 
 
-class FuelDataBank : public CLSSObject, DynamicalSystem
+class FuelDataBank : public CLASSObject, DynamicalSystem
 {
 	
 	public :

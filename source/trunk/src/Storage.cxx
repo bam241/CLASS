@@ -21,13 +21,18 @@
 //________________________________________________________________________
 ClassImp(Storage)
 
-Storage::Storage()
+Storage::Storage():CLASSBackEnd()
 {
+	SetFacilityType(-1);
+	SetIsStorageType();
+
 }
 
 Storage::Storage(LogFile* log)
 {
-	
+	SetFacilityType(-1);
+	SetIsStorageType();
+
 	SetLog(log);
 	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 	
@@ -37,6 +42,8 @@ Storage::Storage(LogFile* log)
 //________________________________________________________________________
 Storage::Storage(LogFile* log, DecayDataBank* evolutivedb)
 {
+	SetFacilityType(-1);
+	SetIsStorageType();
 
 	SetLog(log);
 	SetDecayDataBank(evolutivedb);
@@ -56,23 +63,13 @@ Storage::~Storage()
 }
 
 //________________________________________________________________________
-void Storage::ClearStock()
-{
-
-	IsotopicVector EmptyIV;
-	fInsideIV = EmptyIV;
-	fIVStock.clear();
-
-}
-
-//________________________________________________________________________
-void Storage::AddToStock(IsotopicVector isotopicvector)
+void Storage::AddIV(IsotopicVector isotopicvector)
 {
 
 	AddCumulativeIVIn(isotopicvector);
 
-	if(GetParc()->GetStockManagement() == true)
-		fIVStock.push_back(isotopicvector);
+	if(GetParc()->GetStockManagement() )
+		fIVArray.push_back(isotopicvector);
 	AddToFullStock(isotopicvector);
 
 }
@@ -81,7 +78,7 @@ void Storage::AddToStock(IsotopicVector isotopicvector)
 void Storage::TakeFractionFromStock(int IVId,double fraction)
 {
 
-	if(GetParc()->GetStockManagement() == true)
+	if(GetParc()->GetStockManagement() )
 	{
 		if(fraction > 1 || fraction < 0)
 		{
@@ -90,10 +87,10 @@ void Storage::TakeFractionFromStock(int IVId,double fraction)
 		}
 		else 
 		{
-			AddCumulativeIVOut(fIVStock[IVId]*fraction);
+			AddCumulativeIVOut(fIVArray[IVId]*fraction);
 
-			fInsideIV -= fIVStock[IVId]*fraction;
-			fIVStock[IVId] = fIVStock[IVId]*(1-fraction);
+			fInsideIV -= fIVArray[IVId]*fraction;
+			fIVArray[IVId] = fIVArray[IVId]*(1-fraction);
 		}
 
 	}
@@ -134,9 +131,9 @@ void Storage::StorageEvolution(cSecond t)
 
 	if(t == fInternalTime && t !=0 ) return;
 
-	for(int i = (int)fIVStock.size()-1 ; i >=0; i--) //Removing empty Stock
-		if(Norme(fIVStock[i]) == 0)
-			fIVStock.erase(fIVStock.begin()+i); 
+	for(int i = (int)fIVArray.size()-1 ; i >=0; i--) //Removing empty Stock
+		if(Norme(fIVArray[i]) == 0)
+			fIVArray.erase(fIVArray.begin()+i); 
 	
 	
 
@@ -145,9 +142,9 @@ void Storage::StorageEvolution(cSecond t)
 	fInsideIV = 	GetDecay(fInsideIV , EvolutionTime);
 
 #pragma omp parallel for
-	for (int i=0; i <(int) fIVStock.size() ; i++)
+	for (int i=0; i <(int) fIVArray.size() ; i++)
 	{
-		fIVStock[i] = GetDecay(fIVStock[i] , EvolutionTime);
+		fIVArray[i] = GetDecay(fIVArray[i] , EvolutionTime);
 	}
 	
 
@@ -173,10 +170,10 @@ void Storage::Evolution(cSecond t)
 void Storage::Write(string filename, cSecond date)
 {
 
-	for(int i=0;i < (int)fIVStock.size(); i++)
+	for(int i=0;i < (int)fIVArray.size(); i++)
 	{
 		
-		fIVStock[i].Write(filename, date);
+		fIVArray[i].Write(filename, date);
 	}
 
 }

@@ -70,7 +70,7 @@ double ReactionRateWeightedDistance(EvolutionData DB, IsotopicVector IV1  )
 
 
 //________________________________________________________________________
-FuelDataBank::FuelDataBank():DynamicalSystem()
+FuelDataBank::FuelDataBank(): CLASSObject(), DynamicalSystem()
 {
 	fTheNucleiVector = 0;
 	fTheMatrix = 0;
@@ -664,7 +664,7 @@ void FuelDataBank::SetFissionEnergy(ZAI zai, double E)
 {
 	pair<map<ZAI, double>::iterator, bool> IResult;
 	IResult = fFissionEnergy.insert( pair<ZAI ,double>(zai, E));
-	if(IResult.second == false)
+	if(!IResult.second)
 		IResult.first->second = E;
 	
 }
@@ -718,7 +718,7 @@ map< ZAI,IsotopicVector > FuelDataBank::ReadFPYield(string Yield)
 		{
 			pair<map<ZAI, IsotopicVector>::iterator, bool> IResult;
 			IResult = Yield_map.insert(pair<ZAI,IsotopicVector>(ZAI(Z,A,I),EmptyIV) );
-			if (IResult.second == false)
+			if(!IResult.second)
 			{
 				cout << "!!Error!! !!!FuelDataBank!!! Many accurance of ZAI " << Z << " " << A;
 				cout << " in " << Yield << " file!! Please Check it !!!" << endl;

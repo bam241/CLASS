@@ -14,8 +14,9 @@ ROOTGLIBS	= `root-config --glibs`
 INCLUDES	= $(LOCALINC)/*.hxx
 LIBNAME 	= CLASSpkg
 OBJS		= 	CLASS.o \
-			CLSSObject.o CLSSObjectDict.o\
-			CLSSFacility.o CLSSFacilityDict.o\
+			CLASSObject.o CLASSObjectDict.o\
+			CLASSFacility.o CLASSFacilityDict.o\
+			CLASSBackEnd.o CLASSBackEndDict.o\
 			Storage.o StorageDict.o\
 			FabricationPlant.o FabricationPlantDict.o \
 			PWR_THU_FabricationPlant.o \
@@ -30,8 +31,9 @@ OBJS		= 	CLASS.o \
 			EvolutionData.o EvolutionDataDict.o \
             LogFile.o
 
-ROOTOBJS	= 	CLSSObject.o CLSSObjectDict.o\
-			CLSSFacility.o CLSSFacilityDict.o\
+ROOTOBJS	= 	CLASSObject.o CLASSObjectDict.o\
+			CLASSFacility.o CLASSFacilityDict.o\
+			CLASSBackEnd.o CLASSBackEndDict.o\
 			Storage.o StorageDict.o\
 			Pool.o PoolDict.o\
 			Reactor.o ReactorDict.o \
@@ -58,10 +60,13 @@ all:		$(OBJS)
 
 
 
-CLSSObjectDict.cxx:		$(LOCALINC)/CLSSObject.hxx
+CLASSObjectDict.cxx:		$(LOCALINC)/CLASSObject.hxx
 				rootcint -f $@ -c $^
 
-CLSSFacilityDict.cxx:		$(LOCALINC)/CLSSFacility.hxx
+CLASSFacilityDict.cxx:		$(LOCALINC)/CLASSFacility.hxx
+				rootcint -f $@ -c $^
+
+CLASSBackEndDict.cxx:		$(LOCALINC)/CLASSBackEnd.hxx
 				rootcint -f $@ -c $^
 
 StorageDict.cxx:		$(LOCALINC)/Storage.hxx
