@@ -33,9 +33,8 @@ public:
 
 		///< Normal Destructor.
 	~ZAIMass();
-		//pair<ZAI, double>* find(ZAI zai) {return fZAIMass.find(zai);}
 	
-	map<ZAI, double> fZAIMass;
+	map<ZAI, double> fZAIMass; //! ZAI mass list
 
 
 

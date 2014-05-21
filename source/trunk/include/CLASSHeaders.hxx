@@ -27,7 +27,4 @@
 
 const ZAIMass cZAIMass;
 
-const string cCLASSDirectoryName = getenv("CLASS_PATH");
-const string cDataDirectoryName = cCLASSDirectoryName + "/source/data/";
-
 #endif

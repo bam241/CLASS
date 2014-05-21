@@ -98,9 +98,10 @@ public :
 	 */
 	//@{
 
-	void SetOutBackEndFacility(CLASSBackEnd* befacility)	{  fOutBackEndFacility = befacility;
-								   SetIsStorageType();
-								   fPutToWaste = true; }		//!< Set the Pointer to the Storage
+	void SetOutBackEndFacility(CLASSBackEnd* befacility)
+						{  fOutBackEndFacility = befacility;
+						   SetIsStorageType();
+						   fPutToWaste = true; }		//!< Set the Pointer to the Storage
 
 	void SetPutToWaste(bool val)		{ fPutToWaste = val; }		//!< Set True if IV goes to waste after cooling false instead
 
@@ -133,8 +134,8 @@ public :
 	 */
 	//@{
 
-	vector<cSecond>	GetCoolingStartingTime() const		{ return fCoolingStartingTime; }
-											//!< Return the vector of Cooling Sstarting Time
+	vector<cSecond>	GetCoolingStartingTime() const
+						{ return fCoolingStartingTime; }	//!< Return the vector of Cooling Sstarting Time
 	void	RemoveIVCooling(int i);					//!< Remove a Cooling IsotopicVector
 
 	void	AddIV(IsotopicVector isotopicvector);			//!< Add an Isotopicvector to the IVArray

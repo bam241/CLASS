@@ -72,11 +72,15 @@ public :
 	//@{
 	void	SetId(int id)			{ fId = id; }				//!< Set The Facility Parc'Id
 	void	SetParc(CLASS* parc)		{ fParc = parc; }			//!< Set the Pointer to the Parc
-	void	SetFacilityType(int type)		{ fFacilityType = type; }
+	void	SetFacilityType(int type)		{ fFacilityType = type; }	//!< Set the facility type :
+											/// \li 2 reactor Studown
+											/// \li 4 start/End of reactor cycle,
+											/// \li 8 end of Cooling,
+											/// \li 16 fuel Fabrication
 
 
 	void SetInsideIV(IsotopicVector isotopicvector)	{ fInsideIV = isotopicvector; }	//!< Set the IV inside the Facility Core
-	void SetCreationTime(double creationtime)	{ fCreationTime = (cSecond)creationtime;}
+	void SetCreationTime(double creationtime)	{ fCreationTime = (cSecond)creationtime;} //!< Set the creation Time
 	void SetLifeTime(double lifetime)		{ fLifeTime = (cSecond)lifetime; }	//!< Set the life time of the facility
 	virtual void SetCycleTime(double cycletime)	{ fCycleTime = (cSecond)cycletime; }	//!< Set the cycle time (Cycle of the loading Plan)
 	void SetInCycleTime(double incycletime)		{ fInCycleTime = (cSecond)incycletime; fIsStarted = true; }	//!< Set the cycle time (Cycle of the loading Plan)
@@ -99,7 +103,7 @@ public :
 protected :
 	bool		fIsStarted;		///< True if Running, False Otherwise
 	bool		fIsShutDown;		///< True if the facility is stoped, False Otherwise
-	bool		fIsAtEndOfCycle;		///< True if Reaching the End of a Facility Cycle
+	bool		fIsAtEndOfCycle;	///< True if Reaching the End of a Facility Cycle
 
 		
 	cSecond		fInternalTime;		///< Internal Clock
@@ -113,7 +117,11 @@ protected :
 		//********* Internal Parameter *********//
 private :
 	int		fId;			//!< Identity of the Facility inside the Parc
-	int		fFacilityType;
+	int		fFacilityType;		///< Type of facility :
+						/// \li 2 reactor Studown
+						/// \li 4 start/End of reactor cycle,
+						/// \li 8 end of Cooling,
+						/// \li 16 fuel Fabrication
 
 	CLASS*		fParc;			//!< Pointer to the main Parc
 

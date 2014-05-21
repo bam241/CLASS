@@ -287,11 +287,12 @@ void IsotopicVector::Multiply(double factor)
 
 //________________________________________________________________________
 
-double IsotopicVector::GetSumOfAll()
+double IsotopicVector::GetSumOfAll() const
 {
 	double Sum = 0;
 	map<ZAI ,double >::iterator it;
-	for( it = fIsotopicQuantity.begin(); it != fIsotopicQuantity.end(); it++)
+	map<ZAI ,double > isotopicquantity = GetIsotopicQuantity();
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		Sum += (*it).second;
 
 	return Sum;

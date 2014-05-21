@@ -54,18 +54,21 @@ public :
 	 */
 	//@{
 
-	map<ZAI ,double>	GetIsotopicQuantity() const { return fIsotopicQuantity; }			//!< Return the IVQuantity map 
-	map<ZAI ,double>	GetIsotopicQuantityNeeded() const { return fIsotopicQuantityNeeded; }	//!< Return the IVQuantityNeeded map
-	IsotopicVector		GetSpeciesComposition(int z) const;					//!< Return the Species composition of the "z" atom
-	vector<ZAI>		GetZAIList() const;					//!< Return the list of ZAI present in the IV
-	IsotopicVector		GetActinidesComposition() const;			//!< Return the Actinides composition of the "z" atom
-	double	GetZAIIsotopicQuantity(const ZAI& zai) const;				///< Return the quantity of the ZAI
+	map<ZAI ,double>	GetIsotopicQuantity()		const
+						{ return fIsotopicQuantity; }		//!< Return the IVQuantity map
+	map<ZAI ,double>	GetIsotopicQuantityNeeded()	const
+						{ return fIsotopicQuantityNeeded; }	//!< Return the IVQuantityNeeded map
+	IsotopicVector		GetSpeciesComposition(int z)	const;			//!< Return the Species composition of the "z" atom
+	vector<ZAI>		GetZAIList()			const;			//!< Return the list of ZAI present in the IV
+	IsotopicVector		GetActinidesComposition()	const;			//!< Return the Actinides composition of the "z" atom
+	double	GetZAIIsotopicQuantity(const ZAI& zai)		const;			///< Return the quantity of the ZAI
 	double	GetZAIIsotopicQuantity(const int z, const int a, const int i) const;	///< Return the quantity of the ZAI
 
-	vector<int>		GetChemicalSpecies() const;				//!< Return the Species Species contained
-	int	GetZAIQuantity()		{return  fIsotopicQuantity.size(); }	//!< Return the number of different ZAI in the IsotopicVector
+	vector<int>		GetChemicalSpecies()		const;			//!< Return the Species Species contained
+	int			GetZAIQuantity()		const
+						{return  fIsotopicQuantity.size(); }	//!< Return the number of different ZAI in the IsotopicVector
 
-	double GetSumOfAll();								//!< Return the Sum of nuclei in the IsotopicVector
+	double			GetSumOfAll()			const;			//!< Return the Sum of nuclei in the IsotopicVector
 
 	//@}
 
