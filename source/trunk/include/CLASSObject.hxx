@@ -50,6 +50,7 @@ public :
 private :
  	LogFile*	fLog;			//!< Pointer to the Log
 	bool		fIsLog;			//!< Set at true if a LogFile are define
+	
 	ClassDef(CLASSObject,0);
 };
 

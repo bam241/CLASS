@@ -156,7 +156,7 @@ protected :
 
 
 
-	ClassDef(Storage,2);
+	ClassDef(Storage,3);
 };
 
 #endif

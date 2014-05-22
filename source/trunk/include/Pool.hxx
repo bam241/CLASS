@@ -179,7 +179,7 @@ protected :
 
 
 
-	ClassDef(Pool,2);
+	ClassDef(Pool,3);
 };
 
 #endif

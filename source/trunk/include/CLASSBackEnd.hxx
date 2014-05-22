@@ -88,7 +88,7 @@ class CLASSBackEnd : public CLASSFacility
 	bool		fIsStorageType;		//!< True if there is not OutBAckEndFacility (like a storage...)
 	DecayDataBank*	fDecayDataBase;		//!< Pointer to the Decay DataBase
 
-	ClassDef(CLASSFacility,1);
+	ClassDef(CLASSBackEnd,2);
 };
 
 #endif
