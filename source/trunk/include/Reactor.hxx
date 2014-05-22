@@ -247,7 +247,7 @@ protected :
 	double			fHeavyMetalMass;		///< In tons
 	double			fBurnUp;			///< In GWd/tHM
 
- 	ClassDef(Reactor,2);
+ 	ClassDef(Reactor,3);
  };
 
 

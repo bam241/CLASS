@@ -189,7 +189,7 @@ protected :
 	 */
 	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);
 	//}
-	ClassDef(FabricationPlant,2);
+	ClassDef(FabricationPlant,3);
 
 };
 
