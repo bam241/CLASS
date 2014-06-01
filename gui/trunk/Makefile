@@ -41,6 +41,7 @@ OBJS    = $(subO) $(mainO)
 all:    $(OBJS)
 		
 	$(LD) $(LDFLAGS) $(OBJS) $(LIBS) $(GLIBS) -o $(main)
+	mv  $(main) bin/
 	@echo "$(main) done"
 
 clean:

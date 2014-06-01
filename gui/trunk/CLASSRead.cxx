@@ -153,36 +153,27 @@ void CLASSRead::ReadName()
 			string Name;
 			Name=fData[j]->GetListOfBranches()->At(i)->GetName();
 			string TypeName = Name;
-			string TypeName_100 = Name;
-			string TypeName_1000 = Name;
-			string TypeName_10000 = Name;
-			string TypeName_100000 = Name;
+			TypeName = TypeName.substr(0,2);
 
-			TypeName = TypeName.substr(0,TypeName.size()-2);
-			TypeName_100 = TypeName_100.substr(0,TypeName_100.size()-2);
-			TypeName_1000 = TypeName_1000.substr(0,TypeName_1000.size()-3);
-			TypeName_10000 = TypeName_10000.substr(0,TypeName_10000.size()-4);
-			TypeName_100000 = TypeName_100000.substr(0,TypeName_100000.size()-6);
-
-			if(TypeName=="Reactor"||TypeName_100=="Reactor"||TypeName_1000=="Reactor"||TypeName_10000=="Reactor"||TypeName_100000=="Reactor")
+			if(TypeName=="R_")
 			{
-				ReactorName.push_back(Name);
+				ReactorName.push_back(Name.substr(2,Name.size()-1));
 
 			}
-			else if(TypeName=="Pool"||TypeName_100=="Pool"||TypeName_1000=="Pool"||TypeName_10000=="Pool"||TypeName_100000=="Pool")
+			else if(TypeName=="P_")
 			{
-				PoolName.push_back(Name);
+				PoolName.push_back(Name.substr(2,Name.size()-1));
 
 			}
-			else if(TypeName=="Storage"||TypeName_100=="Storage"||TypeName_1000=="Storage"||TypeName_10000=="Storage"||TypeName_100000=="Storage")
+			else if(TypeName=="S_")
 			{
-				StockName.push_back(Name);
+				StockName.push_back(Name.substr(2,Name.size()-1));
 
 			}
-			else if(TypeName=="FabricationPlant"||TypeName_100=="FabricationPlant"||TypeName_1000=="FabricationPlant"||TypeName_10000=="FabricationPlant"||TypeName_100000=="FabricationPlant")
+			else if(TypeName=="F_")
 			{
-				FabricationName.push_back(Name);
-
+				FabricationName.push_back(Name.substr(2,Name.size()-1));
+				
 			}
 		}
 		fReactorName.push_back(ReactorName);
@@ -1291,23 +1282,23 @@ string CLASSRead::GetBranchInName(CLASSPlotElement toplot)
 			break;
 
 		case 1:
-			name = "Reactor" + itoa(toplot.fFacylityNumber) + ".";
+			name = "R_" + fReactorName[toplot.fTreeId][toplot.fFacylityNumber];
 			return name;
 			break;
 
 		case 2:
-			name = "Storage" + itoa(toplot.fFacylityNumber) + ".";
+			name = "S_" + fStockName[toplot.fTreeId][toplot.fFacylityNumber];
 			return name;
 			break;
 
 		case 3:
-			name = "Pool" + itoa(toplot.fFacylityNumber) + ".";
+			name = "P_" + fPoolName[toplot.fTreeId][toplot.fFacylityNumber];
 			return name;
 
 			break;
 
 		case 4:
-			name = "FabricationPlant" + itoa(toplot.fFacylityNumber) + ".";
+			name = "F_" + fFabricationName[toplot.fTreeId][toplot.fFacylityNumber];
 			return name;
 			break;
 
