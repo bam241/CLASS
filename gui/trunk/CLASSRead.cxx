@@ -341,9 +341,12 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 
 		double x;
 		double y;
+		double x_0;
+		double y_0;
+		fGraphSumOfSelected->GetPoint(1, x_0, y_0);
 		fGraphSumOfSelected->GetPoint(fGraphSumOfSelected->GetN()-1, x, y);
 
-		fLegendSumOfSelected = new TLatex(0.7*(x),1.05*(y),"Sum_Of_Selected");
+		fLegendSumOfSelected = new TLatex(x_0+0.6*(x-x_0),y_0+1.05*(y-y_0),"Sum_Of_Selected");
 		fLegendSumOfSelected->SetTextSize(0.05);
 		fLegendSumOfSelected->SetTextFont(132);
 		fLegendSumOfSelected->SetTextColor(CurveColor(fNumberGraphIterator));
@@ -368,9 +371,13 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 
 		double x;
 		double y;
+		double x_0;
+		double y_0;
+		fGraph[i]->GetPoint(1, x_0, y_0);
+		
 		fGraph[i]->GetPoint(fGraph[i]->GetN()-1, x, y);
 
-		fLegend[i] = new TLatex(0.7*(x),1.05*(y),GetLegendOutName(toplot[i]).c_str());
+		fLegend[i] = new TLatex(x_0+0.6*(x-x_0),y_0+1.05*(y-y_0),GetLegendOutName(toplot[i]).c_str());
 		fLegend[i]->SetTextSize(0.05);
 		fLegend[i]->SetTextFont(132);
 		fLegend[i]->SetTextColor(CurveColor(i));
@@ -677,6 +684,7 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 
 	for (int i = 0; i < (int)fNumberGraphPowerIterator; i++)
 	{
+		fCPower->cd();
 		if( i !=0 ) out += " same";
 
 		fGraphPower[i]->SetName(GetTittleOutName(toplot[i]).c_str());
@@ -686,12 +694,17 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 		fGraphPower[i]->SetMarkerStyle(10);
 		fGraphPower[i]->Draw(out.c_str());
 
+		fCPower->cd();
 
 		double x;
 		double y;
+		double x_0;
+		double y_0;
+		fGraphPower[i]->GetPoint(1, x_0, y_0);
+		
 		fGraphPower[i]->GetPoint(fGraphPower[i]->GetN()-1, x, y);
-
-		fLegendPower[i] = new TLatex(0.7*x,1.05*y,GetLegendOutName(toplot[i]).c_str());
+				
+		fLegendPower[i] = new TLatex(x_0+0.6*(x-x_0),y_0+1.05*(y-y_0),GetLegendOutName(toplot[i]).c_str());
 		fLegendPower[i]->SetTextSize(0.05);
 		fLegendPower[i]->SetTextFont(132);
 		fLegendPower[i]->SetTextColor(CurveColor(i));
@@ -1379,23 +1392,23 @@ string CLASSRead::GetLegendOutName(CLASSPlotElement toplot)
 			break;
 
 		case 1:
-			name = "P_{" + itoa(toplot.fTreeId) + "} R_{" + itoa(toplot.fFacylityNumber)+ "} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
+			name = "P_{" + itoa(toplot.fTreeId) + "} " + fReactorName[toplot.fTreeId][toplot.fFacylityNumber] + " ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
 			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 			break;
 
 		case 2:
-			name = "P_{" + itoa(toplot.fTreeId) + "} Stk_{" + itoa(toplot.fFacylityNumber) + "} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
+			name = "P_{" + itoa(toplot.fTreeId) + "} " + fStockName[toplot.fTreeId][toplot.fFacylityNumber] + " ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
 			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 			break;
 
 		case 3:
-			name = "P_{" + itoa(toplot.fTreeId) + "} Pl_{" + itoa(toplot.fFacylityNumber) + "} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
+			name = "P_{" + itoa(toplot.fTreeId) + "} " + fPoolName[toplot.fTreeId][toplot.fFacylityNumber] + " ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
 			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 
 			break;
 
 		case 4:
-			name = "P_{" + itoa(toplot.fTreeId) + "} FP_{" + itoa(toplot.fFacylityNumber) + "} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
+			name = "P_{" + itoa(toplot.fTreeId) + "} " + fFabricationName[toplot.fTreeId][toplot.fFacylityNumber] + " ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
 			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 			break;
 
