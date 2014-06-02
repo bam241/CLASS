@@ -1502,23 +1502,23 @@ string CLASSRead::GetTittleOutName(CLASSPlotElement toplot)
 			break;
 
 		case 1:
-			name = "PARC "+ itoa(toplot.fTreeId) +  " Reactor " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+			name = "PARC "+ itoa(toplot.fTreeId) +  " " + fReactorName[toplot.fTreeId][toplot.fFacylityNumber] + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 			return name;
 			break;
 
 		case 2:
-			name = "PARC "+ itoa(toplot.fTreeId) +  " Storage " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+			name = "PARC "+ itoa(toplot.fTreeId) +  " " + fStockName[toplot.fTreeId][toplot.fFacylityNumber] + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 			return name;
 			break;
 
 		case 3:
-			name = "PARC "+ itoa(toplot.fTreeId) +  " Cooling " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+			name = "PARC "+ itoa(toplot.fTreeId) +  " " + fPoolName[toplot.fTreeId][toplot.fFacylityNumber] + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 			return name;
 
 			break;
 
 		case 4:
-			name = "PARC "+ itoa(toplot.fTreeId) +  " Fabrication " + itoa(toplot.fFacylityNumber) + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+			name = "PARC "+ itoa(toplot.fTreeId) +  " " + fFabricationName[toplot.fTreeId][toplot.fFacylityNumber] + " " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 			return name;
 			break;
 			
