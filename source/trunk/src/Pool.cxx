@@ -26,6 +26,7 @@ Pool::Pool():CLASSBackEnd()
 {
 	fOutBackEndFacility = 0;
 	SetFacilityType(8);
+	SetName("P_Pool.");
 }
 
 Pool::Pool(LogFile* log)
@@ -42,6 +43,7 @@ Pool::Pool(LogFile* log)
 	fCoolingLastIndex = 0;
 
 	fOutBackEndFacility = 0;
+	SetName("P_Pool.");
 
 	
 	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
@@ -70,6 +72,7 @@ Pool::Pool(LogFile* log, double creation, double coolingtime)
 	fCoolingLastIndex = 0;
 
 	fOutBackEndFacility = 0;
+	SetName("P_Pool.");
 
 	
 	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
@@ -100,6 +103,7 @@ Pool::Pool(LogFile* log, CLASSBackEnd* storage, double creation, double coolingt
 	fIsStarted = false;
 	fPutToWaste = false;
 	fCoolingLastIndex = 0;
+	SetName("P_Pool.");
 
 	
 	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;

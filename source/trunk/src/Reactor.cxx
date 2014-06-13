@@ -29,11 +29,18 @@ ClassImp(Reactor)
 
 Reactor::Reactor()
 {
+
+	SetFacilityType(4);
+	SetName("R_Reactor.");
+
+
 	fOutBackEndFacility = 0;
 	fStorage = 0;
 	fFuelTypeDB = 0;
 	fFabricationPlant = 0;
-	SetFacilityType(4);
+
+
+	fNextPlan = fLoadingPlan.begin();
 }
 
 Reactor::Reactor(LogFile* log)
@@ -45,17 +52,21 @@ Reactor::Reactor(LogFile* log)
 	fFuelTypeDB = 0;
 	fFabricationPlant = 0;
 	SetFacilityType(4);
+	SetName("R_Reactor.");
+	fNextPlan = fLoadingPlan.begin();
 
 }
 
 Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 CLASSBackEnd* Pool,
- 		 double creationtime, double lifetime)
+ 		 cSecond creationtime, cSecond lifetime)
 {
-	SetFacilityType(4);
-
 	SetLog(log);
+
+	SetFacilityType(4);
+	SetName("R_Reactor.");
+
 
 	fIsStarted = false;
 	fIsShutDown = false;
@@ -75,7 +86,12 @@ Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB,
 	fCycleTime = -1.;	 //BU in GWd/t
 
 	SetCreationTime( (cSecond)creationtime );
+	fInternalTime = creationtime;
 	SetLifeTime( (cSecond)lifetime );
+	fInCycleTime = 0;
+
+
+	fNextPlan = fLoadingPlan.begin();
 
 	cout	<< "!!INFO!! !!!Reactor!!! A Reactor has been define :" << endl;
 	cout	<< "\t Fuel Composition is not fixed ! "<< endl;
@@ -95,12 +111,14 @@ Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB,
 }
 
 Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB, FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
- 		 double creationtime, double lifetime,
+ 		 cSecond creationtime, cSecond lifetime,
  		 double Power, double HMMass, double BurnUp, double ChargeFactor)
 {
-	SetFacilityType(4);
-
 	SetLog(log);
+
+	SetFacilityType(4);
+	SetName("R_Reactor.");
+
 
 	fStorage = 0;
 	fIsStarted = false;
@@ -121,8 +139,11 @@ Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB, FabricationPlant* fabri
 	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);	 //BU in GWd/t
 
 	SetCreationTime( (cSecond)creationtime );
+	fInternalTime = creationtime;
 	SetLifeTime( (cSecond)lifetime );
+	fInCycleTime = 0;
 
+	fNextPlan = fLoadingPlan.begin();
 
 
 	cout	<< "!!INFO!! !!!Reactor!!! A Reactor has been define :" << endl;
@@ -152,12 +173,14 @@ Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB, FabricationPlant* fabri
 Reactor::Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 CLASSBackEnd* Pool,
- 		 double creationtime, double lifetime, double cycletime,
+ 		 cSecond creationtime, cSecond lifetime, cSecond cycletime,
  		 double HMMass, double BurnUp)
 {
-	SetFacilityType(4);
-
 	SetLog(log);
+
+	SetFacilityType(4);
+	SetName("R_Reactor.");
+
 
 	fIsStarted = false;
 	fIsShutDown = false;
@@ -176,9 +199,13 @@ Reactor::Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 
 	fCycleTime = (cSecond)cycletime;
 	SetCreationTime( (cSecond)creationtime );
+	fInternalTime = creationtime;
 	SetLifeTime( (cSecond)lifetime );
+	fInCycleTime = 0;
+
 	fPower = BurnUp*3600.*24. / (fCycleTime) * HMMass *1e9; //BU in GWd/t
 
+	fNextPlan = fLoadingPlan.begin();
 
 	cout	<< "!!INFO!! !!!Reactor!!! A Reactor has been define :" << endl;
 	cout	<< "\t Fuel Composition is not fixed ! "<< endl;
@@ -207,13 +234,15 @@ Reactor::Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 
 Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
  		 CLASSBackEnd* Pool,
- 		 double creationtime,
- 		 double lifetime,
+ 		 cSecond creationtime,
+ 		 cSecond lifetime,
  		 double power, double HMMass, double BurnUp, double ChargeFactor )
 {
-	SetFacilityType(4);
-
 	SetLog(log);
+
+	SetFacilityType(4);
+	SetName("R_Reactor.");
+
 
 	fIsStarted = false;
 	fIsShutDown = false;
@@ -229,7 +258,9 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
 	fOutBackEndFacility = Pool;
 
 	SetCreationTime( (cSecond)creationtime );
+	fInternalTime = creationtime;
 	SetLifeTime( (cSecond)lifetime );
+	fInCycleTime = 0;
 
 	fPower = power * ChargeFactor;
 
@@ -250,6 +281,10 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
 	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
 	fIVInCycle = fEvolutionDB.GetIsotopicVectorAt(0);
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
+
+
+
+	fNextPlan = fLoadingPlan.begin();
 
 	cout	<< "!!INFO!! !!!Reactor!!! A Reactor has been define :" << endl;
 	cout	<< "\t Fuel Composition is fixed ! "<< endl;
@@ -281,31 +316,46 @@ Reactor::~Reactor()
 //________________________________________________________________________
 void Reactor::SetCycleTime(double cycletime)
 {
+	fCycleTime = (cSecond)cycletime;
+
 	if(fFixedFuel==true)
 	{
-		fCycleTime = (cSecond)cycletime;
 		fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt(fCycleTime/fEvolutionDB.GetPower()*fPower);
 		fBurnUp = fPower*fCycleTime/3600./24./fHeavyMetalMass;
 	}
 	else
 	{
-		fCycleTime = (cSecond)cycletime;
-		fPower = fBurnUp*3600*24 / (fCycleTime) * fHeavyMetalMass *1e9; //BU in GWd/t
+		fBurnUp = fPower*fCycleTime/3600./24./fHeavyMetalMass;
 	}
 }
 //________________________________________________________________________
 void Reactor::SetPower(double Power)
 {
+	fPower = Power;
+
 	if(fFixedFuel==true)
 	{
-		fPower = Power;
+		fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);
 		fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 	}
 	else
-	{
-		fPower = Power;
 		fCycleTime = (cSecond)(fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);	 //BU in GWd/t
+
+
+}
+//________________________________________________________________________
+void Reactor::SetBurnUp(double BU)
+{
+
+	fBurnUp = BU;
+
+	if(fFixedFuel==true)
+	{
+		fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);
+		fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 	}
+	else
+		fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);
 
 }
 
@@ -354,16 +404,17 @@ void Reactor::Evolution(cSecond t)
 	}
 
 
-	if( t == fInternalTime && t!=0 ) return;
 	if( t < fInternalTime ) return;
+	if( t == fInternalTime && t!=GetCreationTime() ) return;
 
 
 
-	if(fInternalTime == 0 && !fIsStarted) // Start of the Reactor
+	if( t == GetCreationTime() && !fIsStarted) // Start of the Reactor
 	{
 		fIsAtEndOfCycle = true;
 		fInsideIV  = fIVBeginCycle;
 		fInternalTime = t;
+		fInCycleTime = 0;
 
 	}
 
@@ -373,6 +424,7 @@ void Reactor::Evolution(cSecond t)
 
 	cSecond EvolutionTime = t - fInternalTime; // Calculation of the evolution time (relativ)
 
+
 	if( EvolutionTime + fInCycleTime == fCycleTime )		//End of Cycle
 	{
 		fIsAtEndOfCycle = true;
@@ -381,6 +433,7 @@ void Reactor::Evolution(cSecond t)
 
 		if(t >=  GetCreationTime() + GetLifeTime())				// if the Next Cycle don't 'Exist...
 			fIsShutDown = true;
+
 
 	}
 	else if(EvolutionTime + fInCycleTime < fCycleTime )			// During Cycle
@@ -398,6 +451,7 @@ void Reactor::Evolution(cSecond t)
 		cout << "!!Warning!! !!!Reactor!!!"
 		<< " Evolution is too long! This is a Bad way to deal the evolution of the reactor..."
 		<< t/365.25/3600/24 << " :" << endl;
+
 
 		GetLog()->fLog << "!!Warning!! !!!Reactor!!!"
 		<< " Evolution is too long! This is a Bad way to deal the evolution of the reactor..."
@@ -418,7 +472,6 @@ void Reactor::Dump()
 
 	if(fFixedFuel )
 	{
-
 		if(fIsAtEndOfCycle  && !fIsShutDown )
 		{
 			fIsAtEndOfCycle = false;
@@ -449,6 +502,16 @@ void Reactor::Dump()
 			}
 			else	GetParc()->AddGod(fIVInCycle);
 
+
+			if(fNextPlan != fLoadingPlan.end())		// Check if the Fuel change
+			{
+				if(fInternalTime >= (*fNextPlan).first)
+				{
+					SetEvolutionDB((*fNextPlan).second.first);
+					SetBurnUp((*fNextPlan).second.second);
+					fNextPlan++;
+				}
+			}
 			fInsideIV  = fIVBeginCycle;
 			AddCumulativeIVIn(fIVBeginCycle);
 

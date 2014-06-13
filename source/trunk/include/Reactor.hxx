@@ -74,7 +74,7 @@ public :
 	 */
 	Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
-		double creationtime , double lifetime);
+		cSecond creationtime , cSecond lifetime);
 	//}
 
 	//{
@@ -92,7 +92,7 @@ public :
 	 */
 	Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
-		double creationtime , double lifetime, double cycletime,
+		cSecond creationtime , cSecond lifetime, cSecond cycletime,
 		double HMMass, double BurnUp);
 	//}
 
@@ -112,7 +112,7 @@ public :
 	 */
 	Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
-		double creationtime , double lifetime,
+		cSecond creationtime , cSecond lifetime,
 		double Power, double HMMass, double BurnUp, double ChargeFactor);
 	//}
 
@@ -131,7 +131,7 @@ public :
 	 \param ChargeFactor effective charge of the reactor.
 	 */
 	Reactor(LogFile* log, EvolutionData evolutivedb, CLASSBackEnd* Pool,
-		double creationtime, double lifetime,
+		cSecond creationtime, cSecond lifetime,
 		double power, double HMMass, double BurnUp, double ChargeFactor = 1);
 	//}
 
@@ -169,6 +169,13 @@ public :
 	double	GetBurnUp()		const	{ return fBurnUp; }		//!< Return the Burn Up of the Fuel at the end of the cycle
 	double	GetPower()		const	{ return fPower; } 		//!< Return the cycle time of the Reactor
 
+#ifndef __CINT__
+	map<cSecond, pair<EvolutionData, double> >	GetLoadingPlan()		const
+						{ return fLoadingPlan; }	//!< return the LoadingPlan
+	map<cSecond, pair<EvolutionData, double> >::iterator	GetNextPlan()	const
+						{ return fNextPlan; }	//!< return the next fuel in the Plan
+
+#endif
 	//@}
 
 
@@ -186,21 +193,29 @@ public :
 	void	SetStorage(Storage* storage)
 					{ fStorage = storage; fIsStorage = true;}	//!< Set the Pointer to the Storage
 
+	void	SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}	//!< Set the HeavyMetal Mass in the Core at the begining of the cycle
+
 	void	SetIVReactor(IsotopicVector isotopicvector)
-					{ fInsideIV = isotopicvector; }	//!< Set the IV inside the Reactor Core
+					{ fInsideIV = isotopicvector; }		//!< Set the IV inside the Reactor Core
 	void	SetIVBeginCycle(IsotopicVector isotopicvector)
 					{ fIVBeginCycle = isotopicvector; }	//!< Set the IV at the Beginging of the Reactor Cycle
 	void	SetIVOutCycle(IsotopicVector isotopicvector)
 					{ fIVOutCycle = isotopicvector; }	//!< Set the IV Going Out at the End of the Cycle
 	void	SetIVInCycle(IsotopicVector isotopicvector)
 					{ fIVInCycle = isotopicvector; }	//!< Set the IV Coming In at the Beginning of the Cycle
-	
-	void	SetCycleTime(double cycletime);					//!< Set the Power time (Cycle of the loading Plan)
-	
+
 	void	SetEvolutionDB(EvolutionData evolutionDB);			//!< Set the Pointer to the DB Evolution of the Reactor
-	void	SetPower(double Power);						//!< Set the Power
-	void	SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}	//!< Set the HeavyMetal Mass in the Core at the begining of the cycle
-	void	SetBurnUp(double BU)		{fBurnUp = BU;}			//!< Set the the Burn Up of the Fuel at the end of the cycle
+
+	void	SetCycleTime(double cycletime);					//!< Set the Cycle time (Power fixed)
+	void	SetPower(double Power);						//!< Set the Power (BurnUp cte)
+	void	SetBurnUp(double BU);						//!< Set the BurnUp reach at end of cycle (Power cte)
+
+
+
+
+	void	SetLoadingPlan(map<cSecond, pair<EvolutionData, double> > loadingplan)
+					{ fLoadingPlan = loadingplan; fNextPlan = fLoadingPlan.begin(); }
+										//!< Set a LaodingPlan to change the Fuel after some cycle
 	//@}
 
 
@@ -239,7 +254,10 @@ protected :
 	IsotopicVector	fIVInCycle;		///< IVBegin add at the Beginning of the Cycle
 	IsotopicVector	fIVOutCycle;		///< IV wich get out at the End of a Cycle
 
-
+#ifndef __CINT__
+	map<cSecond, pair<EvolutionData, double> >	fLoadingPlan;	///< Loading PLan to change the EvolutionData (and the associetedBurnup) according to the Plan
+	map<cSecond, pair<EvolutionData, double> >::iterator	fNextPlan;	///< Next EvolutionData, and time until it should be load (at the end of the last cycle)
+#endif
 //********* Unfixed Fuel Parameter *********//
 
 

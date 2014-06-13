@@ -257,7 +257,7 @@ protected :
 	
 	TFile*		fOutFile;		///< Pointer to the Root Output File
 	string		fOutputFileName;	//! Name of the Output File
-	TTree*		fOutT;			///< Pointer to the Root Output TTree
+	TTree*		fOutT;			///< Pointer to the Root Output TTr3ee
 	string		fOutputTreeName;	//! Name of the Output TTree
 	string		fOutputLogName;		///< Name of the Ouput log File
 	

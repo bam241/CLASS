@@ -46,6 +46,8 @@ ClassImp(FabricationPlant)
 FabricationPlant::FabricationPlant()
 {
 	SetFacilityType(16);
+	SetName("F_FabricationPLant.");
+	
 	fStorage = 0;
 	fReUsable = 0;
 }
@@ -53,6 +55,7 @@ FabricationPlant::FabricationPlant()
 FabricationPlant::FabricationPlant(LogFile* log)
 {
 	SetFacilityType(16);
+	SetName("F_FabricationPLant.");
 
 	SetLog(log);
 	fChronologicalTimePriority = false;
@@ -76,6 +79,7 @@ FabricationPlant::FabricationPlant(LogFile* log)
 FabricationPlant::FabricationPlant(LogFile* log, Storage* storage, Storage* reusable, double fabircationtime)
 {
 	SetFacilityType(16);
+	SetName("F_FabricationPLant.");
 
 	SetLog(log);
 	
@@ -301,7 +305,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 			double N3 = -FuelType->GetFuelParameter()[0] * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997 + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 ) * (HMmass*1e6 - MPu_0*1e6);
 			
 			double D1 = Sum_AlphaI_nPuI;
-			double D2 = - FuelType->GetFuelParameter()[0] * MPu_1*1e6 * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997 + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 ) ;
+			double D2 = -FuelType->GetFuelParameter()[0] * MPu_1*1e6 * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997 + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 ) ;
 			
 			StockFactionToUse = (N1 + N2 + N3) / (D1 + D2);
 			
@@ -369,6 +373,8 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 	}
 
 }
+
+//________________________________________________________________________
 void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel)
 {
 	

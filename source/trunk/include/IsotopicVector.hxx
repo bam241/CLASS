@@ -63,7 +63,7 @@ public :
 	IsotopicVector		GetActinidesComposition()	const;			//!< Return the Actinides composition of the "z" atom
 	double	GetZAIIsotopicQuantity(const ZAI& zai)		const;			///< Return the quantity of the ZAI
 	double	GetZAIIsotopicQuantity(const int z, const int a, const int i) const;	///< Return the quantity of the ZAI
-
+	
 	vector<int>		GetChemicalSpecies()		const;			//!< Return the Species Species contained
 	int			GetZAIQuantity()		const
 						{return  fIsotopicQuantity.size(); }	//!< Return the number of different ZAI in the IsotopicVector

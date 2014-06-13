@@ -25,6 +25,7 @@ Storage::Storage():CLASSBackEnd()
 {
 	SetFacilityType(-1);
 	SetIsStorageType();
+	SetName("S_Storage.");
 
 }
 
@@ -32,6 +33,8 @@ Storage::Storage(LogFile* log)
 {
 	SetFacilityType(-1);
 	SetIsStorageType();
+
+	SetName("S_Storage.");
 
 	SetLog(log);
 	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
@@ -48,6 +51,8 @@ Storage::Storage(LogFile* log, DecayDataBank* evolutivedb)
 	SetLog(log);
 	SetDecayDataBank(evolutivedb);
 	
+	SetName("S_Storage.");
+
 	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 	
 	GetLog()->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
