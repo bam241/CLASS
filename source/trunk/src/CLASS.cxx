@@ -185,13 +185,26 @@ void CLASS::AddPool(Pool* Pool)
 	fPool.back()->SetId((int)fPool.size()-1);
 
 
-	if(!fNewTtree)
+	string Pool_name = fPool.back()->GetName();
+	if(Pool_name == "P_Pool.")
 	{
-		string Pool_name = "Pool";
+		Pool_name = "P_Pool";
 		Pool_name += dtoa(fPool.back()->GetId());
 		Pool_name += ".";
-		fOutT->Branch(Pool_name.c_str(), "Pool", &fPool.back());
+		fPool.back()->SetName(Pool_name.c_str());
 	}
+	else
+	{
+		string name_tmp = Pool_name;
+		Pool_name = "P_";
+		Pool_name += name_tmp;
+		Pool_name += ".";
+		fPool.back()->SetName(Pool_name.c_str());
+	}
+
+	if(!fNewTtree)
+		fOutT->Branch(fPool.back()->GetName(), "Pool", &fPool.back());
+
 
 }
 
@@ -207,14 +220,25 @@ void CLASS::AddReactor(Reactor* reactor)
 		fReactor.back()->GetFabricationPlant()->AddReactor( (int)fReactor.size()-1,fReactor.back()->GetCreationTime() );
 
 
-
-	if(!fNewTtree)
+	string Reactor_name = fReactor.back()->GetName();
+	if(Reactor_name == "R_Reactor.")
 	{
-		string Reactor_name = "Reactor";
+		Reactor_name = "R_Reactor";
 		Reactor_name += dtoa(fReactor.back()->GetId());
 		Reactor_name += ".";
-		fOutT->Branch(Reactor_name.c_str(), "Reactor", &fReactor.back());
+		fReactor.back()->SetName(Reactor_name.c_str());
 	}
+	else
+	{
+		string name_tmp = Reactor_name;
+		Reactor_name = "R_";
+		Reactor_name += name_tmp;
+		Reactor_name += ".";
+		fReactor.back()->SetName(Reactor_name.c_str());
+	}
+
+	if(!fNewTtree)
+		fOutT->Branch(fReactor.back()->GetName(), "Reactor", &fReactor.back());
 
 
 }
@@ -229,13 +253,26 @@ void CLASS::AddStorage(Storage* storage)
 	fStorage.back()->SetLog(GetLog());
 	fStorage.back()->SetId((int)fStorage.size()-1);
 
-	if(!fNewTtree)
+	string Storage_name = fStorage.back()->GetName();
+
+	if(Storage_name == "S_Storage.")
 	{
-		string Storage_name = "Storage";
+		Storage_name = "S_Storage";
 		Storage_name += dtoa(fStorage.back()->GetId());
 		Storage_name += ".";
-		fOutT->Branch(Storage_name.c_str(), "Storage", &fStorage.back());
+		fStorage.back()->SetName(Storage_name.c_str());
 	}
+	else
+	{
+		string name_tmp = Storage_name;
+		Storage_name = "S_";
+		Storage_name += name_tmp;
+		Storage_name += ".";
+		fStorage.back()->SetName(Storage_name.c_str());
+	}
+
+	if(!fNewTtree)
+		fOutT->Branch(fStorage.back()->GetName(), "Storage", &fStorage.back());
 
 
 }
@@ -249,15 +286,26 @@ void CLASS::AddFabricationPlant(FabricationPlant* fabricationplant)
 	fFabricationPlant.back()->SetLog(GetLog());
 	fFabricationPlant.back()->SetId((int)fStorage.size()-1);
 
-	if(!fNewTtree)
+
+	string FP_name = fFabricationPlant.back()->GetName();
+	if(FP_name == "F_FabricationPlant.")
 	{
-		string FabricationPlant_name = "FabricationPlant";
-		FabricationPlant_name += dtoa(fFabricationPlant.back()->GetId());
-		FabricationPlant_name += ".";
-		fOutT->Branch(FabricationPlant_name.c_str(), "FabricationPlant", &fFabricationPlant.back());
+		FP_name = "F_FabricationPlant";
+		FP_name += dtoa(fFabricationPlant.back()->GetId());
+		FP_name += ".";
+		fFabricationPlant.back()->SetName(FP_name.c_str());
+	}
+	else
+	{
+		string name_tmp = FP_name;
+		FP_name = "F_";
+		FP_name += name_tmp;
+		FP_name += ".";
+		fFabricationPlant.back()->SetName(FP_name.c_str());
 	}
 
-
+	if(!fNewTtree)
+		fOutT->Branch(fFabricationPlant.back()->GetName(), "FabricationPlant", &fFabricationPlant.back());
 }
 //________________________________________________________________________
 map<cSecond,int> CLASS::GetTheBackEndTimePath(Reactor* reactor)
@@ -388,11 +436,29 @@ void CLASS::BuildTimeVector(cSecond t)
 			}
 		}
 
-		if (fReactor[i]->GetCycleTime() !=0)
+		map<cSecond, pair<EvolutionData, double> >	ReactorLoadingPlan = fReactor[i]->GetLoadingPlan();
+		map<cSecond, pair<EvolutionData, double> >::iterator	ReactorNextPlan = ReactorLoadingPlan.begin();
+
+
+
+
+		if (ReactorCycleTime !=0)
 		{
-			step += fReactor[i]->GetCycleTime();
+			step += ReactorCycleTime;
 			do
 			{
+				if(ReactorNextPlan != ReactorLoadingPlan.end())		// Check if the Fuel change
+				{
+					if(step >= (*ReactorNextPlan).first)
+					{
+						ReactorCycleTime = (cSecond) ((*ReactorNextPlan).second.second * 1e9
+									      / (fReactor[i]->GetPower())
+									      * fReactor[i]->GetHeavyMetalMass()  *3600*24);
+						ReactorNextPlan++;
+
+					}
+				}
+
 				//********* FabricationPlant Evolution Step *********//
 				if(!fReactor[i]->IsFuelFixed())
 					if(step - FabricationCycleTime >= fAbsoluteTime && step - FabricationCycleTime <= t && step < ReactorShutDownTime)
@@ -422,6 +488,9 @@ void CLASS::BuildTimeVector(cSecond t)
 							IResult.first->second |= (*TV_it).second;
 					}
 				}
+
+
+
 				step += ReactorCycleTime;
 			}
 			while(step <= t && step <= ReactorShutDownTime );
@@ -447,7 +516,7 @@ void CLASS::BuildTimeVector(cSecond t)
 	}
 	map<cSecond ,int >::iterator it;
 	for( it = fTimeStep.begin(); it != fTimeStep.end(); it++)
-		TimeStepfile << (double)((*it).first/3600/24./365.25) << " " << (*it).second << endl;
+		TimeStepfile << (*it).first << " " << (*it).second << endl;
 
 }
 //________________________________________________________________________
@@ -594,7 +663,7 @@ void CLASS::OldBuildTimeVector(cSecond t)
 	}
 	map<cSecond ,int >::iterator it;
 	for( it = fTimeStep.begin(); it != fTimeStep.end(); it++)
-		TimeStepfile << (double)((*it).first/3600/24./365.25) << " " << (*it).second << endl;
+		TimeStepfile << (*it).first << " " << (*it).second << endl;
 
 }
 
@@ -853,36 +922,19 @@ void CLASS::OutAttach()
 	// Branch the separate object
 
 	for(int i = 0; i < (int)fStorage.size(); i++)
-	{
-		string Storage_name = "Storage";
-		Storage_name += dtoa(i);
-		Storage_name += ".";
-
-		fOutT->Branch(Storage_name.c_str(), "Storage", &fStorage[i]);
-	}
+		fOutT->Branch(fStorage[i]->GetName(), "Storage", &fStorage[i]);
 
 	for(int i = 0; i < (int)fPool.size(); i++)
-	{
-		string TF_name = "Pool";
-		TF_name += dtoa(i);
-		TF_name += ".";
-		fOutT->Branch(TF_name.c_str(), "Pool", &fPool[i]);
-	}
+
+		fOutT->Branch(fPool[i]->GetName(), "Pool", &fPool[i]);
 
 	for(int i = 0; i < (int)fReactor.size(); i++)
-	{
-		string R_name = "Reactor";
-		R_name += dtoa(i);
-		R_name += ".";
-		fOutT->Branch(R_name.c_str(), "Reactor", &fReactor[i]);
-	}
+
+		fOutT->Branch(fReactor[i]->GetName(), "Reactor", &fReactor[i]);
+
 	for(int i = 0; i < (int)fFabricationPlant.size(); i++)
-	{
-		string FP_name = "FabricationPlant";
-		FP_name += dtoa(i);
-		FP_name += ".";
-		fOutT->Branch(FP_name.c_str(), "FabricationPlant", &fFabricationPlant[i]);
-	}
+		fOutT->Branch(fFabricationPlant[i]->GetName(), "FabricationPlant", &fFabricationPlant[i]);
+
 
 }
 

@@ -99,7 +99,7 @@ public :
 	void	SetUpdateReferenceDBatEachStep(bool val){ fUpdateReferenceDBatEachStep = val;}	//!< Set fUpdateReferenceDBatEachStep variable
 	void	SetStorage(Storage* storage)		{ fStorage = storage; }			//!< Set the Pointer to the Storage
 	
-	void	SetChronologicalTimePriority(bool bval)	{ fChronologicalTimePriority = bval;}	//!< Set the chronological priority (true for chronological, false unstead)
+	void	SetChronologicalTimePriority(bool bval = true)	{ fChronologicalTimePriority = bval;}	//!< Set the chronological priority (true for chronological, false unstead)
 	
 	void	SetSubstitutionFuel(EvolutionData fuel);				//!< To use a subtition fuel if the fabrication fail (not enough material in stock)
 	

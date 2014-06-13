@@ -51,8 +51,11 @@ class CLASSBackEnd : public CLASSFacility
 
 	DecayDataBank*	GetDecayDataBank()		{ return fDecayDataBase;}	//!< Return the pointer to the decay DataBank
 	vector<IsotopicVector> GetIVArray()	const	{ return fIVArray; }		//!< Return the IsotopicVector Array
+	int		GetIVNumber()		const	{ return fIVArray.size();}
 	bool		GetStorageType()	const	{ return fIsStorageType;}	//!< Return the storageType
 	CLASSBackEnd*	GetOutBackEndFacility()	const	{ return fOutBackEndFacility;}	//!<Return the pointer to the OUtBackEndFacility
+	IsotopicVector GetIV(int i)		const	{ if(i < (int)fIVArray.size()) return fIVArray[i];
+								else return IsotopicVector(); }
 	//@}
 
 	//********* Set Method *********//
