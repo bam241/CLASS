@@ -31,6 +31,8 @@ OBJS		= 	CLASS.o \
 			EvolutionData.o EvolutionDataDict.o \
 			IrradiationModel.o IM_RK4.o \
 			EquivalenceModel.o \
+			XSModel.o XSM_MLP_PWR_MOX.o \
+			PhysicModels.o \
 			LogFile.o
 
 ROOTOBJS	= 	CLASSObject.o CLASSObjectDict.o\
