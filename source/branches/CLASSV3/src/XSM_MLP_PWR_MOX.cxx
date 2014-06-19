@@ -25,9 +25,6 @@
 #include <algorithm>
 #include <cmath>
 
-
-
-
 //________________________________________________________________________
 //
 //		XSM_MLP_PWR_MOX
@@ -36,8 +33,10 @@
 //
 //
 //________________________________________________________________________
-XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(string TMVA_Weight_Directory,string InformationFile)
+XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(LogFile* Log,string TMVA_Weight_Directory,string InformationFile)
 {
+
+	SetLog(Log);
 
 	fTMVAWeightFolder = TMVA_Weight_Directory;
 	if(InformationFile=="")
@@ -48,6 +47,16 @@ XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(string TMVA_Weight_Directory,string Information
 	GetMLPWeightFiles();
 	SetDataBaseInformation();
 
+	if(IsLog())
+	{
+		// Warning
+		cout	<< "!!INFO!! !!!XSM_MLP_PWR_MOX!!! A EvolutionData has been define :" << endl;
+		cout	<< "\t His TMVA folder is : \"" << fTMVAWeightFolder << "\"" << endl;
+
+		
+		GetLog()->fLog 	<< "!!INFO!! !!!XSM_MLP_PWR_MOX!!! A EvolutionData has been define :" << endl;
+		GetLog()->fLog	<<"\t His TMVA folder is : \"" << fTMVAWeightFolder << "\"" << endl;
+	}
 }
 
 //________________________________________________________________________
