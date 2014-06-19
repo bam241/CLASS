@@ -32,13 +32,13 @@ using namespace std;
 //________________________________________________________________________
 IM_Matrix::IM_Matrix():DynamicalSystem()
 {
-
+	fShorstestHalflife = 3600.*24*160.; //cut by default all nuclei with a shorter liftime than the Cm242 -> remain 33 actinides
 }
 
 
 IM_Matrix::IM_Matrix(LogFile* log):IrradiationModel(log), DynamicalSystem()
 {
-
+	fShorstestHalflife = 3600.*24*160.; //cut by default all nuclei with a shorter liftime than the Cm242 -> remain 33 actinides
 }
 
 
