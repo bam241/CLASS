@@ -4,20 +4,20 @@
 #include "LogFile.hxx"
 #include "StringLine.hxx"
 
+#include "TMVA/Reader.h"
+#include "TMVA/Tools.h"
+#include "TMVA/MethodCuts.h"
+
 #include <TGraph.h>
 #include <TString.h>
-#include <dirent.h>
-#include <errno.h>
 #include "TFile.h"
 #include "TTree.h"
 #include "TSystem.h"
 #include "TROOT.h"
 #include "TStopwatch.h"
 
-#include "TMVA/Reader.h"
-#include "TMVA/Tools.h"
-#include "TMVA/MethodCuts.h"
-
+#include <dirent.h>
+#include <errno.h>
 #include <sstream>
 #include <string>
 #include <iostream>
@@ -36,7 +36,7 @@
 //
 //
 //________________________________________________________________________
-XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(string TMVA_Weight_Directory,string InformationFile)	
+XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(string TMVA_Weight_Directory,string InformationFile)
 {
 
 	fTMVAWeightFolder = TMVA_Weight_Directory;
@@ -56,10 +56,10 @@ void XSM_MLP_PWR_MOX::SetDataBaseInformation()
 	ifstream FILE(fMLPInformationFile.c_str());
 
 	if(FILE.good())
-	{	
+	{
 		double HM_Mass_tonne=0;
 		double Power_watt=0;
-		
+
 		FILE>>HM_Mass_tonne;
 		FILE>>Power_watt;
 
@@ -73,7 +73,7 @@ void XSM_MLP_PWR_MOX::SetDataBaseInformation()
 
 			if(TIME!=-1)
 				fMLP_Time.push_back(TIME);
-		}	
+		}
 	}
 	else
 	{
@@ -88,60 +88,61 @@ void XSM_MLP_PWR_MOX::GetMLPWeightFiles()
 
 	/**********Get All TMVA weight files*******************/
 
-		//check if the folder containing weights exists
-		DIR* rep = NULL;
-		struct dirent* fichierLu = NULL; 
-		rep = opendir(fTMVAWeightFolder.c_str()); 
-		if (rep == NULL) 
-		{   perror("");
-			exit(1);
-		}	
+	//check if the folder containing weights exists
+	DIR* rep = NULL;
+	struct dirent* fichierLu = NULL;
+	rep = opendir(fTMVAWeightFolder.c_str());
+	if (rep == NULL)
+	{
+		perror("");
+		exit(1);
+	}
 
-		/**Save file names of TMVA  weights*/
-		fWeightFiles.resize(0);
-    	 while ((fichierLu = readdir(rep)) != NULL)
-  		 {
-				string FileName= fichierLu->d_name ;
-				if(FileName != "." && FileName != ".." )
-				{
-					if(FileName[FileName.size()-3]=='x'  &&  FileName[FileName.size()-2]=='m' && FileName[FileName.size()-1]=='l' )
-						fWeightFiles.push_back(FileName);
+	/**Save file names of TMVA  weights*/
+	fWeightFiles.resize(0);
+	while ((fichierLu = readdir(rep)) != NULL)
+	{
+		string FileName= fichierLu->d_name ;
+		if(FileName != "." && FileName != ".." )
+		{
+			if(FileName[FileName.size()-3]=='x'  &&  FileName[FileName.size()-2]=='m' && FileName[FileName.size()-1]=='l' )
+				fWeightFiles.push_back(FileName);
 
-				}
-  		}	 	
+		}
+	}
 
 
 
 }
 //________________________________________________________________________
-void ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction) 
+void ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction)
 {
-    Z=-1;
-    A=-1;
-    I=-1;
-    Reaction=-1;
+	Z=-1;
+	A=-1;
+	I=-1;
+	Reaction=-1;
 
-    size_t found = Filename.find("XS");
+	size_t found = Filename.find("XS");
 
-    string NameJOB;
-    NameJOB=Filename.substr(found);
-    int pos=0;
+	string NameJOB;
+	NameJOB=Filename.substr(found);
+	int pos=0;
 
-    StringLine::NextWord(NameJOB, pos, '_');
+	StringLine::NextWord(NameJOB, pos, '_');
 
-    Z = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
+	Z = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
 
-    A = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
+	A = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
 
-    I = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
+	I = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
 
    	string  sReaction = (StringLine::NextWord(NameJOB,pos,'_') ).c_str() ;
-    if(sReaction=="fis")
-    	Reaction=0;
-    if(sReaction=="cap")
-    	Reaction=1;
-    if(sReaction=="n2n")
-    	Reaction=2;
+	if(sReaction=="fis")
+		Reaction=0;
+	if(sReaction=="cap")
+		Reaction=1;
+	if(sReaction=="n2n")
+		Reaction=2;
 
 }
 //________________________________________________________________________
@@ -151,17 +152,17 @@ void XSM_MLP_PWR_MOX::CreateTMVAInputTree(IsotopicVector isotopicvector,int Time
 
 	TFile*   InputFile = new TFile("./InputTMP.root","RECREATE");
 	TTree*   InputTree = new TTree("InTMP", "InTMP");
-	float teneur 			 = 0;
-	float Pu8 				 = 0;
-	float Pu9 				 = 0;
-	float Pu10 			     = 0;
-	float Pu11				 = 0;
-	float Pu12 	    	     = 0;
-	float Am1 	    	     = 0;
+	float teneur = 0;
+	float Pu8    = 0;
+	float Pu9    = 0;
+	float Pu10   = 0;
+	float Pu11   = 0;
+	float Pu12   = 0;
+	float Am1    = 0;
 	float U5_enrichment 	 = 0;
-	float Time 				 = 0;
+	float Time   = 0;
 
-	InputTree->Branch(	"teneur",&teneur,"teneur/F"	);	
+	InputTree->Branch(	"teneur",&teneur,"teneur/F"	);
 	InputTree->Branch(	"Pu8"	,&Pu8	,"Pu8/F"	);
 	InputTree->Branch(	"Pu9"	,&Pu9	,"Pu9/F"	);
 	InputTree->Branch(	"Pu10"	,&Pu10	,"Pu10/F"	);
@@ -199,7 +200,7 @@ void XSM_MLP_PWR_MOX::CreateTMVAInputTree(IsotopicVector isotopicvector,int Time
 
 	U5_enrichment = U5 / UTOT;
 
-	Time=fMLP_Time[TimeStep]; 
+	Time=fMLP_Time[TimeStep];
 
 	if(Pu8 + Pu9 + Pu10 + Pu11 + Pu12 + Am1 > 1.00001 )//?????1.00001??? I don't know it! goes in condition if =1 !! may be float/double issue ...
 	{
@@ -219,68 +220,68 @@ void XSM_MLP_PWR_MOX::CreateTMVAInputTree(IsotopicVector isotopicvector,int Time
 ///________________________________________________________________________
 double XSM_MLP_PWR_MOX::ExecuteTMVA(string WeightFile)
 {
-   // --- Create the Reader object
+	// --- Create the Reader object
 
-   TMVA::Reader *reader = new TMVA::Reader( "Silent" );    
+	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
 
-   // Create a set of variables and declare them to the reader
-   // - the variable names MUST corresponds in name and type to those given in the weight file(s) used
-   Float_t Pu8,Pu9,Pu10,Pu11,Pu12,Am1,Time,teneur;	
-   reader->AddVariable("teneur",&teneur);	
-   reader->AddVariable( "Pu8"  ,&Pu8 );
-   reader->AddVariable( "Pu9"  ,&Pu9 );
-   reader->AddVariable( "Pu10" ,&Pu10);  
-   reader->AddVariable( "Pu11" ,&Pu11);  
-   reader->AddVariable( "Pu12" ,&Pu12);  
-   reader->AddVariable( "Am1"  ,&Am1 );  
-   reader->AddVariable( "Time" ,&Time);  
+	// Create a set of variables and declare them to the reader
+	// - the variable names MUST corresponds in name and type to those given in the weight file(s) used
+	Float_t Pu8,Pu9,Pu10,Pu11,Pu12,Am1,Time,teneur;
+	reader->AddVariable("teneur",&teneur);
+	reader->AddVariable( "Pu8"  ,&Pu8 );
+	reader->AddVariable( "Pu9"  ,&Pu9 );
+	reader->AddVariable( "Pu10" ,&Pu10);
+	reader->AddVariable( "Pu11" ,&Pu11);
+	reader->AddVariable( "Pu12" ,&Pu12);
+	reader->AddVariable( "Am1"  ,&Am1 );
+	reader->AddVariable( "Time" ,&Time);
 
-   // --- Book the MVA methods
+	// --- Book the MVA methods
 
-   string dir    = fTMVAWeightFolder;
-   if(dir[dir.size()-1]!='/')
+	string dir    = fTMVAWeightFolder;
+	if(dir[dir.size()-1]!='/')
    		dir+="/";
 
-   // Book method MLP
-   TString methodName = "MLP method";
-   TString weightpath = dir + WeightFile ;
-   reader->BookMVA( methodName, weightpath ); 
-   
-   // Prepare input tree 
-   TFile *input(0);
-   if (!gSystem->AccessPathName( "./InputTMP.root" )) {
-      input = TFile::Open( "./InputTMP.root" ); // check if file in local directory exists
-   } 
-   if (!input) {
-      std::cout << "ERROR: could not open data file" << std::endl;
-      exit(1);
-   }
+	// Book method MLP
+	TString methodName = "MLP method";
+	TString weightpath = dir + WeightFile ;
+	reader->BookMVA( methodName, weightpath );
 
-   TTree* theTree = (TTree*)input->Get("InTMP");
+	// Prepare input tree
+	TFile *input(0);
+	if (!gSystem->AccessPathName( "./InputTMP.root" )) {
+		input = TFile::Open( "./InputTMP.root" ); // check if file in local directory exists
+	}
+	if (!input) {
+		std::cout << "ERROR: could not open data file" << std::endl;
+		exit(1);
+	}
 
-   theTree->SetBranchAddress("teneur",&teneur);	
-   theTree->SetBranchAddress( "Pu8"  ,&Pu8   );
-   theTree->SetBranchAddress( "Pu9"  ,&Pu9   );
-   theTree->SetBranchAddress( "Pu10" ,&Pu10  );
-   theTree->SetBranchAddress( "Pu11" ,&Pu11  );
-   theTree->SetBranchAddress( "Pu12" ,&Pu12  );
-   theTree->SetBranchAddress( "Am1"  ,&Am1   ); 
-   theTree->SetBranchAddress( "Time" ,&Time  ); 
+	TTree* theTree = (TTree*)input->Get("InTMP");
 
-    theTree->GetEntry(0);
-    Float_t val = (reader->EvaluateRegression( methodName ))[0];
-   
-   delete reader;
-   delete theTree;
-   input->Close();
-   delete input;
-//cout<<"....done"<<endl;
+	theTree->SetBranchAddress("teneur",&teneur);
+	theTree->SetBranchAddress( "Pu8"  ,&Pu8   );
+	theTree->SetBranchAddress( "Pu9"  ,&Pu9   );
+	theTree->SetBranchAddress( "Pu10" ,&Pu10  );
+	theTree->SetBranchAddress( "Pu11" ,&Pu11  );
+	theTree->SetBranchAddress( "Pu12" ,&Pu12  );
+	theTree->SetBranchAddress( "Am1"  ,&Am1   );
+	theTree->SetBranchAddress( "Time" ,&Time  );
 
-//cout<<val<<endl;
-   return (double)val;
+	theTree->GetEntry(0);
+	Float_t val = (reader->EvaluateRegression( methodName ))[0];
+
+	delete reader;
+	delete theTree;
+	input->Close();
+	delete input;
+	//cout<<"....done"<<endl;
+
+	//cout<<val<<endl;
+	return (double)val;
 }
 //________________________________________________________________________
-EvolutionData XSM_MLP_PWR_MOX::GetCrossSections(IsotopicVector IV) 
+EvolutionData XSM_MLP_PWR_MOX::GetCrossSections(IsotopicVector IV)
 {
 
 	//cout<<"=====Building Evolution Data From TMVA MLP====="<<endl;
@@ -288,62 +289,62 @@ EvolutionData XSM_MLP_PWR_MOX::GetCrossSections(IsotopicVector IV)
 	EvolutionData EvolutionDataFromMLP = EvolutionData();
 
 	map<ZAI,TGraph*> ExtrapolatedXS[3];
-/*************DATA BASE INFO****************/
+	/*************DATA BASE INFO****************/
 	EvolutionDataFromMLP.SetReactorType("PWR");
 	EvolutionDataFromMLP.SetFuelType("MOX");
 	EvolutionDataFromMLP.SetPower(fDataBasePower);
 	EvolutionDataFromMLP.SetHeavyMetalMass(fDataBaseHMMass);
-/************* The Cross sections***********/
-    for(int i=0;i<int(fWeightFiles.size());i++)
-    {
-    	int Z=-2;
-    	int A=-2;
-    	int I=-2;
-    	int Reaction=-2;
-        ReadWeightFile( fWeightFiles[i], Z, A, I, Reaction);
+	/************* The Cross sections***********/
+	for(int i=0;i<int(fWeightFiles.size());i++)
+	{
+		int Z=-2;
+		int A=-2;
+		int I=-2;
+		int Reaction=-2;
+		ReadWeightFile( fWeightFiles[i], Z, A, I, Reaction);
 
-        ZAI zaitmp = ZAI(Z,A,I);
+		ZAI zaitmp = ZAI(Z,A,I);
 
-        for(int TimeStep=0;TimeStep<int(fMLP_Time.size());TimeStep++)
-        { 	
-     		std::ifstream ifs ("InputTMP.root");
-	 		if (ifs.is_open()) 
+		for(int TimeStep=0;TimeStep<int(fMLP_Time.size());TimeStep++)
+		{
+			std::ifstream ifs ("InputTMP.root");
+	 		if (ifs.is_open())
 	 		{  ifs.close();
 	 			system( "rm InputTMP.root" );
-	 		}	
+	 		}
 			CreateTMVAInputTree(IV,TimeStep);
-     	
-     	   pair< map<ZAI, TGraph*>::iterator, bool> IResult;
-	
-     	   IResult = ExtrapolatedXS[Reaction].insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph() ) );
-    	
-	
+
+			pair< map<ZAI, TGraph*>::iterator, bool> IResult;
+
+			IResult = ExtrapolatedXS[Reaction].insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph() ) );
+
+
 			if(IResult.second )
 			{
-				 (IResult.first)->second->SetPoint(0, (double)GetMLPTime()[TimeStep], ExecuteTMVA(fWeightFiles[i]) );
+				(IResult.first)->second->SetPoint(0, (double)GetMLPTime()[TimeStep], ExecuteTMVA(fWeightFiles[i]) );
 			}
-     	   else
-     	   {
-     	       (IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)GetMLPTime()[TimeStep], ExecuteTMVA(fWeightFiles[i]) );
-     	   }
-	
+			else
+			{
+				(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)GetMLPTime()[TimeStep], ExecuteTMVA(fWeightFiles[i]) );
+			}
+
   			system( "rm InputTMP.root" );
-  		}	
+  		}
 
-    }
+	}
 
-/**********Sorting TGraph*********/
-   		for(int x=0;x<3;x++)
- 		{	map<ZAI,TGraph*>::iterator it;
-			for(it = ExtrapolatedXS[x].begin(); it != ExtrapolatedXS[x].end(); it++) 
-				it->second->Sort();
-		}
-/**********Filling Matrices*/		
+	/**********Sorting TGraph*********/
+	for(int x=0;x<3;x++)
+	{	map<ZAI,TGraph*>::iterator it;
+		for(it = ExtrapolatedXS[x].begin(); it != ExtrapolatedXS[x].end(); it++)
+			it->second->Sort();
+	}
+	/**********Filling Matrices*/
 	EvolutionDataFromMLP.SetFissionXS(ExtrapolatedXS[0]);
 	EvolutionDataFromMLP.SetCaptureXS(ExtrapolatedXS[1]);
 	EvolutionDataFromMLP.Setn2nXS(ExtrapolatedXS[2]);
 
-//cout<<"=====Evolution Data Built====="<<endl;
-return EvolutionDataFromMLP;
+	//cout<<"=====Evolution Data Built====="<<endl;
+	return EvolutionDataFromMLP;
 }
 //________________________________________________________________________

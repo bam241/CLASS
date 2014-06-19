@@ -50,13 +50,13 @@ public :
 
 
  private :
-    void SetDataBaseInformation(); //<! Read information file and fill HM mass, Power, time vector
-    vector<double> GetMLPTime() {return fMLP_Time; }
+	void SetDataBaseInformation(); //<! Read information file and fill HM mass, Power, time vector
+	vector<double> GetMLPTime() {return fMLP_Time; }
 
  	void GetMLPWeightFiles();
-    void ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction) ;
-    double ExecuteTMVA(string WeightFile);
-    void CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep);
+ 	void ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction) ;
+ 	double ExecuteTMVA(string WeightFile);
+ 	void CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep);
 
 
  	vector<double> 	fMLP_Time;
