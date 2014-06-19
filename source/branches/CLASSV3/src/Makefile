@@ -29,7 +29,9 @@ OBJS		= 	CLASS.o \
 			FuelDataBank.o DecayDataBank.o \
 			DynamicalSystem.o\
 			EvolutionData.o EvolutionDataDict.o \
-            LogFile.o
+			IrradiationModel.o\
+			EquivalenceModel.o\
+			LogFile.o
 
 ROOTOBJS	= 	CLASSObject.o CLASSObjectDict.o\
 			CLASSFacility.o CLASSFacilityDict.o\

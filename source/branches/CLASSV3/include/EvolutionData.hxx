@@ -115,6 +115,7 @@ public :
 	 \name Set Method
 	 */
 	//@{
+	void	SetHeavyMetalMass(double Mass)			{fHeavyMetalMass = Mass;}	//!< Set the HeavyMetal Mass 
 
 	void 	SetReactorType(string reactortype)	{ fReactorType = reactortype; }		///< Set the reactor Type (string)
 	void	SetFuelType(string fueltype)		{ fFuelType = fueltype; }		///< Set the fuel Type (string)
@@ -158,6 +159,7 @@ public :
 
 	IsotopicVector	GetIsotopicVectorAt(double t); 		///< Return the Product IsotopicVector at t time
 
+	double	GetHeavyMetalMass()	const	{ return fHeavyMetalMass; }	//!< Return the HeavyMetal Mass in the Core at the begining of the cycle
 
 
 	//{
@@ -222,6 +224,7 @@ protected :
 	string	fFuelType;			///< Type of fuel
 	double	fPower;				///< Power in W
 	double	fCycleTime;			///< Cycle time of the DataBase
+	double	fHeavyMetalMass;		///< Cycle time of the DataBase
 	double	fNormFactor;			///< Normalisation factor needed to represent to full core (unsless)
 
     
