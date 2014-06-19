@@ -52,8 +52,10 @@ double ReactionRateWeightedDistance(IsotopicVector IV1, EvolutionData DB )
 		for(int i = 1; i < 4 ; i++)
 			XS += DB.GetXSForAt(0., (*it).first, i);
 		
-		double Z1 = IV1.GetZAIIsotopicQuantity( (*it).first );
-		double Z2 = IV2.GetZAIIsotopicQuantity( (*it).first );
+		double Z1 = 0;
+		Z1 = IV1.GetZAIIsotopicQuantity( (*it).first );
+		double Z2 = 0;
+		Z2 = IV2.GetZAIIsotopicQuantity( (*it).first );
 		d2 += pow( (Z1-Z2)*XS , 2 );
 		XS_total += (Z1+Z2)*XS/2;
 	}

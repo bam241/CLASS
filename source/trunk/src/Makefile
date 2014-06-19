@@ -43,9 +43,7 @@ ROOTOBJS	= 	CLASSObject.o CLASSObjectDict.o\
 			ZAI.o ZAIDict.o \
 			FuelDataBank.o DecayDataBank.o \
 			DynamicalSystem.o\
-			EvolutionData.o EvolutionDataDict.o \
-			LogFile.o
-
+			EvolutionData.o EvolutionDataDict.o
 
 CXX           = g++
 CXXFLAGS      = -O2 -g -Wall -fopenmp -fPIC -I$(LOCALINC) $(ROOTCFLAGS)
