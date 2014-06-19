@@ -41,6 +41,10 @@ class CLASSFacility : public CLASSObject
 public :
 		///< Normal Constructor.
 	CLASSFacility();
+	CLASSFacility(LogFile* log);
+	CLASSFacility(LogFile* log, cSecond cycletime);
+	CLASSFacility(LogFile* log, cSecond creationtime, cSecond lifetime);
+	CLASSFacility(LogFile* log, cSecond startingtime, cSecond lifetime, cSecond cycletime);
 	
 		//********* Get Method *********//
 	/*!
@@ -96,7 +100,7 @@ public :
 
 	void AddCumulativeIVIn(IsotopicVector IV) { fCumulativeIVIn += IV;}		//!< Add the Input IsotopicVector the The cumulative IV IN
 	void AddCumulativeIVOut(IsotopicVector IV) { fCumulativeIVOut += IV;}		//!< Add the Input IsotopicVector the The cumulative IV OUT
-	virtual void Evolution(cSecond t)	{ }	//!< Performe the Evolution to the Time t
+	virtual void Evolution(cSecond t)	= 0;	//!< Performe the Evolution to the Time t
 	virtual void Dump()			{ }	//!< Write Modification (IV In/Out, filling the TF...)
 		
 	//@}

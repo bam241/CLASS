@@ -12,8 +12,20 @@
  */
 
 
-using namespace std;
+#include "CLASSObject.hxx"
+#include "TMatrix.h"
+#include "IsotopicVector.hxx"
+#include "EvolutionData.hxx"
 
+#include <map>
+#include <vector>
+
+
+using namespace std;
+typedef long long int cSecond;
+
+class ZAI;
+class LogFile;
 //-----------------------------------------------------------------------------//
 /*!
  Define a IrradiationModel.
@@ -27,10 +39,11 @@ using namespace std;
 
 class EvolutionData;
 
-class IrradiationModel : public TObject
+class IrradiationModel : public CLASSObject
 {
 	
 	public :
+	IrradiationModel();
 	
 	/// virtueal method called to perform the irradiation calculation using a set of cross section.
 	/*!
@@ -40,7 +53,7 @@ class IrradiationModel : public TObject
 	 \param double Power, constant power to use for irradation
 	 \param double irradiationtime, time of the irradiation
 	 */
-	virtual	 EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power);
+	virtual	 EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime) { return 0;}
 	//}
 
 	
@@ -51,7 +64,9 @@ class IrradiationModel : public TObject
 	 \name Get Method
 	 */
 	//@{
-	
+	string	GetDataFileName()	const { return fDataFileName; }
+	string	GetDataDirectoryName()  const { return fDataDirectoryName; }
+
 	double  GetShorstestHalflife()	const { return fShorstestHalflife; }
 	
 	//@}
@@ -66,12 +81,7 @@ class IrradiationModel : public TObject
 	 */
 	//@{
 	
-	void SetFuelDataBank(map< IsotopicVector ,EvolutionData > mymap)	{ fFuelDataBank = mymap; }	//!< Set the FuelDataBank map
-	
-	void SetDataBaseIndex(string database) { fDataBaseIndex = database;; ReadDataBase(); }	//!< Set the Name of the database index
-	
 
-	
 	//{
 	/// set Fission Energy using a file
 	/*!
@@ -142,7 +152,9 @@ class IrradiationModel : public TObject
 	
 	double  fShorstestHalflife;
 	int	 fZAIThreshold;	//!< Lowest Mass deal by the evolution (default 90)
-	
+	string			fDataFileName;		///< Name of the decay list
+	string			fDataDirectoryName;	///< Path to the decay list file
+
 	
 	TMatrixT<double>		fDecayMatrix;	///< Matrix with half life of each nuclei
 	map<ZAI, double >		fFissionEnergy;	///< Store the Energy per fission use for the flux normalisation.
@@ -151,8 +163,6 @@ class IrradiationModel : public TObject
 	map<ZAI, IsotopicVector>	fReactionYield;		///< Store the reaction fission yield
 	
 
-	int	fNVar;		 //!< The size of the composition vector and /or number of ZAIs involved.
-	
 	
 	map<ZAI, int> findex_inver;	///< correspondance matrix from ZAI to the column (or line) of the different Reaction/Decay matrix
 	map<int, ZAI> findex;		///< correspondance matrix from the column (or line) of the different Reaction/Decay matrix to the ZAI

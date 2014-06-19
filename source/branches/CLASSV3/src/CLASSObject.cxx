@@ -21,3 +21,7 @@ CLASSObject::CLASSObject()
 	fIsLog = false;
 }
 
+CLASSObject::CLASSObject(LogFile* log)
+{
+	SetLog(log);
+}

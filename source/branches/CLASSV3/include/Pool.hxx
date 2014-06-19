@@ -46,17 +46,6 @@ public :
 	
 	Pool();				///< Normal Constructor.
 
-
-	//{
-	/// LogFile Constructor.
-	/*!
-	 Use create an empty Pool loading a LogFile
-	 \param LogFile LogFile used for the log...
-	 */
- 	Pool(LogFile* log);
-	//}
-
-
 	//{
 	/// Special Constructor.
 	/*!
@@ -65,8 +54,7 @@ public :
 	 \param abstime time to start the Pool
 	 \param coolingtime duration of the cooling.
 	 */
-	Pool(LogFile* Log, double abstime,
-			 double coolingtime = 5*3600.*24.*365.25); //!<
+	Pool(LogFile* Log, cSecond coolingtime = 5*3600.*24.*365.25); //!<
 	//}
 
 
@@ -80,8 +68,7 @@ public :
 	 \param coolingtime duration of the cooling.
 	 */
 	Pool(LogFile* log, CLASSBackEnd* Storage,
-			 double abstime = 0,
-			 double coolingtime = 5*3600.*24.*365.25); //!<
+			 cSecond coolingtime = 5*3600.*24.*365.25); //!<
 	//}
 
 

@@ -10,9 +10,14 @@
  @author BaM
  @version 2.0
  */
+#include "DynamicalSystem.hxx"
+#include "IrradiationModel.hxx"
 
 
 using namespace std;
+
+
+class LogFile;
 
 //-----------------------------------------------------------------------------//
 /*!
@@ -27,18 +32,23 @@ using namespace std;
 
 class EvolutionData;
 
-class IM_RK4 : public TObject, DynamicalSystem
+class IM_RK4 : public DynamicalSystem, IrradiationModel
 {
 	
 	public :
-	
+
+	IM_RK4();
+	IM_RK4(LogFile* Log);
+
+
+
 	/// virtueal method called to perform the irradiation calculation using a set of cross section.
 	/*!
 	 Perform the Irradiation Calcultion using the XSSet data
 	 \param IsotopicVector IV isotopic vector to irradiate
 	 \param EvolutionData XSSet set of corss section to use to perform the evolution calculation
 	 */
-	EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power);
+	EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime);
 	//}
 	
 	//********* RK4 Method *********//
@@ -49,9 +59,7 @@ class IM_RK4 : public TObject, DynamicalSystem
 	 */
 	//@{
 	
-	void	UseRK4EvolutionMethod(bool usemethod = true)	{fUseRK4EvolutionMethod = usemethod;}
-	
-	
+
 	using	DynamicalSystem::RungeKutta;
 	//!	Pre-treatment Runge-Kutta method.
 	/*!

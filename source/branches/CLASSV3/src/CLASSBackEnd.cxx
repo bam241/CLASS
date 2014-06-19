@@ -26,6 +26,17 @@ CLASSBackEnd::CLASSBackEnd():CLASSFacility()
 	fDecayDataBase = 0;
 }
 
+CLASSBackEnd::CLASSBackEnd(LogFile* log):CLASSFacility(log)
+{
+	fDecayDataBase = 0;
+}
+
+
+CLASSBackEnd::CLASSBackEnd(LogFile* log, cSecond cycletime):CLASSFacility(log, cycletime)
+{
+	fDecayDataBase = 0;
+}
+
 //________________________________________________________________________
 void CLASSBackEnd::ClearIVArray()
 {

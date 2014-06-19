@@ -26,22 +26,15 @@
 
 
 
+using namespace std;
 
 
 //________________________________________________________________________
-IM_RK4::IM_RK4(): CLASSObject(), DynamicalSystem()
+IM_RK4::IM_RK4():DynamicalSystem()
 {
 	fTheNucleiVector = 0;
 	fTheMatrix = 0;
 
-	fWeightedDistance = false;
-	fEvolutionDataInterpolation = false;
-
-
-
-	fOldReadMethod = true;
-	fUseRK4EvolutionMethod = true;
-	fDistanceType = 0;
 	fShorstestHalflife = 3600.*24*2.;
 	fZAIThreshold = 90;
 
@@ -58,8 +51,6 @@ IM_RK4::IM_RK4(): CLASSObject(), DynamicalSystem()
 IM_RK4::IM_RK4(LogFile* Log):DynamicalSystem()
 {
 	SetLog(Log);
-	fWeightedDistance = false;
-	fEvolutionDataInterpolation = false;
 
 
 	fTheNucleiVector = 0;
@@ -89,7 +80,7 @@ IM_RK4::IM_RK4(LogFile* Log):DynamicalSystem()
 //________________________________________________________________________
 /*			Evolution Calculation			*/
 //________________________________________________________________________
-EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, EvolutionData XSSet, double Power);
+EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, EvolutionData XSSet, double Power, double cycletime)
 {
 
 	if(fFastDecay.size() == 0)
@@ -163,7 +154,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 
 	}
 
-	int NStep = = XSSet.GetFissionXS().begin()->second->GetN();
+	int NStep = XSSet.GetFissionXS().begin()->second->GetN();
 	double* DBTimeStep = XSSet.GetFissionXS().begin()->second->GetX();
 
 	int InsideStep = 10;
@@ -221,37 +212,34 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 		BatemanReactionMatrix += CaptureXSMatrix[i];
 		BatemanReactionMatrix += n2nXSMatrix[i];
 
-		if(fUseRK4EvolutionMethod)
+		for(int k=0; k < InsideStep; k++)
 		{
-			for(int k=0; k < InsideStep; k++)
-			{
-				double ESigmaN = 0;
-				for (int j = 0; j < (int)findex.size() ; j++)
-					ESigmaN -= FissionXSMatrix[i][j][j]*NEvolutionMatrix[j][0]*1.6e-19*FissionEnergy[j][0];
-				// Update Flux
-				double Flux_k = Power/ESigmaN;
+			double ESigmaN = 0;
+			for (int j = 0; j < (int)findex.size() ; j++)
+				ESigmaN -= FissionXSMatrix[i][j][j]*NEvolutionMatrix[j][0]*1.6e-19*FissionEnergy[j][0];
+			// Update Flux
+			double Flux_k = Power/ESigmaN;
 
-				if(k==0)
-					Flux[i]=Flux_k;
+			if(k==0)
+				Flux[i]=Flux_k;
 
-				BatemanMatrix = BatemanReactionMatrix;
-				BatemanMatrix *= Flux_k;
-				BatemanMatrix += fDecayMatrix ;
+			BatemanMatrix = BatemanReactionMatrix;
+			BatemanMatrix *= Flux_k;
+			BatemanMatrix += fDecayMatrix ;
 
-				SetTheMatrixToZero();
-				SetTheNucleiVectorToZero();
+			SetTheMatrixToZero();
+			SetTheNucleiVectorToZero();
 
-				SetTheMatrix(BatemanMatrix);
-				SetTheNucleiVector(NEvolutionMatrix);
+			SetTheMatrix(BatemanMatrix);
+			SetTheNucleiVector(NEvolutionMatrix);
 
 
-				RungeKutta(fTheNucleiVector, timevector[i]+TStepMax/InsideStep*k, timevector[i]+TStepMax/InsideStep*(k+1),  fNVar);
-				NEvolutionMatrix = GetTheNucleiVector();
-
-			}
+			RungeKutta(fTheNucleiVector, timevector[i]+TStepMax/InsideStep*k, timevector[i]+TStepMax/InsideStep*(k+1),  fNVar);
 			NEvolutionMatrix = GetTheNucleiVector();
-			NMatrix.push_back(NEvolutionMatrix);
+
 		}
+		NEvolutionMatrix = GetTheNucleiVector();
+		NMatrix.push_back(NEvolutionMatrix);
 
 		timevector[i+1] = timevector[i] + TStepMax;
 
@@ -299,7 +287,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	}
 
 	GeneratedDB.SetPower(Power );
-	GeneratedDB.SetFuelType(fFuelType );
+//	GeneratedDB.SetFuelType(fFuelType );
 	GeneratedDB.SetReactorType(ReactorType );
 	GeneratedDB.SetCycleTime(cycletime);
 
@@ -315,9 +303,9 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	FissionXSMatrix.clear();
 	CaptureXSMatrix.clear();
 	n2nXSMatrix.clear();
-	
+
 	return GeneratedDB;
-	
+
 }
 
 
@@ -420,7 +408,7 @@ TMatrixT<double> IM_RK4::GetTheNucleiVector()
 	TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(findex.size(),1);
 	for (int k = 0; k < (int)fNVar; k++)
 		NEvolutionMatrix[k][0] = fTheNucleiVector[k];
-
+	
 	return NEvolutionMatrix;
 }
 

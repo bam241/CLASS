@@ -1,5 +1,7 @@
 #include "EvolutionData.hxx"
 
+#include "CLASSHeaders.hxx"
+
 #include "LogFile.hxx"
 #include "StringLine.hxx"
 
@@ -660,6 +662,7 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 		
 	}while ( !DecayDB.eof() );
 
+	double Na = 6.02214129e23;	//N Avogadro
 	double M = 0;
 	{
 		map<ZAI, double >::iterator it ;
@@ -670,7 +673,7 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 
 		for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 		{
-			M += isotopicvector.GetActinidesComposition().GetZAIIsotopicQuantity( (*it).first )*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
+			M += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
 		}
 		isotopicquantity.clear();
 

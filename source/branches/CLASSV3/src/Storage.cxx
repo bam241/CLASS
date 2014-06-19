@@ -29,26 +29,24 @@ Storage::Storage():CLASSBackEnd()
 
 }
 
-Storage::Storage(LogFile* log)
+Storage::Storage(LogFile* log):CLASSBackEnd(log)
 {
 	SetFacilityType(-1);
 	SetIsStorageType();
 
 	SetName("S_Storage.");
 
-	SetLog(log);
 	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 	
 	GetLog()->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
 	
 }
 //________________________________________________________________________
-Storage::Storage(LogFile* log, DecayDataBank* evolutivedb)
+Storage::Storage(LogFile* log, DecayDataBank* evolutivedb):CLASSBackEnd(log)
 {
 	SetFacilityType(-1);
 	SetIsStorageType();
 
-	SetLog(log);
 	SetDecayDataBank(evolutivedb);
 	
 	SetName("S_Storage.");
