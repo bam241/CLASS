@@ -198,8 +198,7 @@ class FuelDataBank : public CLASSObject, DynamicalSystem
 	 */
 	//@{
 	
-	
-	IsotopicVector	Evolution(IsotopicVector IV, double dt);	///< Return the Product IsotopicVector evolution from zai during a dt time
+
 	void	CalculateDistanceParameter();		///< Calcul of the weight for each ZAI in the distance calculation from the mean XS of the FuelDataBank
 	void	BuildDecayMatrix();			///w Build the Decay Matrix for the futur evolution...
 	

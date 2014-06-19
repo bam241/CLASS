@@ -660,6 +660,23 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 		
 	}while ( !DecayDB.eof() );
 
+	double M = 0;
+	{
+		map<ZAI, double >::iterator it ;
+
+
+		IsotopicVector IVtmp = GetIsotopicVectorAt(0.).GetActinidesComposition();
+		map<ZAI, double >isotopicquantity = IVtmp.GetIsotopicQuantity();
+
+		for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
+		{
+			M += isotopicvector.GetActinidesComposition().GetZAIIsotopicQuantity( (*it).first )*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
+		}
+		isotopicquantity.clear();
+
+	}
+	fHeavyMetalMass = M;
+
 	DecayDB.close();
 
 		
