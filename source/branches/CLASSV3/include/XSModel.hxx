@@ -43,7 +43,7 @@ class XSModel : public CLASSObject
 	XSModel();
 	~XSModel();
 
-	virtual  EvolutionData GetCrossSections(IsotopicVector IV) {return 0;} 
+	virtual  EvolutionData GetCrossSections(IsotopicVector IV,double t=0) {return 0;} 
 
 
 
