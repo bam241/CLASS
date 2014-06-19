@@ -43,8 +43,11 @@ class IrradiationModel : public CLASSObject
 {
 	
 	public :
-	IrradiationModel();
 	
+	IrradiationModel();
+
+	IrradiationModel(LogFile* log);
+
 	/// virtueal method called to perform the irradiation calculation using a set of cross section.
 	/*!
 	 Perform the Irradiation Calcultion using the XSSet data
