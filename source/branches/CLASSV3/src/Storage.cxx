@@ -112,7 +112,7 @@ void Storage::TakeFractionFromStock(int IVId,double fraction)
 void Storage::TakeFromStock(IsotopicVector isotopicvector)
 {
 
-	if(GetParc()->GetStockManagement() == false)
+	if(!GetParc()->GetStockManagement())
 	{
 
 		AddCumulativeIVOut(isotopicvector);
