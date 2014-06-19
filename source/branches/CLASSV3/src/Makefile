@@ -31,7 +31,7 @@ OBJS		= 	CLASS.o \
 			EvolutionData.o EvolutionDataDict.o \
 			IrradiationModel.o IM_RK4.o \
 			EquivalenceModel.o \
-			XSModel.o XSM_MLP_PWR_MOX.o \
+			XSModel.o XSM_MLP_PWR_MOX.o XSM_CLOSEST.o \
 			PhysicModels.o \
 			LogFile.o
 

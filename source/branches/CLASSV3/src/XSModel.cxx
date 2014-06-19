@@ -3,7 +3,7 @@
 //  CLASSSource
 //
 //  Created by BaM on 04/05/2014.
-//  Copyright (c) 2014 BaM. All rights reserved.
+//  Copyright (c) 2014 BLG. All rights reserved.
 //
 
 #include "XSModel.hxx"
