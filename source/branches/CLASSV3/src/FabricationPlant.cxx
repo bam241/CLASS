@@ -43,7 +43,7 @@ ClassImp(FabricationPlant)
 
 
 
-FabricationPlant::FabricationPlant()
+FabricationPlant::FabricationPlant():CLASSFacility()
 {
 	SetFacilityType(16);
 	SetName("F_FabricationPLant.");
@@ -52,14 +52,12 @@ FabricationPlant::FabricationPlant()
 	fReUsable = 0;
 }
 
-FabricationPlant::FabricationPlant(LogFile* log)
+FabricationPlant::FabricationPlant(LogFile* log):CLASSFacility(log)
 {
 	SetFacilityType(16);
 	SetName("F_FabricationPLant.");
 
-	SetLog(log);
 	fChronologicalTimePriority = false;
-	SetCycleTime(-1);
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
 	fStorage = 0;
@@ -76,19 +74,15 @@ FabricationPlant::FabricationPlant(LogFile* log)
 
 }
 
-FabricationPlant::FabricationPlant(LogFile* log, Storage* storage, Storage* reusable, double fabircationtime)
+FabricationPlant::FabricationPlant(LogFile* log, Storage* storage, Storage* reusable, double fabricationtime):CLASSFacility(log, fabricationtime)
 {
 	SetFacilityType(16);
 	SetName("F_FabricationPLant.");
 
-	SetLog(log);
-	
 	fChronologicalTimePriority = false;
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
 
-
-	SetCycleTime((cSecond)fabircationtime );
 	fStorage = storage;
 	fReUsable = reusable;
 	

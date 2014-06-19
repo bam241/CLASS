@@ -32,7 +32,18 @@
 
 
 
+using namespace std;
 
+IrradiationModel::IrradiationModel(): CLASSObject()
+{
+	fShorstestHalflife = 3600.*24*2.;
+	fZAIThreshold = 90;
+
+
+	fDataDirectoryName = getenv("CLASS_PATH");
+	fDataDirectoryName += "/source/data/";
+	fDataFileName = "chart.JEF3T";
+}
 
 
 
@@ -510,3 +521,324 @@ void IrradiationModel::LoadFPYield(string SponfaneusYield, string ReactionYield)
 	fReactionYield = ReadFPYield(ReactionYield);
 	fZAIThreshold = 0;
 }
+
+
+
+
+
+//________________________________________________________________________
+/*				Reaction Stuff			*/
+//________________________________________________________________________
+TMatrixT<double> IrradiationModel::GetFissionXsMatrix(EvolutionData EvolutionDataStep,double TStep)
+{
+
+	map<ZAI ,TGraph* >::iterator it;
+	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
+	for(int i = 0; i < (int)findex.size(); i++)
+		for(int j = 0; j < (int)findex.size(); j++)
+			BatemanMatrix[i][j] = 0;
+
+	// ----------------  A(n,.) X+Y
+
+	map<ZAI ,TGraph* > FissionXS = EvolutionDataStep.GetFissionXS();
+
+	for(it = FissionXS.begin() ; it != FissionXS.end(); it++)
+	{
+		map<ZAI, int>::iterator findex_inver_it = findex_inver.find( (*it).first );
+		if( findex_inver_it != findex_inver.end() )
+		{
+			double y = (*it).second->Eval(TStep);
+			BatemanMatrix[ findex_inver_it->second ][ findex_inver_it->second ] += -y* 1e-24;
+
+			if(fSpontaneusYield.size() == 0 || fReactionYield.size() == 0)
+				BatemanMatrix[1][ findex_inver_it->second ] += 2*y* 1e-24;
+			else
+			{
+				map<ZAI, IsotopicVector>::iterator it_yield = fReactionYield.find( (*it).first );
+
+				if( it_yield != fReactionYield.end())
+				{
+					map<ZAI ,double>::iterator it_IVQ;
+					map<ZAI ,double> IVQ = (*it_yield).second.GetIsotopicQuantity();
+
+					for( it_IVQ = IVQ.begin(); it_IVQ != IVQ.end(); it_IVQ++ )
+					{
+						map<ZAI, int>::iterator findex_it_PF = findex_inver.find( (*it_IVQ).first );
+
+						if(findex_it_PF != findex_inver.end() )
+							BatemanMatrix[(*findex_it_PF).second][ (*findex_inver_it).second ] += (*it_IVQ).second*y* 1e-24;
+						else
+						{
+							map<ZAI, map<ZAI, double> >::iterator it_FD = fFastDecay.find( (*it_IVQ).first);
+
+							if( it_FD == fFastDecay.end() )
+							{
+								BatemanMatrix[1][ (*findex_inver_it).second ] += (*it_IVQ).second * y * 1e-24  ;
+							}
+							else
+							{
+
+								map< ZAI, double >::iterator it5;
+								map< ZAI, double > decaylist2 = (*it_FD).second;
+								for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
+								{
+									findex_it_PF = findex_inver.find( (*it5).first );
+									if( findex_it_PF == findex_inver.end() )
+										BatemanMatrix[0][findex_inver_it->second] +=
+										(*it_IVQ).second * y * 1e-24 * (*it5).second;
+									else
+										BatemanMatrix[(*findex_it_PF).second][findex_inver_it->second]+=
+										(*it_IVQ).second * y * 1e-24 * (*it5).second;
+								}
+							}
+
+						}
+
+					}
+				}
+				else
+					BatemanMatrix[1][ findex_inver_it->second ] += 2*y* 1e-24;
+
+			}
+		}
+
+	}
+
+	return BatemanMatrix;
+
+}
+
+//________________________________________________________________________
+TMatrixT<double> IrradiationModel::GetCaptureXsMatrix(EvolutionData EvolutionDataStep,double TStep)
+{
+
+
+	map<ZAI ,TGraph* >::iterator it;
+	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
+	for(int i = 0; i < (int)findex.size(); i++)
+		for(int j = 0; j < (int)findex.size(); j++)
+			BatemanMatrix[i][j] = 0;
+
+	map<ZAI, map<ZAI, double> > Capture;
+	{	// 241Am
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(96,242,0) , 0.8733*0.827) ); //directly cut the Am242 as in MURE
+		toAdd.insert(pair<ZAI, double> ( ZAI(94,242,0) , 0.8733*0.173) ); //directly cut the Am242 as in MURE
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,242,1) , 0.1267) );
+		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,241,0), toAdd ) );
+	}
+	{	// 242Am*
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,243,0) , 1) );
+		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,242,1), toAdd ) );
+	}
+
+
+	// ----------------  A(n,.)A+1
+	map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetCaptureXS();
+	for(it = CaptureXS.begin(); it != CaptureXS.end(); it++)
+	{
+		map<ZAI, int>::iterator Index_it = findex_inver.find( (*it).first );
+		if( Index_it != findex_inver.end() )
+		{
+			double y;
+			y = (*it).second->Eval(TStep);
+
+			BatemanMatrix[Index_it->second][ Index_it->second ] += -y* 1e-24 ;
+
+			map<ZAI, map<ZAI, double> >::iterator it3 = Capture.find( (*it).first );
+
+			if( it3 == Capture.end() )
+			{
+				map<ZAI, int >::iterator it6 = findex_inver.find( ZAI( (*it).first.Z(), (*it).first.A()+1, (*it).first.I()) );
+
+				if( it6 != findex_inver.end() )
+				{
+					BatemanMatrix[(*it6).second][Index_it->second] += y* 1e-24  ;
+				}
+				else
+				{
+					map<ZAI, map<ZAI, double> >::iterator it4 = fFastDecay.find(  ZAI( (*it).first.Z(), (*it).first.A()+1, (*it).first.I()) );
+
+					if( it4 == fFastDecay.end() )
+					{
+						BatemanMatrix[0][Index_it->second] += y* 1e-24  ;
+					}
+					else
+					{
+
+						map< ZAI, double >::iterator it5;
+						map< ZAI, double > decaylist2 = (*it4).second;
+						for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
+						{
+							it6 = findex_inver.find( (*it5).first );
+							if( it6 == findex_inver.end() )
+								BatemanMatrix[0][Index_it->second] += y* 1e-24 * (*it5).second;
+							else
+								BatemanMatrix[(*it6).second][Index_it->second] += y* 1e-24 * (*it5).second;
+						}
+					}
+				}
+			}
+			else
+			{
+				map<ZAI, double>::iterator it4;
+				map<ZAI, double> CaptureList = (*it3).second;
+				for(it4 = CaptureList.begin(); it4 != CaptureList.end() ; it4++)
+				{
+
+					map<ZAI, int >::iterator it6 = findex_inver.find( (*it4).first );
+					if( it6 != findex_inver.end() )
+						BatemanMatrix[(*it6).second][Index_it->second] += y* 1e-24 * (*it4).second ;
+					else
+					{
+						map<ZAI, map<ZAI, double> >::iterator it7 = fFastDecay.find( (*it4).first );
+
+						if( it7 == fFastDecay.end() )
+						{
+							cout << "CaptureList Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
+							exit(1);
+						}
+
+						map< ZAI, double >::iterator it5;
+						map< ZAI, double > decaylist2 = (*it7).second;
+						for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
+						{
+
+							it6 = findex_inver.find( (*it5).first );
+							if( it6 == findex_inver.end() )
+							{
+								cout << "CaptureList Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
+								exit(1);
+							}
+
+							BatemanMatrix[(*it6).second][Index_it->second] += y * 1e-24 * (*it5).second * (*it4).second;
+						}
+					}
+
+				}
+			}
+
+
+		}
+	}
+	return BatemanMatrix;
+
+}
+
+
+//________________________________________________________________________
+TMatrixT<double> IrradiationModel::Getn2nXsMatrix(EvolutionData EvolutionDataStep,double TStep)
+{
+
+
+	map<ZAI ,TGraph* >::iterator it;
+	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
+	for(int i = 0; i < (int)findex.size(); i++)
+		for(int j = 0; j < (int)findex.size(); j++)
+			BatemanMatrix[i][j] = 0;
+
+	map<ZAI, map<ZAI, double> > n2n;
+	{	// 237Np
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(93,236,0) , 0.2) );
+		toAdd.insert(pair<ZAI, double> ( ZAI(93,236,1) , 0.8) );
+		n2n.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,237,0), toAdd ) );
+	}
+	{	// 242Am*
+		map<ZAI, double> toAdd ;
+		toAdd.insert(pair<ZAI, double> ( ZAI(95,241,0) , 1) );
+		n2n.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,242,1), toAdd ) );
+	}
+
+	// ----------------  A(n,2n)A-1
+	map<ZAI ,TGraph* > n2nXS = EvolutionDataStep.Getn2nXS();
+	for(it = n2nXS.begin(); it != n2nXS.end(); it++)
+	{
+		map<ZAI, int>::iterator Index_it = findex_inver.find( (*it).first );
+		if( Index_it != findex_inver.end() )
+		{
+			double y;
+			y = (*it).second->Eval(TStep);
+
+			BatemanMatrix[Index_it->second][ Index_it->second ] += -y* 1e-24 ;
+
+			map<ZAI, map<ZAI, double> >::iterator it3 = n2n.find( (*it).first );
+
+			if( it3 == n2n.end() )
+			{
+				map<ZAI, int >::iterator it6 = findex_inver.find( ZAI( (*it).first.Z(), (*it).first.A()-1, (*it).first.I()) );
+
+				if( it6 != findex_inver.end() )
+				{
+					BatemanMatrix[(*it6).second][Index_it->second] += y* 1e-24  ;
+				}
+				else
+				{
+					map<ZAI, map<ZAI, double> >::iterator it4 = fFastDecay.find(  ZAI( (*it).first.Z(), (*it).first.A()-1, (*it).first.I()) );
+
+					if( it4 == fFastDecay.end() )
+					{
+						BatemanMatrix[0][Index_it->second] += y* 1e-24  ;
+					}
+					else
+					{
+
+						map< ZAI, double >::iterator it5;
+						map< ZAI, double > decaylist2 = (*it4).second;
+						for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
+						{
+							it6 = findex_inver.find( (*it5).first );
+							if( it6 == findex_inver.end() )
+								BatemanMatrix[0][Index_it->second] += y* 1e-24 * (*it5).second;
+							else
+								BatemanMatrix[(*it6).second][Index_it->second] += y* 1e-24 * (*it5).second;
+						}
+					}
+				}
+			}
+			else
+			{
+				map<ZAI, double>::iterator it4;
+				map<ZAI, double> n2nList = (*it3).second;
+				for(it4 = n2nList.begin(); it4 != n2nList.end() ; it4++)
+				{
+
+					map<ZAI, int >::iterator it6 = findex_inver.find( (*it4).first );
+					if( it6 != findex_inver.end() )
+						BatemanMatrix[(*it6).second][Index_it->second] += y* 1e-24 * (*it4).second ;
+					else
+					{
+						map<ZAI, map<ZAI, double> >::iterator it7 = fFastDecay.find( (*it4).first );
+
+						if( it7 == fFastDecay.end() )
+						{
+							cout << "n2nList Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
+							exit(1);
+						}
+
+						map< ZAI, double >::iterator it5;
+						map< ZAI, double > decaylist2 = (*it7).second;
+						for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
+						{
+
+							it6 = findex_inver.find( (*it5).first );
+							if( it6 == findex_inver.end() )
+							{
+								cout << "n2nList Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
+								exit(1);
+							}
+
+							BatemanMatrix[(*it6).second][Index_it->second] += y * 1e-24 * (*it5).second * (*it4).second;
+						}
+					}
+
+				}
+			}
+
+
+		}
+	}
+	return BatemanMatrix;
+}
+

@@ -39,6 +39,8 @@ class CLASSObject : public TNamed
 public :
 	///< Normal Constructor.
 	CLASSObject();
+	CLASSObject(LogFile* log);
+	
 	virtual CLASSObject* Clone()	{ return new CLASSObject(*this); } //!< Correct way to copy a CLASSObject in case of derivation
 
 

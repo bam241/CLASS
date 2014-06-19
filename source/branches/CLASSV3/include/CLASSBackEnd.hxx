@@ -42,6 +42,8 @@ class CLASSBackEnd : public CLASSFacility
 	public :
 	///< Normal Constructor.
 	CLASSBackEnd();
+	CLASSBackEnd(LogFile* log);
+	CLASSBackEnd(LogFile* log, cSecond cycletime);
 
 	//********* Get Method *********//
 	/*!
@@ -79,6 +81,7 @@ class CLASSBackEnd : public CLASSFacility
 	void		ClearIVArray();					//!< Empty the IVArray removing all fuel stored
 
 	//@}
+	virtual void Evolution(cSecond t)	{}	//!< Performe the Evolution to the Time t
 
 
 	protected :

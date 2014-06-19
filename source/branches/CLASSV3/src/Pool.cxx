@@ -29,44 +29,13 @@ Pool::Pool():CLASSBackEnd()
 	SetName("P_Pool.");
 }
 
-Pool::Pool(LogFile* log)
-{
-
-	SetFacilityType(8);
-
-	SetLog(log);
-	fCycleTime = 5*3600.*24.*365.25;
-	
-	fIsStarted = false;
-	fPutToWaste = true;
-	SetCreationTime( 0 );
-	fCoolingLastIndex = 0;
-
-	fOutBackEndFacility = 0;
-	SetName("P_Pool.");
-
-	
-	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
-	cout	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
-	cout	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
-	cout	<< "!!WARNING!! !!!Pool!!! All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
-	
-	GetLog()->fLog	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
-	GetLog()->fLog	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
-	GetLog()->fLog	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
-	GetLog()->fLog	<< "!!WARNING!! !!!Pool!!! All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
-	
-	
-}
 	//________________________________________________________________________
-Pool::Pool(LogFile* log, double creation, double coolingtime)
+Pool::Pool(LogFile* log, cSecond coolingtime):CLASSBackEnd(log, coolingtime)
 {
 
 	SetFacilityType(8);
 
-	SetLog(log);
 	fCycleTime = (cSecond)coolingtime;
-	SetCreationTime( (cSecond)creation );
 	fIsStarted = false;
 	fPutToWaste = true;
 	fCoolingLastIndex = 0;
@@ -89,17 +58,14 @@ Pool::Pool(LogFile* log, double creation, double coolingtime)
 }
 
 //________________________________________________________________________
-Pool::Pool(LogFile* log, CLASSBackEnd* storage, double creation, double coolingtime)
+Pool::Pool(LogFile* log, CLASSBackEnd* storage, cSecond coolingtime):CLASSBackEnd(log, coolingtime)
 {
 
 	SetFacilityType(8);
 
-	SetLog(log);
-	fCycleTime = (cSecond)coolingtime;
 	fOutBackEndFacility = storage;
 	SetIsStorageType(false);
 
-	SetCreationTime( (cSecond)creation );
 	fIsStarted = false;
 	fPutToWaste = false;
 	fCoolingLastIndex = 0;

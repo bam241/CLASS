@@ -27,7 +27,7 @@
 
 ClassImp(Reactor)
 
-Reactor::Reactor()
+Reactor::Reactor():CLASSFacility()
 {
 
 	SetFacilityType(4);
@@ -43,10 +43,9 @@ Reactor::Reactor()
 	fNextPlan = fLoadingPlan.begin();
 }
 
-Reactor::Reactor(LogFile* log)
+Reactor::Reactor(LogFile* log):CLASSFacility(log)
 {
 
-	SetLog(log);
 	fOutBackEndFacility = 0;
 	fStorage = 0;
 	fFuelTypeDB = 0;
@@ -60,9 +59,8 @@ Reactor::Reactor(LogFile* log)
 Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 CLASSBackEnd* Pool,
- 		 cSecond creationtime, cSecond lifetime)
+ 		 cSecond creationtime, cSecond lifetime):CLASSFacility(log, creationtime, lifetime)
 {
-	SetLog(log);
 
 	SetFacilityType(4);
 	SetName("R_Reactor.");
@@ -83,13 +81,6 @@ Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB,
 	fFuelTypeDB = fueltypeDB;
 
 	fPower = -1.;
-	fCycleTime = -1.;	 //BU in GWd/t
-
-	SetCreationTime( (cSecond)creationtime );
-	fInternalTime = creationtime;
-	SetLifeTime( (cSecond)lifetime );
-	fInCycleTime = 0;
-
 
 	fNextPlan = fLoadingPlan.begin();
 
@@ -112,10 +103,8 @@ Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB,
 
 Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB, FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
  		 cSecond creationtime, cSecond lifetime,
- 		 double Power, double HMMass, double BurnUp, double ChargeFactor)
+ 		 double Power, double HMMass, double BurnUp, double ChargeFactor):CLASSFacility(log, creationtime, lifetime)
 {
-	SetLog(log);
-
 	SetFacilityType(4);
 	SetName("R_Reactor.");
 
@@ -137,11 +126,6 @@ Reactor::Reactor(LogFile* log, FuelDataBank* fueltypeDB, FabricationPlant* fabri
 	fHeavyMetalMass = HMMass;
 	fPower = Power*ChargeFactor;
 	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);	 //BU in GWd/t
-
-	SetCreationTime( (cSecond)creationtime );
-	fInternalTime = creationtime;
-	SetLifeTime( (cSecond)lifetime );
-	fInCycleTime = 0;
 
 	fNextPlan = fLoadingPlan.begin();
 
@@ -174,10 +158,8 @@ Reactor::Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 CLASSBackEnd* Pool,
  		 cSecond creationtime, cSecond lifetime, cSecond cycletime,
- 		 double HMMass, double BurnUp)
+ 		 double HMMass, double BurnUp):CLASSFacility(log, creationtime, lifetime, cycletime)
 {
-	SetLog(log);
-
 	SetFacilityType(4);
 	SetName("R_Reactor.");
 
@@ -196,12 +178,6 @@ Reactor::Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
 	fOutBackEndFacility = Pool;
 
 	fFuelTypeDB = fueltypeDB;
-
-	fCycleTime = (cSecond)cycletime;
-	SetCreationTime( (cSecond)creationtime );
-	fInternalTime = creationtime;
-	SetLifeTime( (cSecond)lifetime );
-	fInCycleTime = 0;
 
 	fPower = BurnUp*3600.*24. / (fCycleTime) * HMMass *1e9; //BU in GWd/t
 
@@ -236,10 +212,8 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
  		 CLASSBackEnd* Pool,
  		 cSecond creationtime,
  		 cSecond lifetime,
- 		 double power, double HMMass, double BurnUp, double ChargeFactor )
+ 		 double power, double HMMass, double BurnUp, double ChargeFactor ):CLASSFacility(log, creationtime, lifetime)
 {
-	SetLog(log);
-
 	SetFacilityType(4);
 	SetName("R_Reactor.");
 
@@ -256,11 +230,6 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
 	fIsStorage = false;
 
 	fOutBackEndFacility = Pool;
-
-	SetCreationTime( (cSecond)creationtime );
-	fInternalTime = creationtime;
-	SetLifeTime( (cSecond)lifetime );
-	fInCycleTime = 0;
 
 	fPower = power * ChargeFactor;
 
