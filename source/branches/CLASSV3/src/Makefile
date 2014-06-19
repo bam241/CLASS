@@ -29,7 +29,7 @@ OBJS		= 	CLASS.o \
 			FuelDataBank.o DecayDataBank.o \
 			DynamicalSystem.o\
 			EvolutionData.o EvolutionDataDict.o \
-			IrradiationModel.o IM_RK4.o \
+			IrradiationModel.o IM_RK4.o IM_Matrix.o \
 			EquivalenceModel.o \
 			LogFile.o
 

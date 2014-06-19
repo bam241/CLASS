@@ -34,7 +34,7 @@
 
 using namespace std;
 
-IrradiationModel::IrradiationModel(): CLASSObject()
+IrradiationModel::IrradiationModel():CLASSObject()
 {
 	fShorstestHalflife = 3600.*24*2.;
 	fZAIThreshold = 90;
@@ -45,6 +45,16 @@ IrradiationModel::IrradiationModel(): CLASSObject()
 	fDataFileName = "chart.JEF3T";
 }
 
+IrradiationModel::IrradiationModel(LogFile* log):CLASSObject(log)
+{
+	fShorstestHalflife = 3600.*24*2.;
+	fZAIThreshold = 90;
+
+
+	fDataDirectoryName = getenv("CLASS_PATH");
+	fDataDirectoryName += "/source/data/";
+	fDataFileName = "chart.JEF3T";
+}
 
 
 //________________________________________________________________________

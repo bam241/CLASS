@@ -1,12 +1,12 @@
 //
-//  IM_RK4.cxx
+//  IM_Matrix.cxx
 //  CLASSSource
 //
 //  Created by BaM on 04/05/2014.
 //  Copyright (c) 2014 BaM. All rights reserved.
 //
 
-#include "IM_RK4.hxx"
+#include "IM_Matrix.hxx"
 
 #include "IsotopicVector.hxx"
 #include "CLASSHeaders.hxx"
@@ -30,30 +30,16 @@ using namespace std;
 
 
 //________________________________________________________________________
-IM_RK4::IM_RK4():DynamicalSystem(), IrradiationModel()
+IM_Matrix::IM_Matrix():DynamicalSystem()
 {
-	fTheNucleiVector = 0;
-	fTheMatrix = 0;
-
-	SetForbidNegativeValue();
 
 }
 
 
-IM_RK4::IM_RK4(LogFile* log):DynamicalSystem(), IrradiationModel(log)
+IM_Matrix::IM_Matrix(LogFile* log):IrradiationModel(log), DynamicalSystem()
 {
 
-	fTheNucleiVector = 0;
-	fTheMatrix = 0;
-
-	SetForbidNegativeValue();
-
 }
-
-
-
-
-
 
 
 
@@ -61,7 +47,7 @@ IM_RK4::IM_RK4(LogFile* log):DynamicalSystem(), IrradiationModel(log)
 //________________________________________________________________________
 /*			Evolution Calculation			*/
 //________________________________________________________________________
-EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, EvolutionData XSSet, double Power, double cycletime)
+EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, EvolutionData XSSet, double Power, double cycletime)
 {
 
 	if(fFastDecay.size() == 0)
@@ -69,9 +55,6 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 		BuildDecayMatrix();
 		fNVar = findex_inver.size();
 	}
-
-	SetTheMatrixToZero();
-	SetTheNucleiVectorToZero();
 
 	string ReactorType;
 
@@ -207,20 +190,50 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 			BatemanMatrix = BatemanReactionMatrix;
 			BatemanMatrix *= Flux_k;
 			BatemanMatrix += fDecayMatrix ;
-
-			SetTheMatrixToZero();
-			SetTheNucleiVectorToZero();
-
-			SetTheMatrix(BatemanMatrix);
-			SetTheNucleiVector(NEvolutionMatrix);
+			BatemanMatrix *= TStepMax/InsideStep ;
 
 
-			RungeKutta(fTheNucleiVector, timevector[i]+TStepMax/InsideStep*k, timevector[i]+TStepMax/InsideStep*(k+1),  fNVar);
-			NEvolutionMatrix = GetTheNucleiVector();
+			TMatrixT<double> IdMatrix = TMatrixT<double>(findex.size(),findex.size());
+			for(int j = 0; j < (int)findex.size(); j++)
+				for(int k = 0; k < (int)findex.size(); k++)
+				{
+					if(k == j)	IdMatrix[j][k] = 1;
+					else 		IdMatrix[j][k] = 0;
+				}
 
+
+			TMatrixT<double> BatemanMatrixDL = TMatrixT<double>(findex.size(),findex.size());   // Order 0 Term from the DL : Id
+			TMatrixT<double> BatemanMatrixDLTermN = TMatrixT<double>(findex.size(),findex.size());  // Addind it;
+
+			{
+				BatemanMatrix *= TStepMax ;
+				BatemanMatrixDLTermN = IdMatrix;
+				BatemanMatrixDL = BatemanMatrixDLTermN;
+				int j = 1;
+				double NormN;
+
+				do
+				{
+					TMatrixT<double> BatemanMatrixDLTermtmp = TMatrixT<double>(findex.size(),findex.size());  // Adding it;
+					BatemanMatrixDLTermtmp = BatemanMatrixDLTermN;
+
+					BatemanMatrixDLTermN.Mult(BatemanMatrixDLTermtmp, BatemanMatrix );
+
+					BatemanMatrixDLTermN *= 1./j;
+					BatemanMatrixDL += BatemanMatrixDLTermN;
+
+					NormN = 0;
+					for(int m = 0; m < (int)findex.size(); m++)
+						for(int n = 0; n < (int)findex.size(); n++)
+							NormN += BatemanMatrixDLTermN[m][n]*BatemanMatrixDLTermN[m][n];
+					j++;
+
+				} while ( NormN != 0 );
+			}
+			NEvolutionMatrix = BatemanMatrixDL * NEvolutionMatrix ;
 		}
-		NEvolutionMatrix = GetTheNucleiVector();
 		NMatrix.push_back(NEvolutionMatrix);
+
 
 		timevector[i+1] = timevector[i] + TStepMax;
 
@@ -268,12 +281,9 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	}
 
 	GeneratedDB.SetPower(Power );
-//	GeneratedDB.SetFuelType(fFuelType );
+	//	GeneratedDB.SetFuelType(fFuelType );
 	GeneratedDB.SetReactorType(ReactorType );
 	GeneratedDB.SetCycleTime(cycletime);
-
-	ResetTheMatrix();
-	ResetTheNucleiVector();
 
 	for (int i = 0; i < (int) FissionXSMatrix.size(); i++)
 	{
@@ -284,114 +294,11 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	FissionXSMatrix.clear();
 	CaptureXSMatrix.clear();
 	n2nXSMatrix.clear();
-
-	return GeneratedDB;
-
-}
-
-
-void IM_RK4::ResetTheMatrix()
-{
-
-	if(fTheMatrix)
-	{
-		for(int i= 0; i<fNVar; i++)
-			delete [] fTheMatrix[i];
-		delete [] fTheMatrix;
-	}
-	fTheMatrix = 0;
-}
-
-void IM_RK4::SetTheMatrixToZero()
-{
-	ResetTheMatrix();
-
-	fNVar = findex.size();
-	fTheMatrix = new double*[fNVar];
-
-#pragma omp parallel for
-	for(int i= 0; i < fNVar; i++)
-		fTheMatrix[i] = new double[fNVar];
-
-	for(int i = 0; i < fNVar; i++)
-		for(int k = 0; k < fNVar; k++)
-		{
-			fTheMatrix[i][k]=0.0;
-		}
-
-}
-
-//________________________________________________________________________
-void IM_RK4::ResetTheNucleiVector()
-{
-	if(fTheNucleiVector)
-		delete [] fTheNucleiVector;
-	fTheNucleiVector = 0;
-}
-
-//________________________________________________________________________
-void IM_RK4::SetTheNucleiVectorToZero()
-{
-	ResetTheNucleiVector();
-	fTheNucleiVector = new double[fNVar];
-
-#pragma omp parallel for
-	for(int i = 0; i < fNVar; i++)
-		fTheNucleiVector[i]=0.0;
-
-}
-
-//________________________________________________________________________
-void IM_RK4::BuildEqns(double t, double *N, double *dNdt)
-{
-	double sum=0;
-	// pragma omp parallel for reduction(+:sum)
-	for(int i = 0; i < fNVar; i++)
-	{
-		sum=0;
-		for(int k = 0; k < fNVar; k++)
-		{
-			sum += fTheMatrix[i][k]*N[k];
-		}
-		dNdt[i] = sum;
-	}
-}
-
-//________________________________________________________________________
-void IM_RK4::SetTheMatrix(TMatrixT<double> BatemanMatrix)
-{
-	for (int k = 0; k < (int)fNVar; k++)
-		for (int l = 0; l < (int)findex_inver.size(); l++)
-			fTheMatrix[l][k] = BatemanMatrix[l][k];
-}
-
-//________________________________________________________________________
-TMatrixT<double> IM_RK4::GetTheMatrix()
-{
-	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
-	for (int k = 0; k < (int)fNVar; k++)
-		for (int l = 0; l < (int)findex_inver.size(); l++)
-			BatemanMatrix[l][k] = fTheMatrix[l][k];
-
-	return BatemanMatrix;
-}
-
-//________________________________________________________________________
-void IM_RK4::SetTheNucleiVector(TMatrixT<double> NEvolutionMatrix)
-{
-	for (int k = 0; k < (int)fNVar; k++)
-		fTheNucleiVector[k] = NEvolutionMatrix[k][0];
-}
-
-//________________________________________________________________________
-TMatrixT<double> IM_RK4::GetTheNucleiVector()
-{
-	TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(findex.size(),1);
-	for (int k = 0; k < (int)fNVar; k++)
-		NEvolutionMatrix[k][0] = fTheNucleiVector[k];
 	
-	return NEvolutionMatrix;
+	return GeneratedDB;
+	
 }
+
 
 
 
