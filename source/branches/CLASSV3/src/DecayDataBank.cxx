@@ -136,6 +136,30 @@ bool DecayDataBank::IsDefine(const ZAI& zai) const
 	
 }
 
+
+
+//________________________________________________________________________
+//	Get Decay
+//________________________________________________________________________
+IsotopicVector DecayDataBank::GetDecay(IsotopicVector isotopicvector, cSecond t)
+{
+
+	IsotopicVector IV;
+
+	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
+	map<ZAI ,double >::iterator it;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+	{
+		if((*it).second > 0)
+		{
+ 			IsotopicVector ivtmp = Evolution(it->first, t) * (*it).second ;
+			IV += ivtmp;
+		}
+	}
+
+	return IV;
+	
+}
 //________________________________________________________________________
 //________________________________________________________________________
 //________________________________________________________________________

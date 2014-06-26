@@ -53,7 +53,7 @@ class PhysicModels : public CLASSObject
 
 	PhysicModels(XSModel XS,EquivalenceModel EM,IrradiationModel IM );	
 
-	~PhysicModels();
+	~PhysicModels() {;}
 	//{
 
 	EvolutionData GenerateEvolutionData(IsotopicVector IV, double cycletime, double Power);

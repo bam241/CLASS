@@ -54,7 +54,7 @@ ROOTOBJS	= 	CLASSObject.o CLASSObjectDict.o\
 CXX           = g++
 CXXFLAGS      = -O2 -g -Wall -fopenmp -fPIC -I$(LOCALINC) $(ROOTCFLAGS)
 LD            = g++
-LDFLAGS       =  -g -Wall -fPIC $(ROOTLIBS) -shared -lgomp
+LDFLAGS       =  -g -Wall -fPIC $(ROOTLIBS) -lTMVA -shared -lgomp
 
 all:		$(OBJS)
 		$(LD) $(LDFLAGS) $(OBJS) -o $(LIBDIR)/lib$(LIBNAME).so
