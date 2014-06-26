@@ -1,4 +1,6 @@
 #include "ZAI.hxx"
+#include "CLASSHeaders.hxx"
+
 
 //const string DEFAULTDATABASE = "DecayBase.dat";
 //________________________________________________________________________
@@ -18,6 +20,7 @@ ZAI ZAI::operator=(ZAI IVa)
 	fZ = IVa.Z();
 	fA = IVa.A();
 	fI = IVa.I();
+	fMass =  IVa.GetMass();
 	return *this;
 }
 
@@ -39,21 +42,20 @@ ZAI::~ZAI()
 }
 
 //________________________________________________________________________
-ZAI::ZAI(int Z, int A, int I)
+ZAI::ZAI(int Z, int A, int I,bool IsMassSet)
 {
 		
 	fZ=Z;
 	fA=A;
 	fI=I;
-		
-}
 
-//________________________________________________________________________
-double ZAI::GetMass()
-{
-		
-	return fMass;
-}
+	if(!IsMassSet)
+		fMass=0;
 
-//________________________________________________________________________
+	else
+	{
+		fMass=cZAIMass.GetMass(Z,A);
+	}
+
+}
 

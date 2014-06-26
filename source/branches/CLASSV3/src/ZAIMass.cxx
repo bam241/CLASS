@@ -29,7 +29,7 @@ ZAIMass::ZAIMass()
 	while (infile>>Z>>A>>Name>>MassUnity>>MassDec>>error)
 	{
 		double Masse=MassUnity+MassDec*1e-6;
-		fZAIMass.insert( pair< ZAI,double >( ZAI(Z,A,0), Masse ) );
+		fZAIMass.insert( pair< ZAI,double >( ZAI(Z,A,0,false), Masse ) );
 	}
 
 	infile.close();
@@ -42,3 +42,15 @@ ZAIMass::~ZAIMass()
 	fZAIMass.clear();
 }
 
+
+double ZAIMass::GetMass(const int Z,const int A) const
+{
+	map<ZAI,double> ZAIMasscpy = fZAIMass ;
+	map<ZAI,double>::iterator  MassIT = ZAIMasscpy.find( ZAI(Z,A,0,false) );
+	if(MassIT==fZAIMass.end())
+		return A;
+	
+	else
+	   return MassIT->second;
+
+}
