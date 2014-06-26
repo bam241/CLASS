@@ -8,7 +8,7 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
-
+#include "CLASSHeaders.hxx"
 	//________________________________________________________________________
 	//________________________________________________________________________
 	//
@@ -451,6 +451,49 @@ IsotopicVector	IsotopicVector::GetSpeciesComposition(int z) const
 	return IV;
 	
 }
+//________________________________________________________________________
+double IsotopicVector::GetTotalMass() const
+{
+	double TotalMass = 0;
+	double AVOGADRO=6.02214129e23;
+	map<ZAI ,double >::iterator it;
+	map<ZAI ,double > isotopicquantity = GetIsotopicQuantity();
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+	{
+		ZAI zai = ((*it).first);
+		double MolarMass = zai.GetMass();
+		TotalMass += (*it).second/AVOGADRO * MolarMass ;
+	}	
+		
+
+
+	return TotalMass*1e-6;//in tons
+
+}
+//________________________________________________________________________
+
+double IsotopicVector::MeanMolar() const
+{
+	double MeanMolar = 0;
+	map<ZAI ,double >::iterator it;
+	map<ZAI ,double > isotopicquantity = GetIsotopicQuantity();
+
+	double NTot=0;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+		NTot+= (*it).second ;
+
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+	{
+		ZAI zai = ((*it).first);
+		double MolarMass = zai.GetMass();
+		MeanMolar += (*it).second/NTot * MolarMass ;
+	}	
+		
+
+	return MeanMolar;
+
+}
+//________________________________________________________________________
 
 vector<ZAI> IsotopicVector::GetZAIList() const
 {
