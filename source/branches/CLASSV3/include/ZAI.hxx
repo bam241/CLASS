@@ -45,7 +45,7 @@ public:
  	 \param Z : number of protons
  	 \param A : number of nucleons (A=0 means natural isotopes) 
  	*/
-	ZAI(int Z, int A, int I=0);
+	ZAI(int Z, int A, int I=0,bool IsMassSet=true);
 	//}
 
 
@@ -64,7 +64,7 @@ public:
 	int  N()	const	{ return fA-fZ; } //!< returns the number of neutrons
 		
 	void SetMass(double m)	{ fMass=m; }	///< set the mass of a ZAI
-	double GetMass();			///< get the mass of a ZAI
+	double GetMass()		{ return fMass; }			///< get the mass of a ZAI
 	//@}
 
 
