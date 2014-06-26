@@ -42,7 +42,7 @@ public :
 	//@{
 
 	XSM_MLP_PWR_MOX(LogFile* Log,string TMVA_Weight_Directory,string InformationFile="");	
-	~XSM_MLP_PWR_MOX();
+	~XSM_MLP_PWR_MOX() {;}
 	//{
 
 

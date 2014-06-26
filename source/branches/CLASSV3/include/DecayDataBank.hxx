@@ -103,7 +103,8 @@ class DecayDataBank : public CLASSObject
 	string	GetDataDirectoryName()  const { return fDataDirectoryName; }
 	
 	double  GetShorstestHalflife()	const { return fShorstestHalflife; }
-	
+	IsotopicVector		GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
+
 	//@}
 	
 	

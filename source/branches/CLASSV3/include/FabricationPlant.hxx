@@ -58,15 +58,6 @@ public :
 	FabricationPlant();	///< Normal constructor
 
 
-	//{
-	/// LogFile Constructor.
-	/*!
-	 Use create an empty FabricationPlant loading a LogFile
-	 \param LogFile LogFile used for the log...
-	 */
-	FabricationPlant(LogFile* log);
-	//}
-
 
 	//{
 	/// Special Constructor.
@@ -77,7 +68,7 @@ public :
 	 \param reusable storage used to store all separated material not used in the fabrication process
 	 \param fabricationtime duration of the fabrication process (2 years by default).
 	 */
-	FabricationPlant(LogFile* log, Storage* storage, Storage* reusable, double fabricationtime = 365.25*24*3600*2);
+	FabricationPlant(LogFile* log, double fabricationtime = 365.25*24*3600*2);
 	//}
 
 	~FabricationPlant(); 	///< Normal Destructor.
@@ -131,7 +122,8 @@ public :
 
 
 
-
+	void AddFissileStorage(Storage* stock) { fFissileStorage.push_back(stock); } //!< Add a new Storage to the list of Fissile material provider...
+	void AddFertileStorage(Storage* stock) { fFertileStorage.push_back(stock); } //!< Add a new Storage to the list of Fertile material provider...
 
 //********* Fabrication & Evolution Method *********//
 
@@ -165,8 +157,12 @@ protected :
 	map< int,EvolutionData >	fReactorFuturDB; ///< List of the Futur EvolutionData use in the reactor
 	map< int,IsotopicVector >	fReactorFuturIV; ///< List of the Futur Fuel Isotopic Vector used in the reactor
 
-	Storage*	fStorage;			//!< Pointer to the Storage to recycle
-	Storage*	fReUsable;			//!< Pointer to the Storage using for recycling unused Product
+
+	Storage*		fStorage;
+	vector<Storage*>	fFissileStorage;			//!< Pointer to the Storage to recycle used to get the fissile part of the fuel
+	vector<Storage*>	fFertileStorage;			//!< Pointer to the Storage to recycle used to get the fertile part of the fuel
+
+	Storage*		fReUsable;			//!< Pointer to the Storage using for recycling unused Product
 
 	vector< pair<int, double> >	fFractionToTake;	//!< The Temporary Storage IsotopicVector
 
@@ -189,6 +185,8 @@ protected :
 	 */
 	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);
 	//}
+
+	
 	ClassDef(FabricationPlant,3);
 
 };

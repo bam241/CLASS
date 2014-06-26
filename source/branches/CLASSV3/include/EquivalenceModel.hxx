@@ -11,6 +11,8 @@
  @version 2.0
  */
 
+#include "IsotopicVector.hxx"
+
 
 using namespace std;
 
@@ -25,13 +27,12 @@ using namespace std;
  */
 //________________________________________________________________________
 
-class IsotopicVector;
-
 
 class EquivalenceModel : public TObject
 {
 	public :
-	
+
+	EquivalenceModel() {}
 	/// virtueal method called to build a reprocessed fuel as a function of the burnup requierement the stock, mass....
 	/*!
 	 Build the fuel following the equivalance model with the proper requierment in term of mass burnup....
@@ -42,13 +43,19 @@ class EquivalenceModel : public TObject
 	 \param vector<IsotopicVector> FertilArray, isotopicvectors to use to get the fertil part of the fuel (if empty take it from the god)
 	 */
 	
-	virtual	 IsotopicVector BuildFuel(double BurnUp, double HMMass, vector<double> &lambda, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray = 0);
+	virtual	 vector<double> BuildFuel(double BurnUp, double HMMass, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray )
+	{ vector<double> empty; return empty;}
 	//}
 
 	
 	
 	
-	private :
+	protected :
+
+
+	IsotopicVector fFertileListe;
+	IsotopicVector fFissileListe;
+
  	
 };
 

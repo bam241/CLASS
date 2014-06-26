@@ -124,7 +124,7 @@ void XSM_MLP_PWR_MOX::GetMLPWeightFiles()
 
 }
 //________________________________________________________________________
-void ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction)
+void XSM_MLP_PWR_MOX::ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction)
 {
 	Z=-1;
 	A=-1;
