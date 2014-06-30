@@ -87,17 +87,17 @@ FabricationPlant::~FabricationPlant()
 
 
 	//________________________________________________________________________
-void	FabricationPlant::AddValorisableIV(ZAI zai, double factor)
+void	FabricationPlant::SetSeparartionEfficiencyIV(ZAI zai, double factor)
 {
-	
+
 	pair<map<ZAI, double>::iterator, bool> IResult;
 	if(factor > 1) factor = 1;
 	
 	if(factor > 0)
 	{
-		IResult = fValorisableIV.insert( pair<ZAI ,double>(zai, factor));
+		IResult =  fSeparationLostFraction.GetIsotopicQuantity().insert( pair<ZAI ,double>(zai, 1 - factor));
 		if(!IResult.second)
-			IResult.first->second = factor;
+			IResult.first->second = 1 - factor;
 	}
 	
 }
@@ -156,7 +156,6 @@ void FabricationPlant::FabricationPlantEvolution(cSecond t)
 
 
 	//________________________________________________________________________
-
 void FabricationPlant::BuildFuelForReactor(int ReactorId)
 {
 
@@ -171,7 +170,29 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 
 
 //	PhysicModels* FuelType = GetParc()->GetReactor()[ReactorId]->GetFuelType();
+
+	PhysicModels* FuelType;
+
+	IsotopicVector FissileList = FuelType->GetEquivalenceModel()->GetFissileList();
+
+	BuildFissileArray(FissileList);
 }
+
+
+
+void FabricationPlant::BuildFissileArray(IsotopicVector FissileList)
+{
+
+
+
+
+
+}
+
+
+
+
+
 
 //________________________________________________________________________
 void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel)
@@ -288,26 +309,7 @@ void FabricationPlant::RecycleStock(double fraction)
 void FabricationPlant::DumpStock()
 {
 
-	for(int i = (int)fFractionToTake.size()-1; i >= 0; i--)
-	{
 
-		pair<IsotopicVector, IsotopicVector> SeparatedIV;
-		IsotopicVector IV_in_Stock_i = fStorage->GetIVArray()[fFractionToTake[i].first];
-		double Fraction_Taken_from_Stock_i = fFractionToTake[i].second ;
-
-		SeparatedIV = Separation( Fraction_Taken_from_Stock_i * ( IV_in_Stock_i - IV_in_Stock_i.GetSpeciesComposition(94) ) );
-
-		fReUsable->AddIV(SeparatedIV.first);
-		GetParc()->AddWaste(SeparatedIV.second);
-
-
-
-
-		fStorage->TakeFractionFromStock(fFractionToTake[i].first,fFractionToTake[i].second);
-
-
-	}
-	fFractionToTake.clear();
 
 
 
@@ -315,31 +317,17 @@ void FabricationPlant::DumpStock()
 }
 
 	//________________________________________________________________________
-pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector isotopicvector)
+//pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector IVStock, IsotopicVector IVToExtract)
+pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector isotopicvector, IsotopicVector ExtractedList)
 {
 	
 		//[0] = re-use ; [1] = waste
-	pair<IsotopicVector, IsotopicVector>	IVTmp;
-	
-	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
-	map<ZAI ,double >::iterator it;
-	for(it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
-	{
-		map<ZAI ,double>::iterator it2;
-		it2 = fValorisableIV.find((*it).first);
-		if ( it2 != fValorisableIV.end() )
-		{
-			IVTmp.first.Add(	(*it).first, (*it).second * (*it2).second );		//re-use
-			IVTmp.second.Add(	(*it).first, (*it).second * (1-(*it2).second) );	//waste
-		}
-		else
-		{
-			IVTmp.first.Add(	(*it).first, (*it).second );	//re-use
-//			IVTmp.second.Add(	(*it).first, (*it).second * (1-(*it2).second) );	//waste -> Empty
-		}
-	}
-	
-	return IVTmp;
+	IsotopicVector LostPart  = isotopicvector.GetThisComposition(ExtractedList) * fSeparationLostFraction;
+	IsotopicVector SeparatedPart  = isotopicvector.GetThisComposition(ExtractedList) - LostPart;
+	LostPart = isotopicvector - SeparatedPart;
+
+
+	return pair<IsotopicVector, IsotopicVector> (SeparatedPart, LostPart);
 }
 
 

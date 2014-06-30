@@ -45,7 +45,7 @@ class EQM_MLP_MOX  : public EquivalenceModel
 	 \param vector<IsotopicVector> FertilArray, isotopicvectors to use to get the fertil part of the fuel (if empty take it from the god)
 	 */
 	
-	vector<double>  BuildFuel(double BurnUp, double HMMass,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray = 0);
+	vector<double>  BuildFuel(double BurnUp, double HMMass,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray = vector<IsotopicVector>());
 	//}
 	
 	private :

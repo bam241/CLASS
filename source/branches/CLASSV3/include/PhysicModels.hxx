@@ -51,16 +51,16 @@ class PhysicModels : public CLASSObject
 	 */
 	//@{
 
-	PhysicModels(XSModel XS,EquivalenceModel EM,IrradiationModel IM );	
+	PhysicModels(XSModel* XS,EquivalenceModel* EM,IrradiationModel* IM );
 
 	~PhysicModels() {;}
 	//{
 
 	EvolutionData GenerateEvolutionData(IsotopicVector IV, double cycletime, double Power);
 
-	XSModel GetXSModel()   {return fXSModel;}
-	EquivalenceModel GetEquivalenceModel() {return fEquivalenceModel;}
-	IrradiationModel GetIrradiationModel()  {return fIrradiationModel;}
+	XSModel*		GetXSModel()   {return fXSModel;}
+	EquivalenceModel*	GetEquivalenceModel() {return fEquivalenceModel;}
+	IrradiationModel*	GetIrradiationModel()  {return fIrradiationModel;}
 
 
 
@@ -69,9 +69,9 @@ class PhysicModels : public CLASSObject
 
  private :
 
- 	XSModel 			fXSModel;
-	EquivalenceModel	fEquivalenceModel;
-	IrradiationModel	fIrradiationModel;
+ 	XSModel* 		fXSModel;
+	EquivalenceModel*	fEquivalenceModel;
+	IrradiationModel*	fIrradiationModel;
 
 
 
