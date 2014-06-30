@@ -132,7 +132,7 @@ public :
 	 */
 	//@{
 
-	void		AddValorisableIV(ZAI zai, double factor);		///< Add Valorisable Element
+	void		SetSeparartionEfficiencyIV(ZAI zai, double factor);		///< Add Valorisable Element
 	void		Evolution(cSecond t);					//!< Perform the Evolution
 	virtual void	BuildFuelForReactor(int ReactorId);			//!< Build a Fuel for the reactor ReactorId
 	void		RecycleStock(double fraction);				//!< Take a franction of the current stock
@@ -141,7 +141,10 @@ public :
 	EvolutionData	BuildEvolutiveDB(int ReactorId, IsotopicVector isotopicvector);
 										//!< Build the Evolution Database for the Reactir ReactorId Fuel
 	void	TakeReactorFuel(int ReactorId) ;				//!< Remove the Fuel of reactor ReactorId
-	
+
+
+	void BuildFissileArray(IsotopicVector FissileList);
+
 	//@}
 
 
@@ -151,7 +154,7 @@ protected :
 	bool		fUpdateReferenceDBatEachStep;	///< Set to true if the Reference Evolution Product must be updated at each calculation step (in the DataBank calculation)
 
 //********* Internal Parameter *********//
-	map<ZAI ,double>	fValorisableIV;		///< The Valorisable Table
+	IsotopicVector	 fSeparationLostFraction;	///< The speration efficiency Table
 	map<int, cSecond >	fReactorNextStep;	///< Next Time Step to Build a New Fuel
 
 	map< int,EvolutionData >	fReactorFuturDB; ///< List of the Futur EvolutionData use in the reactor
@@ -183,7 +186,7 @@ protected :
 		\li IV[0] -> To Keep
 		\li IV[1] -> To Waste
 	 */
-	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector);
+	pair<IsotopicVector, IsotopicVector> Separation(IsotopicVector isotopicvector, IsotopicVector ExtractedList);
 	//}
 
 	

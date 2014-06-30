@@ -59,6 +59,7 @@ public :
 	map<ZAI ,double>	GetIsotopicQuantityNeeded()	const
 						{ return fIsotopicQuantityNeeded; }	//!< Return the IVQuantityNeeded map
 	IsotopicVector		GetSpeciesComposition(int z)	const;			//!< Return the Species composition of the "z" atom
+	IsotopicVector		GetThisComposition(IsotopicVector IV)	const;		//!< Return the composition according the IV list...
 	vector<ZAI>		GetZAIList()			const;			//!< Return the list of ZAI present in the IV
 	IsotopicVector		GetActinidesComposition()	const;			//!< Return the Actinides composition of the "z" atom
 	double	GetZAIIsotopicQuantity(const ZAI& zai)		const;			///< Return the quantity of the ZAI
@@ -105,6 +106,7 @@ public :
 
 	IsotopicVector& operator+=(IsotopicVector const& IVb);	//!<....
 	IsotopicVector& operator-=(IsotopicVector const& IVb);	//!<....
+	IsotopicVector& operator*=(IsotopicVector const& IVb);	//!<....
 	bool operator <(const IsotopicVector& isotopicvector) const;	//!< IsotopicVector Comparator
 
 	//@}
@@ -143,6 +145,7 @@ IsotopicVector operator*(IsotopicVector const& IVA, double F);
 IsotopicVector operator*(ZAI const& zai, double F);
 IsotopicVector operator*(double F, IsotopicVector const& IVA);
 IsotopicVector operator*(double F, ZAI const& zai);
+IsotopicVector operator*(IsotopicVector const& IVa, IsotopicVector const& IVb);
 IsotopicVector operator+(IsotopicVector const& IVa, IsotopicVector const& IVb);
 IsotopicVector operator-(IsotopicVector const& IVa, IsotopicVector const& IVb);
 

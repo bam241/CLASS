@@ -14,6 +14,9 @@ ROOTGLIBS	= `root-config --glibs`
 INCLUDES	= $(LOCALINC)/*.hxx
 LIBNAME 	= CLASSpkg
 OBJS		= 	CLASS.o \
+			IsotopicVector.o IsotopicVectorDict.o \
+			ZAIMass.o \
+			ZAI.o ZAIDict.o \
 			CLASSObject.o CLASSObjectDict.o\
 			CLASSFacility.o CLASSFacilityDict.o\
 			CLASSBackEnd.o CLASSBackEndDict.o\
@@ -23,9 +26,6 @@ OBJS		= 	CLASS.o \
 			PWR_THPU_FabricationPlant.o \
 			Pool.o PoolDict.o\
 			Reactor.o ReactorDict.o \
-			IsotopicVector.o IsotopicVectorDict.o \
-			ZAIMass.o \
-			ZAI.o ZAIDict.o \
 			FuelDataBank.o DecayDataBank.o \
 			DynamicalSystem.o\
 			EvolutionData.o EvolutionDataDict.o \

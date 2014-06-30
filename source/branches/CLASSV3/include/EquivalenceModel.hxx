@@ -48,13 +48,19 @@ class EquivalenceModel : public TObject
 	//}
 
 	
-	
+
+	IsotopicVector GetFertileList() {return fFertileList;}
+	IsotopicVector GetFissileList() {return fFissileList;}
+
+	void SetFertileList(IsotopicVector IV) {fFertileList = IV;}
+	void SetFissileList(IsotopicVector IV) {fFissileList = IV;}
+
 	
 	protected :
 
 
-	IsotopicVector fFertileListe;
-	IsotopicVector fFissileListe;
+	IsotopicVector fFertileList;
+	IsotopicVector fFissileList;
 
  	
 };

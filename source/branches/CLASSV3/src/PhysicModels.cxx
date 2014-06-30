@@ -8,10 +8,10 @@
 //
 //
 //________________________________________________________________________
-PhysicModels::PhysicModels(XSModel XS,EquivalenceModel EM,IrradiationModel IM )	
+PhysicModels::PhysicModels(XSModel* XS,EquivalenceModel* EM,IrradiationModel* IM )
 {
 
-		fXSModel			= XS;
+		fXSModel		= XS;
 		fEquivalenceModel	= EM;
 		fIrradiationModel	= IM;
 
@@ -22,7 +22,7 @@ EvolutionData PhysicModels::GenerateEvolutionData(IsotopicVector IV, double cycl
 {
 
 
-	return fIrradiationModel.GenerateEvolutionData(IV,	fXSModel.GetCrossSections(IV),Power,cycletime);
+	return fIrradiationModel->GenerateEvolutionData(IV, fXSModel->GetCrossSections(IV), Power, cycletime);
 
 
 }
