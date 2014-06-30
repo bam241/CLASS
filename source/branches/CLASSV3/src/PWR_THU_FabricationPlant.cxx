@@ -48,7 +48,7 @@ PWR_THU_FabricationPlant::PWR_THU_FabricationPlant(LogFile* log)
 	SetFacilityType(16);
 
 	SetLog(log);
-	fChronologicalTimePriority = false;
+	fFiFo = false;
 	SetCycleTime(-1);
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
@@ -72,7 +72,7 @@ PWR_THU_FabricationPlant::PWR_THU_FabricationPlant(LogFile* log, Storage* storag
 
 	SetLog(log);
 	
-	fChronologicalTimePriority = false;
+	fFiFo = false;
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
 

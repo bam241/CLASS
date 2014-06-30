@@ -50,7 +50,7 @@ PWR_THPU_FabricationPlant::PWR_THPU_FabricationPlant(LogFile* log)
 	SetFacilityType(16);
 
 	SetLog(log);
-	fChronologicalTimePriority = false;
+	fFiFo = false;
 	SetCycleTime(-1);
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
@@ -74,7 +74,7 @@ PWR_THPU_FabricationPlant::PWR_THPU_FabricationPlant(LogFile* log, Storage* stor
 
 	SetLog(log);
 	
-	fChronologicalTimePriority = false;
+	fFiFo = false;
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
 

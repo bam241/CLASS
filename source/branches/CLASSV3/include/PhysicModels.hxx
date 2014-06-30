@@ -11,10 +11,11 @@
  @authors BLG,BaM
  @version 1.0
  */
- #include "CLASSObject.hxx"
- #include "EquivalenceModel.hxx"
- #include "XSModel.hxx"
- #include "IrradiationModel.hxx"
+#include "CLASSObject.hxx"
+#include "EquivalenceModel.hxx"
+#include "XSModel.hxx"
+#include "IrradiationModel.hxx"
+#include "EvolutionData.hxx"
 
 
 using namespace std;

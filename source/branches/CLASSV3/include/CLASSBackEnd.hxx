@@ -52,12 +52,17 @@ class CLASSBackEnd : public CLASSFacility
 	//@{
 
 	DecayDataBank*	GetDecayDataBank()		{ return fDecayDataBase;}	//!< Return the pointer to the decay DataBank
+
 	vector<IsotopicVector> GetIVArray()	const	{ return fIVArray; }		//!< Return the IsotopicVector Array
+	vector<cSecond>	GetIVArrayArrivalTime()	const	{ return fIVArrayArrivalTime;}	//!<Return the pointer to the OUtBackEndFacility
+
 	int		GetIVNumber()		const	{ return fIVArray.size();}
 	bool		GetStorageType()	const	{ return fIsStorageType;}	//!< Return the storageType
 	CLASSBackEnd*	GetOutBackEndFacility()	const	{ return fOutBackEndFacility;}	//!<Return the pointer to the OUtBackEndFacility
-	IsotopicVector GetIV(int i)		const	{ if(i < (int)fIVArray.size()) return fIVArray[i];
+	IsotopicVector  GetIV(int i)		const	{ if(i < (int)fIVArray.size()) return fIVArray[i];
 								else return IsotopicVector(); }
+
+
 	//@}
 
 	//********* Set Method *********//
@@ -87,6 +92,7 @@ class CLASSBackEnd : public CLASSFacility
 	protected :
 	IsotopicVector		GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
 	vector<IsotopicVector>	fIVArray;					///< Vector containning all the fuel stored.
+	vector<cSecond>		fIVArrayArrivalTime;					///< Vector containning all the fuel stored.
 	CLASSBackEnd*		fOutBackEndFacility;					//!< Facility getting the fuel at the end of the cycle
 
 	//********* Internal Parameter *********//

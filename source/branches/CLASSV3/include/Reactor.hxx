@@ -21,7 +21,7 @@ class CLASS;
 class CLASSBackEnd;
 //class Pool;
 class EvolutionData;
-class FuelDataBank;
+class PhysicModels;
 class FabricationPlant;
 class Storage;
 class LogFile;
@@ -72,7 +72,7 @@ public :
 	 \param creationtime creation time
 	 \param lifetime working time duration.
 	 */
-	Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
+	Reactor(LogFile* log, PhysicModels* 	fueltypeDB,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
 		cSecond creationtime , cSecond lifetime);
 	//}
@@ -90,7 +90,7 @@ public :
 	 \param HMMass Mass of Heavy Metal in the Reactor
 	 \param BurnUp Burnup reach by the fuel at the end of the cycle
 	 */
-	Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
+	Reactor(LogFile* log, PhysicModels* 	fueltypeDB,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
 		cSecond creationtime , cSecond lifetime, cSecond cycletime,
 		double HMMass, double BurnUp);
@@ -110,7 +110,7 @@ public :
 	 \param BurnUp Burnup reach by the fuel at the end of the cycle
 	 \param ChargeFactor effective charge of the reactor.
 	 */
-	Reactor(LogFile* log, FuelDataBank* 	fueltypeDB,
+	Reactor(LogFile* log, PhysicModels* 	fueltypeDB,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
 		cSecond creationtime , cSecond lifetime,
 		double Power, double HMMass, double BurnUp, double ChargeFactor);
@@ -159,7 +159,7 @@ public :
 	
 
 	EvolutionData	GetEvolutionDB()	const	{ return fEvolutionDB; }	//!< Return the Evolution database of the Fuel
-	FuelDataBank*	GetFuelType()		const	{ return fFuelTypeDB; }		//!< Return the Fuel Type DB of the reactor
+	PhysicModels*	GetFuelType()		const	{ return fFuelTypeDB; }		//!< Return the Fuel Type DB of the reactor
 
 	CLASSBackEnd*		GetOutBackEndFacility()	const	{ return fOutBackEndFacility; }	//!< Return the pointer to Associeted BackEnd Facility
 	FabricationPlant*	GetFabricationPlant()	const	{ return fFabricationPlant; }	//!< Return the Pointer to the FabricationPlant
@@ -246,7 +246,7 @@ protected :
 	Storage*	fStorage;		//!< Pointer to the Stock (only for reprocessing fuel in fixed base...)
 						
 	EvolutionData	fEvolutionDB;		//!< Pointer to the Evolution DataBase
-	FuelDataBank* 	fFuelTypeDB;		//! Pointer to a Fuel Type Database
+	PhysicModels* 	fFuelTypeDB;		//! Pointer to a Fuel Type Database
 	
 	double 		fPower;			///< Power (in Watt)
 	

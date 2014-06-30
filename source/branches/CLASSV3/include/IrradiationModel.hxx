@@ -56,7 +56,7 @@ class IrradiationModel : public CLASSObject
 	 \param double Power, constant power to use for irradation
 	 \param double irradiationtime, time of the irradiation
 	 */
-	virtual	 EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime) { return 0;}
+	virtual	 EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime) { return EvolutionData();}
 	//}
 
 	

@@ -807,7 +807,7 @@ void CLASS::UpdateParc()
 	ResetQuantity();
 
 	for(int i =0; i < (int)fFabricationPlant.size(); i++)
-		fFuelFabrication += fFabricationPlant[i]->GetFullFabrication();
+		fFuelFabrication += fFabricationPlant[i]->GetInsideIV();
 
 	for(int i = 0; i < (int) fPool.size();i++)
 		fTotalCooling += fPool[i]->GetInsideIV();
