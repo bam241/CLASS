@@ -22,8 +22,6 @@ OBJS		= 	CLASS.o \
 			CLASSBackEnd.o CLASSBackEndDict.o\
 			Storage.o StorageDict.o\
 			FabricationPlant.o FabricationPlantDict.o \
-			PWR_THU_FabricationPlant.o \
-			PWR_THPU_FabricationPlant.o \
 			Pool.o PoolDict.o\
 			Reactor.o ReactorDict.o \
 			FuelDataBank.o DecayDataBank.o \
@@ -48,6 +46,7 @@ ROOTOBJS	= 	CLASSObject.o CLASSObjectDict.o\
 			FuelDataBank.o DecayDataBank.o \
 			DynamicalSystem.o\
 			EvolutionData.o EvolutionDataDict.o \
+			PhysicModels.o \
 			LogFile.o
 
 

@@ -122,7 +122,7 @@ public :
 	//@{
 
 	vector<cSecond>	GetCoolingStartingTime() const
-						{ return fCoolingStartingTime; }	//!< Return the vector of Cooling Sstarting Time
+						{ return GetIVArrayArrivalTime(); }	//!< Return the vector of Cooling Sstarting Time
 	void	RemoveIVCooling(int i);					//!< Remove a Cooling IsotopicVector
 
 	void	AddIV(IsotopicVector isotopicvector);			//!< Add an Isotopicvector to the IVArray
@@ -154,7 +154,6 @@ protected :
 
 //********* Isotopic Quantity *********//
 //--------- Cooling ---------//
-	vector<cSecond>		fCoolingStartingTime;	///< Vector of the Cooling Starting Time
 	vector<int>		fCoolingIndex;		///< Vector of the Cooling Index
 	int			fCoolingLastIndex;	//!< Number of Cooling IV Treated
 	vector<int>		fCoolingEndOfCycle;	//!< Index of the Cooling IV reaching the End of a Cooling Cycle

@@ -48,7 +48,6 @@ FabricationPlant::FabricationPlant():CLASSFacility()
 	SetFacilityType(16);
 	SetName("F_FabricationPLant.");
 	
-	fStorage = 0;
 	fReUsable = 0;
 }
 
@@ -58,7 +57,7 @@ FabricationPlant::FabricationPlant(LogFile* log, double fabricationtime):CLASSFa
 	SetFacilityType(16);
 	SetName("F_FabricationPLant.");
 
-	fChronologicalTimePriority = false;
+	fFiFo = false;
 	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
 
@@ -123,8 +122,7 @@ void FabricationPlant::Evolution(cSecond t)
 void FabricationPlant::FabricationPlantEvolution(cSecond t)
 {
 	
-	IsotopicVector EmptyIV;
-	fInsideIV = EmptyIV;
+	IsotopicVector fInsideIV;
 
 
 	map<int ,cSecond >::iterator it;
@@ -169,27 +167,250 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 
 
 
-//	PhysicModels* FuelType = GetParc()->GetReactor()[ReactorId]->GetFuelType();
+	double R_HM_Mass	= GetParc()->GetReactor()[ ReactorId ]->GetHeavyMetalMass();
+	double R_BU		= GetParc()->GetReactor()[ ReactorId ]->GetBurnUp();
+	double R_CycleTime	= GetParc()->GetReactor()[ ReactorId ]->GetCycleTime();
+	double R_Power		= GetParc()->GetReactor()[ ReactorId ]->GetPower();
 
-	PhysicModels* FuelType;
+	PhysicModels* FuelType = GetParc()->GetReactor()[ReactorId]->GetFuelType();
+	//PhysicModels* FuelType;
 
-	IsotopicVector FissileList = FuelType->GetEquivalenceModel()->GetFissileList();
+	fFissileList = FuelType->GetEquivalenceModel()->GetFissileList();
+	BuildFissileArray();
 
-	BuildFissileArray(FissileList);
+
+	fFertileList = FuelType->GetEquivalenceModel()->GetFertileList();
+
+
+
+
+	if(fFertileStorage.size() != 0)			// If the fertile need to be taken in stock
+		BuildFertileArray();
+	else						// if their is not stock and the fertile come from outside of the park
+	{
+		fFertileArray.push_back( fFertileList / fFertileList.GetTotalMass() * R_HM_Mass );
+	}
+
+
+	vector<double> LambdaArray =  FuelType->GetEquivalenceModel()->BuildFuel(R_HM_Mass, R_BU, fFissileArray, fFertileArray);
+
+
+	if(LambdaArray[0] != -1)
+	{
+		IsotopicVector IV = BuildFuelFromEqModel(LambdaArray);
+		EvolutionData EvolDB = FuelType->GenerateEvolutionData( /*GetDecay(IV,fCycleTime)*/ IV , R_CycleTime, R_Power);
+
+		{
+			pair<map<int, IsotopicVector>::iterator, bool> IResult;
+			IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId, IV) );
+			if(!IResult.second)
+			IResult.first->second = IV;
+		}
+		{
+			pair<map<int, EvolutionData>::iterator, bool> IResult;
+			IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,EvolDB) );
+			if(!IResult.second)
+			IResult.first->second = EvolDB;
+		}
+		fInsideIV += IV;
+		AddCumulativeIVIn(IV);
+
+		return;
+	}
+	else
+	{
+
+		if (!fSubstitutionFuel)
+		{
+			{
+				EvolutionData EmptyDB;
+				pair<map<int, EvolutionData>::iterator, bool> IResult;
+				IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,EmptyDB) );
+				if(!IResult.second)
+					IResult.first->second = EmptyDB;
+			}
+			{
+				IsotopicVector EmptyIV;
+				pair<map<int, IsotopicVector>::iterator, bool> IResult;
+				IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId,EmptyIV) );
+				if(!IResult.second)
+					IResult.first->second = EmptyIV;
+			}
+		}
+		else
+		{
+
+			IsotopicVector IV = fSubstitutionEvolutionData.GetIsotopicVectorAt(0);
+			EvolutionData evolutiondb = fSubstitutionEvolutionData * R_HM_Mass / IV.GetTotalMass();
+
+			IV = IV* R_HM_Mass / IV.GetTotalMass();
+			{
+				pair<map<int, IsotopicVector>::iterator, bool> IResult;
+				IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId, IV) );
+				if(!IResult.second)
+				IResult.first->second = IV;
+			}
+			{
+				pair<map<int, EvolutionData>::iterator, bool> IResult;
+				IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,evolutiondb) );
+				if(!IResult.second)
+				IResult.first->second = evolutiondb;
+			}
+			GetParc()->AddGod( IV );
+			fInsideIV += IV;
+			AddCumulativeIVIn(IV);
+
+
+
+		}
+		return;
+	}
+
 }
 
 
 
-void FabricationPlant::BuildFissileArray(IsotopicVector FissileList)
+void FabricationPlant::BuildFissileArray()
 {
 
 
 
+	for(int i = 0; i < (int)fFissileStorage.size(); i++)
+	{
+		vector<IsotopicVector> IVArray = fFissileStorage[i]->GetIVArray();
+		for(int j = 0; j < (int)IVArray.size(); j++)
+		{
+
+			IsotopicVector SeparatedIV = Separation(IVArray[j], fFissileList).first;
+			IsotopicVector CooledSeparatedIV = GetDecay( SeparatedIV , GetCycleTime());
 
 
+			fFissileArray.push_back( CooledSeparatedIV );
+			fFissileArrayAdress.push_back( pair<int,int>(i,j) );
+			fFissileArrayTime.push_back(fFissileStorage[i]->GetIVArrayArrivalTime()[j]);
+		}
+
+	}
+
+	SortArray(0);
 }
 
 
+void FabricationPlant::BuildFertileArray()
+{
+
+
+	for(int i = 0; i < (int)fFertileStorage.size(); i++)
+	{
+		vector<IsotopicVector> IVArray = fFertileStorage[i]->GetIVArray();
+		for(int j = 0; j < (int)IVArray.size(); j++)
+		{
+
+			IsotopicVector SeparatedIV = Separation(IVArray[j], fFertileList).first;
+			IsotopicVector CooledSeparatedIV = GetDecay( SeparatedIV , GetCycleTime());
+
+
+			fFertileArray.push_back( CooledSeparatedIV );
+			fFertileArrayAdress.push_back( pair<int,int>(i,j) );
+			fFertileArrayTime.push_back(fFertileStorage[i]->GetIVArrayArrivalTime()[j]);
+		}
+
+	}
+
+	SortArray(1);
+
+}
+
+void FabricationPlant::SortArray(int i)
+{
+
+
+	vector<IsotopicVector>	IVArray;
+	vector<cSecond>		TimeArray;
+	vector< pair<int,int> >	AdressArray;
+
+	if(i==0) //Fissile
+	{
+		IVArray		= fFissileArray;
+		TimeArray	= fFissileArrayTime;
+		AdressArray	= fFissileArrayAdress;
+	}
+	else if (i==1) //Fertile
+	{
+		IVArray		= fFertileArray;
+		TimeArray	= fFertileArrayTime;
+		AdressArray	= fFertileArrayAdress;
+
+	}
+
+	if(fFiFo)
+	{
+		for(int j = 0; j < (int)TimeArray.size(); j++)
+		{
+			for (int k = j+1; k < (int)TimeArray.size(); k++)
+			{
+				cSecond time_tmp = TimeArray[j];
+				pair<int,int> Adress_tmp = AdressArray[j];
+				IsotopicVector IV_tmp = IVArray[j];
+
+				if(time_tmp > TimeArray[k])
+				{
+					TimeArray[j] = TimeArray[k];
+					TimeArray[k] = time_tmp;
+
+					AdressArray[j] = AdressArray[k];
+					AdressArray[k] = Adress_tmp;
+
+					IVArray[j] = IVArray[k];
+					IVArray[k] = IV_tmp;
+				}
+
+			}
+		}
+	}
+	else
+	{
+		for(int j = 0; j < (int)fFissileArrayTime.size(); j++)
+		{
+			for (int k = j+1; k < (int)TimeArray.size(); k++)
+			{
+				cSecond time_tmp = TimeArray[j];
+				pair<int,int> Adress_tmp = AdressArray[j];
+				IsotopicVector IV_tmp = IVArray[j];
+
+				if(time_tmp < TimeArray[k])
+				{
+					TimeArray[j] = TimeArray[k];
+					TimeArray[k] = time_tmp;
+
+					AdressArray[j] = AdressArray[k];
+					AdressArray[k] = Adress_tmp;
+
+					IVArray[j] = IVArray[k];
+					IVArray[k] = IV_tmp;
+				}
+				
+			}
+		}
+	}
+
+
+	if(i==0) //Fissile
+	{
+		fFissileArray		= IVArray;
+		fFissileArrayTime	= TimeArray;
+		fFissileArrayAdress	= AdressArray;
+	}
+	else if (i==1) //Fertile
+	{
+		fFertileArray = IVArray;
+		fFertileArrayTime = TimeArray;
+		fFertileArrayAdress = AdressArray;
+
+	}
+
+
+}
 
 
 
@@ -213,23 +434,6 @@ void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel)
 	//________________________________________________________________________
 	//_____________________________ Reactor & DB _____________________________
 	//________________________________________________________________________
-EvolutionData FabricationPlant::BuildEvolutiveDB(int ReactorId,IsotopicVector isotopicvector)
-{
-	
-	FuelDataBank* evolutiondb = GetParc()->GetReactor()[ReactorId]->GetFuelType();
-	
-	isotopicvector = GetDecay(isotopicvector, GetCycleTime());
-	
-	EvolutionData EvolBuild;
-
-#pragma omp single
-	{
-		EvolBuild = evolutiondb->GenerateEvolutionData(isotopicvector, GetParc()->GetReactor()[ReactorId]->GetCycleTime(), GetParc()->GetReactor()[ReactorId]->GetPower());
-	}
-	return EvolBuild;
-	
-}
-
 	//________________________________________________________________________
 void FabricationPlant::TakeReactorFuel(int Id)
 {
@@ -244,80 +448,115 @@ void FabricationPlant::TakeReactorFuel(int Id)
 	if (it2 != fReactorFuturIV.end())
 		(*it2).second = IV;
 
+
+	map< int,EvolutionData >::iterator it = fReactorFuturDB.find(Id);
+	(*it).second = EvolutionData();
+
 }
 
-	//________________________________________________________________________
+//________________________________________________________________________
 EvolutionData FabricationPlant::GetReactorEvolutionDB(int ReactorId)
 {
-	
+
 	map< int,EvolutionData >::iterator it = fReactorFuturDB.find(ReactorId);
 	return (*it).second;
-	
 }
-
-IsotopicVector FabricationPlant::GetFullFabrication()
-{
-	
-	IsotopicVector tmp = 0*ZAI(0,0,0);
-	
-	map<int, IsotopicVector > reactorNextStep = fReactorFuturIV;
-	map<int, IsotopicVector >::iterator it;
-	for ( it = reactorNextStep.begin(); it != reactorNextStep.end(); it++)
-		tmp += (*it).second;
-
-	return tmp;
-	
-}
-
 	//________________________________________________________________________
 	//_______________________________ Storage ________________________________
 	//________________________________________________________________________
-
-IsotopicVector FabricationPlant::GetStockToRecycle()
+IsotopicVector FabricationPlant::BuildFuelFromEqModel(vector<double> LambdaArray)
 {
-	
-	IsotopicVector NextStock;
-	int IdToTake = -1;
-	
-	if(fChronologicalTimePriority )
-		IdToTake = (int)( fFractionToTake.size() );
-	else
-		IdToTake = (int)( fStorage->GetIVArray().size() -1 - fFractionToTake.size() );
+	IsotopicVector BuildedFuel;
+	IsotopicVector Lost;
 
-	if(0 <= IdToTake && IdToTake < (int)fStorage->GetIVArray().size())
+	for(int i = 0; i < (int)fFissileArray.size(); i++)
 	{
-		NextStock = fStorage->GetIVArray()[IdToTake];
-		fFractionToTake.push_back( pair<int,double>(IdToTake,0.) );
+		if(LambdaArray[i] != 0)
+		{
+			int Stor_N = fFissileArrayAdress[i].first;
+			int IV_N = fFissileArrayAdress[i].second;
+
+			pair<IsotopicVector, IsotopicVector> Separated_Lost;
+			Separated_Lost = Separation( fFissileStorage[Stor_N]->GetIVArray()[IV_N]*LambdaArray[i], fFissileList);
+			BuildedFuel += Separated_Lost.first;
+			Lost += Separated_Lost.second;
+		}
 	}
-	else NextStock += ZAI(-1,-1,-1) *1;
-	
-	return NextStock;
-	
+
+	if(fFertileStorage.size() != 0)
+	{
+		for(int i = fFissileArray.size(); i < (int)(fFertileArray.size()+fFissileArray.size()); i++)
+		{
+			if(LambdaArray[i] != 0)
+			{
+				int Stor_N = fFertileArrayAdress[i].first;
+				int IV_N = fFertileArrayAdress[i].second;
+
+				pair<IsotopicVector, IsotopicVector> Separated_Lost;
+				Separated_Lost = Separation( fFertileStorage[Stor_N]->GetIVArray()[IV_N]*LambdaArray[i], fFissileList);
+				BuildedFuel += Separated_Lost.first;
+				Lost += Separated_Lost.second;
+			}
+		}
+	}
+	else
+		BuildedFuel += fFertileArray[0]*LambdaArray.back();
+
+	DumpStock(LambdaArray);
+
+
+	return BuildedFuel;
+
 }
 
+
 	//________________________________________________________________________
-void FabricationPlant::RecycleStock(double fraction)
+void FabricationPlant::DumpStock(vector<double> LambdaArray)
 {
-	
-	fFractionToTake.back().second = fraction;
-	
+
+
+	for(int i = 0; i < (int)fFissileArray.size(); i++)
+	{
+		if(LambdaArray[i] != 0)
+		{
+			int Stor_N = fFissileArrayAdress[i].first;
+			int IV_N = fFissileArrayAdress[i].second;
+			fFissileStorage[Stor_N]->TakeFractionFromStock( IV_N, LambdaArray[i] );
+		}
+	}
+	if(fFertileStorage.size() != 0)
+	{
+		for(int i = fFissileArray.size(); i < (int)(fFertileArray.size()+fFissileArray.size()); i++)
+		{
+			if(LambdaArray[i] != 0)
+			{
+				int Stor_N = fFertileArrayAdress[i].first;
+				int IV_N = fFertileArrayAdress[i].second;
+
+				fFertileStorage[Stor_N]->TakeFractionFromStock( IV_N, LambdaArray[i] );
+			}
+		}
+	}
+	else
+		GetParc()->AddGod( fFertileArray[0]*LambdaArray.back() );
+
+
+
+
+	//Clear the Building Array (Fissile and Fertile)
+	fFissileArray.clear();
+	fFissileArrayTime.clear();
+	fFissileArrayAdress.clear();
+	fFertileArray.clear();
+	fFertileArrayTime.clear();
+	fFertileArrayAdress.clear();
+
+	fFertileList = fFissileList = IsotopicVector();
+
+
 }
 
-
-
 	//________________________________________________________________________
-void FabricationPlant::DumpStock()
-{
-
-
-
-
-
-
-}
-
-	//________________________________________________________________________
-//pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector IVStock, IsotopicVector IVToExtract)
 pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector isotopicvector, IsotopicVector ExtractedList)
 {
 	

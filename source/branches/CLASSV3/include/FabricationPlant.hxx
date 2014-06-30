@@ -88,9 +88,8 @@ public :
 	void SetDecayDataBank(DecayDataBank* decayDB) {fDecayDataBase = decayDB;}	//! Set the Decay DataBank
 
 	void	SetUpdateReferenceDBatEachStep(bool val){ fUpdateReferenceDBatEachStep = val;}	//!< Set fUpdateReferenceDBatEachStep variable
-	void	SetStorage(Storage* storage)		{ fStorage = storage; }			//!< Set the Pointer to the Storage
-	
-	void	SetChronologicalTimePriority(bool bval = true)	{ fChronologicalTimePriority = bval;}	//!< Set the chronological priority (true for chronological, false unstead)
+
+	void	SetFiFo(bool bval = true)	{ fFiFo = bval;}	//!< Set the chronological priority (true for chronological, false unstead)
 	
 	void	SetSubstitutionFuel(EvolutionData fuel);				//!< To use a subtition fuel if the fabrication fail (not enough material in stock)
 	
@@ -108,12 +107,11 @@ public :
 	 */
 	//@{
 	
-	Storage*	GetStorage()		{ return fStorage; }		//!< Return the Pointer to the Storage
-	
+	vector<Storage*>	GetFissileStorage()		{ return fFissileStorage; }		//!< Return the Pointer to the Storage
+	vector<Storage*>	GetFertileStorage()		{ return fFertileStorage; }		//!< Return the Pointer to the Storage
+
 	map<int, IsotopicVector >	GetReactorFuturIncome() const
 						{ return fReactorFuturIV;}	//!< Return the List of the Futur Fuel IV
-
-	IsotopicVector GetFullFabrication();					//!< Return the Sum of all Fuel waiting to be put in a reator
 
 	EvolutionData GetReactorEvolutionDB(int ReactorId);			//!< Return the EvolutionData of Reactor ReactorId
 	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
@@ -132,18 +130,20 @@ public :
 	 */
 	//@{
 
-	void		SetSeparartionEfficiencyIV(ZAI zai, double factor);		///< Add Valorisable Element
-	void		Evolution(cSecond t);					//!< Perform the Evolution
-	virtual void	BuildFuelForReactor(int ReactorId);			//!< Build a Fuel for the reactor ReactorId
-	void		RecycleStock(double fraction);				//!< Take a franction of the current stock
-	IsotopicVector	GetStockToRecycle();					//!< Get the next stock to recycle
-	void		DumpStock();						//!< Update the Stock status after building process
-	EvolutionData	BuildEvolutiveDB(int ReactorId, IsotopicVector isotopicvector);
-										//!< Build the Evolution Database for the Reactir ReactorId Fuel
-	void	TakeReactorFuel(int ReactorId) ;				//!< Remove the Fuel of reactor ReactorId
+	void SetSeparartionEfficiencyIV(ZAI zai, double factor);	///< Add Valorisable Element
+	void Evolution(cSecond t);					//!< Perform the Evolution
+	
+	void BuildFuelForReactor(int ReactorId);			//!< Build a Fuel for the reactor ReactorId
+	void DumpStock(vector<double> lambdaArray);			//!< Update the Stock status after building process
+
+	void TakeReactorFuel(int ReactorId) ;				//!< Remove the Fuel of reactor ReactorId
 
 
-	void BuildFissileArray(IsotopicVector FissileList);
+	void BuildFissileArray();
+	void BuildFertileArray();
+	IsotopicVector BuildFuelFromEqModel(vector<double> LambdaArray);
+
+	void SortArray(int i);
 
 	//@}
 
@@ -161,15 +161,22 @@ protected :
 	map< int,IsotopicVector >	fReactorFuturIV; ///< List of the Futur Fuel Isotopic Vector used in the reactor
 
 
-	Storage*		fStorage;
-	vector<Storage*>	fFissileStorage;			//!< Pointer to the Storage to recycle used to get the fissile part of the fuel
-	vector<Storage*>	fFertileStorage;			//!< Pointer to the Storage to recycle used to get the fertile part of the fuel
+
+	vector<Storage*>	fFissileStorage;		//!< Pointer to the Storage to recycle used to get the fissile part of the fuel
+	vector<IsotopicVector>  fFissileArray;
+	vector<cSecond>		fFissileArrayTime;
+	vector< pair<int,int> > fFissileArrayAdress;
+	IsotopicVector		fFissileList;
+
+	vector<Storage*>	fFertileStorage;		//!< Pointer to the Storage to recycle used to get the fertile part of the fuel
+	vector<IsotopicVector>  fFertileArray;
+	vector<cSecond>		fFertileArrayTime;
+	vector< pair<int,int> > fFertileArrayAdress;
+	IsotopicVector		fFertileList;
 
 	Storage*		fReUsable;			//!< Pointer to the Storage using for recycling unused Product
 
-	vector< pair<int, double> >	fFractionToTake;	//!< The Temporary Storage IsotopicVector
-
-	bool		fChronologicalTimePriority;	//!< Set the Chronological Priotity (for the Stock Management) or the anti-chronological one
+	bool		fFiFo;	//!< Set the First In First Out
 
 	bool		fSubstitutionFuel;		//!< true if a subtitution fuel as been set
 	EvolutionData	fSubstitutionEvolutionData;	//!< EvolutionData of the subtitution fuel

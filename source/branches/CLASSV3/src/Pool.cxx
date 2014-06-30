@@ -105,7 +105,7 @@ void Pool::SetIVArray(vector<IsotopicVector> ivarray)
 void Pool::SetIVArray(vector<IsotopicVector> ivarray, vector<cSecond> timearray)
 {
 	fIVArray = ivarray;
-	fCoolingStartingTime =  timearray;
+	fIVArrayArrivalTime =  timearray;
 
 }
 //________________________________________________________________________
@@ -118,7 +118,7 @@ void Pool::AddIV(IsotopicVector IV)
 
 	fIVArray.push_back(IV);
 	fInsideIV += IV;
-	fCoolingStartingTime.push_back(fInternalTime);
+	fIVArrayArrivalTime.push_back(fInternalTime);
 	fCoolingLastIndex++;
 	fCoolingIndex.push_back(fCoolingLastIndex);
 
@@ -133,7 +133,7 @@ void Pool::RemoveIVCooling(int i)		//!< Remove a Cooling IsotopicVector
 	AddCumulativeIVOut(fIVArray[i]);
 
 	fIVArray.erase(fIVArray.begin()+i);
-	fCoolingStartingTime.erase(fCoolingStartingTime.begin()+i);
+	fIVArrayArrivalTime.erase( fIVArrayArrivalTime.begin()+i);
 	fCoolingIndex.erase(fCoolingIndex.begin()+i); 
 
 }
@@ -164,19 +164,19 @@ void Pool::CoolingEvolution(cSecond t)
 #pragma omp parallel for
 	for ( int i = 0 ; i < (int)fIVArray.size() ; i++)
 	{
-		if ( abs(t - fCoolingStartingTime[i] - fCycleTime) < 3600 ) // ">" should not append, only "=" is normal...
+		if ( abs(t -  fIVArrayArrivalTime[i] - fCycleTime) < 3600 ) // ">" should not append, only "=" is normal...
 		{
-			if (t - fCoolingStartingTime[i] > fCycleTime) // Warning & Quit
+			if (t -  fIVArrayArrivalTime[i] > fCycleTime) // Warning & Quit
 			{
 				cout		<< "!!Warning!! !!!TreamtmentFactory!!! Cooling Step : " << t/3600./24/365.25<< " :"
 						<< " An evolution Step is probably missing ! " << " " << endl;
-				cout << t << " " << fCoolingStartingTime[i] << " " << fCycleTime << endl;
+				cout << t << " " <<  fIVArrayArrivalTime[i] << " " << fCycleTime << endl;
 				GetLog()->fLog 	<< "!!Warning!! !!!TreamtmentFactory!!! Cooling Step : "<< t << " :"
 						<< " An evolution Step is probably missing ! " << endl;
 				exit (1);
 			}
    
-			RemainingCoolingTime = fCycleTime - (fInternalTime - fCoolingStartingTime[i]);
+			RemainingCoolingTime = fCycleTime - (fInternalTime -  fIVArrayArrivalTime[i]);
 			//Cooling Decay
 			fIVArray[i] = GetDecay( fIVArray[i], RemainingCoolingTime);
 
@@ -185,7 +185,7 @@ void Pool::CoolingEvolution(cSecond t)
 			{fCoolingEndOfCycle.push_back(i);}
 
 		}
-		else if ( fCoolingStartingTime[i] != t )
+		else if (  fIVArrayArrivalTime[i] != t )
 		{
 			fIVArray[i] = GetDecay( fIVArray[i] , EvolutionTime);
 			fInsideIV += fIVArray[i];

@@ -44,6 +44,7 @@ void CLASSBackEnd::ClearIVArray()
 	IsotopicVector EmptyIV;
 	fInsideIV = EmptyIV;
 	fIVArray.clear();
+	fIVArrayArrivalTime.clear();
 }
 
 //________________________________________________________________________
@@ -53,6 +54,8 @@ void CLASSBackEnd::AddIV(IsotopicVector isotopicvector)
 	AddCumulativeIVIn(isotopicvector);
 
 	fIVArray.push_back(isotopicvector);
+	fIVArrayArrivalTime.push_back(fInternalTime);
+
 
 }
 

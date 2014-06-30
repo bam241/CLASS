@@ -72,7 +72,10 @@ void Storage::AddIV(IsotopicVector isotopicvector)
 	AddCumulativeIVIn(isotopicvector);
 
 	if(GetParc()->GetStockManagement() )
+	{
 		fIVArray.push_back(isotopicvector);
+		fIVArrayArrivalTime.push_back(fInternalTime);
+	}
 	AddToFullStock(isotopicvector);
 
 }
@@ -92,8 +95,8 @@ void Storage::TakeFractionFromStock(int IVId,double fraction)
 		{
 			AddCumulativeIVOut(fIVArray[IVId]*fraction);
 
-			fInsideIV -= fIVArray[IVId]*fraction;
-			fIVArray[IVId] = fIVArray[IVId]*(1-fraction);
+			fInsideIV	-= fIVArray[IVId] * fraction;
+			fIVArray[IVId]  -= fIVArray[IVId] * fraction;
 		}
 
 	}
@@ -136,8 +139,11 @@ void Storage::StorageEvolution(cSecond t)
 
 	for(int i = (int)fIVArray.size()-1 ; i >=0; i--) //Removing empty Stock
 		if(Norme(fIVArray[i]) == 0)
-			fIVArray.erase(fIVArray.begin()+i); 
-	
+		{
+			fIVArray.erase(fIVArray.begin()+i);
+			fIVArrayArrivalTime.erase(fIVArrayArrivalTime.begin()+i);
+
+		}
 	
 
 	int EvolutionTime = t - fInternalTime;
