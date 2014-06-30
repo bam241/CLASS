@@ -264,7 +264,7 @@ vector<double> EQM_MLP_MOX::BuildFuel(double BurnUp, double HMMass,vector<Isotop
 				{
 					cout<<"You requiere more depleted uranium "<<"("<<DeltaM/1e6<<" t needed) ! Reactor not fill"<<endl;
 					for(int i=0 ; i<int(lambda.size()) ; i++)
-						lambda[i]=0;
+						lambda[i]=-1;
 					break;
 				}
 
@@ -286,7 +286,7 @@ vector<double> EQM_MLP_MOX::BuildFuel(double BurnUp, double HMMass,vector<Isotop
 			{
 				cout<<"You requiere more (or better) plutonium !! Reactor not fill"<<endl;
 				for(int i=0 ; i<int(lambda.size()) ; i++)
-					lambda[i]=0;
+					lambda[i]=-1;
 				break;
 			}
 
