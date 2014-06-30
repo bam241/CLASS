@@ -41,7 +41,7 @@ public :
 	 */
 	//@{
 
-	XSM_MLP_PWR_MOX(LogFile* Log,string TMVA_Weight_Directory,string InformationFile="");	
+	XSM_MLP_PWR_MOX(LogFile* Log,string TMVA_Weight_Directory,string InformationFile="",bool IsTimeStep=true);	
 	~XSM_MLP_PWR_MOX() {;}
 	//{
 
@@ -57,6 +57,13 @@ public :
  	void ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction) ;
  	double ExecuteTMVA(string WeightFile);
  	void CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep);
+ 	EvolutionData GetCrossSectionsTime(IsotopicVector IV) ;
+
+ 	void ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &Reaction, int &TimeStep) ;
+ 	double ExecuteTMVAStep(string WeightFile);
+ 	void CreateTMVAInputTreeStep(IsotopicVector isotopicvector);
+ 	EvolutionData GetCrossSectionsStep(IsotopicVector IV) ;
+
 
 
  	vector<double> 	fMLP_Time;
@@ -65,6 +72,7 @@ public :
  	string fMLPInformationFile;
  	double fDataBasePower;
  	double fDataBaseHMMass;
+ 	bool fIsStepTime;
 
 };
 
