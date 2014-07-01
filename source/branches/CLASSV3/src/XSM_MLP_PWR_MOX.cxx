@@ -46,7 +46,7 @@ XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(LogFile* Log,string TMVA_Weight_Directory,strin
 		fMLPInformationFile=InformationFile;
 
 	GetMLPWeightFiles();
-	SetDataBaseInformation();
+	GetDataBaseInformation();
 
 	if(IsLog())
 	{
@@ -59,30 +59,59 @@ XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(LogFile* Log,string TMVA_Weight_Directory,strin
 		GetLog()->fLog	<<"\t His TMVA folder is : \"" << fTMVAWeightFolder << "\"" << endl;
 	}
 }
-
 //________________________________________________________________________
-void XSM_MLP_PWR_MOX::SetDataBaseInformation()
+XSM_MLP_PWR_MOX::~XSM_MLP_PWR_MOX() 
+{
+
+	fMapOfTMVAVariableNames.clear();
+}
+//________________________________________________________________________
+void XSM_MLP_PWR_MOX::GetDataBaseInformation()
 {
 	ifstream FILE(fMLPInformationFile.c_str());
 
 	if(FILE.good())
 	{
-		double HM_Mass_tonne=0;
-		double Power_watt=0;
-
-		FILE>>HM_Mass_tonne;
-		FILE>>Power_watt;
-
-		fDataBaseHMMass=HM_Mass_tonne;
-		fDataBasePower=Power_watt;
-
 		while(FILE.eof())
-		{
-			double TIME=-1;
-			FILE>>TIME;
+		{	
+			string line;
+			getline(FILE, line);
+			size_t foundHM    = line.find("Heavy Metal (t) :"); 
+			size_t foundPower = line.find("Thermal Power (W) :");
+			size_t foundTime  = line.find("Time (s) :");
+			size_t foundZAI	  = line.find("Z A I Name (input MLP) :");
+			int pos=0;
+			if(foundHM != std::string::npos)
+				fDataBaseHMMass = atof( (StringLine::NextWord(line,pos,':')).c_str() );
 
-			if(TIME!=-1)
-				fMLP_Time.push_back(TIME);
+			if(foundPower !=std::string::npos)
+				fDataBasePower = atof( (StringLine::NextWord(line,pos,':') ).c_str() );
+
+ 			pos=0;
+			if(foundTime!=std::string::npos)
+			{
+				fMLP_Time.push_back( atof( (StringLine::NextWord(line,pos,':')).c_str() ));
+				while( pos< (int)line.size() )
+					fMLP_Time.push_back( atof( (StringLine::NextWord(line,pos,' ')).c_str() ));
+			}	
+				
+			if(foundZAI != std::string::npos)
+			{	
+				while(FILE.eof())
+				{
+					int Z=-4;
+					int A=-4;
+					int I=-4;
+					string Name;
+					getline(FILE, line);
+					stringstream ssline;
+					ssline<<line;
+					ssline>>Z>>A>>I>>Name;
+					fMapOfTMVAVariableNames.insert( pair<ZAI,string>(ZAI(Z,A,I),Name) );
+
+				}
+			}	
+
 		}
 	}
 	else
@@ -165,62 +194,44 @@ void XSM_MLP_PWR_MOX::CreateTMVAInputTree(IsotopicVector isotopicvector,int Time
 
 	TFile*   InputFile = new TFile("./InputTMP.root","RECREATE");
 	TTree*   InputTree = new TTree("InTMP", "InTMP");
-	float teneur = 0;
-	float Pu8    = 0;
-	float Pu9    = 0;
-	float Pu10   = 0;
-	float Pu11   = 0;
-	float Pu12   = 0;
-	float Am1    = 0;
-	float U5_enrichment 	 = 0;
-	float Time   = 0;
 
-	InputTree->Branch(	"teneur",&teneur,"teneur/F"	);
-	InputTree->Branch(	"Pu8"	,&Pu8	,"Pu8/F"	);
-	InputTree->Branch(	"Pu9"	,&Pu9	,"Pu9/F"	);
-	InputTree->Branch(	"Pu10"	,&Pu10	,"Pu10/F"	);
-	InputTree->Branch(	"Pu11"	,&Pu11	,"Pu11/F"	);
-	InputTree->Branch(	"Pu12"	,&Pu12	,"Pu12/F"	);
-	InputTree->Branch(	"Am1"	,&Am1	,"Am1/F"	);
-	InputTree->Branch(	"U5_enrichment"	,&U5_enrichment	,"U5_enrichment/F"	);
-	InputTree->Branch(	"Time"	,&Time	,"Time/F"	);
+	vector<float> 	InputTMVA;
+	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
+		InputTMVA.push_back(0);
 
+	float Time=0;
 
+	IsotopicVector IVInputTMVA;
+	map<ZAI ,string >::iterator it;
+	int j=0;
 
-	float U8     = isotopicvector.GetZAIIsotopicQuantity(92,238,0);
-	float U5     = isotopicvector.GetZAIIsotopicQuantity(92,235,0);
-	float U4     = isotopicvector.GetZAIIsotopicQuantity(92,234,0);
+	for( it = fMapOfTMVAVariableNames.begin()  ; it!=fMapOfTMVAVariableNames.end() ; it++)
+	{	
+		InputTree->Branch( ((*it).second).c_str()	,&InputTMVA[j], ((*it).second + "/F").c_str());
+		IVInputTMVA+= ((*it).first)*1;
+		j++;
+	}
+	
+	if( !fIsStepTime)
+		InputTree->Branch(	"Time"	,&Time	,"Time/F"	);
 
-	float UTOT = U8 + U5 + U4;
+	IsotopicVector IVAccordingToUserInfoFile = isotopicvector.GetThisComposition(IVInputTMVA);
 
-	Pu8    	   = isotopicvector.GetZAIIsotopicQuantity(94,238,0);
-	Pu9    	   = isotopicvector.GetZAIIsotopicQuantity(94,239,0);
-	Pu10   	   = isotopicvector.GetZAIIsotopicQuantity(94,240,0);
-	Pu11   	   = isotopicvector.GetZAIIsotopicQuantity(94,241,0);
-	Pu12   	   = isotopicvector.GetZAIIsotopicQuantity(94,242,0);
-	Am1        = isotopicvector.GetZAIIsotopicQuantity(95,241,0);
+	double Ntot = IVAccordingToUserInfoFile.GetTotalMass()*1e6/IVAccordingToUserInfoFile.MeanMolar()*6.02214129e23;
 
-	teneur = (Pu8+Pu9+Pu10+Pu11+Pu12+Am1)/(Pu8+Pu9+Pu10+Pu11+Pu12+Am1+U8+U5+U4); //prop mol. Pu
+	IVAccordingToUserInfoFile = IVAccordingToUserInfoFile/Ntot;
 
-	double TOTPU=(Pu8+Pu9+Pu10+Pu11+Pu12+Am1);
-
-	Pu8 = Pu8  / TOTPU;
-	Pu9 = Pu9  / TOTPU;
-	Pu10= Pu10 / TOTPU;
-	Pu11= Pu11 / TOTPU;
-	Pu12= Pu12 / TOTPU;
-	Am1 = Am1  / TOTPU;
-
-	U5_enrichment = U5 / UTOT;
+	j=0;
+	map<ZAI ,string >::iterator it2;
+	for( it2 = fMapOfTMVAVariableNames.begin() ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
+	{
+		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first ) ;
+		j++;
+	}
 
 	Time=fMLP_Time[TimeStep];
 
-	if(Pu8 + Pu9 + Pu10 + Pu11 + Pu12 + Am1 > 1.00001 )//?????1.00001??? I don't know it! goes in condition if =1 !! may be float/double issue ...
-	{
-		cout<<"!!!!!!!!!!!ERRORR!!!!!!!!!!!!"<<endl;
-		cout<<Pu8<<" "<<Pu9<<" "<<Pu10<<" "<<Pu11<<" "<<Pu12<<" "<<Am1<<endl;
-		exit(0);
-	}
+
 	// All value are molar (!weight)
 
 	InputTree->Fill();
@@ -230,7 +241,7 @@ void XSM_MLP_PWR_MOX::CreateTMVAInputTree(IsotopicVector isotopicvector,int Time
 	InputFile-> Close();
 	delete InputFile;
 }
-///________________________________________________________________________
+//________________________________________________________________________
 double XSM_MLP_PWR_MOX::ExecuteTMVA(string WeightFile)
 {
 	// --- Create the Reader object
@@ -239,15 +250,19 @@ double XSM_MLP_PWR_MOX::ExecuteTMVA(string WeightFile)
 
 	// Create a set of variables and declare them to the reader
 	// - the variable names MUST corresponds in name and type to those given in the weight file(s) used
-	Float_t Pu8,Pu9,Pu10,Pu11,Pu12,Am1,Time,teneur;
-	reader->AddVariable("teneur",&teneur);
-	reader->AddVariable( "Pu8"  ,&Pu8 );
-	reader->AddVariable( "Pu9"  ,&Pu9 );
-	reader->AddVariable( "Pu10" ,&Pu10);
-	reader->AddVariable( "Pu11" ,&Pu11);
-	reader->AddVariable( "Pu12" ,&Pu12);
-	reader->AddVariable( "Am1"  ,&Am1 );
-	reader->AddVariable( "Time" ,&Time);
+	vector<float> 	InputTMVA;
+	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
+		InputTMVA.push_back(0);
+	Float_t Time;
+
+	map<ZAI ,string >::iterator it;
+	int j=0;
+	for( it = fMapOfTMVAVariableNames.begin()  ; it!=fMapOfTMVAVariableNames.end() ; it++)
+	{	reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
+		j++;
+	}
+	if(!fIsStepTime)	
+		reader->AddVariable( "Time" ,&Time);
 
 	// --- Book the MVA methods
 
@@ -271,15 +286,16 @@ double XSM_MLP_PWR_MOX::ExecuteTMVA(string WeightFile)
 	}
 
 	TTree* theTree = (TTree*)input->Get("InTMP");
+	map<ZAI ,string >::iterator it2;
+	j=0;
+	for( it2 = fMapOfTMVAVariableNames.begin()  ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
+	{
+		theTree->SetBranchAddress(( (*it2).second ).c_str(),&InputTMVA[j]);
+		j++;
+	}
 
-	theTree->SetBranchAddress("teneur",&teneur);
-	theTree->SetBranchAddress( "Pu8"  ,&Pu8   );
-	theTree->SetBranchAddress( "Pu9"  ,&Pu9   );
-	theTree->SetBranchAddress( "Pu10" ,&Pu10  );
-	theTree->SetBranchAddress( "Pu11" ,&Pu11  );
-	theTree->SetBranchAddress( "Pu12" ,&Pu12  );
-	theTree->SetBranchAddress( "Am1"  ,&Am1   );
-	theTree->SetBranchAddress( "Time" ,&Time  );
+	if(!fIsStepTime)	
+		theTree->SetBranchAddress( "Time" ,&Time  );
 
 	theTree->GetEntry(0);
 	Float_t val = (reader->EvaluateRegression( methodName ))[0];
@@ -398,10 +414,95 @@ void XSM_MLP_PWR_MOX::ReadWeightFileStep(string Filename, int &Z, int &A, int &I
     TimeStep = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
 
 }
+
 //________________________________________________________________________
+EvolutionData XSM_MLP_PWR_MOX::GetCrossSectionsStep(IsotopicVector IV)
+{
+
+	std::ifstream ifs ("InputTMP.root");
+	 if (ifs.is_open())
+	 {  ifs.close();
+	 	system( "rm InputTMP.root" );
+	 }
+	CreateTMVAInputTree(IV);
+	//cout<<"=====Building Evolution Data From TMVA MLP====="<<endl;
+
+	EvolutionData EvolutionDataFromMLP = EvolutionData();
+
+	map<ZAI,TGraph*> ExtrapolatedXS[3];
+	/*************DATA BASE INFO****************/
+	EvolutionDataFromMLP.SetReactorType("PWR");
+	EvolutionDataFromMLP.SetFuelType("MOX");
+	EvolutionDataFromMLP.SetPower(fDataBasePower);
+	EvolutionDataFromMLP.SetHeavyMetalMass(fDataBaseHMMass);
+
+	/************* The Cross sections***********/
+
+	for(int i=0;i<int(fWeightFiles.size());i++)
+	{
+		int Z=-2;
+		int A=-2;
+		int I=-2;
+		int Reaction=-2;
+		int TimeStep=-2;
+		ReadWeightFileStep( fWeightFiles[i], Z, A, I, Reaction, TimeStep);
+
+		ZAI zaitmp = ZAI(Z,A,I);
+
+		pair< map<ZAI, TGraph*>::iterator, bool> IResult;
+
+		IResult = ExtrapolatedXS[Reaction].insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph() ) );
+
+		if( IResult.second )
+		{
+			(IResult.first)->second->SetPoint(0, (double)GetMLPTime()[TimeStep], ExecuteTMVA(fWeightFiles[i]) );
+		}
+		else
+		{
+			(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)GetMLPTime()[TimeStep], ExecuteTMVA(fWeightFiles[i]) );
+		}
+
+	}
+
+	system( "rm InputTMP.root" );
+	/**********Sorting TGraph*********/
+	for(int x=0;x<3;x++)
+	{	map<ZAI,TGraph*>::iterator it;
+		for(it = ExtrapolatedXS[x].begin(); it != ExtrapolatedXS[x].end(); it++)
+			it->second->Sort();
+	}
+	/**********Filling Matrices*/
+	EvolutionDataFromMLP.SetFissionXS(ExtrapolatedXS[0]);
+	EvolutionDataFromMLP.SetCaptureXS(ExtrapolatedXS[1]);
+	EvolutionDataFromMLP.Setn2nXS(ExtrapolatedXS[2]);
+
+	//cout<<"=====Evolution Data Built====="<<endl;
+	return EvolutionDataFromMLP;
+}
+//________________________________________________________________________
+EvolutionData XSM_MLP_PWR_MOX::GetCrossSections(IsotopicVector IV)
+{
+	EvolutionData EV;
+	if(fIsStepTime)
+		EV=GetCrossSectionsStep(IV);
+
+	else
+		EV=GetCrossSectionsTime(IV);
+
+return EV;
+}
+//________________________________________________________________________
+
+
+
+//________________________________________________________________________
+//
+//					BACKUP
+//
+//________________________________________________________________________
+/*
 void XSM_MLP_PWR_MOX::CreateTMVAInputTreeStep(IsotopicVector isotopicvector)
 {
-	/******Create Input data tree to be interpreted by TMVA::Reader***/
 
 	TFile*   InputFile = new TFile("./InputTMP.root","RECREATE");
 	TTree*   InputTree = new TTree("InTMP", "InTMP");
@@ -465,7 +566,6 @@ void XSM_MLP_PWR_MOX::CreateTMVAInputTreeStep(IsotopicVector isotopicvector)
 	InputFile-> Close();
 	delete InputFile;
 }
-///________________________________________________________________________
 double XSM_MLP_PWR_MOX::ExecuteTMVAStep(string WeightFile)
 {
 	// --- Create the Reader object
@@ -526,79 +626,136 @@ double XSM_MLP_PWR_MOX::ExecuteTMVAStep(string WeightFile)
 	return (double)val;
 }
 //________________________________________________________________________
-EvolutionData XSM_MLP_PWR_MOX::GetCrossSectionsStep(IsotopicVector IV)
+double XSM_MLP_PWR_MOX::ExecuteTMVA(string WeightFile)
+{
+	// --- Create the Reader object
+
+	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
+
+	// Create a set of variables and declare them to the reader
+	// - the variable names MUST corresponds in name and type to those given in the weight file(s) used
+	Float_t Pu8,Pu9,Pu10,Pu11,Pu12,Am1,Time,teneur;
+	reader->AddVariable("teneur",&teneur);
+	reader->AddVariable( "Pu8"  ,&Pu8 );
+	reader->AddVariable( "Pu9"  ,&Pu9 );
+	reader->AddVariable( "Pu10" ,&Pu10);
+	reader->AddVariable( "Pu11" ,&Pu11);
+	reader->AddVariable( "Pu12" ,&Pu12);
+	reader->AddVariable( "Am1"  ,&Am1 );
+	reader->AddVariable( "Time" ,&Time);
+
+	// --- Book the MVA methods
+
+	string dir    = fTMVAWeightFolder;
+	if(dir[dir.size()-1]!='/')
+   		dir+="/";
+
+	// Book method MLP
+	TString methodName = "MLP method";
+	TString weightpath = dir + WeightFile ;
+	reader->BookMVA( methodName, weightpath );
+
+	// Prepare input tree
+	TFile *input(0);
+	if (!gSystem->AccessPathName( "./InputTMP.root" )) {
+		input = TFile::Open( "./InputTMP.root" ); // check if file in local directory exists
+	}
+	if (!input) {
+		std::cout << "ERROR: could not open data file" << std::endl;
+		exit(1);
+	}
+
+	TTree* theTree = (TTree*)input->Get("InTMP");
+
+	theTree->SetBranchAddress("teneur",&teneur);
+	theTree->SetBranchAddress( "Pu8"  ,&Pu8   );
+	theTree->SetBranchAddress( "Pu9"  ,&Pu9   );
+	theTree->SetBranchAddress( "Pu10" ,&Pu10  );
+	theTree->SetBranchAddress( "Pu11" ,&Pu11  );
+	theTree->SetBranchAddress( "Pu12" ,&Pu12  );
+	theTree->SetBranchAddress( "Am1"  ,&Am1   );
+	theTree->SetBranchAddress( "Time" ,&Time  );
+
+	theTree->GetEntry(0);
+	Float_t val = (reader->EvaluateRegression( methodName ))[0];
+
+	delete reader;
+	delete theTree;
+	input->Close();
+	delete input;
+	//cout<<"....done"<<endl;
+
+	//cout<<val<<endl;
+	return (double)val;
+}
+void XSM_MLP_PWR_MOX::CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep)
 {
 
-	std::ifstream ifs ("InputTMP.root");
-	 if (ifs.is_open())
-	 {  ifs.close();
-	 	system( "rm InputTMP.root" );
-	 }
-	CreateTMVAInputTreeStep(IV);
-	//cout<<"=====Building Evolution Data From TMVA MLP====="<<endl;
+	TFile*   InputFile = new TFile("./InputTMP.root","RECREATE");
+	TTree*   InputTree = new TTree("InTMP", "InTMP");
+	float teneur			 = 0;
+	float Pu8   			 = 0;
+	float Pu9   			 = 0;
+	float Pu10  			 = 0;
+	float Pu11  			 = 0;
+	float Pu12  			 = 0;
+	float Am1   			 = 0;
+	float U5_enrichment 	 = 0;
+	float Time   			 = 0;
 
-	EvolutionData EvolutionDataFromMLP = EvolutionData();
+	InputTree->Branch(	"teneur",&teneur,"teneur/F"	);
+	InputTree->Branch(	"Pu8"	,&Pu8	,"Pu8/F"	);
+	InputTree->Branch(	"Pu9"	,&Pu9	,"Pu9/F"	);
+	InputTree->Branch(	"Pu10"	,&Pu10	,"Pu10/F"	);
+	InputTree->Branch(	"Pu11"	,&Pu11	,"Pu11/F"	);
+	InputTree->Branch(	"Pu12"	,&Pu12	,"Pu12/F"	);
+	InputTree->Branch(	"Am1"	,&Am1	,"Am1/F"	);
+	InputTree->Branch(	"U5_enrichment"	,&U5_enrichment	,"U5_enrichment/F"	);
+	InputTree->Branch(	"Time"	,&Time	,"Time/F"	);
 
-	map<ZAI,TGraph*> ExtrapolatedXS[3];
-	/*************DATA BASE INFO****************/
-	EvolutionDataFromMLP.SetReactorType("PWR");
-	EvolutionDataFromMLP.SetFuelType("MOX");
-	EvolutionDataFromMLP.SetPower(fDataBasePower);
-	EvolutionDataFromMLP.SetHeavyMetalMass(fDataBaseHMMass);
 
-	/************* The Cross sections***********/
 
-	for(int i=0;i<int(fWeightFiles.size());i++)
+	float U8     = isotopicvector.GetZAIIsotopicQuantity(92,238,0);
+	float U5     = isotopicvector.GetZAIIsotopicQuantity(92,235,0);
+	float U4     = isotopicvector.GetZAIIsotopicQuantity(92,234,0);
+
+	float UTOT = U8 + U5 + U4;
+
+	Pu8    	   = isotopicvector.GetZAIIsotopicQuantity(94,238,0);
+	Pu9    	   = isotopicvector.GetZAIIsotopicQuantity(94,239,0);
+	Pu10   	   = isotopicvector.GetZAIIsotopicQuantity(94,240,0);
+	Pu11   	   = isotopicvector.GetZAIIsotopicQuantity(94,241,0);
+	Pu12   	   = isotopicvector.GetZAIIsotopicQuantity(94,242,0);
+	Am1        = isotopicvector.GetZAIIsotopicQuantity(95,241,0);
+
+	teneur = (Pu8+Pu9+Pu10+Pu11+Pu12+Am1)/(Pu8+Pu9+Pu10+Pu11+Pu12+Am1+U8+U5+U4); //prop mol. Pu
+
+	double TOTPU=(Pu8+Pu9+Pu10+Pu11+Pu12+Am1);
+
+	Pu8 = Pu8  / TOTPU;
+	Pu9 = Pu9  / TOTPU;
+	Pu10= Pu10 / TOTPU;
+	Pu11= Pu11 / TOTPU;
+	Pu12= Pu12 / TOTPU;
+	Am1 = Am1  / TOTPU;
+
+	U5_enrichment = U5 / UTOT;
+
+	Time=fMLP_Time[TimeStep];
+
+	if(Pu8 + Pu9 + Pu10 + Pu11 + Pu12 + Am1 > 1.00001 )//?????1.00001??? I don't know it! goes in condition if =1 !! may be float/double issue ...
 	{
-		int Z=-2;
-		int A=-2;
-		int I=-2;
-		int Reaction=-2;
-		int TimeStep=-2;
-		ReadWeightFileStep( fWeightFiles[i], Z, A, I, Reaction, TimeStep);
-
-		ZAI zaitmp = ZAI(Z,A,I);
-
-		pair< map<ZAI, TGraph*>::iterator, bool> IResult;
-
-		IResult = ExtrapolatedXS[Reaction].insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph() ) );
-
-		if( IResult.second )
-		{
-			(IResult.first)->second->SetPoint(0, (double)GetMLPTime()[TimeStep], ExecuteTMVAStep(fWeightFiles[i]) );
-		}
-		else
-		{
-			(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)GetMLPTime()[TimeStep], ExecuteTMVAStep(fWeightFiles[i]) );
-		}
-
+		cout<<"!!!!!!!!!!!ERRORR!!!!!!!!!!!!"<<endl;
+		cout<<Pu8<<" "<<Pu9<<" "<<Pu10<<" "<<Pu11<<" "<<Pu12<<" "<<Am1<<endl;
+		exit(0);
 	}
+	// All value are molar (!weight)
 
-	system( "rm InputTMP.root" );
-	/**********Sorting TGraph*********/
-	for(int x=0;x<3;x++)
-	{	map<ZAI,TGraph*>::iterator it;
-		for(it = ExtrapolatedXS[x].begin(); it != ExtrapolatedXS[x].end(); it++)
-			it->second->Sort();
-	}
-	/**********Filling Matrices*/
-	EvolutionDataFromMLP.SetFissionXS(ExtrapolatedXS[0]);
-	EvolutionDataFromMLP.SetCaptureXS(ExtrapolatedXS[1]);
-	EvolutionDataFromMLP.Setn2nXS(ExtrapolatedXS[2]);
+	InputTree->Fill();
 
-	//cout<<"=====Evolution Data Built====="<<endl;
-	return EvolutionDataFromMLP;
-}
-//________________________________________________________________________
-EvolutionData XSM_MLP_PWR_MOX::GetCrossSections(IsotopicVector IV)
-{
-	EvolutionData EV;
-	if(fIsStepTime)
-		EV=GetCrossSectionsStep(IV);
+	InputFile->Write();
+	delete InputTree;
+	InputFile-> Close();
+	delete InputFile;
+}*/
 
-	else
-		EV=GetCrossSectionsTime(IV);
-
-return EV;
-}
-//________________________________________________________________________
