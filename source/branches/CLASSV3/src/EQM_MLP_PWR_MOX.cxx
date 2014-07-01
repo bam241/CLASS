@@ -29,6 +29,23 @@
 EQM_MLP_MOX::EQM_MLP_MOX(string TMVAWeightPath)
 {
 	fTMVAWeightPath =  TMVAWeightPath;
+	
+
+
+	ZAI U8(92,238,0);
+	ZAI U5(92,235,0);
+	double U5_enrich= 0.0025;
+
+	ZAI Pu6(94,236,0);
+	ZAI Pu8(94,238,0);
+	ZAI Pu9(94,239,0);
+	ZAI Pu0(94,240,0);
+	ZAI Pu1(94,241,0);
+	ZAI Pu2(94,242,0);
+	ZAI Pu4(94,244,0);
+
+	fFissileList = Pu6*1+ Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1+Pu4*1;
+	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
 }
 //________________________________________________________________________
 void EQM_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
