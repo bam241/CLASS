@@ -5,7 +5,7 @@
 
 
 //CLASS library
-#include "CLASS.hxx"
+#include "Scenario.hxx"
 #include "CLASSObject.hxx"
 #include "CLASSFacility.hxx"
 #include "Reactor.hxx"

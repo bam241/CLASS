@@ -1,5 +1,5 @@
 #include "CLASSFacility.hxx"
-#include "CLASS.hxx"
+#include "Scenario.hxx"
 
 using namespace std;
 

@@ -1,4 +1,4 @@
-#include "CLASS.hxx"
+#include "Scenario.hxx"
 
 #include "Storage.hxx"
 #include "Reactor.hxx"
@@ -45,7 +45,7 @@ string dtoa(double num)
 
 
 //________________________________________________________________________
-CLASS::CLASS()
+Scenario::Scenario()
 {
 
 
@@ -67,14 +67,14 @@ CLASS::CLASS()
 
 	// Warning
 
-	cout	<< "!!INFO!! !!!CLASS!!! A Parc has been define :" << endl;
+	cout	<< "!!INFO!! !!!Scenario!!! A Parc has been define :" << endl;
 	cout	<< "\t Print set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
 	cout	<< "\t Absolute Time set at " << (double)(fAbsoluteTime/3600/24/365.25) << " year" << endl;
 	cout	<< "\t StockManagement set at : true" << endl;
 	cout	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
 	cout	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl << endl;
 
-	GetLog()->fLog 	<< "!!INFO!! !!!CLASS!!! Parc has been define :" << endl;
+	GetLog()->fLog 	<< "!!INFO!! !!!Scenario!!! Parc has been define :" << endl;
 	GetLog()->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
 	GetLog()->fLog	<< "\t StockManagement set at : true" << endl;
 	GetLog()->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
@@ -84,7 +84,7 @@ CLASS::CLASS()
 
 }
 //________________________________________________________________________
-CLASS::CLASS(LogFile* Log)
+Scenario::Scenario(LogFile* Log):CLASSObject(Log)
 {
 
 
@@ -100,20 +100,19 @@ CLASS::CLASS(LogFile* Log)
 	fOutFile = 0;
 	fOutT = 0;
 
-	SetLog(Log);
 	fParcPower = 0;
 
 
 	// Warning
 
-	cout	<< "!!INFO!! !!!CLASS!!! A Parc has been define :" << endl;
+	cout	<< "!!INFO!! !!!Scenario!!! A Parc has been define :" << endl;
 	cout	<< "\t Print set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
 	cout	<< "\t Absolute Time set at " << (double)(fAbsoluteTime/3600/24/365.25) << " year" << endl;
 	cout	<< "\t StockManagement set at : true" << endl;
 	cout	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
 	cout	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl << endl;
 
-	GetLog()->fLog 	<< "!!INFO!! !!!CLASS!!! Parc has been define :" << endl;
+	GetLog()->fLog 	<< "!!INFO!! !!!Scenario!!! Parc has been define :" << endl;
 	GetLog()->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
 	GetLog()->fLog	<< "\t StockManagement set at : true" << endl;
 	GetLog()->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
@@ -123,7 +122,7 @@ CLASS::CLASS(LogFile* Log)
 
 }
 //________________________________________________________________________
-CLASS::CLASS(double abstime)
+Scenario::Scenario(double abstime)
 {
 
 	fNewTtree = true;
@@ -146,13 +145,13 @@ CLASS::CLASS(double abstime)
 
 	// Warning
 
-	cout	<< "!!INFO!! !!!CLASS!!! A Parc has been define :" << endl;
+	cout	<< "!!INFO!! !!!Scenario!!! A Parc has been define :" << endl;
 	cout	<< "\t Print set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
 	cout	<< "\t StockManagement set at : true" << endl;
 	cout	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
 	cout	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl;
 
-	GetLog()->fLog 	<< "!!INFO!! !!!CLASS!!! Parc has been define :" << endl;
+	GetLog()->fLog 	<< "!!INFO!! !!!Scenario!!! Parc has been define :" << endl;
 	GetLog()->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
 	GetLog()->fLog	<< "\t StockManagement set at : true" << endl;
 	GetLog()->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
@@ -164,7 +163,7 @@ CLASS::CLASS(double abstime)
 
 
 //________________________________________________________________________
-CLASS::~CLASS()
+Scenario::~Scenario()
 {
 
 #pragma omp single
@@ -174,7 +173,7 @@ CLASS::~CLASS()
 }
 
 //________________________________________________________________________
-void CLASS::AddPool(Pool* Pool)
+void Scenario::AddPool(Pool* Pool)
 {
 
 
@@ -209,7 +208,7 @@ void CLASS::AddPool(Pool* Pool)
 }
 
 //________________________________________________________________________
-void CLASS::AddReactor(Reactor* reactor)
+void Scenario::AddReactor(Reactor* reactor)
 {
 
 	fReactor.push_back(reactor);
@@ -244,7 +243,7 @@ void CLASS::AddReactor(Reactor* reactor)
 }
 
 //________________________________________________________________________
-void CLASS::AddStorage(Storage* storage)
+void Scenario::AddStorage(Storage* storage)
 {
 
 	fStorage.push_back(storage);
@@ -277,7 +276,7 @@ void CLASS::AddStorage(Storage* storage)
 
 }
 //________________________________________________________________________
-void CLASS::AddFabricationPlant(FabricationPlant* fabricationplant)
+void Scenario::AddFabricationPlant(FabricationPlant* fabricationplant)
 {
 
 	fFabricationPlant.push_back(fabricationplant);
@@ -308,7 +307,7 @@ void CLASS::AddFabricationPlant(FabricationPlant* fabricationplant)
 		fOutT->Branch(fFabricationPlant.back()->GetName(), "FabricationPlant", &fFabricationPlant.back());
 }
 //________________________________________________________________________
-map<cSecond,int> CLASS::GetTheBackEndTimePath(Reactor* reactor)
+map<cSecond,int> Scenario::GetTheBackEndTimePath(Reactor* reactor)
 {
 	cSecond step = 0;
 	map<cSecond, int> TheBackEndTimePath;
@@ -339,7 +338,7 @@ map<cSecond,int> CLASS::GetTheBackEndTimePath(Reactor* reactor)
 }
 
 //________________________________________________________________________
-void CLASS::BuildTimeVector(cSecond t)
+void Scenario::BuildTimeVector(cSecond t)
 {
 	fTimeStep.clear();
 	fTimeStep.insert( pair<cSecond ,int>(t,1) );
@@ -520,7 +519,7 @@ void CLASS::BuildTimeVector(cSecond t)
 
 }
 //________________________________________________________________________
-void CLASS::OldBuildTimeVector(cSecond t)
+void Scenario::OldBuildTimeVector(cSecond t)
 {
 	fTimeStep.clear();
 	fTimeStep.insert( pair<cSecond ,int>(t,1) );
@@ -673,7 +672,7 @@ void CLASS::OldBuildTimeVector(cSecond t)
 //___________________________ Evolution Method ___________________________
 //________________________________________________________________________
 
-void CLASS::PoolEvolution()
+void Scenario::PoolEvolution()
 {
 
 #pragma omp parallel for
@@ -685,7 +684,7 @@ void CLASS::PoolEvolution()
 
 }
 
-void CLASS::StorageEvolution()
+void Scenario::StorageEvolution()
 {
 
 #pragma omp parallel for
@@ -695,7 +694,7 @@ void CLASS::StorageEvolution()
 
 }
 
-void CLASS::FabricationPlantEvolution()
+void Scenario::FabricationPlantEvolution()
 {
 
 	//#pragma omp parallel for
@@ -706,7 +705,7 @@ void CLASS::FabricationPlantEvolution()
 }
 
 //________________________________________________________________________
-void CLASS::ReactorEvolution()
+void Scenario::ReactorEvolution()
 {
 
 	fParcPower = 0;
@@ -722,7 +721,7 @@ void CLASS::ReactorEvolution()
 }
 
 //________________________________________________________________________
-void CLASS::Evolution(double t)
+void Scenario::Evolution(double t)
 {
 
 
@@ -771,7 +770,7 @@ void CLASS::Evolution(double t)
 
 }
 
-void CLASS::ProgressPrintout(cSecond t)
+void Scenario::ProgressPrintout(cSecond t)
 {
 
 	double Time = (fAbsoluteTime-fStartingTime)/3600/24/365.25 ;
@@ -801,7 +800,7 @@ void CLASS::ProgressPrintout(cSecond t)
 //________________________________________________________________________
 //______________________________ Out Method ______________________________
 //________________________________________________________________________
-void CLASS::UpdateParc()
+void Scenario::UpdateParc()
 {
 
 	ResetQuantity();
@@ -826,7 +825,7 @@ void CLASS::UpdateParc()
 
 
 
-void CLASS::ResetQuantity()
+void Scenario::ResetQuantity()
 {
 
 
@@ -840,7 +839,7 @@ void CLASS::ResetQuantity()
 }
 
 //________________________________________________________________________
-void CLASS::OpenOutputTree()
+void Scenario::OpenOutputTree()
 {
 
 
@@ -871,7 +870,7 @@ void CLASS::OpenOutputTree()
 	GetLog()->fLog <<  "\t ...OK!" << endl;
 
 }
-void CLASS::CloseOutputTree()
+void Scenario::CloseOutputTree()
 {
 
 
@@ -895,7 +894,7 @@ void CLASS::CloseOutputTree()
 	}
 }
 //________________________________________________________________________
-void CLASS::OutAttach()
+void Scenario::OutAttach()
 {
 
 	ResetQuantity();
@@ -939,7 +938,7 @@ void CLASS::OutAttach()
 }
 
 //________________________________________________________________________
-void CLASS::Write()
+void Scenario::Write()
 {
 
 
@@ -948,7 +947,7 @@ void CLASS::Write()
 }
 
 //________________________________________________________________________
-void CLASS::Print()
+void Scenario::Print()
 {
 
 	for(int i = 0; i < (int) fPool.size();i++)

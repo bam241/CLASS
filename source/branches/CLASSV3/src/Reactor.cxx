@@ -5,7 +5,7 @@
 #include "Pool.hxx"
 #include "FabricationPlant.hxx"
 #include "Storage.hxx"
-#include "CLASS.hxx"
+#include "Scenario.hxx"
 #include "CLASSHeaders.hxx"
 
 #include "LogFile.hxx"

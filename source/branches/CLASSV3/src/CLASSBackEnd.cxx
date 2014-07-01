@@ -1,7 +1,7 @@
 #include "CLASSBackEnd.hxx"
 
 #include "DecayDataBank.hxx"
-#include "CLASS.hxx"
+#include "Scenario.hxx"
 #include "LogFile.hxx"
 
 

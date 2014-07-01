@@ -15,7 +15,7 @@
 #include "CLASSFacility.hxx"
 #include "IsotopicVector.hxx"
 #include "EvolutionData.hxx"
-#include "CLASS.hxx"
+#include "Scenario.hxx"
 #include "Storage.hxx"
 #include "Reactor.hxx"
 #include "LogFile.hxx"

@@ -6,7 +6,7 @@
 #include "DecayDataBank.hxx"
 #include "PhysicModels.hxx"
 #include "IsotopicVector.hxx"
-#include "CLASS.hxx"
+#include "Scenario.hxx"
 #include "CLASSHeaders.hxx"
 #include "LogFile.hxx"
 
