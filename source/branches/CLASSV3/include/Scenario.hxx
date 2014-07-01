@@ -1,5 +1,5 @@
-#ifndef _CLASS_HXX_
-#define _CLASS_HXX_
+#ifndef _SCENARIO_HXX_
+#define _SCENARIO_HXX_
 /*!
  \file
  \brief Header file for CLASS classes. 
@@ -28,8 +28,8 @@ class Storage;
 
 //-----------------------------------------------------------------------------//
 /*!
-Define a CLASS Parc.
-The aim of these class is to manage the parc and its evolution and to lead all Storage, FabricationPlant, Reactor, Pool.
+Define a Scenario .
+The aim of these Scenario is to manage the park and its evolution and to lead all Storage, FabricationPlant, Reactor, Pool.
 
 
  @author BaM
@@ -39,7 +39,7 @@ The aim of these class is to manage the parc and its evolution and to lead all S
 //________________________________________________________________________
 
 
-class CLASS : public CLASSObject
+class Scenario : public CLASSObject
 {
 public :
 
@@ -50,24 +50,24 @@ public :
 	 */
 	//@{
 
-	CLASS();		///< Normal Constructor.
+	Scenario();		///< Normal Constructor.
 
 
 
-	CLASS(LogFile* Log);	///< Log Constructor.
+	Scenario(LogFile* Log);	///< Log Constructor.
  	/*!
 	 Use to load a LogFile
 	 \param LogFile: LogFile used for the log...
 	 */
 
 
-	CLASS(double abstime);	///< Time Constructor.
+	Scenario(double abstime);	///< Time Constructor.
  	/*!
 	 Use to set the starting time of the Parc
 	 \param abstime: Starting time of the Parc in second
 	 */
 
-	~CLASS();	///< Normal Destructor.
+	~Scenario();	///< Normal Destructor.
 	//@}
 
 

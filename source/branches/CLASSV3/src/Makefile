@@ -13,7 +13,7 @@ ROOTGLIBS	= `root-config --glibs`
 ######### nothing to change from here #########
 INCLUDES	= $(LOCALINC)/*.hxx
 LIBNAME 	= CLASSpkg
-OBJS		= 	CLASS.o \
+OBJS		= 	Scenario.o \
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAIMass.o \
 			ZAI.o ZAIDict.o \

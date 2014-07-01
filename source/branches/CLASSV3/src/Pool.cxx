@@ -3,7 +3,7 @@
 #include "DecayDataBank.hxx"
 #include "IsotopicVector.hxx"
 #include "Storage.hxx"
-#include "CLASS.hxx"
+#include "Scenario.hxx"
 #include "LogFile.hxx"
 
 #include <sstream>

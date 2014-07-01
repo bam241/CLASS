@@ -5,7 +5,7 @@
 #include "FuelDataBank.hxx"
 #include "DecayDataBank.hxx"
 #include "IsotopicVector.hxx"
-#include "CLASS.hxx"
+#include "Scenario.hxx"
 #include "CLASSHeaders.hxx"
 #include "LogFile.hxx"
 
