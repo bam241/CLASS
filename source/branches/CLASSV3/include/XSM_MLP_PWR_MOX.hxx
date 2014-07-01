@@ -42,7 +42,7 @@ public :
 	//@{
 
 	XSM_MLP_PWR_MOX(LogFile* Log,string TMVA_Weight_Directory,string InformationFile="",bool IsTimeStep=true);	
-	~XSM_MLP_PWR_MOX() {;}
+	~XSM_MLP_PWR_MOX(); 
 	//{
 
 
@@ -50,29 +50,30 @@ public :
 
 
  private :
-	void SetDataBaseInformation(); //<! Read information file and fill HM mass, Power, time vector
+	void GetDataBaseInformation(); //<! Read information file and fill HM mass, Power, time vector
 	vector<double> GetMLPTime() {return fMLP_Time; }
 
  	void GetMLPWeightFiles();
  	void ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction) ;
  	double ExecuteTMVA(string WeightFile);
- 	void CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep);
+ 	void CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep=0);
  	EvolutionData GetCrossSectionsTime(IsotopicVector IV) ;
 
  	void ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &Reaction, int &TimeStep) ;
- 	double ExecuteTMVAStep(string WeightFile);
- 	void CreateTMVAInputTreeStep(IsotopicVector isotopicvector);
  	EvolutionData GetCrossSectionsStep(IsotopicVector IV) ;
 
 
 
  	vector<double> 	fMLP_Time;
- 	vector<string> 		fWeightFiles;
+ 	vector<string> 	fWeightFiles;
  	string fTMVAWeightFolder;
  	string fMLPInformationFile;
  	double fDataBasePower;
  	double fDataBaseHMMass;
  	bool fIsStepTime;
+
+ 	map<ZAI,string> fMapOfTMVAVariableNames;
+
 
 };
 
