@@ -12,6 +12,7 @@
  */
 
 #include "IsotopicVector.hxx"
+#include "CLASSObject.hxx"
 
 
 using namespace std;
@@ -28,11 +29,15 @@ using namespace std;
 //________________________________________________________________________
 
 
-class EquivalenceModel : public TObject
+class EquivalenceModel : public CLASSObject
 {
 	public :
 
-	EquivalenceModel() {}
+	EquivalenceModel();
+	EquivalenceModel(LogFile* log);
+
+	virtual ~EquivalenceModel();
+
 	/// virtueal method called to build a reprocessed fuel as a function of the burnup requierement the stock, mass....
 	/*!
 	 Build the fuel following the equivalance model with the proper requierment in term of mass burnup....
@@ -43,9 +48,10 @@ class EquivalenceModel : public TObject
 	 \param vector<IsotopicVector> FertilArray, isotopicvectors to use to get the fertil part of the fuel (if empty take it from the god)
 	 */
 	
-	virtual	 vector<double> BuildFuel(double BurnUp, double HMMass, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray )
-	{ vector<double> empty; return empty;}
+	virtual	 vector<double> BuildFuel(double BurnUp, double HMMass, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray );
 	//}
+	virtual void GuessLambda(double& lambda, int& StockID,int FirstStockID, int LastStockID, double DeltaM,double StockHM);
+	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp) {return 0;}
 
 	
 
@@ -58,11 +64,13 @@ class EquivalenceModel : public TObject
 	
 	protected :
 
+	IsotopicVector fFertileList;	//!< contain the list of zai, needed as fertile, taken in a stock before fabrication
+					//!< if no stock are provided, will take the isotopic vector in the Park income
 
-	IsotopicVector fFertileList;
-	IsotopicVector fFissileList;
+	IsotopicVector fFissileList;	//!< contain the list of zai, needed as fissile, taken in a stock before fabrication
+					//!< if no stock are provided, will take the isotopic vector in the Park income
 
- 	
+
 };
 
 #endif

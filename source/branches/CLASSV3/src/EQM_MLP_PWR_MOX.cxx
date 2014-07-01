@@ -1,4 +1,3 @@
-#include "EquivalenceModel.hxx"
 #include "EQM_MLP_PWR_MOX.hxx"
 #include "LogFile.hxx"
 #include "StringLine.hxx"
@@ -14,8 +13,9 @@
 #include "TMVA/Reader.h"
 #include "TMVA/Tools.h"
 #include "TMVA/MethodCuts.h"
+#include "TFile.h"
 
-#include "CLASSHeaders.hxx"
+#include "IsotopicVector.hxx"
 
 //________________________________________________________________________
 //
@@ -47,6 +47,7 @@ EQM_MLP_MOX::EQM_MLP_MOX(string TMVAWeightPath)
 	fFissileList = Pu6*1+ Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1+Pu4*1;
 	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
 }
+
 //________________________________________________________________________
 void EQM_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
 {
@@ -191,7 +192,7 @@ void EQM_MLP_MOX::GuessLambda(double& lambda, int& StockID,int FirstStockID, int
 
 		if(lambda >= 1) //this stock is not enought go to next one
 		{
-			lambda=1;
+			lambda = 1;
 
 		if( !( StockID+1 == LastStockID) ) //if its the last stock don't try to look the next one (segfault otherwize)
 				StockID++;
@@ -219,6 +220,7 @@ void EQM_MLP_MOX::GuessLambda(double& lambda, int& StockID,int FirstStockID, int
 	}
 
 }
+
 //________________________________________________________________________
 vector<double> EQM_MLP_MOX::BuildFuel(double BurnUp, double HMMass,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray)
 {

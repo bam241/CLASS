@@ -1,7 +1,7 @@
 #ifndef _EQM_MLP_MOX_HXX
 #define _EQM_MLP_MOX_HXX
 
-#include "CLASSHeaders.hxx"
+#include "EquivalenceModel.hxx"
 
 /*!
  \file
@@ -26,10 +26,8 @@ using namespace std;
  */
 //________________________________________________________________________
 
-class IsotopicVector;
 
-
-class EQM_MLP_MOX  : public EquivalenceModel
+class EQM_MLP_MOX : public EquivalenceModel
 {
 	public :
 	
@@ -47,11 +45,11 @@ class EQM_MLP_MOX  : public EquivalenceModel
 	
 	vector<double>  BuildFuel(double BurnUp, double HMMass,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray = vector<IsotopicVector>());
 	//}
-	
+	void GuessLambda(double& lambda, int& StockID,int FirstStockID, int LastStockID, double DeltaM,double StockHM);
+
 	private :
 	void CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);
 	double ExecuteTMVA();
-	void GuessLambda(double& lambda, int& StockID,int FirstStockID, int LastStockID, double DeltaM,double StockHM);
 
 
 	string fTMVAWeightPath;
