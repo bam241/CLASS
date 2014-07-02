@@ -16,7 +16,6 @@
 using namespace std;
 typedef long long int cSecond;
 
-class CLASS;
 class LogFile;
 class DecayDataBank;
 

@@ -24,7 +24,7 @@ OBJS		= 	Scenario.o \
 			FabricationPlant.o FabricationPlantDict.o \
 			Pool.o PoolDict.o\
 			Reactor.o ReactorDict.o \
-			FuelDataBank.o DecayDataBank.o \
+			DecayDataBank.o \
 			DynamicalSystem.o\
 			EvolutionData.o EvolutionDataDict.o \
 			IrradiationModel.o IM_RK4.o \
@@ -43,7 +43,7 @@ ROOTOBJS	= 	CLASSObject.o CLASSObjectDict.o\
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAIMass.o \
 			ZAI.o ZAIDict.o \
-			FuelDataBank.o DecayDataBank.o \
+			DecayDataBank.o \
 			DynamicalSystem.o\
 			EvolutionData.o EvolutionDataDict.o \
 			PhysicModels.o \
