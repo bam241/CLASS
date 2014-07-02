@@ -17,7 +17,6 @@ using namespace std;
 typedef long long int cSecond;
 
 
-class CLASS;
 class CLASSBackEnd;
 //class Pool;
 class EvolutionData;

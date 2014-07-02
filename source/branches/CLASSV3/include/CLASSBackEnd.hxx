@@ -21,8 +21,6 @@
 using namespace std;
 typedef long long int cSecond;
 
-class CLASS;
-
 //-----------------------------------------------------------------------------//
 /*!
  Define a CLASS Facility.
