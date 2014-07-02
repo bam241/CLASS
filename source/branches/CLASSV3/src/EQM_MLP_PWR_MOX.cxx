@@ -116,14 +116,15 @@ double EQM_MLP_MOX::ExecuteTMVA(TTree* theTree)
 
 	// Create a set of variables and declare them to the reader
 	// - the variable names MUST corresponds in name and type to those given in the weight file(s) used
-	Float_t Pu8,Pu9,Pu10,Pu11,Pu12,Am1,BU,teneur;
-	reader->AddVariable( "Pu8"  ,&Pu8 );
-	reader->AddVariable( "Pu9"  ,&Pu9 );
-	reader->AddVariable( "Pu10" ,&Pu10);
-	reader->AddVariable( "Pu11" ,&Pu11);
-	reader->AddVariable( "Pu12" ,&Pu12);
-	reader->AddVariable( "Am1"  ,&Am1 );
-	reader->AddVariable( "BU"   ,&BU );
+	Float_t Pu8,Pu9,Pu10,Pu11,Pu12,Am1,BU,U5_enrichment;
+	reader->AddVariable( "Pu8"  		,&Pu8 );
+	reader->AddVariable( "Pu9"  		,&Pu9 );
+	reader->AddVariable( "Pu10" 		,&Pu10);
+	reader->AddVariable( "Pu11" 		,&Pu11);
+	reader->AddVariable( "Pu12" 		,&Pu12);
+	reader->AddVariable( "Am1"  		,&Am1 );
+	reader->AddVariable( "U5_enrichment",&U5_enrichment );
+	reader->AddVariable( "BU"   		,&BU );
 
 
 	// --- Book the MVA methods
@@ -132,14 +133,15 @@ double EQM_MLP_MOX::ExecuteTMVA(TTree* theTree)
 	TString methodName = "MLP method";
 	reader->BookMVA( methodName, fTMVAWeightPath );
 
-	theTree->SetBranchAddress("teneur",&teneur);
-	theTree->SetBranchAddress( "Pu8"  ,&Pu8   );
-	theTree->SetBranchAddress( "Pu9"  ,&Pu9   );
-	theTree->SetBranchAddress( "Pu10" ,&Pu10  );
-	theTree->SetBranchAddress( "Pu11" ,&Pu11  );
-	theTree->SetBranchAddress( "Pu12" ,&Pu12  );
-	theTree->SetBranchAddress( "Am1"  ,&Am1   );
-	theTree->SetBranchAddress( "BU"   ,&BU 	  );
+	//theTree->SetBranchAddress("teneur",&teneur);
+	theTree->SetBranchAddress( "Pu8"  			,&Pu8   );
+	theTree->SetBranchAddress( "Pu9"  			,&Pu9   );
+	theTree->SetBranchAddress( "Pu10" 			,&Pu10  );
+	theTree->SetBranchAddress( "Pu11" 			,&Pu11  );
+	theTree->SetBranchAddress( "Pu12" 			,&Pu12  );
+	theTree->SetBranchAddress( "Am1"  			,&Am1   );
+	theTree->SetBranchAddress( "U5_enrichment"  ,&U5_enrichment   );
+	theTree->SetBranchAddress( "BU"   			,&BU 	);
 
 	theTree->GetEntry(0);
 	Float_t val = (reader->EvaluateRegression( methodName ))[0];
