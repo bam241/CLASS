@@ -41,9 +41,9 @@ XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(LogFile* Log,string TMVA_Weight_Directory,strin
 	fIsStepTime=IsTimeStep;
 	fTMVAWeightFolder = TMVA_Weight_Directory;
 	if(InformationFile=="")
-		fMLPInformationFile=TMVA_Weight_Directory+"/Data_Base_Info.nfo";
+		fMLPInformationFile = TMVA_Weight_Directory+"/Data_Base_Info.nfo";
 	else
-		fMLPInformationFile=InformationFile;
+		fMLPInformationFile=fTMVAWeightFolder+InformationFile;
 
 	GetMLPWeightFiles();
 	GetDataBaseInformation();
