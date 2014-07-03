@@ -68,7 +68,7 @@ Scenario::Scenario()
 	// Warning
 
 	cout	<< "!!INFO!! !!!Scenario!!! A Parc has been define :" << endl;
-	cout	<< "\t Print set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	cout	<< "\t Print step at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
 	cout	<< "\t Absolute Time set at " << (double)(fAbsoluteTime/3600/24/365.25) << " year" << endl;
 	cout	<< "\t StockManagement set at : true" << endl;
 	cout	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;

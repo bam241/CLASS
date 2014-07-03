@@ -8,7 +8,7 @@
 //
 //
 //________________________________________________________________________
-PhysicModels::PhysicModels(XSModel* XS,EquivalenceModel* EM,IrradiationModel* IM )
+PhysicModels::PhysicModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM )
 {
 
 		fXSModel		= XS;

@@ -52,7 +52,7 @@ class PhysicModels : public CLASSObject
 	 */
 	//@{
 
-	PhysicModels(XSModel* XS,EquivalenceModel* EM,IrradiationModel* IM );
+	PhysicModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM );
 
 	~PhysicModels() {;}
 	//{

@@ -18,7 +18,7 @@
 using namespace std;
 
 
-
+class IsotopicVector;
 
 ///< A ZAIMass .
 
@@ -37,7 +37,11 @@ public:
 	map<ZAI, double> fZAIMass; //! ZAI mass list
 
 
-	double GetMass(const int Z, const int A ) const;
+	double GetMass(ZAI zai ) const;
+	double GetMass(const int Z, const int A ) const { return GetMass( ZAI(Z, A, 0) ); }
+
+	double GetMass(const IsotopicVector IV) const; //return Mass of HM in tons
+
 
 };
 

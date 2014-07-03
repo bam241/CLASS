@@ -69,6 +69,8 @@ EQM_LIN_PWR_MOX::~EQM_LIN_PWR_MOX()
 vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray)
 {
 
+	cout << FissilArray.size() << endl;
+
 	//-----------------------------------------------------------------------------//
 	//-----------------------------------------------------------------------------//
 	//-----------------------------------------------------------------------------//
@@ -159,6 +161,7 @@ vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 
 		if(StockFactionToUse < 0)
 		{
+			stock.Print();
 			cout << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use "<< endl;
 			GetLog()->fLog << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use" << endl;
 			lambda[N_FissilStock_OnCheck] = 0.;

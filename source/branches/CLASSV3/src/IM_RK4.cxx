@@ -30,7 +30,7 @@ using namespace std;
 
 
 //________________________________________________________________________
-IM_RK4::IM_RK4():DynamicalSystem(), IrradiationModel()
+IM_RK4::IM_RK4():IrradiationModel(), DynamicalSystem()
 {
 	fTheNucleiVector = 0;
 	fTheMatrix = 0;
@@ -40,9 +40,8 @@ IM_RK4::IM_RK4():DynamicalSystem(), IrradiationModel()
 }
 
 
-IM_RK4::IM_RK4(LogFile* log):DynamicalSystem(), IrradiationModel(log)
+IM_RK4::IM_RK4(LogFile* log):IrradiationModel(log), DynamicalSystem()
 {
-
 	fTheNucleiVector = 0;
 	fTheMatrix = 0;
 

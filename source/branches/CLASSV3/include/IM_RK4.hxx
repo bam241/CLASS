@@ -32,7 +32,7 @@ class LogFile;
 
 class EvolutionData;
 
-class IM_RK4 : public DynamicalSystem, IrradiationModel
+class IM_RK4 : public IrradiationModel, DynamicalSystem
 {
 	
 	public :

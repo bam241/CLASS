@@ -191,7 +191,8 @@ IsotopicVector operator*(IsotopicVector const& IVa, IsotopicVector const& IVb)
 
 	IsotopicVector IVtmp;
 	IVtmp = IVa;
-	return IVtmp *= IVb;
+	IVtmp *= IVb;
+	return IVtmp;
 }
 
 //________________________________________________________________________
@@ -235,12 +236,14 @@ IsotopicVector& IsotopicVector::operator*=(const IsotopicVector& IVa)
 	{
 		map<ZAI, double>::iterator IVa_isotopicIT = IVA_isotopicquantity.find( (*isotopicIT).first );
 
-		if(IVa_isotopicIT != IVA_isotopicquantity.end())
-		(*isotopicIT).second *= (*IVa_isotopicIT).second;
+		if( IVa_isotopicIT != IVA_isotopicquantity.end() )
+			(*isotopicIT).second *= (*IVa_isotopicIT).second;
 		else
-		(*isotopicIT).second *= 0;
+			(*isotopicIT).second = 0;
 
 	}
+
+	fIsotopicQuantity = isotopicquantity;
 
 	return *this;
 
@@ -492,11 +495,13 @@ IsotopicVector	IsotopicVector::GetThisComposition(IsotopicVector IV) const
 {
 	IsotopicVector IVtmp;
 	map<ZAI ,double > IsotopicQuantity = IV.GetIsotopicQuantity();
+	map<ZAI ,double > THISIsotopicQuantity = (*this).GetIsotopicQuantity();
+
 	map<ZAI ,double >::iterator it;
 	for( it = IsotopicQuantity.begin(); it != IsotopicQuantity.end(); it++)
 	{
-		map<ZAI ,double >::iterator it2 = GetIsotopicQuantity().find((*it).first);
-		if(it2 != GetIsotopicQuantity().end())
+		map<ZAI ,double >::iterator it2 = THISIsotopicQuantity.find( (*it).first );
+		if(it2 != THISIsotopicQuantity.end())
 			IVtmp += (*it2).first * (*it2).second ;
 
 	}
@@ -507,43 +512,15 @@ IsotopicVector	IsotopicVector::GetThisComposition(IsotopicVector IV) const
 //________________________________________________________________________
 double IsotopicVector::GetTotalMass() const
 {
-	double TotalMass = 0;
-	double AVOGADRO=6.02214129e23;
-	map<ZAI ,double >::iterator it;
-	map<ZAI ,double > isotopicquantity = GetIsotopicQuantity();
-	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
-	{
-		ZAI zai = ((*it).first);
-		double MolarMass = zai.GetMass();
-		TotalMass += (*it).second/AVOGADRO * MolarMass ;
-	}
-
-
-
-	return TotalMass*1e-6;//in tons
-
+	return cZAIMass.GetMass(*this);//in tons
 }
 //________________________________________________________________________
 
 double IsotopicVector::MeanMolar() const
 {
-	double MeanMolar = 0;
-	map<ZAI ,double >::iterator it;
-	map<ZAI ,double > isotopicquantity = GetIsotopicQuantity();
+	double AVOGADRO = 6.02214129e23;
 
-	double NTot=0;
-	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
-	NTot+= (*it).second ;
-
-	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
-	{
-		ZAI zai = ((*it).first);
-		double MolarMass = zai.GetMass();
-		MeanMolar += (*it).second/NTot * MolarMass ;
-	}
-
-
-	return MeanMolar;
+	return GetTotalMass() * 1e6 * AVOGADRO / GetActinidesComposition().GetSumOfAll();
 
 }
 //________________________________________________________________________

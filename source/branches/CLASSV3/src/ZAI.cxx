@@ -20,7 +20,6 @@ ZAI ZAI::operator=(ZAI IVa)
 	fZ = IVa.Z();
 	fA = IVa.A();
 	fI = IVa.I();
-	fMass =  IVa.GetMass();
 	return *this;
 }
 
@@ -33,29 +32,24 @@ ZAI::ZAI()
 	fZ=0;
 	fA=0;
 	fI=0;
-	fMass=0;	
-		
+
 }
+
+
+//________________________________________________________________________
+ZAI::ZAI(int Z, int A, int I)
+{
+
+	fZ=Z;
+	fA=A;
+	fI=I;
+
+}
+
+
 ZAI::~ZAI()
 {
 		
 }
 
-//________________________________________________________________________
-ZAI::ZAI(int Z, int A, int I,bool IsMassSet)
-{
-		
-	fZ=Z;
-	fA=A;
-	fI=I;
-
-	if(!IsMassSet)
-		fMass=0;
-
-	else
-	{
-		fMass=cZAIMass.GetMass(Z,A);
-	}
-
-}
 
