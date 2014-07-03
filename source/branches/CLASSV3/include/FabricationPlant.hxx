@@ -87,14 +87,14 @@ public :
 
 	void SetDecayDataBank(DecayDataBank* decayDB) {fDecayDataBase = decayDB;}	//! Set the Decay DataBank
 
-	void	SetUpdateReferenceDBatEachStep(bool val){ fUpdateReferenceDBatEachStep = val;}	//!< Set fUpdateReferenceDBatEachStep variable
-
-	void	SetFiFo(bool bval = true)	{ fFiFo = bval;}	//!< Set the chronological priority (true for chronological, false unstead)
+	void SetFiFo(bool bval = true)	{ fFiFo = bval;}	//!< Set the chronological priority (true for chronological, false unstead)
 	
-	void	SetSubstitutionFuel(EvolutionData fuel);				//!< To use a subtition fuel if the fabrication fail (not enough material in stock)
+	void SetSubstitutionFuel(EvolutionData fuel);				//!< To use a subtition fuel if the fabrication fail (not enough material in stock)
 	
-	void	AddReactor(int reactorid, double creationtime)
+	void AddReactor(int reactorid, double creationtime)
 			{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }	//!< Add a new reactor
+
+	void SetReUsableStorage(Storage* store) { fReUsable = store;}
 	//@}
 
 
@@ -151,7 +151,6 @@ public :
 
 
 protected :
-	bool		fUpdateReferenceDBatEachStep;	///< Set to true if the Reference Evolution Product must be updated at each calculation step (in the DataBank calculation)
 
 //********* Internal Parameter *********//
 	IsotopicVector	 fSeparationLostFraction;	///< The speration efficiency Table

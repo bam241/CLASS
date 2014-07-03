@@ -45,7 +45,7 @@ public:
  	 \param Z : number of protons
  	 \param A : number of nucleons (A=0 means natural isotopes) 
  	*/
-	ZAI(int Z, int A, int I=0,bool IsMassSet=true);
+	ZAI(int Z, int A, int I=0);
 	//}
 
 
@@ -63,8 +63,6 @@ public:
 	int  I()	const	{ return fI; } //!< returns the Isomeric State
 	int  N()	const	{ return fA-fZ; } //!< returns the number of neutrons
 		
-	void SetMass(double m)	{ fMass=m; }	///< set the mass of a ZAI
-	double GetMass()		{ return fMass; }			///< get the mass of a ZAI
 	//@}
 
 
@@ -85,8 +83,7 @@ protected :
 	short	fZ;		///< number of protons
 	short	fA;		///< number of nucleons (A=0 means natural isotopes) 
 	short	fI;		///< Isomeric state
-	double	fMass;		///< Mass of a ZAI (from the BaseSummary.dat file
-	
+
 	ClassDef(ZAI,1);
 };
 

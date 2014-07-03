@@ -17,6 +17,7 @@
 #include "LogFile.hxx"
 
 #include "EvolutionData.hxx"
+#include "PhysicModels.hxx"
 #include "DecayDataBank.hxx"
 #include "StringLine.hxx"
 

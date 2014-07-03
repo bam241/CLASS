@@ -58,7 +58,6 @@ FabricationPlant::FabricationPlant(LogFile* log, double fabricationtime):CLASSFa
 	SetName("F_FabricationPLant.");
 
 	fFiFo = false;
-	fUpdateReferenceDBatEachStep = false;
 	fSubstitutionFuel = false;
 
 
@@ -173,15 +172,12 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 	double R_Power		= GetParc()->GetReactor()[ ReactorId ]->GetPower();
 
 	PhysicModels* FuelType = GetParc()->GetReactor()[ReactorId]->GetFuelType();
-	//PhysicModels* FuelType;
 
 	fFissileList = FuelType->GetEquivalenceModel()->GetFissileList();
 	BuildFissileArray();
 
 
 	fFertileList = FuelType->GetEquivalenceModel()->GetFertileList();
-
-
 
 
 	if(fFertileStorage.size() != 0)			// If the fertile need to be taken in stock
@@ -562,6 +558,7 @@ pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector
 	
 		//[0] = re-use ; [1] = waste
 	IsotopicVector LostPart  = isotopicvector.GetThisComposition(ExtractedList) * fSeparationLostFraction;
+
 	IsotopicVector SeparatedPart  = isotopicvector.GetThisComposition(ExtractedList) - LostPart;
 	LostPart = isotopicvector - SeparatedPart;
 

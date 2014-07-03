@@ -29,7 +29,7 @@ ZAIMass::ZAIMass()
 	while (infile>>Z>>A>>Name>>MassUnity>>MassDec>>error)
 	{
 		double Masse=MassUnity+MassDec*1e-6;
-		fZAIMass.insert( pair< ZAI,double >( ZAI(Z,A,0,false), Masse ) );
+		fZAIMass.insert( pair< ZAI,double >( ZAI(Z,A,0), Masse ) );
 	}
 
 	infile.close();
@@ -43,14 +43,32 @@ ZAIMass::~ZAIMass()
 }
 
 
-double ZAIMass::GetMass(const int Z,const int A) const
+double ZAIMass::GetMass(ZAI zai ) const
 {
 	map<ZAI,double> ZAIMasscpy = fZAIMass ;
-	map<ZAI,double>::iterator  MassIT = ZAIMasscpy.find( ZAI(Z,A,0,false) );
+	map<ZAI,double>::iterator  MassIT = ZAIMasscpy.find( ZAI(zai.Z(), zai.A(), 0) );
+
 	if(MassIT==fZAIMass.end())
-		return A;
-	
+		return zai.A();
 	else
 	   return MassIT->second;
+
+}
+
+
+double ZAIMass::GetMass(const IsotopicVector IV) const
+{
+
+	double TotalMass = 0;
+	double AVOGADRO=6.02214129e23;
+
+	map<ZAI ,double >::iterator it;
+	map<ZAI ,double > isotopicquantity = IV.GetIsotopicQuantity();
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+	{
+		TotalMass += (*it).second/AVOGADRO * GetMass( (*it).first ) ;
+	}
+
+	return TotalMass*1e-6;
 
 }

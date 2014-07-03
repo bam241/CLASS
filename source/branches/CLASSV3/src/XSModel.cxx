@@ -7,8 +7,6 @@
 //
 
 #include "XSModel.hxx"
-#include "CLASSHeaders.hxx"
-
 
 using namespace std;
 
