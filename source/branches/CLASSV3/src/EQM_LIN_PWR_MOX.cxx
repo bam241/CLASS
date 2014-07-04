@@ -60,6 +60,58 @@ EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(string WeightPath):EquivalenceModel()
 	
 }
 
+
+EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(LogFile* log, string WeightPath):EquivalenceModel(log)
+{
+	fWeightPath =  WeightPath;
+
+	ifstream DataDB(fWeightPath.c_str());							// Open the File
+	if(!DataDB)
+		cout << "!!Warning!! !!!EQM QUAD PWR MOX!!! \n Can't open \"" << fWeightPath << "\"\n" << endl;
+
+	string line;
+	int start = 0;	// First Get Fuel Parameter
+	getline(DataDB, line);
+
+	if( StringLine::NextWord(line, start, ' ') != "PARAM")
+	{
+		cout << "!!Bad Trouble!! !!!EQM QUAD PWR MOX!!! Bad Database file : " <<  fWeightPath << " Can't find the Parameter of the DataBase"<< endl;
+		exit (1);
+	}
+	while(start < (int)line.size())
+		fFuelParameter.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
+
+	cout << "!!INFO!! !!!EQM QUAD PWR MOX!!! " <<  fFuelParameter.size() << " have been read"<< endl;
+
+
+
+	//-----------------------------------------------------------------------------//
+	//-----------------------------------------------------------------------------//
+	//-----------------------------------------------------------------------------//
+	//-----------------------------------------------------------------------------//
+	//-----------------------------------------------------------------------------//
+	// ADD ENrichment of the U reading !!!!!!!!!!!!!!!!!!!!!!!!!!!!		       //
+	//-----------------------------------------------------------------------------//
+	//-----------------------------------------------------------------------------//
+	//-----------------------------------------------------------------------------//
+	//-----------------------------------------------------------------------------//
+
+	ZAI U8(92,238,0);
+	ZAI U5(92,235,0);
+	double U5_enrich= 0.0025;
+	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
+
+
+	ZAI Pu8(94,238,0);
+	ZAI Pu9(94,239,0);
+	ZAI Pu0(94,240,0);
+	ZAI Pu1(94,241,0);
+	ZAI Pu2(94,242,0);
+	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
+	
+	
+}
+
 EQM_LIN_PWR_MOX::~EQM_LIN_PWR_MOX()
 {
 
@@ -68,8 +120,6 @@ EQM_LIN_PWR_MOX::~EQM_LIN_PWR_MOX()
 //________________________________________________________________________
 vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray)
 {
-
-	cout << FissilArray.size() << endl;
 
 	//-----------------------------------------------------------------------------//
 	//-----------------------------------------------------------------------------//
@@ -94,11 +144,18 @@ vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 	IsotopicVector stock;
 
 	bool FuelBuild = false;
+	if(FissilArray.size() == 0)
+	{
+		for(int i = 0; i < (int)lambda.size(); i++)
+			lambda[i] = -1;
 
+		FuelBuild = true;
+	}
 	int N_FissilStock_OnCheck = 0;
 
 	while(!FuelBuild)
 	{
+
 		double nPu_0 = 0;
 		double MPu_0 = 0;
 		{
@@ -112,7 +169,6 @@ vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 			for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 				MPu_0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
 		}
-
 		stock = FissilArray[N_FissilStock_OnCheck];
 		double nPu_1 = 0;
 		double MPu_1 = 0;
@@ -148,23 +204,27 @@ vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 
 		double StockFactionToUse = 0;
 
-		double NT = HMMass*1e6 * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997 + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 );
+		double NT = HMMass*1e6 * Na / (cZAIMass.GetMass( ZAI(92,238,0) ) * 0.997
+					       + cZAIMass.GetMass( ZAI(92,235,0) ) * 0.003 );
 
 		double N1 = (BurnUp - fFuelParameter[6]) * NT;
 		double N2 = -Sum_AlphaI_nPuI0;
-		double N3 = -fFuelParameter[0] * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997 + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 ) * (HMMass*1e6 - MPu_0*1e6);
+		double N3 = -fFuelParameter[0] * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997
+						       + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 )
+							* (HMMass*1e6 - MPu_0*1e6);
 
 		double D1 = Sum_AlphaI_nPuI;
-		double D2 = -fFuelParameter[0] * MPu_1*1e6 * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997 + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 ) ;
+		double D2 = -fFuelParameter[0] * MPu_1*1e6 * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997
+								   + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 ) ;
 
 		StockFactionToUse = (N1 + N2 + N3) / (D1 + D2);
 
 		if(StockFactionToUse < 0)
 		{
-			stock.Print();
 			cout << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use "<< endl;
-			GetLog()->fLog << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use" << endl;
+			//GetLog()->fLog << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use" << endl;
 			lambda[N_FissilStock_OnCheck] = 0.;
+			N_FissilStock_OnCheck++;
 			FuelBuild = false;
 		}
 		else if( StockFactionToUse > 1 )
@@ -174,15 +234,6 @@ vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 			lambda[N_FissilStock_OnCheck] = 1;
 			N_FissilStock_OnCheck++;
 			FuelBuild = false;
-
-
-			if( N_FissilStock_OnCheck > (int) lambda.size() )	// Check if the last Fissil stock has been tested... quit if so...
-			{
-				for(int i = 0; i < (int)lambda.size(); i++)
-					lambda[i] = -1;
-
-				FuelBuild = true;
-			}
 		}
 		else
 		{
@@ -195,6 +246,14 @@ vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 			lambda.back() = U8_Quantity / FertilArray[0].GetSumOfAll();
 		}
 
+
+		if( N_FissilStock_OnCheck == (int) FissilArray.size() )	// Check if the last Fissil stock has been tested... quit if so...
+		{
+			for(int i = 0; i < (int)lambda.size(); i++)
+				lambda[i] = -1;
+
+			FuelBuild = true;
+		}
 	}
 
 
