@@ -14,3 +14,10 @@ XSModel::XSModel(): CLASSObject()
 {
 
 }
+
+
+
+XSModel::XSModel(LogFile* log): CLASSObject(log)
+{
+
+}

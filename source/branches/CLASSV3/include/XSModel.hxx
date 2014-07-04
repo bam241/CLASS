@@ -43,6 +43,7 @@ class XSModel : public CLASSObject
 	public : 
 
 	XSModel();
+	XSModel(LogFile* log);
 
 	virtual  EvolutionData GetCrossSections(IsotopicVector IV,double t=0) {return 0;} 
 
