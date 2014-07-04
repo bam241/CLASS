@@ -187,8 +187,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 		fFertileArray.push_back( fFertileList / fFertileList.GetTotalMass() * R_HM_Mass );
 	}
 
-
-	vector<double> LambdaArray =  FuelType->GetEquivalenceModel()->BuildFuel(R_HM_Mass, R_BU, fFissileArray, fFertileArray);
+	vector<double> LambdaArray =  FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fFissileArray, fFertileArray);
 
 
 	if(LambdaArray[0] != -1)
