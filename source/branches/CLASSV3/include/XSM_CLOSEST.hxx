@@ -54,14 +54,14 @@ public :
 	 */
 	//@{
  	EvolutionData GetCrossSections(IsotopicVector isotopicvector,double t=0) ; //!< Reason to live of this CLASS Return the closest Evolutiondata
-	map<IsotopicVector ,EvolutionData >	GetFuelDataBank()	const	{ return fFuelDataBank; }	//!< Return the FuelDataBank
-	string 					GetDataBaseIndex()	const	{ return fDataBaseIndex; }	//!< Return the index Name
-	string					GetFuelType()		const	{ return fFuelType; }		//!< Return the fuel type of the DB
-	vector<double>			GetFuelParameter()	const	{ return fFuelParameter; }	//!< Return the Fuel parameter of the DB
-	pair<double,double>		GetBurnUpRange()	const	{ return fBurnUpRange;}		//!< Return the BurnUp range of the DB
-	bool 					IsDefine(IsotopicVector IV)	const;					//!< True the key is define, false unstead
+	vector< EvolutionData >	GetFuelDataBank()	const	{ return fFuelDataBank; }	//!< Return the FuelDataBank
+	string 			GetDataBaseIndex()	const	{ return fDataBaseIndex; }	//!< Return the index Name
+	string			GetFuelType()		const	{ return fFuelType; }		//!< Return the fuel type of the DB
+	vector<double>		GetFuelParameter()	const	{ return fFuelParameter; }	//!< Return the Fuel parameter of the DB
+	pair<double,double>	GetBurnUpRange()	const	{ return fBurnUpRange;}		//!< Return the BurnUp range of the DB
+	bool 			IsDefine(IsotopicVector IV)	const;					//!< True the key is define, false unstead
 
-	map<double, EvolutionData>	GetDistancesTo(IsotopicVector isotopicvector, double t = 0) const;	//! Return a map containing the distance of each EvolutionData in the DataBase to the set IV at the t time
+	map<double, int>	GetDistancesTo(IsotopicVector isotopicvector, double t = 0);	//! Return a map containing the distance of each EvolutionData in the DataBase to the set IV at the t time
 	//@}
 
 	//********* Set Method *********//
@@ -71,11 +71,10 @@ public :
 	 */
 	//@{
 
-	void SetFuelDataBank(map< IsotopicVector ,EvolutionData > mymap)	{ fFuelDataBank = mymap; }	//!< Set the FuelDataBank map
+	void SetFuelDataBank(vector< EvolutionData > mymap)	{ fFuelDataBank = mymap; }	//!< Set the FuelDataBank map
 
-	void SetDataBaseIndex(string database) { fDataBaseIndex = database;; ReadDataBase(); }	//!< Set the Name of the database index
-
-	void SetOldReadMethod(bool val)			{ fOldReadMethod = val; ReadDataBase();}			///< use the old reading method
+	void SetDataBaseIndex(string database)	{ fDataBaseIndex = database;; ReadDataBase(); }	//!< Set the Name of the database index
+	void SetOldReadMethod(bool val)		{ fOldReadMethod = val; ReadDataBase();}			///< use the old reading method
 
 
 
@@ -107,8 +106,7 @@ public :
 
  private :
 
-	map<IsotopicVector, EvolutionData>	fFuelDataBank;		///< DataBanck map
-	map<IsotopicVector, EvolutionData>	fFuelDataBankCalculated;	///< Map of the already calculated EvolutionData (to avoid recalculation...)
+	vector< EvolutionData > fFuelDataBank;			///< DataBanck map
 
  	string			fDataBaseIndex;			///< Name of the index
 
