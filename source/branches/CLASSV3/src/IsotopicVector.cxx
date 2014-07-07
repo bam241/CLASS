@@ -1,6 +1,7 @@
 #include "IsotopicVector.hxx"
 
 #include "LogFile.hxx"
+#include "CLASSConstante.hxx"
 
 
 #include <cmath>
@@ -8,7 +9,6 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
-#include "CLASSHeaders.hxx"
 //________________________________________________________________________
 //________________________________________________________________________
 //
@@ -518,10 +518,7 @@ double IsotopicVector::GetTotalMass() const
 
 double IsotopicVector::MeanMolar() const
 {
-	double AVOGADRO = 6.02214129e23;
-
 	return GetTotalMass() * 1e6 * AVOGADRO / GetActinidesComposition().GetSumOfAll();
-
 }
 //________________________________________________________________________
 

@@ -7,8 +7,8 @@
 #include "PhysicModels.hxx"
 #include "IsotopicVector.hxx"
 #include "Scenario.hxx"
-#include "CLASSHeaders.hxx"
 #include "LogFile.hxx"
+#include "CLASSConstante.hxx"
 
 
 
@@ -32,29 +32,20 @@
 	//
 	//________________________________________________________________________
 	//________________________________________________________________________
-template <class T>  T random(T a, T b) //peak random numebr between a and b
-{
-	double range = pow(2., 31);
-	srand(time(NULL)); //initialize the srand
-	return (T)a + (T)(b-a)*rand()/range;
-}
-
 ClassImp(FabricationPlant)
 
 
 
-FabricationPlant::FabricationPlant():CLASSFacility()
+FabricationPlant::FabricationPlant():CLASSFacility(16)
 {
-	SetFacilityType(16);
 	SetName("F_FabricationPLant.");
 	
 	fReUsable = 0;
 }
 
 
-FabricationPlant::FabricationPlant(LogFile* log, double fabricationtime):CLASSFacility(log, fabricationtime)
+FabricationPlant::FabricationPlant(LogFile* log, double fabricationtime):CLASSFacility(log, fabricationtime, 16)
 {
-	SetFacilityType(16);
 	SetName("F_FabricationPLant.");
 
 	fFiFo = false;
@@ -415,12 +406,11 @@ void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel)
 {
 	
 	fSubstitutionFuel = true;
-	double Na = 6.02214129e23;	//N Avogadro
 	map<ZAI ,double>::iterator it;
 	map<ZAI ,double> isotopicquantity = fuel.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
 	double M0 = 0;
 	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
+		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
 	fSubstitutionEvolutionData = fuel / M0;
 
 }

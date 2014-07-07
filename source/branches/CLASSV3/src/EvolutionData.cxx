@@ -1,8 +1,7 @@
 #include "EvolutionData.hxx"
 
-#include "CLASSHeaders.hxx"
-
 #include "LogFile.hxx"
+#include "CLASSConstante.hxx"
 #include "StringLine.hxx"
 
 #include <TGraph.h>
@@ -349,7 +348,6 @@ EvolutionData::EvolutionData():CLASSObject()
 	fIsCrossSection = false;
 	fPower = 0;
 	fCycleTime = 0;
-	fNormFactor = 1;
 	fKeff = 0;
 	fFlux = 0;
 }
@@ -362,7 +360,6 @@ EvolutionData::EvolutionData(LogFile* Log)
 	fIsCrossSection = false;
 	fPower = 0;
 	fCycleTime = 0;
-	fNormFactor = 1;
 	fKeff = 0;
 	fFlux = 0;
 
@@ -378,7 +375,6 @@ EvolutionData::EvolutionData(LogFile* Log, string DB_file, bool oldread, ZAI zai
 	fDB_file = DB_file;
 	fPower = 0;
 	fCycleTime = 0;
-	fNormFactor = 1;
 	fKeff = 0;
 	fFlux = 0;
 	
@@ -662,7 +658,6 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 		
 	}while ( !DecayDB.eof() );
 
-	double Na = 6.02214129e23;	//N Avogadro
 	double M = 0;
 	{
 		map<ZAI, double >::iterator it ;
@@ -673,7 +668,7 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 
 		for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 		{
-			M += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
+			M += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
 		}
 		isotopicquantity.clear();
 
@@ -771,7 +766,7 @@ void	EvolutionData::ReadInv(string line, double* time, int NTimeStep)
 		int i = 0;
 		while(start < (int)line.size() && i < NTimeStep )	// Read the Data
 		{
-			Inv[i] = atof(StringLine::NextWord(line, start, ' ').c_str())*fNormFactor ;
+			Inv[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
 			i++;
 		}
 			// Add the TGraph
@@ -926,17 +921,6 @@ void EvolutionData::ReadInfo()
 	getline(InfoDB, line);
 	if ( tlc(StringLine::NextWord(line, start, ' ')) == "constantpower")
 		fPower =  atof(StringLine::NextWord(line, start, ' ').c_str());
-
-	
-	getline(InfoDB, line); // cutoff
-	getline(InfoDB, line); // NUmber of Nuclei
-	start = 0;
-	getline(InfoDB, line);
-	if ( tlc(StringLine::NextWord(line, start, ' ')) == "normalizationfactor")
-	{
-		fNormFactor = atof(StringLine::NextWord(line, start, ' ').c_str());
-		fPower = fPower * fNormFactor;
-	}
 	InfoDB.close();
 }
 

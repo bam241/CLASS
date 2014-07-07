@@ -1,6 +1,5 @@
 #include "Pool.hxx"
 
-#include "DecayDataBank.hxx"
 #include "IsotopicVector.hxx"
 #include "Storage.hxx"
 #include "Scenario.hxx"
@@ -22,18 +21,17 @@
 //________________________________________________________________________
 ClassImp(Pool)
 
-Pool::Pool():CLASSBackEnd()
+
+Pool::Pool():CLASSBackEnd(8)
 {
 	fOutBackEndFacility = 0;
-	SetFacilityType(8);
 	SetName("P_Pool.");
 }
 
 	//________________________________________________________________________
-Pool::Pool(LogFile* log, cSecond coolingtime):CLASSBackEnd(log, coolingtime)
+Pool::Pool(LogFile* log, cSecond coolingtime):CLASSBackEnd(log, coolingtime, 8)
 {
 
-	SetFacilityType(8);
 
 	fCycleTime = (cSecond)coolingtime;
 	fIsStarted = false;
@@ -58,10 +56,8 @@ Pool::Pool(LogFile* log, cSecond coolingtime):CLASSBackEnd(log, coolingtime)
 }
 
 //________________________________________________________________________
-Pool::Pool(LogFile* log, CLASSBackEnd* storage, cSecond coolingtime):CLASSBackEnd(log, coolingtime)
+Pool::Pool(LogFile* log, CLASSBackEnd* storage, cSecond coolingtime):CLASSBackEnd(log, coolingtime, 8)
 {
-
-	SetFacilityType(8);
 
 	fOutBackEndFacility = storage;
 	SetIsStorageType(false);

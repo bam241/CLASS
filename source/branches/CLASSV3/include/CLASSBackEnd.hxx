@@ -19,6 +19,7 @@
 #include "TNamed.h"
 
 using namespace std;
+
 typedef long long int cSecond;
 
 //-----------------------------------------------------------------------------//
@@ -33,15 +34,13 @@ typedef long long int cSecond;
 //________________________________________________________________________
 
 
-
-
 class CLASSBackEnd : public CLASSFacility
 {
 	public :
 	///< Normal Constructor.
-	CLASSBackEnd();
-	CLASSBackEnd(LogFile* log);
-	CLASSBackEnd(LogFile* log, cSecond cycletime);
+	CLASSBackEnd(int type = 0);
+	CLASSBackEnd(LogFile* log,int type = 0);
+	CLASSBackEnd(LogFile* log, cSecond cycletime, int type = 0);
 
 	//********* Get Method *********//
 	/*!

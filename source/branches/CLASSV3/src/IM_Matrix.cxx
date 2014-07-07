@@ -9,7 +9,6 @@
 #include "IM_Matrix.hxx"
 
 #include "IsotopicVector.hxx"
-#include "CLASSHeaders.hxx"
 #include "LogFile.hxx"
 #include "StringLine.hxx"
 
@@ -99,7 +98,6 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 	//-------------------------//
 	ReactorType = XSSet.GetReactorType();
 
-	double Na = 6.02214129e23;	//N Avogadro
 	double M_ref = XSSet.GetHeavyMetalMass();
 	double M = 0;
 	double Power_ref =  XSSet.GetPower();
@@ -113,7 +111,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 		map<ZAI, double >isotopicquantity = IVtmp.GetIsotopicQuantity();
 
 		for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-			M += isotopicvector.GetActinidesComposition().GetZAIIsotopicQuantity( (*it).first )*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
+			M += isotopicvector.GetActinidesComposition().GetZAIIsotopicQuantity( (*it).first )*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
 		isotopicquantity.clear();
 
 	}

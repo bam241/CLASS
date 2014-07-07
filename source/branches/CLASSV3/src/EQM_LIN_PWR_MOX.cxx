@@ -1,11 +1,12 @@
 #include "EQM_LIN_PWR_MOX.hxx"
 
+#include "CLASSConstante.hxx"
+
 #include <vector>
 
 #include "StringLine.hxx"
 #include "LogFile.hxx"
 #include "IsotopicVector.hxx"
-#include "CLASSHeaders.hxx"
 
 
 
