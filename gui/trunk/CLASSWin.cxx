@@ -588,48 +588,50 @@ void MainWin::FillNucFoil(int n_item, int Ncol,int Nline)
 {
 	int current_foil = 0;
 	int current_item = 0;
-	for( int l = 0; l < n_item; l++ )
+	for( int l = n_item; l >= 0; l-- )
 	{
 		
 		stringstream name;
 		int Atmp = fDATA->GetZAIvector()[l].A();
-		
-		if(fDATA->GetZAIvector()[l].Z() == -3)
+		if(Atmp !=0)
 		{
-			name << Atmp << "TMP"; //@@@@
-			
+
+			if(fDATA->GetZAIvector()[l].Z() == -3)
+			{
+				name << Atmp << "TMP"; //@@@@
+
+			}
+			else if(fDATA->GetZAIvector()[l].Z() == -2)
+			{
+				name << Atmp << "PF"; //@@@@
+
+			}
+			else if(fDATA->GetZAIvector()[l].Z() == -1)
+			{
+				name << Atmp << "ERR"; //@@@@
+
+			} else
+				name << Atmp << NucleusName[fDATA->GetZAIvector()[l].Z()]; //@@@@
+
+
+			if( fDATA->GetZAIvector()[0].I() > 0 )
+				name << "*";
+
+
+			fCheckArrayNuc[l] = new TGCheckButton( fTabFoilNuc[current_foil], name.str().c_str(), l + M_CHECK_PLOTALL+1 );
+			fCheckArrayNuc[l]->SetFont( fLabelFontS );
+
+			fTabFoilNuc[current_foil]->AddFrame( fCheckArrayNuc[l] );
+			fCheckArrayNuc[l]->Associate( this );
+
+			current_item++;
+
+			if( current_item >= Ncol * Nline )
+			{
+				current_item = 0;
+				current_foil++;
+			}
 		}
-		else if(fDATA->GetZAIvector()[l].Z() == -2)
-		{
-			name << Atmp << "PF"; //@@@@
-			
-		}
-		else if(fDATA->GetZAIvector()[l].Z() == -1)
-		{
-			name << Atmp << "ERR"; //@@@@
-			
-		} else
-			name << Atmp << NucleusName[fDATA->GetZAIvector()[l].Z()]; //@@@@
-		
-		
-		if( fDATA->GetZAIvector()[0].I() > 0 )
-			name << "*";
-		
-		
-		fCheckArrayNuc[l] = new TGCheckButton( fTabFoilNuc[current_foil], name.str().c_str(), l + M_CHECK_PLOTALL+1 );
-		fCheckArrayNuc[l]->SetFont( fLabelFontS );
-		
-		fTabFoilNuc[current_foil]->AddFrame( fCheckArrayNuc[l] );
-		fCheckArrayNuc[l]->Associate( this );
-		
-		current_item++;
-		
-		if( current_item >= Ncol * Nline )
-		{
-			current_item = 0;
-			current_foil++;
-		}
-		
 	}
 	
 	current_foil++;
