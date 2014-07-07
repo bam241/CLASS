@@ -21,18 +21,18 @@
 //________________________________________________________________________
 ClassImp(CLASSBackEnd)
 
-CLASSBackEnd::CLASSBackEnd():CLASSFacility()
+CLASSBackEnd::CLASSBackEnd(int type):CLASSFacility(type)
 {
 	fDecayDataBase = 0;
 }
 
-CLASSBackEnd::CLASSBackEnd(LogFile* log):CLASSFacility(log)
+CLASSBackEnd::CLASSBackEnd(LogFile* log, int type):CLASSFacility(log, type)
 {
 	fDecayDataBase = 0;
 }
 
 
-CLASSBackEnd::CLASSBackEnd(LogFile* log, cSecond cycletime):CLASSFacility(log, cycletime)
+CLASSBackEnd::CLASSBackEnd(LogFile* log, cSecond cycletime, int type):CLASSFacility(log, cycletime, type)
 {
 	fDecayDataBase = 0;
 }

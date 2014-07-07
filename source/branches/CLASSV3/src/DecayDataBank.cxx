@@ -1,7 +1,6 @@
 #include "DecayDataBank.hxx"
 
 #include "IsotopicVector.hxx"
-#include "CLASSHeaders.hxx"
 #include "LogFile.hxx"
 #include "StringLine.hxx"
 

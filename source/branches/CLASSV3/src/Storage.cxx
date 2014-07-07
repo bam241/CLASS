@@ -1,6 +1,5 @@
 #include "Storage.hxx"
 
-#include "DecayDataBank.hxx"
 #include "Scenario.hxx"
 #include "LogFile.hxx"
 
@@ -21,17 +20,15 @@
 //________________________________________________________________________
 ClassImp(Storage)
 
-Storage::Storage():CLASSBackEnd()
+Storage::Storage():CLASSBackEnd(-1)
 {
-	SetFacilityType(-1);
 	SetIsStorageType();
 	SetName("S_Storage.");
 
 }
 
-Storage::Storage(LogFile* log):CLASSBackEnd(log)
+Storage::Storage(LogFile* log):CLASSBackEnd(log, -1)
 {
-	SetFacilityType(-1);
 	SetIsStorageType();
 
 	SetName("S_Storage.");
@@ -42,9 +39,8 @@ Storage::Storage(LogFile* log):CLASSBackEnd(log)
 	
 }
 //________________________________________________________________________
-Storage::Storage(LogFile* log, DecayDataBank* evolutivedb):CLASSBackEnd(log)
+Storage::Storage(LogFile* log, DecayDataBank* evolutivedb):CLASSBackEnd(log, -1)
 {
-	SetFacilityType(-1);
 	SetIsStorageType();
 
 	SetDecayDataBank(evolutivedb);

@@ -6,7 +6,7 @@
 #include "FabricationPlant.hxx"
 #include "Storage.hxx"
 #include "Scenario.hxx"
-#include "CLASSHeaders.hxx"
+#include "CLASSConstante.hxx"
 
 #include "LogFile.hxx"
 
@@ -59,10 +59,9 @@ Reactor::Reactor(LogFile* log):CLASSFacility(log)
 Reactor::Reactor(LogFile* log, PhysicModels* fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 CLASSBackEnd* Pool,
- 		 cSecond creationtime, cSecond lifetime):CLASSFacility(log, creationtime, lifetime)
+ 		 cSecond creationtime, cSecond lifetime):CLASSFacility(log, creationtime, lifetime, 4)
 {
 
-	SetFacilityType(4);
 	SetName("R_Reactor.");
 
 
@@ -101,9 +100,8 @@ Reactor::Reactor(LogFile* log, PhysicModels* fueltypeDB,
 
 Reactor::Reactor(LogFile* log, PhysicModels* fueltypeDB, FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
  		 cSecond creationtime, cSecond lifetime,
- 		 double Power, double HMMass, double BurnUp, double ChargeFactor):CLASSFacility(log, creationtime, lifetime)
+ 		 double Power, double HMMass, double BurnUp, double ChargeFactor):CLASSFacility(log, creationtime, lifetime, 4)
 {
-	SetFacilityType(4);
 	SetName("R_Reactor.");
 
 
@@ -154,9 +152,8 @@ Reactor::Reactor(LogFile* log, PhysicModels* 	fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 CLASSBackEnd* Pool,
  		 cSecond creationtime, cSecond lifetime, cSecond cycletime,
- 		 double HMMass, double BurnUp):CLASSFacility(log, creationtime, lifetime, cycletime)
+ 		 double HMMass, double BurnUp):CLASSFacility(log, creationtime, lifetime, cycletime, 4)
 {
-	SetFacilityType(4);
 	SetName("R_Reactor.");
 
 
@@ -206,9 +203,8 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
  		 CLASSBackEnd* Pool,
  		 cSecond creationtime,
  		 cSecond lifetime,
- 		 double power, double HMMass, double BurnUp, double ChargeFactor ):CLASSFacility(log, creationtime, lifetime)
+ 		 double power, double HMMass, double BurnUp, double ChargeFactor ):CLASSFacility(log, creationtime, lifetime, 4)
 {
-	SetFacilityType(4);
 	SetName("R_Reactor.");
 
 
@@ -229,12 +225,11 @@ Reactor::Reactor(LogFile* log, EvolutionData evolutivedb,
 
 	fHeavyMetalMass = HMMass;
 
-	double Na = 6.02214129e23;	//N Avogadro
 	map<ZAI ,double>::iterator it;
 	map<ZAI ,double> isotopicquantity = evolutivedb.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
 	double M0 = 0;
 	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
+		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
 
 	fEvolutionDB = evolutivedb * (fHeavyMetalMass/M0);
 
@@ -325,12 +320,11 @@ void Reactor::SetBurnUp(double BU)
 //________________________________________________________________________
 void Reactor::SetEvolutionDB(EvolutionData evolutionDB)
 {
-	double Na = 6.02214129e23;	//N Avogadro
 	map<ZAI ,double>::iterator it;
 	map<ZAI ,double> isotopicquantity = evolutionDB.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
 	double M0 = 0;
 	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
+		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
 	fEvolutionDB = evolutionDB * (fHeavyMetalMass/M0);
 
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );

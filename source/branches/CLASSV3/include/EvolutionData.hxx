@@ -225,7 +225,6 @@ protected :
 	double	fPower;				///< Power in W
 	double	fCycleTime;			///< Cycle time of the DataBase
 	double	fHeavyMetalMass;		///< Cycle time of the DataBase
-	double	fNormFactor;			///< Normalisation factor needed to represent to full core (unsless)
 
     
 	void	OldReadDB(string DBfile);				//!< Read old format database

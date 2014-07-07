@@ -1,4 +1,6 @@
 #include "PWR_THPU_FabricationPlant.hxx"
+
+
 #include "Storage.hxx"
 #include "Reactor.hxx"
 #include "EvolutionData.hxx"
@@ -6,11 +8,7 @@
 #include "DecayDataBank.hxx"
 #include "IsotopicVector.hxx"
 #include "Scenario.hxx"
-#include "CLASSHeaders.hxx"
 #include "LogFile.hxx"
-
-
-
 
 #include "TMatrixT.h"
 
@@ -121,7 +119,6 @@ void PWR_THPU_FabricationPlant::BuildFuelForReactor(int ReactorId)
 		GetLog()->fLog << "!!Bad Trouble!! !!!FabricationPlant!!! Try to do MOX with a not MOXed DB" << endl;
 		exit (1);
 	}	
-	double Na = 6.02214129e23;	//N Avogadro
 
 	double HMmass = GetParc()->GetReactor()[ReactorId]->GetHeavyMetalMass();
 	
@@ -143,7 +140,7 @@ void PWR_THPU_FabricationPlant::BuildFuelForReactor(int ReactorId)
 			
 			isotopicquantity = FullUsedStock.GetSpeciesComposition(94).GetIsotopicQuantity();
 			for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-				MPu_0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
+				MPu_0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
 		}
 		
 		stock = GetStockToRecycle();
@@ -210,7 +207,7 @@ void PWR_THPU_FabricationPlant::BuildFuelForReactor(int ReactorId)
 				for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 					if ((*it).first.A() >= 238 && (*it).first.A() <= 242)
 					{
-						MPu_1 += (*it).second * (cZAIMass.fZAIMass.find( (*it).first )->second)/Na*1e-6;
+						MPu_1 += (*it).second * (cZAIMass.fZAIMass.find( (*it).first )->second)/AVOGADRO*1e-6;
 					}
 				
 				isotopicquantity = GetDecay( FullUsedStock , GetCycleTime()).GetSpeciesComposition(94).GetIsotopicQuantity();
@@ -224,14 +221,14 @@ void PWR_THPU_FabricationPlant::BuildFuelForReactor(int ReactorId)
 			//cout<<"TEST TEST TEST TEST TEST MPu_1 : "<<MPu_1<<endl;
 			double StockFactionToUse = 0;
 			
-			double NT = HMmass*1e6 * Na / (cZAIMass.fZAIMass.find( ZAI(90,232,0) )->second);
+			double NT = HMmass*1e6 * AVOGADRO / (cZAIMass.fZAIMass.find( ZAI(90,232,0) )->second);
 			
 			double N1 = (BU - FuelType->GetFuelParameter()[6]) * NT;
 			double N2 = -Sum_AlphaI_nPuI0;
-			double N3 = -FuelType->GetFuelParameter()[0] * Na / (cZAIMass.fZAIMass.find( ZAI(90,232,0) )->second) * (HMmass*1e6 - MPu_0*1e6);
+			double N3 = -FuelType->GetFuelParameter()[0] * AVOGADRO / (cZAIMass.fZAIMass.find( ZAI(90,232,0) )->second) * (HMmass*1e6 - MPu_0*1e6);
 			
 			double D1 = Sum_AlphaI_nPuI;
-			double D2 = -FuelType->GetFuelParameter()[0] * MPu_1*1e6 * Na / (cZAIMass.fZAIMass.find( ZAI(90,232,0) )->second) ;
+			double D2 = -FuelType->GetFuelParameter()[0] * MPu_1*1e6 * AVOGADRO / (cZAIMass.fZAIMass.find( ZAI(90,232,0) )->second) ;
 			
 			StockFactionToUse = (N1 + N2 + N3) / (D1 + D2);
 			
@@ -265,7 +262,7 @@ void PWR_THPU_FabricationPlant::BuildFuelForReactor(int ReactorId)
 				//cout<<"TEST TEST TEST TEST TEST HMmass : "<<HMmass <<endl;
 				//cout<<"TEST TEST TEST TEST TEST MPu_0 : "<<MPu_0<<endl;
 				//cout<<"TEST TEST TEST TEST TEST StockFactionToUse*MPu_1 : "<<StockFactionToUse<<"*"<<MPu_1<<endl;
-				double Th_Quantity = (HMmass - (MPu_0+StockFactionToUse*MPu_1 ))/(cZAIMass.fZAIMass.find( ZAI(90,232,0) )->second)*Na/1e-6;
+				double Th_Quantity = (HMmass - (MPu_0+StockFactionToUse*MPu_1 ))/(cZAIMass.fZAIMass.find( ZAI(90,232,0) )->second)*AVOGADRO/1e-6;
 				
 				GetParc()->AddGodIncome(Th, Th_Quantity);
 				

@@ -5,9 +5,8 @@
 
 
 //CLASS library
+#include "CLASSConstante.hxx
 #include "Scenario.hxx"
-#include "CLASSObject.hxx"
-#include "CLASSFacility.hxx"
 #include "Reactor.hxx"
 #include "Pool.hxx"
 #include "FabricationPlant.hxx"
@@ -19,7 +18,6 @@
 #include "EvolutionData.hxx"
 #include "PhysicModels.hxx"
 #include "DecayDataBank.hxx"
-#include "StringLine.hxx"
 
 #include "ZAIMass.hxx"
 

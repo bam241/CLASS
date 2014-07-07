@@ -1,5 +1,12 @@
 #include "ZAIMass.hxx"
-#include "CLASSHeaders.hxx"
+
+#include "CLASSConstante.hxx"
+
+#include "stdlib.h"
+#include <fstream>
+#include <string>
+
+#include "IsotopicVector.hxx"
 	//________________________________________________________________________
 	//
 	//		ZAI
@@ -16,7 +23,9 @@ ZAIMass::ZAIMass()
 {
 	string  CLASSPATH = getenv("CLASS_PATH");
 	string	MassDataFile = CLASSPATH +"/source/data/Mass.dat";
+
 	ifstream infile(MassDataFile.c_str());	
+
 	if(!infile.good())
 	{	
 		cout<<"ZAIMass Error.\n can't find/open file "<<MassDataFile<<endl;
@@ -60,7 +69,6 @@ double ZAIMass::GetMass(const IsotopicVector IV) const
 {
 
 	double TotalMass = 0;
-	double AVOGADRO=6.02214129e23;
 
 	map<ZAI ,double >::iterator it;
 	map<ZAI ,double > isotopicquantity = IV.GetIsotopicQuantity();

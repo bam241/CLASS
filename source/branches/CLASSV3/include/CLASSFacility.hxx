@@ -40,11 +40,11 @@ class CLASSFacility : public CLASSObject
 {
 public :
 		///< Normal Constructor.
-	CLASSFacility();
-	CLASSFacility(LogFile* log);
-	CLASSFacility(LogFile* log, cSecond cycletime);
-	CLASSFacility(LogFile* log, cSecond creationtime, cSecond lifetime);
-	CLASSFacility(LogFile* log, cSecond startingtime, cSecond lifetime, cSecond cycletime);
+	CLASSFacility(int type = 0);
+	CLASSFacility(LogFile* log, int type = 0);
+	CLASSFacility(LogFile* log, cSecond cycletime, int type = 0);
+	CLASSFacility(LogFile* log, cSecond creationtime, cSecond lifetime, int type = 0);
+	CLASSFacility(LogFile* log, cSecond startingtime, cSecond lifetime, cSecond cycletime, int type = 0);
 	
 		//********* Get Method *********//
 	/*!

@@ -15,34 +15,48 @@ using namespace std;
 ClassImp(CLASSFacility)
 
 
-CLASSFacility::CLASSFacility():CLASSObject()
+
+
+CLASSFacility::CLASSFacility(int type):CLASSObject()
 {
 	fParc = 0;
+
+	fFacilityType = type;
+
 	fInternalTime = 0;
 	fInCycleTime = 0;
 	fCycleTime = -1;
 }
 
-CLASSFacility::CLASSFacility(LogFile* log):CLASSObject(log)
+CLASSFacility::CLASSFacility(LogFile* log, int type):CLASSObject(log)
 {
 	fParc = 0;
+
+	fFacilityType = type;
+
 	fInternalTime = 0;
 	fInCycleTime = 0;
 	fCycleTime = -1;
 }
 
 
-CLASSFacility::CLASSFacility(LogFile* log, cSecond cycletime):CLASSObject(log)
+CLASSFacility::CLASSFacility(LogFile* log, cSecond cycletime, int type):CLASSObject(log)
 {
 	fParc = 0;
+
+	fFacilityType = type;
+	
 	fInternalTime = 0;
 	fInCycleTime = 0;
 	fCycleTime = cycletime;
 }
 
-CLASSFacility::CLASSFacility(LogFile* log, cSecond creationtime, cSecond lifetime):CLASSObject(log)
+CLASSFacility::CLASSFacility(LogFile* log, cSecond creationtime, cSecond lifetime, int type):CLASSObject(log)
 {
 	fParc = 0;
+
+	fFacilityType = type;
+	
 	fInternalTime = 0;
 	fInCycleTime = 0;
 	fCycleTime = -1;
@@ -50,9 +64,12 @@ CLASSFacility::CLASSFacility(LogFile* log, cSecond creationtime, cSecond lifetim
 	fLifeTime = lifetime;
 }
 
-CLASSFacility::CLASSFacility(LogFile* log, cSecond creationtime, cSecond lifetime, cSecond cycletime):CLASSObject(log)
+CLASSFacility::CLASSFacility(LogFile* log, cSecond creationtime, cSecond lifetime, cSecond cycletime, int type):CLASSObject(log)
 {
 	fParc = 0;
+
+	fFacilityType = type;
+	
 	fInternalTime = 0;
 	fInCycleTime = 0;
 	fCycleTime = cycletime;

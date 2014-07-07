@@ -1,6 +1,4 @@
 #include "ZAI.hxx"
-#include "CLASSHeaders.hxx"
-
 
 //const string DEFAULTDATABASE = "DecayBase.dat";
 //________________________________________________________________________
