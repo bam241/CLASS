@@ -5,7 +5,7 @@
 
 
 //CLASS library
-#include "CLASSConstante.hxx
+#include "CLASSConstante.hxx"
 #include "Scenario.hxx"
 #include "Reactor.hxx"
 #include "Pool.hxx"
@@ -21,6 +21,5 @@
 
 #include "ZAIMass.hxx"
 
-const ZAIMass cZAIMass;
 
 #endif
