@@ -21,8 +21,6 @@
 
 #include "CLASSHeaders.hxx"
 
-const double AVOGADRO = 6.0221418E+23 ; //2006 CODATA recommended value
-
 using namespace std;
 // for gcc3.2.3 only
 char* operator+( std::streampos&, char* );
