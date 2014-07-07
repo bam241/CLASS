@@ -524,7 +524,7 @@ void MainWin::FillNucTab()		// fill the Inventory Tab foil
 {
 	static bool first=true;
 	
-	int NCheck=fDATA->GetZAIvector().size();
+	int NCheck=fDATA->GetZAIvector().size()-1;
 	//number of lines and columns per foil
 	int Nline = 14-WIDE;
 	int Ncol = 8+WIDE;
@@ -610,9 +610,9 @@ void MainWin::FillNucFoil(int n_item, int Ncol,int Nline)
 			{
 				name << Atmp << "ERR"; //@@@@
 
-			} else
+			} 
+			else
 				name << Atmp << NucleusName[fDATA->GetZAIvector()[l].Z()]; //@@@@
-
 
 			if( fDATA->GetZAIvector()[0].I() > 0 )
 				name << "*";
