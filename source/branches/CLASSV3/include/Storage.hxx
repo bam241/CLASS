@@ -110,7 +110,8 @@ public :
 	void TakeFromStock(IsotopicVector isotopicvector);						//!<
 
 
-	void AddIV(IsotopicVector isotopicvector);			//!< Add an Isotopicvector to the IVArray
+	void AddIV(IsotopicVector isotopicvector);					//!< Add an Isotopicvector to the IVArray
+	void AddToStock(IsotopicVector isotopicvector) {AddIV(isotopicvector);}		//!< Add an Isotopicvector to the IVArray
 
 	//@}
 

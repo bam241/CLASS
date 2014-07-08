@@ -63,7 +63,15 @@ void Storage::AddIV(IsotopicVector isotopicvector)
 
 	AddCumulativeIVIn(isotopicvector);
 
-	if(GetParc()->GetStockManagement() )
+	if(GetParc())
+	{
+		if(GetParc()->GetStockManagement() )
+		{
+			fIVArray.push_back(isotopicvector);
+			fIVArrayArrivalTime.push_back(fInternalTime);
+		}
+	}
+	else
 	{
 		fIVArray.push_back(isotopicvector);
 		fIVArrayArrivalTime.push_back(fInternalTime);
@@ -76,25 +84,43 @@ void Storage::AddIV(IsotopicVector isotopicvector)
 void Storage::TakeFractionFromStock(int IVId,double fraction)
 {
 
-	if(GetParc()->GetStockManagement() )
+	if(GetParc())
+	{
+		if(GetParc()->GetStockManagement() )
+		{
+			if(fraction > 1 || fraction < 0)
+			{
+				WARNING << " You try to remove fraction superior than 1 or a negative one..." << endl;
+			}
+			else
+			{
+				AddCumulativeIVOut(fIVArray[IVId]*fraction);
+
+				fInsideIV	-= fIVArray[IVId] * fraction;
+				fIVArray[IVId]  -= fIVArray[IVId] * fraction;
+			}
+
+		}
+		else
+		{
+			ERROR << " TakeFractionFromStock can't be DEFINE without REAL stock management" << endl;
+			exit(1);
+			
+		}
+	}
+	else
 	{
 		if(fraction > 1 || fraction < 0)
 		{
 			WARNING << " You try to remove fraction superior than 1 or a negative one..." << endl;
 		}
-		else 
+		else
 		{
 			AddCumulativeIVOut(fIVArray[IVId]*fraction);
 
 			fInsideIV	-= fIVArray[IVId] * fraction;
 			fIVArray[IVId]  -= fIVArray[IVId] * fraction;
 		}
-
-	}
-	else
-	{
-		ERROR << " TakeFractionFromStock can't be DEFINE without REAL stock management" << endl;
-		exit(1);
 
 	}
 	
@@ -105,16 +131,25 @@ void Storage::TakeFractionFromStock(int IVId,double fraction)
 void Storage::TakeFromStock(IsotopicVector isotopicvector)
 {
 
-	if(!GetParc()->GetStockManagement())
+	if(GetParc())
 	{
+		if(!GetParc()->GetStockManagement())
+		{
 
-		AddCumulativeIVOut(isotopicvector);
-		fInsideIV -= isotopicvector;
+			AddCumulativeIVOut(isotopicvector);
+			fInsideIV -= isotopicvector;
+		}
+		else
+		{
+			ERROR << " TakeFromStock can't be DEFINE WITH REAL stock management" << endl;
+			exit(1);
+		}
 	}
 	else
 	{
-		ERROR << " TakeFromStock can't be DEFINE WITH REAL stock management" << endl;
-		exit(1);
+		AddCumulativeIVOut(isotopicvector);
+		fInsideIV -= isotopicvector;
+
 	}
 
 }
