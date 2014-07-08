@@ -12,6 +12,7 @@
  @version 1.0
  */
 #include "XSModel.hxx"
+#include "TTree.h"
 #include <string>
 #include <fstream>
 #include <iostream> 
@@ -46,7 +47,7 @@ public :
 	//{
 
 
- 	EvolutionData GetCrossSections(IsotopicVector IV) ;
+ 	EvolutionData GetCrossSections(IsotopicVector IV,double t=0) ;
 
 
  private :
@@ -55,8 +56,8 @@ public :
 
  	void GetMLPWeightFiles();
  	void ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction) ;
- 	double ExecuteTMVA(string WeightFile);
- 	void CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep=0);
+ 	double ExecuteTMVA(string WeightFile, TTree* InputTree);
+ 	TTree* CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep=0);
  	EvolutionData GetCrossSectionsTime(IsotopicVector IV) ;
 
  	void ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &Reaction, int &TimeStep) ;
@@ -70,6 +71,8 @@ public :
  	string fMLPInformationFile;
  	double fDataBasePower;
  	double fDataBaseHMMass;
+ 	string fDataBaseFType;	//<! Reactor Type (e.g PWR, RNR, ADS..)
+ 	string fDataBaseRType;	//<! Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
  	bool fIsStepTime;
 
  	map<ZAI,string> fMapOfTMVAVariableNames;

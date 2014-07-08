@@ -12,6 +12,7 @@
  */
 
 #include "IsotopicVector.hxx"
+#include <math.h>
 #include "CLASSObject.hxx"
 
 
@@ -50,7 +51,7 @@ class EquivalenceModel : public CLASSObject
 	
 	virtual	 vector<double> BuildFuel(double BurnUp, double HMMass, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray );
 	//}
-	virtual void GuessLambda(double& lambda, int& StockID,int FirstStockID, int LastStockID, double DeltaM,double StockHM);
+	virtual void GuessLambda(vector<double>& lambda,int FirstStockID, int LastStockID, double DeltaM, vector<IsotopicVector> Stocks, double  HMMass);
 	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp) {return 0;}
 
 	
@@ -70,6 +71,13 @@ class EquivalenceModel : public CLASSObject
 	IsotopicVector fFissileList;	//!< contain the list of zai, needed as fissile, taken in a stock before fabrication
 					//!< if no stock are provided, will take the isotopic vector in the Park income
 
+
+	private :
+
+	void SetLambda(vector<double>& lambda ,int FirstStockID, int LastStockID, double LAMBDA_TOT);
+	void FindLambdaMax(int FirstStockID, int LastStockID, vector<IsotopicVector> Stocks, double  HMMass);
+	double fOld_Lambda_Tot[2];
+	double fLambda_max[2];
 
 };
 
