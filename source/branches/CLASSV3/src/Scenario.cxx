@@ -100,8 +100,6 @@ Scenario::Scenario(cSecond abstime, CLASSLogger* log):CLASSObject(log)
 	INFO	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
 	INFO	<< "\t Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
 
-
-
 }
 
 
