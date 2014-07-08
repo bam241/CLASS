@@ -47,8 +47,10 @@ EQM_MLP_MOX::EQM_MLP_MOX(string TMVAWeightPath)
 }
 //________________________________________________________________________
 TTree* EQM_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
-{
+{	//cout<<"entering EQM_MLP_MOX::CreateTMVAInputTree"<<endl;
 	/******Create Input data tree to be interpreted by TMVA::Reader***/
+	//Fissil.Print();
+
 	TTree*   InputTree = new TTree("EQTMP", "EQTMP");
 	float Pu8   			 = 0;
 	float Pu9   			 = 0;
@@ -94,7 +96,8 @@ TTree* EQM_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fer
 	U5_enrichment = U5 / UTOT;
 
 	BU=BurnUp;
-
+//cout<<"Pu8 "<<Pu8 <<" Pu9 "<< Pu9 <<" Pu10 "<< Pu10 << " Pu11 "<< Pu11 <<" Pu12 "<<Pu12 <<" Am1 "<<Am1<<endl;
+//cout<<"BU "<<BU<<" U5_enrichment "<<U5_enrichment<<endl;
 	if(Pu8 + Pu9 + Pu10 + Pu11 + Pu12 + Am1 > 1.00001 )//?????1.00001??? I don't know it! goes in condition if =1 !! may be float/double issue ...
 	{
 		cout<<"!!!!!!!!!!!ERRORR!!!!!!!!!!!!"<<endl;
@@ -104,27 +107,26 @@ TTree* EQM_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fer
 	// All value are molar (!weight)
 
 	InputTree->Fill();
-
+//cout<<"exiting EQM_MLP_MOX::CreateTMVAInputTree"<<endl;
 	return InputTree;
 }
 //________________________________________________________________________
 double EQM_MLP_MOX::ExecuteTMVA(TTree* theTree)
-{
+{	
 	// --- Create the Reader object
-
 	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
-
 	// Create a set of variables and declare them to the reader
 	// - the variable names MUST corresponds in name and type to those given in the weight file(s) used
 	Float_t Pu8,Pu9,Pu10,Pu11,Pu12,Am1,BU,U5_enrichment;
+
+	reader->AddVariable( "BU"   		,&BU );
+	reader->AddVariable( "U5_enrichment",&U5_enrichment );
 	reader->AddVariable( "Pu8"  		,&Pu8 );
 	reader->AddVariable( "Pu9"  		,&Pu9 );
 	reader->AddVariable( "Pu10" 		,&Pu10);
 	reader->AddVariable( "Pu11" 		,&Pu11);
 	reader->AddVariable( "Pu12" 		,&Pu12);
 	reader->AddVariable( "Am1"  		,&Am1 );
-	reader->AddVariable( "U5_enrichment",&U5_enrichment );
-	reader->AddVariable( "BU"   		,&BU );
 
 
 	// --- Book the MVA methods
@@ -132,18 +134,17 @@ double EQM_MLP_MOX::ExecuteTMVA(TTree* theTree)
 	// Book method MLP
 	TString methodName = "MLP method";
 	reader->BookMVA( methodName, fTMVAWeightPath );
-
 	//theTree->SetBranchAddress("teneur",&teneur);
+	theTree->SetBranchAddress( "BU"   			,&BU 	);
+	theTree->SetBranchAddress( "U5_enrichment"  ,&U5_enrichment   )	;
 	theTree->SetBranchAddress( "Pu8"  			,&Pu8   );
 	theTree->SetBranchAddress( "Pu9"  			,&Pu9   );
 	theTree->SetBranchAddress( "Pu10" 			,&Pu10  );
 	theTree->SetBranchAddress( "Pu11" 			,&Pu11  );
 	theTree->SetBranchAddress( "Pu12" 			,&Pu12  );
 	theTree->SetBranchAddress( "Am1"  			,&Am1   );
-	theTree->SetBranchAddress( "U5_enrichment"  ,&U5_enrichment   );
-	theTree->SetBranchAddress( "BU"   			,&BU 	);
-
 	theTree->GetEntry(0);
+
 	Float_t val = (reader->EvaluateRegression( methodName ))[0];
 
 	delete reader;
