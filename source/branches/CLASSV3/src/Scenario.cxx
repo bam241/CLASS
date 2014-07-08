@@ -772,14 +772,14 @@ void Scenario::ProgressPrintout(cSecond t)
 	double Total = (t-fStartingTime)/3600/24/365.25;
 
 	// Reset the line
-	for(int i = 0; i < 100; i++)
+	for(int i = 0; i < 10; i++)
 		cout << "  ";
 	cout << flush ;
 
 	cout << "\r[";
-	for(int i = 0; i < (int)(Time/Total*100.0); i++)
+	for(int i = 0; i < (int)(Time/Total*20.0); i++)
 		cout << "|";
-	for(int i = 100; i >= (int)(Time/Total*100.0); i--)
+	for(int i = 20; i >= (int)(Time/Total*20.0); i--)
 		cout << "-";
 	cout << "] ";
 
@@ -787,7 +787,7 @@ void Scenario::ProgressPrintout(cSecond t)
 	if (Time < 10) cout << " ";
 	if (Time < 100) cout << " ";
 	cout << (int)Time << " / " << (int)Total << " Years \r";
-	if(fLog->GetVerboseLVL() < 2) cout << flush;
+	if( fLog->GetVerboseLVL() < 2) cout << flush;
 	else cout << endl;
 
 
