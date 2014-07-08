@@ -28,7 +28,7 @@ using namespace std;
 #define INFO		if(fLog->GetMaxOutPutLVL() >= 2) fLog->I() << "!!!!INFO!!! " << "[" << __FILE__ << "]"
 
 #define DBGL		if(fLog->GetMaxOutPutLVL() >= 3) fLog->D() << __FILE__ << " : " << __LINE__ << " [" << __FUNCTION__ << "]" << endl;
-#define DBGV(x)		if(fLog->GetMaxOutPutLVL() >= 3) fLog->D() << __FILE__ << " : " << __LINE__ << " [" << __FUNCTION__ << "]" << endl;
+#define DBGV(x)		if(fLog->GetMaxOutPutLVL() >= 3) fLog->D() << __FILE__ << " : " << __LINE__ << " [" << __FUNCTION__ << "]" #x  "='" << x << endl;
 
 #else
 
