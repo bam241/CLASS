@@ -25,7 +25,7 @@
 //
 //________________________________________________________________________
 
-EQM_MLP_MOX::EQM_MLP_MOX(string TMVAWeightPath)
+EQM_MLP_MOX::EQM_MLP_MOX(string TMVAWeightPath):EquivalenceModel(new CLASSLogger("EQM_MLP_MOX.log"))
 {
 	fTMVAWeightPath =  TMVAWeightPath;
 	
@@ -43,6 +43,27 @@ EQM_MLP_MOX::EQM_MLP_MOX(string TMVAWeightPath)
 	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
 	
 }
+
+//________________________________________________________________________
+EQM_MLP_MOX::EQM_MLP_MOX(CLASSLogger* log, string TMVAWeightPath):EquivalenceModel(log)
+{
+	fTMVAWeightPath =  TMVAWeightPath;
+
+	ZAI U8(92,238,0);
+	ZAI U5(92,235,0);
+	double U5_enrich= 0.0025;
+
+	ZAI Pu8(94,238,0);
+	ZAI Pu9(94,239,0);
+	ZAI Pu0(94,240,0);
+	ZAI Pu1(94,241,0);
+	ZAI Pu2(94,242,0);
+
+	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
+	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
+
+}
+
 //________________________________________________________________________
 TTree* EQM_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
 {	//cout<<"entering EQM_MLP_MOX::CreateTMVAInputTree"<<endl;

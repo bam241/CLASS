@@ -8,7 +8,7 @@
 
 
 
-EQM_QUAD_PWR_MOX::EQM_QUAD_PWR_MOX(string WeightPath):EquivalenceModel()
+EQM_QUAD_PWR_MOX::EQM_QUAD_PWR_MOX(string WeightPath):EquivalenceModel(new CLASSLogger("EQM_QUAD_PWR_MOX.log"))
 {
 	fWeightPath =  WeightPath;
 
@@ -46,6 +46,46 @@ EQM_QUAD_PWR_MOX::EQM_QUAD_PWR_MOX(string WeightPath):EquivalenceModel()
 
 
 }
+
+EQM_QUAD_PWR_MOX::EQM_QUAD_PWR_MOX(CLASSLogger* log, string WeightPath):EquivalenceModel(log)
+{
+	fWeightPath =  WeightPath;
+
+	ifstream DataDB(fWeightPath.c_str());							// Open the File
+	if(!DataDB)
+		WARNING << " Can't open \"" << fWeightPath << "\"" << endl;
+
+	string line;
+	int start = 0;	// First Get Fuel Parameter
+	getline(DataDB, line);
+
+	if( StringLine::NextWord(line, start, ' ') != "PARAM")
+	{
+		ERROR << "Bad Database file : " <<  fWeightPath << " Can't find the Parameter of the DataBase " << endl;
+		exit (1);
+	}
+	while(start < (int)line.size())
+		fFuelParameter.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
+
+	INFO << fFuelParameter.size() << " have been read " << endl;
+
+
+	ZAI U8(92,238,0);
+	ZAI U5(92,235,0);
+	double U5_enrich= 0.0025;
+	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
+
+
+	ZAI Pu8(94,238,0);
+	ZAI Pu9(94,239,0);
+	ZAI Pu0(94,240,0);
+	ZAI Pu1(94,241,0);
+	ZAI Pu2(94,242,0);
+	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
+	
+	
+}
+
 
 
 EQM_QUAD_PWR_MOX::~EQM_QUAD_PWR_MOX()

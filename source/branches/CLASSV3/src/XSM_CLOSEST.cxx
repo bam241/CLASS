@@ -27,6 +27,27 @@
 //
 //
 //________________________________________________________________________
+
+XSM_CLOSEST::XSM_CLOSEST(string DB_index_file, bool oldreadmethod ): XSModel(new CLASSLogger("XSM_CLOSEST.log"))
+{
+	fOldReadMethod = oldreadmethod;
+	fDataBaseIndex = DB_index_file;
+	fDistanceType = 0;
+	fWeightedDistance = false;
+	fEvolutionDataInterpolation = false;
+	ReadDataBase();
+
+	if(IsLog())
+	{
+		// Warning
+		INFO 	<< " A EvolutionData has been define :" << endl;
+		INFO	<< "\t His index is : \"" << DB_index_file << "\" " << endl;
+		INFO	<< "\t " << fFuelDataBank.size() << " EvolutionData have been read."<< endl << endl;
+	}
+
+}
+
+//________________________________________________________________________
 XSM_CLOSEST::XSM_CLOSEST(CLASSLogger* Log,string DB_index_file, bool oldreadmethod ): XSModel(Log)
 {
 	fOldReadMethod = oldreadmethod;

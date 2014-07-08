@@ -32,10 +32,8 @@
 //
 //
 //________________________________________________________________________
-XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(CLASSLogger* Log,string TMVA_Weight_Directory,string InformationFile, bool IsTimeStep)
+XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(string TMVA_Weight_Directory,string InformationFile, bool IsTimeStep):XSModel(new CLASSLogger("XSM_MLP_PWR_MOX.log"))
 {
-
-	SetLog(Log);
 
 	fIsStepTime=IsTimeStep;
 	fTMVAWeightFolder = TMVA_Weight_Directory;
@@ -47,12 +45,26 @@ XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(CLASSLogger* Log,string TMVA_Weight_Directory,s
 	GetMLPWeightFiles();
 	GetDataBaseInformation();
 
-	if(IsLog())
-	{
-		// Warning
-		INFO << " A EvolutionData has been define : " << endl;
-		INFO << " \t His TMVA folder is : \" " << fTMVAWeightFolder << "\"" << endl;
-	}
+	INFO << " A EvolutionData has been define : " << endl;
+	INFO << " \t His TMVA folder is : \" " << fTMVAWeightFolder << "\"" << endl;
+
+}
+//________________________________________________________________________
+XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(CLASSLogger* Log,string TMVA_Weight_Directory,string InformationFile, bool IsTimeStep):XSModel(Log)
+{
+
+	fIsStepTime=IsTimeStep;
+	fTMVAWeightFolder = TMVA_Weight_Directory;
+	if(InformationFile=="")
+		fMLPInformationFile = TMVA_Weight_Directory+"/Data_Base_Info.nfo";
+	else
+		fMLPInformationFile=fTMVAWeightFolder+InformationFile;
+
+	GetMLPWeightFiles();
+	GetDataBaseInformation();
+
+	INFO << " A EvolutionData has been define : " << endl;
+	INFO << " \t His TMVA folder is : \" " << fTMVAWeightFolder << "\"" << endl;
 
 }
 //________________________________________________________________________

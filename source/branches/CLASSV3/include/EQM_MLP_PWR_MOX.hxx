@@ -33,6 +33,7 @@ class EQM_MLP_MOX : public EquivalenceModel
 	public :
 	
 	EQM_MLP_MOX(string TMVAWeightPath);
+	EQM_MLP_MOX(CLASSLogger* log, string TMVAWeightPath);
 
 	double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);
 

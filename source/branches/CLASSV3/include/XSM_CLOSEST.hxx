@@ -42,7 +42,7 @@ public :
 	 \name Constructor/Desctructor
 	 */
 	//@{
-
+	XSM_CLOSEST(string DB_index_file, bool oldreadmethod = true );
 	XSM_CLOSEST(CLASSLogger* Log, string DB_index_file, bool oldreadmethod = true );	
 	~XSM_CLOSEST();
 	//{
