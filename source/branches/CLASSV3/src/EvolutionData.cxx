@@ -1,6 +1,6 @@
 #include "EvolutionData.hxx"
 
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 #include "CLASSConstante.hxx"
 #include "StringLine.hxx"
 
@@ -353,7 +353,7 @@ EvolutionData::EvolutionData():CLASSObject()
 }
 
 	//________________________________________________________________________
-EvolutionData::EvolutionData(LogFile* Log)
+EvolutionData::EvolutionData(CLASSLogger* Log)
 {
 	
 	SetLog(Log);
@@ -367,7 +367,7 @@ EvolutionData::EvolutionData(LogFile* Log)
 }
 
 	//________________________________________________________________________
-EvolutionData::EvolutionData(LogFile* Log, string DB_file, bool oldread, ZAI zai)
+EvolutionData::EvolutionData(CLASSLogger* Log, string DB_file, bool oldread, ZAI zai)
 {
 	
 	SetLog(Log);
@@ -533,8 +533,7 @@ double	EvolutionData::GetXSForAt(double t, ZAI zai, int ReactionId)
 			break;
 		case 3: XSEvol = Getn2nXS();
 			break;
-		default:cout << "!!Error!! !!!EvolutionData!!! \n Wrong ReactionId !!" << endl;
-			GetLog()->fLog << "!!Error!! !!!EvolutionData!!! \n Wrong ReactionId !!" << endl;
+		default:ERROR << "!!Error!! !!!EvolutionData!!! \n Wrong ReactionId !!" << endl;
 			exit(1);
 	}
 	
@@ -580,8 +579,7 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 	ifstream DecayDB(DBfile.c_str());	// Open the File
 	if(!DecayDB)				//check if file is correctly open
 	{
-		cout << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
-		GetLog()->fLog << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
+		INFO << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
 	}
 	vector<double> vTime;
 	
@@ -591,10 +589,8 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 	getline(DecayDB, line);
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "time")
 	{
-		cout << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
-		cout << "!!Bad Trouble!! !!!EvolutionData!!! The first Line MUST be the time line !!!" << endl;
-		GetLog()->fLog << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
-		GetLog()->fLog << "!!Bad Trouble!! !!!EvolutionData!!! The first Line MUST be the time line !!!" << endl;
+		ERROR << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
+		ERROR << "!!Bad Trouble!! !!!EvolutionData!!! The first Line MUST be the time line !!!" << endl;
 		exit (1);
 	}
 	
@@ -688,8 +684,7 @@ void EvolutionData::ReadKeff(string line, double* time, int NTimeStep)
 	int start = 0;
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "keff" )	// Check the keyword
 	{
-		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"keff\" not found !" << endl;
-		GetLog()->fLog << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"keff\" not found !" << endl;
+		ERROR << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"keff\" not found !" << endl;
 		exit(1);
 	}
 	
@@ -721,8 +716,7 @@ void EvolutionData::ReadFlux(string line, double* time, int NTimeStep)
 	
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "flux" )	// Check the keyword
 	{
-		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"flux\" not found !" << endl;
-		GetLog()->fLog << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"flux\" not found !" << endl;
+		ERROR << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"flux\" not found !" << endl;
 		exit(1);
 	}
 	
@@ -750,8 +744,7 @@ void	EvolutionData::ReadInv(string line, double* time, int NTimeStep)
 	int start = 0;
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "inv" )	// Check the keyword
 	{
-		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"inv\" not found !" << endl;
-		GetLog()->fLog << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"inv\" not found !" << endl;
+		ERROR << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"inv\" not found !" << endl;
 		exit(1);
 	}
 		// Read the Z A I
@@ -784,8 +777,7 @@ void	EvolutionData::ReadXSFis(string line, double* time, int NTimeStep)
 	int start = 0;
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "xsfis" )	// Check the keyword
 	{
-		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xsfis\" not found !" << endl;
-		GetLog()->fLog << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xsfis\" not found !" << endl;
+		ERROR << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xsfis\" not found !" << endl;
 		exit(1);
 	}
 		// Read the Z A I
@@ -818,8 +810,7 @@ void	EvolutionData::ReadXSCap(string line, double* time, int NTimeStep)
 	int start = 0;
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "xscap" )	// Check the keyword
 	{
-		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xscap\" not found !" << endl;
-		GetLog()->fLog << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xscap\" not found !" << endl;
+		ERROR << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xscap\" not found !" << endl;
 		exit(1);
 	}
 		// Read the Z A I
@@ -852,8 +843,7 @@ void	EvolutionData::ReadXSn2n(string line, double* time, int NTimeStep)
 	int start = 0;
 	if( tlc(StringLine::NextWord(line, start, ' ')) != "xsn2n" )	// Check the keyword
 	{
-		cout << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xsn2n\" not found !" << endl;
-		GetLog()->fLog << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xsn2n\" not found !" << endl;
+		ERROR << "!!ERROR!! !!!EvolutionData!!! \n Bad keyword : \"xsn2n\" not found !" << endl;
 		exit(1);
 	}
 		// Read the Z A I
@@ -897,8 +887,7 @@ void EvolutionData::ReadInfo()
 	ifstream InfoDB(InfoDBFile.c_str());				// Open the File
 	if(!InfoDB)
 	{
-		cout << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
-		GetLog()->fLog << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
+		ERROR << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
 		exit(1);
 	}
 
@@ -931,8 +920,7 @@ void EvolutionData::OldReadDB(string DBfile)
 	ifstream DecayDB(DBfile.c_str());							// Open the File
 	if(!DecayDB)
 	{
-		cout << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
-		GetLog()->fLog << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
+		WARNING << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << DBfile << "\"\n" << endl;
 	}
 	vector<double> vTime;
 	vector<double> vTimeErr;
@@ -943,8 +931,7 @@ void EvolutionData::OldReadDB(string DBfile)
 	getline(DecayDB, line);
 	if( StringLine::NextWord(line, start, ' ') != "time")
 	{
-		cout << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
-		GetLog()->fLog << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
+		ERROR << "!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : " <<  DBfile << endl;
 		exit (1);
 	}
 
@@ -1145,7 +1132,7 @@ void EvolutionData::OldReadDB(string DBfile)
 	ifstream InfoDB(InfoDBFile.c_str());							// Open the File
 	if(!InfoDB)
 	{
-		GetLog()->fLog << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
+		WARNING << "!!Warning!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
 		return;
 	}
 

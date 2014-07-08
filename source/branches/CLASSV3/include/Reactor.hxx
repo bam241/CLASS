@@ -23,7 +23,7 @@ class EvolutionData;
 class PhysicModels;
 class FabricationPlant;
 class Storage;
-class LogFile;
+class CLASSLogger;
 
 //-----------------------------------------------------------------------------//
 /*!
@@ -53,25 +53,25 @@ public :
 	Reactor();		///< Normal Constructor.
 
 	//{
-	/// LogFile Constructor.
+	/// CLASSLogger Constructor.
 	/*!
-	 Use create an empty Reactor loading a LogFile
-	 \param LogFile LogFile used for the log...
+	 Use create an empty Reactor loading a CLASSLogger
+	 \param CLASSLogger CLASSLogger used for the log...
 	 */
-	Reactor(LogFile* log);
+	Reactor(CLASSLogger* log);
 	//}
 
 	//{
 	/// Special Constructor for reprocessed fuel.
 	/*!
 	 Make a new reactor
-	 \param LogFile LogFile used for the log...
+	 \param CLASSLogger CLASSLogger used for the log...
 	 \param fueltypeDB Databank describing the evolution of the fuel
 	 \param CLASSBAckEnd Pool used facility wich get the fuel after iradiation
 	 \param creationtime creation time
 	 \param lifetime working time duration.
 	 */
-	Reactor(LogFile* log, PhysicModels* 	fueltypeDB,
+	Reactor(CLASSLogger* log, PhysicModels* 	fueltypeDB,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
 		cSecond creationtime , cSecond lifetime);
 	//}
@@ -80,7 +80,7 @@ public :
 	 /// Special Constructor for reprocessed fuel using cycletime and Burn-Up.
 	 /*!
 	  Make a new reactor
-	 \param LogFile LogFile used for the log...
+	 \param CLASSLogger CLASSLogger used for the log...
 	 \param fueltypeDB Databank describing the evolution of the fuel
 	 \param CLASSBAckEnd Pool used facility wich get the fuel after iradiation
 	 \param creationtime creation time
@@ -89,7 +89,7 @@ public :
 	 \param HMMass Mass of Heavy Metal in the Reactor
 	 \param BurnUp Burnup reach by the fuel at the end of the cycle
 	 */
-	Reactor(LogFile* log, PhysicModels* 	fueltypeDB,
+	Reactor(CLASSLogger* log, PhysicModels* 	fueltypeDB,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
 		cSecond creationtime , cSecond lifetime, cSecond cycletime,
 		double HMMass, double BurnUp);
@@ -99,7 +99,7 @@ public :
 	/// Special Constructor for reprocessed fuel using Power and Burn-Up.
 	/*!
 	 Make a new reactor
-	 \param LogFile LogFile used for the log...
+	 \param CLASSLogger CLASSLogger used for the log...
 	 \param fueltypeDB Databank describing the evolution of the fuel
 	 \param CLASSBAckEnd Pool used facility wich get the fuel after iradiation
 	 \param creationtime creation time
@@ -109,7 +109,7 @@ public :
 	 \param BurnUp Burnup reach by the fuel at the end of the cycle
 	 \param ChargeFactor effective charge of the reactor.
 	 */
-	Reactor(LogFile* log, PhysicModels* 	fueltypeDB,
+	Reactor(CLASSLogger* log, PhysicModels* 	fueltypeDB,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
 		cSecond creationtime , cSecond lifetime,
 		double Power, double HMMass, double BurnUp, double ChargeFactor);
@@ -119,7 +119,7 @@ public :
 	/// Special Constructor for fixed fuel using Power and Burn-Up.
 	/*!
 	 Make a new reactor
-	 \param LogFile LogFile used for the log...
+	 \param CLASSLogger CLASSLogger used for the log...
 	 \param evolutivedb EvolutionData describing the evolution of the fuel
 	 \param CLASSBAckEnd Pool used facility wich get the fuel after iradiation
 	 \param creationtime creation time
@@ -129,7 +129,7 @@ public :
 	 \param BurnUp Burnup reach by the fuel at the end of the cycle
 	 \param ChargeFactor effective charge of the reactor.
 	 */
-	Reactor(LogFile* log, EvolutionData evolutivedb, CLASSBackEnd* Pool,
+	Reactor(CLASSLogger* log, EvolutionData evolutivedb, CLASSBackEnd* Pool,
 		cSecond creationtime, cSecond lifetime,
 		double power, double HMMass, double BurnUp, double ChargeFactor = 1);
 	//}
@@ -215,6 +215,9 @@ public :
 	void	SetLoadingPlan(map<cSecond, pair<EvolutionData, double> > loadingplan)
 					{ fLoadingPlan = loadingplan; fNextPlan = fLoadingPlan.begin(); }
 										//!< Set a LaodingPlan to change the Fuel after some cycle
+
+	using CLASSFacility::SetName;
+
 	//@}
 
 

@@ -29,9 +29,9 @@ class PWR_THPU_FabricationPlant : public FabricationPlant
 	//on a besoin de surcherger le constructeur que si
 public :
 	PWR_THPU_FabricationPlant();
-	PWR_THPU_FabricationPlant(LogFile* log);
+	PWR_THPU_FabricationPlant(CLASSLogger* log);
 	
-	PWR_THPU_FabricationPlant(LogFile* log, Storage* storage, Storage* reusable, double fabricationtime = 365.25*24*3600*2);
+	PWR_THPU_FabricationPlant(CLASSLogger* log, Storage* storage, Storage* reusable, double fabricationtime = 365.25*24*3600*2);
 	///< Normal Destructor.
 	~PWR_THPU_FabricationPlant();
 	

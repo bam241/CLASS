@@ -16,7 +16,7 @@
 using namespace std;
 typedef long long int cSecond;
 
-class LogFile;
+class CLASSLogger;
 class DecayDataBank;
 
 //-----------------------------------------------------------------------------//
@@ -46,12 +46,12 @@ public :
  	Storage();		///< Normal Constructor.
 
 	//{
-	/// LogFile Constructor.
+	/// CLASSLogger Constructor.
 	/*!
-	 Use create an empty Stotarage loading a LogFile
-	 \param LogFile LogFile used for the log...
+	 Use create an empty Stotarage loading a CLASSLogger
+	 \param CLASSLogger CLASSLogger used for the log...
 	 */
- 	Storage(LogFile* log);
+ 	Storage(CLASSLogger* log);
 	//}
 
 
@@ -59,10 +59,10 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new reactor
-	 \param LogFile LogFile used for the log...
+	 \param CLASSLogger CLASSLogger used for the log...
 	 \param evolutivedb DataBank for decay management
 	 */
-	Storage(LogFile* log, DecayDataBank* evolutivedb);
+	Storage(CLASSLogger* log, DecayDataBank* evolutivedb);
 	//}
 
 
@@ -79,6 +79,10 @@ public :
 	 \name Set Method
 	 */
 	//@{
+
+	using CLASSBackEnd::SetName;
+	using CLASSBackEnd::SetIsStorageType;
+
 	//@}
 
 
@@ -135,7 +139,7 @@ public :
 	/// Write the Isotope composition of all IsotopicVector stored.
 	/*!
 	 Make a new reactor
-	 \param filenam LogFile used for the log...
+	 \param filenam CLASSLogger used for the log...
 	 \param data only use to srite a date in the file, theyr is not treatment of the date in this method....
 	 */
 	void Write(string filename,cSecond date = -1);

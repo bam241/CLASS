@@ -1,7 +1,7 @@
 
 #include "XSModel.hxx"
 #include "XSM_MLP_PWR_MOX.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 #include "StringLine.hxx"
 
 #include "TMVA/Reader.h"
@@ -32,8 +32,8 @@
 //
 //
 //________________________________________________________________________
-XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(LogFile* Log,string TMVA_Weight_Directory,string InformationFile, bool IsTimeStep)
-{	
+XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(CLASSLogger* Log,string TMVA_Weight_Directory,string InformationFile, bool IsTimeStep)
+{
 
 	SetLog(Log);
 
@@ -50,12 +50,8 @@ XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(LogFile* Log,string TMVA_Weight_Directory,strin
 	if(IsLog())
 	{
 		// Warning
-		cout	<< "!!INFO!! !!!XSM_MLP_PWR_MOX!!! A EvolutionData has been define :" << endl;
-		cout	<< "\t His TMVA folder is : \"" << fTMVAWeightFolder << "\"" << endl;
-
-		
-		GetLog()->fLog 	<< "!!INFO!! !!!XSM_MLP_PWR_MOX!!! A EvolutionData has been define :" << endl;
-		GetLog()->fLog	<<"\t His TMVA folder is : \"" << fTMVAWeightFolder << "\"" << endl;
+		INFO << " A EvolutionData has been define : " << endl;
+		INFO << " \t His TMVA folder is : \" " << fTMVAWeightFolder << "\"" << endl;
 	}
 
 }
@@ -128,7 +124,7 @@ void XSM_MLP_PWR_MOX::GetDataBaseInformation()
 	}
 	else
 	{
-		cout<<"Can't find/open file "<<fMLPInformationFile<<endl;
+		ERROR << "Can't find/open file " << fMLPInformationFile << endl;
 		exit(0);
 	}
 
@@ -215,7 +211,7 @@ void XSM_MLP_PWR_MOX::ReadWeightFile(string Filename, int &Z, int &A, int &I, in
 
 	if(Z<=0 || A<=0 || I<0 || Reaction==-1)
 	{
-		cout<<"ERROR in XSM_MLP_PWR_MOX::ReadWeightFile : wrong TMVA weight format"<<endl;
+		ERROR << " wrong TMVA weight format " << endl;
 		exit(0);
 	}
 }
@@ -416,7 +412,7 @@ void XSM_MLP_PWR_MOX::ReadWeightFileStep(string Filename, int &Z, int &A, int &I
 
     if(Z==-1 || A==-1 || I==-1 || Reaction==-1 || TimeStep==-1)
 	{
-		cout<<"ERROR in XSM_MLP_PWR_MOX::ReadWeightFile : wrong TMVA weight format"<<endl;
+		ERROR << " wrong TMVA weight format " << endl;
 		exit(0);
 	}
 }
@@ -484,7 +480,7 @@ EvolutionData XSM_MLP_PWR_MOX::GetCrossSectionsStep(IsotopicVector IV)
 EvolutionData XSM_MLP_PWR_MOX::GetCrossSections(IsotopicVector IV ,double t)
 {	
 	if(t!=0)
-		{cout<<"WARNING::XSM_MLP_PWR_MOX::GetCrossSections argument t has non effect here "<<endl; }
+		WARNING << " argument t has non effect here " << endl;
 
 	EvolutionData EV;
 	if(fIsStepTime)

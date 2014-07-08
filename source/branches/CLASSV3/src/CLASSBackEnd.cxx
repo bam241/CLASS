@@ -2,7 +2,7 @@
 
 #include "DecayDataBank.hxx"
 #include "Scenario.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 
 
 #include <sstream>
@@ -26,13 +26,13 @@ CLASSBackEnd::CLASSBackEnd(int type):CLASSFacility(type)
 	fDecayDataBase = 0;
 }
 
-CLASSBackEnd::CLASSBackEnd(LogFile* log, int type):CLASSFacility(log, type)
+CLASSBackEnd::CLASSBackEnd(CLASSLogger* log, int type):CLASSFacility(log, type)
 {
 	fDecayDataBase = 0;
 }
 
 
-CLASSBackEnd::CLASSBackEnd(LogFile* log, cSecond cycletime, int type):CLASSFacility(log, cycletime, type)
+CLASSBackEnd::CLASSBackEnd(CLASSLogger* log, cSecond cycletime, int type):CLASSFacility(log, cycletime, type)
 {
 	fDecayDataBase = 0;
 }

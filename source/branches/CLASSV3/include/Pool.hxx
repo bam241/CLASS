@@ -15,7 +15,7 @@ using namespace std;
 typedef long long int cSecond;
 
 class CLASSBackEnd;
-class LogFile;
+class CLASSLogger;
 class DecayDataBank;
 
 //-----------------------------------------------------------------------------//
@@ -49,11 +49,11 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new EvolutionData
-	 \param Log LogFile used for the log...
+	 \param Log CLASSLogger used for the log...
 	 \param abstime time to start the Pool
 	 \param coolingtime duration of the cooling.
 	 */
-	Pool(LogFile* Log, cSecond coolingtime = 5*3600.*24.*365.25); //!<
+	Pool(CLASSLogger* Log, cSecond coolingtime = 5*3600.*24.*365.25); //!<
 	//}
 
 
@@ -61,12 +61,12 @@ public :
 	/// Special Special Constructor.
 	/*!
 	 Make a new EvolutionData
-	 \param Log LogFile used for the log...
+	 \param Log CLASSLogger used for the log...
 	 \param Storage storage which get the fuel after the cooling
 	 \param abstime time to start the Pool
 	 \param coolingtime duration of the cooling.
 	 */
-	Pool(LogFile* log, CLASSBackEnd* Storage,
+	Pool(CLASSLogger* log, CLASSBackEnd* Storage,
 			 cSecond coolingtime = 5*3600.*24.*365.25); //!<
 	//}
 
@@ -93,6 +93,9 @@ public :
 
 	void SetIVArray(vector<IsotopicVector> ivarray);			//! not use there (Does nothing!!!)
 	void SetIVArray(vector<IsotopicVector> ivarray, vector<cSecond> timearray); //!< Set The isotopicVector Array at the corresponding time
+
+
+	using CLASSBackEnd::SetName;
 
 	//@}
 

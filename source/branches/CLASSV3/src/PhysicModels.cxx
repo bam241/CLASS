@@ -21,9 +21,6 @@ PhysicModels::PhysicModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel* 
 EvolutionData PhysicModels::GenerateEvolutionData(IsotopicVector IV, double cycletime, double Power)
 {
 
-
 	return fIrradiationModel->GenerateEvolutionData(IV, fXSModel->GetCrossSections(IV), Power, cycletime);
-
-
 }
 //________________________________________________________________________

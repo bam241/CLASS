@@ -7,7 +7,7 @@
 #include "DecayDataBank.hxx"
 #include "IsotopicVector.hxx"
 #include "Scenario.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 
 
 
@@ -43,7 +43,7 @@ PWR_THU_FabricationPlant::PWR_THU_FabricationPlant():FabricationPlant()
 
 }
 
-PWR_THU_FabricationPlant::PWR_THU_FabricationPlant(LogFile* log)
+PWR_THU_FabricationPlant::PWR_THU_FabricationPlant(CLASSLogger* log)
 {
 	SetFacilityType(16);
 
@@ -55,18 +55,15 @@ PWR_THU_FabricationPlant::PWR_THU_FabricationPlant(LogFile* log)
 	fStorage = 0;
 	fReUsable = 0;
 
-	cout	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
-	cout	<< "\t Chronological Stock Priority set! "<< endl << endl;
-	cout	<< "!!WARNING!! !!!FabricationPlant!!! You need to set the different stock manually as well as the Fabrication Time Manualy !! " << endl;
-	GetLog()->fLog	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
-	GetLog()->fLog	<< "\t Chronological Stock Priority set! "<< endl << endl;
-	GetLog()->fLog	<< "!!WARNING!! !!!FabricationPlant!!! You need to set the different stock manually as well as the Fabrication Time Manualy !! " << endl;
+	INFO	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
+	INFO	<< "\t Chronological Stock Priority set! "<< endl << endl;
+	INFO	<< "!!WARNING!! !!!FabricationPlant!!! You need to set the different stock manually as well as the Fabrication Time Manualy !! " << endl;
 	
 	
 
 }
 
-PWR_THU_FabricationPlant::PWR_THU_FabricationPlant(LogFile* log, Storage* storage, Storage* reusable, double fabircationtime)
+PWR_THU_FabricationPlant::PWR_THU_FabricationPlant(CLASSLogger* log, Storage* storage, Storage* reusable, double fabircationtime)
 {
 	SetFacilityType(16);
 
@@ -82,13 +79,9 @@ PWR_THU_FabricationPlant::PWR_THU_FabricationPlant(LogFile* log, Storage* storag
 	fReUsable = reusable;
 	
 	
-	cout	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
-	cout	<< "\t Chronological Stock Priority has been set! "<< endl;
-	cout	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/3600/24/365.25) << " year" << endl << endl;
-	
-	GetLog()->fLog	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
-	GetLog()->fLog	<< "\t Chronological Stock Priority has been set! "<< endl;
-	GetLog()->fLog	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/3600/24/365.25) << " year" << endl << endl;
+	INFO	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
+	INFO	<< "\t Chronological Stock Priority has been set! "<< endl;
+	INFO	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/3600/24/365.25) << " year" << endl << endl;
 	
 	
 
@@ -115,8 +108,7 @@ void PWR_THU_FabricationPlant::BuildFuelForReactor(int ReactorId)
 	string ReactorType ="PWR";	
 	if(FuelType->GetFuelType() != "THU" || ReactorType !="PWR")//Check if the reactor is the right type and use the right type of fuel
 	{
-		cout << "!!Bad Trouble!! !!!FabricationPlant!!! Try to do MOX with a not MOXed DB "<< endl;
-		GetLog()->fLog << "!!Bad Trouble!! !!!FabricationPlant!!! Try to do MOX with a not MOXed DB" << endl;
+		ERROR << "!!Bad Trouble!! !!!FabricationPlant!!! Try to do MOX with a not MOXed DB" << endl;
 		exit (1);
 	}	
 
@@ -234,8 +226,7 @@ void PWR_THU_FabricationPlant::BuildFuelForReactor(int ReactorId)
 			{
 				stock.GetActinidesComposition().Print();
 
-				cout << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use "<< endl;
-				GetLog()->fLog << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use" << endl;
+				ERROR << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use" << endl;
 				RecycleStock(0.);
 				FuelBuild = false;
 				

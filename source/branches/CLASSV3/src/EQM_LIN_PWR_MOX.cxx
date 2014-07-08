@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "StringLine.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 #include "IsotopicVector.hxx"
 
 
@@ -16,7 +16,7 @@ EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(string WeightPath):EquivalenceModel()
 
 	ifstream DataDB(fWeightPath.c_str());							// Open the File
 	if(!DataDB)
-		cout << "!!Warning!! !!!EQM QUAD PWR MOX!!! \n Can't open \"" << fWeightPath << "\"\n" << endl;
+		WARNING << "Can't open \"" << fWeightPath << "\"\n" << endl;
 
 	string line;
 	int start = 0;	// First Get Fuel Parameter
@@ -24,13 +24,13 @@ EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(string WeightPath):EquivalenceModel()
 
 	if( StringLine::NextWord(line, start, ' ') != "PARAM")
 	{
-		cout << "!!Bad Trouble!! !!!EQM QUAD PWR MOX!!! Bad Database file : " <<  fWeightPath << " Can't find the Parameter of the DataBase"<< endl;
+		ERROR << " Bad Database file : " <<  fWeightPath << " Can't find the Parameter of the DataBase " << endl;
 		exit (1);
 	}
 	while(start < (int)line.size())
 		fFuelParameter.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
 
-	cout << "!!INFO!! !!!EQM QUAD PWR MOX!!! " <<  fFuelParameter.size() << " have been read"<< endl;
+	INFO << fFuelParameter.size() << " have been read " << endl;
 
 
 
@@ -62,13 +62,13 @@ EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(string WeightPath):EquivalenceModel()
 }
 
 
-EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(LogFile* log, string WeightPath):EquivalenceModel(log)
+EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(CLASSLogger* log, string WeightPath):EquivalenceModel(log)
 {
 	fWeightPath =  WeightPath;
 
 	ifstream DataDB(fWeightPath.c_str());							// Open the File
 	if(!DataDB)
-		cout << "!!Warning!! !!!EQM QUAD PWR MOX!!! \n Can't open \"" << fWeightPath << "\"\n" << endl;
+		WARNING << " Can't open \"" << fWeightPath << "\"\n" << endl;
 
 	string line;
 	int start = 0;	// First Get Fuel Parameter
@@ -76,13 +76,13 @@ EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(LogFile* log, string WeightPath):EquivalenceMod
 
 	if( StringLine::NextWord(line, start, ' ') != "PARAM")
 	{
-		cout << "!!Bad Trouble!! !!!EQM QUAD PWR MOX!!! Bad Database file : " <<  fWeightPath << " Can't find the Parameter of the DataBase"<< endl;
+		ERROR << " Bad Database file : " <<  fWeightPath << " Can't find the Parameter of the DataBase"<< endl;
 		exit (1);
 	}
 	while(start < (int)line.size())
 		fFuelParameter.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
 
-	cout << "!!INFO!! !!!EQM QUAD PWR MOX!!! " <<  fFuelParameter.size() << " have been read"<< endl;
+	INFO << fFuelParameter.size() << " have been read"<< endl;
 
 
 
@@ -222,8 +222,7 @@ vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 
 		if(StockFactionToUse < 0)
 		{
-			cout << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use "<< endl;
-			//GetLog()->fLog << "!!Bad Trouble!! !!!FabricationPlant!!! Oups Bug in calculating stock fraction to use" << endl;
+			WARNING << "!!!FabricationPlant!!! Oups Bug in calculating stock fraction to use "<< endl;
 			lambda[N_FissilStock_OnCheck] = 0.;
 			N_FissilStock_OnCheck++;
 			FuelBuild = false;

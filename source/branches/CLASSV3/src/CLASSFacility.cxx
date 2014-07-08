@@ -28,7 +28,7 @@ CLASSFacility::CLASSFacility(int type):CLASSObject()
 	fCycleTime = -1;
 }
 
-CLASSFacility::CLASSFacility(LogFile* log, int type):CLASSObject(log)
+CLASSFacility::CLASSFacility(CLASSLogger* log, int type):CLASSObject(log)
 {
 	fParc = 0;
 
@@ -40,7 +40,7 @@ CLASSFacility::CLASSFacility(LogFile* log, int type):CLASSObject(log)
 }
 
 
-CLASSFacility::CLASSFacility(LogFile* log, cSecond cycletime, int type):CLASSObject(log)
+CLASSFacility::CLASSFacility(CLASSLogger* log, cSecond cycletime, int type):CLASSObject(log)
 {
 	fParc = 0;
 
@@ -51,7 +51,7 @@ CLASSFacility::CLASSFacility(LogFile* log, cSecond cycletime, int type):CLASSObj
 	fCycleTime = cycletime;
 }
 
-CLASSFacility::CLASSFacility(LogFile* log, cSecond creationtime, cSecond lifetime, int type):CLASSObject(log)
+CLASSFacility::CLASSFacility(CLASSLogger* log, cSecond creationtime, cSecond lifetime, int type):CLASSObject(log)
 {
 	fParc = 0;
 
@@ -64,7 +64,7 @@ CLASSFacility::CLASSFacility(LogFile* log, cSecond creationtime, cSecond lifetim
 	fLifeTime = lifetime;
 }
 
-CLASSFacility::CLASSFacility(LogFile* log, cSecond creationtime, cSecond lifetime, cSecond cycletime, int type):CLASSObject(log)
+CLASSFacility::CLASSFacility(CLASSLogger* log, cSecond creationtime, cSecond lifetime, cSecond cycletime, int type):CLASSObject(log)
 {
 	fParc = 0;
 

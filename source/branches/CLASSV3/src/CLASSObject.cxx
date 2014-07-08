@@ -1,6 +1,6 @@
 #include "CLASSObject.hxx"
 
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 
 using namespace std;
 
@@ -21,7 +21,7 @@ CLASSObject::CLASSObject()
 	fIsLog = false;
 }
 
-CLASSObject::CLASSObject(LogFile* log)
+CLASSObject::CLASSObject(CLASSLogger* log)
 {
 	SetLog(log);
 }

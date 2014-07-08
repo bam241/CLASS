@@ -25,7 +25,7 @@ using namespace std;
 typedef long long int cSecond;
 
 class ZAI;
-class LogFile;
+class CLASSLogger;
 //-----------------------------------------------------------------------------//
 /*!
  Define a IrradiationModel.
@@ -46,7 +46,7 @@ class IrradiationModel : public CLASSObject
 	
 	IrradiationModel();
 
-	IrradiationModel(LogFile* log);
+	IrradiationModel(CLASSLogger* log);
 
 	/// virtueal method called to perform the irradiation calculation using a set of cross section.
 	/*!

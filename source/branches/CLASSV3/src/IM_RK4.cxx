@@ -10,7 +10,7 @@
 
 #include "IsotopicVector.hxx"
 #include "CLASSConstante.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 
 #include "StringLine.hxx"
 
@@ -41,7 +41,7 @@ IM_RK4::IM_RK4():IrradiationModel(), DynamicalSystem()
 }
 
 
-IM_RK4::IM_RK4(LogFile* log):IrradiationModel(log), DynamicalSystem()
+IM_RK4::IM_RK4(CLASSLogger* log):IrradiationModel(log), DynamicalSystem()
 {
 	fTheNucleiVector = 0;
 	fTheMatrix = 0;
@@ -63,7 +63,7 @@ IM_RK4::IM_RK4(LogFile* log):IrradiationModel(log), DynamicalSystem()
 //________________________________________________________________________
 EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, EvolutionData XSSet, double Power, double cycletime)
 {
-
+DBGL
 	if(fFastDecay.size() == 0)
 	{
 		BuildDecayMatrix();
@@ -168,7 +168,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	vector< TMatrixT<double> > FissionXSMatrix;	// Store The Fisison XS Matrix
 	vector< TMatrixT<double> > CaptureXSMatrix;	// Store The Capture XS Matrix
 	vector< TMatrixT<double> > n2nXSMatrix;		// Store The n2N XS Matrix
-
+DBGL
 	for(int i = 0; i < NStep-1; i++)
 	{
 		double TStepMax = ( (DBTimeStep[i+1]-DBTimeStep[i] ) ) * Power_ref/M_ref / Power*M ;	// Get the next Time step
@@ -265,9 +265,8 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 		GeneratedDB.CaptureXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NStep, timevector, CaptureXS)));
 		GeneratedDB.n2nXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NStep, timevector, n2nXS)));
 	}
-
+DBGL
 	GeneratedDB.SetPower(Power );
-//	GeneratedDB.SetFuelType(fFuelType );
 	GeneratedDB.SetReactorType(ReactorType );
 	GeneratedDB.SetCycleTime(cycletime);
 
@@ -283,7 +282,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	FissionXSMatrix.clear();
 	CaptureXSMatrix.clear();
 	n2nXSMatrix.clear();
-
+DBGL
 	return GeneratedDB;
 
 }

@@ -13,17 +13,17 @@ ROOTGLIBS	= `root-config --glibs`
 ######### nothing to change from here #########
 INCLUDES	= $(LOCALINC)/*.hxx
 LIBNAME 	= CLASSpkg
-OBJS		= 	Scenario.o \
+OBJS		= 	CLASSLogger.o \
+			ZAI.o ZAIDict.o \
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAIMass.o \
-			ZAI.o ZAIDict.o \
 			CLASSObject.o CLASSObjectDict.o\
 			CLASSFacility.o CLASSFacilityDict.o\
+			FabricationPlant.o FabricationPlantDict.o \
+			Reactor.o ReactorDict.o \
 			CLASSBackEnd.o CLASSBackEndDict.o\
 			Storage.o StorageDict.o\
-			FabricationPlant.o FabricationPlantDict.o \
 			Pool.o PoolDict.o\
-			Reactor.o ReactorDict.o \
 			DecayDataBank.o \
 			DynamicalSystem.o\
 			EvolutionData.o EvolutionDataDict.o \
@@ -31,23 +31,23 @@ OBJS		= 	Scenario.o \
 			EquivalenceModel.o EQM_MLP_PWR_MOX.o EQM_QUAD_PWR_MOX.o EQM_LIN_PWR_MOX.o \
 			XSModel.o XSM_MLP_PWR_MOX.o XSM_CLOSEST.o \
 			PhysicModels.o \
-			LogFile.o
+			Scenario.o
 
-ROOTOBJS	= 	CLASSObject.o CLASSObjectDict.o\
+ROOTOBJS	= 	CLASSLogger.o \
+			ZAI.o ZAIDict.o \
+			IsotopicVector.o IsotopicVectorDict.o \
+			ZAIMass.o \
+			CLASSObject.o CLASSObjectDict.o\
 			CLASSFacility.o CLASSFacilityDict.o\
+			Reactor.o ReactorDict.o \
+			FabricationPlant.o FabricationPlantDict.o \
 			CLASSBackEnd.o CLASSBackEndDict.o\
 			Storage.o StorageDict.o\
 			Pool.o PoolDict.o\
-			Reactor.o ReactorDict.o \
-			FabricationPlant.o FabricationPlantDict.o \
-			IsotopicVector.o IsotopicVectorDict.o \
-			ZAIMass.o \
-			ZAI.o ZAIDict.o \
 			DecayDataBank.o \
 			DynamicalSystem.o\
 			EvolutionData.o EvolutionDataDict.o \
-			PhysicModels.o \
-			LogFile.o
+			PhysicModels.o
 
 
 CXX           = g++

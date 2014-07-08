@@ -18,7 +18,7 @@
 #include "Scenario.hxx"
 #include "Storage.hxx"
 #include "Reactor.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 #include "ZAI.hxx"
 
 using namespace std;
@@ -63,12 +63,12 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new FabricationPlant evolution
-	 \param LogFile LogFile used for the log...
+	 \param CLASSLogger CLASSLogger used for the log...
 	 \param storage storage used to build the reprocessed fuel
 	 \param reusable storage used to store all separated material not used in the fabrication process
 	 \param fabricationtime duration of the fabrication process (2 years by default).
 	 */
-	FabricationPlant(LogFile* log, double fabricationtime = 365.25*24*3600*2);
+	FabricationPlant(CLASSLogger* log, double fabricationtime = 365.25*24*3600*2);
 	//}
 
 	~FabricationPlant(); 	///< Normal Destructor.
@@ -95,6 +95,9 @@ public :
 			{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }	//!< Add a new reactor
 
 	void SetReUsableStorage(Storage* store) { fReUsable = store;}
+
+	using CLASSFacility::SetName;
+
 	//@}
 
 

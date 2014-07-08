@@ -42,7 +42,7 @@ public :
 	 */
 	//@{
 
-	XSM_MLP_PWR_MOX(LogFile* Log,string TMVA_Weight_Directory,string InformationFile="",bool IsTimeStep=true);	
+	XSM_MLP_PWR_MOX(CLASSLogger* Log,string TMVA_Weight_Directory,string InformationFile="",bool IsTimeStep=true);	
 	~XSM_MLP_PWR_MOX(); 
 	//{
 

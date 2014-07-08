@@ -1,7 +1,7 @@
 #include "Storage.hxx"
 
 #include "Scenario.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 
 
 #include <sstream>
@@ -27,19 +27,17 @@ Storage::Storage():CLASSBackEnd(-1)
 
 }
 
-Storage::Storage(LogFile* log):CLASSBackEnd(log, -1)
+Storage::Storage(CLASSLogger* log):CLASSBackEnd(log, -1)
 {
 	SetIsStorageType();
 
 	SetName("S_Storage.");
 
-	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
-	
-	GetLog()->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
+	INFO << " A new Storage has been define." << endl;
 	
 }
 //________________________________________________________________________
-Storage::Storage(LogFile* log, DecayDataBank* evolutivedb):CLASSBackEnd(log, -1)
+Storage::Storage(CLASSLogger* log, DecayDataBank* evolutivedb):CLASSBackEnd(log, -1)
 {
 	SetIsStorageType();
 
@@ -47,9 +45,7 @@ Storage::Storage(LogFile* log, DecayDataBank* evolutivedb):CLASSBackEnd(log, -1)
 	
 	SetName("S_Storage.");
 
-	cout	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
-	
-	GetLog()->fLog	<< "!!INFO!! !!!Storage!!! A new Storage has been define." << endl;
+	INFO << " A new Storage has been define." << endl;
 
 
 }
@@ -84,8 +80,7 @@ void Storage::TakeFractionFromStock(int IVId,double fraction)
 	{
 		if(fraction > 1 || fraction < 0)
 		{
-			cout << "!!Warning!! !!!Storage!!! You try to remove fraction superior than 1 or a negative one..." << endl;
-			GetLog()->fLog << "!!Warning!! !!!Storage!!! You try to remove fraction superior than 1 or a negative one..." << endl;
+			WARNING << " You try to remove fraction superior than 1 or a negative one..." << endl;
 		}
 		else 
 		{
@@ -98,8 +93,7 @@ void Storage::TakeFractionFromStock(int IVId,double fraction)
 	}
 	else
 	{
-		cout << "!!Warning!! !!!Storage!!! TakeFractionFromStock can't be DEFINE without REAL stock management" << endl;
-		GetLog()->fLog << "!!Warning!! !!!Storage!!! TakeFractionFromStock can't be DEFINE without REAL stock management" << endl;
+		ERROR << " TakeFractionFromStock can't be DEFINE without REAL stock management" << endl;
 		exit(1);
 
 	}
@@ -119,8 +113,7 @@ void Storage::TakeFromStock(IsotopicVector isotopicvector)
 	}
 	else
 	{
-		cout << "!!Warning!! !!!Storage!!! TakeFromStock can't be DEFINE WITH REAL stock management" << endl;
-		GetLog()->fLog << "!!Warning!! !!!Storage!!! TakeFromStock can't be DEFINE WITH REAL stock management" << endl;
+		ERROR << " TakeFromStock can't be DEFINE WITH REAL stock management" << endl;
 		exit(1);
 	}
 
@@ -129,7 +122,7 @@ void Storage::TakeFromStock(IsotopicVector isotopicvector)
 //________________________________________________________________________
 void Storage::StorageEvolution(cSecond t)
 {
-
+DBGL
 
 	if(t == fInternalTime && t !=0 ) return;
 
@@ -151,10 +144,7 @@ void Storage::StorageEvolution(cSecond t)
 	{
 		fIVArray[i] = GetDecay(fIVArray[i] , EvolutionTime);
 	}
-	
-
-	
-
+DBGL
 }
 
 //________________________________________________________________________

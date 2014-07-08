@@ -3,7 +3,7 @@
 #include "IsotopicVector.hxx"
 #include "Storage.hxx"
 #include "Scenario.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 
 #include <sstream>
 #include <string>
@@ -29,7 +29,7 @@ Pool::Pool():CLASSBackEnd(8)
 }
 
 	//________________________________________________________________________
-Pool::Pool(LogFile* log, cSecond coolingtime):CLASSBackEnd(log, coolingtime, 8)
+Pool::Pool(CLASSLogger* log, cSecond coolingtime):CLASSBackEnd(log, coolingtime, 8)
 {
 
 
@@ -42,21 +42,16 @@ Pool::Pool(LogFile* log, cSecond coolingtime):CLASSBackEnd(log, coolingtime, 8)
 	SetName("P_Pool.");
 
 	
-	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
-	cout	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
-	cout	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
-	cout	<< "!!WARNING!! !!!Pool!!! All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
-	
-	GetLog()->fLog	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
-	GetLog()->fLog	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
-	GetLog()->fLog	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
-	GetLog()->fLog	<< "!!WARNING!! !!!Pool!!! All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
+	INFO	<< " A new Pool has been define :" << endl;
+	INFO	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
+	INFO	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
+	WARNING	<< " All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
 
 
 }
 
 //________________________________________________________________________
-Pool::Pool(LogFile* log, CLASSBackEnd* storage, cSecond coolingtime):CLASSBackEnd(log, coolingtime, 8)
+Pool::Pool(CLASSLogger* log, CLASSBackEnd* storage, cSecond coolingtime):CLASSBackEnd(log, coolingtime, 8)
 {
 
 	fOutBackEndFacility = storage;
@@ -68,15 +63,10 @@ Pool::Pool(LogFile* log, CLASSBackEnd* storage, cSecond coolingtime):CLASSBackEn
 	SetName("P_Pool.");
 
 	
-	cout	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
-	cout	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
 
-
-	cout	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
-	
-	GetLog()->fLog	<< "!!INFO!! !!!Pool!!! A new Pool has been define :" << endl;
-	GetLog()->fLog	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
-	GetLog()->fLog	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
+	INFO	<< " A new Pool has been define :" << endl;
+	INFO	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
+	INFO	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
 
 
 }
@@ -92,8 +82,8 @@ Pool::~Pool()
 //________________________________________________________________________
 void Pool::SetIVArray(vector<IsotopicVector> ivarray)
 {
-	cout << "this method as no effect !!!" << endl;
-	cout << "Use SetIVArray(vector<IsotopicVector> ivarray, vector<cSecond>n timearray) unstead!!!!"<<endl;
+	INFO << "This method as no effect !!!" << endl;
+	INFO << "Use SetIVArray(vector<IsotopicVector> ivarray, vector<cSecond>n timearray) unstead!!!!"<<endl;
 }
 
 
@@ -150,6 +140,7 @@ void Pool::RemoveIVCooling(int i)		//!< Remove a Cooling IsotopicVector
 //________________________________________________________________________
 void Pool::CoolingEvolution(cSecond t)
 {
+DBGL
 
 	if(t == fInternalTime && t!=0) return;
 	int RemainingCoolingTime;
@@ -164,11 +155,7 @@ void Pool::CoolingEvolution(cSecond t)
 		{
 			if (t -  fIVArrayArrivalTime[i] > fCycleTime) // Warning & Quit
 			{
-				cout		<< "!!Warning!! !!!TreamtmentFactory!!! Cooling Step : " << t/3600./24/365.25<< " :"
-						<< " An evolution Step is probably missing ! " << " " << endl;
-				cout << t << " " <<  fIVArrayArrivalTime[i] << " " << fCycleTime << endl;
-				GetLog()->fLog 	<< "!!Warning!! !!!TreamtmentFactory!!! Cooling Step : "<< t << " :"
-						<< " An evolution Step is probably missing ! " << endl;
+				ERROR << " Cooling Step : " << t/3600./24/365.25<< " :" << " an evolution Step is probably missing ! " << " " << endl;
 				exit (1);
 			}
    
@@ -190,6 +177,7 @@ void Pool::CoolingEvolution(cSecond t)
 #pragma omp critical(DeleteCoolingIVPB)
 	{sort (fCoolingEndOfCycle.begin(), fCoolingEndOfCycle.end());}
 
+DBGL
 }
 
 
@@ -221,6 +209,7 @@ void Pool::Evolution(cSecond t)
 //________________________________________________________________________
 void Pool::Dump()
 {
+DBGL
 //------ Cooling ------//
 	for(int i = (int)fCoolingEndOfCycle.size()-1; i >=0 ; i--)	// IV End Of Cooling
 	{
@@ -238,10 +227,10 @@ void Pool::Dump()
 	
 	if((int)fCoolingEndOfCycle.size() != 0 )// Control
 	{
-		cout		<< "Problem while Dumping Cooling"<< endl;
-		GetLog()->fLog 	<< "Problem while Dumping Cooling"<< endl;
+		ERROR << "Problem while Dumping Cooling"<< endl;
 		exit (1);
 	}
+DBGL
 }
 
 

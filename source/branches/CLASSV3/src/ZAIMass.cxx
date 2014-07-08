@@ -28,7 +28,7 @@ ZAIMass::ZAIMass()
 
 	if(!infile.good())
 	{	
-		cout<<"ZAIMass Error.\n can't find/open file "<<MassDataFile<<endl;
+		cout << " ZAIMass Error.\n can't find/open file " << MassDataFile << endl;
 		exit(1);
 	}
 

@@ -15,7 +15,7 @@
 #include <string>
 #include <fstream>
 
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 
 #include "TNamed.h"
 
@@ -39,19 +39,24 @@ class CLASSObject : public TNamed
 public :
 	///< Normal Constructor.
 	CLASSObject();
-	CLASSObject(LogFile* log);
+	CLASSObject(CLASSLogger* log);
+
 	
 	virtual CLASSObject* Clone()	{ return new CLASSObject(*this); } //!< Correct way to copy a CLASSObject in case of derivation
 
 
-	void		SetLog(LogFile* log)	{ fLog = log; fIsLog = true; }		//!< Set the LogFile
+	void		SetLog(CLASSLogger* log)	{ fLog = log; fIsLog = true; }		//!< Set the CLASSLogger
 
-	LogFile*	GetLog()		{ return fLog; }		//!< Return the Pointer to the Log
-	bool		IsLog()			{ return fIsLog; }		//!< reutrn true if a LogFile is defined
-	
+	CLASSLogger*	GetLog()		{ return fLog; }		//!< Return the Pointer to the Log
+	bool		IsLog()			{ return fIsLog; }		//!< reutrn true if a CLASSLogger is defined
+
+	using TNamed::SetName;
+protected :
+	CLASSLogger*	fLog;			//!< Pointer to the Log
+
+
 private :
- 	LogFile*	fLog;			//!< Pointer to the Log
-	bool		fIsLog;			//!< Set at true if a LogFile are define
+	bool		fIsLog;			//!< Set at true if a CLASSLogger are define
 	
 	ClassDef(CLASSObject,0);
 };

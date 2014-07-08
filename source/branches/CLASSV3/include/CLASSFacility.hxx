@@ -41,10 +41,10 @@ class CLASSFacility : public CLASSObject
 public :
 		///< Normal Constructor.
 	CLASSFacility(int type = 0);
-	CLASSFacility(LogFile* log, int type = 0);
-	CLASSFacility(LogFile* log, cSecond cycletime, int type = 0);
-	CLASSFacility(LogFile* log, cSecond creationtime, cSecond lifetime, int type = 0);
-	CLASSFacility(LogFile* log, cSecond startingtime, cSecond lifetime, cSecond cycletime, int type = 0);
+	CLASSFacility(CLASSLogger* log, int type = 0);
+	CLASSFacility(CLASSLogger* log, cSecond cycletime, int type = 0);
+	CLASSFacility(CLASSLogger* log, cSecond creationtime, cSecond lifetime, int type = 0);
+	CLASSFacility(CLASSLogger* log, cSecond startingtime, cSecond lifetime, cSecond cycletime, int type = 0);
 	
 		//********* Get Method *********//
 	/*!
@@ -81,6 +81,7 @@ public :
 											/// \li 4 start/End of reactor cycle,
 											/// \li 8 end of Cooling,
 											/// \li 16 fuel Fabrication
+	using CLASSObject::SetName;
 
 
 	void SetInsideIV(IsotopicVector isotopicvector)	{ fInsideIV = isotopicvector; }	//!< Set the IV inside the Facility Core

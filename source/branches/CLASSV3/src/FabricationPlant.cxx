@@ -7,7 +7,7 @@
 #include "PhysicModels.hxx"
 #include "IsotopicVector.hxx"
 #include "Scenario.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 #include "CLASSConstante.hxx"
 
 
@@ -44,7 +44,7 @@ FabricationPlant::FabricationPlant():CLASSFacility(16)
 }
 
 
-FabricationPlant::FabricationPlant(LogFile* log, double fabricationtime):CLASSFacility(log, fabricationtime, 16)
+FabricationPlant::FabricationPlant(CLASSLogger* log, double fabricationtime):CLASSFacility(log, fabricationtime, 16)
 {
 	SetName("F_FabricationPLant.");
 
@@ -52,13 +52,9 @@ FabricationPlant::FabricationPlant(LogFile* log, double fabricationtime):CLASSFa
 	fSubstitutionFuel = false;
 
 
-	cout	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
-	cout	<< "\t Chronological Stock Priority has been set! "<< endl;
-	cout	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/3600/24/365.25) << " year" << endl << endl;
-	
-	GetLog()->fLog	<< "!!INFO!! !!!FabricationPlant!!! A FabricationPlant has been define :" << endl;
-	GetLog()->fLog	<< "\t Chronological Stock Priority has been set! "<< endl;
-	GetLog()->fLog	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/3600/24/365.25) << " year" << endl << endl;
+	INFO	<< " A FabricationPlant has been define :" << endl;
+	INFO	<< "\t Chronological Stock Priority has been set! "<< endl;
+	INFO	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/3600/24/365.25) << " year" << endl << endl;
 	
 	
 
@@ -111,7 +107,7 @@ void FabricationPlant::Evolution(cSecond t)
 	//________________________________________________________________________
 void FabricationPlant::FabricationPlantEvolution(cSecond t)
 {
-	
+DBGL
 	IsotopicVector fInsideIV;
 
 
@@ -139,19 +135,19 @@ void FabricationPlant::FabricationPlantEvolution(cSecond t)
 	}
 	
 	
-	
+DBGL
 }
 
 
 	//________________________________________________________________________
 void FabricationPlant::BuildFuelForReactor(int ReactorId)
 {
-
+DBGL
 	if(fFissileStorage.size() == 0)
 	{
-		cout << "!!Error!! !!!FabricationPlant!!! One need at least one Fissile storage to build fuel " << endl;
-		cout << "!!Error!! !!!FabricationPlant!!! use AddFissileStorage to add a stock to provide fissil material... " << endl;
-		GetLog()->fLog << "!!Error!! !!!FabricationPlant!!! One need at least one Fissile storage to build fuel " << endl;
+		ERROR << " One need at least one Fissile storage to build fuel " << endl;
+		ERROR << " Use AddFissileStorage to add a stock to provide fissil material... " << endl;
+		ERROR << " One need at least one Fissile storage to build fuel " << endl;
 		exit(1);
 	}
 
@@ -251,15 +247,13 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 		}
 		return;
 	}
-
+DBGL
 }
 
 
 
 void FabricationPlant::BuildFissileArray()
 {
-
-
 
 	for(int i = 0; i < (int)fFissileStorage.size(); i++)
 	{
@@ -451,6 +445,7 @@ EvolutionData FabricationPlant::GetReactorEvolutionDB(int ReactorId)
 	//________________________________________________________________________
 IsotopicVector FabricationPlant::BuildFuelFromEqModel(vector<double> LambdaArray)
 {
+DBGL
 	IsotopicVector BuildedFuel;
 	IsotopicVector Lost;
 
@@ -489,16 +484,15 @@ IsotopicVector FabricationPlant::BuildFuelFromEqModel(vector<double> LambdaArray
 
 	DumpStock(LambdaArray);
 
-
+DBGL
 	return BuildedFuel;
-
 }
 
 
 	//________________________________________________________________________
 void FabricationPlant::DumpStock(vector<double> LambdaArray)
 {
-
+DBGL
 
 	for(int i = 0; i < (int)fFissileArray.size(); i++)
 	{
@@ -538,7 +532,7 @@ void FabricationPlant::DumpStock(vector<double> LambdaArray)
 
 	fFertileList = fFissileList = IsotopicVector();
 
-
+DBGL
 }
 
 	//________________________________________________________________________

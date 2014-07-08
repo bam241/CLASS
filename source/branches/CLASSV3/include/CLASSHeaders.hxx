@@ -13,13 +13,12 @@
 #include "Storage.hxx"
 #include "IsotopicVector.hxx"
 #include "ZAI.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 
 #include "EvolutionData.hxx"
 #include "PhysicModels.hxx"
 #include "DecayDataBank.hxx"
 
 #include "ZAIMass.hxx"
-
 
 #endif
