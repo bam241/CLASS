@@ -131,9 +131,9 @@ public:
 	 \name Constructor/Desctructor
 	 */
 	//@{
+	CLASSLogger();
 
-
-	CLASSLogger(string CLASSLoggerName = "CLASS_OUTPUT.log", int VerboseLvl = 0, int OutputLvl = 1 );	//!< Normal Constructor
+	CLASSLogger(string CLASSLoggerName, int VerboseLvl = 0, int OutputLvl = 1 );	//!< Normal Constructor
 
 	~CLASSLogger();	//!< Normal Destructor
 

@@ -49,15 +49,18 @@ public :
 	 \name Constructor/Desctructor
 	 */
 	//@{
+	
+	Scenario();	///< Normal Constructor.
 
-	Scenario(CLASSLogger* Log= new CLASSLogger(), cSecond abstime = 0);	///< Log Constructor.
+	Scenario(CLASSLogger* Log, cSecond abstime = 0);	///< Log Constructor.
  	/*!
 	 Use to load a CLASSLogger
 	 \param CLASSLogger: CLASSLogger used for the log...
 	 */
+	Scenario(cSecond abstime);	///< Time Constructor.
 
 
-	Scenario(cSecond abstime, CLASSLogger* log = new CLASSLogger());	///< Time Constructor.
+	Scenario(cSecond abstime, CLASSLogger* log);	///< Time Constructor.
  	/*!
 	 Use to set the starting time of the Parc
 	 \param abstime: Starting time of the Parc in second
