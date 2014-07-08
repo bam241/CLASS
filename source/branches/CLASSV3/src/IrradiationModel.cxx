@@ -9,7 +9,7 @@
 #include "IrradiationModel.hxx"
 
 #include "IsotopicVector.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 #include "StringLine.hxx"
 
 #include <TGraph.h>
@@ -22,13 +22,6 @@
 #include <fstream>
 #include <algorithm>
 #include <cmath>
-
-
-
-
-
-
-
 
 
 using namespace std;
@@ -44,7 +37,7 @@ IrradiationModel::IrradiationModel():CLASSObject()
 	fDataFileName = "chart.JEF3T";
 }
 
-IrradiationModel::IrradiationModel(LogFile* log):CLASSObject(log)
+IrradiationModel::IrradiationModel(CLASSLogger* log):CLASSObject(log)
 {
 	fShorstestHalflife = 3600.*24*2.;
 	fZAIThreshold = 90;
@@ -95,6 +88,7 @@ string IrradiationModel::GetDecay(string DecayModes, double &BR,int &Iso, int &S
 //________________________________________________________________________
 void IrradiationModel::BuildDecayMatrix()
 {
+DBGL
 	fDecayMatrix.Clear();
 
 	// List of Decay Time and Properties
@@ -116,13 +110,7 @@ void IrradiationModel::BuildDecayMatrix()
 	ifstream infile(DataFullPathName.c_str());
 
 	if(!infile)
-	{
-		cout << "!!Warning!! !!!IrradiationModel!!! \n Can't open \"" << DataFullPathName << "\"\n" << endl;
-		GetLog()->fLog << "!!Warning!! !!!IrradiationModel!!! \n Can't open \"" << DataFullPathName<< "\"\n" << endl;
-	}
-
-
-
+		WARNING << " Can't open \"" << DataFullPathName<< "\"" << endl;
 
 
 	do
@@ -278,7 +266,7 @@ void IrradiationModel::BuildDecayMatrix()
 			i++;
 		}
 	}
-
+DBGL
 	// Fill the Decay Part of the Bateman Matrix Always the same !
 	bool FastDecayValidation  = false;
 	while (!FastDecayValidation)
@@ -353,7 +341,7 @@ void IrradiationModel::BuildDecayMatrix()
 			}
 		}
 	}
-
+DBGL
 
 	fDecayMatrix.ResizeTo(findex.size(),findex.size());
 	for(int i = 0; i < (int)findex.size(); i++)
@@ -415,7 +403,7 @@ void IrradiationModel::BuildDecayMatrix()
 
 		}
 	}
-
+DBGL
 }
 
 //________________________________________________________________________
@@ -435,10 +423,7 @@ void IrradiationModel::SetFissionEnergy(string FissionEnergyFile)
 {
 	ifstream FissionFile(FissionEnergyFile.c_str());	// Open the File
 	if(!FissionFile)				//check if file is correctly open
-	{
-		cout << "!!Warning!! !!!IrradiationModel!!! \n Can't open \"" << FissionFile << "\"\n" << endl;
-		GetLog()->fLog << "!!Warning!! !!!IrradiationModel!!! \n Can't open \"" << FissionFile << "\"\n" << endl;
-	}
+		WARNING << " Can't open \"" << FissionEnergyFile << "\"\n" << endl;
 
 	do {
 		int Z = 0;
@@ -458,10 +443,7 @@ map< ZAI,IsotopicVector > IrradiationModel::ReadFPYield(string Yield)
 
 	ifstream infile(Yield.c_str());
 	if(!infile)
-	{
-		cout << "!!Warning!! !!!IrradiationModel!!! \n Can't open \"" << Yield << "\"\n" << endl;
-		GetLog()->fLog << "!!Warning!! !!!IrradiationModel!!! \n Can't open \"" << Yield<< "\"\n" << endl;
-	}
+		WARNING << " Can't open \"" << Yield<< "\"\n" << endl;
 
 
 	string line;
@@ -481,8 +463,7 @@ map< ZAI,IsotopicVector > IrradiationModel::ReadFPYield(string Yield)
 			IResult = Yield_map.insert(pair<ZAI,IsotopicVector>(ZAI(Z,A,I),EmptyIV) );
 			if(!IResult.second)
 			{
-				cout << "!!Error!! !!!IrradiationModel!!! Many accurance of ZAI " << Z << " " << A;
-				cout << " in " << Yield << " file!! Please Check it !!!" << endl;
+				ERROR << " Many accurance of ZAI " << Z << " " << A << " in " << Yield << " file!! " << endl;
 				exit(1);
 
 			}
@@ -502,9 +483,8 @@ map< ZAI,IsotopicVector > IrradiationModel::ReadFPYield(string Yield)
 		{
 			if (it == Yield_map.end())
 			{
-				cout << "!!Error!! !!!IrradiationModel!!! Many accurance of the PF " << Z << " " << A;
-				cout << " in " << Yield << " file!! Please Check it";
-				cout << "(Number of yield does not match the number of ZAI that fission !!!" << endl;
+				ERROR << " Many accurance of the PF " << Z << " " << A << " in " << Yield << " file!! ";
+				ERROR << "(Number of yield does not match the number of ZAI that fission !!!" << endl;
 				exit(1);
 
 			}
@@ -540,7 +520,7 @@ void IrradiationModel::LoadFPYield(string SponfaneusYield, string ReactionYield)
 //________________________________________________________________________
 TMatrixT<double> IrradiationModel::GetFissionXsMatrix(EvolutionData EvolutionDataStep,double TStep)
 {
-
+DBGL
 	map<ZAI ,TGraph* >::iterator it;
 	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
 	for(int i = 0; i < (int)findex.size(); i++)
@@ -613,15 +593,14 @@ TMatrixT<double> IrradiationModel::GetFissionXsMatrix(EvolutionData EvolutionDat
 
 	}
 
+DBGL
 	return BatemanMatrix;
-
 }
 
 //________________________________________________________________________
 TMatrixT<double> IrradiationModel::GetCaptureXsMatrix(EvolutionData EvolutionDataStep,double TStep)
 {
-
-
+DBGL
 	map<ZAI ,TGraph* >::iterator it;
 	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
 	for(int i = 0; i < (int)findex.size(); i++)
@@ -636,11 +615,7 @@ TMatrixT<double> IrradiationModel::GetCaptureXsMatrix(EvolutionData EvolutionDat
 		toAdd.insert(pair<ZAI, double> ( ZAI(95,242,1) , 0.1267) );
 		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,241,0), toAdd ) );
 	}
-	{	// 242Am*
-		map<ZAI, double> toAdd ;
-		toAdd.insert(pair<ZAI, double> ( ZAI(95,243,0) , 1) );
-		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,242,1), toAdd ) );
-	}
+
 
 
 	// ----------------  A(n,.)A+1
@@ -659,7 +634,7 @@ TMatrixT<double> IrradiationModel::GetCaptureXsMatrix(EvolutionData EvolutionDat
 
 			if( it3 == Capture.end() )
 			{
-				map<ZAI, int >::iterator it6 = findex_inver.find( ZAI( (*it).first.Z(), (*it).first.A()+1, (*it).first.I()) );
+				map<ZAI, int >::iterator it6 = findex_inver.find( ZAI( (*it).first.Z(), (*it).first.A()+1, 0) );
 
 				if( it6 != findex_inver.end() )
 				{
@@ -667,7 +642,7 @@ TMatrixT<double> IrradiationModel::GetCaptureXsMatrix(EvolutionData EvolutionDat
 				}
 				else
 				{
-					map<ZAI, map<ZAI, double> >::iterator it4 = fFastDecay.find(  ZAI( (*it).first.Z(), (*it).first.A()+1, (*it).first.I()) );
+					map<ZAI, map<ZAI, double> >::iterator it4 = fFastDecay.find(  ZAI( (*it).first.Z(), (*it).first.A()+1, 0) );
 
 					if( it4 == fFastDecay.end() )
 					{
@@ -705,7 +680,7 @@ TMatrixT<double> IrradiationModel::GetCaptureXsMatrix(EvolutionData EvolutionDat
 
 						if( it7 == fFastDecay.end() )
 						{
-							cout << "CaptureList Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
+							ERROR << " CaptureList Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
 							exit(1);
 						}
 
@@ -717,7 +692,7 @@ TMatrixT<double> IrradiationModel::GetCaptureXsMatrix(EvolutionData EvolutionDat
 							it6 = findex_inver.find( (*it5).first );
 							if( it6 == findex_inver.end() )
 							{
-								cout << "CaptureList Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
+								ERROR << " CaptureList Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
 								exit(1);
 							}
 
@@ -731,15 +706,15 @@ TMatrixT<double> IrradiationModel::GetCaptureXsMatrix(EvolutionData EvolutionDat
 
 		}
 	}
+DBGL
 	return BatemanMatrix;
-
 }
 
 
 //________________________________________________________________________
 TMatrixT<double> IrradiationModel::Getn2nXsMatrix(EvolutionData EvolutionDataStep,double TStep)
 {
-
+DBGL
 
 	map<ZAI ,TGraph* >::iterator it;
 	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
@@ -753,11 +728,6 @@ TMatrixT<double> IrradiationModel::Getn2nXsMatrix(EvolutionData EvolutionDataSte
 		toAdd.insert(pair<ZAI, double> ( ZAI(93,236,0) , 0.2) );
 		toAdd.insert(pair<ZAI, double> ( ZAI(93,236,1) , 0.8) );
 		n2n.insert( pair< ZAI, map<ZAI, double> > ( ZAI(93,237,0), toAdd ) );
-	}
-	{	// 242Am*
-		map<ZAI, double> toAdd ;
-		toAdd.insert(pair<ZAI, double> ( ZAI(95,241,0) , 1) );
-		n2n.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,242,1), toAdd ) );
 	}
 
 	// ----------------  A(n,2n)A-1
@@ -776,7 +746,7 @@ TMatrixT<double> IrradiationModel::Getn2nXsMatrix(EvolutionData EvolutionDataSte
 
 			if( it3 == n2n.end() )
 			{
-				map<ZAI, int >::iterator it6 = findex_inver.find( ZAI( (*it).first.Z(), (*it).first.A()-1, (*it).first.I()) );
+				map<ZAI, int >::iterator it6 = findex_inver.find( ZAI( (*it).first.Z(), (*it).first.A()-1, 0) );
 
 				if( it6 != findex_inver.end() )
 				{
@@ -784,7 +754,7 @@ TMatrixT<double> IrradiationModel::Getn2nXsMatrix(EvolutionData EvolutionDataSte
 				}
 				else
 				{
-					map<ZAI, map<ZAI, double> >::iterator it4 = fFastDecay.find(  ZAI( (*it).first.Z(), (*it).first.A()-1, (*it).first.I()) );
+					map<ZAI, map<ZAI, double> >::iterator it4 = fFastDecay.find(  ZAI( (*it).first.Z(), (*it).first.A()-1, 0) );
 
 					if( it4 == fFastDecay.end() )
 					{
@@ -822,7 +792,7 @@ TMatrixT<double> IrradiationModel::Getn2nXsMatrix(EvolutionData EvolutionDataSte
 
 						if( it7 == fFastDecay.end() )
 						{
-							cout << "n2nList Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
+							ERROR << " n2nList Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
 							exit(1);
 						}
 
@@ -834,7 +804,7 @@ TMatrixT<double> IrradiationModel::Getn2nXsMatrix(EvolutionData EvolutionDataSte
 							it6 = findex_inver.find( (*it5).first );
 							if( it6 == findex_inver.end() )
 							{
-								cout << "n2nList Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
+								ERROR << " n2nList Problem in FastDecay for nuclei " << (*it7).first.Z() << " " << (*it7).first.A() << " " << (*it7).first.I() << endl;
 								exit(1);
 							}
 
@@ -848,6 +818,7 @@ TMatrixT<double> IrradiationModel::Getn2nXsMatrix(EvolutionData EvolutionDataSte
 
 		}
 	}
+DBGL
 	return BatemanMatrix;
 }
 

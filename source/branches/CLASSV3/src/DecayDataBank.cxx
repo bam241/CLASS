@@ -1,7 +1,7 @@
 #include "DecayDataBank.hxx"
 
 #include "IsotopicVector.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 #include "StringLine.hxx"
 
 #include <TGraph.h>
@@ -35,7 +35,7 @@ DecayDataBank::DecayDataBank():CLASSObject()
 //________________________________________________________________________
 //________________________________________________________________________
 
-DecayDataBank::DecayDataBank(LogFile* Log, string DB_index_file, bool setlog, bool olfreadmethod)
+DecayDataBank::DecayDataBank(CLASSLogger* Log, string DB_index_file, bool setlog, bool olfreadmethod)
 {
 	
 	SetLog(Log);
@@ -46,11 +46,8 @@ DecayDataBank::DecayDataBank(LogFile* Log, string DB_index_file, bool setlog, bo
 	// Warning
 	if(IsLog())
 	{
-		cout	<< "!!INFO!! !!!DecayDataBank!!! A EvolutionData has been define :" << endl;
-		cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
-		
-		GetLog()->fLog 	<< "!!INFO!! !!!DecayDataBank!!! A EvolutionData has been define :" << endl;
-		GetLog()->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
+		INFO 	<< " A EvolutionData has been define :" << endl;
+		INFO	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
 	}
 	
 }
@@ -64,7 +61,7 @@ DecayDataBank::~DecayDataBank()
 //________________________________________________________________________
 IsotopicVector	DecayDataBank::Evolution(const ZAI& zai, double dt)
 {
-	
+DBGL
 	IsotopicVector	returnIV;
 	
 	map<ZAI ,EvolutionData >::iterator it = fDecayDataBank.find(zai);
@@ -74,8 +71,7 @@ IsotopicVector	DecayDataBank::Evolution(const ZAI& zai, double dt)
 		ifstream DB_index(fDataBaseIndex.c_str());
 		if( !DB_index)
 		{
-			cout << "!!!EVOLUTIVE DB!!!! Can't open \"" << fDataBaseIndex << "\"" << endl;
-			GetLog()->fLog << "!!!EVOLUTIVE DB!!!! Can't open \"" << fDataBaseIndex << "\"" << endl;
+			ERROR << " Can't open \"" << fDataBaseIndex << "\"" << endl;
 			exit (1);
 		}
 		bool zaifind = false;
@@ -107,8 +103,8 @@ IsotopicVector	DecayDataBank::Evolution(const ZAI& zai, double dt)
 		
 		if(!zaifind)
 		{
-			GetLog()->fLog << "!!Warning!! !!!EVOLUTIVE DB!!! Oups... Can't Find the ZAI : " ;
-			GetLog()->fLog << zai.Z() << " " << zai.A() << " "	<< zai.I() << "!!! It will be considered as stable !!" << endl;
+			WARNING << " Oups... Can't Find the ZAI : "
+			<< zai.Z() << " " << zai.A() << " "	<< zai.I() << "!!! It will be considered as stable !!" << endl;
 			
 			EvolutionData evolutionproduct = EvolutionData(GetLog()," " , false, zai);
 			{fDecayDataBank.insert( pair<ZAI, EvolutionData >(zai, evolutionproduct) );}
@@ -120,7 +116,8 @@ IsotopicVector	DecayDataBank::Evolution(const ZAI& zai, double dt)
 		
 	}
 	else	returnIV = (*it).second.GetIsotopicVectorAt(dt);
-	
+
+DBGL
 	return returnIV;
 }
 
@@ -142,7 +139,7 @@ bool DecayDataBank::IsDefine(const ZAI& zai) const
 //________________________________________________________________________
 IsotopicVector DecayDataBank::GetDecay(IsotopicVector isotopicvector, cSecond t)
 {
-
+DBGL
 	IsotopicVector IV;
 
 	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
@@ -156,8 +153,8 @@ IsotopicVector DecayDataBank::GetDecay(IsotopicVector isotopicvector, cSecond t)
 		}
 	}
 
+DBGL
 	return IV;
-	
 }
 //________________________________________________________________________
 //________________________________________________________________________

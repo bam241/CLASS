@@ -39,8 +39,8 @@ class CLASSBackEnd : public CLASSFacility
 	public :
 	///< Normal Constructor.
 	CLASSBackEnd(int type = 0);
-	CLASSBackEnd(LogFile* log,int type = 0);
-	CLASSBackEnd(LogFile* log, cSecond cycletime, int type = 0);
+	CLASSBackEnd(CLASSLogger* log,int type = 0);
+	CLASSBackEnd(CLASSLogger* log, cSecond cycletime, int type = 0);
 
 	//********* Get Method *********//
 	/*!
@@ -72,6 +72,9 @@ class CLASSBackEnd : public CLASSFacility
 	virtual	void	SetIVArray(vector<IsotopicVector> ivarray)	{ fIVArray = ivarray; }		//!< Set The isotopicVector Array
 	virtual void	SetOutBackEndFacility(CLASSBackEnd* befacility)	{ fOutBackEndFacility = befacility;
 									  fIsStorageType = true; } //! Set a Out Facility for the fuel
+
+	using CLASSFacility::SetName;
+
 	//@}
 
 

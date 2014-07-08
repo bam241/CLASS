@@ -21,7 +21,7 @@ using namespace std;
 typedef long long int cSecond;
 
 class ZAI;
-class LogFile;
+class CLASSLogger;
 
 double ReactionRateWeightedDistance(IsotopicVector IV1, EvolutionData DB );
 double ReactionRateWeightedDistance(EvolutionData DB, IsotopicVector IV1  );
@@ -60,13 +60,13 @@ class DecayDataBank : public CLASSObject
 	//{
 	/// Special Constructor.
 	/*!
-	 Use to load a LogFile
-	 \param LogFile LogFile used for the log...
+	 Use to load a CLASSLogger
+	 \param CLASSLogger CLASSLogger used for the log...
 	 \param DB_index_file path to the index file
-	 \param setlog if the log are stored in the LogFile
+	 \param setlog if the log are stored in the CLASSLogger
 	 \param olfreadmethod true if the old format of EvolutionData are used (ie without the key word such as Inv, XSFiss...)
 	 */
-	DecayDataBank(LogFile* Log, string DB_index_file, bool setlog = true, bool olfreadmethod = true );
+	DecayDataBank(CLASSLogger* Log, string DB_index_file, bool setlog = true, bool olfreadmethod = true );
 	//}
 	
 	//{

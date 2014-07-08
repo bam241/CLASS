@@ -18,7 +18,7 @@
 
 class TGraph;
 class EvolutionData;
-class LogFile;
+class CLASSLogger;
 
 using namespace std;
 typedef long long int cSecond;
@@ -65,24 +65,24 @@ public :
 
 
 	//{
-	/// LogFile Constructor.
+	/// CLASSLogger Constructor.
 	/*!
-	 Use create an empty EvolutionData loading a LogFile
-	 \param LogFile LogFile used for the log...
+	 Use create an empty EvolutionData loading a CLASSLogger
+	 \param CLASSLogger CLASSLogger used for the log...
 	 */
-	EvolutionData(LogFile* Log); 	///< Make a new Evolutive Product evolution
+	EvolutionData(CLASSLogger* Log); 	///< Make a new Evolutive Product evolution
 	//}
 
 	//{
 	/// Special Constructor.
 	/*!
 	 Make a new EvolutionData
-	 \param Log LogFile used for the log...
+	 \param Log CLASSLogger used for the log...
 	 \param DB_file path to the DataBase file
 	 \param oldread true if the oldmethod should be use to read the DatBase File
 	 \param zai set the ZAI if you want to add a stable nuclei.
 	 */
-	EvolutionData(LogFile* Log, string DB_file, bool oldread = true, ZAI zai = ZAI(0,0,0) );
+	EvolutionData(CLASSLogger* Log, string DB_file, bool oldread = true, ZAI zai = ZAI(0,0,0) );
 	//}
 
 

@@ -17,7 +17,7 @@
 using namespace std;
 
 
-class LogFile;
+class CLASSLogger;
 
 //-----------------------------------------------------------------------------//
 /*!
@@ -38,7 +38,7 @@ class IM_RK4 : public IrradiationModel, DynamicalSystem
 	public :
 
 	IM_RK4();
-	IM_RK4(LogFile* Log);
+	IM_RK4(CLASSLogger* Log);
 
 
 

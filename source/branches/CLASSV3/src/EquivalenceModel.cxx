@@ -10,7 +10,7 @@ EquivalenceModel::EquivalenceModel():CLASSObject()
 
 }
 
-EquivalenceModel::EquivalenceModel(LogFile* log):CLASSObject(log)
+EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 {
 
 }
@@ -89,6 +89,14 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass,vector<I
 			}
 			AvailableFertilMass=Fertile.GetTotalMass() * 1e6; //in grams
 
+			if( j+1 == int( FertilArray.size() ) && FertilMassNeeded  > AvailableFertilMass ) //if this is the last stock and it's not enought
+			{
+				WARNING <<"You requiere more depleted uranium "<<"("<<DeltaM/1e6<<" t needed) ! Reactor not fill"<<endl;
+				for(int i=0 ; i<int(lambda.size()) ; i++)
+					lambda[i]=0;
+				break;
+			}
+
 		}
 	//cout<<"********FERTILE OK**********"<<endl;
 		/*Calcul the quantity of this composition needed to reach the burnup*/
@@ -113,7 +121,7 @@ void EquivalenceModel::SetLambda(vector<double>& lambda ,int FirstStockID, int L
 {
 		if(LAMBDA_TOT > LastStockID - FirstStockID + 1 )
 		{
-			cout<<"EquivalenceModel::SetLambda FATAL ERROR"<<endl;
+			ERROR << " FATAL ERROR " <<endl;
 			exit(0);
 		}
 
@@ -246,7 +254,7 @@ void EquivalenceModel::FindLambdaMax(int FirstStockID, int LastStockID, vector<I
 				ID_max++ ;
 				if( ID_max >=(int) Stocks.size())
 				{
-					cout<<"EquivalenceModel::FindLambdaMax FATAL ERROR BLG codes like shit"<<endl;
+					ERROR << " FATAL ERROR BLG codes like shit " << endl;
 					exit(0);
 				}
 			}	

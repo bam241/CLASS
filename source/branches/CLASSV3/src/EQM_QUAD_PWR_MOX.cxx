@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "StringLine.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 
 
 
@@ -14,7 +14,7 @@ EQM_QUAD_PWR_MOX::EQM_QUAD_PWR_MOX(string WeightPath):EquivalenceModel()
 
 	ifstream DataDB(fWeightPath.c_str());							// Open the File
 	if(!DataDB)
-		cout << "!!Warning!! !!!EQM QUAD PWR MOX!!! \n Can't open \"" << fWeightPath << "\"\n" << endl;
+		WARNING << " Can't open \"" << fWeightPath << "\"" << endl;
 
 	string line;
 	int start = 0;	// First Get Fuel Parameter
@@ -22,13 +22,13 @@ EQM_QUAD_PWR_MOX::EQM_QUAD_PWR_MOX(string WeightPath):EquivalenceModel()
 
 	if( StringLine::NextWord(line, start, ' ') != "PARAM")
 	{
-		cout << "!!Bad Trouble!! !!!EQM QUAD PWR MOX!!! Bad Database file : " <<  fWeightPath << " Can't find the Parameter of the DataBase"<< endl;
+		ERROR << "Bad Database file : " <<  fWeightPath << " Can't find the Parameter of the DataBase " << endl;
 		exit (1);
 	}
 	while(start < (int)line.size())
 		fFuelParameter.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
 
-	cout << "!!INFO!! !!!EQM QUAD PWR MOX!!! " <<  fFuelParameter.size() << " have been read"<< endl;
+	INFO << fFuelParameter.size() << " have been read " << endl;
 
 
 	ZAI U8(92,238,0);

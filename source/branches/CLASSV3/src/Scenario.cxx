@@ -15,7 +15,7 @@
 #include "CLASSBackEnd.hxx"
 #include "Pool.hxx"
 #include "FabricationPlant.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 
 
 //________________________________________________________________________
@@ -43,92 +43,14 @@ string dtoa(double num)
 	return os.str();
 }
 
-
-
 //________________________________________________________________________
-Scenario::Scenario()
+Scenario::Scenario(CLASSLogger* log, cSecond abstime):CLASSObject(log)
 {
 
 
 	fNewTtree = true;
 	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
-	fAbsoluteTime = 0;
-	fStartingTime = 0;
-
-	fStockManagement = true;
-
-	fOutputFileName = "CLASS_Default.root";
-	fOutputTreeName = "Data";
-	fOutFile = 0;
-	fOutT = 0;
-
-	SetLog(new LogFile("CLASS.log"));
-	fParcPower = 0;
-
-
-	// Warning
-
-	cout	<< "!!INFO!! !!!Scenario!!! A Parc has been define :" << endl;
-	cout	<< "\t Print step at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
-	cout	<< "\t Absolute Time set at " << (double)(fAbsoluteTime/3600/24/365.25) << " year" << endl;
-	cout	<< "\t StockManagement set at : true" << endl;
-	cout	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	cout	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl << endl;
-
-	GetLog()->fLog 	<< "!!INFO!! !!!Scenario!!! Parc has been define :" << endl;
-	GetLog()->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
-	GetLog()->fLog	<< "\t StockManagement set at : true" << endl;
-	GetLog()->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	GetLog()->fLog	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl << endl;
-
-
-
-}
-//________________________________________________________________________
-Scenario::Scenario(LogFile* Log):CLASSObject(Log)
-{
-
-
-	fNewTtree = true;
-	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
-	fAbsoluteTime = 0;
-	fStartingTime = 0;
-
-	fStockManagement = true;
-
-	fOutputFileName = "CLASS_Default.root";
-	fOutputTreeName = "Data";
-	fOutFile = 0;
-	fOutT = 0;
-
-	fParcPower = 0;
-
-
-	// Warning
-
-	cout	<< "!!INFO!! !!!Scenario!!! A Parc has been define :" << endl;
-	cout	<< "\t Print set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
-	cout	<< "\t Absolute Time set at " << (double)(fAbsoluteTime/3600/24/365.25) << " year" << endl;
-	cout	<< "\t StockManagement set at : true" << endl;
-	cout	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	cout	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl << endl;
-
-	GetLog()->fLog 	<< "!!INFO!! !!!Scenario!!! Parc has been define :" << endl;
-	GetLog()->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
-	GetLog()->fLog	<< "\t StockManagement set at : true" << endl;
-	GetLog()->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	GetLog()->fLog	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl << endl;
-
-
-
-}
-//________________________________________________________________________
-Scenario::Scenario(double abstime)
-{
-
-	fNewTtree = true;
-	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
-	fAbsoluteTime = (cSecond)abstime;
+	fAbsoluteTime = abstime;
 	fStartingTime = fAbsoluteTime;
 
 	fStockManagement = true;
@@ -138,25 +60,45 @@ Scenario::Scenario(double abstime)
 	fOutFile = 0;
 	fOutT = 0;
 
-	SetLog(new LogFile("CLASS.log"));
 	fParcPower = 0;
-
-
 
 
 	// Warning
 
-	cout	<< "!!INFO!! !!!Scenario!!! A Parc has been define :" << endl;
-	cout	<< "\t Print set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
-	cout	<< "\t StockManagement set at : true" << endl;
-	cout	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	cout	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl;
 
-	GetLog()->fLog 	<< "!!INFO!! !!!Scenario!!! Parc has been define :" << endl;
-	GetLog()->fLog	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
-	GetLog()->fLog	<< "\t StockManagement set at : true" << endl;
-	GetLog()->fLog	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	GetLog()->fLog	<< "\t Log will be in " << GetLog()->GetLogFileName() << endl << endl;
+	INFO 	<< " Parc has been define :" << endl;
+	INFO	<< " Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	INFO	<< " StockManagement set at : true" << endl;
+	INFO	<< " OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
+	INFO	<< " Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
+
+
+
+}
+//________________________________________________________________________
+Scenario::Scenario(cSecond abstime, CLASSLogger* log):CLASSObject(log)
+{
+
+	fNewTtree = true;
+	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
+	fAbsoluteTime = abstime;
+	fStartingTime = fAbsoluteTime;
+
+	fStockManagement = true;
+
+	fOutputFileName = "CLASS_Default.root";
+	fOutputTreeName = "Data";
+	fOutFile = 0;
+	fOutT = 0;
+	fParcPower = 0;
+
+	// Warning
+
+	INFO 	<< "!!INFO!! !!!Scenario!!! Parc has been define :" << endl;
+	INFO	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	INFO	<< "\t StockManagement set at : true" << endl;
+	INFO	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
+	INFO	<< "\t Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
 
 
 
@@ -341,6 +283,7 @@ map<cSecond,int> Scenario::GetTheBackEndTimePath(Reactor* reactor)
 //________________________________________________________________________
 void Scenario::BuildTimeVector(cSecond t)
 {
+DBGL
 	fTimeStep.clear();
 	fTimeStep.insert( pair<cSecond ,int>(t,1) );
 	//********* Printing Step *********//
@@ -430,8 +373,7 @@ void Scenario::BuildTimeVector(cSecond t)
 			}
 			else if( step - FabricationCycleTime < fStartingTime )
 			{
-				cout	   << "!!Warning!! !!!CLASS!!! Can't Build Fuel before Scenario's start\"\n" << endl;
-				GetLog()->fLog   << "!!Warning!! !!!CLASS!!! Can't Build Fuel before Scenario's start\"\n" << endl;
+				ERROR   << " Can't Build Fuel before Scenario's start\"\n" << endl;
 				exit(1);
 			}
 		}
@@ -497,8 +439,7 @@ void Scenario::BuildTimeVector(cSecond t)
 		}
 		else
 		{
-			cout	       << "!!Warning!! !!!Reactor!!! Be carefull a reactor cycletime is set to 0 second....\"\n" << endl;
-			GetLog()->fLog << "!!Warning!! !!!Reactor!!! Be carefull a reactor cycletime is set to 0 second....\"\n" << endl;
+			WARNING << " Be carefull a reactor cycletime is set to 0 second....\"\n" << endl;
 		}
 
 	}
@@ -510,14 +451,13 @@ void Scenario::BuildTimeVector(cSecond t)
 	ofstream TimeStepfile("CLASS_TimeStep", ios_base::app);		// Open the File
 
 	if(!TimeStepfile)
-	{
-		cout		<< "!!Warning!! !!!CLASS!!! Can't open \" CLASS_TimeStep \"\n" << endl;
-		GetLog()->fLog 	<< "!!Warning!! !!!CLASS!!! Can't open \" CLASS_TimeStep \"\n" << endl;
-	}
+		WARNING	<< " Can't open \" CLASS_TimeStep \"\n" << endl;
+
 	map<cSecond ,int >::iterator it;
 	for( it = fTimeStep.begin(); it != fTimeStep.end(); it++)
 		TimeStepfile << (*it).first << " " << (*it).second << endl;
 
+DBGL
 }
 //________________________________________________________________________
 void Scenario::OldBuildTimeVector(cSecond t)
@@ -592,8 +532,7 @@ void Scenario::OldBuildTimeVector(cSecond t)
 			}
 			else if(step - fabricationstep < fStartingTime)
 			{
-				cout		<< "!!Warning!! !!!CLASS!!! Can't Build Fuel before Scenario's start\"\n" << endl;
-				GetLog()->fLog 	<< "!!Warning!! !!!CLASS!!! Can't Build Fuel before Scenario's start\"\n" << endl;
+				ERROR << " Can't Build Fuel before Scenario's start\"\n" << endl;
 				exit(1);
 			}
 		}
@@ -658,13 +597,14 @@ void Scenario::OldBuildTimeVector(cSecond t)
 
 	if(!TimeStepfile)
 	{
-		cout		<< "!!Warning!! !!!CLASS!!! Can't open \" CLASS_TimeStep \"\n" << endl;
-		GetLog()->fLog 	<< "!!Warning!! !!!CLASS!!! Can't open \" CLASS_TimeStep \"\n" << endl;
+		WARNING << " Can't open \" CLASS_TimeStep \"\n" << endl;
 	}
-	map<cSecond ,int >::iterator it;
-	for( it = fTimeStep.begin(); it != fTimeStep.end(); it++)
-		TimeStepfile << (*it).first << " " << (*it).second << endl;
-
+	else
+	{
+		map<cSecond ,int >::iterator it;
+		for( it = fTimeStep.begin(); it != fTimeStep.end(); it++)
+			TimeStepfile << (*it).first << " " << (*it).second << endl;
+	}
 }
 
 
@@ -675,40 +615,40 @@ void Scenario::OldBuildTimeVector(cSecond t)
 
 void Scenario::PoolEvolution()
 {
-
+DBGL
 #pragma omp parallel for
 	for(int i = 0; i < (int) fPool.size();i++)
 		fPool[i]->Evolution(fAbsoluteTime);
 
 	for(int i = 0; i < (int) fPool.size();i++)
 		fPool[i]->Dump();
-
+DBGL
 }
 
 void Scenario::StorageEvolution()
 {
-
+DBGL
 #pragma omp parallel for
 	for(int i = 0; i < (int) fStorage.size();i++)
 		fStorage[i]->Evolution(fAbsoluteTime);
 
-
+DBGL
 }
 
 void Scenario::FabricationPlantEvolution()
 {
-
+DBGL
 	//#pragma omp parallel for
 	for(int i = 0; i < (int) fFabricationPlant.size();i++)
 		fFabricationPlant[i]->Evolution(fAbsoluteTime);
 
-
+DBGL
 }
 
 //________________________________________________________________________
 void Scenario::ReactorEvolution()
 {
-
+DBGL
 	fParcPower = 0;
 #pragma omp parallel for
 	for(int i = 0; i < (int)fReactor.size(); i++)
@@ -718,13 +658,13 @@ void Scenario::ReactorEvolution()
 	for(int i = 0; i < (int)fReactor.size(); i++)
 		fReactor[i]->Dump();
 
-
+DBGL
 }
 
 //________________________________________________________________________
 void Scenario::Evolution(double t)
 {
-
+DBGL
 
 	BuildTimeVector( (cSecond)t );
 
@@ -768,7 +708,7 @@ void Scenario::Evolution(double t)
 	}
 	cout << endl;
 
-
+DBGL
 }
 
 void Scenario::ProgressPrintout(cSecond t)
@@ -777,7 +717,11 @@ void Scenario::ProgressPrintout(cSecond t)
 	double Time = (fAbsoluteTime-fStartingTime)/3600/24/365.25 ;
 	double Total = (t-fStartingTime)/3600/24/365.25;
 
-	cout << "                                                                                                       " << flush ;
+	// Reset the line
+	for(int i = 0; i < 100; i++)
+		cout << "  ";
+	cout << flush ;
+
 	cout << "\r[";
 	for(int i = 0; i < (int)(Time/Total*100.0); i++)
 		cout << "|";
@@ -788,13 +732,12 @@ void Scenario::ProgressPrintout(cSecond t)
 	cout << " Processed ";
 	if (Time < 10) cout << " ";
 	if (Time < 100) cout << " ";
-	cout << (int)Time << " / " << (int)Total << " Years \r" << flush;
+	cout << (int)Time << " / " << (int)Total << " Years \r";
+	if(fLog->GetVerboseLVL() < 2) cout << flush;
+	else cout << endl;
 
 
-	GetLog()->fLog 	<< "Proccessed";
-	if (Time < 10) GetLog()->fLog << " ";
-	if (Time < 100) GetLog()->fLog << " ";
-	GetLog()->fLog << (int)Time << " / " << (int)Total << " Years \r" << endl;
+	INFO << " Proccessed" << (int)Time << " / " << (int)Total << " Years \r" << endl;
 
 }
 
@@ -844,31 +787,26 @@ void Scenario::OpenOutputTree()
 {
 
 
-	cout << "Opening OutPut File ...\t";
-	GetLog()->fLog << "Opening : " << fOutputFileName << " ...\t";
+	INFO << "Opening : " << fOutputFileName << " ...\t";
 	fOutFile = new TFile(fOutputFileName.c_str(),"UPDATE");
 
 	if(!fOutFile)
 	{
-		cout << "\nCould not open " << fOutputFileName <<endl;
-		GetLog()->fLog << "\nCould not open " << fOutputFileName <<endl;
+		ERROR << "\nCould not open " << fOutputFileName <<endl;
 		exit(-1);
 	}
 	cout << "\t ...OK!" << endl;
 
 
 	fOutT = new TTree(fOutputTreeName.c_str(), "Data Tree");
-	cout << "Creating Data Tree ...\t";
-	GetLog()->fLog << "Creating Data Tree ...\t";
+	INFO << "Creating Data Tree ...\t";
 	if(!fOutT)
 	{
-		cout << "\nCould not create Data Tree in " << fOutputFileName << endl;
-		GetLog()->fLog << "\nCould not create Data Tree in " << fOutputFileName << endl;
+		ERROR << "\nCould not create Data Tree in " << fOutputFileName << endl;
 		exit(-1);
 	}
 	fNewTtree = false;
-	cout << "\t ...OK!" << endl;
-	GetLog()->fLog <<  "\t ...OK!" << endl;
+	INFO <<  "\t ...OK!" << endl;
 
 }
 void Scenario::CloseOutputTree()
@@ -876,21 +814,17 @@ void Scenario::CloseOutputTree()
 
 
 	fOutFile->ls();
-	cout << "Writing outTree " << fOutputFileName << endl;
-	GetLog()->fLog << "Writing outTree " << fOutputFileName << endl;
+	INFO << "Writing outTree " << fOutputFileName << endl;
 	fOutFile->Write();
 
 	if(fOutFile->IsOpen()) {
-		cout << "Deleting outTree : " << endl;
-		GetLog()->fLog << "Deleting outTree : " << endl;
+		INFO << "Deleting outTree : " << endl;
 		delete fOutT;
-		cout << "Closing file : " << fOutputFileName <<endl;
-		GetLog()->fLog << "Closing file : " << fOutputFileName <<endl;
+		INFO << "Closing file : " << fOutputFileName <<endl;
 		fOutFile-> Close();
 		delete fOutFile;
 	} else {
-		cout << "File was not opened " << fOutputFileName << endl;
-		GetLog()->fLog << "File was not opened " << fOutputFileName << endl;
+		ERROR << "File was not opened " << fOutputFileName << endl;
 		exit(-1);
 	}
 }
@@ -953,15 +887,15 @@ void Scenario::Print()
 
 	for(int i = 0; i < (int) fPool.size();i++)
 	{
-		cout << "!!!!!!!!!STEP : " << fAbsoluteTime/(int)(3600*24*365.25) << endl;
-		cout << "Pool : " << endl;
-		cout << "Cooling ";
-		cout << fPool[i]->GetIVArray().size()<< endl;
+		INFO << "!!!!!!!!!STEP : " << fAbsoluteTime/(int)(3600*24*365.25) << endl;
+		INFO << "Pool : " << endl;
+		INFO << "Cooling ";
+		INFO << fPool[i]->GetIVArray().size()<< endl;
 	}
 
 	for(int i = 0; i < (int)fReactor.size(); i++)
 	{
-		cout << "Reactor" << endl;
+		INFO << "Reactor" << endl;
 		fReactor[i]->GetIVReactor().Print();
 	}
 

@@ -1,6 +1,6 @@
 #include "EquivalenceModel.hxx"
 #include "EQM_MLP_PWR_MOX.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 #include "StringLine.hxx"
 
 #include <string>
@@ -15,8 +15,6 @@
 #include "TMVA/Tools.h"
 #include "TMVA/MethodCuts.h"
 
-
-#include "CLASSHeaders.hxx"
 
 //________________________________________________________________________
 //
@@ -100,8 +98,7 @@ TTree* EQM_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fer
 //cout<<"BU "<<BU<<" U5_enrichment "<<U5_enrichment<<endl;
 	if(Pu8 + Pu9 + Pu10 + Pu11 + Pu12 + Am1 > 1.00001 )//?????1.00001??? I don't know it! goes in condition if =1 !! may be float/double issue ...
 	{
-		cout<<"!!!!!!!!!!!ERRORR!!!!!!!!!!!!"<<endl;
-		cout<<Pu8<<" "<<Pu9<<" "<<Pu10<<" "<<Pu11<<" "<<Pu12<<" "<<Am1<<endl;
+		ERROR << Pu8 << " " << Pu9 << " " << Pu10 << " " << Pu11 << " " << Pu12 << " " << Am1 << endl;
 		exit(0);
 	}
 	// All value are molar (!weight)

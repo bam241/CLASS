@@ -35,7 +35,7 @@ class EquivalenceModel : public CLASSObject
 	public :
 
 	EquivalenceModel();
-	EquivalenceModel(LogFile* log);
+	EquivalenceModel(CLASSLogger* log);
 
 	virtual ~EquivalenceModel();
 

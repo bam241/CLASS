@@ -1,6 +1,6 @@
 #include "XSModel.hxx"
 #include "XSM_CLOSEST.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 #include "StringLine.hxx"
 
 
@@ -27,7 +27,7 @@
 //
 //
 //________________________________________________________________________
-XSM_CLOSEST::XSM_CLOSEST(LogFile* Log,string DB_index_file, bool oldreadmethod ): XSModel(Log)
+XSM_CLOSEST::XSM_CLOSEST(CLASSLogger* Log,string DB_index_file, bool oldreadmethod ): XSModel(Log)
 {
 	fOldReadMethod = oldreadmethod;
 	fDataBaseIndex = DB_index_file;
@@ -39,13 +39,9 @@ XSM_CLOSEST::XSM_CLOSEST(LogFile* Log,string DB_index_file, bool oldreadmethod )
 	if(IsLog())
 	{
 		// Warning
-		cout	<< "!!INFO!! !!!XSM_CLOSEST!!! A EvolutionData has been define :" << endl;
-		cout	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
-		cout	<< "\t " << fFuelDataBank.size() << " EvolutionData have been read."<< endl << endl;
-		
-		GetLog()->fLog 	<< "!!INFO!! !!!XSM_CLOSEST!!! A EvolutionData has been define :" << endl;
-		GetLog()->fLog	<< "\t His index is : \"" << DB_index_file << "\"" << endl;
-		GetLog()->fLog	<< "\t " << fFuelDataBank.size() << " EvolutionData have been read."<< endl << endl;
+		INFO 	<< " A EvolutionData has been define :" << endl;
+		INFO	<< "\t His index is : \"" << DB_index_file << "\" " << endl;
+		INFO	<< "\t " << fFuelDataBank.size() << " EvolutionData have been read."<< endl << endl;
 	}
 
 }
@@ -72,10 +68,8 @@ void XSM_CLOSEST::ReadDataBase()
 
 	ifstream DataDB(fDataBaseIndex.c_str());							// Open the File
 	if(!DataDB)
-	{
-		cout << "!!Warning!! !!!FuelDataBank!!! \n Can't open \"" << fDataBaseIndex << "\"\n" << endl;
-		GetLog()->fLog << "!!Warning!! !!!FuelDataBank!!! \n Can't open \"" << fDataBaseIndex << "\"\n" << endl;
-	}
+		WARNING << " Can't open \"" << fDataBaseIndex << "\"\n" << endl;
+
 	vector<double> vTime;
 	vector<double> vTimeErr;
 	
@@ -87,8 +81,7 @@ void XSM_CLOSEST::ReadDataBase()
 	getline(DataDB, line);
 	if( StringLine::NextWord(line, start, ' ') != "TYPE")
 	{
-		cout << "!!Bad Trouble!! !!!FuelDataBank!!! Bad Database file : " <<  fDataBaseIndex << " Can't find the type of the DataBase"<< endl;
-		GetLog()->fLog << "!!Bad Trouble!! !!!FuelDataBank!!! Bad Database file : " <<  fDataBaseIndex << " Can't find the type of the DataBase"<< endl;
+		ERROR << " Bad Database file : " <<  fDataBaseIndex << " Can't find the type of the DataBase"<< endl;
 		exit (1);
 	}
 	fFuelType = StringLine::NextWord(line, start, ' ');
@@ -142,14 +135,14 @@ map<double, int> XSM_CLOSEST::GetDistancesTo(IsotopicVector isotopicvector, doub
 //________________________________________________________________________
 EvolutionData XSM_CLOSEST::GetCrossSections(IsotopicVector isotopicvector, double t) 
 {
-	
+DBGL
 	double distance = 0;
 	int N_BestEvolutionData = 0;
 
 	
 	if(fWeightedDistance)
 	{
-
+DBGL
 		IsotopicVector ActinidesCompositionAtT = fFuelDataBank[0].GetIsotopicVectorAt(t).GetActinidesComposition();
 		IsotopicVector IV_ActinidesComposition = isotopicvector.GetActinidesComposition();
 
@@ -176,12 +169,12 @@ EvolutionData XSM_CLOSEST::GetCrossSections(IsotopicVector isotopicvector, doubl
 				N_BestEvolutionData = i;
 			}
 		}
-		
+DBGL
 		return fFuelDataBank[N_BestEvolutionData];
 	}
 	else if (fEvolutionDataInterpolation)
 	{
-		
+DBGL
 		map<double, int> distance_map = GetDistancesTo(isotopicvector, t);
 		map<double, int>::iterator it_distance;
 		int NClose = 64;
@@ -227,11 +220,13 @@ EvolutionData XSM_CLOSEST::GetCrossSections(IsotopicVector isotopicvector, doubl
 		EvolInterpolate = Multiply(1/SumOfDistance, Evoltmp);
 		
 		Evoltmp.DeleteEvolutionData();
+DBGL
 		return EvolInterpolate;
 		
 	}
 	else
 	{
+DBGL
 		IsotopicVector ActinidesCompositionAtT = fFuelDataBank[0].GetIsotopicVectorAt(t).GetActinidesComposition();
 		IsotopicVector IV_ActinidesComposition = isotopicvector.GetActinidesComposition();
 
@@ -261,21 +256,17 @@ EvolutionData XSM_CLOSEST::GetCrossSections(IsotopicVector isotopicvector, doubl
 			}
 		}
 
+DBGL
 		return fFuelDataBank[N_BestEvolutionData];
-
 	}
-		
+
 }
 //________________________________________________________________________
 void XSM_CLOSEST::CalculateDistanceParameter()
 {
-	
+DBGL
 	if(fDistanceType!=1){
-		cout << "!!Warning!! !!!CalculateDistanceParameter!!!"
-		<< " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
-		
-		GetLog()->fLog << "!!Warning!! !!!CalculateDistanceParameter!!!"
-		<< " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten"<<endl;
+		WARNING << " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten" << endl;
 	}
 	
 	fDistanceParameter.Clear();
@@ -304,20 +295,20 @@ void XSM_CLOSEST::CalculateDistanceParameter()
 	
 	if(GetLog())
 	{
-		GetLog()->fLog <<"!!INFO!! Distance Parameters "<<endl;
+		INFO <<"!!INFO!! Distance Parameters "<<endl;
 		map<ZAI ,double >::iterator it2;
 		for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
 		{
-			GetLog()->fLog << (*it2).first.Z() << " ";
-			GetLog()->fLog << (*it2).first.A() << " ";
-			GetLog()->fLog << (*it2).first.I() << " ";
-			GetLog()->fLog << ": " << (*it2).second;
-			GetLog()->fLog << endl;
+			INFO << (*it2).first.Z() << " ";
+			INFO << (*it2).first.A() << " ";
+			INFO << (*it2).first.I() << " ";
+			INFO << ": " << (*it2).second;
+			INFO << endl;
 		}
-		GetLog()->fLog << endl;
+		INFO << endl;
 	}
 	
-	
+DBGL
 }
 //________________________________________________________________________
 void XSM_CLOSEST::SetDistanceParameter(IsotopicVector DistanceParameter)
@@ -325,17 +316,17 @@ void XSM_CLOSEST::SetDistanceParameter(IsotopicVector DistanceParameter)
 	
 	fDistanceParameter = DistanceParameter;
 	
-	GetLog()->fLog <<"!!INFO!! Distance Parameters "<<endl;
+	INFO <<"!!INFO!! Distance Parameters "<<endl;
 	map<ZAI ,double >::iterator it2;
 	for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
 	{
-		GetLog()->fLog << (*it2).first.Z() << " ";
-		GetLog()->fLog << (*it2).first.A() << " ";
-		GetLog()->fLog << (*it2).first.I() << " ";
-		GetLog()->fLog << ": " << (*it2).second;
-		GetLog()->fLog << endl;
+		INFO << (*it2).first.Z() << " ";
+		INFO << (*it2).first.A() << " ";
+		INFO << (*it2).first.I() << " ";
+		INFO << ": " << (*it2).second;
+		INFO << endl;
 	}
-	GetLog()->fLog << endl;
+	INFO << endl;
 	
 }
 
@@ -349,19 +340,11 @@ void XSM_CLOSEST::SetDistanceType(int DistanceType)
 	}
 	else if(fDistanceType == 2 && Norme(fDistanceParameter)==0){
 		// This is so bad!! You will probably unsynchronize all the reactor....
-		cout << "!!Warning!! !!!DistanceType!!!"
-		<< " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
-		
-		GetLog()->fLog << "!!Warning!! !!!DistanceType!!!"
-		<< " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
+		WARNING << " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
 		exit(1);
 	}
 	else if (fDistanceType != 0 && fDistanceType != 1 && fDistanceType != 2 ){
-		cout << "!!ERROR!! !!!DistanceType!!!"
-		<< " Distancetype defined by the user isn't recognized by the code"<<endl;
-		
-		GetLog()->fLog << "!!ERROR!! !!!DistanceType!!!"
-		<< " Distancetype defined by the user isn't recognized by the code"<<endl;
+		ERROR << " Distancetype defined by the user isn't recognized by the code"<<endl;
 		exit(1);
 	}
 	

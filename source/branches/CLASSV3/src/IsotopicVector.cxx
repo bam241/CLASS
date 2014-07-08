@@ -1,6 +1,6 @@
 #include "IsotopicVector.hxx"
 
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 #include "CLASSConstante.hxx"
 
 
@@ -90,8 +90,7 @@ double Distance(IsotopicVector IV1, IsotopicVector IV2 ,int DistanceType, Isotop
 	}
 	else
 	{
-		cout << "!!ERROR!! !!!Distance!!!"
-		<< " DistanceType defined by the user isn't recognized by the code"<<endl;
+		cout << " DistanceType defined by the user isn't recognized by the code" << endl;
 
 		exit(1);
 	}
