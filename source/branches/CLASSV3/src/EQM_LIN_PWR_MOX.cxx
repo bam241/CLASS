@@ -10,7 +10,7 @@
 
 
 
-EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(string WeightPath):EquivalenceModel()
+EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(string WeightPath):EquivalenceModel(new CLASSLogger("EQM_LIN_PWR_MOX.log"))
 {
 	fWeightPath =  WeightPath;
 
