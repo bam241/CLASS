@@ -6,7 +6,6 @@
  */
 
 #include "CLASSObject.hxx"
-#include "CLASSLogger.hxx"
 #include "IsotopicVector.hxx"
 
 #include <TFile.h>
@@ -51,11 +50,7 @@ public :
 	 */
 	//@{
 
-	Scenario();		///< Normal Constructor.
-
-
-
-	Scenario(CLASSLogger* Log = new CLASSLogger(), cSecond abstime = 0);	///< Log Constructor.
+	Scenario(CLASSLogger* Log= new CLASSLogger(), cSecond abstime = 0);	///< Log Constructor.
  	/*!
 	 Use to load a CLASSLogger
 	 \param CLASSLogger: CLASSLogger used for the log...

@@ -116,8 +116,8 @@ public:
 #endif
 
 
-#ifndef _CLASSLogger_CLASS
-#define _CLASSLogger_CLASS
+#ifndef _CLASSLogger_CLASS_
+#define _CLASSLogger_CLASS_
 
 
 
