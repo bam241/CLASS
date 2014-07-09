@@ -6,12 +6,17 @@ EXTERNINC	= ../external
 LOCALINC	= ../include
 
 
+EQM		= ../Model/Equivalence
+IM		= ../Model/Irradiation
+XSM		= ../Model/XS
+
+
 ROOTCFLAGS    	= `root-config --cflags`
 ROOTLIBS	= `root-config --libs`
 ROOTGLIBS	= `root-config --glibs`
 
 ######### nothing to change from here #########
-INCLUDES	= $(LOCALINC)/*.hxx
+INCLUDES	= $(LOCALINC)/*.hxx 
 LIBNAME 	= CLASSpkg
 OBJS		= 	CLASSLogger.o \
 			ZAI.o ZAIDict.o \
@@ -27,11 +32,16 @@ OBJS		= 	CLASSLogger.o \
 			DecayDataBank.o \
 			DynamicalSystem.o\
 			EvolutionData.o EvolutionDataDict.o \
-			IrradiationModel.o IM_RK4.o \
-			EquivalenceModel.o EQM_MLP_PWR_MOX.o EQM_QUAD_PWR_MOX.o EQM_LIN_PWR_MOX.o \
-			XSModel.o XSM_MLP_PWR_MOX.o XSM_CLOSEST.o \
+			IrradiationModel.o \
+			EquivalenceModel.o \
+			XSModel.o \
 			PhysicModels.o \
 			Scenario.o
+
+OBJMODEL	=	$(EQM)/EQM_MLP_PWR_MOX.o $(EQM)/EQM_QUAD_PWR_MOX.o $(EQM)/EQM_LIN_PWR_MOX.o \
+			$(XSM)/XSM_MLP.o $(XSM)/XSM_CLOSEST.o \
+			$(IM)/IM_RK4.o $(IM)/IM_Matrix.o
+
 
 ROOTOBJS	= 	CLASSLogger.o \
 			ZAI.o ZAIDict.o \
@@ -55,11 +65,23 @@ CXXFLAGS      = -O2 -g -Wall -fopenmp -fPIC -I$(LOCALINC) $(ROOTCFLAGS)
 LD            = g++
 LDFLAGS       =  -g -Wall -fPIC $(ROOTLIBS) -lTMVA -shared -lgomp
 
-all:		$(OBJS)
-		$(LD) $(LDFLAGS) $(OBJS) -o $(LIBDIR)/lib$(LIBNAME).so
+all:		$(OBJS) $(OBJMODEL)
+		$(LD) $(LDFLAGS) $(OBJS) $(OBJMODEL) -o $(LIBDIR)/lib$(LIBNAME).so
 		@echo "lib$(LIBNAME).so done"
 		$(LD) $(LDFLAGS) $(ROOTOBJS) -o $(LIBDIR)/lib$(LIBNAME)_root.so
 		@echo "lib$(LIBNAME)_root.so done"
+
+clean:
+		@rm -vf $(OBJS) $(OBJMODEL) *~ core *Dict.cxx *Dict.h
+
+
+install:	
+		$(OBJS) $(OBJMODEL)
+		$(LD) $(LDFLAGS) $(OBJS) $(OBJMODEL) -o $(LIBDIR)/lib$(LIBNAME).so
+		@echo "lib$(LIBNAME).so done"
+		$(LD) $(LDFLAGS) $(ROOTOBJS) -o $(LIBDIR)/lib$(LIBNAME)_root.so
+		@echo "lib$(LIBNAME)_root.so done"
+		@ln -sf ../Model/* ../include/
 
 
 
@@ -94,12 +116,7 @@ EvolutionDataDict.cxx:		$(LOCALINC)/EvolutionData.hxx
 				rootcint -f $@ -c $^
 
 
-
-clean:
-		@rm -vf $(OBJS) *~ core *Dict.cxx *Dict.h
-oclean :
-		@rm -vf $(OBJS) *~ core *Dict.cxx *Dict.h
 .SUFFIXES: .cxx
 
 %.o: %.cxx $(INCLUDES)
-	$(CXX) $(CXXFLAGS) -c $*.cxx
+	$(CXX) $(CXXFLAGS) -c $*.cxx -o $*.o
