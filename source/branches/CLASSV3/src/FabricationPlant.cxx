@@ -36,7 +36,7 @@ ClassImp(FabricationPlant)
 
 
 
-FabricationPlant::FabricationPlant():CLASSFacility(16)
+FabricationPlant::FabricationPlant():CLASSFacility(new CLASSLogger("FabricationPlant.log"), 16)
 {
 	SetName("F_FabricationPLant.");
 	

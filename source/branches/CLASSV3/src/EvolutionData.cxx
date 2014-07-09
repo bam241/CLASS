@@ -343,7 +343,7 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 ClassImp(EvolutionData)
 
 
-EvolutionData::EvolutionData():CLASSObject()
+EvolutionData::EvolutionData():CLASSObject(new CLASSLogger("EvolutionData.log"))
 {
 	fIsCrossSection = false;
 	fPower = 0;
@@ -353,10 +353,9 @@ EvolutionData::EvolutionData():CLASSObject()
 }
 
 	//________________________________________________________________________
-EvolutionData::EvolutionData(CLASSLogger* Log)
+EvolutionData::EvolutionData(CLASSLogger* log):CLASSObject(log)
 {
 	
-	SetLog(Log);
 	fIsCrossSection = false;
 	fPower = 0;
 	fCycleTime = 0;
@@ -367,10 +366,9 @@ EvolutionData::EvolutionData(CLASSLogger* Log)
 }
 
 	//________________________________________________________________________
-EvolutionData::EvolutionData(CLASSLogger* Log, string DB_file, bool oldread, ZAI zai)
+EvolutionData::EvolutionData(CLASSLogger* log, string DB_file, bool oldread, ZAI zai):CLASSObject(log)
 {
 	
-	SetLog(Log);
 	fIsCrossSection = false;
 	fDB_file = DB_file;
 	fPower = 0;

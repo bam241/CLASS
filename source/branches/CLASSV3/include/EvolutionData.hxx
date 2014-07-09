@@ -70,7 +70,7 @@ public :
 	 Use create an empty EvolutionData loading a CLASSLogger
 	 \param CLASSLogger CLASSLogger used for the log...
 	 */
-	EvolutionData(CLASSLogger* Log); 	///< Make a new Evolutive Product evolution
+	EvolutionData(CLASSLogger* log); 	///< Make a new Evolutive Product evolution
 	//}
 
 	//{
@@ -82,7 +82,7 @@ public :
 	 \param oldread true if the oldmethod should be use to read the DatBase File
 	 \param zai set the ZAI if you want to add a stable nuclei.
 	 */
-	EvolutionData(CLASSLogger* Log, string DB_file, bool oldread = true, ZAI zai = ZAI(0,0,0) );
+	EvolutionData(CLASSLogger* log, string DB_file, bool oldread = true, ZAI zai = ZAI(0,0,0) );
 	//}
 
 

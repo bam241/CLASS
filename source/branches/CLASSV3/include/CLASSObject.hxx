@@ -45,10 +45,9 @@ public :
 	virtual CLASSObject* Clone()	{ return new CLASSObject(*this); } //!< Correct way to copy a CLASSObject in case of derivation
 
 
-	void		SetLog(CLASSLogger* log)	{ fLog = log; fIsLog = true; }		//!< Set the CLASSLogger
+	void		SetLog(CLASSLogger* log)	{ fLog = log;}		//!< Set the CLASSLogger
 
 	CLASSLogger*	GetLog()		{ return fLog; }		//!< Return the Pointer to the Log
-	bool		IsLog()			{ return fIsLog; }		//!< reutrn true if a CLASSLogger is defined
 
 	using TNamed::SetName;
 protected :
@@ -56,8 +55,7 @@ protected :
 
 
 private :
-	bool		fIsLog;			//!< Set at true if a CLASSLogger are define
-	
+
 	ClassDef(CLASSObject,0);
 };
 

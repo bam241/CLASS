@@ -44,7 +44,7 @@ string dtoa(double num)
 }
 
 //________________________________________________________________________
-Scenario::Scenario():CLASSObject(new CLASSLogger())
+Scenario::Scenario():CLASSObject(new CLASSLogger("CLASS_OUTPUT.log"))
 {
 
 	fNewTtree = true;

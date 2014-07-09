@@ -17,7 +17,7 @@ ClassImp(CLASSFacility)
 
 
 
-CLASSFacility::CLASSFacility(int type):CLASSObject()
+CLASSFacility::CLASSFacility(int type):CLASSObject(new CLASSLogger("CLASSFacility.log"))
 {
 	fParc = 0;
 
