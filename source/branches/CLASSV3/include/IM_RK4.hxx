@@ -17,7 +17,7 @@
 using namespace std;
 
 
-class CLASSLogger;
+class LogFile;
 
 //-----------------------------------------------------------------------------//
 /*!
@@ -32,13 +32,13 @@ class CLASSLogger;
 
 class EvolutionData;
 
-class IM_RK4 : public IrradiationModel, DynamicalSystem
+class IM_RK4 : public DynamicalSystem, IrradiationModel
 {
 	
 	public :
 
 	IM_RK4();
-	IM_RK4(CLASSLogger* Log);
+	IM_RK4(LogFile* Log);
 
 
 
