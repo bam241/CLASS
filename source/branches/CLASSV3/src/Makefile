@@ -76,11 +76,6 @@ clean:
 
 
 install:	
-		$(OBJS) $(OBJMODEL)
-		$(LD) $(LDFLAGS) $(OBJS) $(OBJMODEL) -o $(LIBDIR)/lib$(LIBNAME).so
-		@echo "lib$(LIBNAME).so done"
-		$(LD) $(LDFLAGS) $(ROOTOBJS) -o $(LIBDIR)/lib$(LIBNAME)_root.so
-		@echo "lib$(LIBNAME)_root.so done"
 		@ln -sf ../Model/* ../include/
 
 
