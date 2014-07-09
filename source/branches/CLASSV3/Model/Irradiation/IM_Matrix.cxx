@@ -9,6 +9,7 @@
 #include "IM_Matrix.hxx"
 
 #include "IsotopicVector.hxx"
+#include "CLASSConstante.hxx"
 #include "CLASSLogger.hxx"
 #include "StringLine.hxx"
 
