@@ -11,10 +11,12 @@
  @author BLG
  @version 1.0
  */
-#include "CLASSHeaders.hxx"
+#include "EvolutionData.hxx"
 
 
 using namespace std;
+
+class IsotopicVector;
 
 //-----------------------------------------------------------------------------//
 /*!
