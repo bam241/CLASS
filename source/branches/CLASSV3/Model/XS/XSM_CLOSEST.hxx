@@ -5,7 +5,7 @@
 
 /*!
  \file
- \brief Header file for XSM_MLP_PWR_MOX class.
+ \brief Header file for XS_CLOSEST class.
  
  
  @authors BaM,BLG

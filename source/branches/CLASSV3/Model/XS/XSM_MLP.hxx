@@ -1,11 +1,11 @@
 
-#ifndef _XSM_MLP_PWR_MOX_HXX
-#define _XSM_MLP_PWR_MOX_HXX
+#ifndef _XSM_MLP_HXX
+#define _XSM_MLP_HXX
 
 
 /*!
  \file
- \brief Header file for XSM_MLP_PWR_MOX class.
+ \brief Header file for XSM_MLP class.
  
  
  @authors BLG
@@ -22,7 +22,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------//
 /*!
- Define a XSM_MLP_PWR_MOX.
+ Define a XSM_MLP.
 This is the class to predict cross sections with a set of MultiLayerPerceptrons
 Design for a PWR MOX reactor
 
@@ -32,7 +32,7 @@ Design for a PWR MOX reactor
 //________________________________________________________________________
 
 
-class XSM_MLP_PWR_MOX : public XSModel
+class XSM_MLP : public XSModel
 {
 public : 
 
@@ -41,8 +41,8 @@ public :
 	 */
 	//@{
 
-	XSM_MLP_PWR_MOX(LogFile* Log,string TMVA_Weight_Directory,string InformationFile="",bool IsTimeStep=true);	
-	~XSM_MLP_PWR_MOX() {;}
+	XSM_MLP(LogFile* Log,string TMVA_Weight_Directory,string InformationFile="",bool IsTimeStep=true);	
+	~XSM_MLP() {;}
 	//{
 
 
