@@ -27,11 +27,11 @@ DBGL
 
 	/****Some initializations**/
 	vector<double> lambda ; //vector of portion of stocks taken (fissile & fertil)
-	for(int i=0;i < (int)FissilArray.size() + (int)FertilArray.size();i++ )
+	for(int i = 0 ; i < (int)FissilArray.size() + (int)FertilArray.size() ; i++ )
 		lambda.push_back(0);
 
 	fOld_Lambda_Tot = 0;
-	fLambda_max=FindLambdaMax(FissilArray,HMMass);
+	fLambda_max = FindLambdaMax( FissilArray, HMMass );
 	
 
 	IsotopicVector Fertile;
@@ -47,33 +47,34 @@ DBGL
 		GuessLambda( lambda,0,FissilArray.size()-1, DeltaM, FissilArray ,HMMass);
 		if(lambda[0]==-1)
 		{	
-			for(int i=0;i < (int)FissilArray.size() + (int)FertilArray.size();i++ )
-				lambda[i]=-1;
+			for(int i=0 ; i < (int)FissilArray.size() + (int)FertilArray.size();i++ )
+				lambda[i ]= -1;
 			WARNING<<"Not enought fissile material to build fuel"<<endl;
 			return lambda;
 		}
 		//Build the Plutonium vector from stocks
 		Fissile.Clear();
 		
-		for(int i=0;i<(int)FissilArray.size();i++)
+		for( int i = 0 ; i < (int)FissilArray.size() ; i++ )
 			Fissile +=lambda[i] * FissilArray[i];
 
 		AvailablePuMass = Fissile.GetTotalMass() * 1e6; //in grams
 		//Building complementary Fertile from stocks
 		double FertilMassNeeded = HMMass - AvailablePuMass;			
 		double LAMBDA_FERTILE = FindLambdaMax(FertilArray, FertilMassNeeded);
+
 		SetLambda(lambda,FissilArray.size(), lambda.size()-1,LAMBDA_FERTILE);
 		int j=-1;
 		Fertile.Clear();
-		for(int i=(int)FissilArray.size();i<(int)FissilArray.size()+(int)FertilArray.size() ;i++)
+		for(int i = (int)FissilArray.size() ; i < (int)FissilArray.size()+(int)FertilArray.size() ; i++)
 		{	j++;
 			Fertile +=  lambda[i] * FertilArray[j];
 		}
-
-		if(Fertile.GetTotalMass()*1e6 <FertilMassNeeded)//Not enought fertile in stocks
+	
+		if(  fabs(Fertile.GetTotalMass()*1e6 - FertilMassNeeded) > FertilMassNeeded * 1e-6)//Not enought fertile in stocks
 		{
-			for(int i=0;i < (int)FissilArray.size() + (int)FertilArray.size();i++ )
-				lambda[i]=-1; //error code (read by FabricationPlant)
+			for( int i = 0 ; i < (int)FissilArray.size() + (int)FertilArray.size() ; i++ )
+				lambda[i] = -1; //error code (read by FabricationPlant)
 			WARNING<<"Not enought fertile material to build fuel"<<endl;
 			return lambda;
 		}
@@ -81,9 +82,9 @@ DBGL
 		double MolarPuContent = GetFissileMolarFraction(Fissile, Fertile, BurnUp);
 		double MeanMolarPu = Fissile.MeanMolar();
 		double MeanMolarDepletedU = Fertile.MeanMolar();
-		double MeanMolar   = MeanMolarPu*MolarPuContent + (1-MolarPuContent)*MeanMolarDepletedU;
+		double MeanMolar   = MeanMolarPu * MolarPuContent + (1-MolarPuContent)*MeanMolarDepletedU;
 
-		WeightPuContent = MolarPuContent * MeanMolarPu/MeanMolar ;
+		WeightPuContent = MolarPuContent * MeanMolarPu / MeanMolar ;
 		PuMassNeeded = WeightPuContent  *  HMMass ;
 	}
 
@@ -99,13 +100,13 @@ void EquivalenceModel::SetLambda(vector<double>& lambda ,int FirstStockID, int L
 			exit(0);
 		}
 
-		for(int i = FirstStockID ; i<=LastStockID ;i++) //set to 0 all non touched value (to be sure)
+		for(int i = FirstStockID ; i <= LastStockID ; i++) //set to 0 all non touched value (to be sure)
 			lambda[i] = 0  ;
 
-		int PartieEntier = floor(LAMBDA_TOT);
+		int PartieEntier = floor( LAMBDA_TOT );
 		double PartieDecimal = LAMBDA_TOT - PartieEntier;
 
-		for(int i=FirstStockID  ; i< FirstStockID +PartieEntier ;i++ )
+		for(int i=FirstStockID  ; i < FirstStockID +PartieEntier ;i++ )
 				lambda[i]=1;
 
 		lambda[FirstStockID + PartieEntier] = PartieDecimal  ;
@@ -125,6 +126,7 @@ void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int 
 		int ID_max = 0;
 		while( MASS < 0.05*HMMass )
 		{		
+			Stocks[ID_max].Print();
 			double StockMass = Stocks[ID_max].GetTotalMass() * 1e6;
 
 			if( StockMass > HMMass )
@@ -188,7 +190,7 @@ void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int 
 double EquivalenceModel::FindLambdaMax(vector<IsotopicVector> Stocks, double  HMMass)
 {	
 	//je cherche les lambda telle que j'ai 100% de HMass  ou bien la mass total des stocks
-	double LAMBDA=0;
+	double LAMBDA = 0;
 	double TotStockMass = 0;
 	for (int i = 0 ; i < (int)Stocks.size() ; i++)
 		TotStockMass += Stocks[i].GetTotalMass() * 1e6;
@@ -208,7 +210,7 @@ double EquivalenceModel::FindLambdaMax(vector<IsotopicVector> Stocks, double  HM
 				LAMBDA++;
 			}
 			else
-			{	LAMBDA+= fabs(RemainHM) / (Stocks[i].GetTotalMass() * 1e6);
+			{	LAMBDA+= RemainHM / (Stocks[i].GetTotalMass() * 1e6);
 				return LAMBDA;
 			}	
 		}
