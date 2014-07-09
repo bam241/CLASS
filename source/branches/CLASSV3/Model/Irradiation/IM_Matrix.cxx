@@ -9,8 +9,7 @@
 #include "IM_Matrix.hxx"
 
 #include "IsotopicVector.hxx"
-#include "CLASSHeaders.hxx"
-#include "LogFile.hxx"
+#include "CLASSLogger.hxx"
 #include "StringLine.hxx"
 
 #include <TGraph.h>
@@ -30,13 +29,13 @@ using namespace std;
 
 
 //________________________________________________________________________
-IM_Matrix::IM_Matrix():DynamicalSystem()
+IM_Matrix::IM_Matrix():IrradiationModel(new CLASSLogger("IM_Matrix.log")), DynamicalSystem()
 {
 	fShorstestHalflife = 3600.*24*160.; //cut by default all nuclei with a shorter liftime than the Cm242 -> remain 33 actinides
 }
 
 
-IM_Matrix::IM_Matrix(LogFile* log):IrradiationModel(log), DynamicalSystem()
+IM_Matrix::IM_Matrix(CLASSLogger* log):IrradiationModel(log), DynamicalSystem()
 {
 	fShorstestHalflife = 3600.*24*160.; //cut by default all nuclei with a shorter liftime than the Cm242 -> remain 33 actinides
 }
@@ -49,7 +48,7 @@ IM_Matrix::IM_Matrix(LogFile* log):IrradiationModel(log), DynamicalSystem()
 //________________________________________________________________________
 EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, EvolutionData XSSet, double Power, double cycletime)
 {
-
+DBGL
 	if(fFastDecay.size() == 0)
 	{
 		BuildDecayMatrix();
@@ -99,7 +98,6 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 	//-------------------------//
 	ReactorType = XSSet.GetReactorType();
 
-	double Na = 6.02214129e23;	//N Avogadro
 	double M_ref = XSSet.GetHeavyMetalMass();
 	double M = 0;
 	double Power_ref =  XSSet.GetPower();
@@ -113,7 +111,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 		map<ZAI, double >isotopicquantity = IVtmp.GetIsotopicQuantity();
 
 		for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-			M += isotopicvector.GetActinidesComposition().GetZAIIsotopicQuantity( (*it).first )*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
+			M += isotopicvector.GetActinidesComposition().GetZAIIsotopicQuantity( (*it).first )*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
 		isotopicquantity.clear();
 
 	}
@@ -152,7 +150,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 	vector< TMatrixT<double> > FissionXSMatrix;	// Store The Fisison XS Matrix
 	vector< TMatrixT<double> > CaptureXSMatrix;	// Store The Capture XS Matrix
 	vector< TMatrixT<double> > n2nXSMatrix;		// Store The n2N XS Matrix
-
+DBGL
 	for(int i = 0; i < NStep-1; i++)
 	{
 		double TStepMax = ( (DBTimeStep[i+1]-DBTimeStep[i] ) ) * Power_ref/M_ref / Power*M ;	// Get the next Time step
@@ -243,6 +241,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 
 
 	}
+DBGL
 	FissionXSMatrix.push_back(GetFissionXsMatrix(XSSet, DBTimeStep[NStep-1])); //Feel the reaction Matrix
 	CaptureXSMatrix.push_back(GetCaptureXsMatrix(XSSet, DBTimeStep[NStep-1])); //Feel the reaction Matrix
 	n2nXSMatrix.push_back(Getn2nXsMatrix(XSSet, DBTimeStep[NStep-1])); //Feel the reaction Matrix
@@ -281,7 +280,6 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 	}
 
 	GeneratedDB.SetPower(Power );
-	//	GeneratedDB.SetFuelType(fFuelType );
 	GeneratedDB.SetReactorType(ReactorType );
 	GeneratedDB.SetCycleTime(cycletime);
 
@@ -294,7 +292,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 	FissionXSMatrix.clear();
 	CaptureXSMatrix.clear();
 	n2nXSMatrix.clear();
-	
+DBGL
 	return GeneratedDB;
 	
 }

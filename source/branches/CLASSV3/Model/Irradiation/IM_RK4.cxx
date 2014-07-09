@@ -9,8 +9,9 @@
 #include "IM_RK4.hxx"
 
 #include "IsotopicVector.hxx"
-#include "CLASSHeaders.hxx"
-#include "LogFile.hxx"
+#include "CLASSConstante.hxx"
+#include "CLASSLogger.hxx"
+
 #include "StringLine.hxx"
 
 #include <TGraph.h>
@@ -30,7 +31,7 @@ using namespace std;
 
 
 //________________________________________________________________________
-IM_RK4::IM_RK4():DynamicalSystem(), IrradiationModel()
+IM_RK4::IM_RK4():IrradiationModel(new CLASSLogger("IM_RK4.log")), DynamicalSystem()
 {
 	fTheNucleiVector = 0;
 	fTheMatrix = 0;
@@ -40,9 +41,8 @@ IM_RK4::IM_RK4():DynamicalSystem(), IrradiationModel()
 }
 
 
-IM_RK4::IM_RK4(LogFile* log):DynamicalSystem(), IrradiationModel(log)
+IM_RK4::IM_RK4(CLASSLogger* log):IrradiationModel(log), DynamicalSystem()
 {
-
 	fTheNucleiVector = 0;
 	fTheMatrix = 0;
 
@@ -63,7 +63,7 @@ IM_RK4::IM_RK4(LogFile* log):DynamicalSystem(), IrradiationModel(log)
 //________________________________________________________________________
 EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, EvolutionData XSSet, double Power, double cycletime)
 {
-
+DBGL
 	if(fFastDecay.size() == 0)
 	{
 		BuildDecayMatrix();
@@ -116,7 +116,6 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	//-------------------------//
 	ReactorType = XSSet.GetReactorType();
 
-	double Na = 6.02214129e23;	//N Avogadro
 	double M_ref = XSSet.GetHeavyMetalMass();
 	double M = 0;
 	double Power_ref =  XSSet.GetPower();
@@ -130,7 +129,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 		map<ZAI, double >isotopicquantity = IVtmp.GetIsotopicQuantity();
 
 		for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-			M += isotopicvector.GetActinidesComposition().GetZAIIsotopicQuantity( (*it).first )*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
+			M += isotopicvector.GetActinidesComposition().GetZAIIsotopicQuantity( (*it).first )*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
 		isotopicquantity.clear();
 
 	}
@@ -169,7 +168,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	vector< TMatrixT<double> > FissionXSMatrix;	// Store The Fisison XS Matrix
 	vector< TMatrixT<double> > CaptureXSMatrix;	// Store The Capture XS Matrix
 	vector< TMatrixT<double> > n2nXSMatrix;		// Store The n2N XS Matrix
-
+DBGL
 	for(int i = 0; i < NStep-1; i++)
 	{
 		double TStepMax = ( (DBTimeStep[i+1]-DBTimeStep[i] ) ) * Power_ref/M_ref / Power*M ;	// Get the next Time step
@@ -266,9 +265,8 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 		GeneratedDB.CaptureXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NStep, timevector, CaptureXS)));
 		GeneratedDB.n2nXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NStep, timevector, n2nXS)));
 	}
-
+DBGL
 	GeneratedDB.SetPower(Power );
-//	GeneratedDB.SetFuelType(fFuelType );
 	GeneratedDB.SetReactorType(ReactorType );
 	GeneratedDB.SetCycleTime(cycletime);
 
@@ -284,7 +282,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	FissionXSMatrix.clear();
 	CaptureXSMatrix.clear();
 	n2nXSMatrix.clear();
-
+DBGL
 	return GeneratedDB;
 
 }
