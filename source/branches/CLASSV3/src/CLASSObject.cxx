@@ -17,11 +17,10 @@ ClassImp(CLASSObject)
 
 CLASSObject::CLASSObject()
 {
-	fLog = 0;
-	fIsLog = false;
+	fLog = new CLASSLogger("CLASSObject.log");
 }
 
 CLASSObject::CLASSObject(CLASSLogger* log)
 {
-	SetLog(log);
+	fLog = log;
 }

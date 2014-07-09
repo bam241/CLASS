@@ -27,12 +27,10 @@
 
 ClassImp(Reactor)
 
-Reactor::Reactor():CLASSFacility()
+Reactor::Reactor():CLASSFacility(new CLASSLogger("Reactor.log"), 4)
 {
 
-	SetFacilityType(4);
 	SetName("R_Reactor.");
-
 
 	fOutBackEndFacility = 0;
 	fStorage = 0;

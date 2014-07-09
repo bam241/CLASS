@@ -5,7 +5,7 @@
 
 
 
-EquivalenceModel::EquivalenceModel():CLASSObject()
+EquivalenceModel::EquivalenceModel():CLASSObject(new CLASSLogger("EquivalenceModel.log"))
 {
 
 }

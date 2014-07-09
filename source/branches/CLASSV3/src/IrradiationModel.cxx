@@ -26,7 +26,7 @@
 
 using namespace std;
 
-IrradiationModel::IrradiationModel():CLASSObject()
+IrradiationModel::IrradiationModel():CLASSObject(new CLASSLogger("IrradiationModel.log"))
 {
 	fShorstestHalflife = 3600.*24*2.;
 	fZAIThreshold = 90;

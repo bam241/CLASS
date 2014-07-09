@@ -25,7 +25,7 @@
 //
 //________________________________________________________________________
 
-DecayDataBank::DecayDataBank():CLASSObject()
+DecayDataBank::DecayDataBank():CLASSObject(new CLASSLogger("DecayDataBank.log"))
 {
 }
 
@@ -35,21 +35,16 @@ DecayDataBank::DecayDataBank():CLASSObject()
 //________________________________________________________________________
 //________________________________________________________________________
 
-DecayDataBank::DecayDataBank(CLASSLogger* Log, string DB_index_file, bool setlog, bool olfreadmethod)
+DecayDataBank::DecayDataBank(CLASSLogger* log, string DB_index_file, bool setlog, bool olfreadmethod):CLASSObject(log)
 {
 	
-	SetLog(Log);
 	fDataBaseIndex = DB_index_file;
-	
 	fOldReadMethod = olfreadmethod;
 	
 	// Warning
-	if(IsLog())
-	{
 		INFO 	<< " A EvolutionData has been define :" << endl;
 		INFO	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
-	}
-	
+
 }
 
 //________________________________________________________________________

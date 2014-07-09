@@ -53,6 +53,7 @@ class PhysicModels : public CLASSObject
 	//@{
 
 	PhysicModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM );
+	PhysicModels(CLASSLogger* log, XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM );
 
 	~PhysicModels() {;}
 	//{
