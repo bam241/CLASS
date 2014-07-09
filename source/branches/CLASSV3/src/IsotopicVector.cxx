@@ -278,8 +278,8 @@ bool IsotopicVector::operator<(const IsotopicVector& isotopicvector) const
 //________________________________________________________________________
 IsotopicVector::IsotopicVector()
 {
-
-
+	fIsotopicQuantity = map<ZAI,double>();
+	fIsotopicQuantityNeeded = map<ZAI,double>();
 }
 
 
