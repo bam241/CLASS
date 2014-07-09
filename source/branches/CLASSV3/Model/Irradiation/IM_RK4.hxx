@@ -5,8 +5,8 @@
 /*!
  \file
  \brief Header file for IrradiationModel class.
- 
- 
+
+
  @author BaM
  @version 2.0
  */
@@ -17,14 +17,14 @@
 using namespace std;
 
 
-class LogFile;
+class CLASSLogger;
 
 //-----------------------------------------------------------------------------//
 /*!
  Define a IM_RK4.
  The aim of these class is perform the calculation of the evolution of a fuel trough irradiation solving numericaly the Bateman using RK4.
- 
- 
+
+
  @author BaM
  @version 3.0
  */
@@ -32,13 +32,13 @@ class LogFile;
 
 class EvolutionData;
 
-class IM_RK4 : public DynamicalSystem, IrradiationModel
+class IM_RK4 : public IrradiationModel, DynamicalSystem
 {
-	
+
 	public :
 
 	IM_RK4();
-	IM_RK4(LogFile* Log);
+	IM_RK4(CLASSLogger* Log);
 
 
 
@@ -50,15 +50,15 @@ class IM_RK4 : public DynamicalSystem, IrradiationModel
 	 */
 	EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime);
 	//}
-	
+
 	//********* RK4 Method *********//
-	
+
 	//@}
 	/*!
 	 \name RK4 Method
 	 */
 	//@{
-	
+
 
 	using	DynamicalSystem::RungeKutta;
 	//!	Pre-treatment Runge-Kutta method.
@@ -67,27 +67,27 @@ class IM_RK4 : public DynamicalSystem, IrradiationModel
 	 // \param t1: initial time
 	 // \param t2: final time
 	 */
-	
-	
+
+
    	void BuildEqns(double t, double *N, double *dNdt);
 	void SetTheMatrixToZero();			//!< Initialize the evolution Matrix
 	void ResetTheMatrix();
 	void SetTheMatrix(TMatrixT<double> BatemanMatrix);	//!< Set the Evolution Matrix (Bateman equations)
 	TMatrixT<double> GetTheMatrix();		//!< return the Evolution Matrix (Bateman equations)
-	
+
 	void SetTheNucleiVectorToZero();			//!< Initialize the evolution Matrix
 	void ResetTheNucleiVector();
 	void SetTheNucleiVector(TMatrixT<double> NEvolutionMatrix);	//!< Set the Evolution Matrix (Bateman equations)
 	TMatrixT<double> GetTheNucleiVector();		//!< return the Evolution Matrix (Bateman equations)
 	//@}
-	
-	
-	
+
+
+
 	private :
-	
+
 	double	*fTheNucleiVector;	//!< The evolving atoms copied from Material proportions.
 	double 	**fTheMatrix;  		//!< The evolution Matrix
-	
+
 	double	fPrecision;	//!< Precision of the RungeKutta
 	double	fHestimate;	//!< RK Step estimation.
 	double	fHmin;		//!< RK minimum Step.
@@ -95,7 +95,7 @@ class IM_RK4 : public DynamicalSystem, IrradiationModel
 	double	fMinHdid;	//!< store the effective RK min step
 	bool	fIsNegativeValueAllowed; //!< whether or not negative value are physical.
 
- 	
+
 };
 
 #endif

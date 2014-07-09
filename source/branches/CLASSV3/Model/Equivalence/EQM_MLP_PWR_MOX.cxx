@@ -28,7 +28,7 @@
 EQM_MLP_MOX::EQM_MLP_MOX(string TMVAWeightPath):EquivalenceModel(new CLASSLogger("EQM_MLP_MOX.log"))
 {
 	fTMVAWeightPath =  TMVAWeightPath;
-	
+
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
 	double U5_enrich= 0.0025;
@@ -46,7 +46,7 @@ EQM_MLP_MOX::EQM_MLP_MOX(string TMVAWeightPath):EquivalenceModel(new CLASSLogger
 	INFO<<"\tThis model is based on a multi layer perceptron"<<endl;
 	INFO<<"\t\tThe TMVA weight file is :"<<endl;
 	INFO<<"\t\t\t"<<fTMVAWeightPath<<endl;
-	
+
 }
 
 //________________________________________________________________________
@@ -76,7 +76,7 @@ EQM_MLP_MOX::EQM_MLP_MOX(CLASSLogger* log, string TMVAWeightPath):EquivalenceMod
 
 //________________________________________________________________________
 TTree* EQM_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
-{	
+{
 	TTree*   InputTree = new TTree("EQTMP", "EQTMP");
 	float Pu8   			 = 0;
 	float Pu9   			 = 0;
@@ -122,8 +122,8 @@ TTree* EQM_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fer
 	U5_enrichment = U5 / UTOT;
 
 	BU=BurnUp;
-//cout<<"Pu8 "<<Pu8 <<" Pu9 "<< Pu9 <<" Pu10 "<< Pu10 << " Pu11 "<< Pu11 <<" Pu12 "<<Pu12 <<" Am1 "<<Am1<<endl;
-//cout<<"BU "<<BU<<" U5_enrichment "<<U5_enrichment<<endl;
+	//cout<<"Pu8 "<<Pu8 <<" Pu9 "<< Pu9 <<" Pu10 "<< Pu10 << " Pu11 "<< Pu11 <<" Pu12 "<<Pu12 <<" Am1 "<<Am1<<endl;
+	//cout<<"BU "<<BU<<" U5_enrichment "<<U5_enrichment<<endl;
 	if(Pu8 + Pu9 + Pu10 + Pu11 + Pu12 + Am1 > 1.00001 )//?????1.00001??? I don't know it! goes in condition if =1 !! may be float/double issue ...
 	{
 		ERROR << Pu8 << " " << Pu9 << " " << Pu10 << " " << Pu11 << " " << Pu12 << " " << Am1 << endl;
@@ -136,7 +136,7 @@ TTree* EQM_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fer
 }
 //________________________________________________________________________
 double EQM_MLP_MOX::ExecuteTMVA(TTree* theTree)
-{	
+{
 	// --- Create the Reader object
 	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
 	// Create a set of variables and declare them to the reader
@@ -178,5 +178,5 @@ double EQM_MLP_MOX::ExecuteTMVA(TTree* theTree)
 //________________________________________________________________________
 double EQM_MLP_MOX::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
 {DBGL
-	return	ExecuteTMVA(CreateTMVAInputTree(Fissil,Fertil,BurnUp));	
+	return	ExecuteTMVA(CreateTMVAInputTree(Fissil,Fertil,BurnUp));
 }
