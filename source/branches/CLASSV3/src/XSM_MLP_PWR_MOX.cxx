@@ -45,7 +45,8 @@ XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(string TMVA_Weight_Directory,string Information
 	GetMLPWeightFiles();
 	GetDataBaseInformation();
 
-	INFO << " A EvolutionData has been define : " << endl;
+	INFO<<"__A cross section interpolator using" <<endl;
+	INFO<<"Multi Layer Perceptron has been define__"<<endl;
 	INFO << " \t His TMVA folder is : \" " << fTMVAWeightFolder << "\"" << endl;
 
 }
@@ -63,7 +64,8 @@ XSM_MLP_PWR_MOX::XSM_MLP_PWR_MOX(CLASSLogger* Log,string TMVA_Weight_Directory,s
 	GetMLPWeightFiles();
 	GetDataBaseInformation();
 
-	INFO << " A EvolutionData has been define : " << endl;
+	INFO<<"__A cross section interpolator using" <<endl;
+	INFO<<"Multi Layer Perceptron has been define__"<<endl;
 	INFO << " \t His TMVA folder is : \" " << fTMVAWeightFolder << "\"" << endl;
 
 }
@@ -126,7 +128,7 @@ void XSM_MLP_PWR_MOX::GetDataBaseInformation()
 					stringstream ssline;
 					ssline<<line;
 					ssline>>Z>>A>>I>>Name;
-				//	cout<<Z<<" "<<A<<" "<<I<<" "<<Name<<endl;
+					//cout<<Z<<" "<<A<<" "<<I<<" "<<Name<<endl;
 					fMapOfTMVAVariableNames.insert( pair<ZAI,string>(ZAI(Z,A,I),Name) );
 
 				}
@@ -140,24 +142,25 @@ void XSM_MLP_PWR_MOX::GetDataBaseInformation()
 		exit(0);
 	}
 
-/********DEBUG************************************
-	cout<<"Heavy Metal (t) :"<<fDataBaseHMMass<<endl;
-	cout<<"Thermal Power (W) :"<<fDataBasePower<<endl;
-	cout<<"Time (s) :"<<endl;
+	/********DEBUG*************************************/
+	INFO<<"\tMLP XS Data Base Information : "<<endl;
+	INFO<<"\t\tHeavy Metal (t) :"<<fDataBaseHMMass<<endl;
+	INFO<<"\t\tThermal Power (W) :"<<fDataBasePower<<endl;
+	INFO<<"\t\tTime (s) :"<<endl;
 	for (int i = 0; i < (int)fMLP_Time.size(); ++i)
-		cout<<fMLP_Time[i]<<endl;
-	cout<<"Z A I Name (input MLP) :"<<endl;
+		INFO<<"\t\t\t"<<fMLP_Time[i]<<endl;
+	INFO<<"\t\tZ A I Name (input MLP) :"<<endl;
 		
 	map<ZAI ,string >::iterator it;
 
 	for (it= fMapOfTMVAVariableNames.begin();it!=fMapOfTMVAVariableNames.end();it++)
-		cout<< it->first.Z()<<" "<<it->first.A()<<" "<<it->second<<endl;
+		INFO<<"\t\t\t"<< it->first.Z()<<" "<<it->first.A()<<" "<<it->second<<endl;
 
-*/
+
 }
 //________________________________________________________________________
 void XSM_MLP_PWR_MOX::GetMLPWeightFiles()
-{	
+{DBGL	
 	/**********Get All TMVA weight files*******************/
 	//check if the folder containing weights exists
 	DIR* rep = NULL;
@@ -181,7 +184,7 @@ void XSM_MLP_PWR_MOX::GetMLPWeightFiles()
 
 		}
 	}
-
+DBGL
 }
 //________________________________________________________________________
 //________________________________________________________________________
@@ -190,7 +193,7 @@ void XSM_MLP_PWR_MOX::GetMLPWeightFiles()
 //________________________________________________________________________
 //________________________________________________________________________
 void XSM_MLP_PWR_MOX::ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction)
-{	
+{
 	Z=-1;
 	A=-1;
 	I=-1;
@@ -226,10 +229,11 @@ void XSM_MLP_PWR_MOX::ReadWeightFile(string Filename, int &Z, int &A, int &I, in
 		ERROR << " wrong TMVA weight format " << endl;
 		exit(0);
 	}
+
 }
 //________________________________________________________________________
 TTree* XSM_MLP_PWR_MOX::CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep)
-{
+{	
 	/******Create Input data tree to be interpreted by TMVA::Reader***/
 	TTree*   InputTree = new TTree("InTMP", "InTMP");
 
@@ -264,19 +268,21 @@ TTree* XSM_MLP_PWR_MOX::CreateTMVAInputTree(IsotopicVector isotopicvector,int Ti
 	for( it2 = fMapOfTMVAVariableNames.begin() ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
 	{
 		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first ) ;
+		INFO<< (*it2).first.Z()<<" "<<(*it2).first.A()<<" "<<InputTMVA[j]<<endl;
 		j++;
 	}
 
 	Time=fMLP_Time[TimeStep];
 
 	InputTree->Fill();
+	
 	return InputTree;
 }
 //________________________________________________________________________
 double XSM_MLP_PWR_MOX::ExecuteTMVA(string WeightFile,TTree* InputTree)
-{
+{	
 	// --- Create the Reader object
-	TMVA::Reader *reader = new TMVA::Reader( "V:Color" );
+	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
 
 	// Create a set of variables and declare them to the reader
 	// - the variable names MUST corresponds in name and type to those given in the weight file(s) used
@@ -321,14 +327,11 @@ double XSM_MLP_PWR_MOX::ExecuteTMVA(string WeightFile,TTree* InputTree)
 
 	delete reader;
 
-
 	return (double)val;
 }
 //________________________________________________________________________
 EvolutionData XSM_MLP_PWR_MOX::GetCrossSectionsTime(IsotopicVector IV)
-{
-
-	cout<<"=====Building Evolution Data From TMVA MLP====="<<endl;
+{DBGL
 
 	EvolutionData EvolutionDataFromMLP = EvolutionData();
 
@@ -384,7 +387,7 @@ EvolutionData XSM_MLP_PWR_MOX::GetCrossSectionsTime(IsotopicVector IV)
 	EvolutionDataFromMLP.Setn2nXS(ExtrapolatedXS[2]);
 
 
-	cout<<"=====Evolution Data Built====="<<endl;
+DBGL
 	return EvolutionDataFromMLP;
 }
 //________________________________________________________________________
@@ -431,8 +434,7 @@ void XSM_MLP_PWR_MOX::ReadWeightFileStep(string Filename, int &Z, int &A, int &I
 
 //________________________________________________________________________
 EvolutionData XSM_MLP_PWR_MOX::GetCrossSectionsStep(IsotopicVector IV)
-{
-	cout<<"Getting cross section step mode ..."<<endl;
+{DBGL
 	 TTree* InputTree=CreateTMVAInputTree(IV);
 	//cout<<"=====Building Evolution Data From TMVA MLP====="<<endl;
 
@@ -484,15 +486,15 @@ EvolutionData XSM_MLP_PWR_MOX::GetCrossSectionsStep(IsotopicVector IV)
 	EvolutionDataFromMLP.SetCaptureXS(ExtrapolatedXS[1]);
 	EvolutionDataFromMLP.Setn2nXS(ExtrapolatedXS[2]);
 
-	cout<<"=====Evolution Data Built (step mode)====="<<endl;
 	delete InputTree;
+DBGL	
 	return EvolutionDataFromMLP;
 }
 //________________________________________________________________________
 EvolutionData XSM_MLP_PWR_MOX::GetCrossSections(IsotopicVector IV ,double t)
-{	
+{DBGL	
 	if(t!=0)
-		WARNING << " argument t has non effect here " << endl;
+		WARNING << " Argument t has non effect here " << endl;
 
 	EvolutionData EV;
 	if(fIsStepTime)
@@ -501,7 +503,7 @@ EvolutionData XSM_MLP_PWR_MOX::GetCrossSections(IsotopicVector IV ,double t)
 	else
 		EV=GetCrossSectionsTime(IV);
 
-
-return EV;
+DBGL
+	return EV;
 }
 //________________________________________________________________________
