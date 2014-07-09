@@ -17,7 +17,7 @@
 using namespace std;
 
 
-class LogFile;
+class CLASSLogger;
 
 //-----------------------------------------------------------------------------//
 /*!
@@ -38,7 +38,7 @@ class IM_Matrix : public IrradiationModel, DynamicalSystem
 	public :
 
 	IM_Matrix();
-	IM_Matrix(LogFile* log);
+	IM_Matrix(CLASSLogger* log);
 
 
 
@@ -56,8 +56,8 @@ class IM_Matrix : public IrradiationModel, DynamicalSystem
 
 	private :
 
-
-
+	
+	
 };
 
 #endif

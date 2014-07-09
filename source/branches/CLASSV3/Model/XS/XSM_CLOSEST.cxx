@@ -37,10 +37,10 @@ XSM_CLOSEST::XSM_CLOSEST(string DB_index_file, bool oldreadmethod ): XSModel(new
 	fEvolutionDataInterpolation = false;
 	ReadDataBase();
 
-		// Warning
-		INFO 	<< " A EvolutionData has been define :" << endl;
-		INFO	<< "\t His index is : \"" << DB_index_file << "\" " << endl;
-		INFO	<< "\t " << fFuelDataBank.size() << " EvolutionData have been read."<< endl << endl;
+	// Warning
+	INFO 	<< " A EvolutionData has been define :" << endl;
+	INFO	<< "\t His index is : \"" << DB_index_file << "\" " << endl;
+	INFO	<< "\t " << fFuelDataBank.size() << " EvolutionData have been read."<< endl << endl;
 
 }
 
@@ -54,10 +54,10 @@ XSM_CLOSEST::XSM_CLOSEST(CLASSLogger* Log,string DB_index_file, bool oldreadmeth
 	fEvolutionDataInterpolation = false;
 	ReadDataBase();
 
-		// Warning
-		INFO 	<< " A EvolutionData has been define :" << endl;
-		INFO	<< "\t His index is : \"" << DB_index_file << "\" " << endl;
-		INFO	<< "\t " << fFuelDataBank.size() << " EvolutionData have been read."<< endl << endl;
+	// Warning
+	INFO 	<< " A EvolutionData has been define :" << endl;
+	INFO	<< "\t His index is : \"" << DB_index_file << "\" " << endl;
+	INFO	<< "\t " << fFuelDataBank.size() << " EvolutionData have been read."<< endl << endl;
 
 }
 
@@ -72,14 +72,14 @@ XSM_CLOSEST::~XSM_CLOSEST()
 //________________________________________________________________________
 void XSM_CLOSEST::ReadDataBase()
 {
-	
+
 	if(fFuelDataBank.size() != 0)
 	{
 		for( int i = 0; i < (int)fFuelDataBank.size(); i++)
 			fFuelDataBank[i].DeleteEvolutionData();
 		fFuelDataBank.clear();
 	}
-	
+
 
 	ifstream DataDB(fDataBaseIndex.c_str());							// Open the File
 	if(!DataDB)
@@ -87,10 +87,10 @@ void XSM_CLOSEST::ReadDataBase()
 
 	vector<double> vTime;
 	vector<double> vTimeErr;
-	
+
 	string line;
 	int start = 0;
-	
+
 
 	// First Get Fuel Type
 	getline(DataDB, line);
@@ -102,7 +102,7 @@ void XSM_CLOSEST::ReadDataBase()
 	fFuelType = StringLine::NextWord(line, start, ' ');
 
 	//Then Get All the Database
-	
+
 	while (!DataDB.eof())
 	{
 		getline(DataDB, line);
@@ -112,7 +112,7 @@ void XSM_CLOSEST::ReadDataBase()
 			fFuelDataBank.push_back(evolutionproduct);
 		}
 	}
-	
+
 }
 //________________________________________________________________________
 //________________________________________________________________________
@@ -123,9 +123,9 @@ void XSM_CLOSEST::ReadDataBase()
 //________________________________________________________________________
 map<double, int> XSM_CLOSEST::GetDistancesTo(IsotopicVector isotopicvector, double t)
 {
-	
+
 	map<double, int> distances;
-	
+
 	for( int i = 0; i < (int)fFuelDataBank.size(); i++)
 	{
 		pair<map<double, int>::iterator, bool> IResult;
@@ -137,27 +137,27 @@ map<double, int> XSM_CLOSEST::GetDistancesTo(IsotopicVector isotopicvector, doub
 
 
 		double distance = Distance( IV_ActinidesComposition,
-				    ActinidesCompositionAtT / NormalisationFactor,
-				    fDistanceType,
-				    fDistanceParameter);
-		
+					   ActinidesCompositionAtT / NormalisationFactor,
+					   fDistanceType,
+					   fDistanceParameter);
+
 		IResult = distances.insert( pair< double, int >(distance, i) );
 	}
-	
+
 	return distances;
-	
+
 }
 //________________________________________________________________________
-EvolutionData XSM_CLOSEST::GetCrossSections(IsotopicVector isotopicvector, double t) 
+EvolutionData XSM_CLOSEST::GetCrossSections(IsotopicVector isotopicvector, double t)
 {
-DBGL
+	DBGL
 	double distance = 0;
 	int N_BestEvolutionData = 0;
 
-	
+
 	if(fWeightedDistance)
 	{
-DBGL
+		DBGL
 		IsotopicVector ActinidesCompositionAtT = fFuelDataBank[0].GetIsotopicVectorAt(t).GetActinidesComposition();
 		IsotopicVector IV_ActinidesComposition = isotopicvector.GetActinidesComposition();
 
@@ -177,19 +177,19 @@ DBGL
 			D = Distance( IV_ActinidesComposition / NormalisationFactor,
 				     fFuelDataBank[i]);
 
-			
+
 			if (D< distance)
 			{
 				distance = D;
 				N_BestEvolutionData = i;
 			}
 		}
-DBGL
+		DBGL
 		return fFuelDataBank[N_BestEvolutionData];
 	}
 	else if (fEvolutionDataInterpolation)
 	{
-DBGL
+		DBGL
 		map<double, int> distance_map = GetDistancesTo(isotopicvector, t);
 		map<double, int>::iterator it_distance;
 		int NClose = 64;
@@ -201,7 +201,7 @@ DBGL
 
 			double distance = (*it_distance).first;
 			int ED_Indice = (*it_distance).second;
-			
+
 			if(distance == 0 )
 			{
 				EvolInterpolate = Multiply(1,fFuelDataBank[ED_Indice]);
@@ -212,36 +212,36 @@ DBGL
 				EvolInterpolate = Multiply(1./distance, fFuelDataBank[ED_Indice]);
 			else
 			{
-				
+
 				EvolutionData Evoltmp = EvolInterpolate;
 				EvolutionData Evoltmp2 = Multiply(1./distance, fFuelDataBank[ED_Indice]);
-				
+
 				EvolInterpolate = Sum(Evoltmp,  Evoltmp2);
 				Evoltmp.DeleteEvolutionData();
 				Evoltmp2.DeleteEvolutionData();
-				
-				
+
+
 			}
-			
+
 			SumOfDistance += 1./distance;
 			Nstep++;
 			if(Nstep == NClose) break;
-			
+
 		}
-		
+
 		EvolutionData Evoltmp = EvolInterpolate;
 		EvolInterpolate.Clear();
-		
+
 		EvolInterpolate = Multiply(1/SumOfDistance, Evoltmp);
-		
+
 		Evoltmp.DeleteEvolutionData();
-DBGL
+		DBGL
 		return EvolInterpolate;
-		
+
 	}
 	else
 	{
-DBGL
+		DBGL
 		IsotopicVector ActinidesCompositionAtT = fFuelDataBank[0].GetIsotopicVectorAt(t).GetActinidesComposition();
 		IsotopicVector IV_ActinidesComposition = isotopicvector.GetActinidesComposition();
 
@@ -271,7 +271,7 @@ DBGL
 			}
 		}
 
-DBGL
+		DBGL
 		return fFuelDataBank[N_BestEvolutionData];
 	}
 
@@ -279,16 +279,16 @@ DBGL
 //________________________________________________________________________
 void XSM_CLOSEST::CalculateDistanceParameter()
 {
-DBGL
+	DBGL
 	if(fDistanceType!=1){
 		WARNING << " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten" << endl;
 	}
-	
+
 	fDistanceParameter.Clear();
-	
+
 	//We calculate the weight for the distance calculation.
 	int NevolutionDatainFuelDataBank = 0;
-	
+
 	for( int i = 0; i < (int)fFuelDataBank.size(); i++)
 	{
 		NevolutionDatainFuelDataBank++;
@@ -297,17 +297,17 @@ DBGL
 		for(itit=isovector.begin(); itit != isovector.end(); itit++) //Boucle sur ZAI
 		{
 			double TmpXS=0;
-			
+
 			for( int i=1; i<4; i++ ) //Loop on Reactions 1==fission, 2==capture, 3==n2n
 				TmpXS+=	fFuelDataBank[i].GetXSForAt(0, (*itit).first, i);
-			
+
 			fDistanceParameter.Add((*itit).first,TmpXS);
 		}
-		
-		
+
+
 	}
 	fDistanceParameter.Multiply( (double)1.0/NevolutionDatainFuelDataBank );
-	
+
 	if(GetLog())
 	{
 		INFO <<"!!INFO!! Distance Parameters "<<endl;
@@ -322,15 +322,15 @@ DBGL
 		}
 		INFO << endl;
 	}
-	
-DBGL
+
+	DBGL
 }
 //________________________________________________________________________
 void XSM_CLOSEST::SetDistanceParameter(IsotopicVector DistanceParameter)
 {
-	
+
 	fDistanceParameter = DistanceParameter;
-	
+
 	INFO <<"!!INFO!! Distance Parameters "<<endl;
 	map<ZAI ,double >::iterator it2;
 	for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
@@ -342,13 +342,13 @@ void XSM_CLOSEST::SetDistanceParameter(IsotopicVector DistanceParameter)
 		INFO << endl;
 	}
 	INFO << endl;
-	
+
 }
 
 //________________________________________________________________________
 void XSM_CLOSEST::SetDistanceType(int DistanceType)
 {
-	
+
 	fDistanceType=DistanceType;
 	if(fDistanceType==1){
 		CalculateDistanceParameter();

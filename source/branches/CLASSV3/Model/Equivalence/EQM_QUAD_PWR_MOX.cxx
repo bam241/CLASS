@@ -82,8 +82,8 @@ EQM_QUAD_PWR_MOX::EQM_QUAD_PWR_MOX(CLASSLogger* log, string WeightPath):Equivale
 	ZAI Pu1(94,241,0);
 	ZAI Pu2(94,242,0);
 	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
-	
-	
+
+
 }
 
 
@@ -127,7 +127,7 @@ double EQM_QUAD_PWR_MOX::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 		}
 		A += fFuelParameter[par];
 	}
-
+	
 	return A;
 }
 

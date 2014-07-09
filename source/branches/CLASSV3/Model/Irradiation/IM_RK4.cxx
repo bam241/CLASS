@@ -63,7 +63,7 @@ IM_RK4::IM_RK4(CLASSLogger* log):IrradiationModel(log), DynamicalSystem()
 //________________________________________________________________________
 EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, EvolutionData XSSet, double Power, double cycletime)
 {
-DBGL
+	DBGL
 	if(fFastDecay.size() == 0)
 	{
 		BuildDecayMatrix();
@@ -168,7 +168,7 @@ DBGL
 	vector< TMatrixT<double> > FissionXSMatrix;	// Store The Fisison XS Matrix
 	vector< TMatrixT<double> > CaptureXSMatrix;	// Store The Capture XS Matrix
 	vector< TMatrixT<double> > n2nXSMatrix;		// Store The n2N XS Matrix
-DBGL
+	DBGL
 	for(int i = 0; i < NStep-1; i++)
 	{
 		double TStepMax = ( (DBTimeStep[i+1]-DBTimeStep[i] ) ) * Power_ref/M_ref / Power*M ;	// Get the next Time step
@@ -265,7 +265,7 @@ DBGL
 		GeneratedDB.CaptureXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NStep, timevector, CaptureXS)));
 		GeneratedDB.n2nXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NStep, timevector, n2nXS)));
 	}
-DBGL
+	DBGL
 	GeneratedDB.SetPower(Power );
 	GeneratedDB.SetReactorType(ReactorType );
 	GeneratedDB.SetCycleTime(cycletime);
@@ -282,7 +282,7 @@ DBGL
 	FissionXSMatrix.clear();
 	CaptureXSMatrix.clear();
 	n2nXSMatrix.clear();
-DBGL
+	DBGL
 	return GeneratedDB;
 
 }

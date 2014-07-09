@@ -30,7 +30,7 @@ EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(string WeightPath):EquivalenceModel(new CLASSLo
 	while(start < (int)line.size())
 		fFuelParameter.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
 
-	INFO << fFuelParameter.size() << " have been read " << endl;
+	INFO << (int)fFuelParameter.size() << " have been read " << endl;
 
 
 
@@ -57,8 +57,8 @@ EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(string WeightPath):EquivalenceModel(new CLASSLo
 	ZAI Pu1(94,241,0);
 	ZAI Pu2(94,242,0);
 	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
-	
-	
+
+
 }
 
 
@@ -109,8 +109,8 @@ EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(CLASSLogger* log, string WeightPath):Equivalenc
 	ZAI Pu1(94,241,0);
 	ZAI Pu2(94,242,0);
 	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
-	
-	
+
+
 }
 
 EQM_LIN_PWR_MOX::~EQM_LIN_PWR_MOX()
@@ -212,7 +212,7 @@ vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 		double N2 = -Sum_AlphaI_nPuI0;
 		double N3 = -fFuelParameter[0] * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997
 						       + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 )
-							* (HMMass*1e6 - MPu_0*1e6);
+		* (HMMass*1e6 - MPu_0*1e6);
 
 		double D1 = Sum_AlphaI_nPuI;
 		double D2 = -fFuelParameter[0] * MPu_1*1e6 * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997
@@ -251,12 +251,12 @@ vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 		{
 			for(int i = 0; i < (int)lambda.size(); i++)
 				lambda[i] = -1;
-
+			
 			FuelBuild = true;
 		}
 	}
-
-
-
+	
+	
+	
 	return lambda;
 }
