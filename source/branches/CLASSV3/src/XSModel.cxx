@@ -7,12 +7,17 @@
 //
 
 #include "XSModel.hxx"
-#include "CLASSHeaders.hxx"
-
 
 using namespace std;
 
-XSModel::XSModel(): CLASSObject()
+XSModel::XSModel(): CLASSObject(new CLASSLogger("XSModel.log"))
+{
+
+}
+
+
+
+XSModel::XSModel(CLASSLogger* log): CLASSObject(log)
 {
 
 }
