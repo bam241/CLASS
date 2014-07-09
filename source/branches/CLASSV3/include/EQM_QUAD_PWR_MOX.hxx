@@ -32,7 +32,6 @@ class EQM_QUAD_PWR_MOX : public EquivalenceModel
 	public :
 	
 	EQM_QUAD_PWR_MOX(string WeightPath);
-	EQM_QUAD_PWR_MOX(CLASSLogger* log, string WeightPath);
 	~EQM_QUAD_PWR_MOX();
 
 	double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);
