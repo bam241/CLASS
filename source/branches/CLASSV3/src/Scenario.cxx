@@ -849,7 +849,7 @@ void Scenario::OpenOutputTree()
 		ERROR << "\nCould not open " << fOutputFileName <<endl;
 		exit(-1);
 	}
-	cout << "\t ...OK!" << endl;
+	INFO << "\t ...OK!" << endl;
 
 
 	fOutT = new TTree(fOutputTreeName.c_str(), "Data Tree");
