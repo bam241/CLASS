@@ -29,8 +29,7 @@ CLASSLogger::CLASSLogger()
 		cout << "Could not open the CLASSLogger: " << CLASSLoggerName << " !" << endl;
 		exit(-1);
 	}
-	else
-		cout << "CLASSLogger: " << CLASSLoggerName << " opened." << endl;
+
 	fError = 0;
 	fWarning = 0;
 	fDebug = 0;
