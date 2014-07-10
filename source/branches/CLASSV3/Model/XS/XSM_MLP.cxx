@@ -265,10 +265,11 @@ TTree* XSM_MLP::CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep)
 
 	j=0;
 	map<ZAI ,string >::iterator it2;
+	DBGV("INPUT TMVA");
 	for( it2 = fMapOfTMVAVariableNames.begin() ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
 	{
 		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first ) ;
-		INFO<< (*it2).first.Z()<<" "<<(*it2).first.A()<<" "<<InputTMVA[j]<<endl;
+		DBGV((*it2).first.Z()<<" "<<(*it2).first.A()<<" "<<InputTMVA[j]);
 		j++;
 	}
 
