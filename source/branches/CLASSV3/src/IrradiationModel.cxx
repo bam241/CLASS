@@ -33,7 +33,7 @@ IrradiationModel::IrradiationModel():CLASSObject()
 
 
 	fDataDirectoryName = getenv("CLASS_PATH");
-	fDataDirectoryName += "/source/data/";
+	fDataDirectoryName += "/data/";
 	fDataFileName = "chart.JEF3T";
 }
 
@@ -44,7 +44,7 @@ IrradiationModel::IrradiationModel(CLASSLogger* log):CLASSObject(log)
 
 
 	fDataDirectoryName = getenv("CLASS_PATH");
-	fDataDirectoryName += "/source/data/";
+	fDataDirectoryName += "/data/";
 	fDataFileName = "chart.JEF3T";
 }
 

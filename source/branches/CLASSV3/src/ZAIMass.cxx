@@ -22,7 +22,7 @@
 ZAIMass::ZAIMass()
 {
 	string  CLASSPATH = getenv("CLASS_PATH");
-	string	MassDataFile = CLASSPATH +"/source/data/Mass.dat";
+	string	MassDataFile = CLASSPATH + "/data/Mass.dat";
 
 	ifstream infile(MassDataFile.c_str());	
 
