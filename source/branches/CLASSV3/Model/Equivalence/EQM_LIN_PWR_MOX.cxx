@@ -30,7 +30,7 @@ EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(string WeightPath):EquivalenceModel(new CLASSLo
 	while(start < (int)line.size())
 		fFuelParameter.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
 
-	INFO << (int)fFuelParameter.size() << " have been read " << endl;
+	INFO << " " << (int)fFuelParameter.size() << " parameters have been read " << endl;
 
 
 
