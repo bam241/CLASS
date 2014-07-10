@@ -44,14 +44,17 @@ public :
 	
 	virtual CLASSObject* Clone()	{ return new CLASSObject(*this); } //!< Correct way to copy a CLASSObject in case of derivation
 
-
+#ifndef __CINT__
 	void		SetLog(CLASSLogger* log)	{ fLog = log;}		//!< Set the CLASSLogger
-
 	CLASSLogger*	GetLog()		{ return fLog; }		//!< Return the Pointer to the Log
+#endif
+
 
 	using TNamed::SetName;
 protected :
+#ifndef __CINT__
 	CLASSLogger*	fLog;			//!< Pointer to the Log
+#endif
 
 
 private :

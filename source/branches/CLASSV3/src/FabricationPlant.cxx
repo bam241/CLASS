@@ -36,7 +36,7 @@ ClassImp(FabricationPlant)
 
 
 
-FabricationPlant::FabricationPlant():CLASSFacility(new CLASSLogger("FabricationPlant.log"), 16)
+FabricationPlant::FabricationPlant():CLASSFacility(16)
 {
 	SetName("F_FabricationPLant.");
 	
@@ -142,7 +142,7 @@ DBGL
 	//________________________________________________________________________
 void FabricationPlant::BuildFuelForReactor(int ReactorId)
 {
-DBGL
+	DBGV( " IN"<< "in ");
 	if(fFissileStorage.size() == 0)
 	{
 		ERROR << " One need at least one Fissile storage to build fuel " << endl;

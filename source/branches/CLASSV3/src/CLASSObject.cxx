@@ -17,7 +17,7 @@ ClassImp(CLASSObject)
 
 CLASSObject::CLASSObject()
 {
-	fLog = new CLASSLogger("CLASSObject.log");
+	fLog = 0;
 }
 
 CLASSObject::CLASSObject(CLASSLogger* log)

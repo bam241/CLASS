@@ -157,11 +157,6 @@ public :
 											//!< (Note : IVIn != IVBegin, only if using charging plan)
 	
 
-	EvolutionData	GetEvolutionDB()	const	{ return fEvolutionDB; }	//!< Return the Evolution database of the Fuel
-	PhysicModels*	GetFuelType()		const	{ return fFuelTypeDB; }		//!< Return the Fuel Type DB of the reactor
-
-	CLASSBackEnd*		GetOutBackEndFacility()	const	{ return fOutBackEndFacility; }	//!< Return the pointer to Associeted BackEnd Facility
-	FabricationPlant*	GetFabricationPlant()	const	{ return fFabricationPlant; }	//!< Return the Pointer to the FabricationPlant
 
 	bool	IsFuelFixed()		const	{ return fFixedFuel; }		//!< True if using fixed Fuel, False otherwise
 	double	GetHeavyMetalMass()	const	{ return fHeavyMetalMass; }	//!< Return the HeavyMetal Mass in the Core at the begining of the cycle
@@ -169,6 +164,14 @@ public :
 	double	GetPower()		const	{ return fPower; } 		//!< Return the cycle time of the Reactor
 
 #ifndef __CINT__
+
+	EvolutionData	GetEvolutionDB()	const	{ return fEvolutionDB; }	//!< Return the Evolution database of the Fuel
+	PhysicModels*	GetFuelType()		const	{ return fFuelTypeDB; }		//!< Return the Fuel Type DB of the reactor
+
+	CLASSBackEnd*		GetOutBackEndFacility()	const	{ return fOutBackEndFacility; }	//!< Return the pointer to Associeted BackEnd Facility
+	FabricationPlant*	GetFabricationPlant()	const	{ return fFabricationPlant; }	//!< Return the Pointer to the FabricationPlant
+
+
 	map<cSecond, pair<EvolutionData, double> >	GetLoadingPlan()		const
 						{ return fLoadingPlan; }	//!< return the LoadingPlan
 	map<cSecond, pair<EvolutionData, double> >::iterator	GetNextPlan()	const
@@ -186,11 +189,7 @@ public :
 	 \name Set Method
 	 */
 	//@{
-	void	SetOutBackEndFacility(CLASSBackEnd* pool)
-					{ fOutBackEndFacility = pool; }	//!< Return the pointer to OutBackEnd Facility
 
-	void	SetStorage(Storage* storage)
-					{ fStorage = storage; fIsStorage = true;}	//!< Set the Pointer to the Storage
 
 	void	SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}	//!< Set the HeavyMetal Mass in the Core at the begining of the cycle
 
@@ -203,18 +202,22 @@ public :
 	void	SetIVInCycle(IsotopicVector isotopicvector)
 					{ fIVInCycle = isotopicvector; }	//!< Set the IV Coming In at the Beginning of the Cycle
 
-	void	SetEvolutionDB(EvolutionData evolutionDB);			//!< Set the Pointer to the DB Evolution of the Reactor
 
 	void	SetCycleTime(double cycletime);					//!< Set the Cycle time (Power fixed)
 	void	SetPower(double Power);						//!< Set the Power (BurnUp cte)
 	void	SetBurnUp(double BU);						//!< Set the BurnUp reach at end of cycle (Power cte)
 
 
+#ifndef __CINT__
 
+	void	SetOutBackEndFacility(CLASSBackEnd* pool)	{ fOutBackEndFacility = pool; }	//!< Return the pointer to OutBackEnd Facility
+	void	SetStorage(Storage* storage)			{ fStorage = storage; fIsStorage = true;}	//!< Set the Pointer to the Storage
+	void	SetEvolutionDB(EvolutionData evolutionDB);			//!< Set the Pointer to the DB Evolution of the Reactor
 
 	void	SetLoadingPlan(map<cSecond, pair<EvolutionData, double> > loadingplan)
 					{ fLoadingPlan = loadingplan; fNextPlan = fLoadingPlan.begin(); }
 										//!< Set a LaodingPlan to change the Fuel after some cycle
+#endif
 
 	using CLASSFacility::SetName;
 
@@ -244,12 +247,7 @@ protected :
 	bool		fIsStorage;		//!< true if a storage has been define (to approximate the reprocessing using fixed fuel)
 	
 //********* Internal Parameter *********//
-	CLASSBackEnd*	fOutBackEndFacility;	//!< Pointer to the BackEnd Facility which collect the spend fuel
-	Storage*	fStorage;		//!< Pointer to the Stock (only for reprocessing fuel in fixed base...)
-						
-	EvolutionData	fEvolutionDB;		//!< Pointer to the Evolution DataBase
-	PhysicModels* 	fFuelTypeDB;		//! Pointer to a Fuel Type Database
-	
+
 	double 		fPower;			///< Power (in Watt)
 	
 	IsotopicVector	fIVBeginCycle;		///< Fuel IV at the Beginning of a Cycle
@@ -257,13 +255,20 @@ protected :
 	IsotopicVector	fIVOutCycle;		///< IV wich get out at the End of a Cycle
 
 #ifndef __CINT__
+	EvolutionData	fEvolutionDB;		//!< Pointer to the Evolution DataBase
+	PhysicModels* 	fFuelTypeDB;		//! Pointer to a Fuel Type Database
+
+	CLASSBackEnd*	fOutBackEndFacility;	//!< Pointer to the BackEnd Facility which collect the spend fuel
+	Storage*	fStorage;		//!< Pointer to the Stock (only for reprocessing fuel in fixed base...)
 	map<cSecond, pair<EvolutionData, double> >	fLoadingPlan;	///< Loading PLan to change the EvolutionData (and the associetedBurnup) according to the Plan
 	map<cSecond, pair<EvolutionData, double> >::iterator	fNextPlan;	///< Next EvolutionData, and time until it should be load (at the end of the last cycle)
+
+	FabricationPlant*	fFabricationPlant;		//!< Poitner to the FabricationPlant
+
 #endif
 //********* Unfixed Fuel Parameter *********//
 
 
-	FabricationPlant*	fFabricationPlant;		//!< Poitner to the FabricationPlant
 	double			fHeavyMetalMass;		///< In tons
 	double			fBurnUp;			///< In GWd/tHM
 

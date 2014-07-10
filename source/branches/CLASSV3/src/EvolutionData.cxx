@@ -343,7 +343,8 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 ClassImp(EvolutionData)
 
 
-EvolutionData::EvolutionData():CLASSObject(new CLASSLogger("EvolutionData.log"))
+
+EvolutionData::EvolutionData():CLASSObject()
 {
 	fIsCrossSection = false;
 	fPower = 0;

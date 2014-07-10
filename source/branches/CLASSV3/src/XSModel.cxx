@@ -10,7 +10,7 @@
 
 using namespace std;
 
-XSModel::XSModel(): CLASSObject(new CLASSLogger("XSModel.log"))
+XSModel::XSModel(): CLASSObject()
 {
 
 }
