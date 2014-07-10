@@ -22,7 +22,7 @@
 ClassImp(Pool)
 
 
-Pool::Pool():CLASSBackEnd(new CLASSLogger("Pool.log"), 8)
+Pool::Pool():CLASSBackEnd(8)
 {
 	fOutBackEndFacility = 0;
 	SetName("P_Pool.");

@@ -8,7 +8,7 @@
 //
 //
 //________________________________________________________________________
-PhysicModels::PhysicModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM ):CLASSObject(new CLASSLogger("PhysicsModel.log"))
+PhysicModels::PhysicModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM ):CLASSObject()
 {
 
 		fXSModel		= XS;

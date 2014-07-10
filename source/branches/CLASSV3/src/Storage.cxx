@@ -20,7 +20,10 @@
 //________________________________________________________________________
 ClassImp(Storage)
 
-Storage::Storage():CLASSBackEnd(new CLASSLogger("Storage.log"), -1)
+
+
+
+Storage::Storage():CLASSBackEnd(-1)
 {
 	SetIsStorageType();
 	SetName("S_Storage.");
