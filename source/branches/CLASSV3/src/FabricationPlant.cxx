@@ -180,7 +180,7 @@ DBGL
 	if(LambdaArray[0] != -1)
 	{
 		IsotopicVector IV = BuildFuelFromEqModel(LambdaArray);
-		EvolutionData EvolDB = FuelType->GenerateEvolutionData( GetDecay(IV,fCycleTime) /*IV*/ , R_CycleTime, R_Power);
+		EvolutionData EvolDB = FuelType->GenerateEvolutionData( GetDecay(IV,fCycleTime), R_CycleTime, R_Power);
 
 		{
 			pair<map<int, IsotopicVector>::iterator, bool> IResult;

@@ -1130,7 +1130,7 @@ void EvolutionData::OldReadDB(string DBfile)
 	ifstream InfoDB(InfoDBFile.c_str());							// Open the File
 	if(!InfoDB)
 	{
-		WARNING << " Can't open \"" << InfoDBFile << "\"\n" << endl;
+		INFO << " Can't open \"" << InfoDBFile << "\"\n" << endl;
 		return;
 	}
 

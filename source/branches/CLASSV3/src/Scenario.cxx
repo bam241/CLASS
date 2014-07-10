@@ -179,6 +179,7 @@ void Scenario::AddPool(Pool* Pool)
 	fPool.back()->SetDecayDataBank( (*this).GetDecayDataBase() );
 	fPool.back()->SetLog(GetLog());
 	fPool.back()->SetId((int)fPool.size()-1);
+	fPool.back()->SetCreationTime(fAbsoluteTime);
 
 
 	string Pool_name = fPool.back()->GetName();
@@ -248,6 +249,7 @@ void Scenario::AddStorage(Storage* storage)
 	fStorage.back()->SetDecayDataBank( (*this).GetDecayDataBase() );
 	fStorage.back()->SetLog(GetLog());
 	fStorage.back()->SetId((int)fStorage.size()-1);
+	fStorage.back()->SetCreationTime(fAbsoluteTime);
 
 	string Storage_name = fStorage.back()->GetName();
 
@@ -791,7 +793,7 @@ void Scenario::ProgressPrintout(cSecond t)
 	else cout << endl;
 
 
-	INFO << " Proccessed" << (int)Time << " / " << (int)Total << " Years \r" << endl;
+	INFO << " Proccessed " << (int)Time << " / " << (int)Total << " Years \r" << endl;
 
 }
 
