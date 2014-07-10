@@ -180,7 +180,7 @@ DBGL
 	if(LambdaArray[0] != -1)
 	{
 		IsotopicVector IV = BuildFuelFromEqModel(LambdaArray);
-		EvolutionData EvolDB = FuelType->GenerateEvolutionData( /*GetDecay(IV,fCycleTime)*/ IV , R_CycleTime, R_Power);
+		EvolutionData EvolDB = FuelType->GenerateEvolutionData( GetDecay(IV,fCycleTime) /*IV*/ , R_CycleTime, R_Power);
 
 		{
 			pair<map<int, IsotopicVector>::iterator, bool> IResult;
@@ -258,12 +258,12 @@ void FabricationPlant::BuildFissileArray()
 	for(int i = 0; i < (int)fFissileStorage.size(); i++)
 	{
 		vector<IsotopicVector> IVArray = fFissileStorage[i]->GetIVArray();
+
 		for(int j = 0; j < (int)IVArray.size(); j++)
 		{
 
 			IsotopicVector SeparatedIV = Separation(IVArray[j], fFissileList).first;
 			IsotopicVector CooledSeparatedIV = GetDecay( SeparatedIV , GetCycleTime());
-
 
 			fFissileArray.push_back( CooledSeparatedIV );
 			fFissileArrayAdress.push_back( pair<int,int>(i,j) );
