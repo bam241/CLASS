@@ -30,9 +30,17 @@ DBGL
 	for(int i = 0 ; i < (int)FissilArray.size() + (int)FertilArray.size() ; i++ )
 		lambda.push_back(0);
 
+
+	if( (int)FissilArray.size()==0 )
+	{	WARNING<<" No fissile stocks available ! Fuel not build"<<endl;
+		lambda[0] = -1;
+		return lambda;
+	}
+
+
 	fOld_Lambda_Tot = 0;
 	fLambda_max = FindLambdaMax( FissilArray, HMMass );
-	
+	DBGV("fLambda_max "<<fLambda_max);
 
 	IsotopicVector Fertile;
 	IsotopicVector Fissile;
@@ -62,7 +70,6 @@ DBGL
 		//Building complementary Fertile from stocks
 		double FertilMassNeeded = HMMass - AvailablePuMass;			
 		double LAMBDA_FERTILE = FindLambdaMax(FertilArray, FertilMassNeeded);
-
 		SetLambda(lambda,FissilArray.size(), lambda.size()-1,LAMBDA_FERTILE);
 		int j=-1;
 		Fertile.Clear();
@@ -83,11 +90,17 @@ DBGL
 		double MeanMolarPu = Fissile.MeanMolar();
 		double MeanMolarDepletedU = Fertile.MeanMolar();
 		double MeanMolar   = MeanMolarPu * MolarPuContent + (1-MolarPuContent)*MeanMolarDepletedU;
-
+		DBGV("MolarPuContent "<<MolarPuContent);
 		WeightPuContent = MolarPuContent * MeanMolarPu / MeanMolar ;
 		PuMassNeeded = WeightPuContent  *  HMMass ;
 	}
 
+
+	DBGV("Weight percent fissil : "<<PuMassNeeded/HMMass );
+	DBGV("Lambda vector: ");
+	for(int i = 0 ; i < (int)FissilArray.size() + (int)FertilArray.size() ; i++ )
+			DBGV(lambda[i]);
+	
 DBGL
 	return lambda;
 }
@@ -126,7 +139,6 @@ void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int 
 		int ID_max = 0;
 		while( MASS < 0.05*HMMass )
 		{		
-			Stocks[ID_max].Print();
 			double StockMass = Stocks[ID_max].GetTotalMass() * 1e6;
 
 			if( StockMass > HMMass )
@@ -139,9 +151,9 @@ void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int 
 				LAMBDA_TOT=ID_max+1;
 				ID_max++ ;
 				if( ID_max >=(int) Stocks.size())
-					lambda[0]=-1;//error code;
-
-				break;
+				{	lambda[0]=-1;//error code;
+					break;
+				}	
 			}	
 
 			SetLambda(lambda,FirstStockID,LastStockID,LAMBDA_TOT );	
@@ -164,7 +176,7 @@ void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int 
 		fOld_Lambda_Tot = LAMBDA_TOT;
 		LAMBDA_TOT += (fLambda_max - LAMBDA_TOT)/2.;
 
-		if(LAMBDA_TOT>0.99*fLambda_max) //if we get close to the total of the stocks
+		if(LAMBDA_TOT > 0.99*fLambda_max) //if we get close to the total of the stocks
 		{	
 			double MasseTot=0;
 			for(int i=0;i<(int)Stocks.size();i++) 
@@ -215,5 +227,6 @@ double EquivalenceModel::FindLambdaMax(vector<IsotopicVector> Stocks, double  HM
 			}	
 		}
 	}
+
 return -1;
 }
