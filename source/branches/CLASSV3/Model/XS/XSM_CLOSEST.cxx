@@ -173,6 +173,7 @@ EvolutionData XSM_CLOSEST::GetCrossSections(IsotopicVector isotopicvector, doubl
 			double D = 0;
 			ActinidesCompositionAtT = fFuelDataBank[i].GetIsotopicVectorAt(t).GetActinidesComposition();
 			IV_ActinidesComposition = isotopicvector.GetActinidesComposition();
+			NormalisationFactor = Norme( ActinidesCompositionAtT ) / Norme(IV_ActinidesComposition);
 
 			D = Distance( IV_ActinidesComposition / NormalisationFactor,
 				     fFuelDataBank[i]);
@@ -244,7 +245,8 @@ EvolutionData XSM_CLOSEST::GetCrossSections(IsotopicVector isotopicvector, doubl
 		DBGL
 		IsotopicVector ActinidesCompositionAtT = fFuelDataBank[0].GetIsotopicVectorAt(t).GetActinidesComposition();
 		IsotopicVector IV_ActinidesComposition = isotopicvector.GetActinidesComposition();
-
+		
+		
 		double NormalisationFactor = Norme(IV_ActinidesComposition) / Norme( ActinidesCompositionAtT );
 
 
@@ -258,7 +260,8 @@ EvolutionData XSM_CLOSEST::GetCrossSections(IsotopicVector isotopicvector, doubl
 			double D = 0;
 			ActinidesCompositionAtT = fFuelDataBank[i].GetIsotopicVectorAt(t).GetActinidesComposition();
 			IV_ActinidesComposition = isotopicvector.GetActinidesComposition();
-
+			
+			NormalisationFactor = Norme(IV_ActinidesComposition) / Norme( ActinidesCompositionAtT );
 			D = Distance( IV_ActinidesComposition,
 				     ActinidesCompositionAtT / NormalisationFactor,
 				     fDistanceType,
@@ -270,8 +273,11 @@ EvolutionData XSM_CLOSEST::GetCrossSections(IsotopicVector isotopicvector, doubl
 				N_BestEvolutionData = i;
 			}
 		}
-
+		
+		
+		INFO << distance << endl;
 		DBGL
+		
 		return fFuelDataBank[N_BestEvolutionData];
 	}
 
