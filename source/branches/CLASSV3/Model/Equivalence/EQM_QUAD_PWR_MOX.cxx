@@ -127,7 +127,6 @@ double EQM_QUAD_PWR_MOX::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 		}
 		A += fFuelParameter[par];
 	}
-	
-	return A;
+	return A/100;
 }
 
