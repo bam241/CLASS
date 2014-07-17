@@ -259,7 +259,7 @@ TTree* XSM_MLP::CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep)
 
 	IsotopicVector IVAccordingToUserInfoFile = isotopicvector.GetThisComposition(IVInputTMVA);
 
-	double Ntot = IVAccordingToUserInfoFile.GetTotalMass()*1e6/IVAccordingToUserInfoFile.MeanMolar()*6.02214129e23;
+	double Ntot = IVAccordingToUserInfoFile.GetSumOfAll();
 
 	IVAccordingToUserInfoFile = IVAccordingToUserInfoFile/Ntot;
 
