@@ -92,6 +92,9 @@ public :
 	void	Add(const ZAI& zai, double quantity); 		//!< Add Quantity gramme of the ZAI Element
 	void	Add(const IsotopicVector& isotopicvector); 	//!< Add IsotopicVector to the existing IsotopicVector
 	void	Add(const map<ZAI ,double>& quantity);		//!< Add IsotopicVector to the existing IsotopicVector
+	void	Add(int Z, int A, in I, double quantity)
+		{ (*this).Add(ZAI(Z,A,I), quantity); } 		//!< Add Quantity gramme of the ZAI Element
+
 
 	void	Need(const ZAI& zai, double quantity);		//!< Fill the fIsotopicQuantityNeeded
 	void	Need(const IsotopicVector& isotopicvector);	//!< Fill the fIsotopicQuantityNeeded

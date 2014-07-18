@@ -38,6 +38,14 @@ ZAI::ZAI()
 ZAI::ZAI(int Z, int A, int I)
 {
 
+	if( Z > A )
+	{
+		cout << "!!!ERROR!!! " << "[" << __FILE__ << ":" << __FUNCTION__ << "]" << endl;
+		cout << "!!!ERROR!!!  Z:" << Z << " is higher than A: " << A << endl;
+		cout << "!!!ERROR!!!  CLASS did not manage yet anti-mater!!! Update comming soon !!!"  << endl;
+		exit(1);
+	}
+
 	fZ=Z;
 	fA=A;
 	fI=I;
