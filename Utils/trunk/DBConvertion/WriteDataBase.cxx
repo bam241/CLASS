@@ -625,11 +625,11 @@ int main(int argc, char** argv)
 		Output << endl;
 	}
 	int NPrinted=0;
-	for(int i=0; i<Ni; i++)
+	///		if (HasToBePrint[i])
 	{
-///		if (HasToBePrint[i])
+		if (SumOfCell)
 		{
-			if (SumOfCell)
+			for(int i=0; i < zai2[0].size(); i++)
 			{
 				Output << "Inv " << zai2[0][i].Z() << " " << zai2[0][i].A() << " " << zai2[0][i].I() << " ";
 				for (int t=StepToSkip; t<vTime.size(); t++)
@@ -641,7 +641,10 @@ int main(int argc, char** argv)
 				}
 				Output << endl;
 			}
-			else
+		}
+		else
+		{
+			for(int i=0; i < zai3[0].size(); i++)
 			{
 				Output << "Inv " << zai3[0][0][i].Z() << " " << zai3[0][0][i].A() << " " << zai3[0][0][i].I() << " ";
 				for (int t=StepToSkip; t<vTime.size(); t++)
@@ -654,9 +657,10 @@ int main(int argc, char** argv)
 			}
 		}
 	}
-	for(int i=0; i< (int)zai_FS_3[0][0].size(); i++)
+
+	if (SumOfCell)
 	{
-		if (SumOfCell)
+		for(int i=0; i< (int)zai_FS_2[0].size(); i++)
 		{
 
 			Output << "XSFis " << zai_FS_2[0][i].Z() << " " << zai_FS_2[0][i].A() << " " << zai_FS_2[0][i].I() << " ";
@@ -668,7 +672,10 @@ int main(int argc, char** argv)
 			}
 			Output << endl;
 		}
-		else
+	}
+	else
+	{
+		for(int i=0; i< (int)zai_FS_3[0][0].size(); i++)
 		{
 
 			Output << "XSFis " << zai_FS_3[0][0][i].Z() << " " << zai_FS_3[0][0][i].A() << " " << zai_FS_3[0][0][i].I() << " ";
@@ -679,12 +686,11 @@ int main(int argc, char** argv)
 			}
 			Output << endl;
 		}
-
 	}
 
-	for(int i=0; i < (int)zai_SC_3[0][0].size(); i++)
+	if (SumOfCell)
 	{
-		if (SumOfCell)
+		for(int i=0; i< (int)zai_SC_2[0].size(); i++)
 		{
 			Output << "XSCap " << zai_SC_2[0][i].Z() << " " << zai_SC_2[0][i].A() << " " << zai_SC_2[0][i].I() << " ";
 			for (int t=StepToSkip; t<vTime.size(); t++)
@@ -695,7 +701,10 @@ int main(int argc, char** argv)
 			}
 			Output << endl;
 		}
-		else
+	}
+	else
+	{
+		for(int i=0; i< (int)zai_SC_3[0][0].size(); i++)
 		{
 			Output << "XSCap " << zai_SC_3[0][0][i].Z() << " " << zai_SC_3[0][0][i].A() << " " << zai_SC_3[0][0][i].I() << " ";
 			for (int t=StepToSkip; t<vTime.size(); t++)
@@ -705,11 +714,11 @@ int main(int argc, char** argv)
 			}
 			Output << endl;
 		}
-
 	}
-	for(int i=0; i<  (int)zai_SN_3[0][0].size(); i++)
+
+	if (SumOfCell)
 	{
-		if (SumOfCell)
+		for(int i=0; i<  (int)zai_SN_2[0].size(); i++)
 		{
 			Output << "XSn2n " << zai_SN_2[0][i].Z() << " " << zai_SN_2[0][i].A() << " " << zai_SN_2[0][i].I() << " ";
 			for (int t=StepToSkip; t<vTime.size(); t++)
@@ -720,7 +729,10 @@ int main(int argc, char** argv)
 			}
 			Output << endl;
 		}
-		else
+	}
+	else
+	{
+		for(int i=0; i<  (int)zai_SN_3[0][0].size(); i++)
 		{
 			Output << "XSn2n " << zai_SN_3[0][0][i].Z() << " " << zai_SN_3[0][0][i].A() << " " << zai_SN_3[0][0][i].I() << " ";
 			for (int t=StepToSkip; t<vTime.size(); t++)
@@ -730,7 +742,6 @@ int main(int argc, char** argv)
 			}
 			Output << endl;
 		}
-
 	}
 	Output.close();
 
