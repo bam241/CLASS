@@ -1,4 +1,6 @@
 #include "ZAI.hxx"
+#include "stdlib.h"
+
 
 //const string DEFAULTDATABASE = "DecayBase.dat";
 //________________________________________________________________________

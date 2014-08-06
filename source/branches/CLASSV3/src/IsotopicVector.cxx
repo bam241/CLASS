@@ -34,7 +34,7 @@
 
 ClassImp(IsotopicVector)
 
-double 	Norme(IsotopicVector IV1,int DistanceType, IsotopicVector DistanceParameter)
+double 	Norme(IsotopicVector IV1, int DistanceType, IsotopicVector DistanceParameter)
 {
 
 	IsotopicVector IV;
@@ -78,7 +78,7 @@ double DistanceAdjusted(IsotopicVector IV1, IsotopicVector IV2, IsotopicVector D
 
 
 
-double Distance(IsotopicVector IV1, IsotopicVector IV2 ,int DistanceType, IsotopicVector DistanceParameter)
+double Distance(IsotopicVector IV1, IsotopicVector IV2, int DistanceType, IsotopicVector DistanceParameter)
 {
 
 	if(DistanceType==0)
