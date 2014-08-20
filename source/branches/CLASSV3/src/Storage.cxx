@@ -164,14 +164,7 @@ DBGL
 
 	if(t == fInternalTime && t !=0 ) return;
 
-	for(int i = (int)fIVArray.size()-1 ; i >=0; i--) //Removing empty Stock
-		if(Norme(fIVArray[i]) == 0)
-		{
-			fIVArray.erase(fIVArray.begin()+i);
-			fIVArrayArrivalTime.erase(fIVArrayArrivalTime.begin()+i);
-
-		}
-	
+	RemoveEmptyStocks();
 
 	int EvolutionTime = t - fInternalTime;
 
@@ -210,4 +203,14 @@ void Storage::Write(string filename, cSecond date)
 	}
 
 }
-
+//________________________________________________________________________
+void Storage::RemoveEmptyStocks()
+{
+	for(int i = (int)fIVArray.size()-1 ; i >=0; i--) //Removing empty Stock
+		if(Norme(fIVArray[i]) == 0)
+		{
+			fIVArray.erase(fIVArray.begin()+i);
+			fIVArrayArrivalTime.erase(fIVArrayArrivalTime.begin()+i);
+            
+		}
+}
