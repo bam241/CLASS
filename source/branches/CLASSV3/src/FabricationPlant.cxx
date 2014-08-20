@@ -519,7 +519,26 @@ DBGL
 	else
 		GetParc()->AddGod( fFertileArray[0]*LambdaArray.back() );
 
-
+	//Remove the empty stocks
+	for(int i = 0; i < (int)fFissileArray.size(); i++)
+	{	if(LambdaArray[i] != 0)
+    {
+        int Stor_N = fFissileArrayAdress[i].first;
+        fFissileStorage[Stor_N]->RemoveEmptyStocks();
+    }
+	}
+	if(fFertileStorage.size() != 0)
+	{
+		for(int i = fFissileArray.size(); i < (int)(fFertileArray.size()+fFissileArray.size()); i++)
+		{
+			if(LambdaArray[i] != 0)
+			{
+				int Stor_N = fFertileArrayAdress[i].first;
+				fFertileStorage[Stor_N]->RemoveEmptyStocks();
+			}
+            
+		}
+	}
 
 
 	//Clear the Building Array (Fissile and Fertile)
