@@ -112,6 +112,7 @@ public :
 
 	void AddIV(IsotopicVector isotopicvector);					//!< Add an Isotopicvector to the IVArray
 	void AddToStock(IsotopicVector isotopicvector) {AddIV(isotopicvector);}		//!< Add an Isotopicvector to the IVArray
+	void RemoveEmptyStocks(); //!< delete the empty Isotopicvectors contained in IVArray
 
 	//@}
 
