@@ -53,7 +53,7 @@ FabricationPlant::FabricationPlant(CLASSLogger* log, double fabricationtime):CLA
 	fSubstitutionFuel = false;
 
 	fReUsable = 0;
-	 = false;
+	fIsReusable = false;
 
 	INFO	<< " A FabricationPlant has been define :" << endl;
 	INFO	<< "\t Chronological Stock Priority has been set! "<< endl;
