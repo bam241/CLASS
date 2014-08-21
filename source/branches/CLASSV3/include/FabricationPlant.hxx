@@ -95,7 +95,7 @@ public :
 			{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }	//!< Add a new reactor
 
 #ifndef __CINT__
-	void SetReUsableStorage(Storage* store) { fReUsable = store;}
+	void SetReUsableStorage(Storage* store) { fReUsable = store; fIsReusable = true;}
 #endif
 
 	using CLASSFacility::SetName;
@@ -179,9 +179,9 @@ protected :
 
 
 
-	bool		fFiFo;	//!< Set the First In First Out
+	bool	fFiFo;	//!< Set the First In First Out
 
-	bool		fSubstitutionFuel;		//!< true if a subtitution fuel as been set
+	bool	fSubstitutionFuel;		//!< true if a subtitution fuel as been set
 
 	void	FabricationPlantEvolution(cSecond t);	//!< Deal the FabricationPlant Evolution
 
@@ -200,7 +200,8 @@ protected :
 	vector< pair<int,int> > fFertileArrayAdress;
 	IsotopicVector		fFertileList;
 
-	Storage*		fReUsable;			//!< Pointer to the Storage using for recycling unused Product
+	Storage*	fReUsable;			//!< Pointer to the Storage using for recycling unused Product
+	bool		fIsReusable;
 
 	EvolutionData	fSubstitutionEvolutionData;	//!< EvolutionData of the subtitution fuel
 

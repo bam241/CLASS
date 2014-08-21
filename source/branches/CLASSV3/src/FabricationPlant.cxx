@@ -21,6 +21,8 @@
 #include <cmath>
 #include <algorithm>
 
+ClassImp(FabricationPlant)
+
 	//________________________________________________________________________
 	//________________________________________________________________________
 	//________________________________________________________________________
@@ -32,8 +34,6 @@
 	//
 	//________________________________________________________________________
 	//________________________________________________________________________
-ClassImp(FabricationPlant)
-
 
 
 FabricationPlant::FabricationPlant():CLASSFacility(16)
@@ -41,6 +41,7 @@ FabricationPlant::FabricationPlant():CLASSFacility(16)
 	SetName("F_FabricationPLant.");
 	
 	fReUsable = 0;
+	fIsReusable = false;
 }
 
 
@@ -51,14 +52,12 @@ FabricationPlant::FabricationPlant(CLASSLogger* log, double fabricationtime):CLA
 	fFiFo = false;
 	fSubstitutionFuel = false;
 
+	fReUsable = 0;
+	 = false;
 
 	INFO	<< " A FabricationPlant has been define :" << endl;
 	INFO	<< "\t Chronological Stock Priority has been set! "<< endl;
 	INFO	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/3600/24/365.25) << " year" << endl << endl;
-	
-	
-
-
 }
 
 
@@ -263,11 +262,16 @@ void FabricationPlant::BuildFissileArray()
 		{
 
 			IsotopicVector SeparatedIV = Separation(IVArray[j], fFissileList).first;
-			IsotopicVector CooledSeparatedIV = GetDecay( SeparatedIV , GetCycleTime());
 
-			fFissileArray.push_back( CooledSeparatedIV );
-			fFissileArrayAdress.push_back( pair<int,int>(i,j) );
-			fFissileArrayTime.push_back(fFissileStorage[i]->GetIVArrayArrivalTime()[j]);
+			if(Norme(SeparatedIV) != 0)
+			{
+				IsotopicVector CooledSeparatedIV = GetDecay( SeparatedIV , GetCycleTime());
+
+				fFissileArray.push_back( CooledSeparatedIV );
+				fFissileArrayAdress.push_back( pair<int,int>(i,j) );
+				fFissileArrayTime.push_back(fFissileStorage[i]->GetIVArrayArrivalTime()[j]);
+			}
+
 		}
 
 	}
@@ -287,12 +291,14 @@ void FabricationPlant::BuildFertileArray()
 		{
 
 			IsotopicVector SeparatedIV = Separation(IVArray[j], fFertileList).first;
-			IsotopicVector CooledSeparatedIV = GetDecay( SeparatedIV , GetCycleTime());
+			if(Norme(SeparatedIV) != 0)
+			{
+				IsotopicVector CooledSeparatedIV = GetDecay( SeparatedIV , GetCycleTime());
 
-
-			fFertileArray.push_back( CooledSeparatedIV );
-			fFertileArrayAdress.push_back( pair<int,int>(i,j) );
-			fFertileArrayTime.push_back(fFertileStorage[i]->GetIVArrayArrivalTime()[j]);
+				fFertileArray.push_back( CooledSeparatedIV );
+				fFertileArrayAdress.push_back( pair<int,int>(i,j) );
+				fFertileArrayTime.push_back(fFertileStorage[i]->GetIVArrayArrivalTime()[j]);
+			}
 		}
 
 	}
@@ -482,6 +488,11 @@ DBGL
 	else
 		BuildedFuel += fFertileArray[0]*LambdaArray.back();
 
+	if(fIsReusable)
+		fReUsable->AddIV(Lost);
+	else
+		GetParc()->AddWaste(Lost);
+
 	DumpStock(LambdaArray);
 
 DBGL
@@ -518,27 +529,6 @@ DBGL
 	}
 	else
 		GetParc()->AddGod( fFertileArray[0]*LambdaArray.back() );
-
-	//Remove the empty stocks
-	for(int i = 0; i < (int)fFissileArray.size(); i++)
-	{	if(LambdaArray[i] != 0)
-    {
-        int Stor_N = fFissileArrayAdress[i].first;
-        fFissileStorage[Stor_N]->RemoveEmptyStocks();
-    }
-	}
-	if(fFertileStorage.size() != 0)
-	{
-		for(int i = fFissileArray.size(); i < (int)(fFertileArray.size()+fFissileArray.size()); i++)
-		{
-			if(LambdaArray[i] != 0)
-			{
-				int Stor_N = fFertileArrayAdress[i].first;
-				fFertileStorage[Stor_N]->RemoveEmptyStocks();
-			}
-            
-		}
-	}
 
 
 	//Clear the Building Array (Fissile and Fertile)
