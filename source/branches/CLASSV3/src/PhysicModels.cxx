@@ -8,17 +8,30 @@
 //
 //
 //________________________________________________________________________
-PhysicModels::PhysicModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM ):CLASSObject()
+
+
+
+PhysicModels::PhysicModels():CLASSFuel()
 {
 
-		fXSModel		= XS;
-		fEquivalenceModel	= EM;
-		fIrradiationModel	= IM;
+	fXSModel		= 0;
+	fEquivalenceModel	= 0;
+	fIrradiationModel	= 0;
 
 
 }
 //________________________________________________________________________
-PhysicModels::PhysicModels(CLASSLogger* log, XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM ):CLASSObject(log)
+PhysicModels::PhysicModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM ):CLASSFuel()
+{
+
+	fXSModel		= XS;
+	fEquivalenceModel	= EM;
+	fIrradiationModel	= IM;
+
+
+}
+//________________________________________________________________________
+PhysicModels::PhysicModels(CLASSLogger* log, XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM ):CLASSFuel(log)
 {
 
 	fXSModel		= XS;

@@ -11,7 +11,7 @@
 #include <map>
 
 #include "IsotopicVector.hxx"
-#include "CLASSObject.hxx"
+#include "CLASSFuel.hxx"
 #include "ZAI.hxx"
 
 #include "TMatrix.h"
@@ -49,7 +49,7 @@ double 	Distance(EvolutionData Evd1, IsotopicVector IV1 );
 
 
 
-class EvolutionData : public CLASSObject
+class EvolutionData : public CLASSFuel
 {
 	
 public :
@@ -124,7 +124,7 @@ public :
 	void	SetCycleTime(cSecond cycletime)		{ fCycleTime = cycletime; }		///< Set cycletime of the EvolutionData (double)
 
 
-	void	SetEvolutionData(map<ZAI, TGraph*> maptoinsert)	{ fEvolutionData = maptoinsert;}///< Set EvolutionData map
+	void	SetInventoryEvolution(map<ZAI, TGraph*> maptoinsert)	{ fInventoryEvolution = maptoinsert;}///< Set EvolutionData map
 	void	SetFissionXS(map<ZAI, TGraph*> maptoinsert)	{ fFissionXS = maptoinsert;}	///< Set fission cross section map
 	void	SetCaptureXS(map<ZAI, TGraph*> maptoinsert)	{ fCaptureXS = maptoinsert;}	///< Set capture cross section map
 	void	Setn2nXS(map<ZAI, TGraph*> maptoinsert)		{ fn2nXS = maptoinsert;}	///< Set (n,2n) cross section map
@@ -142,7 +142,8 @@ public :
 	//@{
 
 #ifndef __CINT__
-	map<ZAI ,TGraph* >	GetEvolutionData()	const { return fEvolutionData; }	//!< return the EvolutionData map
+	EvolutionData*		GetEvolutionData()	{return this;}
+	map<ZAI ,TGraph* >	GetInventoryEvolution()	const { return fInventoryEvolution; }	//!< return the EvolutionData map
 	map<ZAI ,TGraph* >	GetFissionXS()		const { return fFissionXS; }		//!< return the fission cross section map
 	map<ZAI ,TGraph* >	GetCaptureXS()		const { return fCaptureXS; }		//!< return the capture cross section map
 	map<ZAI ,TGraph* >	Getn2nXS()		const { return fn2nXS; }		//!< return the (n,2n) cross section map
@@ -207,7 +208,7 @@ protected :
 	
 	
 #ifndef __CINT__
-	map<ZAI ,TGraph* >	fEvolutionData;	//!< evolution map
+	map<ZAI ,TGraph* >	fInventoryEvolution;	//!< evolution map
 	map<ZAI ,TGraph* >	fFissionXS;	//!< fission cross section map
 	map<ZAI ,TGraph* >	fCaptureXS;	//!< capture cross section map
 	map<ZAI ,TGraph* >	fn2nXS;		//!< (n,2n) cross section map

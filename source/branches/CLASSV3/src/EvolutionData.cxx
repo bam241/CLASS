@@ -63,9 +63,13 @@ double 	Distance(IsotopicVector IV1, EvolutionData Evd1 )
 
 	for( it = IVtmpIsotopicQuantity.begin(); it != IVtmpIsotopicQuantity.end(); it++)
 	{
-		double Z1 = IV1.GetZAIIsotopicQuantity( (*it).first );
-		double Z2 = IV2.GetZAIIsotopicQuantity( (*it).first );
-		double XS = Evd1.GetXSForAt(0., (*it).first, 1)
+		double Z1 = 0.0;
+		double Z2 = 0.0;
+		double XS = 0.0;
+
+		Z1 = IV1.GetZAIIsotopicQuantity( (*it).first );
+		Z2 = IV2.GetZAIIsotopicQuantity( (*it).first );
+		XS = Evd1.GetXSForAt(0., (*it).first, 1)
 			  + Evd1.GetXSForAt(0., (*it).first, 2)
 			  + Evd1.GetXSForAt(0., (*it).first, 3);
 
@@ -89,7 +93,7 @@ EvolutionData operator*(EvolutionData const& evol, double F)
 	
 	EvolutionData evoltmp;
 	
-	map<ZAI ,TGraph* > EvolutionData = evol.GetEvolutionData();
+	map<ZAI ,TGraph* > EvolutionData = evol.GetInventoryEvolution();
 	map<ZAI ,TGraph* >::iterator it;
 	for(it = EvolutionData.begin(); it != EvolutionData.end(); it++)
 	{
@@ -133,7 +137,7 @@ EvolutionData Multiply(EvolutionData const& evol, double F)
 {
 
 	EvolutionData evoltmp;
-	map<ZAI ,TGraph* > EvolutionData = evol.GetEvolutionData();
+	map<ZAI ,TGraph* > EvolutionData = evol.GetInventoryEvolution();
 	map<ZAI ,TGraph* >::iterator it;
 	for(it = EvolutionData.begin(); it != EvolutionData.end(); it++)
 	{
@@ -217,8 +221,8 @@ EvolutionData Multiply(double F, EvolutionData const& evol)
 EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 {
 	EvolutionData EvolSum = evol1;
-	map<ZAI ,TGraph* > EvolutionData1 = EvolSum.GetEvolutionData();
-	map<ZAI ,TGraph* > EvolutionData2 = evol2.GetEvolutionData();
+	map<ZAI ,TGraph* > EvolutionData1 = EvolSum.GetInventoryEvolution();
+	map<ZAI ,TGraph* > EvolutionData2 = evol2.GetInventoryEvolution();
 	map<ZAI ,TGraph* >::iterator it;
 
 	for(it = EvolutionData2.begin(); it != EvolutionData2.end(); it++)
@@ -244,7 +248,7 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 		}
 
 	}
-	EvolSum.SetEvolutionData(EvolutionData1);
+	EvolSum.SetInventoryEvolution(EvolutionData1);
 
 
 	EvolutionData1 = evol1.GetFissionXS();
@@ -344,7 +348,7 @@ ClassImp(EvolutionData)
 
 
 
-EvolutionData::EvolutionData():CLASSObject()
+EvolutionData::EvolutionData():CLASSFuel()
 {
 	fIsCrossSection = false;
 	fPower = 0;
@@ -354,7 +358,7 @@ EvolutionData::EvolutionData():CLASSObject()
 }
 
 	//________________________________________________________________________
-EvolutionData::EvolutionData(CLASSLogger* log):CLASSObject(log)
+EvolutionData::EvolutionData(CLASSLogger* log):CLASSFuel(log)
 {
 	
 	fIsCrossSection = false;
@@ -367,7 +371,7 @@ EvolutionData::EvolutionData(CLASSLogger* log):CLASSObject(log)
 }
 
 	//________________________________________________________________________
-EvolutionData::EvolutionData(CLASSLogger* log, string DB_file, bool oldread, ZAI zai):CLASSObject(log)
+EvolutionData::EvolutionData(CLASSLogger* log, string DB_file, bool oldread, ZAI zai):CLASSFuel(log)
 {
 	
 	fIsCrossSection = false;
@@ -398,7 +402,7 @@ void EvolutionData::DeleteEvolutionData()
 
 	map<ZAI ,TGraph* >::iterator it_del;
 
-	for( it_del = fEvolutionData.begin(); it_del != fEvolutionData.end(); it_del++)
+	for( it_del = fInventoryEvolution.begin(); it_del != fInventoryEvolution.end(); it_del++)
 	{
 		delete (*it_del).second;
 		(*it_del).second = 0;
@@ -423,7 +427,7 @@ void EvolutionData::DeleteEvolutionData()
 	delete	fKeff;
 	delete	fFlux;
 
-	fEvolutionData.clear();
+	fInventoryEvolution.clear();
 	fFissionXS.clear();
 	fCaptureXS.clear();
 	fn2nXS.clear();
@@ -438,7 +442,7 @@ bool EvolutionData::NucleiInsert(pair<ZAI, TGraph*> zaitoinsert)
 {
 	
 	pair<map<ZAI, TGraph*>::iterator, bool> IResult;
-	IResult = fEvolutionData.insert( zaitoinsert);
+	IResult = fInventoryEvolution.insert( zaitoinsert);
 	return IResult.second;
 	
 }
@@ -477,7 +481,7 @@ void EvolutionData::AddAsStable(ZAI zai)
 	double time[2] = {0, (500*365.25*3600*24)};
 	double quantity[2] = {1., 1.};
 	
-	fEvolutionData.insert(pair<ZAI ,TGraph* >(zai, new TGraph(2, time, quantity) ) );
+	fInventoryEvolution.insert(pair<ZAI ,TGraph* >(zai, new TGraph(2, time, quantity) ) );
 	
 }
 
@@ -494,9 +498,9 @@ Double_t EvolutionData::Interpolate(double t, TGraph& EvolutionGraph)
 TGraph*	EvolutionData::GetEvolutionTGraph(const ZAI& zai)
 {
 	
-	map<ZAI ,TGraph *>::iterator it = GetEvolutionData().find(zai) ;
+	map<ZAI ,TGraph *>::iterator it = GetInventoryEvolution().find(zai) ;
 	
-	if ( it != GetEvolutionData().end() )
+	if ( it != GetInventoryEvolution().end() )
 		return it->second;
 	else
 		return new TGraph();
@@ -510,7 +514,7 @@ IsotopicVector	EvolutionData::GetIsotopicVectorAt(double t)
 	
 	IsotopicVector IsotopicVectorTmp;
 	map<ZAI ,TGraph* >::iterator it;
-	for( it = fEvolutionData.begin(); it != fEvolutionData.end(); it++ )
+	for( it = fInventoryEvolution.begin(); it != fInventoryEvolution.end(); it++ )
 	{
 		IsotopicVectorTmp.Add( (*it).first, Interpolate(t, *((*it).second)) );
 	}
@@ -762,7 +766,7 @@ void	EvolutionData::ReadInv(string line, double* time, int NTimeStep)
 			i++;
 		}
 			// Add the TGraph
-		fEvolutionData.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, Inv) ) );
+		fInventoryEvolution.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, Inv) ) );
 	}
 	
 	
@@ -1002,7 +1006,7 @@ void EvolutionData::OldReadDB(string DBfile)
 
 			}
 			TGraph* tgraphtmp = new TGraph((int)vTime.size()-1, Time, DPQuantity);
-			fEvolutionData.insert(pair<ZAI ,TGraph* >(zaitmp, tgraphtmp) );
+			fInventoryEvolution.insert(pair<ZAI ,TGraph* >(zaitmp, tgraphtmp) );
 		}
 
 		getline(DecayDB, line);

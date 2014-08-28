@@ -118,9 +118,18 @@ DBGL
 		{
 			if( (*it).second == t )
 			{
+				int ReactorId = (*it).first;
+				pair<CLASSFuel, double> R_Fuel = GetParc()->GetReactor()[ReactorId]->GetFuelPlan()->GetFuelAt( t + GetCycleTime() );
 #pragma omp critical(FuelBuild)
-				{BuildFuelForReactor( (*it).first );}
-				(*it).second += GetParc()->GetReactor()[ (*it).first ]->GetCycleTime();
+				{
+					if( typeid(R_Fuel.first) == typeid(PhysicModels) )
+						BuildFuelForReactor( (*it).first, t );
+				}
+
+				double R_BU = R_Fuel.second;
+				double R_Power = GetParc()->GetReactor()[ReactorId]->GetPower();
+				double R_HMMass = GetParc()->GetReactor()[ReactorId]->GetHeavyMetalMass();
+				(*it).second += (cSecond) (R_BU / R_Power * R_HMMass * 1e9 *3600*24);
 			}
 			else if ( (*it).second - GetParc()->GetReactor()[ (*it).first ]->GetCycleTime() + GetCycleTime() > t )
 			{
@@ -139,7 +148,7 @@ DBGL
 
 
 	//________________________________________________________________________
-void FabricationPlant::BuildFuelForReactor(int ReactorId)
+void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 {
 	DBGV( " IN"<< "in ");
 	if(fFissileStorage.size() == 0)
@@ -153,17 +162,18 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 
 
 	double R_HM_Mass	= GetParc()->GetReactor()[ ReactorId ]->GetHeavyMetalMass();
-	double R_BU		= GetParc()->GetReactor()[ ReactorId ]->GetBurnUp();
 	double R_CycleTime	= GetParc()->GetReactor()[ ReactorId ]->GetCycleTime();
 	double R_Power		= GetParc()->GetReactor()[ ReactorId ]->GetPower();
 
-	PhysicModels* FuelType = GetParc()->GetReactor()[ReactorId]->GetFuelType();
+	pair<CLASSFuel, double > FuelBU = GetParc()->GetReactor()[ReactorId]->GetFuelPlan()->GetFuelAt(t+GetCycleTime()) ;
+	PhysicModels FuelType = *FuelBU.first.GetPhysicModels();
+	double R_BU	      = FuelBU.second;
 
-	fFissileList = FuelType->GetEquivalenceModel()->GetFissileList();
+	fFissileList = FuelType.GetEquivalenceModel()->GetFissileList();
 	BuildFissileArray();
 
 
-	fFertileList = FuelType->GetEquivalenceModel()->GetFertileList();
+	fFertileList = FuelType.GetEquivalenceModel()->GetFertileList();
 
 
 	if(fFertileStorage.size() != 0)			// If the fertile need to be taken in stock
@@ -173,13 +183,13 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId)
 		fFertileArray.push_back( fFertileList / fFertileList.GetTotalMass() * R_HM_Mass );
 	}
 
-	vector<double> LambdaArray =  FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fFissileArray, fFertileArray);
+	vector<double> LambdaArray =  FuelType.GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fFissileArray, fFertileArray);
 
 
 	if(LambdaArray[0] != -1)
 	{
 		IsotopicVector IV = BuildFuelFromEqModel(LambdaArray);
-		EvolutionData EvolDB = FuelType->GenerateEvolutionData( GetDecay(IV,fCycleTime), R_CycleTime, R_Power);
+		EvolutionData EvolDB = FuelType.GenerateEvolutionData( GetDecay(IV,fCycleTime), R_CycleTime, R_Power);
 
 		{
 			pair<map<int, IsotopicVector>::iterator, bool> IResult;
@@ -463,7 +473,7 @@ DBGL
 			int IV_N = fFissileArrayAdress[i].second;
 
 			pair<IsotopicVector, IsotopicVector> Separated_Lost;
-			Separated_Lost = Separation( fFissileStorage[Stor_N]->GetIVArray()[IV_N]*LambdaArray[i], fFissileList);
+			Separated_Lost = Separation( fFertileArray[Stor_N]->GetIVArray()[IV_N]*LambdaArray[i], fFertileList);
 			BuildedFuel += Separated_Lost.first;
 			Lost += Separated_Lost.second;
 		}

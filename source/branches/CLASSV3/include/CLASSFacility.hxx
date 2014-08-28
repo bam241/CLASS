@@ -82,6 +82,7 @@ public :
 											/// \li 8 end of Cooling,
 											/// \li 16 fuel Fabrication
 	using CLASSObject::SetName;
+	using CLASSObject::GetName;
 
 
 	void SetInsideIV(IsotopicVector isotopicvector)	{ fInsideIV = isotopicvector; }	//!< Set the IV inside the Facility Core

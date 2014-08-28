@@ -1,7 +1,6 @@
 #include "Reactor.hxx"
 
 #include "EvolutionData.hxx"
-#include "PhysicModels.hxx"
 #include "Pool.hxx"
 #include "FabricationPlant.hxx"
 #include "Storage.hxx"
@@ -13,6 +12,7 @@
 #include <iostream>
 #include <cmath>
 #include <omp.h>
+#include <typeinfo>
 
 //________________________________________________________________________
 //
@@ -35,11 +35,8 @@ Reactor::Reactor():CLASSFacility(4)
 
 	fOutBackEndFacility = 0;
 	fStorage = 0;
-	fFuelTypeDB = 0;
 	fFabricationPlant = 0;
 
-
-	fNextPlan = fLoadingPlan.begin();
 }
 
 Reactor::Reactor(CLASSLogger* log):CLASSFacility(log, 4)
@@ -47,51 +44,13 @@ Reactor::Reactor(CLASSLogger* log):CLASSFacility(log, 4)
 
 	fOutBackEndFacility = 0;
 	fStorage = 0;
-	fFuelTypeDB = 0;
 	fFabricationPlant = 0;
-	(*this).SetName("R_Reactor.");
-	fNextPlan = fLoadingPlan.begin();
+	SetName("R_Reactor.");
 
 }
 
-Reactor::Reactor(CLASSLogger* log, PhysicModels* fueltypeDB,
-		 FabricationPlant* fabricationplant,
- 		 CLASSBackEnd* Pool,
- 		 cSecond creationtime, cSecond lifetime):CLASSFacility(log, creationtime, lifetime, 4)
-{
 
-	(*this).SetName("R_Reactor.");
-
-
-	fIsStarted = false;
-	fIsShutDown = false;
-	fIsAtEndOfCycle = false;
-
-	fFabricationPlant = fabricationplant;
-	fFixedFuel = false;
-	fBurnUp = -1.;
-	fHeavyMetalMass = -1.;
-	fStorage = 0;
-
-	fOutBackEndFacility = Pool;
-
-	fFuelTypeDB = fueltypeDB;
-
-	fPower = -1.;
-
-	fNextPlan = fLoadingPlan.begin();
-
-
-	INFO << " A Reactor has been define :" << endl;
-	INFO << "\t Fuel Composition is not fixed ! "<< endl;
-	INFO << "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
-	INFO << "\t Life time (Operating's Duration) set at \t " << (double)(GetLifeTime()/3600/24/365.25) << " year" << endl;
-
-	WARNING << " You need to set Burn-up/Power/CycleTime (2 of 3) & Heavy Metal Mass Manualy !! " << endl;
-
-}
-
-Reactor::Reactor(CLASSLogger* log, PhysicModels* fueltypeDB, FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
+Reactor::Reactor(CLASSLogger* log, PhysicModels fueltypeDB, FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
  		 cSecond creationtime, cSecond lifetime,
  		 double Power, double HMMass, double BurnUp, double ChargeFactor):CLASSFacility(log, creationtime, lifetime, 4)
 {
@@ -108,15 +67,13 @@ Reactor::Reactor(CLASSLogger* log, PhysicModels* fueltypeDB, FabricationPlant* f
 
 	fOutBackEndFacility = Pool;
 
-	fFuelTypeDB = fueltypeDB;
-
-
 	fBurnUp = BurnUp;
 	fHeavyMetalMass = HMMass;
 	fPower = Power*ChargeFactor;
 	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);	 //BU in GWd/t
 
-	fNextPlan = fLoadingPlan.begin();
+	fFuelPlan->AddFuel(creationtime, fueltypeDB, fBurnUp);
+
 
 
 	INFO << " A Reactor has been define :" << endl;
@@ -132,7 +89,7 @@ Reactor::Reactor(CLASSLogger* log, PhysicModels* fueltypeDB, FabricationPlant* f
 
 }
 
-Reactor::Reactor(CLASSLogger* log, PhysicModels* 	fueltypeDB,
+Reactor::Reactor(CLASSLogger* log, PhysicModels 	fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 CLASSBackEnd* Pool,
  		 cSecond creationtime, cSecond lifetime, cSecond cycletime,
@@ -153,12 +110,10 @@ Reactor::Reactor(CLASSLogger* log, PhysicModels* 	fueltypeDB,
 	fHeavyMetalMass = HMMass;
 
 	fOutBackEndFacility = Pool;
-
-	fFuelTypeDB = fueltypeDB;
-
 	fPower = BurnUp*3600.*24. / (fCycleTime) * HMMass *1e9; //BU in GWd/t
 
-	fNextPlan = fLoadingPlan.begin();
+	fFuelPlan->AddFuel(creationtime, fueltypeDB, fBurnUp);
+
 
 	INFO << " A Reactor has been define :" << endl;
 	INFO << "\t Fuel Composition is not fixed ! "<< endl;
@@ -188,7 +143,6 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData evolutivedb,
 	fIsAtEndOfCycle = false;
 
 	fStorage = 0;
-	fFuelTypeDB = 0;
 	fFabricationPlant = 0;
 
 	fFixedFuel = true;
@@ -216,8 +170,7 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData evolutivedb,
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 
 
-
-	fNextPlan = fLoadingPlan.begin();
+	fFuelPlan->AddFuel(creationtime, evolutivedb, fBurnUp);
 
 	INFO << " A Reactor has been define :" << endl;
 	INFO << "\t Fuel Composition is fixed ! "<< endl;
@@ -372,7 +325,9 @@ DBGL
 	else
 	{
 		// This is so bad!! You will probably unsynchronize all the reactor....
+		ERROR << " " << (*this).GetName()<< endl;
 		ERROR << " Evolution is too long! There is a problem in Reactor evolution at " << t/365.25/3600/24 << endl;
+		ERROR << " This is too long of : " << EvolutionTime + fInCycleTime - fCycleTime << endl;
 		exit(1);
 	}
 
@@ -388,18 +343,62 @@ DBGL
 	if(fInternalTime < GetCreationTime()) return;
 	if(fIsShutDown  && !fIsStarted) return; // Reactor stopped...
 
+
+// First trash the irradiated fuel
+	if(fIsAtEndOfCycle  && !fIsShutDown )
+	{
+		if(fIsStarted  )					// A Cycle has already been done
+		{
+			fOutBackEndFacility->AddIV(fInsideIV);
+			AddCumulativeIVOut(fInsideIV);
+		}
+		else fIsStarted = true;					// Just start the first cycle
+
+	}
+	else if (fIsAtEndOfCycle  && fIsShutDown )			//shutdown at end of Cycle
+	{
+
+		fOutBackEndFacility->AddIV(fIVOutCycle);
+		AddCumulativeIVOut(fIVOutCycle);
+		fInsideIV.Clear();
+		fInCycleTime = 0;
+		fIsStarted = false;					// shut down the Reactor
+	}
+	else if (!fIsAtEndOfCycle && fIsShutDown ) 			//shutdown during Cycle
+	{
+		fOutBackEndFacility->AddIV(fInsideIV);
+		AddCumulativeIVOut(fInsideIV);
+		fInsideIV.Clear();
+		fInCycleTime = 0;
+		fIsStarted = false;					// shut down the Reactor
+	}
+
+
+
+
+// Get the new Fuel !
+
+	pair<CLASSFuel, double> NextFuel = fFuelPlan->GetFuelAt(fInternalTime);
+	SetBurnUp((NextFuel).second);
+
+	if( typeid(NextFuel.first) == typeid(PhysicModels) )
+		fFixedFuel = false;
+	else if( typeid(NextFuel.first) == typeid(EvolutionData) )
+		fFixedFuel = true;
+	else
+	{
+		ERROR << "WRONG Fuel Format Correct it !! " << endl;
+		exit(1);
+	}
+
 	if(fFixedFuel )
 	{
 		if(fIsAtEndOfCycle  && !fIsShutDown )
 		{
+			SetEvolutionDB( *NextFuel.first.GetEvolutionData() );
+
 			fIsAtEndOfCycle = false;
 
-			if(fIsStarted  )					// A Cycle has already been done
-			{
-				fOutBackEndFacility->AddIV(fInsideIV);
-				AddCumulativeIVOut(fInsideIV);
-			}
-			else fIsStarted = true;					// Just start the first cycle
 
 			if(!GetParc()->GetStockManagement() && fIsStorage )
 			{
@@ -421,37 +420,12 @@ DBGL
 			else	GetParc()->AddGod(fIVInCycle);
 
 
-			if(fNextPlan != fLoadingPlan.end())		// Check if the Fuel change
-			{
-				if(fInternalTime >= (*fNextPlan).first)
-				{
-					SetEvolutionDB((*fNextPlan).second.first);
-					SetBurnUp((*fNextPlan).second.second);
-					fNextPlan++;
-				}
-			}
 			fInsideIV  = fIVBeginCycle;
 			AddCumulativeIVIn(fIVBeginCycle);
 
 			fInCycleTime = 0;
 		}
-		else if (fIsAtEndOfCycle  && fIsShutDown )		//shutdown at end of Cycle
-		{
 
-			fOutBackEndFacility->AddIV(fIVOutCycle);
-			AddCumulativeIVOut(fIVOutCycle);
-			fInsideIV.Clear();
-			fInCycleTime = 0;
-			fIsStarted = false;		// shut down the Reactor
-		}
-		else if (!fIsAtEndOfCycle && fIsShutDown ) 					//shutdown during Cycle
-		{
-			fOutBackEndFacility->AddIV(fInsideIV);
-			AddCumulativeIVOut(fInsideIV);
-			fInsideIV.Clear();
-			fInCycleTime = 0;
-			fIsStarted = false;		// shut down the Reactor
-		}
 	}
 	else
 	{
@@ -461,17 +435,9 @@ DBGL
 			exit(1);
 		}
 
-
 		if(fIsAtEndOfCycle  && !fIsShutDown )
 		{
 			fIsAtEndOfCycle = false;
-
-			if(fIsStarted  )					// A Cycle has already been done
-			{
-				fOutBackEndFacility->AddIV(fIVOutCycle);
-				AddCumulativeIVOut(fIVOutCycle);
-			}
-			else fIsStarted = true;					// Just start the first cycle
 
 			SetNewFuel(fFabricationPlant->GetReactorEvolutionDB(GetId()));
 			fFabricationPlant->TakeReactorFuel(GetId());
@@ -483,22 +449,7 @@ DBGL
 			fInCycleTime = 0;
 
 		}
-		else if (fIsAtEndOfCycle  && fIsShutDown )		//shutdown at end of Cycle
-		{
-			fOutBackEndFacility->AddIV(fIVOutCycle);
-			AddCumulativeIVOut(fIVOutCycle);
-			fInsideIV.Clear();
-			fInCycleTime = 0;
-			fIsStarted = false;		// shut down the Reactor
-		}
-		else if (!fIsAtEndOfCycle && fIsShutDown ) 					//shutdown during Cycle
-		{
-			fOutBackEndFacility->AddIV(fInsideIV);
-			AddCumulativeIVOut(fInsideIV);
-			fInsideIV.Clear();
-			fInCycleTime = 0;
-			fIsStarted = false;		// shut down the Reactor
-		}
+
 		
 		
 		

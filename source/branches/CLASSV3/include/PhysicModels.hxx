@@ -11,7 +11,7 @@
  @authors BLG,BaM
  @version 1.0
  */
-#include "CLASSObject.hxx"
+#include "CLASSFuel.hxx"
 #include "EquivalenceModel.hxx"
 #include "XSModel.hxx"
 #include "IrradiationModel.hxx"
@@ -42,7 +42,7 @@ typedef long long int cSecond;
 //________________________________________________________________________
 
 
-class PhysicModels : public CLASSObject
+class PhysicModels : public CLASSFuel
 {
 
 	public : 
@@ -52,6 +52,7 @@ class PhysicModels : public CLASSObject
 	 */
 	//@{
 
+	PhysicModels();
 	PhysicModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM );
 	PhysicModels(CLASSLogger* log, XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM );
 
@@ -63,6 +64,8 @@ class PhysicModels : public CLASSObject
 	XSModel*		GetXSModel()   {return fXSModel;}
 	EquivalenceModel*	GetEquivalenceModel() {return fEquivalenceModel;}
 	IrradiationModel*	GetIrradiationModel()  {return fIrradiationModel;}
+	
+	PhysicModels*		GetPhysicModels()	{return this;}
 
 
 

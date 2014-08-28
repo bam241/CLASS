@@ -153,7 +153,7 @@ public :
 	void BuildFertileArray();
 
 #ifndef __CINT__
-	void BuildFuelForReactor(int ReactorId);			//!< Build a Fuel for the reactor ReactorId
+	void BuildFuelForReactor(int ReactorId, cSecond t);			//!< Build a Fuel for the reactor ReactorId
 #endif
 
 	void SortArray(int i);
