@@ -180,7 +180,7 @@ public :
 							/// \li 8 end of Cooling,
 							/// \li 16 fuel Fabrication
 
-	void	Evolution(double t);			///< Perform the Evolution
+	void	Evolution(cSecond t);			///< Perform the Evolution
 	void	PoolEvolution();			///< Perform TF Evolution
 	void	ReactorEvolution();			///< Perform the Reactor Evolution
 	void	FabricationPlantEvolution();		///< Perform the FabricationPlant Evolution

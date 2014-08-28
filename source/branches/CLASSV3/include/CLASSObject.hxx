@@ -51,6 +51,7 @@ public :
 
 
 	using TNamed::SetName;
+	using TNamed::GetName;
 protected :
 #ifndef __CINT__
 	CLASSLogger*	fLog;			//!< Pointer to the Log

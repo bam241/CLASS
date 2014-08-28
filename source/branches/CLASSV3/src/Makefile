@@ -31,11 +31,13 @@ OBJS		= 	CLASSLogger.o \
 			Pool.o PoolDict.o\
 			DecayDataBank.o \
 			DynamicalSystem.o\
-			EvolutionData.o EvolutionDataDict.o \
 			IrradiationModel.o \
 			EquivalenceModel.o \
 			XSModel.o \
+			CLASSFuel.o\
 			PhysicModels.o \
+			EvolutionData.o EvolutionDataDict.o \
+			CLASSFuelPlan.o\
 			Scenario.o
 
 OBJMODEL	=	$(EQM)/EQM_MLP_PWR_MOX.o $(EQM)/EQM_QUAD_PWR_MOX.o $(EQM)/EQM_LIN_PWR_MOX.o \
@@ -56,7 +58,9 @@ ROOTOBJS	= 	CLASSLogger.o \
 			Pool.o PoolDict.o\
 			DecayDataBank.o \
 			DynamicalSystem.o\
+			CLASSFuel.o\
 			EvolutionData.o EvolutionDataDict.o \
+			CLASSFuelPlan.o\
 			PhysicModels.o
 
 

@@ -12,15 +12,15 @@
 #include "CLASSFacility.hxx"
 #include "IsotopicVector.hxx"
 #include "EvolutionData.hxx"
+#include "PhysicModels.hxx"
+#include "CLASSFuelPlan.hxx"
 
 using namespace std;
 typedef long long int cSecond;
 
 
 class CLASSBackEnd;
-//class Pool;
 class EvolutionData;
-class PhysicModels;
 class FabricationPlant;
 class Storage;
 class CLASSLogger;
@@ -62,21 +62,6 @@ public :
 	//}
 
 	//{
-	/// Special Constructor for reprocessed fuel.
-	/*!
-	 Make a new reactor
-	 \param CLASSLogger CLASSLogger used for the log...
-	 \param fueltypeDB Databank describing the evolution of the fuel
-	 \param CLASSBAckEnd Pool used facility wich get the fuel after iradiation
-	 \param creationtime creation time
-	 \param lifetime working time duration.
-	 */
-	Reactor(CLASSLogger* log, PhysicModels* 	fueltypeDB,
-		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
-		cSecond creationtime , cSecond lifetime);
-	//}
-
-	//{
 	 /// Special Constructor for reprocessed fuel using cycletime and Burn-Up.
 	 /*!
 	  Make a new reactor
@@ -89,7 +74,7 @@ public :
 	 \param HMMass Mass of Heavy Metal in the Reactor
 	 \param BurnUp Burnup reach by the fuel at the end of the cycle
 	 */
-	Reactor(CLASSLogger* log, PhysicModels* 	fueltypeDB,
+	Reactor(CLASSLogger* log, PhysicModels 	fueltypeDB,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
 		cSecond creationtime , cSecond lifetime, cSecond cycletime,
 		double HMMass, double BurnUp);
@@ -109,7 +94,7 @@ public :
 	 \param BurnUp Burnup reach by the fuel at the end of the cycle
 	 \param ChargeFactor effective charge of the reactor.
 	 */
-	Reactor(CLASSLogger* log, PhysicModels* 	fueltypeDB,
+	Reactor(CLASSLogger* log, PhysicModels 	fueltypeDB,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
 		cSecond creationtime , cSecond lifetime,
 		double Power, double HMMass, double BurnUp, double ChargeFactor);
@@ -166,16 +151,12 @@ public :
 #ifndef __CINT__
 
 	EvolutionData	GetEvolutionDB()	const	{ return fEvolutionDB; }	//!< Return the Evolution database of the Fuel
-	PhysicModels*	GetFuelType()		const	{ return fFuelTypeDB; }		//!< Return the Fuel Type DB of the reactor
 
 	CLASSBackEnd*		GetOutBackEndFacility()	const	{ return fOutBackEndFacility; }	//!< Return the pointer to Associeted BackEnd Facility
 	FabricationPlant*	GetFabricationPlant()	const	{ return fFabricationPlant; }	//!< Return the Pointer to the FabricationPlant
 
 
-	map<cSecond, pair<EvolutionData, double> >	GetLoadingPlan()		const
-						{ return fLoadingPlan; }	//!< return the LoadingPlan
-	map<cSecond, pair<EvolutionData, double> >::iterator	GetNextPlan()	const
-						{ return fNextPlan; }	//!< return the next fuel in the Plan
+	CLASSFuelPlan*	GetFuelPlan()		const	{ return fFuelPlan; }	//!< return the LoadingPlan
 
 #endif
 	//@}
@@ -213,13 +194,10 @@ public :
 	void	SetOutBackEndFacility(CLASSBackEnd* pool)	{ fOutBackEndFacility = pool; }	//!< Return the pointer to OutBackEnd Facility
 	void	SetStorage(Storage* storage)			{ fStorage = storage; fIsStorage = true;}	//!< Set the Pointer to the Storage
 	void	SetEvolutionDB(EvolutionData evolutionDB);			//!< Set the Pointer to the DB Evolution of the Reactor
-
-	void	SetLoadingPlan(map<cSecond, pair<EvolutionData, double> > loadingplan)
-					{ fLoadingPlan = loadingplan; fNextPlan = fLoadingPlan.begin(); }
-										//!< Set a LaodingPlan to change the Fuel after some cycle
 #endif
 
 	using CLASSFacility::SetName;
+	using CLASSFacility::GetName;
 
 	//@}
 
@@ -255,15 +233,17 @@ protected :
 	IsotopicVector	fIVOutCycle;		///< IV wich get out at the End of a Cycle
 
 #ifndef __CINT__
-	EvolutionData	fEvolutionDB;		//!< Pointer to the Evolution DataBase
-	PhysicModels* 	fFuelTypeDB;		//! Pointer to a Fuel Type Database
+	EvolutionData	fEvolutionDB;		//!< Pointer to the Actual Evolution DataBase
 
 	CLASSBackEnd*	fOutBackEndFacility;	//!< Pointer to the BackEnd Facility which collect the spend fuel
-	Storage*	fStorage;		//!< Pointer to the Stock (only for reprocessing fuel in fixed base...)
-	map<cSecond, pair<EvolutionData, double> >	fLoadingPlan;	///< Loading PLan to change the EvolutionData (and the associetedBurnup) according to the Plan
-	map<cSecond, pair<EvolutionData, double> >::iterator	fNextPlan;	///< Next EvolutionData, and time until it should be load (at the end of the last cycle)
+
+
+	CLASSFuelPlan*	fFuelPlan;
 
 	FabricationPlant*	fFabricationPlant;		//!< Poitner to the FabricationPlant
+
+	Storage*	fStorage;		//!< Pointer to the Stock (only for reprocessing fuel in fixed base...)
+
 
 #endif
 //********* Unfixed Fuel Parameter *********//

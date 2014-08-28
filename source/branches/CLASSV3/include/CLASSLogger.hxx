@@ -23,9 +23,9 @@ using namespace std;
 
 #ifndef __CINT__
 
-#define ERROR		if(fLog)if(fLog->GetMaxOutPutLVL() >= 0) fLog->E() << "!!!ERROR!!! " << "[" << __FILE__ << ":" << __FUNCTION__ << "]"
-#define WARNING		if(fLog)if(fLog->GetMaxOutPutLVL() >= 1) fLog->W() << "!!WARNING!! " << "[" << __FILE__ << ":" << __FUNCTION__ << "]"
-#define INFO		if(fLog)if(fLog->GetMaxOutPutLVL() >= 2) fLog->I() << "!!!!INFO!!! " << "[" << __FILE__ << "]"
+#define ERROR		if(fLog)if(fLog->GetMaxOutPutLVL() >= 0) fLog->E() << "!!!ERROR!!! " << "[" << __FILE__ << ":" << __FUNCTION__ << "] "
+#define WARNING		if(fLog)if(fLog->GetMaxOutPutLVL() >= 1) fLog->W() << "!!WARNING!! " << "[" << __FILE__ << ":" << __FUNCTION__ << "] "
+#define INFO		if(fLog)if(fLog->GetMaxOutPutLVL() >= 2) fLog->I() << "!!!!INFO!!! " << "[" << __FILE__ << "] "
 
 #define DBGL		if(fLog)if(fLog->GetMaxOutPutLVL() >= 3) fLog->D() << __FILE__ << " : " << __LINE__ << " [" << __FUNCTION__ << "]" << endl;
 #define DBGV(x)		{if(fLog)if(fLog->GetMaxOutPutLVL() >= 3) fLog->D() << __FILE__ << " : " << __LINE__ << " [" << __FUNCTION__ << "]" << x << endl;}
