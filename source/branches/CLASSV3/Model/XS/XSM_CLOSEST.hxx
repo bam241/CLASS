@@ -79,7 +79,7 @@ class XSM_CLOSEST : public XSModel
 
 
 	void SetWeightedDistanceCalculation(bool val = true) { fWeightedDistance = val;}		///< Set weighted Distance calculation
-	void SetEvolutionDataInterpolation(bool val = true) { fEvolutionDataInterpolation = val;}		///< Set weighted Distance calculation
+	void SetInventoryEvolutionInterpolation(bool val = true) { fEvolutionDataInterpolation = val;}		///< Set weighted Distance calculation
 	void SetDistanceParameter(IsotopicVector DistanceParameter);		///< Define mannually the weight for each ZAI in the distance calculation
 
 
