@@ -1,70 +1,16 @@
 %\RequirePackage{lineno}
-\documentclass[12pt,a4paper,twoside,titlepage,final,openright]{book}
+\documentclass[12pt,a4paper,twoside,titlepage,final,openany]{book}
 
 
 %% ---- style files ------
 \usepackage{bstyle}
+
 %\author{B. MOUGINOT \& B. LENIAU}
 %\title{CLASS Userguide.}
 %
 %\date\today
-\usepackage{float}
-\usepackage{hyperref}
-\usepackage{xcolor}
-\usepackage{listings}         %Insérer du code source d'un pgm
-\lstset{
-	language=[Visual]C++,
-	keywordstyle=\bfseries\ttfamily\color{red},
-	identifierstyle=\ttfamily,
-	commentstyle=\color[rgb]{0.133,0.545,0.133},
-	stringstyle=\ttfamily\color[rgb]{0.627,0.126,0.941},
-	showstringspaces=false,
-	basicstyle=\footnotesize,
-	tabsize=2,
-	breaklines=true,
-	breakatwhitespace=false,
-	aboveskip={1.5\baselineskip},
-  columns=fixed,
-  frame=single,
-  extendedchars=true
-}
-\lstdefinestyle{terminal}
-{
-    backgroundcolor=\color{black},
-    basicstyle=\scriptsize\color{white}\ttfamily,
-    stringstyle=\color{white},
-     keywordstyle=\color{white}
-}
-\lstdefinestyle{makefile}
-{
-    numberblanklines=false,
-    language=make,
-    tabsize=4,
-    keywordstyle=\color{red},
-    identifierstyle= %plain identifiers for make
-}
 
 
-
-%----------------------------------------------------------------------------------------
-%	TITLE PAGE
-%----------------------------------------------------------------------------------------
-
-\newcommand*{\titleGM}{\begingroup % Create the command for including the title page in the document
-\hbox{ % Horizontal box
-\hspace*{0.2\textwidth} % Whitespace to the left of the title page
-\rule{1pt}{\textheight} % Vertical line
-\hspace*{0.05\textwidth} % Whitespace between the vertical line and title page text
-\parbox[b]{0.75\textwidth}{ % Paragraph box which restricts text to less than the width of the page
-
-{\noindent\Huge\bfseries User Guide - CLASS v3.0  }\\[2\baselineskip] % Title
-{\large \textit{Core Library for Advanced Scenario Simulation}}\\[4\baselineskip] % Tagline or further description
-{\Large \textsc{B. MOUGINOT \& B. LENIAU}} % Author name
-
-\vspace{0.5\textheight} % Whitespace between the title block and the publisher
-{\noindent CNRS:IN2P3:Subatech:Erdre }\\[\baselineskip] % Publisher and logo
-}}
-\endgroup}
 
 %----------------------------------------------------------------------------------------
 %	BLANK DOCUMENT
@@ -76,35 +22,36 @@
 \titleGM % This command includes the title page
 % === title and abst. ===
 \pagestyle{empty}
-% === title and abst. ===
-\pagestyle{empty}
-%\include{title}
-\cleardoublepage
 %\include{abstract}
-\cleardoublepage
-
-% === front matter ===
-\pagestyle{fancy}
-%\frontmatter
-
+\frontmatter
+\phantomsection
+\addcontentsline{toc}{part}{Abstract}
+\chapter*{{\large Abstract}}
+\clearpage
+\phantomsection
+\addcontentsline{toc}{part}{Table of Contents}
 \tableofcontents
+%
+\clearpage
+\phantomsection
+\addcontentsline{toc}{part}{List of figures}
 \listoffigures
-%\listoftables
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHAPTER :	INTRODUCTION
 %%%%%%%%%%%%%%%%%%%%%%%%%
-
-\chapter{Introduction}
+\mainmatter
+\part{Introduction}
 code de scenar tatati c'est gnial ça sert à ça ça et ça ...
 donner le forge in2p3
 
-\chapter{First Steps}
-\section{Package Contents}
+\part{First Steps}
+\chapter{Package Contents}
 Ya quoi dans ce que je viens de downloader
-\section{Install procedure}
+\chapter{Install procedure}
 
-\subsection{Requirement}
+\section{Requirement}
 
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -198,7 +145,7 @@ sudo make -j
 \end{center}
 
 
-\subsection{Installation}
+\section{Installation}
 Decompress the CLASS.tar.gz in your wanted location \footnote{ \$CLASS\_PATH is the path of your CLASS installation folder}. Then type in terminal:\\
 
 \begin{center}
@@ -238,7 +185,7 @@ setenv PATH ${PATH}:${CLASS_PATH}/bin/gui
 \end{minipage}
 \end{center}
 
-\section{CLASS Execution}
+\chapter{CLASS Execution}
 CLASS is a set of C++ libraries, there is no CLASS binary file. A CLASS executable has to be build by user using objects and methods defined in the CLASS package. \\
 The compilation line for generating your executable from a .cxx file is the following :
 
@@ -250,7 +197,7 @@ g++ -o CLASS_exec YourScenario.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `r
 \end{minipage}
 \end{center}
 
-\section{News, forum, troubleshooting, doxygen ...}
+\chapter{News, forum, troubleshooting, doxygen ...}
 CLASS has a \href{https://forge.in2p3.fr/projects/classforge}{forge}\footnote{https://forge.in2p3.fr/projects/classforge} hosted by the IN2P3  where you can find :
 
 \begin{itemize}
@@ -262,30 +209,30 @@ CLASS has a \href{https://forge.in2p3.fr/projects/classforge}{forge}\footnote{ht
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHAPTER :	GENERAL OVERVIEW
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{CLASS : General overview}
-\section{Generalities}
+\part{CLASS : General overview}
+\chapter{Generalities}
 Lister les unité 
 image : shéma de principe de class
-\section{Facilities descriptions}
-\subsection{Storage}
-\subsection{Pool}
-\subsection{Fabrication Plant}
-\subsection{Reactor}
+\chapter{Facilities descriptions}
+\section{Storage}
+\section{Pool}
+\section{Fabrication Plant}
+\section{Reactor}
 
-\section{Other objects}
-\subsection{ZAI}
-\subsection{IsotopicVector}
-\subsection{Log management : CLASSLogger}\label{sec:logclass}
-\subsection{EvolutionData}\label{sec:EvolutionData}
-\section{Decay data bases}\label{sec:DecayDB}
+\chapter{Other objects}
+\section{ZAI}
+\section{IsotopicVector}
+\section{Log management : CLASSLogger}\label{sec:logclass}
+\section{EvolutionData}\label{sec:EvolutionData}
+\chapter{Decay data bases}\label{sec:DecayDB}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHAPTER :		PHYSIC MODEL
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Physic Models}
-\section{Description and implementation}
+\part{Physic Models}
+\chapter{Description and implementation}
 A Physic Models is related to one or several reactors , it is a container of three models :
 \begin{itemize}
 \item Equivalence Model : Tells to the Fabrication Plant how to build the fuel.
@@ -329,27 +276,30 @@ All the existing models are define in the following sections, furthermore, the w
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %%		EQUIVALENCE MODEL
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Equivalence Model}\label{sec:Equivalence}
+\chapter{Equivalence Model}\label{sec:Equivalence}
 The aim of an equivalence model is to predict the content of fissile element needed in a fuel to reach a given burn-up or to satisfied criticality conditions.
-\subsection{Available Equivalence Models}
+\section{Available Equivalence Models}
 The CLASS package contains, for the moment, 4 different equivalence models where three are related to the building of fuels for a PWR-MOX and one to the building of  PWR-UOX fuels :
-\paragraph{PWR-MOX models :}
+\subsection{PWR-MOX models :}
 The following models returns the molar fraction $\%_{Pu}$ of plutonium needed to reach a given burn-up according to the plutonium isotopic composition available in stocks.
 
 
 
 \subsubsection{Linear BU model : EQM\_LIN\_MOX } 
-@@@ enlever ??
-@@@BAM
-
-
+It was initially applied for MOX fuel, but because of the lack of precision, this model could be deprecated (at least in the PWR MOX case). It remain in the CLASS packages only because it was present historically.\\
+ Nevertheless it could be use as an example for similar model for other fuel. This model suppose it is possible to describe the maximal burn-up accessible for a set fuel using its initial composition using a simple linear modelisation (equation~\ref{eq:EQM_LIN}):\\ 
+\begin{equation}\label{eq:EQM_LIN}
+BU_{max} = \alpha_{0} +   \sum_{i}^{N} \alpha_{i} \cdot n_{i},
+\end{equation}
+where $BU_{max}$ represent the maximal accessible burn-up for the fuel, $n_{i}$ the isotopic fraction of the isotope $i$, $N$ the number of isotope present in the fuel, and the $\alpha_{i}$ the parameter of the model. 
+The main difficulty concerning this model, is the determination of the $\alpha_{i}$: to be correct the $\alpha_{i}$ should be fitted on a set of evolution data which are not constrain to reach an unique burn-up, but a large burn-up region. One can see the problem guessing it is possible to build a set a fuel evolution reaching exactly a unique burn-up (45 GWd/t by example), the $\chi^{2}$ minimization of the $\alpha_i$ will end up with $\alpha_{0} = 45$ and all the other at zero. That why, when using a linear burn-up description model, one should test the validity of the model, on many random compositions by example... 
 
 \subsubsection{Quadratic Model : EQM\_QUAD\_MOX}
-The $\%_{Pu}$ is calculated according a quadratic model. See equation~\ref{eq:EQM_LIN}.
-\begin{equation}\label{eq:EQM_LIN}
-\%_{Pu} = \alpha_{0} +   \sum_{i}^{N} \alpha_{i} \cdot n_{i}\ + \sum_{j}^{j\leq i}  \sum_{i}^{N} \alpha_{ij} \cdot n_{i}\cdot n_{j}
+The $\%_{Pu}$ is calculated according a quadratic model. See equation~\ref{eq:EQM_QUAD_MOX}.
+\begin{equation}\label{eq:EQM_QUAD_MOX}
+\%_{Pu} = \alpha_{0} +   \sum_{i\in Pu}^{N} \left(\alpha_{i} \cdot n_{i}\ + \sum_{j\leq i} \alpha_{ij} \cdot n_{i}\cdot n_{j}\right),
 \end{equation}
-Where $n_{i}$ is the molar proportion (in $\%mol.$) of isotope $i$ \footnote{from $^{238}Pu$ to $^{242}Pu$} in the fresh plutonium vector.  $\alpha_{ij}$, $\alpha_{i}$ and $\alpha_{0}$  are the weights resulting from a minimization procedure and are related to one targeted burn-up and one fuel management. Furthermore, $^{241}Am$ from $^{241}Pu$ decay is not one of the considered component of the model ($n_{i}$), instead the model considers a fixed time since plutonium separation. For instance the $\alpha$ given in file \$CLASS\_PATH/DataBase/Equivalence/PWR\_MOX\_45GW\_3Batch\_2y.dat
+where $n_{i}$ is the molar proportion (in $\%mol.$) of isotope $i$ \footnote{from $^{238}Pu$ to $^{242}Pu$} in the fresh plutonium vector.  $\alpha_{ij}$, $\alpha_{i}$ and $\alpha_{0}$  are the weights resulting from a minimization procedure and are related to one targeted burn-up and one fuel management. Furthermore, $^{241}Am$ from $^{241}Pu$ decay is not one of the considered component of the model ($n_{i}$), instead the model considers a fixed time since plutonium separation. For instance the $\alpha$ given in file \$CLASS\_PATH/DataBase/Equivalence/PWR\_MOX\_45GW\_3Batch\_2y.dat
 are representative of a PWR-MOX with a maximal burn-up of $45GWd/tHM$, a fuel management of 3 batches, and a time between separation and irradiation of 2 years.
 
 The file containing the weights is formatted as follow :
@@ -401,8 +351,8 @@ With LogObject a CLASSLogger object (see section~\ref{sec:logclass}) and AlphasF
 \end{center}
 
 \subsubsection{Neural network model : EQM\_MLP\_MOX}\label{sec:EQMMOX}
-This equivalence model  is based on a Multi Layer Perceptron (MLP) and  predict the amount of plutonium needed to reach \textbf{any burn-up}. The MLP inputs are the isotopic compositions of the plutonium (\textbf{including $^{241}Am$}), the enrichment of depleted uranium, and the targeted burn-up. The output is the plutonium content needed to reach the burn-up. This method uses the neural networks of the root module TMVA (@@@  Ref TMVA). To executes this model, TMVA is run in CLASS and need a .xml file. This file contains the neural network architecture and the weights resulting from the training procedure.\\
-\\
+This equivalence model  is based on a Multi Layer Perceptron (MLP) and  predict the amount of plutonium needed to reach \textbf{any burn-up}. The MLP inputs are the isotopic compositions of the plutonium (\textbf{including $^{241}Am$}), the enrichment of depleted uranium, and the targeted burn-up. The output is the plutonium content needed to reach the burn-up. This method uses the neural networks of the root module TMVA (@@@  Ref TMVA). To executes this model, TMVA is run in CLASS and need a .xml file. This file contains the neural network architecture and the weights resulting from the training procedure.
+
 \paragraph{Implementation in a .cxx : }
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -514,12 +464,12 @@ For more informations about this model please refer to [@@Papier BaL].
 \end{minipage}
 \end{center}
 
-\paragraph{PWR-UOX model :}
+\subsection{PWR-UOX model :}
 
 \subsubsection{Linear Model: EQM\_LIN\_UOX}
 @@@BAM
 
-\subsection{How to build an Equivalence Model}
+\section{How to build an Equivalence Model}
 The strength of CLASS is to allow the user to build his own physic models, this section explains how to build a new equivalence model and to incorporate it into CLASS.
 
 First you have to create the file EQM\_NAME.cxx and EQM\_NAME.hxx, where NAME is a name you choose. 
@@ -611,10 +561,10 @@ Fill free to have a look at the models present in \$CLASS\_PATH/source/Model/Equ
 
 Now that your equivalence model is ready two choices are offered to you. You can compile the two files of your model with your CLASS input or you can add this model to the CLASS package. The second option will modify the CLASS software and we will be no longer able to troubleshoot your scenario. So use the second option only if you are a completely independent user !
 
-\paragraph{Compile your equivalence model with your CLASS executable :}
+\subsection{Compile your equivalence model with your CLASS executable :}
 @@BAM
 
-\paragraph{Your equivalence model in the CLASS library :}
+\subsection{Your equivalence model in the CLASS library :}
 Move your  EQM\_NAME.hxx and  EQM\_NAME.cxx in \$CLASS\_PATH/source/Model/Equivalence/. Then open with your favourite text editor the file  \$CLASS\_PATH/source/src/Makefile, find "OBJMODEL" and add \$(EQM)/EQM\_NAME.o within the others \$(EQM) objects. Then re-compile CLASS, fix the compilation errors ;) and voilà your equivalence model is now available in the CLASS library.
 
 
@@ -623,12 +573,12 @@ Move your  EQM\_NAME.hxx and  EQM\_NAME.cxx in \$CLASS\_PATH/source/Model/Equiva
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %%		XS MODEL
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\section{XS Model}
+\chapter{XS Model}
 The aim of a mean cross section model (XSModel) is to predict the mean cross sections of a fuel build by a EquivalenceModel (EQM) (see section \ref{sec:Equivalence}. The mean cross sections are required to compute fuel depletion in a reactor.
 
-\subsection{Available XS Models}
+\section{Available XS Models}
 There is, for the moment, 2 XSModel in CLASS : 
-\subsubsection{Pre-calculated XS : XSM\_CLOSEST}\label{sec:CLOSEST}
+\subsection{Pre-calculated XS : XSM\_CLOSEST}\label{sec:CLOSEST}
 This method looks, in a data base, for a fresh fuel with a composition \textbf{close} to the brandy new fuel built by the EquivalenceModel. Here, close means that the fresh fuel in the data base minimizes the distance d (see equation~\ref{eq:distance}).
 \begin{equation}\label{eq:distance}
 d=\sqrt{\sum_{i} w_{i}\cdot(n_{i}^{DB} - n_{i}^{new} )^{2} }
@@ -751,7 +701,7 @@ Users of others fuel depletion code (\emph{e.g} VESTA, ORIGEN, MONTEBURNS, SERPE
 
 
 
-\subsubsection{XS predictor : XSM\_MLP}
+\subsection{XS predictor : XSM\_MLP}
 This method calculates the mean cross sections by the mean of a set of neural networks (MLP from TMVA module) . There is two configurations available :
 
 \begin{itemize}
@@ -909,7 +859,7 @@ for(int i=0;i<N;i++) {stringstream ss;ss<<"Training_output_"<<i<<".root";deviati
  
  
 
-\subsection{How to build an XS Model}
+\section{How to build an XS Model}
 The strength of CLASS is to allow the user to build his own physic models, this section explains how to build a new cross section model and to incorporate it into CLASS.
 First you have to create the file XSM\_NAME.cxx and XSM\_NAME.hxx, where NAME is a name you choose. 
 Then open with a text editor the .hxx and copy past the following replacing NAME by the name you want.
@@ -1004,10 +954,10 @@ Then, edit these two files to make the function XSM\_NAME::GetCrossSections to r
 
 Now that your cross section model is ready, two choices are offered to you. You can compile the two files of your model with your CLASS input or you can add this model to the CLASS package. The second option will modify the CLASS software and we will be no longer able to troubleshoot your scenario. So use the second option only if you are a completely independent user !
 
-\paragraph{Compile your cross section model with your CLASS executable :}
+\subsection{Compile your cross section model with your CLASS executable :}
 @@BAM
 
-\paragraph{Your cross section model in the CLASS library :}
+\subsection{Your cross section model in the CLASS library :}
 Move your  XSM\_NAME.hxx and  XSM\_NAME.cxx in \$CLASS\_PATH/source/Model/XS/. Then open with your favourite text editor the file \\ \$CLASS\_PATH/source/src/Makefile, find "OBJMODEL" and add \$(XSM)/XSM\_NAME.o within the others \$(XSM) objects. Then re-compile CLASS, fix the compilation errors ;) and voilà your cross section model is now available in the CLASS library.
 
 
@@ -1017,11 +967,11 @@ Move your  XSM\_NAME.hxx and  XSM\_NAME.cxx in \$CLASS\_PATH/source/Model/XS/. T
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% IRRADIATION MODEL
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Irradiation Model}
+\chapter{Irradiation Model}
 
 \textbf{The irradiation model is the Bateman equations solver}. It is used for the calculation of fuel depletion in reactor. The decay depletion (without neutron flux) is not managed by an irradiation model but with a decay data bases (see section~\ref{sec:DecayDB}). 
 
-\subsection{Available Irradiation Model}
+\section{Available Irradiation Model}
 At the moment, there is two Irradiation Model available. The two solvers differs according to the numerical integration method used. The Irradiation Model IM\_RK4 uses the fourth order Runge-Kutta method. And IM\_Matrix uses the development in a power series of the exponential of the Bateman matrix.\\  
 \paragraph{Implementation in a .cxx : }
 
@@ -1036,7 +986,7 @@ At the moment, there is two Irradiation Model available. The two solvers differs
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHAPTER :	CLASSGUI
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{CLASSGui : The results viewer}
+\part{CLASSGui : The results viewer}
 
 
 
@@ -1046,7 +996,7 @@ At the moment, there is two Irradiation Model available. The two solvers differs
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHAPTER :	INPUT EXAMPLE
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Input examples}
+\part{Input examples}
 
 
 
@@ -1054,7 +1004,7 @@ At the moment, there is two Irradiation Model available. The two solvers differs
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHAPTER :	IN DEVELOPMENT
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{In development}
+\part{In development}
 
 
 
