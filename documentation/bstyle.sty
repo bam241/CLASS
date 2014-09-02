@@ -83,9 +83,72 @@
     \Huge \bfseries #1\par\nobreak
     \vskip 40\p@
   }}
+%---------------------------------------------------------------------
+
+\renewcommand{\bibname}{References}
+\renewcommand{\contentsname}{Table of Contents}
+\renewcommand{\listfigurename}{List of Figures}
 
 %---------------------------------------------------------------------
-\renewcommand{\bibname}{References}
+
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}         %Insérer du code source d'un pgm
+\lstset{
+	language=[Visual]C++,
+	keywordstyle=\bfseries\ttfamily\color{red},
+	identifierstyle=\ttfamily,
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\ttfamily\color[rgb]{0.627,0.126,0.941},
+	showstringspaces=false,
+	basicstyle=\footnotesize,
+	tabsize=2,
+	breaklines=true,
+	breakatwhitespace=false,
+	aboveskip={1.5\baselineskip},
+  columns=fixed,
+  frame=single,
+  extendedchars=true
+}
+\lstdefinestyle{terminal}
+{
+    backgroundcolor=\color{black},
+    basicstyle=\scriptsize\color{white}\ttfamily,
+    stringstyle=\color{white},
+     keywordstyle=\color{white}
+}
+\lstdefinestyle{makefile}
+{
+    numberblanklines=false,
+    language=make,
+    tabsize=4,
+    keywordstyle=\color{red},
+    identifierstyle= %plain identifiers for make
+}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\newcommand*{\titleGM}{\begingroup % Create the command for including the title page in the document
+\hbox{ % Horizontal box
+\hspace*{0.2\textwidth} % Whitespace to the left of the title page
+\rule{1pt}{\textheight} % Vertical line
+\hspace*{0.05\textwidth} % Whitespace between the vertical line and title page text
+\parbox[b]{0.75\textwidth}{ % Paragraph box which restricts text to less than the width of the page
+
+{\noindent\Huge\bfseries User Guide - CLASS v3.0  }\\[2\baselineskip] % Title
+{\large \textit{Core Library for Advanced Scenario Simulation}}\\[4\baselineskip] % Tagline or further description
+{\Large \textsc{B. MOUGINOT \& B. LENIAU}} % Author name
+
+\vspace{0.5\textheight} % Whitespace between the title block and the publisher
+{\noindent CNRS:IN2P3:Subatech:Erdre }\\[\baselineskip] % Publisher and logo
+}}
+\endgroup}
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+
 
 %---------------------------------------------------------------------
 
