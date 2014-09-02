@@ -550,12 +550,12 @@ double EQM_NAME::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fe
 \end{minipage}
 \end{center}
 
-In the constructor (EQM\_NAME::EQM\_NAME) you have to fill two isotopic vectors named \textbf{fFissileList} and \textbf{fFertileList}. Don't declare these isotopic vector in the .hxx, there are already declare in the file src/EquivalenceModel.hxx. fFissileList is used by the FabricationPlant to do the chemical separation of the fissile element from the other present in stock. For instance, for the plutonium, add the ZAI $^{238}Pu$, $^{239}Pu$, $^{240}Pu$, $^{241}Pu$ and $^{242}Pu$. fFertile List is used by the FabricationPlant the same way fFissileList is used but you have to define a default IsotopicVector to be used if you didn't provide a fertile stock to your FabricationPlant.  In the example given above the fertile is depleted uranium and  the proportion of each isotope is given ($^{234}U$ is unheeded). Now you have to build the function \textbf{GetFissileMolarFraction(IsotopicVector Fissil, IsotopicVector Fertil, double BurnUp)}. Its parameters are provided by the FabricationPlant and are :
+In the constructor (EQM\_NAME::EQM\_NAME) you have to fill two isotopic vectors named \textbf{fFissileList} and \textbf{fFertileList}. Don't declare these isotopic vector in the .hxx, there are already declared in the file src/EquivalenceModel.hxx. fFissileList is used by the FabricationPlant to do the chemical separation of the fissile element from the other present in stock. For instance, for the plutonium, add the ZAI $^{238}Pu$, $^{239}Pu$, $^{240}Pu$, $^{241}Pu$ and $^{242}Pu$. fFertile List is used by the FabricationPlant the same way fFissileList is used but you have to define a default IsotopicVector to be used if you didn't provide a fertile stock to your FabricationPlant.  In the example given above the fertile is depleted uranium and  the proportion of each isotope is given ($^{234}U$ is unheeded). Now you have to build the function \textbf{GetFissileMolarFraction(IsotopicVector Fissil, IsotopicVector Fertil, double BurnUp)}. Its parameters are provided by the FabricationPlant and are :
 
 \begin{itemize}
-\item IsotopicVector Fissil : it is the proportion of each nuclei you give in the fFissileList and the proportion of the nuclei that appears during the fabrication time (time given in the FabricationPlant constructor, is default is 2 years)
-\item IsotopicVector Fertil :  it is the proportion of each nuclei you give in the fFertileList and the proportion of the nuclei that appears during the fabrication time. If you didn't provide any fertile stock to your FabricationPlant then it's the default vector given in the EQM\_NAME constructor.
-\item double BurnUp : The maximal average burn-up for your fuel to reach in GWd/tHM.
+\item IsotopicVector Fissil : it is the proportion of each nucleus you give in the fFissileList plus the proportion of the nuclei that appears during the fabrication time (time given in the FabricationPlant constructor, is default is 2 years)
+\item IsotopicVector Fertil :  it is the proportion of each nucleus you give in the fFertileList plus the proportion of the nuclei that appears during the fabrication time. If you didn't provide any fertile stock to your FabricationPlant then it's the default vector given in the EQM\_NAME constructor.
+\item double BurnUp : The maximal average burn-up for your fuel to reach (in GWd/tHM).
 \end{itemize}
 Fill free to have a look at the models present in \$CLASS\_PATH/source/Model/Equivalence to get inspiration.
 
@@ -574,14 +574,14 @@ Move your  EQM\_NAME.hxx and  EQM\_NAME.cxx in \$CLASS\_PATH/source/Model/Equiva
 %%		XS MODEL
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{XS Model}
-The aim of a mean cross section model (XSModel) is to predict the mean cross sections of a fuel build by a EquivalenceModel (EQM) (see section \ref{sec:Equivalence}. The mean cross sections are required to compute fuel depletion in a reactor.
+The aim of a mean cross section model (XSModel) is to predict the mean cross sections of a fuel built by an EquivalenceModel (EQM) (see section \ref{sec:Equivalence}. The mean cross sections are required to compute fuel depletion in a reactor.
 
 \section{Available XS Models}
 There is, for the moment, 2 XSModel in CLASS : 
 \subsection{Pre-calculated XS : XSM\_CLOSEST}\label{sec:CLOSEST}
 This method looks, in a data base, for a fresh fuel with a composition \textbf{close} to the brandy new fuel built by the EquivalenceModel. Here, close means that the fresh fuel in the data base minimizes the distance d (see equation~\ref{eq:distance}).
 \begin{equation}\label{eq:distance}
-d=\sqrt{\sum_{i} w_{i}\cdot(n_{i}^{DB} - n_{i}^{new} )^{2} }
+d=\sqrt{\sum_{i} w_{i}\cdot(n_{i}^{DB} - n_{i}^{new} )^{2} },
 \end{equation}
 where $n_{i}^{DB}$ is the number of nuclei $i$ in one element of the data base and  $n_{i}^{new}$ the number of nuclei $i$ in the new fuel built by the EQM. $w_{i}$ is a weight associated to each isotopes, its value is 1 by default.
 When the closest evolution in the database is found, the corresponding mean cross sections are extracted and used for the calculation of the depletion of the new fuel.
@@ -673,7 +673,7 @@ Each EvolutionName.dat files comes with a EvolutionName.info file, which describ
 \begin{lstlisting}
 Reactor "ReactorName"		//What ever string without space
 Fueltype "FuelName"			//What ever string without space
-CycleTime "t"						//The final time simulated
+CycleTime "t"						//The final time simulated (@@BaM)
 ConstantPower "P"				//Simulated power (in W)
 \end{lstlisting}
 \end{minipage}
@@ -686,12 +686,13 @@ ConstantPower "P"				//Simulated power (in W)
 \item ...
 \end{itemize}
 
-\textbf{For MURE user only : } The program \$CLASS\_PATH/Utils/XS/CLOSEST/WriteDataBase converts a list of MURE evolution to a list of .dat and .info files and creates the .idx file, type in terminal the following command for more details.
+\textbf{For MURE user only : } The program \$CLASS\_PATH/Utils/XS/CLOSEST/WriteDataBase converts a list of MURE evolutions to a list of .dat and .info files and creates the .idx file, type in terminal the following command for more details.
 
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[style=terminal]
 \$CLASS\_PATH/Utils/XS/CLOSEST/WriteDataBase -h 
+@@BAM
 \end{lstlisting}
 \end{minipage}
 \end{center}
@@ -807,7 +808,7 @@ cd $CLASS_PATH/Utils/XS/MLP/Train
 \end{minipage} 
 \end{center}
 
- Look for @@Change in the file Train\_XS\_.cxx , and make the appropriate changes. Then type :
+ Look for @@Change in the file Train\_XS.cxx , and make the appropriate changes. Then type :
 
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -817,7 +818,7 @@ cd $CLASS_PATH/Utils/XS/MLP/Train
 \end{minipage} 
 \end{center}
 
-According the number of "events" in your .root file and the number of cross sections the training time can be very very very long. You might want to decrease the number of events (this will probably deteriorate the model accuracy) : look for nTrain\_Regression in Train\_XS\_.cxx and change is value to your wanted number of events. And/Or you may want to use more than one processor or perhaps a supercomputer : This is completely doable since the program Train\_XS trains only one MLP (one cross section). Indeed the execution line is the following :
+According the number of "events" in your .root file and the number of cross sections, the training time can be very very very long. You might want to decrease the number of events (this will probably deteriorate the model accuracy) : look for nTrain\_Regression in Train\_XS.cxx and change its value to your wanted number of events. And/Or you may want to use more than one processor or perhaps a supercomputer : This is completely doable since the program Train\_XS trains only one MLP (one cross section). Indeed the execution line is the following :
 
 \begin{center}
 \begin{minipage}{\textwidth}
