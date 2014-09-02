@@ -978,18 +978,30 @@ At the moment, there is two Irradiation Model available. The two solvers differs
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
-
+#include "CLASSHeaders.hxx"
+#include "Irradiation/IM_RK4.hxx"
+//#include "Irradiation/IM_Matrix.hxx"
+..
+using namespace std;
+int main()
+{
+//...
+	IM_RK4* Solver = new IM_RK4(LogObject); // or new IM_RK4(); // uses a default logfile
+//	IM_Matrix* Solver = new IM_Matrix(LogObject); // or new IM_Matrix(); //uses default logfile
+	PhysicModels* PHYMOD = new PhysicModels(XSMOX, EQMLINPWRMOX, Solver);
+//...	
+}
 \end{lstlisting}
 \end{minipage} 
 \end{center}
-
+LogObject is a  CLASSLogger object (see section~\ref{sec:logclass}).
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHAPTER :	CLASSGUI
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \part{CLASSGui : The results viewer}
 
-
-
+\subsection{How to build an Irradiation Model}
+The strength of CLASS is to allow the user to build his own physic models, this section explains how to build a new Bateman solver (Irradiation Model) and to incorporate it into CLASS.
 
 
 
