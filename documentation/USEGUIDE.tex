@@ -10,8 +10,8 @@
 %\date\today
 \usepackage{float}
 \usepackage{hyperref}
-\usepackage{listings}         %Insérer du code source d'un pgm
 \usepackage{xcolor}
+\usepackage{listings}         %Insérer du code source d'un pgm
 \lstset{
 	language=[Visual]C++,
 	keywordstyle=\bfseries\ttfamily\color{red},
@@ -31,7 +31,9 @@
 \lstdefinestyle{terminal}
 {
     backgroundcolor=\color{black},
-    basicstyle=\scriptsize\color{white}\ttfamily
+    basicstyle=\scriptsize\color{white}\ttfamily,
+    stringstyle=\color{white},
+     keywordstyle=\color{white}
 }
 \lstdefinestyle{makefile}
 {
@@ -41,6 +43,9 @@
     keywordstyle=\color{red},
     identifierstyle= %plain identifiers for make
 }
+
+
+
 %----------------------------------------------------------------------------------------
 %	TITLE PAGE
 %----------------------------------------------------------------------------------------
@@ -103,7 +108,7 @@ Ya quoi dans ce que je viens de downloader
 
 \begin{minipage}{\linewidth}
 \begin{itemize}
-\item User skills : Good knowledge of C++. 
+\item User skills : Good knowledge of C++. Abilities in using Root (cern). Experience in depletion codes and neutron transport codes.
 \item OS : CLASS is known to work under Linux (64  bits) and MacOSX (64 bits). It  has never been tested on any Windows distribution.
 \item Root (CERN) :  
 CLASS uses Root to store output data. 
@@ -253,7 +258,7 @@ image : shéma de principe de class
 \subsection{IsotopicVector}
 \subsection{Log management : CLASSLogger}\label{sec:logclass}
 \subsection{EvolutionData}\label{sec:EvolutionData}
-\section{Decay data bases}
+\section{Decay data bases}\label{sec:DecayDB}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -368,7 +373,7 @@ With LogObject a CLASSLogger object (see section~\ref{sec:logclass}) and AlphasF
 \end{itemize}
 \end{minipage}
 
-\subsubsection{Neural network model : EQM\_MLP\_MOX}
+\subsubsection{Neural network model : EQM\_MLP\_MOX}\label{sec:EQMMOX}
 This equivalence model  is based on a Multi Layer Perceptron (MLP) and  predict the amount of plutonium needed to reach \textbf{any burn-up}. The MLP inputs are the isotopic compositions of the plutonium (\textbf{including $^{241}Am$}), the enrichment of depleted uranium, and the targeted burn-up. The output is the plutonium content needed to reach the burn-up. This method uses the neural networks of the root module TMVA (@@@  Ref TMVA). To executes this model, TMVA is run in CLASS and need a .xml file. This file contains the neural network architecture and the weights resulting from the training procedure. 
 \\
 \\
@@ -399,12 +404,12 @@ In order to make his own .xml file one need to have a training data containing t
 \item The $^{235}U$ content in the depleted uranium.
 \end{itemize}
 
-The file \$CLASS\_PATH/DataBases/Equivalence/EQM\_MLP\_PWR\_MOX\_3batch.xml has been generated from the file \$CLASS\_PATH/Utils/EquivalenceGeneration/PWR\_MOX\_MLP/Train\_MLP.cxx 
+The file \$CLASS\_PATH/DataBases/Equivalence/EQM\_MLP\_PWR\_MOX\_3batch.xml has been generated from the file \$CLASS\_PATH/Utils/Equivalence/PWR\_MOX\_MLP/Train\_MLP.cxx 
 To train a new MLP from your own training sample proceed as follow : 
 
  \begin{minipage}{\linewidth} 
 \begin{lstlisting}[style=terminal]
-cd $CLASS_PATH/Utils/EquivalenceGeneration/PWR_MOX_MLP
+cd $CLASS_PATH/Utils/Equivalence/PWR_MOX_MLP
 g++ -o Train_MLP `root-config --cflags` Train_MLP.cxx `root-config --glibs` -lTMVA -I$ROOTSYS/tmva/test/
 Train_MLP YourTrainingData.root
 \end{lstlisting}
@@ -570,7 +575,7 @@ Fill free to have a look at the models present in \$CLASS\_PATH/source/Model/Equ
 Now that your equivalence model is ready two choices are offered to you. You can compile the two files of your model with your CLASS input or you can add this model to the CLASS package. The second option will modify the CLASS software and we will be no longer able to troubleshoot your scenario. So use the second option only if you are a completely independent user !
 
 \paragraph{Compile your equivalence model with your CLASS executable :}
-
+@@BAM
 
 \paragraph{Your equivalence model in the CLASS library :}
 Move your  EQM\_NAME.hxx and  EQM\_NAME.cxx in \$CLASS\_PATH/source/Model/Equivalence/. Then open with your favourite text editor the file  \$CLASS\_PATH/source/src/Makefile, find "OBJMODEL" and add \$(EQM)/EQM\_NAME.o within the others \$(EQM) objects. Then re-compile CLASS, fix the compilation errors ;) and voilà your equivalence model is now available in the CLASS library.
@@ -586,7 +591,7 @@ The aim of a mean cross section model (XSModel) is to predict the mean cross sec
 
 \subsection{Available XS Models}
 There is, for the moment, 2 XSModel in CLASS : 
-\subsubsection{Pre-calculated XS : XSM\_CLOSEST}
+\subsubsection{Pre-calculated XS : XSM\_CLOSEST}\label{sec:CLOSEST}
 This method looks, in a data base, for a fresh fuel with a composition \textbf{close} to the brandy new fuel built by the EquivalenceModel. Here, close means that the fresh fuel in the data base minimizes the distance d (see equation~\ref{eq:distance}).
 \begin{equation}\label{eq:distance}
 d=\sqrt{\sum_{i} w_{i}\cdot(n_{i}^{DB} - n_{i}^{new} )^{2} }
@@ -625,7 +630,7 @@ TYPE "NameOfTheFuel(withoutspace)"
 Each EvolutionName.dat file contains a fuel depletion calculation formatted as follow :
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}
+\begin{lstlisting}[label=lst:DatFormat,caption=Evolution Data format]
 time "0 t2 t3 ..."						// in seconds
 keff "k1 k2 k3 ..."					// not mandatory entry
 flux "phi1 phi2 phi3 ..." 			//(neutron/(second.cm2))not mandatory entry
@@ -652,13 +657,16 @@ Key words & Meaning \\
 \hline
 Inv & Inventory \\
 \hline
-Z & Charge number\\
-A & Mass number\\
-I & State (fundamental=0, $1^{st}$ excited =1, ...) \\
-\hline
 XSFis & mean fission cross section \\
 XSCap & mean $(n,\gamma)$ cross section\\
 XSn2n & mean $(n,2n)$ cross section \\
+\hline
+\hline
+Value & meaning \\
+\hline
+Z & Charge number\\
+A & Mass number\\
+I & State (fundamental=0, $1^{st}$ excited =1, ...) \\
 \hline
 \end{tabular}
 \end{center}
@@ -682,11 +690,11 @@ ConstantPower "P"				//Simulated power (in W)
 \item ...
 \end{itemize}
 
-\textbf{For MURE user only : } The program \$CLASS\_PATH/Utils/XS/XS\_CLOSEST/WriteDataBase converts a list of MURE evolution to a list of .dat and .info files and creates the .idx file, type in terminal the following command for more details.
+\textbf{For MURE user only : } The program \$CLASS\_PATH/Utils/XS/CLOSEST/WriteDataBase converts a list of MURE evolution to a list of .dat and .info files and creates the .idx file, type in terminal the following command for more details.
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[style=terminal]
-\$CLASS\_PATH/Utils/XS/XS_CLOSEST/WriteDataBase -h 
+\$CLASS\_PATH/Utils/XS/CLOSEST/WriteDataBase -h 
 \end{lstlisting}
 \end{minipage}
 
@@ -696,10 +704,10 @@ Users of others fuel depletion code (\emph{e.g} VESTA, ORIGEN, MONTEBURNS, SERPE
 
 
 \subsubsection{XS predictor : XSM\_MLP}
-This method calculates the mean cross sections by the mean of a set of neural networks (MLP). There is two configurations available :
+This method calculates the mean cross sections by the mean of a set of neural networks (MLP from TMVA module) . There is two configurations available :
 
 \begin{itemize}
-\item One MLP per nuclear reaction and per time step.
+\item One MLP per nuclear reaction and per time step (this one is deprecated and not describe in this manual) .
 \item	One MLP per nuclear reaction. the irradiation time is one of the MLP inputs.
 \end{itemize}
 
@@ -712,7 +720,7 @@ This method calculates the mean cross sections by the mean of a set of neural ne
 ...
 int main()
 {	...
-	XSM_MLP* XSMOX = new XSM_MLP( ClassLog, PathToWeightFolder, InfoFileName, IsTimeStep );
+	XSM_MLP* XSMOX = new XSM_MLP( ClassLog, PathToWeightFolder, InfoFileName, OneMLPPerTime );
 //or
 //XSM_MLP* XSMOX = new XSM_MLP(PathToWeightFolder, InfoFileName, OneMLPPerTime);
 ...
@@ -724,7 +732,7 @@ int main()
 Format of InfoFileName is :
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}
+\begin{lstlisting}[label=lst:informationfile,caption=Information file format]
 ReactorType :"ReactorName"	//without space
 FuelType :"FuelName" //without space
 Heavy Metal (t) :"m"
@@ -752,19 +760,209 @@ Z A I Name (input MLP) :
 \\
 \textcolor{blue}{\large{\textbf{Training MLPs for cross sections prediction :}}}\\
 
-Like for the equivalence model, first of all you have to create a training sample. This is one of the most important thing since the way of filling the hyperspace of
+\textbf{\underline{ Preparation of the training sample :} }\\
+\\
+Like for the equivalence model, first of all you have to create a training sample. This is one of the most important thing since the way of filling the hyperspace of the MLP inputs will influence the accuracy of your model. We suggest to used the Latin Hyper Cube method [@@@REFF] to generate many fresh fuel compositions, then, calculates with your favourite neutron transport code (MCNP, MORET, SERPENT ...) the mean cross sections of each fresh fuel for different irradiation time. Please refer to [REFFFBAL MLPXS] for more informations about the space filling and the validation of this cross sections predictor .
+Once all your calculations are complete you have to convert them into the .dat format (see code frame~\ref{lst:DatFormat}).
+Then type :
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=terminal]
+cd $CLASS_PATH/Utils/XS/MLP/BuildInput
+\end{lstlisting}
+\end{minipage}
+
+Open the file Gene.cxx, looks for @@Change and make the appropriate changes. Then type :
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=terminal]
+g++ -o Gene Gene.cxx `root-config --cflags` `root-config --libs`
+Gene PATH_To_dat_Folder/
+\end{lstlisting}
+\end{minipage}
+
+Where  PATH\_To\_dat\_Folder/ is the path to the folder containing the .dat files. This program should have built two files :
+
+\begin{itemize}
+\item TrainingInput.root : This root file contains the fresh fuel inventories and the cross sections values of all the read .dat files. You can plot the data with the root command line tool if you wish. This file is the \textbf{Training and testing sample} that will be used for the TMVA training and testing procedure.
+ 
+\item TrainingInput.cxx : This file contains, in a vector, the names of all the MLP outputs. The number of lines in this file is the number of MLP that will be train.
+\end{itemize} 
+
+\textbf{\underline{ Training and testing procedure : }}\\
+\\
+Once the two TrainingInput (.cxx and .root) are generated type :
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=terminal]
+cd $CLASS_PATH/Utils/XS/MLP/Train
+\end{lstlisting}
+\end{minipage} 
+
+ Look for @@Change in the file Train\_XS\_.cxx , and make the appropriate changes. Then type :
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=terminal]
+ g++ -o Train_XS  `root-config --cflags` Train_XS.cxx `root-config --glibs` -lTMVA
+\end{lstlisting}
+\end{minipage} 
+
+According the number of "events" in your .root file and the number of cross sections the training time can be very very very long. You might want to decrease the number of events (this will probably deteriorate the model accuracy) : look for nTrain\_Regression in Train\_XS\_.cxx and change is value to your wanted number of events. And/Or you may want to use more than one processor or perhaps a supercomputer : This is completely doable since the program Train\_XS trains only one MLP (one cross section). Indeed the execution line is the following :
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=terminal]
+Train_XS i
+\end{lstlisting}
+\end{minipage} 
+
+where i is the index of the cross section in the vector created in TrainingInput.cxx. So feel free to create a script to run the training on a wanted number of processors. For instance let's say you have 40 cross sections and 4 processors, creates 4 files (make them executable) and in the first one type :
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+Train_XS 0
+Train_XS 1
+...
+TrainXS 9
+\end{lstlisting}
+\end{minipage} 
+
+continue in the second file, and so on. Then execute all of them. The architecture and weights of each MLP (.xml files) are stored in the folder weights. Rename this folder by the name of the reactor and fuel, then create in this folder the information file (see code frame~\ref{lst:informationfile}). And voilà your new XSM\_MLP is ready to be used.\\
+
+After each training (using by default the half of the events) a testing procedure (using the other half) is performed. This latter consists on executing the trained MLP with input data from a known sample and compare the MLP result to the true value. These data and other informations about the training are stored in file \textbf{Training\_output\_i.root}, with i the index of the cross section. In order to see either the MLPs predictions are accurate or not, the root macro \$CLASS\_PATH/Utils/XS/MLP/Train/deviations.C plot the distribution of relative differences between model executions and the true values and a  Gaussian fit of it. Then, the mean and the standard deviation of the Gaussian fit are stored in file \textbf{XS\_accuracy.dat} (format : XSName mean std.dev.). Type the following to get, in file XS\_accuracy.dat, the mean and the standard deviation of all the MLPs (with N the number of cross sections (number of MLPs) ) :
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=terminal]
+cd $CLASS\_PATH/Utils/XS/MLP/Train/
+root
+.L deviations.C
+for(int i=0;i<N;i++) {stringstream ss;ss<<"Training_output_"<<i<<".root";deviations(ss.str().c_str(),0,kTRUE,kFALSE,kFALSE); }
+\end{lstlisting}
+\end{minipage} 
+ 
+ The closest to 0 the mean is and the smaller standard deviation, the better.
+ 
+ 
 
 \subsection{How to build an XS Model}
+The strength of CLASS is to allow the user to build his own physic models, this section explains how to build a new cross section model and to incorporate it into CLASS.
+First you have to create the file XSM\_NAME.cxx and XSM\_NAME.hxx, where NAME is a name you choose. 
+Then open with a text editor the .hxx and copy past the following replacing NAME by the name you want.
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+#ifndef _XSM_NAME_HXX
+#define _XSM_NAME_HXX
+#include "XSModel.hxx"
+// add include if needed
+using namespace std;
+//----------------------------------------------------------------------//
+/*!
+ Define a XSM_NAME
+describe your model
+ @authors YourName
+ @version 1.0
+ */
+//________________________________________________________________________
+class XSM_NAME : public XSModel
+{
+	public :
+	
+	XSM_NAME(/*parameters (if any)*/);
+
+	~XSM_NAME();
+
+ 	EvolutionData GetCrossSections(IsotopicVector IV,double t=0);
+
+	private :			
+	//your private variables and methods
+};
+#endif
+\end{lstlisting}
+\end{minipage} 
+
+
+Open the .cxx file and copy past the following in it (replacing NAME by the same name you used in the .hxx).
+ 
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+#include "XSModel.hxx"
+#include "XSM_NAME.hxx"
+#include "CLASSLogger.hxx"
+#include "StringLine.hxx"
+
+#include <TGraph.h>
+//________________________________________________________________________
+//
+//		XSM_NAME
+//________________________________________________________________________
+XSM_NAME::XSM_NAME(/*parameters (if any)*/)
+{
+// do what you want : for instance save path of eventual files
+}
+//________________________________________________________________________
+XSM_NAME::~XSM_NAME()
+{
+ //delete pointer if any; clear map if any ; empty vector if any
+}
+//________________________________________________________________________
+EvolutionData XSM_NAME::GetCrossSections(IsotopicVector IV ,double t)
+{
+	EvolutionData EvolutionDataFromXSM_NAME = EvolutionData();
+	/*************DATA BASE INFO****************/
+	EvolutionDataFromXSM_NAME.SetReactorType(fDataBaseRType);//Give the reactor name
+	EvolutionDataFromXSM_NAME.SetFuelType(fDataBaseFType);//Give the fuel name
+	EvolutionDataFromXSM_NAME.SetPower(fDataBasePower);//Set the power W
+	EvolutionDataFromXSM_NAME.SetHeavyMetalMass(fDataBaseHMMass);//corresponding to this mass (t)
+	
+	map<ZAI,TGraph*> ExtrapolatedXS[3];
+//... Fill the 3 maps ExtrapolatedXS  according to your model and the
+// fresh fuel composition given by argument IsotopicVector IV 
+// argument double t may be not used. 	
+
+	/*****THE CROSS SECTIONS***/
+	EvolutionDataFromXSM_NAME.SetFissionXS(ExtrapolatedXS[0]);
+	EvolutionDataFromXSM_NAME.SetCaptureXS(ExtrapolatedXS[1]);
+	EvolutionDataFromXSM_NAME.Setn2nXS(ExtrapolatedXS[2]);
+
+return EvolutionDataFromXSM_NAME;
+}
+\end{lstlisting}
+\end{minipage} 
+
+Then, edit these two files to make the function XSM\_NAME::GetCrossSections to return the cross sections in a EvolutionData object. To do so you have to fill three maps (ExtrapolatedXS in .cxx), one for fission, one for $(n,\gamma)$, and one for $(n,2n)$ . Each map associates a nucleus (a ZAI) to a TGraph. A TGraph is a root object, here, it contains the cross section (barns) evolution over time (seconds). If your are not comfortable with TGraph refer to the  \href{http://root.cern.ch/root/html/TGraph.html}{root website}
+\footnote{http://root.cern.ch/root/html/TGraph.html}
+
+Now that your cross section model is ready, two choices are offered to you. You can compile the two files of your model with your CLASS input or you can add this model to the CLASS package. The second option will modify the CLASS software and we will be no longer able to troubleshoot your scenario. So use the second option only if you are a completely independent user !
+
+\paragraph{Compile your cross section model with your CLASS executable :}
+@@BAM
+
+\paragraph{Your cross section model in the CLASS library :}
+Move your  XSM\_NAME.hxx and  XSM\_NAME.cxx in \$CLASS\_PATH/source/Model/XS/. Then open with your favourite text editor the file \\ \$CLASS\_PATH/source/src/Makefile, find "OBJMODEL" and add \$(XSM)/XSM\_NAME.o within the others \$(XSM) objects. Then re-compile CLASS, fix the compilation errors ;) and voilà your cross section model is now available in the CLASS library.
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% IRRADIATION MODEL
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Irradiation Model}
 
+\textbf{The irradiation model is the Bateman equations solver}. It is used for the calculation of fuel depletion in reactor. The decay depletion (without neutron flux) is not managed by an irradiation model but with a decay data bases (see section~\ref{sec:DecayDB}). 
 
+\subsection{Available Irradiation Model}
+At the moment, there is two Irradiation Model available. The two solvers differs according to the numerical integration method used. The Irradiation Model IM\_RK4 uses the fourth order Runge-Kutta method. And IM\_Matrix uses the development in a power series of the exponential of the Bateman matrix.
 
+\\  
+\\
+\textbf{Implementation in a .cxx : }
 
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
 
+\end{lstlisting}
+\end{minipage} 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHAPTER :	CLASSGUI
