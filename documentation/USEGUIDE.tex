@@ -303,13 +303,13 @@ Just define a simple reactor without fuel, starting time,  mass of fuel, time of
 \vspace{3cm}
 
 \subsubsection{Fixed fuel constructor}
-Constructor defining the a reactor using fixed fuel. 
+Constructor defining a reactor using fixed fuel. 
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
 	Reactor(CLASSLogger* log, EvolutionData evolutivedb, CLASSBackEnd* CBE,
 		cSecond creationtime, cSecond lifetime,
-		double power, double HMMass, double BurnUp, double ChargeFactor = 1);
+		double power, double HMMass, double BurnUp, double CapacityFactor = 1);
 \end{lstlisting}
 \begin{lstlisting}
 	Reactor(CLASSLogger* log, EvolutionData evolutivedb, CLASSBackEnd* Pool,
@@ -318,12 +318,12 @@ Constructor defining the a reactor using fixed fuel.
 \end{lstlisting}
 \end{minipage}
 \end{center}
-The evolution of the fuel is given by the \hyperref[sec:EvolutionData]{EvolutionData} \textit{evolutivedb} the mass of heavy metal in the reactor core by \textit{HMMass}, the power by \textit{Power} and  its charge factor by \textit{ChargeFactor}.\\
+The evolution of the fuel is given by the \hyperref[sec:EvolutionData]{EvolutionData} \textit{evolutivedb} the mass of heavy metal in the reactor core by \textit{HMMass}, the power by \textit{Power} and  its capacity factor by \textit{CapacityFactor}.\\
 To avoid mixing between constructor, only 2 constructor exist to set the triplet (power, burnup, cycle time). (if more 2 constructor would have the same number of input variables.)\\
 After irradiation the fuel goes in the \hyperref[sec:CLASSBackEnd]{CLASSBackEnd} CBE, which as seen section \label{sec:CLASSBackEnd} can be any CLASSBackEndFacility (SeparationPlant, Pool or storage).
 
 \subsubsection{Reprocessed fuel constructor}
-As well as in the fixed fuel constructor, the mass of heavy metal in the reactor core by \textit{HMMass}, the power by \textit{Power} and  its charge factor by \textit{ChargeFactor}. Only 2 constructor exist to set the triplet (power, burnup, cycle time).\\
+As well as in the fixed fuel constructor, the mass of heavy metal in the reactor core by \textit{HMMass}, the power by \textit{Power} and  its capacity factor by \textit{CapacityFactor}. Only 2 constructor exist to set the triplet (power, burnup, cycle time).\\
 The \hyperref[sec:PhysicsModels]{PhysicsModels} is \textit{fuelDB}, and the \hyperref[sec:FabricationPlant]{FabricationPlant} is \textit{FabricationPlant}.
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -337,7 +337,7 @@ The \hyperref[sec:PhysicsModels]{PhysicsModels} is \textit{fuelDB}, and the \hyp
 	Reactor(CLASSLogger* log, PhysicsModels 	fueltypeDB,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
 		cSecond creationtime , cSecond lifetime,
-		double Power, double HMMass, double BurnUp, double ChargeFactor);
+		double Power, double HMMass, double BurnUp, double CapacityFactor);
 \end{lstlisting}
 \end{minipage}
 \end{center}
@@ -446,6 +446,7 @@ PARAM "238Pu 238Pu*238Pu 238Pu*239Pu 238Pu*240Pu 238Pu*241Pu 238Pu*242Pu 239Pu 2
 Where 238Pu stands for $\alpha_{^{238}Pu}$ and it is the first order weight  related to the  molar proportion of $^{238}Pu$ and $1$ is $\alpha_{0}$. The weights are in units of $\%mol. \cdot \%mol.^{-1}$ for $\alpha_{i}$ in units of  $\%mol. \cdot \%mol.^{-2}$ for  $\alpha_{ij}$ and in units of $\%mol.$ for $\alpha_{0}$. The Keyword "PARAM" has to be present in the file before the $\alpha$ values. For more informations about this model and the generation of the coefficients please refer to reference [@@PAPIER BAM].
 \\  
 \\
+
 \begin{center}
 \begin{minipage}{\textwidth}
 \textbf{Implementation in a .cxx }
@@ -705,12 +706,12 @@ Move your  EQM\_NAME.hxx and  EQM\_NAME.cxx in \$CLASS\_PATH/source/Model/Equiva
 %%		XS MODEL
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{XS Model}
-The aim of a mean cross section model (XSModel) is to predict the mean cross sections of a fuel built by an EquivalenceModel (EQM) (see section \ref{sec:Equivalence}. The mean cross sections are required to compute fuel depletion in a reactor.
+The aim of a mean cross section model (XSModel) is to predict the mean cross sections of a fuel built by an EquivalenceModel (EQM) (see section \ref{sec:Equivalence}). The mean cross sections are required to compute fuel depletion in a reactor.
 
 \section{Available XS Models}
 There is, for the moment, 2 XSModel in CLASS : 
 \subsection{Pre-calculated XS : XSM\_CLOSEST}\label{sec:CLOSEST}
-This method looks, in a data base, for a fresh fuel with a composition \textbf{close} to the brandy new fuel built by the EquivalenceModel. Here, close means that the fresh fuel in the data base minimizes the distance d (see equation~\ref{eq:distance}).
+This method looks, in a data base, for a fresh fuel with a composition \textbf{close} to the brandy new fuel built by the EquivalenceModel. Here, close means that the fresh fuel in the data base minimizes the distance $d$ (see equation~\ref{eq:distance}).
 \begin{equation}\label{eq:distance}
 d=\sqrt{\sum_{i} w_{i}\cdot(n_{i}^{DB} - n_{i}^{new} )^{2} },
 \end{equation}
@@ -857,10 +858,8 @@ int main()
 \end{lstlisting}
 \end{minipage}
 \end{center}
-
 \textbf{PathToWeightFolder} (string) is the path to the folder containing the weight files (.xml files). \textbf{OneMLPPerTime} is a boolean setted to true if there is one MLP per reaction and per time step. \textbf{InfoFileName} (string) is the name of the file located in PathToWeightFolder which is informing on the reactor and on the inputs of the XS\_MLP model.
 Format of InfoFileName is :
-
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[label=lst:informationfile,caption=Information file format]
