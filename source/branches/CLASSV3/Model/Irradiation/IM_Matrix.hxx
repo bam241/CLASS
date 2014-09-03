@@ -10,7 +10,6 @@
  @author BaM
  @version 2.0
  */
-#include "DynamicalSystem.hxx"
 #include "IrradiationModel.hxx"
 
 
@@ -32,7 +31,7 @@ class CLASSLogger;
 
 class EvolutionData;
 
-class IM_Matrix : public IrradiationModel, DynamicalSystem
+class IM_Matrix : public IrradiationModel
 {
 
 	public :

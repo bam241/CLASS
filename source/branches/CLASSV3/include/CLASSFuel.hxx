@@ -20,7 +20,7 @@
 using namespace std;
 
 class EvolutionData;
-class PhysicModels;
+class PhysicsModels;
 //-----------------------------------------------------------------------------//
 /*!
  Define a CLASS Object.
@@ -46,7 +46,7 @@ class CLASSFuel : public CLASSObject
 
 
 	virtual EvolutionData* GetEvolutionData() {return 0;}
-	virtual PhysicModels* GetPhysicModels() {return 0;}
+	virtual PhysicsModels* GetPhysicsModels() {return 0;}
 	using CLASSObject::SetName;
 	using CLASSObject::GetName;
 	protected :
