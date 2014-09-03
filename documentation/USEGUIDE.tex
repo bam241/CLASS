@@ -205,23 +205,85 @@ CLASS has a \href{https://forge.in2p3.fr/projects/classforge}{forge}\footnote{ht
 \item \href{https://forge.in2p3.fr/projects/classforge/embedded/annotated.html}{A doxygen}\footnote{https://forge.in2p3.fr/projects/classforge/embedded/annotated.html} where all the CLASS objects and methods are defined and explained.
 \item \href{https://forge.in2p3.fr/projects/classforge/news}{News}\footnote{https://forge.in2p3.fr/projects/classforge/news} : All the news related to CLASS
 \end{itemize}
+A \href{classuser-l@ccpntc02.in2p3.fr}{Mailing List}\footnote{classuser-l@ccpntc02.in2p3.fr} also exist in order to be warned of all the change inside CLASS and to allow user to exchange directly on the code. One can join the mailing list through the following  \href{http://listserv.in2p3.fr/cgi-bin/wa?SUBED1=classuser-l&A=1}{link}\footnote{http://listserv.in2p3.fr/cgi-bin/wa?SUBED1=classuser-l\&A=1}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHAPTER :	GENERAL OVERVIEW
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \part{CLASS : General overview}
 \chapter{Generalities}
-Lister les unité 
+\section{Basic units\label{section:unit}}
+All time in CLASS should be written in second. It corresponds to the cSecond, a CLASS c++ type, which are a \textbf{long long int} going, in 32bits \textbf{and} 64 bits, up to  to  $(2^{63} - 1)~\textrm{s}~ \sim 2.9\cdot 10^{11}$ years, enough for any electro-nuclear scenarios one can consider....\\
+ \section{CLASS working process principle}
 image : shéma de principe de class
 \chapter{Facilities descriptions}
-\section{Storage}
-\section{Pool}
-\section{Fabrication Plant}
-\section{Reactor}
+All the facility in CLASS project are regroup inside a large group called CLASSFacility (and inherit of all the properties of the CLASSFacility in a C++ way). Inside the CLASSFacility, 3 different types can be defined, the reactor, the FabricationPlant (or more generally, all the fuel cycle front-end facilities) and the backend facilities. 
+\section{CLASSFacility}
+The CLASSFacility should never be used directly in the main CLASS program (the one made to perform the simulation).  The aim of these object is to regroup all the common properties of the nuclear facilities, such as common variables, methods, and builder. 
+Its includes 2 variables needed by CLASS environment:
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+private :
+	int		fId;						//!< Identity of the Facility inside the Parc
+	int		fFacilityType;	///< Type of facility :
+												/// \li 4 reactor,
+												/// \li 8 Pool,
+												/// \li 16 FabricationPlant.
+	Scenario*		fParc;		//!< Pointer to the main Parc
+\end{lstlisting}
+\end{minipage}
+\end{center}
+The \textit{fId} variable correspond to the unique identity number allowing to differentiate all the facility of a certain type. The \textit{fFacilityType} variable correspond to an identity number allowing to separate the different type of facilities. Those to variable are "\textbf{private}", which mean it is not possible to access to them directly, one \textbf{must} to use there Get-xxx() and the Set-xxx() function (even inside the daughter class such as reactor...). \textit{fParc} is a pointer to the main park, which allow to access to the rest of the park. Be careful the \textit{fParc} pointer main not be assigned if the facility is not included in a park...\\
+\\
+\\
+\\
+The CLASSFacility also includes all the generic variable and method for time and simple fuel management:
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+protected :
+	bool		fIsStarted;			///< True if Running, False Otherwise
+	bool		fIsShutDown;		///< True if the facility is stoped, False Otherwise
+	bool		fIsShutDown;	///< True if Reaching the End of a Facility Cycle
+
+		
+	cSecond		fInternalTime;		///< Internal Clock
+	cSecond		fInCycleTime;			///< Time spend since the beginning of the last Cycle
+	cSecond		fCycleTime;				///< Cycle duration Time
+
+	IsotopicVector	fInsideIV;	///< All IV in the Facility (fuel for reactor, total for all others...)
+	IsotopicVector	fCumulativeIVIn;	///< All IV in the Facility (fuel for reactor, total for all others...)
+	IsotopicVector	fCumulativeIVOut;	///< All IV in the Facility (fuel for reactor, total for all others...)
+
+		//********* Internal Parameter *********//
+private :
+	[...]
+	cSecond		fCreationTime;		///< CLASS Universal Time of Creation
+	cSecond		fLifeTime;				///< Time of life Of the Reactor (Operating's Duration)
+
+\end{lstlisting}
+\end{minipage}
+\end{center}
+\textit{fIsStarted}, \textit{fIsShutDown}, \textit{fIsShutDown} allows to the Dump() method to determine the state of the facility and do what is necessary.\\
+\textit{fInternalTime}, \textit{fInCycleTime}, \textit{fCycleTime} variable allows the \hyperref[section:unit]{time} the time management inside the facility. \textit{fInternalTime} correspond to the last time until the evolution of the facility as been calculated. \textit{fCycleTime} the time length of a cycle in this facility (note that it could be irradiation cycle in a \hyperref[section:reactor]{Reactor}, fabrication time in a \hyperref[section:FP]{FabricationPlant}, or cooling time in a \hyperref[section:pool]{Pool}). And \textit{fInCycleTime} correspond to the time already past in the current cycle.\\
+\textit{fCreationTime}, \textit{fLifeTime} are \textbf{private} and used to define the creation time of the facility, and its operation time length.
+ 
+Besides all the time management of the facility, it also contain the basic tool for fuel management the three \hyperref[section:IV]{IsotopicVector} : \textit{fInsideIV}, \textit{fCumulativeIVIn}, \textit{fCumulativeIVOut}, which correspond respectively to the isotopic vector present in the facility, to the cumulative income inside the facility, and the cumulative outcome outside the facility.
+
+By default af the Get-xxx() and Set-xxx() method associated to those variable are define, and some can be overloaded.
+
+The CLASSFacility also comes with 2 virtual method (which means one must  overloading it when defining a new facility) : \textit{Evolution(cSecond t)} and \textit{Dump()}. They are both used to perform the evolution of the facility. Where the first one (\textit{Evolution}) is used to specify the change inside the facility (mainly fuel evolution), the second one (\textit{Dump}) is used to deal the exchange between facility, such as refilling a reactor or send a fuel to the stick at the end of cooling.
+
+\section{Reactor\label{section:reactor}}
+\section{CLASSBackEnd}
+\subsection{Storage}
+\subsection{Pool\label{section:pool}}
+\section{Fabrication Plant\label{section:FP}}
 
 \chapter{Other objects}
 \section{ZAI}
-\section{IsotopicVector}
+\section{IsotopicVector\label{section:IV}}
 \section{Log management : CLASSLogger}\label{sec:logclass}
 \section{EvolutionData}\label{sec:EvolutionData}
 \chapter{Decay data bases}\label{sec:DecayDB}
