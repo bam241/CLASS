@@ -358,23 +358,24 @@ The \hyperref[sec:PhysicsModels]{PhysicsModels} is \textit{fuelDB}, and the \hyp
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
-%% CHAPTER :		PHYSIC MODEL
+%% CHAPTER :		Physics MODEL
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
 \part{Physics Models\label{sec:PhysicsModels}}
 \chapter{Description and implementation}
-A Physic Models is related to one or several reactors , it is a container of three models :
+A Physics Models is related to one or several reactors , it is a container of three models :
 \begin{itemize}
 \item Equivalence Model : Tells to the Fabrication Plant how to build the fuel.
 \item XS Model : "Calculates" the mean  cross sections of this fuel and sends it to the Bateman Solver.
 \item Irradiation Model : It is the Bateman Solver. User can choose between different numerical method.
 \end{itemize}
 
-A physic model is called in the CLASS input like the following example :
+A Physics model is called in the CLASS input like the following example :
 
 \begin{center}
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\textbf{Implementation in a .cxx :}
+\begin{lstlisting}[label=lst:PIMP_HYMOD, caption=PhysicsModels]
 ...
 #include "XS/XSM_MLP.hxx"
 #include "Irradiation/IM_RK4.hxx"
@@ -396,7 +397,7 @@ int main()
 \end{minipage}
 \end{center}
 
-In this latter example a physics model called "PHYMOD" is defined, it contains the bateman solver "Solver" which is the Runge Kutta ($4^{th}$ order) method. The mean cross sections predictor, "XS",  used is  based on a Multi Layer Perceptron. The Equivalence Model "Equivalence" is the one used for PWR MOX fuels. The arguments of the 3 objects constructor are explained in its corresponding sections.
+In this latter example a Physics model called "PHYMOD" is defined, it contains the bateman solver "Solver" which is the Runge Kutta ($4^{th}$ order) method. The mean cross sections predictor, "XS",  used is  based on a Multi Layer Perceptron. The Equivalence Model "Equivalence" is the one used for PWR MOX fuels. The arguments of the 3 objects constructor are explained in its corresponding sections.
 
 All the existing models are define in the following sections, furthermore, the way to build its own Model is presented.
 
@@ -445,11 +446,10 @@ PARAM "238Pu 238Pu*238Pu 238Pu*239Pu 238Pu*240Pu 238Pu*241Pu 238Pu*242Pu 239Pu 2
 Where 238Pu stands for $\alpha_{^{238}Pu}$ and it is the first order weight  related to the  molar proportion of $^{238}Pu$ and $1$ is $\alpha_{0}$. The weights are in units of $\%mol. \cdot \%mol.^{-1}$ for $\alpha_{i}$ in units of  $\%mol. \cdot \%mol.^{-2}$ for  $\alpha_{ij}$ and in units of $\%mol.$ for $\alpha_{0}$. The Keyword "PARAM" has to be present in the file before the $\alpha$ values. For more informations about this model and the generation of the coefficients please refer to reference [@@PAPIER BAM].
 \\  
 \\
-\textbf{Implementation in a .cxx : }
-
 \begin{center}
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\textbf{Implementation in a .cxx }
+\begin{lstlisting}[label=lst:IMP_EQMQUAD,caption=Equivalence Model EQM\_QUAD\_MOX ]
 ...
 #include "Equivalence/EQM_QUAD_PWR_MOX.hxx"
 ...
@@ -468,10 +468,10 @@ EQM_QUAD_PWR_MOX* Equivalence = new	EQM_QUAD_PWR_MOX( LogObject, AlphasFile );
 With LogObject a CLASSLogger object (see section~\ref{sec:logclass}) and AlphasFile a string which is the complete path to the file containing the weights (the $\alpha$ parameters)
 \\
 \\
-\textbf{Available weight file (.dat) : }
 
 \begin{center}
 \begin{minipage}{\textwidth}
+\textbf{Available weight file (.dat) : }
 \begin{itemize}
 \item \textbf{@@@ BAM}
 \item \textbf{@@@ BAM}
@@ -482,11 +482,12 @@ With LogObject a CLASSLogger object (see section~\ref{sec:logclass}) and AlphasF
 
 \subsubsection{Neural network model : EQM\_MLP\_MOX}\label{sec:EQMMOX}
 This equivalence model  is based on a Multi Layer Perceptron (MLP) and  predict the amount of plutonium needed to reach \textbf{any burn-up}. The MLP inputs are the isotopic compositions of the plutonium (\textbf{including $^{241}Am$}), the enrichment of depleted uranium, and the targeted burn-up. The output is the plutonium content needed to reach the burn-up. This method uses the neural networks of the root module TMVA (@@@  Ref TMVA). To executes this model, TMVA is run in CLASS and need a .xml file. This file contains the neural network architecture and the weights resulting from the training procedure.
-
-\paragraph{Implementation in a .cxx : }
+\\
+\\
 \begin{center}
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\textbf{Implementation in a .cxx : }
+\begin{lstlisting}[label=lst:IMP_EQMMLP,caption=Equivalence Model EQM\_MLP\_PWR\_MOX ]
 ...
 #include "Equivalence/EQM_MLP_PWR_MOX.hxx"
 ...
@@ -600,14 +601,14 @@ For more informations about this model please refer to [@@Papier BaL].
 @@@BAM
 
 \section{How to build an Equivalence Model}
-The strength of CLASS is to allow the user to build his own physic models, this section explains how to build a new equivalence model and to incorporate it into CLASS.
+The strength of CLASS is to allow the user to build his own Physics models, this section explains how to build a new equivalence model and to incorporate it into CLASS.
 
 First you have to create the file EQM\_NAME.cxx and EQM\_NAME.hxx, where NAME is a name you choose. 
 Then open with a text editor the .hxx and copy past the following replacing NAME by the name you want.
 
 \begin{center}
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\begin{lstlisting}[label=lst:HXX_EQM,caption=EQM\_NAME.hxx ]
 #ifndef _EQM_NAME_HXX
 #define _EQM_NAME_HXX
 #include "EquivalenceModel.hxx"
@@ -641,7 +642,7 @@ Open the .cxx file and copy past the following in it (replacing NAME by the same
  
 \begin{center}
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\begin{lstlisting}[label=lst:CXX_EQM,caption=EQM\_NAME.cxx ]
 #include "EquivalenceModel.hxx"
 #include "EQM_NAME.hxx"
 #include "CLASSLogger.hxx"
@@ -717,11 +718,10 @@ where $n_{i}^{DB}$ is the number of nuclei $i$ in one element of the data base a
 When the closest evolution in the database is found, the corresponding mean cross sections are extracted and used for the calculation of the depletion of the new fuel.
 \\
 \\
-\textbf{Implementation in a .cxx : }
-
 \begin{center}
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\textbf{Implementation in a .cxx : }
+\begin{lstlisting}[label=lst:IMP_EQMQUAD,caption=Cross section Model XSM\_CLOSEST ]
 ...
 #include "XS/XSM_CLOSEST.hxx"
 ...
@@ -840,11 +840,10 @@ This method calculates the mean cross sections by the mean of a set of neural ne
 \item	One MLP per nuclear reaction. the irradiation time is one of the MLP inputs.
 \end{itemize}
 
-\textbf{Implementation in a .cxx : }
-
 \begin{center}
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\textbf{Implementation in a .cxx : }
+\begin{lstlisting}[label=lst:IMP_EQMQUAD,caption=Cross section Model XSM\_MLP ]
 ...
 #include "XS/XSM_MLP.hxx"
 ...
@@ -991,13 +990,13 @@ for(int i=0;i<N;i++) {stringstream ss;ss<<"Training_output_"<<i<<".root";deviati
  
 
 \section{How to build an XS Model}
-The strength of CLASS is to allow the user to build his own physic models, this section explains how to build a new cross section model and to incorporate it into CLASS.
+The strength of CLASS is to allow the user to build his own Physics models, this section explains how to build a new cross section model and to incorporate it into CLASS.
 First you have to create the file XSM\_NAME.cxx and XSM\_NAME.hxx, where NAME is a name you choose. 
 Then open with a text editor the .hxx and copy past the following replacing NAME by the name you want.
 
 \begin{center}
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\begin{lstlisting}[label=lst:HXX_XSM,caption=XSM\_NAME.hxx ]
 #ifndef _XSM_NAME_HXX
 #define _XSM_NAME_HXX
 #include "XSModel.hxx"
@@ -1034,7 +1033,7 @@ Open the .cxx file and copy past the following in it (replacing NAME by the same
  
 \begin{center}
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\begin{lstlisting}[label=lst:CXX_XSM,caption=XSM\_NAME.cxx ]
 #include "XSModel.hxx"
 #include "XSM_NAME.hxx"
 #include "CLASSLogger.hxx"
@@ -1103,12 +1102,12 @@ Move your  XSM\_NAME.hxx and  XSM\_NAME.cxx in \$CLASS\_PATH/source/Model/XS/. T
 \textbf{The irradiation model is the Bateman equations solver}. It is used for the calculation of fuel depletion in reactor. The decay depletion (without neutron flux) is not managed by an irradiation model but with a decay data bases (see section~\ref{sec:DecayDB}). 
 
 \section{Available Irradiation Model}
-At the moment, there is two Irradiation Model available. The two solvers differs according to the numerical integration method used. The Irradiation Model IM\_RK4 uses the fourth order Runge-Kutta method. And IM\_Matrix uses the development in a power series of the exponential of the Bateman matrix.\\  
-\paragraph{Implementation in a .cxx : }
+At the moment, there is two Irradiation Model available. The two solvers differs according to the numerical integration method used. The Irradiation Model IM\_RK4 uses the fourth order Runge-Kutta method. And IM\_Matrix uses the development in a power series of the exponential of the Bateman matrix.
 
 \begin{center}
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\textbf{ Implementation in a .cxx :}
+\begin{lstlisting}[label=lst:IMP_IRM,caption=Irradiation Model ]
 #include "CLASSHeaders.hxx"
 #include "Irradiation/IM_RK4.hxx"
 //#include "Irradiation/IM_Matrix.hxx"
@@ -1126,13 +1125,93 @@ int main()
 \end{minipage} 
 \end{center}
 LogObject is a  CLASSLogger object (see section~\ref{sec:logclass}).
-%%%%%%%%%%%%%%%%%%%%%%%%%
-%% CHAPTER :	CLASSGUI
-%%%%%%%%%%%%%%%%%%%%%%%%%
-\part{CLASSGui : The results viewer}
 
 \subsection{How to build an Irradiation Model}
-The strength of CLASS is to allow the user to build his own physic models, this section explains how to build a new Bateman solver (Irradiation Model) and to incorporate it into CLASS.
+The strength of CLASS is to allow the user to build his own Physics models, this section explains how to build a new Bateman solver (Irradiation Model) and to incorporate it into CLASS.
+First you have to create the file IRM\_NAME.cxx and IRM\_NAME.hxx, where NAME is a name you choose. 
+Then open with a text editor the .hxx and copy past the following replacing NAME by the name you want.
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=lst:HXX_IRM,caption=lRM\_NAME.hxx ]
+#ifndef _IRM_NAME_HXX
+#define _IRM_NAME_HXX
+
+#include "IrradiationModel.hxx"
+using namespace std;
+class CLASSLogger;
+class EvolutionData;
+//----------------------------------------------------------------------//
+/*!
+ Define a IM_NAME
+Description
+ @author YourName
+ @version 3.0
+ */
+//________________________________________________________________________
+class IM_NAME : public IrradiationModel
+{
+	public :
+	IM_NAME(); //constructor
+
+	/*!
+	virtual method called to perform the irradiation calculation using a set of cross sections.
+	 \param IsotopicVector IV isotopic vector to irradiate
+	 \param EvolutionData XSSet set of corss section to use to perform the evolution calculation
+	 */
+	EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime);
+	//}
+	private :
+	//declare your private variables here	
+};
+#endif
+\end{lstlisting}
+\end{minipage} 
+\end{center}
+
+Open the .cxx file and copy past the following in it (replacing NAME by the same name you used in the .hxx).
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=lst:CXX_IRM,caption=lRM\_NAME.cxx ]
+#include "IRM_NAME.hxx"
+#include "CLASSLogger.hxx"
+#include <TGraph.h>
+//Add whatever includes
+using namespace std;
+//________________________________________________________________________
+IRM_NAME::IRM_NAME():IrradiationModel(new CLASSLogger("IRM_NAME.log"))
+{
+	// do what you want
+}
+//________________________________________________________________________
+EvolutionData IRM_NAME::GenerateEvolutionData(IsotopicVector FreshFuelIV, EvolutionData XSSet, double Power, double cycletime)
+{
+	EvolutionData GeneratedDB = EvolutionData(GetLog());
+	GeneratedDB.SetPower(Power );
+	GeneratedDB.SetReactorType(ReactorType );
+	
+//Your Solver algorithm has to  fill GeneratedDB with the calculated inventories
+//using :
+GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (ZAI(Z,A,I), new TGraph(SizeOfpTime, pTime, pZAIQuantity)));	
+		
+	return GeneratedDB;
+}
+\end{lstlisting}
+\end{minipage} 
+\end{center}
+The function \textbf{GenerateEvolutionData} returns a \emph{EvolutionData} (see section~\ref{sec:EvolutionData}) containing the inventories evolution over time. This has to be done according to the fresh fuel composition (\textbf{FreshFuelIV}), to the mean cross sections (\textbf{XSSet}), to the (\textbf{Power} : thermal power (W)) and to the irradiation time (\textbf{cycletime} (seconds)).
+To fill this  \emph{EvolutionData} you have to call the method  \textbf{NucleiInsert} which associates a nucleus (a ZAI) to  a root object \href{http://root.cern.ch/root/html/TGraph.html}{TGraph}
+\footnote{http://root.cern.ch/root/html/TGraph.html}. This TGraph is the evolution (\textbf{pZAIQuantity} in atoms) of this associated nucleus  (\textbf{ZAI(Z,A,I)}) over time (\textbf{pTime} in seconds). This TGraph has \textbf{SizeOfpTime} points.
+
+After making the appropriate changes in this two files to make the function \textbf{GenerateEvolutionData} to return the fuel evolution  (fill free to look at\\
+ \$CLASS\_PATH/source/Model/Irradiation/*xx to get inspiration ),  two choices are offered to you. You can compile the two files of your model with your CLASS input or you can add this model to the CLASS package. The second option will modify the CLASS software and we will be no longer able to troubleshoot your scenario. So use the second option only if you are a completely independent user !
+
+
+\subsection{Compile your cross section model with your CLASS executable :}
+@@BAM
+
+\subsection{Your cross section model in the CLASS library :}
+Move your  IRM\_NAME.hxx and  IRM\_NAME.cxx in \$CLASS\_PATH/source/Model/Irradiation/. Then open with your favourite text editor the file \\ \$CLASS\_PATH/source/src/Makefile, find "OBJMODEL" and add \$(IM)/IRM\_NAME.o within the others \$(IM) objects. Then re-compile CLASS, fix the compilation errors ;) and voilà your irradiation model is now available in the CLASS library.
 
 
 
