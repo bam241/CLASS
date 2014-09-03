@@ -212,15 +212,15 @@ A \href{classuser-l@ccpntc02.in2p3.fr}{Mailing List}\footnote{classuser-l@ccpntc
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \part{CLASS : General overview}
 \chapter{Generalities}
-\section{Basic units\label{section:unit}}
-All time in CLASS should be written in second. It corresponds to the cSecond, a CLASS c++ type, which are a \textbf{long long int} going, in 32bits \textbf{and} 64 bits, up to  to  $(2^{63} - 1)~\textrm{s}~ \sim 2.9\cdot 10^{11}$ years, enough for any electro-nuclear scenarios one can consider....\\
+\section{Basic unit\label{sec:unit}}
+All time in CLASS should be written in second. It corresponds to the cSecond, a CLASS c++ type, which are a \textbf{long long int} going, in 32 bits \textbf{and} 64 bits, up to  $(2^{63} - 1)~\textrm{s}~ \sim 2.9\cdot 10^{11}$ years, enough for any electro-nuclear scenarios one can consider....\\
  \section{CLASS working process principle}
 image : shéma de principe de class
 \chapter{Facilities descriptions}
-All the facility in CLASS project are regroup inside a large group called CLASSFacility (and inherit of all the properties of the CLASSFacility in a C++ way). Inside the CLASSFacility, 3 different types can be defined, the reactor, the FabricationPlant (or more generally, all the fuel cycle front-end facilities) and the backend facilities. 
-\section{CLASSFacility}
+All the facility in CLASS project are regroup inside a large group called CLASSFacility (and inherit of all the properties of the CLASSFacility in a C++ way). Inside the CLASSFacility, 3 different types has be defined, the reactor, the FabricationPlant (or more generally, all the fuel cycle front-end facilities) and the backend facilities. 
+\section{CLASSFacility\label{sec:CLASSFacility}}
 The CLASSFacility should never be used directly in the main CLASS program (the one made to perform the simulation).  The aim of these object is to regroup all the common properties of the nuclear facilities, such as common variables, methods, and builder. 
-Its includes 2 variables needed by CLASS environment:
+Its includes 3 variables needed by CLASS environment:
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -266,24 +266,92 @@ private :
 \end{minipage}
 \end{center}
 \textit{fIsStarted}, \textit{fIsShutDown}, \textit{fIsShutDown} allows to the Dump() method to determine the state of the facility and do what is necessary.\\
-\textit{fInternalTime}, \textit{fInCycleTime}, \textit{fCycleTime} variable allows the \hyperref[section:unit]{time} the time management inside the facility. \textit{fInternalTime} correspond to the last time until the evolution of the facility as been calculated. \textit{fCycleTime} the time length of a cycle in this facility (note that it could be irradiation cycle in a \hyperref[section:reactor]{Reactor}, fabrication time in a \hyperref[section:FP]{FabricationPlant}, or cooling time in a \hyperref[section:pool]{Pool}). And \textit{fInCycleTime} correspond to the time already past in the current cycle.\\
+\textit{fInternalTime}, \textit{fInCycleTime}, \textit{fCycleTime} variable allows the \hyperref[sec:unit]{time} the time management inside the facility. \textit{fInternalTime} correspond to the last time until the evolution of the facility as been calculated. \textit{fCycleTime} the time length of a cycle in this facility (note that it could be irradiation cycle in a \hyperref[sec:reactor]{Reactor}, fabrication time in a \hyperref[sec:FP]{FabricationPlant}, or cooling time in a \hyperref[sec:pool]{Pool}). And \textit{fInCycleTime} correspond to the time already past in the current cycle.\\
 \textit{fCreationTime}, \textit{fLifeTime} are \textbf{private} and used to define the creation time of the facility, and its operation time length.
  
-Besides all the time management of the facility, it also contain the basic tool for fuel management the three \hyperref[section:IV]{IsotopicVector} : \textit{fInsideIV}, \textit{fCumulativeIVIn}, \textit{fCumulativeIVOut}, which correspond respectively to the isotopic vector present in the facility, to the cumulative income inside the facility, and the cumulative outcome outside the facility.
+Besides all the time management of the facility, it also contain the basic tool for fuel management the three \hyperref[sec:IV]{IsotopicVector} : \textit{fInsideIV}, \textit{fCumulativeIVIn}, \textit{fCumulativeIVOut}, which correspond respectively to the isotopic vector present in the facility, to the cumulative income inside the facility, and the cumulative outcome outside the facility.
 
 By default af the Get-xxx() and Set-xxx() method associated to those variable are define, and some can be overloaded.
 
-The CLASSFacility also comes with 2 virtual method (which means one must  overloading it when defining a new facility) : \textit{Evolution(cSecond t)} and \textit{Dump()}. They are both used to perform the evolution of the facility. Where the first one (\textit{Evolution}) is used to specify the change inside the facility (mainly fuel evolution), the second one (\textit{Dump}) is used to deal the exchange between facility, such as refilling a reactor or send a fuel to the stick at the end of cooling.
+The CLASSFacility also comes with 2 virtual method (which means one must  overloading it when defining a new facility) : \textit{Evolution(cSecond t)} and \textit{Dump()}. They are both used to perform the evolution of the facility. Where the first one (\textit{Evolution}) is used to specify the change inside the facility (mainly fuel evolution), the second one (\textit{Dump}) is used to deal the exchange between facility, such as refilling a reactor or send a fuel to the stock at the end of cooling.
 
-\section{Reactor\label{section:reactor}}
+\section{Reactor\label{sec:reactor}}
+\subsection{Generalities}
+ The aim of this class is to deal the evolution of the fuel inside a reactor.
+ The fuel state of the reactor is describe in the IsotopicVector fInsideIV (which are inherit from the  \hyperref[sec:CLASSFacility]{CLASSFacility} class). Its evolution is \textbf{always} contain in the \hyperref[sec:EvolutionData]{EvolutionData} \textit{fEvolutionDB}.\\
+  There are 2 way to provide the \hyperref[sec:EvolutionData]{EvolutionData} to the reactor. In the case of fixed fuel the user need to provide it, using the appropriated constructor, the set function, or a \hyperref[sec:CLASSFuelPlan]{CLASSFuelPlan}. In the case of recycled fuel or unfixed fuel, the user need to provide a \hyperref[sec:PhysicsModels]{PhysicsModels}, using the appropriated constructor, the set function, and/or a \hyperref[sec:CLASSFuelPlan]{CLASSFuelPlan}.
+
+\subsection{Constructor}
+There are many ways to define a reactor.
+\subsubsection{Normal constructor}
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+	Reactor();		///< Normal Constructor.
+\end{lstlisting}
+\end{minipage}
+\end{center}
+Just define a simple reactor without fuel, starting time,  mass of fuel, time of life or anything.
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+	Reactor(CLASSLogger* log);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+Just define a simple reactor without fuel, starting time,  mass of fuel, time of life or anything, but set a \hyperref[sec:CLASSLogger]{CLASSLogger} \textit{log} to send the CLASS message.
+\vspace{3cm}
+
+\subsubsection{Fixed fuel constructor}
+Constructor defining the a reactor using fixed fuel. 
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+	Reactor(CLASSLogger* log, EvolutionData evolutivedb, CLASSBackEnd* CBE,
+		cSecond creationtime, cSecond lifetime,
+		double power, double HMMass, double BurnUp, double ChargeFactor = 1);
+\end{lstlisting}
+\begin{lstlisting}
+	Reactor(CLASSLogger* log, EvolutionData evolutivedb, CLASSBackEnd* Pool,
+		cSecond creationtime, cSecond lifetime,
+		cSecond cycletime, double HMMass, double BurnUp);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+The evolution of the fuel is given by the \hyperref[sec:EvolutionData]{EvolutionData} \textit{evolutivedb} the mass of heavy metal in the reactor core by \textit{HMMass}, the power by \textit{Power} and  its charge factor by \textit{ChargeFactor}.\\
+To avoid mixing between constructor, only 2 constructor exist to set the triplet (power, burnup, cycle time). (if more 2 constructor would have the same number of input variables.)\\
+After irradiation the fuel goes in the \hyperref[sec:CLASSBackEnd]{CLASSBackEnd} CBE, which as seen section \label{sec:CLASSBackEnd} can be any CLASSBackEndFacility (SeparationPlant, Pool or storage).
+
+\subsubsection{Reprocessed fuel constructor}
+As well as in the fixed fuel constructor, the mass of heavy metal in the reactor core by \textit{HMMass}, the power by \textit{Power} and  its charge factor by \textit{ChargeFactor}. Only 2 constructor exist to set the triplet (power, burnup, cycle time).\\
+The \hyperref[sec:PhysicsModels]{PhysicsModels} is \textit{fuelDB}, and the \hyperref[sec:FabricationPlant]{FabricationPlant} is \textit{FabricationPlant}.
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+	Reactor(CLASSLogger* log, PhysicsModels 	fueltypeDB,
+		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
+		cSecond creationtime , cSecond lifetime, cSecond cycletime,
+		double HMMass, double BurnUp);
+\end{lstlisting}
+\begin{lstlisting}
+	Reactor(CLASSLogger* log, PhysicsModels 	fueltypeDB,
+		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
+		cSecond creationtime , cSecond lifetime,
+		double Power, double HMMass, double BurnUp, double ChargeFactor);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+
 \section{CLASSBackEnd}
 \subsection{Storage}
-\subsection{Pool\label{section:pool}}
-\section{Fabrication Plant\label{section:FP}}
+\subsection{Pool\label{sec:pool}}
+\section{Fabrication Plant\label{sec:FP}}
 
 \chapter{Other objects}
 \section{ZAI}
-\section{IsotopicVector\label{section:IV}}
+\section{IsotopicVector\label{sec:IV}}
 \section{Log management : CLASSLogger}\label{sec:logclass}
 \section{EvolutionData}\label{sec:EvolutionData}
 \chapter{Decay data bases}\label{sec:DecayDB}
@@ -293,7 +361,7 @@ The CLASSFacility also comes with 2 virtual method (which means one must  overlo
 %% CHAPTER :		PHYSIC MODEL
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
-\part{Physic Models}
+\part{Physics Models\label{sec:PhysicsModels}}
 \chapter{Description and implementation}
 A Physic Models is related to one or several reactors , it is a container of three models :
 \begin{itemize}
@@ -318,7 +386,7 @@ int main()
 	EQM_MLP_MOX* Equivalence 	= new EQM_MLP_MOX( "PathToTMVAWeightFile/TMVAWeightFile.xml" );
 	XSM_MLP* XS = new XSM_MLP( gCLASS->GetLog(),"PathToTMVAWeighstFolder" , OneMLPPerTimeStep );
 	IM_RK4* Solver = new IM_RK4( gCLASS->GetLog() );
-	PhysicModels* PHYMOD = new PhysicModels( XS , Equivalence , Solver );
+	PhysicsModels* PHYMOD = new PhysicsModels( XS , Equivalence , Solver );
 	
 	...
 	Reactor *PWR_MOX = new Reactor(log, PHYMOD, fabricationplant, Pool, creationtime, lifetime, cycletime, HMMass, BurnUp);
@@ -1051,7 +1119,7 @@ int main()
 //...
 	IM_RK4* Solver = new IM_RK4(LogObject); // or new IM_RK4(); // uses a default logfile
 //	IM_Matrix* Solver = new IM_Matrix(LogObject); // or new IM_Matrix(); //uses default logfile
-	PhysicModels* PHYMOD = new PhysicModels(XSMOX, EQMLINPWRMOX, Solver);
+	PhysicsModels* PHYMOD = new PhysicsModels(XSMOX, EQMLINPWRMOX, Solver);
 //...	
 }
 \end{lstlisting}
