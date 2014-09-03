@@ -16,7 +16,7 @@
 #include "CLASSLogger.hxx"
 
 #include "EvolutionData.hxx"
-#include "PhysicModels.hxx"
+#include "PhysicsModels.hxx"
 #include "DecayDataBank.hxx"
 
 #include "ZAIMass.hxx"

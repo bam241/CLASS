@@ -35,7 +35,7 @@ OBJS		= 	CLASSLogger.o \
 			EquivalenceModel.o \
 			XSModel.o \
 			CLASSFuel.o\
-			PhysicModels.o \
+			PhysicsModels.o \
 			EvolutionData.o EvolutionDataDict.o \
 			CLASSFuelPlan.o\
 			Scenario.o
@@ -61,7 +61,7 @@ ROOTOBJS	= 	CLASSLogger.o \
 			CLASSFuel.o\
 			EvolutionData.o EvolutionDataDict.o \
 			CLASSFuelPlan.o\
-			PhysicModels.o
+			PhysicsModels.o
 
 
 CXX           = g++

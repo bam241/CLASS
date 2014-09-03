@@ -4,7 +4,7 @@
 #include "Reactor.hxx"
 #include "EvolutionData.hxx"
 #include "DecayDataBank.hxx"
-#include "PhysicModels.hxx"
+#include "PhysicsModels.hxx"
 #include "IsotopicVector.hxx"
 #include "Scenario.hxx"
 #include "CLASSLogger.hxx"
@@ -122,7 +122,7 @@ DBGL
 				pair<CLASSFuel, double> R_Fuel = GetParc()->GetReactor()[ReactorId]->GetFuelPlan()->GetFuelAt( t + GetCycleTime() );
 #pragma omp critical(FuelBuild)
 				{
-					if( typeid(R_Fuel.first) == typeid(PhysicModels) )
+					if( typeid(R_Fuel.first) == typeid(PhysicsModels) )
 						BuildFuelForReactor( (*it).first, t );
 				}
 
@@ -166,7 +166,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 	double R_Power		= GetParc()->GetReactor()[ ReactorId ]->GetPower();
 
 	pair<CLASSFuel, double > FuelBU = GetParc()->GetReactor()[ReactorId]->GetFuelPlan()->GetFuelAt(t+GetCycleTime()) ;
-	PhysicModels FuelType = *FuelBU.first.GetPhysicModels();
+	PhysicsModels FuelType = *FuelBU.first.GetPhysicsModels();
 	double R_BU	      = FuelBU.second;
 
 	fFissileList = FuelType.GetEquivalenceModel()->GetFissileList();
@@ -473,7 +473,7 @@ DBGL
 			int IV_N = fFissileArrayAdress[i].second;
 
 			pair<IsotopicVector, IsotopicVector> Separated_Lost;
-			Separated_Lost = Separation( fFertileArray[Stor_N]->GetIVArray()[IV_N]*LambdaArray[i], fFertileList);
+			Separated_Lost = Separation( fFissileStorage[Stor_N]->GetIVArray()[IV_N]*LambdaArray[i], fFertileList);
 			BuildedFuel += Separated_Lost.first;
 			Lost += Separated_Lost.second;
 		}

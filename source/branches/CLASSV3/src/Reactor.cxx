@@ -49,8 +49,91 @@ Reactor::Reactor(CLASSLogger* log):CLASSFacility(log, 4)
 
 }
 
+Reactor::Reactor(CLASSLogger* log,
+		 CLASSBackEnd* Pool,
+ 		 cSecond creationtime,
+ 		 cSecond lifetime,
+ 		 double power, double HMMass, double ChargeFactor ):CLASSFacility(log, creationtime, lifetime, 4)
+{
+	(*this).SetName("R_Reactor.");
 
-Reactor::Reactor(CLASSLogger* log, PhysicModels fueltypeDB, FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
+
+	fIsStarted = false;
+	fIsShutDown = false;
+	fIsAtEndOfCycle = false;
+
+	fStorage = 0;
+	fFabricationPlant = 0;
+
+	fFixedFuel = true;
+	fIsStorage = false;
+
+	fOutBackEndFacility = Pool;
+
+	fPower = power * ChargeFactor;
+
+	fHeavyMetalMass = HMMass;
+
+	fBurnUp = -1;
+	fCycleTime = (-1);
+
+	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
+	fIVInCycle = fEvolutionDB.GetIsotopicVectorAt(0);
+	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
+
+
+	fFuelPlan = 0;
+
+	INFO << " A Reactor has been define :" << endl;
+	INFO << "\t Fuel Composition is fixed (for now)! "<< endl;
+	INFO << "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
+	INFO << "\t Life time (Operating's Duration) set at \t " << (double)(GetLifeTime()/3600/24/365.25) << " year" << endl;
+	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << ChargeFactor << " Charge Factor)"<< endl;
+	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
+	
+	
+}
+
+Reactor::Reactor(CLASSLogger* log,
+		 FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
+ 		 cSecond creationtime, cSecond lifetime,
+ 		 double Power, double HMMass, double ChargeFactor):CLASSFacility(log, creationtime, lifetime, 4)
+{
+	(*this).SetName("R_Reactor.");
+
+
+	fStorage = 0;
+	fIsStarted = false;
+	fIsShutDown = false;
+	fIsAtEndOfCycle = false;
+
+	fFabricationPlant = fabricationplant;
+	fFixedFuel = false;
+
+	fOutBackEndFacility = Pool;
+
+	fBurnUp = -1;
+	fHeavyMetalMass = HMMass;
+	fPower = Power*ChargeFactor;
+	fCycleTime = -1;	 //BU in GWd/t
+
+	fFuelPlan = 0;
+
+
+
+	INFO << " A Reactor has been define :" << endl;
+	INFO << "\t Fuel Composition is not fixed (for now)! "<< endl;
+	INFO << "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
+	INFO << "\t Life time (Operating's Duration) set at \t " << (double)(GetLifeTime()/3600/24/365.25) << " year" << endl;
+	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << Power << " and " << ChargeFactor << " Charge Factor)"<< endl;
+	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
+	
+	
+	
+}
+
+
+Reactor::Reactor(CLASSLogger* log, PhysicsModels fueltypeDB, FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
  		 cSecond creationtime, cSecond lifetime,
  		 double Power, double HMMass, double BurnUp, double ChargeFactor):CLASSFacility(log, creationtime, lifetime, 4)
 {
@@ -89,7 +172,7 @@ Reactor::Reactor(CLASSLogger* log, PhysicModels fueltypeDB, FabricationPlant* fa
 
 }
 
-Reactor::Reactor(CLASSLogger* log, PhysicModels 	fueltypeDB,
+Reactor::Reactor(CLASSLogger* log, PhysicsModels 	fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 CLASSBackEnd* Pool,
  		 cSecond creationtime, cSecond lifetime, cSecond cycletime,
@@ -181,6 +264,58 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData evolutivedb,
 	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 
 
+}
+
+Reactor::Reactor(CLASSLogger* log, EvolutionData evolutivedb,
+ 		 CLASSBackEnd* Pool,
+ 		 cSecond creationtime, cSecond lifetime, cSecond cyclertime,
+		 double HMMass, double BurnUp, double ChargeFactor ):CLASSFacility(log, creationtime, lifetime, cycletime, 4)
+{
+	(*this).SetName("R_Reactor.");
+
+
+	fIsStarted = false;
+	fIsShutDown = false;
+	fIsAtEndOfCycle = false;
+
+	fStorage = 0;
+	fFabricationPlant = 0;
+
+	fFixedFuel = true;
+	fIsStorage = false;
+
+	fOutBackEndFacility = Pool;
+
+	fPower = BurnUp*3600.*24. / (fCycleTime) * HMMass *1e9; //BU in GWd/t
+
+	fHeavyMetalMass = HMMass;
+
+	map<ZAI ,double>::iterator it;
+	map<ZAI ,double> isotopicquantity = evolutivedb.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
+	double M0 = 0;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
+		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
+
+	fEvolutionDB = evolutivedb * (fHeavyMetalMass/M0);
+
+	fBurnUp = BurnUp;
+
+	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
+	fIVInCycle = fEvolutionDB.GetIsotopicVectorAt(0);
+	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
+
+
+	fFuelPlan->AddFuel(creationtime, evolutivedb, fBurnUp);
+
+	INFO << " A Reactor has been define :" << endl;
+	INFO << "\t Fuel Composition is fixed ! "<< endl;
+	INFO << "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
+	INFO << "\t Life time (Operating's Duration) set at \t " << (double)(GetLifeTime()/3600/24/365.25) << " year" << endl;
+	INFO << "\t The Cycle Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
+	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << ChargeFactor << " Charge Factor)"<< endl;
+	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
+	
+	
 }
 
 
@@ -381,7 +516,7 @@ DBGL
 	pair<CLASSFuel, double> NextFuel = fFuelPlan->GetFuelAt(fInternalTime);
 	SetBurnUp((NextFuel).second);
 
-	if( typeid(NextFuel.first) == typeid(PhysicModels) )
+	if( typeid(NextFuel.first) == typeid(PhysicsModels) )
 		fFixedFuel = false;
 	else if( typeid(NextFuel.first) == typeid(EvolutionData) )
 		fFixedFuel = true;

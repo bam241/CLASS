@@ -25,7 +25,7 @@ class Scenario;
 //-----------------------------------------------------------------------------//
 /*!
  Define a CLASS Facility.
- The aim of these class is synthetyse all the commum properties of the nuclear facilities.
+ The aim of these class is to regroup all the commum properties of the nuclear facilities.
 
 
  @author BaM
@@ -62,7 +62,7 @@ public :
 	cSecond		GetCycleTime()		const	{ return fCycleTime; } 		//!< Return the cycle time of the Facility
 	cSecond 	GetCreationTime()	const	{ return fCreationTime; }	//!< Return the creation time of the Facility
 	cSecond 	GetLifeTime()		const	{ return fLifeTime; }		//!< Return the life time of the Facility
-	Scenario*		GetParc()			{ return fParc; }		//!< return the pointer to the Park
+	Scenario*	GetParc()			{ return fParc; }		//!< return the pointer to the Park
 
 
 	IsotopicVector GetCumulativeIVIn() { return fCumulativeIVIn;}			//!< return the culative sum of all incoming IV
@@ -124,15 +124,15 @@ protected :
 private :
 	int		fId;			//!< Identity of the Facility inside the Parc
 	int		fFacilityType;		///< Type of facility :
-						/// \li 2 reactor Studown
-						/// \li 4 start/End of reactor cycle,
-						/// \li 8 end of Cooling,
-						/// \li 16 fuel Fabrication
+						/// \li 4 reactor,
+						/// \li 8 Pool,
+						/// \li 16 FabricationPlant.
+
 
 	Scenario*	fParc;			//!< Pointer to the main Parc
 
 	cSecond		fCreationTime;		///< CLASS Universal Time of Creation
-	cSecond		fLifeTime;		///< LifeTime Of the Reactor (Operating's Duration)
+	cSecond		fLifeTime;		///< Time of life Of the Reactor (Operating's Duration)
 
 	ClassDef(CLASSFacility,1);
 };

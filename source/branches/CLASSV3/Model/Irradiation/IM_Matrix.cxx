@@ -30,13 +30,13 @@ using namespace std;
 
 
 //________________________________________________________________________
-IM_Matrix::IM_Matrix():IrradiationModel(new CLASSLogger("IM_Matrix.log")), DynamicalSystem()
+IM_Matrix::IM_Matrix():IrradiationModel(new CLASSLogger("IM_Matrix.log"))
 {
 	fShorstestHalflife = 3600.*24*160.; //cut by default all nuclei with a shorter liftime than the Cm242 -> remain 33 actinides
 }
 
 
-IM_Matrix::IM_Matrix(CLASSLogger* log):IrradiationModel(log), DynamicalSystem()
+IM_Matrix::IM_Matrix(CLASSLogger* log):IrradiationModel(log)
 {
 	fShorstestHalflife = 3600.*24*160.; //cut by default all nuclei with a shorter liftime than the Cm242 -> remain 33 actinides
 }
@@ -51,10 +51,8 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 {
 	DBGL
 	if(fFastDecay.size() == 0)
-	{
 		BuildDecayMatrix();
-		fNVar = findex_inver.size();
-	}
+
 
 	string ReactorType;
 

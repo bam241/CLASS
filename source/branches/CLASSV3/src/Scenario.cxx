@@ -384,7 +384,7 @@ void Scenario::BuildTimeVector(cSecond t)
 		cSecond step = R_StartingTime;
 
 		map< cSecond, int > R_BackEndTimePath = GetTheBackEndTimePath(fReactor[i]);
-		if( typeid(R_Fuel.first) == typeid(PhysicModels) )
+		if( typeid(R_Fuel.first) == typeid(PhysicsModels) )
 			F_CycleTime = fReactor[i]->GetFabricationPlant()->GetCycleTime();
 
 
@@ -436,7 +436,7 @@ void Scenario::BuildTimeVector(cSecond t)
 		//********* FabricationPlant Evolution Step *********//
 
 
-		if( typeid(R_Fuel.first) == typeid(PhysicModels) )
+		if( typeid(R_Fuel.first) == typeid(PhysicsModels) )
 		{
 
 			fReactor[i]->GetFabricationPlant()->AddReactor( i, fReactor[i]->GetCreationTime() );
@@ -474,7 +474,7 @@ void Scenario::BuildTimeVector(cSecond t)
 		{
 
 			// FabricationPlant Evolution Step
-			if( typeid(R_Fuel.first) == typeid(PhysicModels) )
+			if( typeid(R_Fuel.first) == typeid(PhysicsModels) )
 			{
 				F_CycleTime = fReactor[i]->GetFabricationPlant()->GetCycleTime();
 
