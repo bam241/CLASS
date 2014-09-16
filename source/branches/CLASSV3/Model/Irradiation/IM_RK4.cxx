@@ -267,6 +267,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	}
 	DBGL
 	GeneratedDB.SetPower(Power );
+	GeneratedDB.SetHeavyMetalMass(M);
 	GeneratedDB.SetReactorType(ReactorType );
 	GeneratedDB.SetCycleTime(cycletime);
 

@@ -279,6 +279,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 	}
 
 	GeneratedDB.SetPower(Power );
+	GeneratedDB.SetHeavyMetalMass(M);
 	GeneratedDB.SetReactorType(ReactorType );
 	GeneratedDB.SetCycleTime(cycletime);
 
