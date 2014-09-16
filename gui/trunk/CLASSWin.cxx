@@ -80,7 +80,6 @@ MainWin::~MainWin()
 //_____________________________________________________________________________________________
 void MainWin::Start(vector<string> VFileName)
 {
-
 	//
 	// Set the line width for all graph: for PPT presentation a value of 2 is probably better
 	//
@@ -114,7 +113,7 @@ void MainWin::Start(vector<string> VFileName)
 	fNumberOfStock = new int[fNumberOfParc];
 	fNumberOfPool = new int[fNumberOfParc];
 	fNumberOfFab = new int[fNumberOfParc];
-	
+
 	for(int i = 0; i < fNumberOfParc; i++)
 	{
 		fNumberOfReactor[i] = fDATA->GetReactorName()[i].size();
@@ -211,7 +210,6 @@ void MainWin::Start(vector<string> VFileName)
 		fFacilitiesTabFoil[i][4] = fFacilitiesTab[i]->AddTab("Fabrication Plant(s)");
 	}
 
-	
 	//1 jeu d'ItemTab par facility tab
 
 	fItemTab = new TGTab**[fNumberOfParc];
@@ -295,7 +293,7 @@ void MainWin::Start(vector<string> VFileName)
 	Resize(GetDefaultSize()); 					// fit to the exact size
 	Move(410,30);
 	fMainWidth=fGeneF0->GetWidth();
-	
+
 	Resize(550,820); 					// fit to the exact size
 
 
@@ -524,7 +522,7 @@ void MainWin::FillNucTab()		// fill the Inventory Tab foil
 {
 	static bool first=true;
 	
-	int NCheck=fDATA->GetZAIvector().size()-1;
+	int NCheck=fDATA->GetZAIvector().size();
 	//number of lines and columns per foil
 	int Nline = 14-WIDE;
 	int Ncol = 8+WIDE;
@@ -672,7 +670,7 @@ void MainWin::FillTotalTab()
 			if(i==0) name="TOTAL";
 			if(i==1) name="INCYCLE";
 			if(i==2) name="WASTE";
-			if(i==3) name="GOD";
+			if(i==3) name="OUTINCOME";
 			if(i==4) name="REACTOR";
 			if(i==5) name="COOLING";
 			if(i==6) name="STOCK";

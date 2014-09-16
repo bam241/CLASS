@@ -41,7 +41,7 @@ class CLASSPlotElement
 				// 0 TOTAL
 				// 1 INCYCLE
 				// 2 WASTE
-				// 3 GOD
+				// 3 OUTINCOME
 				// 4 REACTOR
 				// 5 COOLING
 				// 6 STOCK
