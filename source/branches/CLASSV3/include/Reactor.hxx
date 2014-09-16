@@ -75,7 +75,7 @@ public :
 	 */
 	Reactor(CLASSLogger* log, CLASSBackEnd* Pool,
 		cSecond creationtime , cSecond lifetime, double Power,
-		double HMMass, double ChargeFactor = 1);
+		double HMMass, double CapacityFactor = 1);
 	//}
 
 	//{
@@ -93,7 +93,7 @@ public :
 	Reactor(CLASSLogger* log,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
 		cSecond creationtime , cSecond lifetime, double Power,
-		double HMMass, double ChargeFactor = 1);
+		double HMMass, double CapacityFactor = 1);
 	//}
 
 	//{
@@ -109,7 +109,7 @@ public :
 	 \param HMMass Mass of Heavy Metal in the Reactor
 	 \param BurnUp Burnup reach by the fuel at the end of the cycle
 	 */
-	Reactor(CLASSLogger* log, PhysicsModels 	fueltypeDB,
+	Reactor(CLASSLogger* log, PhysicsModels* fueltypeDB,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
 		cSecond creationtime , cSecond lifetime, cSecond cycletime,
 		double HMMass, double BurnUp);
@@ -127,12 +127,12 @@ public :
 	 \param Power Thermal power of the reactor
 	 \param HMMass Mass of Heavy Metal in the Reactor
 	 \param BurnUp Burnup reach by the fuel at the end of the cycle
-	 \param ChargeFactor effective charge of the reactor.
+	 \param CapacityFactor effective charge of the reactor.
 	 */
-	Reactor(CLASSLogger* log, PhysicsModels 	fueltypeDB,
+	Reactor(CLASSLogger* log, PhysicsModels* fueltypeDB,
 		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
 		cSecond creationtime , cSecond lifetime,
-		double Power, double HMMass, double BurnUp, double ChargeFactor);
+		double Power, double HMMass, double BurnUp, double CapacityFactor);
 	//}
 
 	//{
@@ -147,11 +147,11 @@ public :
 	 \param Power Thermal power of the reactor
 	 \param HMMass Mass of Heavy Metal in the Reactor
 	 \param BurnUp Burnup reach by the fuel at the end of the cycle
-	 \param ChargeFactor effective charge of the reactor.
+	 \param CapacityFactor effective charge of the reactor.
 	 */
-	Reactor(CLASSLogger* log, EvolutionData evolutivedb, CLASSBackEnd* Pool,
+	Reactor(CLASSLogger* log, EvolutionData* evolutivedb, CLASSBackEnd* Pool,
 		cSecond creationtime, cSecond lifetime,
-		double power, double HMMass, double BurnUp, double ChargeFactor);
+		double power, double HMMass, double BurnUp, double CapacityFactor);
 	//}
 
 	//{
@@ -166,9 +166,9 @@ public :
 	 \param Power Thermal power of the reactor
 	 \param HMMass Mass of Heavy Metal in the Reactor
 	 \param BurnUp Burnup reach by the fuel at the end of the cycle
-	 \param ChargeFactor effective charge of the reactor.
+	 \param CapacityFactor effective charge of the reactor.
 	 */
-	Reactor(CLASSLogger* log, EvolutionData evolutivedb, CLASSBackEnd* Pool,
+	Reactor(CLASSLogger* log, EvolutionData* evolutivedb, CLASSBackEnd* Pool,
 		cSecond creationtime, cSecond lifetime,
 		cSecond cycletime, double HMMass, double BurnUp);
 	//}
@@ -247,6 +247,7 @@ public :
 
 	void	SetOutBackEndFacility(CLASSBackEnd* pool)	{ fOutBackEndFacility = pool; }	//!< Return the pointer to OutBackEnd Facility
 	void	SetStorage(Storage* storage)			{ fStorage = storage; fIsStorage = true;}	//!< Set the Pointer to the Storage
+	void	SetFabricationPlant(FabricationPlant* FP)	{ fFabricationPlant = FP;}	//!< Set the Pointer to the FabricationPlant
 	void	SetEvolutionDB(EvolutionData evolutionDB);			//!< Set the Pointer to the DB Evolution of the Reactor
 #endif
 

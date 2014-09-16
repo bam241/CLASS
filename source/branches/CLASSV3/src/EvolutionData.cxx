@@ -348,7 +348,7 @@ ClassImp(EvolutionData)
 
 
 
-EvolutionData::EvolutionData():CLASSFuel()
+EvolutionData::EvolutionData():CLASSObject()
 {
 	fIsCrossSection = false;
 	fPower = 0;
@@ -358,7 +358,7 @@ EvolutionData::EvolutionData():CLASSFuel()
 }
 
 	//________________________________________________________________________
-EvolutionData::EvolutionData(CLASSLogger* log):CLASSFuel(log)
+EvolutionData::EvolutionData(CLASSLogger* log):CLASSObject(log)
 {
 	
 	fIsCrossSection = false;
@@ -371,7 +371,7 @@ EvolutionData::EvolutionData(CLASSLogger* log):CLASSFuel(log)
 }
 
 	//________________________________________________________________________
-EvolutionData::EvolutionData(CLASSLogger* log, string DB_file, bool oldread, ZAI zai):CLASSFuel(log)
+EvolutionData::EvolutionData(CLASSLogger* log, string DB_file, bool oldread, ZAI zai):CLASSObject(log)
 {
 	
 	fIsCrossSection = false;

@@ -44,6 +44,8 @@ class CLASSFuelPlan : public CLASSObject
 	CLASSFuelPlan(CLASSLogger* log);
 
 	void AddFuel(cSecond time,  CLASSFuel fuel, double BurnUp);
+	void AddFuel(cSecond time,  EvolutionData* fuel, double BurnUp) {AddFuel( time, CLASSFuel(fuel), BurnUp);}
+	void AddFuel(cSecond time,  PhysicsModels* fuel, double BurnUp) {AddFuel( time, CLASSFuel(fuel), BurnUp);}
 
 	pair< CLASSFuel, double> GetFuelAt(cSecond t);
 

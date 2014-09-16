@@ -25,13 +25,16 @@ ClassImp(Storage)
 
 Storage::Storage():CLASSBackEnd(-1)
 {
+	DBGL
 	SetIsStorageType();
 	SetName("S_Storage.");
 
+	DBGL
 }
 
 Storage::Storage(CLASSLogger* log):CLASSBackEnd(log, -1)
 {
+	DBGL
 	SetIsStorageType();
 
 	SetName("S_Storage.");
@@ -42,6 +45,7 @@ Storage::Storage(CLASSLogger* log):CLASSBackEnd(log, -1)
 //________________________________________________________________________
 Storage::Storage(CLASSLogger* log, DecayDataBank* evolutivedb):CLASSBackEnd(log, -1)
 {
+	DBGL
 	SetIsStorageType();
 
 	SetDecayDataBank(evolutivedb);
@@ -51,6 +55,7 @@ Storage::Storage(CLASSLogger* log, DecayDataBank* evolutivedb):CLASSBackEnd(log,
 	INFO << " A new Storage has been define." << endl;
 
 
+	DBGL
 }
 
 //________________________________________________________________________

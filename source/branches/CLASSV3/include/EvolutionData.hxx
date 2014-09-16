@@ -11,7 +11,7 @@
 #include <map>
 
 #include "IsotopicVector.hxx"
-#include "CLASSFuel.hxx"
+#include "CLASSObject.hxx"
 #include "ZAI.hxx"
 
 #include "TMatrix.h"
@@ -49,7 +49,7 @@ double 	Distance(EvolutionData Evd1, IsotopicVector IV1 );
 
 
 
-class EvolutionData : public CLASSFuel
+class EvolutionData : public CLASSObject
 {
 	
 public :
@@ -142,7 +142,6 @@ public :
 	//@{
 
 #ifndef __CINT__
-	EvolutionData*		GetEvolutionData()	{return this;}
 	map<ZAI ,TGraph* >	GetInventoryEvolution()	const { return fInventoryEvolution; }	//!< return the EvolutionData map
 	map<ZAI ,TGraph* >	GetFissionXS()		const { return fFissionXS; }		//!< return the fission cross section map
 	map<ZAI ,TGraph* >	GetCaptureXS()		const { return fCaptureXS; }		//!< return the capture cross section map

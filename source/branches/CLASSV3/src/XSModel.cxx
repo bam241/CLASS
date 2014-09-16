@@ -10,14 +10,13 @@
 
 using namespace std;
 
-XSModel::XSModel(): CLASSObject()
+XSModel::XSModel():CLASSObject()
 {
 
 }
 
 
-
-XSModel::XSModel(CLASSLogger* log): CLASSObject(log)
+XSModel::XSModel(CLASSLogger* log):CLASSObject(log)
 {
 
 }

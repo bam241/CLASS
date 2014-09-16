@@ -11,7 +11,6 @@
  @authors BLG,BaM
  @version 1.0
  */
-#include "CLASSFuel.hxx"
 #include "EquivalenceModel.hxx"
 #include "XSModel.hxx"
 #include "IrradiationModel.hxx"
@@ -42,7 +41,7 @@ typedef long long int cSecond;
 //________________________________________________________________________
 
 
-class PhysicsModels : public CLASSFuel
+class PhysicsModels : public CLASSObject
 {
 
 	public : 

@@ -253,7 +253,7 @@ void PWR_THU_FabricationPlant::BuildFuelForReactor(int ReactorId)
 				//cout<<"TEST TEST TEST TEST TEST StockFactionToUse*MU_1 : "<<StockFactionToUse<<"*"<<MU_1<<endl;
 				double Th_Quantity = (HMmass - (MU_0+StockFactionToUse*MU_1 ))/(cZAIMass.fZAIMass.find( ZAI(90,232,0) )->second)*AVOGADRO/1e-6;
 				
-				GetParc()->AddGodIncome( Th, Th_Quantity);
+				GetParc()->AddOutIncomeIncome( Th, Th_Quantity);
 				
 				for(int i = (int)fFractionToTake.size()-1; i >= 0; i--)
 				{

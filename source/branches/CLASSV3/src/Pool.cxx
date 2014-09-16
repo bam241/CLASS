@@ -31,6 +31,7 @@ Pool::Pool():CLASSBackEnd(8)
 	//________________________________________________________________________
 Pool::Pool(CLASSLogger* log, cSecond coolingtime):CLASSBackEnd(log, coolingtime, 8)
 {
+	DBGL
 
 
 	fCycleTime = (cSecond)coolingtime;
@@ -47,12 +48,14 @@ Pool::Pool(CLASSLogger* log, cSecond coolingtime):CLASSBackEnd(log, coolingtime,
 	INFO	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
 	WARNING	<< " All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
 
+	DBGL
 
 }
 
 //________________________________________________________________________
 Pool::Pool(CLASSLogger* log, CLASSBackEnd* storage, cSecond coolingtime):CLASSBackEnd(log, coolingtime, 8)
 {
+	DBGL
 
 	fOutBackEndFacility = storage;
 	SetIsStorageType(false);
@@ -68,6 +71,7 @@ Pool::Pool(CLASSLogger* log, CLASSBackEnd* storage, cSecond coolingtime):CLASSBa
 	INFO	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
 	INFO	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
 
+	DBGL
 
 }
 

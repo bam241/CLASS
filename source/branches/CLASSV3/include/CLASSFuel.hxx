@@ -16,11 +16,11 @@
 #include <fstream>
 
 #include "CLASSObject.hxx"
+#include "PhysicsModels.hxx"
+#include "EvolutionData.hxx"
 
 using namespace std;
 
-class EvolutionData;
-class PhysicsModels;
 //-----------------------------------------------------------------------------//
 /*!
  Define a CLASS Object.
@@ -38,15 +38,15 @@ class CLASSFuel : public CLASSObject
 {
 	public :
 	///< Normal Constructor.
-	CLASSFuel();
-	CLASSFuel(CLASSLogger* log);
+	CLASSFuel(EvolutionData* evo);
+	CLASSFuel(PhysicsModels* evo);
 
 
 	virtual CLASSFuel* Clone()	{ return new CLASSFuel(*this); } //!< Correct way to copy a CLASSFuel in case of derivation
 
 
-	virtual EvolutionData* GetEvolutionData() {return 0;}
-	virtual PhysicsModels* GetPhysicsModels() {return 0;}
+	EvolutionData* GetEvolutionData() {return fEvolutionData;}
+	PhysicsModels* GetPhysicsModels() {return fPhysicsModels;}
 	using CLASSObject::SetName;
 	using CLASSObject::GetName;
 	protected :
@@ -54,6 +54,8 @@ class CLASSFuel : public CLASSObject
 
 	private :
 
+	EvolutionData* fEvolutionData;
+	PhysicsModels* fPhysicsModels;
 };
 
 #endif

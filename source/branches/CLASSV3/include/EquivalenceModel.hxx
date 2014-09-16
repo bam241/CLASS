@@ -46,7 +46,7 @@ class EquivalenceModel : public CLASSObject
 	 \param double HMMass, needed Heavy metal mass needed
 	 \param vector<double> &lambda, fraction of the stock to take (initialy should be 0)
 	 \param vector<IsotopicVector> FissilArray, isotopicvectors to use to get the fissil part of the fuel
-	 \param vector<IsotopicVector> FertilArray, isotopicvectors to use to get the fertil part of the fuel (if empty take it from the god)
+	 \param vector<IsotopicVector> FertilArray, isotopicvectors to use to get the fertil part of the fuel (if empty take it from the OutIncome)
 	 */
 	
 	virtual	 vector<double> BuildFuel(double BurnUp, double HMMass, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray );
