@@ -41,20 +41,23 @@ Reactor::Reactor():CLASSFacility(4)
 
 Reactor::Reactor(CLASSLogger* log):CLASSFacility(log, 4)
 {
+	DBGL
 
 	fOutBackEndFacility = 0;
 	fStorage = 0;
 	fFabricationPlant = 0;
 	SetName("R_Reactor.");
 
+	DBGL
 }
 
 Reactor::Reactor(CLASSLogger* log,
 		 CLASSBackEnd* Pool,
  		 cSecond creationtime,
  		 cSecond lifetime,
- 		 double power, double HMMass, double ChargeFactor ):CLASSFacility(log, creationtime, lifetime, 4)
+ 		 double power, double HMMass, double CapacityFactor ):CLASSFacility(log, creationtime, lifetime, 4)
 {
+	DBGL
 	(*this).SetName("R_Reactor.");
 
 
@@ -70,7 +73,7 @@ Reactor::Reactor(CLASSLogger* log,
 
 	fOutBackEndFacility = Pool;
 
-	fPower = power * ChargeFactor;
+	fPower = power * CapacityFactor;
 
 	fHeavyMetalMass = HMMass;
 
@@ -88,17 +91,19 @@ Reactor::Reactor(CLASSLogger* log,
 	INFO << "\t Fuel Composition is fixed (for now)! "<< endl;
 	INFO << "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
 	INFO << "\t Life time (Operating's Duration) set at \t " << (double)(GetLifeTime()/3600/24/365.25) << " year" << endl;
-	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << ChargeFactor << " Charge Factor)"<< endl;
+	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << CapacityFactor << " capacity factor)"<< endl;
 	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 	
-	
+	DBGL
+
 }
 
 Reactor::Reactor(CLASSLogger* log,
 		 FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
  		 cSecond creationtime, cSecond lifetime,
- 		 double Power, double HMMass, double ChargeFactor):CLASSFacility(log, creationtime, lifetime, 4)
+ 		 double Power, double HMMass, double CapacityFactor):CLASSFacility(log, creationtime, lifetime, 4)
 {
+	DBGL
 	(*this).SetName("R_Reactor.");
 
 
@@ -114,7 +119,7 @@ Reactor::Reactor(CLASSLogger* log,
 
 	fBurnUp = -1;
 	fHeavyMetalMass = HMMass;
-	fPower = Power*ChargeFactor;
+	fPower = Power*CapacityFactor;
 	fCycleTime = -1;	 //BU in GWd/t
 
 	fFuelPlan = 0;
@@ -125,18 +130,20 @@ Reactor::Reactor(CLASSLogger* log,
 	INFO << "\t Fuel Composition is not fixed (for now)! "<< endl;
 	INFO << "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
 	INFO << "\t Life time (Operating's Duration) set at \t " << (double)(GetLifeTime()/3600/24/365.25) << " year" << endl;
-	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << Power << " and " << ChargeFactor << " Charge Factor)"<< endl;
+	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << Power << " and " << CapacityFactor << " capacity factor)"<< endl;
 	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 	
 	
-	
+	DBGL
+
 }
 
 
-Reactor::Reactor(CLASSLogger* log, PhysicsModels fueltypeDB, FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
+Reactor::Reactor(CLASSLogger* log, PhysicsModels* fueltypeDB, FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
  		 cSecond creationtime, cSecond lifetime,
- 		 double Power, double HMMass, double BurnUp, double ChargeFactor):CLASSFacility(log, creationtime, lifetime, 4)
+ 		 double Power, double HMMass, double BurnUp, double CapacityFactor):CLASSFacility(log, creationtime, lifetime, 4)
 {
+	DBGL
 	(*this).SetName("R_Reactor.");
 
 
@@ -146,16 +153,18 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels fueltypeDB, FabricationPlant* f
 	fIsAtEndOfCycle = false;
 
 	fFabricationPlant = fabricationplant;
+
 	fFixedFuel = false;
 
 	fOutBackEndFacility = Pool;
 
 	fBurnUp = BurnUp;
 	fHeavyMetalMass = HMMass;
-	fPower = Power*ChargeFactor;
+	fPower = Power*CapacityFactor;
 	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);	 //BU in GWd/t
 
-	fFuelPlan->AddFuel(creationtime, fueltypeDB, fBurnUp);
+	fFuelPlan = new CLASSFuelPlan(log);
+	fFuelPlan->AddFuel(creationtime, CLASSFuel(fueltypeDB), fBurnUp);
 
 
 
@@ -163,21 +172,23 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels fueltypeDB, FabricationPlant* f
 	INFO << "\t Fuel Composition is not fixed ! "<< endl;
 	INFO << "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
 	INFO << "\t Life time (Operating's Duration) set at \t " << (double)(GetLifeTime()/3600/24/365.25) << " year" << endl;
-	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << Power << " and " << ChargeFactor << " Charge Factor)"<< endl;
+	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << Power << " and " << CapacityFactor << " capacity factor)"<< endl;
 	INFO << "\t Burn-Up at end of Cycle set at \t " << (double)(fBurnUp) << " GWj/t" << endl;
 	INFO << "\t The corresponding Cycle Time is\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
 	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 
 
+	DBGL
 
 }
 
-Reactor::Reactor(CLASSLogger* log, PhysicsModels 	fueltypeDB,
+Reactor::Reactor(CLASSLogger* log, PhysicsModels* 	fueltypeDB,
 		 FabricationPlant* fabricationplant,
  		 CLASSBackEnd* Pool,
  		 cSecond creationtime, cSecond lifetime, cSecond cycletime,
  		 double HMMass, double BurnUp):CLASSFacility(log, creationtime, lifetime, cycletime, 4)
 {
+	DBGL
 	(*this).SetName("R_Reactor.");
 
 
@@ -195,7 +206,8 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels 	fueltypeDB,
 	fOutBackEndFacility = Pool;
 	fPower = BurnUp*3600.*24. / (fCycleTime) * HMMass *1e9; //BU in GWd/t
 
-	fFuelPlan->AddFuel(creationtime, fueltypeDB, fBurnUp);
+	fFuelPlan = new CLASSFuelPlan(log);
+	fFuelPlan->AddFuel(creationtime, CLASSFuel(fueltypeDB), fBurnUp);
 
 
 	INFO << " A Reactor has been define :" << endl;
@@ -208,16 +220,18 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels 	fueltypeDB,
 	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 
 
+	DBGL
 
 }
 
 
-Reactor::Reactor(CLASSLogger* log, EvolutionData evolutivedb,
+Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
  		 CLASSBackEnd* Pool,
  		 cSecond creationtime,
  		 cSecond lifetime,
- 		 double power, double HMMass, double BurnUp, double ChargeFactor ):CLASSFacility(log, creationtime, lifetime, 4)
+ 		 double power, double HMMass, double BurnUp, double CapacityFactor ):CLASSFacility(log, creationtime, lifetime, 4)
 {
+	DBGL
 	(*this).SetName("R_Reactor.");
 
 
@@ -233,17 +247,17 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData evolutivedb,
 
 	fOutBackEndFacility = Pool;
 
-	fPower = power * ChargeFactor;
+	fPower = power * CapacityFactor;
 
 	fHeavyMetalMass = HMMass;
 
 	map<ZAI ,double>::iterator it;
-	map<ZAI ,double> isotopicquantity = evolutivedb.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
+	map<ZAI ,double> isotopicquantity = evolutivedb->GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
 	double M0 = 0;
 	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
 
-	fEvolutionDB = evolutivedb * (fHeavyMetalMass/M0);
+	fEvolutionDB = *evolutivedb * (fHeavyMetalMass/M0);
 
 	fBurnUp = BurnUp;
 	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);
@@ -252,25 +266,27 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData evolutivedb,
 	fIVInCycle = fEvolutionDB.GetIsotopicVectorAt(0);
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 
-
-	fFuelPlan->AddFuel(creationtime, evolutivedb, fBurnUp);
+	fFuelPlan = new CLASSFuelPlan(log);
+	fFuelPlan->AddFuel(creationtime, CLASSFuel(evolutivedb), fBurnUp);
 
 	INFO << " A Reactor has been define :" << endl;
 	INFO << "\t Fuel Composition is fixed ! "<< endl;
 	INFO << "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
 	INFO << "\t Life time (Operating's Duration) set at \t " << (double)(GetLifeTime()/3600/24/365.25) << " year" << endl;
 	INFO << "\t The Cycle Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
-	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << ChargeFactor << " Charge Factor)"<< endl;
+	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << CapacityFactor << " capacity factor)"<< endl;
 	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 
 
+	DBGL
 }
 
-Reactor::Reactor(CLASSLogger* log, EvolutionData evolutivedb,
+Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
  		 CLASSBackEnd* Pool,
- 		 cSecond creationtime, cSecond lifetime, cSecond cyclertime,
-		 double HMMass, double BurnUp, double ChargeFactor ):CLASSFacility(log, creationtime, lifetime, cycletime, 4)
+ 		 cSecond creationtime, cSecond lifetime, cSecond cycletime,
+		 double HMMass, double BurnUp ):CLASSFacility(log, creationtime, lifetime, cycletime, 4)
 {
+	DBGL
 	(*this).SetName("R_Reactor.");
 
 
@@ -291,12 +307,12 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData evolutivedb,
 	fHeavyMetalMass = HMMass;
 
 	map<ZAI ,double>::iterator it;
-	map<ZAI ,double> isotopicquantity = evolutivedb.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
+	map<ZAI ,double> isotopicquantity = evolutivedb->GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
 	double M0 = 0;
 	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
 
-	fEvolutionDB = evolutivedb * (fHeavyMetalMass/M0);
+	fEvolutionDB = *evolutivedb * (fHeavyMetalMass/M0);
 
 	fBurnUp = BurnUp;
 
@@ -305,17 +321,17 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData evolutivedb,
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 
 
-	fFuelPlan->AddFuel(creationtime, evolutivedb, fBurnUp);
+	fFuelPlan->AddFuel(creationtime, CLASSFuel(evolutivedb), fBurnUp);
 
 	INFO << " A Reactor has been define :" << endl;
 	INFO << "\t Fuel Composition is fixed ! "<< endl;
 	INFO << "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
 	INFO << "\t Life time (Operating's Duration) set at \t " << (double)(GetLifeTime()/3600/24/365.25) << " year" << endl;
 	INFO << "\t The Cycle Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
-	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << ChargeFactor << " Charge Factor)"<< endl;
+	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << fPower << endl;
 	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 	
-	
+	DBGL
 }
 
 
@@ -384,6 +400,7 @@ void Reactor::SetEvolutionDB(EvolutionData evolutionDB)
 
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
+
 
 
 }
@@ -459,10 +476,12 @@ DBGL
 	}
 	else
 	{
-		// This is so bad!! You will probably unsynchronize all the reactor....
-		ERROR << " " << (*this).GetName()<< endl;
+		// Evolution goes after the end of cycle.... check it
+		ERROR << " " << (*this).GetName() << endl;
+		ERROR << " Evolution Time is " << t << endl;
 		ERROR << " Evolution is too long! There is a problem in Reactor evolution at " << t/365.25/3600/24 << endl;
 		ERROR << " This is too long of : " << EvolutionTime + fInCycleTime - fCycleTime << endl;
+		ERROR << " I have spend " << fInCycleTime +EvolutionTime << " and should have been " << fCycleTime << endl;
 		exit(1);
 	}
 
@@ -477,7 +496,7 @@ DBGL
 
 	if(fInternalTime < GetCreationTime()) return;
 	if(fIsShutDown  && !fIsStarted) return; // Reactor stopped...
-
+	if(!fIsAtEndOfCycle && !fIsShutDown) return;
 
 // First trash the irradiated fuel
 	if(fIsAtEndOfCycle  && !fIsShutDown )
@@ -509,50 +528,52 @@ DBGL
 	}
 
 
+	DBGL
 
 
 // Get the new Fuel !
-
 	pair<CLASSFuel, double> NextFuel = fFuelPlan->GetFuelAt(fInternalTime);
 	SetBurnUp((NextFuel).second);
 
-	if( typeid(NextFuel.first) == typeid(PhysicsModels) )
+	if( NextFuel.first.GetPhysicsModels() )
 		fFixedFuel = false;
-	else if( typeid(NextFuel.first) == typeid(EvolutionData) )
+	else if( NextFuel.first.GetEvolutionData() )
 		fFixedFuel = true;
 	else
 	{
+		ERROR << typeid(NextFuel.first).name() << endl;
 		ERROR << "WRONG Fuel Format Correct it !! " << endl;
 		exit(1);
 	}
+	DBGL
 
 	if(fFixedFuel )
 	{
+		DBGL
 		if(fIsAtEndOfCycle  && !fIsShutDown )
 		{
-			SetEvolutionDB( *NextFuel.first.GetEvolutionData() );
-
+			SetEvolutionDB( *(NextFuel.first.GetEvolutionData()) );
 			fIsAtEndOfCycle = false;
 
 
 			if(!GetParc()->GetStockManagement() && fIsStorage )
 			{
 				IsotopicVector BuildIVtmp ;
-				IsotopicVector GodPart;
+				IsotopicVector OutIncomePart;
 
 				//Get The Storage Compostion
 				BuildIVtmp.Add(fStorage->GetInsideIV().GetIsotopicQuantity());
 				//Get the rest after IVIn creation
 				BuildIVtmp -= fIVInCycle;
-				//Get the God part form this rest
-				GodPart.Add(BuildIVtmp.GetIsotopicQuantityNeeded()) ;
+				//Get the OutIncome part form this rest
+				OutIncomePart.Add(BuildIVtmp.GetIsotopicQuantityNeeded()) ;
 				//Take what you can from Storage...
-				fStorage->TakeFromStock( fIVInCycle - GodPart);
-				//And Get the rest from God
-				GetParc()->AddGod(GodPart);
+				fStorage->TakeFromStock( fIVInCycle - OutIncomePart);
+				//And Get the rest from OutIncome
+				GetParc()->AddOutIncome(OutIncomePart);
 
 			}
-			else	GetParc()->AddGod(fIVInCycle);
+			else	GetParc()->AddOutIncome(fIVInCycle);
 
 
 			fInsideIV  = fIVBeginCycle;
@@ -560,10 +581,12 @@ DBGL
 
 			fInCycleTime = 0;
 		}
+		DBGL
 
 	}
 	else
 	{
+		DBGL
 		if(!GetParc()->GetStockManagement())
 		{
 			ERROR << " Can't have unfixedFuel without stock management" << endl;
@@ -582,10 +605,10 @@ DBGL
 			AddCumulativeIVIn(fIVBeginCycle);
 
 			fInCycleTime = 0;
-
 		}
 
-		
+		DBGL
+
 		
 		
 	}

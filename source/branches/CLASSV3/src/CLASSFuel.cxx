@@ -13,10 +13,14 @@ using namespace std;
 //
 //________________________________________________________________________
 
-CLASSFuel::CLASSFuel():CLASSObject()
+CLASSFuel::CLASSFuel(EvolutionData* evo)
 {
+	fEvolutionData = evo;
+	fPhysicsModels = 0;
 }
 
-CLASSFuel::CLASSFuel(CLASSLogger* log):CLASSObject(log)
+CLASSFuel::CLASSFuel(PhysicsModels* evo)
 {
+	fEvolutionData = 0;
+	fPhysicsModels = evo;
 }

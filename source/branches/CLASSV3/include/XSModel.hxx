@@ -1,4 +1,3 @@
-
 #ifndef _XSMODEL_HXX
 #define _XSMODEL_HXX
 
@@ -12,6 +11,7 @@
  @version 1.0
  */
 #include "EvolutionData.hxx"
+#include "CLASSObject.hxx"
 
 
 using namespace std;
@@ -45,9 +45,9 @@ class XSModel : public CLASSObject
 	XSModel();
 	XSModel(CLASSLogger* log);
 
-	virtual  EvolutionData GetCrossSections(IsotopicVector IV,double t=0) {return 0;} 
-
-
+	virtual  EvolutionData GetCrossSections(IsotopicVector IV,double t=0) {return EvolutionData();}
+	
+	
 
 };
 

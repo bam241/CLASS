@@ -148,6 +148,7 @@ public :
 	//}
 	//@}
 
+	void SetLogTimeStep(bool val = true)	{fLogTimeStep = true;}
 
 //********* Add Method *********//
 	/*!
@@ -170,8 +171,6 @@ public :
 	 \name Evolution Method
 	 */
 	//@{
-	void	OldBuildTimeVector(cSecond t);
-
 
 	void	BuildTimeVector(cSecond t);		///< Build the Time Evolution Vector where :
 							/// \li 1 printing,
@@ -198,9 +197,9 @@ public :
 	//@{
 
 
-	IsotopicVector		GetGod() const		{ return fGod; }		//!< Return the God Providings IsotopicVector
-	void AddGod(ZAI zai, double quantity)		{ AddGod(zai*quantity); }	//!< Add a ZAI*quantity to GodIncome
-	void AddGod(IsotopicVector isotopicvector)	{ fGod.Add(isotopicvector); }	//!< Add a isotopicVector to GodIncome
+	IsotopicVector		GetOutIncome() const		{ return fOutIncome; }		//!< Return the OutIncome Providings IsotopicVector
+	void AddOutIncome(ZAI zai, double quantity)		{ AddOutIncome(zai*quantity); }	//!< Add a ZAI*quantity to OutIncomeIncome
+	void AddOutIncome(IsotopicVector isotopicvector)	{ fOutIncome.Add(isotopicvector); }	//!< Add a isotopicVector to OutIncomeIncome
 	void AddWaste(ZAI zai, double quantity)		{ AddWaste(zai*quantity); }	//!< Add a ZAI*quantity to Waste
 	void AddWaste(IsotopicVector isotopicvector)	{ fWaste.Add(isotopicvector); }	//!< Add a isotopicVector to Waste
 	void AddToPower(double power)			{ fParcPower += power;}		//!< Add power to the installed power in the Parc
@@ -234,7 +233,7 @@ public :
 protected :
 	bool			fNewTtree;		//!< Tru if we want to define a new TTree in the output File
 	bool			fStockManagement;	///< True if real StockManagement false unstead (Default = true)
-	
+	bool			fLogTimeStep;
 	
 	cSecond			fPrintStep;		///< Time interval between two output update
 	cSecond			fAbsoluteTime;		///< Absolute Clock
@@ -262,7 +261,7 @@ protected :
 	
 	IsotopicVector	fWaste;			///< Waste IV
 	IsotopicVector	fTotalStorage;		///< Sum of all IV in Storage IV
-	IsotopicVector	fGod;			///< GodIncome IV
+	IsotopicVector	fOutIncome;			///< OutIncomeIncome IV
 	IsotopicVector	fTotalCooling;		///< Sum of all IV in Cooling IV
 	IsotopicVector	fFuelFabrication;	///< Sum of all IV in Fabrication IV
 	IsotopicVector	fTotalInReactor;	///< Sum of all IV in Reactor IV

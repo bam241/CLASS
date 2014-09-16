@@ -338,9 +338,9 @@ double IsotopicVector::GetSumOfAll() const
 void IsotopicVector::Add(const ZAI& zai, double quantity)
 {
 
-	if( ceil(quantity*1e25) - quantity*1e25 >  quantity*1e25 - floor(quantity*1e25) )
-	quantity = floor(quantity*1e25)*1/1e25;
-	else	quantity = ceil(quantity*1e25)*1/1e25;
+	if( ceil(quantity*1e50) - quantity*1e50 >  quantity*1e50 - floor(quantity*1e50) )
+	quantity = floor(quantity*1e50)*1/1e50;
+	else	quantity = ceil(quantity*1e50)*1/1e50;
 
 
 	if(quantity > 0)

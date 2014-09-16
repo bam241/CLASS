@@ -47,6 +47,7 @@ FabricationPlant::FabricationPlant():CLASSFacility(16)
 
 FabricationPlant::FabricationPlant(CLASSLogger* log, double fabricationtime):CLASSFacility(log, fabricationtime, 16)
 {
+DBGL
 	SetName("F_FabricationPLant.");
 
 	fFiFo = false;
@@ -58,6 +59,7 @@ FabricationPlant::FabricationPlant(CLASSLogger* log, double fabricationtime):CLA
 	INFO	<< " A FabricationPlant has been define :" << endl;
 	INFO	<< "\t Chronological Stock Priority has been set! "<< endl;
 	INFO	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/3600/24/365.25) << " year" << endl << endl;
+DBGL
 }
 
 
@@ -113,8 +115,10 @@ DBGL
 	map<int ,cSecond >::iterator it;
 	for( it = fReactorNextStep.begin(); it!= fReactorNextStep.end(); it++ )
 	{
-		if( t + GetCycleTime() >= GetParc()->GetReactor()[ (*it).first ]->GetCreationTime()
-		   && t + GetCycleTime() < GetParc()->GetReactor()[ (*it).first ]->GetCreationTime() + GetParc()->GetReactor()[ (*it).first ]->GetLifeTime())
+		double R_CreactionTime = GetParc()->GetReactor()[ (*it).first ]->GetCreationTime();
+		double R_LifeTime = GetParc()->GetReactor()[ (*it).first ]->GetLifeTime();
+		if( t + GetCycleTime() >= R_CreactionTime
+		   && t + GetCycleTime() < R_CreactionTime + R_LifeTime)
 		{
 			if( (*it).second == t )
 			{
@@ -122,8 +126,10 @@ DBGL
 				pair<CLASSFuel, double> R_Fuel = GetParc()->GetReactor()[ReactorId]->GetFuelPlan()->GetFuelAt( t + GetCycleTime() );
 #pragma omp critical(FuelBuild)
 				{
-					if( typeid(R_Fuel.first) == typeid(PhysicsModels) )
+					if( R_Fuel.first.GetPhysicsModels() )
+					{
 						BuildFuelForReactor( (*it).first, t );
+					}
 				}
 
 				double R_BU = R_Fuel.second;
@@ -247,7 +253,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 				if(!IResult.second)
 				IResult.first->second = evolutiondb;
 			}
-			GetParc()->AddGod( IV );
+			GetParc()->AddOutIncome( IV );
 			fInsideIV += IV;
 			AddCumulativeIVIn(IV);
 
@@ -538,7 +544,7 @@ DBGL
 		}
 	}
 	else
-		GetParc()->AddGod( fFertileArray[0]*LambdaArray.back() );
+		GetParc()->AddOutIncome( fFertileArray[0]*LambdaArray.back() );
 
 
 	//Clear the Building Array (Fissile and Fertile)

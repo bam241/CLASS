@@ -53,6 +53,7 @@ Scenario::Scenario():CLASSObject(new CLASSLogger("CLASS_OUTPUT.log"))
 	fStartingTime = fAbsoluteTime;
 
 	fStockManagement = true;
+	fLogTimeStep = false;
 
 	fOutputFileName = "CLASS_Default.root";
 	fOutputTreeName = "Data";
@@ -81,6 +82,7 @@ Scenario::Scenario(cSecond abstime):CLASSObject(new CLASSLogger())
 	fStartingTime = fAbsoluteTime;
 
 	fStockManagement = true;
+	fLogTimeStep = false;
 
 	fOutputFileName = "CLASS_Default.root";
 	fOutputTreeName = "Data";
@@ -110,6 +112,7 @@ Scenario::Scenario(CLASSLogger* log, cSecond abstime):CLASSObject(log)
 	fStartingTime = fAbsoluteTime;
 
 	fStockManagement = true;
+	fLogTimeStep = false;
 
 	fOutputFileName = "CLASS_Default.root";
 	fOutputTreeName = "Data";
@@ -141,6 +144,7 @@ Scenario::Scenario(cSecond abstime, CLASSLogger* log):CLASSObject(log)
 	fStartingTime = fAbsoluteTime;
 
 	fStockManagement = true;
+	fLogTimeStep = false;
 
 	fOutputFileName = "CLASS_Default.root";
 	fOutputTreeName = "Data";
@@ -342,24 +346,37 @@ void Scenario::BuildTimeVector(cSecond t)
 	fTimeStep.insert( pair<cSecond ,int>(t,1) );
 	//********* Printing Step *********//
 	{
+		DBGL
 		cSecond step = fStartingTime;
 
 		if(step >= fAbsoluteTime )
 			fTimeStep.insert( pair<cSecond ,int>(step,1) );
 		step += fPrintStep;
+		cSecond timescale = 1;
+
 		do
 		{
 
 			if(step >= fAbsoluteTime )
 				fTimeStep.insert( pair<cSecond ,int>(step,1) );
-			step += fPrintStep;
+
+			if(fLogTimeStep)
+			{
+				timescale *= 10;
+				step = fPrintStep*timescale;
+			}
+			else
+				step += fPrintStep;
+
 		}
 		while( step < t );
+		DBGL
 	}
 
 
 	for(int i = 0; i < (int)fReactor.size();i++)
 	{
+		DBGL
 		cSecond R_StartingTime = fReactor[i]->GetCreationTime();
 		cSecond R_ShutDownTime = fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime();
 
@@ -436,18 +453,19 @@ void Scenario::BuildTimeVector(cSecond t)
 		//********* FabricationPlant Evolution Step *********//
 
 
-		if( typeid(R_Fuel.first) == typeid(PhysicsModels) )
+		if( R_Fuel.first.GetPhysicsModels() )
 		{
 
-			fReactor[i]->GetFabricationPlant()->AddReactor( i, fReactor[i]->GetCreationTime() );
+			fReactor[i]->GetFabricationPlant()->AddReactor( i, step );
 
 
-			if( (step - F_CycleTime) >= fAbsoluteTime && (step - F_CycleTime) <= t )
-			{
+			F_CycleTime = fReactor[i]->GetFabricationPlant()->GetCycleTime();
+
+			if(step - F_CycleTime >= fAbsoluteTime && step - F_CycleTime <= t && step < R_ShutDownTime)
+			{						// Set End of reactor cycle
 				pair< map<cSecond, int>::iterator, bool > IResult;
 				IResult = fTimeStep.insert( pair<cSecond ,int>(step - F_CycleTime,16) );
-				if( !IResult.second )
-					IResult.first->second |= 16;
+				if( !IResult.second ) IResult.first->second  |= 16;
 			}
 			else if( step - F_CycleTime < fStartingTime )
 			{
@@ -456,6 +474,7 @@ void Scenario::BuildTimeVector(cSecond t)
 			}
 		}
 
+		step += R_CycleTime;
 		//Prepare the first Cycle
 		R_Fuel = fReactor[i]->GetFuelPlan()->GetFuelAt(step);
 
@@ -467,75 +486,74 @@ void Scenario::BuildTimeVector(cSecond t)
 			ERROR << " Be carefull a reactor cycletime is set to 0 second....\"\n" << endl;
 			exit(1);
 		}
-		step += R_CycleTime;
 
 
 		while(step <= t && step <= R_ShutDownTime )
 		{
+			DBGL
 
 			// FabricationPlant Evolution Step
-			if( typeid(R_Fuel.first) == typeid(PhysicsModels) )
+			if( R_Fuel.first.GetPhysicsModels() )
 			{
+				fReactor[i]->GetFabricationPlant()->AddReactor( i, step );
+
 				F_CycleTime = fReactor[i]->GetFabricationPlant()->GetCycleTime();
 
-				if(step - F_CycleTime >= fAbsoluteTime &&
-				   step - F_CycleTime <= t &&
-				   step < R_ShutDownTime)
+				if(step - F_CycleTime >= fAbsoluteTime && step - F_CycleTime <= t && step < R_ShutDownTime)
 				{						// Set End of reactor cycle
 					pair< map<cSecond, int>::iterator, bool > IResult;
 					IResult = fTimeStep.insert( pair<cSecond ,int>(step - F_CycleTime,16) );
 					if( !IResult.second ) IResult.first->second  |= 16;
 				}
-
-				if(step >= fAbsoluteTime &&
-				   step <= t &&
-				   step < R_ShutDownTime)
-				{						// Set End of reactor cycle
-					pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step,4) );
-					if( !IResult.second ) IResult.first->second  |= 4;
-				}
-
-				// End/Start Of Reactor Cycle Step //
-
-
-				map< cSecond, int >::iterator TV_it; // the time vector iterator
-				// BackEnd fuel Cycle
-				// Loop on the BackEnd fuel Cycle Time path
-				for(TV_it = R_BackEndTimePath.begin(); TV_it != R_BackEndTimePath.end(); TV_it++)
-				{
-
-					if(step + (*TV_it).first >= fAbsoluteTime &&
-					   step + (*TV_it).first <= t)
-					{	// Test if each step of the Fuel Cycle BackEnd is after the actual time (AbsolutreTime) and before the end of the evolution (t)
-						pair< map<cSecond, int>::iterator, bool > IResult;
-
-						IResult = fTimeStep.insert( pair<cSecond ,int>(step + (*TV_it).first, (*TV_it).second) );
-						if( !IResult.second )
-							IResult.first->second |= (*TV_it).second;
-					}
-				}
-
-
-
-				// Update to the next fuel
-				R_Fuel = fReactor[i]->GetFuelPlan()->GetFuelAt(step);
-
-				R_BU = fReactor[i]->GetFuelPlan()->GetFuelAt(step).second;
-				R_CycleTime = (cSecond) (R_BU / R_Power * R_HMMass * 1e9 *3600*24);
-				if(R_CycleTime == 0)
-				{
-					ERROR << " Be carefull a reactor cycletime is set to 0 second....\"\n" << endl;
-					exit(1);
-				}
-				step += R_CycleTime;
 			}
 
 
+			if(step >= fAbsoluteTime && step <= t && step < R_ShutDownTime)
+			{						// Set End of reactor cycle
+				pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step,4) );
+				if( !IResult.second ) IResult.first->second  |= 4;
+			}
 
+			// End/Start Of Reactor Cycle Step //
+
+
+			map< cSecond, int >::iterator TV_it; // the time vector iterator
+			// BackEnd fuel Cycle
+			// Loop on the BackEnd fuel Cycle Time path
+			for(TV_it = R_BackEndTimePath.begin(); TV_it != R_BackEndTimePath.end(); TV_it++)
+			{
+
+				if(step + (*TV_it).first >= fAbsoluteTime &&
+				   step + (*TV_it).first <= t)
+				{	// Test if each step of the Fuel Cycle BackEnd is after the actual time (AbsolutreTime) and before the end of the evolution (t)
+					pair< map<cSecond, int>::iterator, bool > IResult;
+
+					IResult = fTimeStep.insert( pair<cSecond ,int>(step + (*TV_it).first, (*TV_it).second) );
+					if( !IResult.second )
+						IResult.first->second |= (*TV_it).second;
+				}
+			}
+
+
+			step += R_CycleTime;
+
+			// Update to the next fuel
+			R_Fuel = fReactor[i]->GetFuelPlan()->GetFuelAt(step);
+
+			R_BU = fReactor[i]->GetFuelPlan()->GetFuelAt(step).second;
+			R_CycleTime = (cSecond) (R_BU / R_Power * R_HMMass * 1e9 *3600*24);
+			if(R_CycleTime == 0)
+			{
+				ERROR << " Be carefull a reactor cycletime is set to 0 second....\"\n" << endl;
+				exit(1);
+			}
+
+			DBGL
 		}
 
 
 
+		DBGL
 	}
 	//****** Print the Time Index ******//
 	ofstream TimeStepfile("CLASS_TimeStep", ios_base::app);		// Open the File
@@ -549,156 +567,6 @@ void Scenario::BuildTimeVector(cSecond t)
 
 	DBGL
 }
-
-
-//________________________________________________________________________
-void Scenario::OldBuildTimeVector(cSecond t)
-{
-	fTimeStep.clear();
-	fTimeStep.insert( pair<cSecond ,int>(t,1) );
-	//********* Printing Step *********//
-	{
-		cSecond step = 0;
-		if(fAbsoluteTime == fStartingTime)
-			step = fStartingTime;
-		else
-		{
-			step = fAbsoluteTime;
-		}
-		if(step >= fAbsoluteTime )
-			fTimeStep.insert( pair<cSecond ,int>(step,1) );
-		step += fPrintStep;
-		do
-		{
-
-			if(step >= fAbsoluteTime )
-				fTimeStep.insert( pair<cSecond ,int>(step,1) );
-			step += fPrintStep;
-		}
-		while( step < t );
-	}
-
-	for(int i = 0; i < (int)fReactor.size();i++)
-	{
-		double step = fReactor[i]->GetCreationTime();
-		double coolingstep = fReactor[i]->GetOutBackEndFacility()->GetCycleTime();
-		double fabricationstep = 0;
-
-		if(!fReactor[i]->IsFuelFixed())
-			fabricationstep = fReactor[i]->GetFabricationPlant()->GetCycleTime();
-
-
-		//********* Reactor Evolution Step *********//
-		// set destruction of a reactor
-		if( (fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime() > fAbsoluteTime) &&
-		   (fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime() < t) )
-		{
-			//********* Reactor Shutdown *********//
-			pair< map<cSecond, int>::iterator, bool > IResult  = fTimeStep.insert( pair<cSecond ,int>(fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime(),2) );
-			if( !IResult.second ) IResult.first->second |= 2;
-
-			//********* End of Cooling after reactor Shutdown *********//
-			if(fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime()+coolingstep >= fAbsoluteTime
-			   && fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime()+coolingstep <= t)
-			{
-				pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime()+coolingstep,8) );
-				if( !IResult.second ) IResult.first->second |= 8;
-			}
-		}
-
-
-		//********* Start Of Reactor First Cycle *********//
-		if(step >= fAbsoluteTime &&  step <= t && step < fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime())
-		{
-			pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step,4) );
-			if( !IResult.second ) IResult.first->second |= 4;
-		}
-
-		//********* FabricationPlant Evolution Step *********//
-		if(!fReactor[i]->IsFuelFixed())
-		{
-			if(step > fAbsoluteTime && step - fabricationstep <= t && step < fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime() )
-			{
-				pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step -fabricationstep,16) );
-				if( !IResult.second ) IResult.first->second  |= 16;
-			}
-			else if(step - fabricationstep < fStartingTime)
-			{
-				ERROR << " Can't Build Fuel before Scenario's start\"\n" << endl;
-				exit(1);
-			}
-		}
-
-
-		//********* Reactor related Step *********//
-		step += fReactor[i]->GetCycleTime();
-		if (fReactor[i]->GetCycleTime() !=0)
-		{
-			do
-			{
-
-
-				//********* FabricationPlant Evolution Step *********//
-				if(!fReactor[i]->IsFuelFixed())
-					if(step > fAbsoluteTime && step - fabricationstep <= t && step < fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime())
-					{						// Set End of reactor cycle
-						pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step -fabricationstep,16) );
-						if( !IResult.second ) IResult.first->second  |= 16;
-					}
-
-
-				//********* End/Start Of Reactor Cycle Step *********//
-				if(step > fAbsoluteTime && step <= t && step < fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime())
-				{						// Set End of reactor cycle
-					pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step,4) );
-					if( !IResult.second ) IResult.first->second  |= 4;
-				}
-
-				//********* End of Cooling Step *********//
-				if(step >= fAbsoluteTime && step + coolingstep <= t)			// Set End of Cooling
-				{
-					pair< map<cSecond, int>::iterator, bool > IResult = fTimeStep.insert( pair<cSecond ,int>(step+coolingstep,8) );
-					if( !IResult.second ) IResult.first->second |= 8;
-				}
-				step += fReactor[i]->GetCycleTime();
-			}
-			while(step <= t && step <= fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime() );
-		}
-	}
-
-
-	//*** In Case of Evolution Restart ****//
-	for(int i =0; i < (int)fPool.size(); i++)
-	{
-		//********* End of Cooling Step *********//
-		for(int j = 0; j<(int)fPool[i]->GetIVArray().size(); j++ )// Set End of Cooling
-		{
-			if(fPool[i]->GetCoolingStartingTime()[j] +  fPool[i]->GetCycleTime() > fAbsoluteTime )
-			{
-				pair< map<cSecond, int>::iterator, bool > IResult;
-				IResult = fTimeStep.insert( pair<cSecond ,int>(fPool[i]->GetCoolingStartingTime()[j] + fPool[i]->GetCycleTime(),8) );
-				if( !IResult.second ) IResult.first->second |= 8;
-			}
-		}
-	}
-
-
-
-	//****** Print the Time Index ******//
-	ofstream TimeStepfile("CLASS_TimeStep", ios_base::app);		// Open the File
-
-	if(!TimeStepfile)
-	{
-		WARNING << " Can't open \" CLASS_TimeStep \"\n" << endl;
-	}
-	else
-	{
-		map<cSecond ,int >::iterator it;
-		for( it = fTimeStep.begin(); it != fTimeStep.end(); it++)
-			TimeStepfile << (*it).first << " " << (*it).second << endl;
-	}
-}
-
 
 
 //________________________________________________________________________
@@ -772,6 +640,7 @@ void Scenario::Evolution(cSecond t)
 	for(it = fTimeStep.begin(); it != fTimeStep.end(); it++)
 	{
 
+		fWaste = fDecayDataBase->GetDecay(fWaste, (*it).first - fAbsoluteTime);
 		fAbsoluteTime = (*it).first;
 
 
@@ -864,7 +733,6 @@ void Scenario::UpdateParc()
 void Scenario::ResetQuantity()
 {
 
-
 	fTotalInReactor.Clear();
 	fTotalStorage.Clear();
 	fTotalCooling.Clear();
@@ -942,7 +810,7 @@ void Scenario::OutAttach()
 	fOutT->Branch("INCYCLE.", "IsotopicVector", &fIVInCycleTotal);
 	fOutT->Branch("TOTAL.", "IsotopicVector", &fIVTotal);
 
-	fOutT->Branch("GOD.", "IsotopicVector", &fGod);
+	fOutT->Branch("OUTINCOME.", "IsotopicVector", &fOutIncome);
 	fOutT->Branch("WASTE.", "IsotopicVector", &fWaste);
 
 	// Branch the separate object

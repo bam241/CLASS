@@ -11,7 +11,7 @@
 
 
 
-PhysicsModels::PhysicsModels():CLASSFuel()
+PhysicsModels::PhysicsModels():CLASSObject()
 {
 
 	fXSModel		= 0;
@@ -21,7 +21,7 @@ PhysicsModels::PhysicsModels():CLASSFuel()
 
 }
 //________________________________________________________________________
-PhysicsModels::PhysicsModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM ):CLASSFuel()
+PhysicsModels::PhysicsModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM ):CLASSObject()
 {
 
 	fXSModel		= XS;
@@ -31,7 +31,7 @@ PhysicsModels::PhysicsModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel
 
 }
 //________________________________________________________________________
-PhysicsModels::PhysicsModels(CLASSLogger* log, XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM ):CLASSFuel(log)
+PhysicsModels::PhysicsModels(CLASSLogger* log, XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM ):CLASSObject(log)
 {
 
 	fXSModel		= XS;
