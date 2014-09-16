@@ -196,9 +196,11 @@ void CLASSRead::ReadZAI()
 
 		Long64_t nentries = fData[i]->GetEntries();
 
-		fData[i]->GetEntry(nentries-1);
-		IVTot += (*IVIn);
-
+		for(int j = 0; j < nentries; j++)
+		{
+			fData[i]->GetEntry(j);
+			IVTot += (*IVIn);
+		}
 		fData[i]->ResetBranchAddresses();
 	}
 	fZAIvector = IVTot.GetZAIList();
@@ -1099,7 +1101,7 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 							break;
 
 						case 3:
-							name = "GOD.";
+							name = "OUTINCOME.";
 
 
 
@@ -1263,7 +1265,7 @@ string CLASSRead::GetBranchInName(CLASSPlotElement toplot)
 				break;
 
 			case 3:
-				name = "GOD.";
+				name = "OUTINCOME.";
 				return name;
 				break;
 
@@ -1358,7 +1360,7 @@ string CLASSRead::GetLegendOutName(CLASSPlotElement toplot)
 				break;
 
 			case 3:
-				name = "P_{" + itoa(toplot.fTreeId) + "} GOD ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
+				name = "P_{" + itoa(toplot.fTreeId) + "} OUTINCOME ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
 				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
 				break;
 
@@ -1470,7 +1472,7 @@ string CLASSRead::GetTittleOutName(CLASSPlotElement toplot)
 				break;
 
 			case 3:
-				name = "PARC "+ itoa(toplot.fTreeId) +  " GOD " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
+				name = "PARC "+ itoa(toplot.fTreeId) +  " OUTINCOME " + itoa(toplot.fZAI.Z()) + " " + itoa(toplot.fZAI.A()) + " " + itoa(toplot.fZAI.I());
 				return name;
 				break;
 

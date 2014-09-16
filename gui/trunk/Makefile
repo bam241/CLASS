@@ -13,13 +13,13 @@ LOCALINC	= $(CLASS_include)
 ######################################################
 
 #------------------------------------------------------------------------------
-CXXFLAGS      += -I$(LOCALINC)
+CXXFLAGS      += -g -I$(LOCALINC)
 LD            = $(CXX)
 LIBS          += -L$(LIBDIR) -lCLASSpkg -lgomp
-LDFLAGS       = 
+LDFLAGS       = -g
 GLIBS         = $(ROOTGLIBS)
 
-CXXFLAGS     += $(ROOTCFLAGS) 
+CXXFLAGS     += -g $(ROOTCFLAGS)
 
 #------------------------------------------------------------------------------
 subO	= CLASSPlotElement.o \
