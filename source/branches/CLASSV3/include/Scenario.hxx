@@ -156,11 +156,15 @@ public :
 	 */
 	//@{
 
-	void	AddPool(Pool* Pool);						///< Add A TF to the Park
+	void	AddPool(Pool* Pool);						///< Add a Pool to the Park
 	void	AddReactor(Reactor* reactor);					///< Add a Reactor to the Park 
 	void 	AddStorage(Storage* storage);					///< Add a Storage to the Park
 	void 	AddFabricationPlant(FabricationPlant* fabricationplant);	///< Add a Storage to the Park
 	
+	void	Add(Pool* Pool)					{AddPool(Pool);}	///< Add a Pool to the Park
+	void	Add(Reactor* reactor)				{AddReactor(reactor);}	///< Add a Reactor to the Park
+	void 	Add(Storage* storage)				{AddStorage(storage);}	///< Add a Storage to the Park
+	void 	Add(FabricationPlant* fabricationplant)		{AddFabricationPlant(fabricationplant);}///< Add a Storage to the Park
 
 	//@}
 
@@ -250,6 +254,7 @@ protected :
 	vector<Pool*>			fPool;			///< Vector of Pool
 	vector<Reactor*>		fReactor;		///< Vector of Reactor
 	vector<FabricationPlant*>	fFabricationPlant;	///< Vector of FabricationPlant
+	vector<SeparationPlant*>	fSeparationPlant;	///< Vector of FabricationPlant
 	DecayDataBank*			fDecayDataBase;		//!< Pointer to the Decay DataBase
 
 	
