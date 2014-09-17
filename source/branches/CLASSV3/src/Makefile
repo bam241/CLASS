@@ -27,6 +27,7 @@ OBJS		= 	CLASSLogger.o \
 			FabricationPlant.o FabricationPlantDict.o \
 			Reactor.o ReactorDict.o \
 			CLASSBackEnd.o CLASSBackEndDict.o\
+			SeparationPlant.o SeparationPlantDict.o\
 			Storage.o StorageDict.o\
 			Pool.o PoolDict.o\
 			DecayDataBank.o \
@@ -56,6 +57,7 @@ ROOTOBJS	= 	CLASSLogger.o \
 			CLASSBackEnd.o CLASSBackEndDict.o\
 			Storage.o StorageDict.o\
 			Pool.o PoolDict.o\
+			SeparationPlant.o SeparationPlantDict.o\
 			DecayDataBank.o \
 			DynamicalSystem.o\
 			CLASSFuel.o\
@@ -103,6 +105,9 @@ FabricationPlantDict.cxx:	$(LOCALINC)/FabricationPlant.hxx
 				rootcint -f $@ -c $^
 
 PoolDict.cxx:			$(LOCALINC)/Pool.hxx
+				rootcint -f $@ -c $^
+
+SeparationPlantDict.cxx:	$(LOCALINC)/SeparationPlant.hxx
 				rootcint -f $@ -c $^
 
 IsotopicVectorDict.cxx:		$(LOCALINC)/IsotopicVector.hxx
