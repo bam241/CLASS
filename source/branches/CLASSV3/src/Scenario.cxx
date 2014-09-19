@@ -15,6 +15,7 @@
 #include "CLASSBackEnd.hxx"
 #include "Pool.hxx"
 #include "FabricationPlant.hxx"
+#include "SeparationPlant.hxx"
 #include "CLASSLogger.hxx"
 
 
@@ -308,35 +309,44 @@ void Scenario::AddFabricationPlant(FabricationPlant* fabricationplant)
 		fOutT->Branch(fFabricationPlant.back()->GetName(), "FabricationPlant", &fFabricationPlant.back());
 }
 //________________________________________________________________________
-map<cSecond,int> Scenario::GetTheBackEndTimePath(Reactor* reactor)
+void Scenario::AddSeparationPlant(SeparationPlant* SeparationPlant)
 {
-	cSecond step = 0;
-	map<cSecond, int> TheBackEndTimePath;
 
+
+	fSeparationPlant.push_back(SeparationPlant);
+	fSeparationPlant.back()->SetParc(this);
+	fSeparationPlant.back()->SetDecayDataBank( (*this).GetDecayDataBase() );
+	fSeparationPlant.back()->SetLog(GetLog());
+	fSeparationPlant.back()->SetId((int)fSeparationPlant.size()-1);
+	fSeparationPlant.back()->SetCreationTime(fAbsoluteTime);
+
+
+	string SeparationPlant_name = fSeparationPlant.back()->GetName();
+	if(SeparationPlant_name == "C_SepPlant.")
 	{
-		pair< map<cSecond, int>::iterator, bool > IResult;
-		//		IResult = TheBackEndTimePath.insert(pair<cSecond, double> ( step,reactor->GetFacilityType() ) );
-		//		if( !IResult.second ) IResult.first->second |= reactor->GetFacilityType();
-
+		SeparationPlant_name = "C_SepPlant";
+		SeparationPlant_name += dtoa(fSeparationPlant.back()->GetId());
+		SeparationPlant_name += ".";
+		fSeparationPlant.back()->SetName(SeparationPlant_name.c_str());
+	}
+	else
+	{
+		string name_tmp = SeparationPlant_name;
+		SeparationPlant_name = "C_";
+		SeparationPlant_name += name_tmp;
+		SeparationPlant_name += ".";
+		fSeparationPlant.back()->SetName(SeparationPlant_name.c_str());
 	}
 
-
-
-	vector<CLASSBackEnd*> BackEndPath;
-	BackEndPath.push_back(reactor->GetOutBackEndFacility());
-	while (!BackEndPath.back()->GetStorageType())
-	{
-		step += BackEndPath.back()->GetCycleTime();
-		int FacilityType = BackEndPath.back()->GetFacilityType();
-		pair< map<cSecond, int>::iterator, bool > IResult  = TheBackEndTimePath.insert(pair<cSecond,int> (step, FacilityType));
-		if( !IResult.second ) IResult.first->second |= FacilityType;
-
-		BackEndPath.push_back(BackEndPath[BackEndPath.size()-1]->GetOutBackEndFacility());
-
-	}
-
-	return TheBackEndTimePath;
+	if(!fNewTtree)
+		fOutT->Branch(fSeparationPlant.back()->GetName(), "SeparationPlant", &fSeparationPlant.back());
+	
+	
 }
+
+
+//________________________________________________________________________
+
 
 //________________________________________________________________________
 void Scenario::BuildTimeVector(cSecond t)
@@ -400,8 +410,9 @@ void Scenario::BuildTimeVector(cSecond t)
 
 		cSecond step = R_StartingTime;
 
-		map< cSecond, int > R_BackEndTimePath = GetTheBackEndTimePath(fReactor[i]);
-		if( typeid(R_Fuel.first) == typeid(PhysicsModels) )
+		map< cSecond, int > R_BackEndTimePath = fReactor[i]->GetOutBackEndFacility()->GetTheBackEndTimePath();
+
+		if( R_Fuel.first.GetPhysicsModels() )
 			F_CycleTime = fReactor[i]->GetFabricationPlant()->GetCycleTime();
 
 

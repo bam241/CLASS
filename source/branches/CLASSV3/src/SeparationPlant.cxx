@@ -22,7 +22,7 @@
 ClassImp(SeparationPlant)
 
 
-SeparationPlant::SeparationPlant():CLASSBackEnd(8)
+SeparationPlant::SeparationPlant():CLASSBackEnd(-2)
 {
 	fOutBackEndFacility = 0;
 	SetName("C_SeparationPlant.");
@@ -30,7 +30,7 @@ SeparationPlant::SeparationPlant():CLASSBackEnd(8)
 }
 
 //________________________________________________________________________
-SeparationPlant::SeparationPlant(CLASSLogger* log, cSecond separationtime):CLASSBackEnd(log, separationtime, 8)
+SeparationPlant::SeparationPlant(CLASSLogger* log, cSecond separationtime):CLASSBackEnd(log, separationtime, -2)
 {
 
 
@@ -65,6 +65,7 @@ SeparationPlant::~SeparationPlant()
 //________________________________________________________________________
 void SeparationPlant::SetStorageDestination(CLASSBackEnd* storagedestination, IsotopicVector isotopicvector, cSecond destinationstartingtime)
 {
+	DBGL
 
 	fDestinationStorageStartingTime.push_back(destinationstartingtime);
 	fDestinationStorage.push_back(storagedestination);
@@ -90,12 +91,14 @@ les pertes non gérées -> WASTE par défaut
 	
 
 */
+	DBGL
+
 }
 
 
 void SeparationPlant::AddIV(IsotopicVector IV)
 { 
-
+DBGL
 	for(int fds=0; fds<(int)fDestinationStorage.size(); fds++)
 	{
 		cSecond CurrentTime = GetParc()->GetAbsoluteTime();
@@ -111,14 +114,42 @@ void SeparationPlant::AddIV(IsotopicVector IV)
 			fDestinationStorage[fds]->AddIV(IVtmp);
 			IV -= IVtmp;
 		}
-		//IV.Print();
 
 	}
 
 	GetParc()->AddWaste(IV);
 
-
+	DBGL
 }
+
+
+
+map<cSecond,int> SeparationPlant::GetTheBackEndTimePath()
+{
+	DBGL
+
+	map<cSecond, int> TheBackEndTimePath;
+	for( int i = 0; i < (int)fDestinationStorage.size(); i++ )
+	{
+		map<cSecond, int> TheBackEndTimePath_tmp = fDestinationStorage[i]->GetTheBackEndTimePath();
+		map<cSecond, int>::iterator it;
+		for (it = TheBackEndTimePath_tmp.begin(); it != TheBackEndTimePath_tmp.end(); it++)
+		{
+			pair< map<cSecond, int>::iterator, bool > IResult;
+			IResult = TheBackEndTimePath.insert( pair<cSecond ,int>((*it).first, (*it).second) );
+			if( !IResult.second )
+				IResult.first->second |= (*it).second;
+
+		}
+	}
+
+	DBGL
+	return TheBackEndTimePath;
+}
+
+
+
+
 
 //________________________________________________________________________
 //	Time Action with the reste of the Universe : 

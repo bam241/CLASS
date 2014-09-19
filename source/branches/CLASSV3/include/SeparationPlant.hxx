@@ -97,6 +97,7 @@ public :
 	//@}
 
 
+	map<cSecond,int> GetTheBackEndTimePath();
 
 
 //********* IsotopicVector Managment Method *********//

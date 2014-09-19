@@ -64,6 +64,7 @@ void CLASSBackEnd::AddIV(IsotopicVector isotopicvector)
 //________________________________________________________________________
 IsotopicVector CLASSBackEnd::GetDecay(IsotopicVector isotopicvector, cSecond t)
 {
+	DBGL
 
 	IsotopicVector IV;
 
@@ -78,6 +79,38 @@ IsotopicVector CLASSBackEnd::GetDecay(IsotopicVector isotopicvector, cSecond t)
 		}
 	}
 
+	DBGL
 	return IV;
+}
 
+
+map<cSecond,int> CLASSBackEnd::GetTheBackEndTimePath()
+{
+	DBGL
+	map<cSecond, int> TheBackEndTimePath;
+
+	if(!fIsStorageType)
+	{
+		int FacilityType = GetFacilityType();
+		cSecond step = GetCycleTime();
+
+		pair< map<cSecond, int>::iterator, bool > IResult  = TheBackEndTimePath.insert(pair<cSecond,int> (step, FacilityType));
+		if( !IResult.second ) IResult.first->second |= FacilityType;
+
+		map<cSecond, int> TheBackEndTimePath_tmp = GetOutBackEndFacility()->GetTheBackEndTimePath();
+
+		map<cSecond, int>::iterator it;
+		for (it = TheBackEndTimePath_tmp.begin(); it != TheBackEndTimePath_tmp.end(); it++)
+		{
+			pair< map<cSecond, int>::iterator, bool > IResult;
+
+			IResult = TheBackEndTimePath.insert( pair<cSecond ,int>(step + (*it).first, (*it).second) );
+			if( !IResult.second )
+				IResult.first->second |= (*it).second;
+
+		}
+	}
+
+	DBGL
+	return TheBackEndTimePath;
 }
