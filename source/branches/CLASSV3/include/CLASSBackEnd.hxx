@@ -11,6 +11,8 @@
 
 #include <string>
 #include <fstream>
+#include <map>
+
 
 #include "CLASSFacility.hxx"
 #include "IsotopicVector.hxx"
@@ -59,6 +61,8 @@ class CLASSBackEnd : public CLASSFacility
 #ifndef __CINT__
 	DecayDataBank*	GetDecayDataBank()		{ return fDecayDataBase;}	//!< Return the pointer to the decay DataBank
 	CLASSBackEnd*	GetOutBackEndFacility()	const	{ return fOutBackEndFacility;}	//!<Return the pointer to the OUtBackEndFacility
+	virtual map<cSecond,int> GetTheBackEndTimePath();
+
 #endif
 
 	//@}

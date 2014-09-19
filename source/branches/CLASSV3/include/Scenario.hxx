@@ -22,6 +22,7 @@ typedef long long int cSecond;
 
 class DecayDataBank;
 class FabricationPlant;
+class SeparationPlant;
 class Reactor;
 class Pool;
 class Storage;
@@ -88,7 +89,7 @@ public :
 	string				GetOutputFileName()	{ return fOutputFileName; }	///< Return the Output File name
 	string				GetOutputTreeName()	{ return fOutputTreeName; }	///< Return the Output ROOT TTree name
 
-	map<cSecond,int>		GetTheBackEndTimePath(Reactor* reactor);		///< BUild and return the time path of a iradiated fuel
+	IsotopicVector			GetWaste()		{ return fWaste;}		///< Return the waste IsotopicVcetor
 
 	//@}
 
@@ -160,11 +161,13 @@ public :
 	void	AddReactor(Reactor* reactor);					///< Add a Reactor to the Park 
 	void 	AddStorage(Storage* storage);					///< Add a Storage to the Park
 	void 	AddFabricationPlant(FabricationPlant* fabricationplant);	///< Add a Storage to the Park
-	
+	void	AddSeparationPlant(SeparationPlant* separationplant);
+
 	void	Add(Pool* Pool)					{AddPool(Pool);}	///< Add a Pool to the Park
 	void	Add(Reactor* reactor)				{AddReactor(reactor);}	///< Add a Reactor to the Park
 	void 	Add(Storage* storage)				{AddStorage(storage);}	///< Add a Storage to the Park
 	void 	Add(FabricationPlant* fabricationplant)		{AddFabricationPlant(fabricationplant);}///< Add a Storage to the Park
+	void 	Add(SeparationPlant* separationplant)		{AddSeparationPlant(separationplant);}///< Add a Storage to the Park
 
 	//@}
 

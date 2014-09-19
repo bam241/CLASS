@@ -10,6 +10,7 @@
 #include "Reactor.hxx"
 #include "Pool.hxx"
 #include "FabricationPlant.hxx"
+#include "SeparationPlant.hxx"
 #include "Storage.hxx"
 #include "IsotopicVector.hxx"
 #include "ZAI.hxx"
