@@ -508,7 +508,7 @@ Myreactor->GetFuelPlan()->AddFuel(2001*3600*24*365.25, GRANACE, 42);
 \end{minipage}
 \end{center}
 If one want to switch between fixed fuel (e.g. PWR UOX) to recycled fuel (e.q. PWR MOX) one need to define a FabricationPlant to the reactor :
-\begin{center}
+\begin{center}x
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
 IM_RK4 *IMRK4 = new IM_RK4(MyLogger);
@@ -526,8 +526,43 @@ Myreactor->SetFabricationPlant(FP_MOX);
 
 
 \section{CLASSBackEnd}
+The CLASSBackEnd class is a master class which aims to regroup all common properties of the fuel back-end facilities. All other back-end facilities in CLASS inherit of the CLASSBackEnd.\\
+In CLASS, a CLASSBackEnd does not control its upstream. Its incoming material flux is pushed by its upstream facility (a Reactor, or an other CLASSBackEnd). It only controls its downstream flux.\\
+\textbf{This object is not supposed to be used explicitly in a CLASS input.}
 \subsection{Storage}
+Storage is a CLASSBack end without associated downstream factory. All the incoming material are stored individually. During the storage, the depletion by decay is taken into account. The storage has to be defined as follow :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+Storage *Stock = new Storage(aCLASSLogger);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+ 
+ 
 \subsection{Pool\label{sec:pool}}
+Pool is a CLASSBack end with an associated downstream factory. All incoming material will be pushed in the downstream factory after a set time, so called CoolingTime. All the incoming material are stored individually. During the cooling process, the depletion by decay is taken into account. The storage has to be defined as follow :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+Storage *Stock = new Storage(aCLASSLogger);
+Pool *MyPool = new Pool(aCLASSLogger,Stock, 5*365.25*24.*3600);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+In the previous example, a 5 years cooling time has been used.
+If no downstream facility is set, all the material will be pushed after cooling to the WASTE of the Scenario. To do so :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+Pool *MyPool = new Pool(aCLASSLogger, 5*365.25*24.*3600);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\subsection{SeparationPlant\label{sec:sepplant}}
+
+
 \section{Fabrication Plant\label{sec:FP}}
 
 \chapter{Other objects}
@@ -729,8 +764,6 @@ In other words, in CLASS, for each nucleus of the chart, a depletion calculation
 The determination  of an IsotopicVector depletion is performed as follow :\\
 First, one determines the depletion of each nucleus of the IsotopicVector following the DecayDataBank, then sums all those contributions.
 
-
-
 DecayDataBank can be defined as follow :
 
 \begin{center}
@@ -744,7 +777,19 @@ gCLASS->SetDecayDataBase(DecayDB);
 \end{lstlisting}
 \end{minipage}
 \end{center}
+In the previous example a DecayDataBank has been defined using the file Decay.idx. This file lists all the path to EvolutionDatas (each one corresponding to the depletion of one nucleus). The format of the .idx file is the following :
 
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+Z1 A1 I1 PATH/ZAI1.dat
+...
+Zn An In PATH/ZAIn.dat
+\end{lstlisting}
+\end{minipage}
+\end{center}
+A DecayDataBank can be find in \$PATH\_TO\_CLASS/Data/@@@.
+\vspace{3cm}
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %% CHAPTER :		Physics MODEL
 %%%%%%%%%%%%%%%%%%%%%%%%%
