@@ -281,7 +281,7 @@ The CLASSFacility also comes with 2 virtual method (which means one must  overlo
  The fuel state of the reactor is describe in the IsotopicVector fInsideIV (which are inherit from the  \hyperref[sec:CLASSFacility]{CLASSFacility} class). Its evolution is \textbf{always} contain in the \hyperref[sec:EvolutionData]{EvolutionData} \textit{fEvolutionDB}.\\
   There are 2 way to provide the \hyperref[sec:EvolutionData]{EvolutionData} to the reactor. In the case of fixed fuel the user need to provide it, using the appropriated constructor, the set function, or a \hyperref[sec:CLASSFuelPlan]{CLASSFuelPlan}. In the case of recycled fuel or unfixed fuel, the user need to provide a \hyperref[sec:PhysicsModels]{PhysicsModels}, using the appropriated constructor, the set function, and/or a \hyperref[sec:CLASSFuelPlan]{CLASSFuelPlan}.
 
-\subsection{Constructor}
+\subsection{Constructor\label{sec:reactor:constructor}}
 There are many ways to define a reactor.
 \subsubsection{Normal constructor}
 \begin{center}
@@ -319,11 +319,11 @@ Constructor defining a reactor using fixed fuel.
 \end{minipage}
 \end{center}
 The evolution of the fuel is given by the \hyperref[sec:EvolutionData]{EvolutionData} \textit{evolutivedb} the mass of heavy metal in the reactor core by \textit{HMMass}, the power by \textit{Power} and  its capacity factor by \textit{CapacityFactor}.\\
-To avoid mixing between constructor, only 2 constructor exist to set the triplet (power, burnup, cycle time). (if more 2 constructor would have the same number of input variables.)\\
+To avoid mixing between constructor, only 2 constructors exist to set the triplet (power, burnup, cycle time). (if more 2 constructor would have the same number of input variables.)\\
 After irradiation the fuel goes in the \hyperref[sec:CLASSBackEnd]{CLASSBackEnd} CBE, which as seen section \label{sec:CLASSBackEnd} can be any CLASSBackEndFacility (SeparationPlant, Pool or storage).
 
 \subsubsection{Reprocessed fuel constructor}
-As well as in the fixed fuel constructor, the mass of heavy metal in the reactor core by \textit{HMMass}, the power by \textit{Power} and  its capacity factor by \textit{CapacityFactor}. Only 2 constructor exist to set the triplet (power, burnup, cycle time).\\
+As well as in the fixed fuel constructor, the mass of heavy metal in the reactor core by \textit{HMMass}, the power by \textit{Power} and  its capacity factor by \textit{CapacityFactor}. Only 2 constructors exist to set the triplet (power, burnup, cycle time).\\
 The \hyperref[sec:PhysicsModels]{PhysicsModels} is \textit{fuelDB}, and the \hyperref[sec:FabricationPlant]{FabricationPlant} is \textit{FabricationPlant}.
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -341,6 +341,188 @@ The \hyperref[sec:PhysicsModels]{PhysicsModels} is \textit{fuelDB}, and the \hyp
 \end{lstlisting}
 \end{minipage}
 \end{center}
+
+\subsection{Main methods}
+Despite all the Get-xxx() and Set-xxx() method, Reactor possess 3 main method, Evolution(), Dump() and SetStorage() (yes this is a Set-xxx() method...).
+\subsubsection{Evolution}
+The evolution function is quite simple, it only follow the \hyperref[sec:EvolutionData]{EvolutionData}, containing all the information about the fuel evolution.
+When called the \textit{Evolution(cSecond t)} method, the reactor will perform its evolution until the time \textit{t}.\\\\
+\fbox{
+\begin{minipage}{\textwidth}
+\textbf{Note that, the reactor \textcolor{red}{MUST} have a time step at the exact second of its end of cycle, start or shutdown, if not the CLASS will break returning : }\\
+"Evolution is too long! There is a problem in Reactor evolution at ..."\\
+\textbf{as an error, giving also some time information about the break.}
+\end{minipage}
+}\\\\
+Beside the verification if the reactor is started, and its start, the evolution can encounter 2 cases : if the evolution stop during and cycle to at the end of a cycle.
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+if( EvolutionTime + fInCycleTime == fCycleTime )		//End of Cycle
+{
+	fIsAtEndOfCycle = true;
+	fInternalTime += EvolutionTime; 				// Update Internal Time
+	fInCycleTime += EvolutionTime;					// Update InCycleTime
+	if(t >= GetCreationTime() + GetLifeTime()) // if the Next Cycle don't exist
+		fIsShutDown = true;
+}
+else if(EvolutionTime + fInCycleTime < fCycleTime )			// During Cycle
+{
+	fInternalTime += EvolutionTime;					// Update Internal Time
+	fInCycleTime += EvolutionTime;					// Update InCycleTime
+
+	fInsideIV = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fInCycleTime/fEvolutionDB.GetPower()*fPower) );	// update the fuel composition
+	if(t>=GetCreationTime() + GetLifeTime())	fIsShutDown = true;
+}
+else
+{
+	// Evolution goes after the end of cycle.... check it
+	exit(1);
+}
+\end{lstlisting}
+\end{minipage}
+\end{center}
+In the first case, the reactor will only update its \textit{fInsideIV} to the corresponding state.
+In the second case, only flag the end of cycle, the rest of the job is don in the \textit{Dump()} method.\\
+\\
+\\
+
+\subsubsection{Dump}
+This method deal all the exchange with the other facility of the scenario. It is divided in two part. The first one trash the used fuel, detecting which case it is (normal end of a cycle, end of cycle ad reactor shutdown, or shutdown during a cycle).
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+if(fIsAtEndOfCycle  && !fIsShutDown )
+{
+	if(fIsStarted  )					// A Cycle has already been done
+	{
+		fOutBackEndFacility->AddIV(fInsideIV);
+		AddCumulativeIVOut(fInsideIV);
+	}
+	else fIsStarted = true;					// Just start the first cycle
+
+}
+else if (fIsAtEndOfCycle  && fIsShutDown )			//shutdown at end of Cycle
+{
+
+	fOutBackEndFacility->AddIV(fIVOutCycle);
+	AddCumulativeIVOut(fIVOutCycle);
+	fInsideIV.Clear();
+	fInCycleTime = 0;
+	fIsStarted = false;					// shut down the Reactor
+}
+else if (!fIsAtEndOfCycle && fIsShutDown ) 			//shutdown during Cycle
+{
+	fOutBackEndFacility->AddIV(fInsideIV);
+	AddCumulativeIVOut(fInsideIV);
+	fInsideIV.Clear();
+	fInCycleTime = 0;
+	fIsStarted = false;					// shut down the Reactor
+}
+
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+The second part correspond to refilling of the reactor...
+For the fixed fuel :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+fIsAtEndOfCycle = false;
+GetParc()->AddGod(fIVInCycle);
+fInsideIV  = fIVBeginCycle;
+AddCumulativeIVIn(fIVBeginCycle);
+fInCycleTime = 0;
+\end{lstlisting}
+\end{minipage}
+\end{center}
+where the fuel material is taken outside of the scenario.\\
+\\
+\begin{center}
+\begin{minipage}{\textwidth}
+Or for the reprocessed fuel :
+\begin{lstlisting}
+fIsAtEndOfCycle = false;
+SetNewFuel(fFabricationPlant->GetReactorEvolutionDB(GetId()));
+fFabricationPlant->TakeReactorFuel(GetId());
+fInsideIV  = fIVBeginCycle;
+AddCumulativeIVIn(fIVBeginCycle);
+fInCycleTime = 0;
+\end{lstlisting}
+\end{minipage}
+\end{center}
+where the fuel and the corresponding EvolutionData is builded by a FabricationPlant using the PhysicsModel.
+
+\subsubsection{SetStorage}
+The SetStorage() method must be use with caution !! Because its use will modify the normal operation of the reactor.
+It can be used only in the case of a fixed fuel reactor and not stock management (all stock ar mixed inside the storage), when one want to take the material inside the stock instead of outside of the scenario. In this case, an isotopic separation of the provided stock is done, the needed isotope are taken from the stock, the missing part is provided by the OutSide of the scenario. The refilling part of the Dump() method becomes :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+fIsAtEndOfCycle = false;
+IsotopicVector BuildIVtmp ;
+IsotopicVector GodPart;
+//Get The Storage Compostion
+BuildIVtmp.Add(fStorage->GetInsideIV().GetIsotopicQuantity());
+//Get the rest after IVIn creation
+BuildIVtmp -= fIVInCycle;
+//Get the God part form this rest
+GodPart.Add(BuildIVtmp.GetIsotopicQuantityNeeded()) ;
+//Take what you can from Storage...
+fStorage->TakeFromStock( fIVInCycle - GodPart);
+//And Get the rest from God
+GetParc()->AddGod(GodPart);
+fInsideIV  = fIVBeginCycle;
+AddCumulativeIVIn(fIVBeginCycle);
+fInCycleTime = 0;
+\end{lstlisting}
+\end{minipage}
+\end{center}
+Again this method is really tricky to use and need to be used with great caution!!!
+
+\subsection{CLASSFuelPlan}
+If you don't want to change the fuel type (from a fixed fuel to an other, a fixed fuel to a reprocessed one, changing the final burnup of a fuel...) inside a reactor during its operation stay away from this part.\\
+The aim of this class is to allow user to change the fuel parameter during the operation of the reactor, by example setting a reactor with a UOX fuel enriched at 3\% for 3 cycles, then changing to 5\% UOX or even to MOX. All fuel in a CLASSFUelPLan are associated to a burnup. The reactor updating his cycle time to this burnup( considering the power remain the same in a reactor during all its life.\\
+The usage of the CLASSFuelPlan is quiet simple... On just need to add to an existing CLASSFuelPlan, a time (to perform the fuel switch), a fuel and an associated burnup. One should note that the fuel in the reactor only change at the end of a cycle (finish the current cycle even after a date to change fuel type.)\\
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+void AddFuel(cSecond time,  EvolutionData* fuel, double BurnUp)
+void AddFuel(cSecond time,  PhysicsModels* fuel, double BurnUp)
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+For the one who want to go further, when declaring a reactor (using any type of fuel) (see \ref{sec:reactor:constructor}), a CLASSFuelPlan is created inside the reactor. So it is possible to create a reactor using the normal reactor creator (which include a fuel...) and add after some fuel to the plan using \textit{
+CLASSFuelPlan*	GetFuelPlan()} method of the reactor, then the AddFuel method of CLASSFuelPlan.\\
+ie : 
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+CLASSLogger *MyLogger = new CLASSLogger("CLASS_OUTPUT.log",1,2);
+EvolutionData* STD900 = new EvolutionData(MyLogger, "STD900.dat",false);
+EvolutionData* GARANCE = new EvolutionData(MyLogger, "GARANCE.dat",false);
+Reactor* MyReactor = new Reactor(MyLogger, STD900, Cooling_UOX, 0., 40*3600*24*365.25, 900e6, 106, 33, 0.8);
+Myreactor->GetFuelPlan()->AddFuel(2001*3600*24*365.25, GRANACE, 42);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+If one want to switch between fixed fuel (e.g. PWR UOX) to recycled fuel (e.q. PWR MOX) one need to define a FabricationPlant to the reactor :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+IM_RK4 *IMRK4 = new IM_RK4(MyLogger);
+EQM_LIN_PWR_MOX* EQMLINPWRMOX = new EQM_LIN_PWR_MOX(MyLogger, "EQ_Lin.dat");
+EQM_QUAD_PWR_MOX* EQMQUADPWRMOX = new EQM_QUAD_PWR_MOX(MyLogger, "DB.dat");
+PhysicsModels* PHYMOD = new PhysicsModels(XSMOX, EQMQUADPWRMOX, IMRK4);
+Myreactor->GetFuelPlan()->AddFuel( MOXTime, PHYMOD, 35);
+Myreactor->SetFabricationPlant(FP_MOX);
+
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
 
 
 
