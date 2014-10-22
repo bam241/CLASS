@@ -299,7 +299,7 @@ Just define a simple reactor without fuel, starting time,  mass of fuel, time of
 \end{lstlisting}
 \end{minipage}
 \end{center}
-Just define a simple reactor without fuel, starting time,  mass of fuel, time of life or anything, but set a \hyperref[sec:CLASSLogger]{CLASSLogger} \textit{log} to send the CLASS message.
+Just define a simple reactor without fuel, starting time,  mass of fuel, time of life or anything, but set a \hyperref[sec:logclass]{CLASSLogger} \textit{log} to send the CLASS message (see section~\ref{sec:logclass}).
 \vspace{3cm}
 
 \subsubsection{Fixed fuel constructor}
@@ -494,8 +494,7 @@ void AddFuel(cSecond time,  PhysicsModels* fuel, double BurnUp)
 \end{minipage}
 \end{center}
 
-For the one who want to go further, when declaring a reactor (using any type of fuel) (see \ref{sec:reactor:constructor}), a CLASSFuelPlan is created inside the reactor. So it is possible to create a reactor using the normal reactor creator (which include a fuel...) and add after some fuel to the plan using \textit{
-CLASSFuelPlan*	GetFuelPlan()} method of the reactor, then the AddFuel method of CLASSFuelPlan.\\
+For the one who want to go further, when declaring a reactor (using any type of fuel) (see \ref{sec:reactor:constructor}), a CLASSFuelPlan is created inside the reactor. So it is possible to create a reactor using the normal reactor creator (which include a fuel...) and add after some fuel to the plan using \textit{CLASSFuelPlan*	GetFuelPlan()} method of the reactor, then the AddFuel method of CLASSFuelPlan.\\
 ie : 
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -532,11 +531,203 @@ Myreactor->SetFabricationPlant(FP_MOX);
 \section{Fabrication Plant\label{sec:FP}}
 
 \chapter{Other objects}
-\section{ZAI}
+\section{ZAI\label{sec:ZAI}}
+The ZAi object represents a nucleus, from its charge number, mass number and isomeric state.\\
+The object save  the charge number Z, the mass number A and the isomeric state I  of a nucleus : I=0 for ground state , I=1 for the first isomeric state ...\\
+To declare a ZAI object proceed as follow :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+ZAI U238 = ZAI(92, 238, 0);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+This class includes the mains logical comparators (\emph{e.g} ==, >, !=). Fill free to read the doxygen for more details on the methods associated to this class. (\emph{e.g} A(), Z(), I(), N()...) \cite{doxygen}.
+%\vspace{4cm}
+
 \section{IsotopicVector\label{sec:IV}}
+\subsection{Generality}
+The IsotopicVector object is a collection of ZAI, for each ZAI a number of nuclei is associated (IsotopicVector is a c++ map of ZAI and double, which corresponds to a sorted array of ZAI and its quantity).\\
+Two pincipales operation have been defined on IsotopicVector. 
+The following illustrates the possible operation allowed for IsotopicVectors :
+\paragraph{Definiton \& Addition of nuclei}
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+IsotopicVector IV_1;
+IsotopicVector IV_2;
+
+IV_1 += 23 * ZAI(92, 238, 0); // Add 23 nucleus of uranium 238 to ZAI_1
+IV_1 += 52 * ZAI(92, 235, 0); // Add 52 nucleus of uranium 235 to ZAI_1
+\end{lstlisting}
+\end{minipage}
+\end{center}
+\paragraph{Multiplication}
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+IV_1 *= 100; // Multiply all the nuclei quantities by 100 -> resulting : 2300 uranium 238 and 5200 uranium 235
+
+IV_2 = IV_1 * 10; // IV_2 will be equal to 10 IV_1 
+\end{lstlisting}
+\end{minipage}
+\end{center}
+\paragraph{Sum}
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+IsotopicVector IV_sum = IV_1 + IV2; // IV_sum will be equal to 11 IV_1
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+Some additional operations have been also implemented, such as subtraction. It works as the sum, but if the result of the subtraction is negative for some nuclei, those nuclei are set to zero and the difference is added to the, so called, \textit{fIsotopicQuantityNeeded}. If so, a WARNING will be written on the terminal.\\
+@@ Link WARNING \\
+\textbf{To insure the quality and the reliability of the simulation, the fIsotopicQuantityNeeded MUST remain empty.}
+
+
+\subsection{Print method}
+You can use the Print() method to write the composition of an IsotopicVector.
+When printing the IsotopicVector composition present nuclei, as well as the \textit{needed} one, are written with their corresponding quantity (unit: nucleus number).\\
+
+
+\subsection{GetTotalMass}
+Return the mass of the IsotopicVector in tons using :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+double TotalMass = IV.GetTotalMass();
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+\subsection{Multiplication between IsotopicVector}
+The result of this operation is an IsotopicVector, where each nucleus quantity is the product of the corresponding nucleus quantity of the two IsotopicVector.\\
+In other words :\\
+If a nucleus A is present in both IsotopicVector, with respective quantity $\alpha$ and $\beta$, the resulting IsotopicVector will contain $\alpha\times\beta$ nucleus A. If the nucleus A is not present in both IsotopicVector, the resulting IsotopicVector will not contain the nucleus A.\\
+
+\textit{By exemple, this method can be used to apply separation efficiency: one IsotopicVector containing real material and the other one containing separation efficiency of each nucleus.}
+
 \section{Log management : CLASSLogger}\label{sec:logclass}
+In CLASS, all messages are handled by the CLASSLogger object. There are 4 verbose levels, see table~\ref{tab:verblevel}.
+
+\begin{table}[H]
+\begin{center}
+\caption{Verbose levels}
+\label{tab:verblevel}
+\begin{tabular}{|c|c|l|}
+\hline
+level \# & meaning & informations\\
+\hline
+0 & ERROR & This is the default. \textit{It makes the code to stop}\\
+\hline
+1 & WARNING & LVL 0 + something may go wrong but the code continue running\\
+\hline
+2 & INFO &  LVL 1 + simple informations about ongoing process \\
+\hline
+3 & DEBUG & LVL 2 + each method begin and end \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+There are two outputs for these messages : the standard output (terminal) and a logfile. For each output a verbose can be assigned as follow :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+CLASSLogger *Logger = new CLASSLogger("CLASS_OUTPUT.log",1,2);  
+\end{lstlisting}
+\end{minipage}
+\end{center}
+In the preceding example, verbose level 1 (WARNING) has been set for the terminal output and level 2 (INFO) for the second output which is the logfile named CLASS\_OUTPUT.log. 
+
 \section{EvolutionData}\label{sec:EvolutionData}
-\chapter{Decay data bases}\label{sec:DecayDB}
+An EvolutionData aims to describe the evolution of an IsotopicVector through a physical process (decay or irradiation). The Decay case is fully described in section~\ref{sec:DecayDB}.\\
+
+In case of irradiation, it may also contains the evolution of the one group cross section, the evolution of the neutron flux and the keff and are not mandatory. Note that neutron flux and keff are not used in CLASS. The EvolutionData MUST contain the power and can contain the heavy metal mass, the fuel type, reactor type and the cycle time.\\
+These EvolutionData can be loaded into CLASS from a formatted ASCII file see section~\ref{sec:EDformat} as follow :
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+CLASSLogger *Logger = new CLASSLogger("CLASS_OUTPUT.log",1,2);  
+
+EvolutionData*  MyEvolutionData = new EvolutionData(Logger, "/PATH/Data.dat");
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+\subsection{EvolutionData ASCII format}\label{sec:EDformat}
+The formatted ASCII file describing the EvolutionData is formatted as follow:
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=lst:DatFormat,caption=Evolution Data format]
+time "0 t2 t3 ..."						// in seconds
+keff "k1 k2 k3 ..."					// not mandatory entry
+flux "phi1 phi2 phi3 ..." 			//(neutron/(second.cm2))not mandatory entry
+Inv "Z A I inv1 inv2 inv 3 ..."		//in atoms
+...
+XSFis "Z A I xsfis1 xsfis2 xsfis3 ..."//in barns
+... 
+XSCap "Z A I xscap1 xscap2 xscap3 ..."
+...
+XSn2n "Z A I xsn2n1 xsnsn2 xsn2n3 ..."
+...
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+The meaning of each keyword is listed in table~\ref{tab:meanKeyWord}.
+
+\begin{table}[H]
+\begin{center}
+\caption{.dat Key words meaning}
+\label{tab:meanKeyWord}
+\begin{tabular}{|c|c|}
+\hline
+Key words & Meaning \\
+\hline
+Inv & Inventory \\
+\hline
+XSFis & mean fission cross section \\
+XSCap & mean $(n,\gamma)$ cross section\\
+XSn2n & mean $(n,2n)$ cross section \\
+\hline
+\hline
+Value & meaning \\
+\hline
+Z & Charge number\\
+A & Mass number\\
+I & State (fundamental=0, $1^{st}$ excited =1, ...) \\
+\hline
+\end{tabular}
+\end{center}
+
+\end{table}
+
+Each EvolutionName.dat files comes with a EvolutionName.info file, which describes the reactor, it is formatted like this :
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+Reactor "ReactorName"		//What ever string without space
+Fueltype "FuelName"			//What ever string without space
+CycleTime "t"						//The final time simulated (@@BaM)
+ConstantPower "P"				//Simulated power (in W)
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+\subsection{DecayDataBank}\label{sec:DecayDB}
+The radioactive decay is handled by a DecayDataBank. The DecayDataBank contains an EvolutionData for each nucleus of the nuclei chart. 
+Each EvolutionData describes the evolution of the nucleus and all its daughters as a function of the time. The depletion of an isotopic vector corresponds to the sum of all its nucleus depletion contribution.\\
+
+In other words, in CLASS, for each nucleus of the chart, a depletion calculation has been performed and compiled in a DecayDataBank.\\
+The determination  of an IsotopicVector depletion is performed as follow :\\
+First, one determines the depletion of each nucleus of the IsotopicVector following the DecayDataBank, then sums all those contributions.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -648,7 +839,7 @@ EQM_QUAD_PWR_MOX* Equivalence = new	EQM_QUAD_PWR_MOX( LogObject, AlphasFile );
 \end{minipage}
 \end{center}
 
-With LogObject a CLASSLogger object (see section~\ref{sec:logclass}) and AlphasFile a string which is the complete path to the file containing the weights (the $\alpha$ parameters)
+With LogObject a \hyperref[sec:logclass]{CLASSLogger} object (see section~\ref{sec:logclass}) and AlphasFile a string which is the complete path to the file containing the weights (the $\alpha$ parameters)
 \\
 \\
 
@@ -685,7 +876,7 @@ EQM_MLP_PWR_MOX* Equivalence = new	EQM_MLP_PWR_MOX( LogObject, TMVAWeightPath );
 \end{minipage}
 \end{center}
 
-With LogObject a CLASSLogger object (see section~\ref{sec:logclass}) and TMVAWeightPath a string containing the path to the .xml file. 
+With LogObject a \hyperref[sec:logclass]{CLASSLogger} object (see section~\ref{sec:logclass}) and TMVAWeightPath a string containing the path to the .xml file. 
 
 
 In order to make his own .xml file one need to have a training data containing the fresh fuel composition and the achievable burn-up of many examples. The fuel composition is characterized by the mean of :
@@ -918,7 +1109,7 @@ int main()
 \end{minipage}
 \end{center}
 
-With LogObject a CLASSLogger object (see section~\ref{sec:logclass}) and PathToIdxFile  a string containing the path to the .idx file. The .idx file lists all the EvolutionData (see section~\ref{sec:EvolutionData}) of the data base. This file is formatted as follow :
+With LogObject a \hyperref[sec:logclass]{CLASSLogger} object (see section~\ref{sec:logclass}) and PathToIdxFile  a string containing the path to the .idx file. The .idx file lists all the EvolutionData (see section~\ref{sec:EvolutionData}) of the data base. This file is formatted as follow :
 
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -931,66 +1122,8 @@ TYPE "NameOfTheFuel(withoutspace)"
 \end{minipage}
 \end{center}
 
-Each EvolutionName.dat file contains a fuel depletion calculation formatted as follow :
+Each EvolutionName.dat file contains a formatted fuel depletion calculation. the format of a EvolutionData ASCII file is detailed in section~\ref{sec:EDformat}.  The number of .dat files has an influence on the model accuracy. Furthermore, the initial composition of the different fuel depletion calculations has to be representative of the fresh fuel compositions encounter in a scenario. For more details on this method please refer to [ref @@@ BAM physor]. 
 
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}[label=lst:DatFormat,caption=Evolution Data format]
-time "0 t2 t3 ..."						// in seconds
-keff "k1 k2 k3 ..."					// not mandatory entry
-flux "phi1 phi2 phi3 ..." 			//(neutron/(second.cm2))not mandatory entry
-Inv "Z A I inv1 inv2 inv 3 ..."		//in atoms
-...
-XSFis "Z A I xsfis1 xsfis2 xsfis3 ..."//in barns
-... 
-XSCap "Z A I xscap1 xscap2 xscap3 ..."
-...
-XSn2n "Z A I xsn2n1 xsnsn2 xsn2n3 ..."
-...
-\end{lstlisting}
-\end{minipage}
-\end{center}
-
-The meaning of each keyword is listed in table~\ref{tab:meanKeyWord}. The number of .dat files has an influence on the model accuracy. Furthermore, the initial composition of the different fuel depletion calculations has to be representative of the fresh fuel compositions encounter in a scenario. For more details on this method please refer to [ref @@@ BAM physor]. 
-
-\begin{table}[H]
-\begin{center}
-\caption{.dat Key words meaning}
-\label{tab:meanKeyWord}
-\begin{tabular}{|c|c|}
-\hline
-Key words & Meaning \\
-\hline
-Inv & Inventory \\
-\hline
-XSFis & mean fission cross section \\
-XSCap & mean $(n,\gamma)$ cross section\\
-XSn2n & mean $(n,2n)$ cross section \\
-\hline
-\hline
-Value & meaning \\
-\hline
-Z & Charge number\\
-A & Mass number\\
-I & State (fundamental=0, $1^{st}$ excited =1, ...) \\
-\hline
-\end{tabular}
-\end{center}
-
-\end{table}
-
-Each EvolutionName.dat files comes with a EvolutionName.info file, which describes the reactor, it is formatted like this :
-
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}
-Reactor "ReactorName"		//What ever string without space
-Fueltype "FuelName"			//What ever string without space
-CycleTime "t"						//The final time simulated (@@BaM)
-ConstantPower "P"				//Simulated power (in W)
-\end{lstlisting}
-\end{minipage}
-\end{center}
 
 \textbf{Available .idx file  : }
 \begin{itemize}
@@ -1260,7 +1393,8 @@ return EvolutionDataFromXSM_NAME;
 \end{minipage} 
 \end{center}
 
-Then, edit these two files to make the function XSM\_NAME::GetCrossSections to return the cross sections in a EvolutionData object. To do so you have to fill three maps (ExtrapolatedXS in .cxx), one for fission, one for $(n,\gamma)$, and one for $(n,2n)$ . Each map associates a nucleus (a ZAI) to a TGraph. A TGraph is a root object, here, it contains the cross section (barns) evolution over time (seconds). If your are not comfortable with TGraph refer to the  \href{http://root.cern.ch/root/html/TGraph.html}{root website}
+Then, edit these two files to make the function XSM\_NAME::GetCrossSections to return the cross sections in a EvolutionData object. (\textit{In this case, the EvolutionData only contains the 1 group cross section without the inventory evolution, the power and the corresponding mass.})\\
+ To do so you have to fill three maps (ExtrapolatedXS in .cxx), one for fission, one for $(n,\gamma)$, and one for $(n,2n)$ . Each map associates a nucleus (a ZAI) to a TGraph. A TGraph is a root object, here, it contains the cross section (barns) evolution over time (seconds). If your are not comfortable with TGraph refer to the  \href{http://root.cern.ch/root/html/TGraph.html}{root website}
 \footnote{http://root.cern.ch/root/html/TGraph.html}
 
 Now that your cross section model is ready, two choices are offered to you. You can compile the two files of your model with your CLASS input or you can add this model to the CLASS package. The second option will modify the CLASS software and we will be no longer able to troubleshoot your scenario. So use the second option only if you are a completely independent user !
@@ -1305,7 +1439,7 @@ int main()
 \end{lstlisting}
 \end{minipage} 
 \end{center}
-LogObject is a  CLASSLogger object (see section~\ref{sec:logclass}).
+LogObject is a  \hyperref[sec:logclass]{CLASSLogger} object (see section~\ref{sec:logclass}).
 
 \subsection{How to build an Irradiation Model}
 The strength of CLASS is to allow the user to build his own Physics models, this section explains how to build a new Bateman solver (Irradiation Model) and to incorporate it into CLASS.
