@@ -2,320 +2,147 @@
 
 \part{CLASS : General overview}
 \chapter{Generalities}
-\section{Basic unit\label{sec:unit}}
+\section{Basic unit\label{sec:cSecond}}
 All time in CLASS should be written in second. It corresponds to the cSecond, a CLASS c++ type, which are a \textbf{long long int} going, in 32 bits \textbf{and} 64 bits, up to  $(2^{63} - 1)~\textrm{s}~ \sim 2.9\cdot 10^{11}$ years, enough for any electro-nuclear scenarios one can consider....\\
  \section{CLASS working process principle}
 image : shéma de principe de class
 \chapter{Facilities descriptions}
-All the facility in CLASS project are regroup inside a large group called CLASSFacility (and inherit of all the properties of the CLASSFacility in a C++ way). Inside the CLASSFacility, 3 different types has be defined, the reactor, the FabricationPlant (or more generally, all the fuel cycle front-end facilities) and the backend facilities. 
+All the facilities in CLASS project are regrouped inside a large group called CLASSFacility (and inherit of all the properties of the CLASSFacility in a C++ way). Inside the CLASSFacility, 3 different types has been defined, the reactor, the FabricationPlant (or more generally, all the fuel cycle front-end facilities) and the backend facilities. 
 \section{CLASSFacility\label{sec:CLASSFacility}}
 The CLASSFacility should never be used directly in the main CLASS program (the one made to perform the simulation).  The aim of these object is to regroup all the common properties of the nuclear facilities, such as common variables, methods, and builder. 
-Its includes 3 variables needed by CLASS environment:
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}
-private :
-	int		fId;						//!< Identity of the Facility inside the Parc
-	int		fFacilityType;	///< Type of facility :
-												/// \li 4 reactor,
-												/// \li 8 Pool,
-												/// \li 16 FabricationPlant.
-	Scenario*		fParc;		//!< Pointer to the main Parc
-\end{lstlisting}
-\end{minipage}
-\end{center}
-The \textit{fId} variable correspond to the unique identity number allowing to differentiate all the facility of a certain type. The \textit{fFacilityType} variable correspond to an identity number allowing to separate the different type of facilities. Those to variable are "\textbf{private}", which mean it is not possible to access to them directly, one \textbf{must} to use there Get-xxx() and the Set-xxx() function (even inside the daughter class such as reactor...). \textit{fParc} is a pointer to the main park, which allow to access to the rest of the park. Be careful the \textit{fParc} pointer main not be assigned if the facility is not included in a park...\\
-\\
-\\
-\\
-The CLASSFacility also includes all the generic variable and method for time and simple fuel management:
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}
-protected :
-	bool		fIsStarted;			///< True if Running, False Otherwise
-	bool		fIsShutDown;		///< True if the facility is stoped, False Otherwise
-	bool		fIsShutDown;	///< True if Reaching the End of a Facility Cycle
 
-		
-	cSecond		fInternalTime;		///< Internal Clock
-	cSecond		fInCycleTime;			///< Time spend since the beginning of the last Cycle
-	cSecond		fCycleTime;				///< Cycle duration Time
-
-	IsotopicVector	fInsideIV;	///< All IV in the Facility (fuel for reactor, total for all others...)
-	IsotopicVector	fCumulativeIVIn;	///< All IV in the Facility (fuel for reactor, total for all others...)
-	IsotopicVector	fCumulativeIVOut;	///< All IV in the Facility (fuel for reactor, total for all others...)
-
-		//********* Internal Parameter *********//
-private :
-	[...]
-	cSecond		fCreationTime;		///< CLASS Universal Time of Creation
-	cSecond		fLifeTime;				///< Time of life Of the Reactor (Operating's Duration)
-
-\end{lstlisting}
-\end{minipage}
-\end{center}
-\textit{fIsStarted}, \textit{fIsShutDown}, \textit{fIsShutDown} allows to the Dump() method to determine the state of the facility and do what is necessary.\\
-\textit{fInternalTime}, \textit{fInCycleTime}, \textit{fCycleTime} variable allows the \hyperref[sec:unit]{time} the time management inside the facility. \textit{fInternalTime} correspond to the last time until the evolution of the facility as been calculated. \textit{fCycleTime} the time length of a cycle in this facility (note that it could be irradiation cycle in a \hyperref[sec:reactor]{Reactor}, fabrication time in a \hyperref[sec:FP]{FabricationPlant}, or cooling time in a \hyperref[sec:pool]{Pool}). And \textit{fInCycleTime} correspond to the time already past in the current cycle.\\
-\textit{fCreationTime}, \textit{fLifeTime} are \textbf{private} and used to define the creation time of the facility, and its operation time length.
- 
-Besides all the time management of the facility, it also contain the basic tool for fuel management the three \hyperref[sec:IV]{IsotopicVector} : \textit{fInsideIV}, \textit{fCumulativeIVIn}, \textit{fCumulativeIVOut}, which correspond respectively to the isotopic vector present in the facility, to the cumulative income inside the facility, and the cumulative outcome outside the facility.
-
-By default af the Get-xxx() and Set-xxx() method associated to those variable are define, and some can be overloaded.
-
-The CLASSFacility also comes with 2 virtual method (which means one must  overloading it when defining a new facility) : \textit{Evolution(cSecond t)} and \textit{Dump()}. They are both used to perform the evolution of the facility. Where the first one (\textit{Evolution}) is used to specify the change inside the facility (mainly fuel evolution), the second one (\textit{Dump}) is used to deal the exchange between facility, such as refilling a reactor or send a fuel to the stock at the end of cooling.
 
 \section{Reactor\label{sec:reactor}}
 \subsection{Generalities}
- The aim of this class is to deal the evolution of the fuel inside a reactor.
- The fuel state of the reactor is describe in the IsotopicVector fInsideIV (which are inherit from the  \hyperref[sec:CLASSFacility]{CLASSFacility} class). Its evolution is \textbf{always} contain in the \hyperref[sec:EvolutionData]{EvolutionData} \textit{fEvolutionDB}.\\
-  There are 2 way to provide the \hyperref[sec:EvolutionData]{EvolutionData} to the reactor. In the case of fixed fuel the user need to provide it, using the appropriated constructor, the set function, or a \hyperref[sec:CLASSFuelPlan]{CLASSFuelPlan}. In the case of recycled fuel or unfixed fuel, the user need to provide a \hyperref[sec:PhysicsModels]{PhysicsModels}, using the appropriated constructor, the set function, and/or a \hyperref[sec:CLASSFuelPlan]{CLASSFuelPlan}.
+The aim of this class is to deal with the evolution of the fuel inside a reactor.\\
+The evolution of the fuel is \textbf{always} contain in the \hyperref[sec:EvolutionData]{EvolutionData} \textit{fEvolutionDB}.\\
+There are 2 way to provide the \hyperref[sec:EvolutionData]{EvolutionData} to the reactor. In the case of fixed fuel\footnote{Always the same input/output isotopic composition.} the user need to provide it, using the appropriated constructor, the set function, or a \hyperref[sec:CLASSFuelPlan]{CLASSFuelPlan}. In the case of recycled fuel or unfixed fuel, the user need to provide a \hyperref[sec:PhysicsModels]{PhysicsModels}, using the appropriated constructor, the set function, and/or a \hyperref[sec:CLASSFuelPlan]{CLASSFuelPlan}.
 
-\subsection{Constructor\label{sec:reactor:constructor}}
-There are many ways to define a reactor.
-\subsubsection{Normal constructor}
+\subsection{Use}
+There are 2 main ways to define a reactor, depending on the type of fuel loaded.
+
+\subsubsection{Fixed Fuel}
+Reactor using fixed fuel, which load always the same fresh fuel, and unload it with always the same burnup (same spent fuel...), to declare a reactor proceed as follow:
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
-	Reactor();		///< Normal Constructor.
+Reactor *MyReactor = new reactor(aCLASSLogger,		// CLASSLogger
+				 myFuel_EvolutionData,	// EvolutionData
+				 aBackEnd,		// BackEnd
+				 myRe_StartingTime,	// Starting Time
+				 myRe_LifeTime,		// Time of Life
+				 myRe_Power,		// Power
+				 myRe_HeavyMetalMass,	// HM mass
+				 myRe_BurnUp,		// BurnUp
+				 myRe_LoadFactor);	// LoadFactor
 \end{lstlisting}
 \end{minipage}
 \end{center}
-Just define a simple reactor without fuel, starting time,  mass of fuel, time of life or anything.
+or
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
-	Reactor(CLASSLogger* log);
+Reactor *MyReactor = new reactor(aCLASSLogger,		// CLASSLogger
+				 myFuel_EvolutionData,	// EvolutionData
+				 aBackEnd,		// BackEnd
+				 myRe_StartingTime,	// Starting Time
+				 myRe_LifeTime,		// Time of Life
+				 myRe_CycleTime,	// Time of Cycle
+				 myRe_HeavyMetalMass,	// HM mass
+				 myRe_BurnUp);		// BurnUp
 \end{lstlisting}
 \end{minipage}
 \end{center}
-Just define a simple reactor without fuel, starting time,  mass of fuel, time of life or anything, but set a \hyperref[sec:logclass]{CLASSLogger} \textit{log} to send the CLASS message (see section~\ref{sec:logclass}).
-\vspace{3cm}
+The meaning of each arguments of the two constructor previously defined are summed up in the following table
 
-\subsubsection{Fixed fuel constructor}
-Constructor defining a reactor using fixed fuel. 
+\begin{table}[H]
+\begin{center}
+\caption{Arguments of Reactor constructors}
+\label{tab:meanKeyWord}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Argument & type & meaning & unit \\
+\hline
+aCLASSLogger 		&	\hyperref[sec:CLASSLogger]{CLASSLogger}		& Output messages 			& N.A.\\
+myFuel\_EvolutionData	&	\hyperref[sec:EvolutionData]{EvolutionData}	& Fuel evolution description		& N.A. \\
+aBackEnd 		&	\hyperref[sec:CLASSBackEnd]{CLASSBackEnd}	& Facility getting the spent fuel 	& N.A. \\
+myRe\_StartingTime 	&	\hyperref[sec:cSecond]{cSecond}			& Creation time 			& second\\
+myRe\_LifeTime 		&	\hyperref[sec:cSecond]{cSecond}			& Operation time 			& second\\
+myRe\_Power 		&	double						& Thermal power 			& Watt\\
+myRe\_HeavyMetalMass 	&	double						& Heavy metal mass 			& tons\\
+myRe\_BurnUp 		&	double						& Burn up at EOC 			& GWd/tHM\\
+myRe\_LoadFactor 	&	double						& Fraction of nominal power 		& .\\
+myRe\_CycleTime 	&	\hyperref[sec:cSecond]{cSecond}			& the cycle time 			& second\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\subsubsection{Reprocessed Fuel}
+In this case, the fuel is provided by an external facility, so called, the \hyperref[sec:FabricationPlant]{FabricationPlant}. The way to build the reprocessed fresh fuel and to handle the fuel depletion calculation is done by the \hyperref[sec:PhysicsModels]{PhysicsModels}.
+The main ways to defined a Reactor (with reprocessed fuel) is shown in the next two examples :
+
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
-	Reactor(CLASSLogger* log, EvolutionData evolutivedb, CLASSBackEnd* CBE,
-		cSecond creationtime, cSecond lifetime,
-		double power, double HMMass, double BurnUp, double CapacityFactor = 1);
-\end{lstlisting}
-\begin{lstlisting}
-	Reactor(CLASSLogger* log, EvolutionData evolutivedb, CLASSBackEnd* Pool,
-		cSecond creationtime, cSecond lifetime,
-		cSecond cycletime, double HMMass, double BurnUp);
+Reactor *MyReactor = new Reactor(aCLASSLogger,		// CLASSLogger
+				 myFuel_PhysicsModels,	// PhysicsModels
+				 aFabricationPlant,	// FabricationPlant
+				 aBackEnd,		// BackEnd
+				 myRe_StartingTime,	// Starting Time
+				 myRe_LifeTime,		// Time of Life
+				 myRe_Power,		// Power
+				 myRe_HeavyMetalMass,	// HM mass
+				 myRe_BurnUp,		// BurnUp
+				 myRe_LoadFactor);	// LoadFactor
 \end{lstlisting}
 \end{minipage}
 \end{center}
-The evolution of the fuel is given by the \hyperref[sec:EvolutionData]{EvolutionData} \textit{evolutivedb} the mass of heavy metal in the reactor core by \textit{HMMass}, the power by \textit{Power} and  its capacity factor by \textit{CapacityFactor}.\\
-To avoid mixing between constructor, only 2 constructors exist to set the triplet (power, burnup, cycle time). (if more 2 constructor would have the same number of input variables.)\\
-After irradiation the fuel goes in the \hyperref[sec:CLASSBackEnd]{CLASSBackEnd} CBE, which as seen section \label{sec:CLASSBackEnd} can be any CLASSBackEndFacility (SeparationPlant, Pool or storage).
-
-\subsubsection{Reprocessed fuel constructor}
-As well as in the fixed fuel constructor, the mass of heavy metal in the reactor core by \textit{HMMass}, the power by \textit{Power} and  its capacity factor by \textit{CapacityFactor}. Only 2 constructors exist to set the triplet (power, burnup, cycle time).\\
-The \hyperref[sec:PhysicsModels]{PhysicsModels} is \textit{fuelDB}, and the \hyperref[sec:FabricationPlant]{FabricationPlant} is \textit{FabricationPlant}.
+or
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
-	Reactor(CLASSLogger* log, PhysicsModels 	fueltypeDB,
-		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
-		cSecond creationtime , cSecond lifetime, cSecond cycletime,
-		double HMMass, double BurnUp);
-\end{lstlisting}
-\begin{lstlisting}
-	Reactor(CLASSLogger* log, PhysicsModels 	fueltypeDB,
-		FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
-		cSecond creationtime , cSecond lifetime,
-		double Power, double HMMass, double BurnUp, double CapacityFactor);
+Reactor *MyReactor = new Reactor(aCLASSLogger,		// CLASSLogger
+				 myFuel_PhysicsModels,	// PhysicsModels
+				 aFabricationPlant,	// FabricationPlant
+				 aBackEnd,		// BackEnd
+				 myRe_StartingTime,	// Starting Time
+				 myRe_LifeTime,		// Time of Life
+				 myRe_CycleTime,	// Time of Cycle
+				 myRe_HeavyMetalMass,	// HM mass
+				 myRe_BurnUp);		// BurnUp
 \end{lstlisting}
 \end{minipage}
 \end{center}
+The meaning of each arguments of the two constructor previously defined are summed up in the following table
 
-\subsection{Main methods}
-Despite all the Get-xxx() and Set-xxx() method, Reactor possess 3 main method, Evolution(), Dump() and SetStorage() (yes this is a Set-xxx() method...).
-\subsubsection{Evolution}
-The evolution function is quite simple, it only follow the \hyperref[sec:EvolutionData]{EvolutionData}, containing all the information about the fuel evolution.
-When called the \textit{Evolution(cSecond t)} method, the reactor will perform its evolution until the time \textit{t}.\\\\
-\fbox{
-\begin{minipage}{\textwidth}
-\textbf{Note that, the reactor \textcolor{red}{MUST} have a time step at the exact second of its end of cycle, start or shutdown, if not the CLASS will break returning : }\\
-"Evolution is too long! There is a problem in Reactor evolution at ..."\\
-\textbf{as an error, giving also some time information about the break.}
-\end{minipage}
-}\\\\
-Beside the verification if the reactor is started, and its start, the evolution can encounter 2 cases : if the evolution stop during and cycle to at the end of a cycle.
+\begin{table}[H]
 \begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}
-if( EvolutionTime + fInCycleTime == fCycleTime )		//End of Cycle
-{
-	fIsAtEndOfCycle = true;
-	fInternalTime += EvolutionTime; 				// Update Internal Time
-	fInCycleTime += EvolutionTime;					// Update InCycleTime
-	if(t >= GetCreationTime() + GetLifeTime()) // if the Next Cycle don't exist
-		fIsShutDown = true;
-}
-else if(EvolutionTime + fInCycleTime < fCycleTime )			// During Cycle
-{
-	fInternalTime += EvolutionTime;					// Update Internal Time
-	fInCycleTime += EvolutionTime;					// Update InCycleTime
-
-	fInsideIV = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fInCycleTime/fEvolutionDB.GetPower()*fPower) );	// update the fuel composition
-	if(t>=GetCreationTime() + GetLifeTime())	fIsShutDown = true;
-}
-else
-{
-	// Evolution goes after the end of cycle.... check it
-	exit(1);
-}
-\end{lstlisting}
-\end{minipage}
+\caption{Arguments of Reactor constructors}
+\label{tab:meanKeyWord}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Argument & type & meaning & unit \\
+\hline
+aCLASSLogger 		& \hyperref[sec:CLASSLogger]{CLASSLogger}		& Output messages 			& N.A.\\
+myFuel\_PhysicsModels	& \hyperref[sec:PhysicsModels]{PhysicsModels}		& Fuel construction/evolution		& N.A. \\
+aFabricationPlant 	& \hyperref[sec:FabricationPlant]{FabricationPlant}	& Facility building the fuel 		& N.A. \\
+aBackEnd 		& \hyperref[sec:CLASSBackEnd]{CLASSBackEnd}		& Facility getting the spent fuel 	& N.A. \\
+myRe\_StartingTime 	& \hyperref[sec:cSecond]{cSecond}			& Creation time 			& second\\
+myRe\_LifeTime 		& \hyperref[sec:cSecond]{cSecond}			& Operation time 			& second\\
+myRe\_Power 		& double						& Thermal power 			& Watt\\
+myRe\_HeavyMetalMass 	& double						& Heavy metal mass 			& tons\\
+myRe\_BurnUp 		& double						& Burn up at EOC 			& GWd/tHM\\
+myRe\_LoadFactor 	& double						& Fraction of nominal power 		& .\\
+myRe\_CycleTime 	& \hyperref[sec:cSecond]{cSecond}			& the cycle time 			& second\\
+\hline
+\end{tabular}
 \end{center}
-In the first case, the reactor will only update its \textit{fInsideIV} to the corresponding state.
-In the second case, only flag the end of cycle, the rest of the job is don in the \textit{Dump()} method.\\
-\\
-\\
-
-\subsubsection{Dump}
-This method deal all the exchange with the other facility of the scenario. It is divided in two part. The first one trash the used fuel, detecting which case it is (normal end of a cycle, end of cycle ad reactor shutdown, or shutdown during a cycle).
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}
-if(fIsAtEndOfCycle  && !fIsShutDown )
-{
-	if(fIsStarted  )					// A Cycle has already been done
-	{
-		fOutBackEndFacility->AddIV(fInsideIV);
-		AddCumulativeIVOut(fInsideIV);
-	}
-	else fIsStarted = true;					// Just start the first cycle
-
-}
-else if (fIsAtEndOfCycle  && fIsShutDown )			//shutdown at end of Cycle
-{
-
-	fOutBackEndFacility->AddIV(fIVOutCycle);
-	AddCumulativeIVOut(fIVOutCycle);
-	fInsideIV.Clear();
-	fInCycleTime = 0;
-	fIsStarted = false;					// shut down the Reactor
-}
-else if (!fIsAtEndOfCycle && fIsShutDown ) 			//shutdown during Cycle
-{
-	fOutBackEndFacility->AddIV(fInsideIV);
-	AddCumulativeIVOut(fInsideIV);
-	fInsideIV.Clear();
-	fInCycleTime = 0;
-	fIsStarted = false;					// shut down the Reactor
-}
-
-\end{lstlisting}
-\end{minipage}
-\end{center}
-
-The second part correspond to refilling of the reactor...
-For the fixed fuel :
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}
-fIsAtEndOfCycle = false;
-GetParc()->AddGod(fIVInCycle);
-fInsideIV  = fIVBeginCycle;
-AddCumulativeIVIn(fIVBeginCycle);
-fInCycleTime = 0;
-\end{lstlisting}
-\end{minipage}
-\end{center}
-where the fuel material is taken outside of the scenario.\\
-\\
-\begin{center}
-\begin{minipage}{\textwidth}
-Or for the reprocessed fuel :
-\begin{lstlisting}
-fIsAtEndOfCycle = false;
-SetNewFuel(fFabricationPlant->GetReactorEvolutionDB(GetId()));
-fFabricationPlant->TakeReactorFuel(GetId());
-fInsideIV  = fIVBeginCycle;
-AddCumulativeIVIn(fIVBeginCycle);
-fInCycleTime = 0;
-\end{lstlisting}
-\end{minipage}
-\end{center}
-where the fuel and the corresponding EvolutionData is builded by a FabricationPlant using the PhysicsModel.
-
-\subsubsection{SetStorage}
-The SetStorage() method must be use with caution !! Because its use will modify the normal operation of the reactor.
-It can be used only in the case of a fixed fuel reactor and not stock management (all stock ar mixed inside the storage), when one want to take the material inside the stock instead of outside of the scenario. In this case, an isotopic separation of the provided stock is done, the needed isotope are taken from the stock, the missing part is provided by the OutSide of the scenario. The refilling part of the Dump() method becomes :
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}
-fIsAtEndOfCycle = false;
-IsotopicVector BuildIVtmp ;
-IsotopicVector GodPart;
-//Get The Storage Compostion
-BuildIVtmp.Add(fStorage->GetInsideIV().GetIsotopicQuantity());
-//Get the rest after IVIn creation
-BuildIVtmp -= fIVInCycle;
-//Get the God part form this rest
-GodPart.Add(BuildIVtmp.GetIsotopicQuantityNeeded()) ;
-//Take what you can from Storage...
-fStorage->TakeFromStock( fIVInCycle - GodPart);
-//And Get the rest from God
-GetParc()->AddGod(GodPart);
-fInsideIV  = fIVBeginCycle;
-AddCumulativeIVIn(fIVBeginCycle);
-fInCycleTime = 0;
-\end{lstlisting}
-\end{minipage}
-\end{center}
-Again this method is really tricky to use and need to be used with great caution!!!
-
-\subsection{CLASSFuelPlan}
-If you don't want to change the fuel type (from a fixed fuel to an other, a fixed fuel to a reprocessed one, changing the final burnup of a fuel...) inside a reactor during its operation stay away from this part.\\
-The aim of this class is to allow user to change the fuel parameter during the operation of the reactor, by example setting a reactor with a UOX fuel enriched at 3\% for 3 cycles, then changing to 5\% UOX or even to MOX. All fuel in a CLASSFUelPLan are associated to a burnup. The reactor updating his cycle time to this burnup (considering the power remain the same in a reactor during all its life).\\
-The usage of the CLASSFuelPlan is quiet simple... On just need to add to an existing CLASSFuelPlan, a time (to perform the fuel switch), a fuel and an associated burnup. One should note that the fuel in the reactor only change at the end of a cycle (finish the current cycle even after a date to change fuel type.)\\
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}
-void AddFuel(cSecond time,  EvolutionData* fuel, double BurnUp)
-void AddFuel(cSecond time,  PhysicsModels* fuel, double BurnUp)
-\end{lstlisting}
-\end{minipage}
-\end{center}
-
-For the one who want to go further, when declaring a reactor (using any type of fuel) (see \ref{sec:reactor:constructor}), a CLASSFuelPlan is created inside the reactor. So it is possible to create a reactor using the normal reactor creator (which include a fuel...) and add after some fuel to the plan using \textit{CLASSFuelPlan*	GetFuelPlan()} method of the reactor, then the AddFuel method of CLASSFuelPlan.\\
-ie : 
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}
-CLASSLogger *MyLogger = new CLASSLogger("CLASS_OUTPUT.log",1,2);
-EvolutionData* STD900 = new EvolutionData(MyLogger, "STD900.dat",false);
-EvolutionData* GARANCE = new EvolutionData(MyLogger, "GARANCE.dat",false);
-Reactor* MyReactor = new Reactor(MyLogger, STD900, Cooling_UOX, 0., 40*3600*24*365.25, 900e6, 106, 33, 0.8);
-Myreactor->GetFuelPlan()->AddFuel(2001*3600*24*365.25, GRANACE, 42);
-\end{lstlisting}
-\end{minipage}
-\end{center}
-If one want to switch between fixed fuel (e.g. PWR UOX) to recycled fuel (e.q. PWR MOX) one need to define a FabricationPlant to the reactor :
-\begin{center}x
-\begin{minipage}{\textwidth}
-\begin{lstlisting}
-IM_RK4 *IMRK4 = new IM_RK4(MyLogger);
-EQM_LIN_PWR_MOX* EQMLINPWRMOX = new EQM_LIN_PWR_MOX(MyLogger, "EQ_Lin.dat");
-EQM_QUAD_PWR_MOX* EQMQUADPWRMOX = new EQM_QUAD_PWR_MOX(MyLogger, "DB.dat");
-PhysicsModels* PHYMOD = new PhysicsModels(XSMOX, EQMQUADPWRMOX, IMRK4);
-Myreactor->GetFuelPlan()->AddFuel( MOXTime, PHYMOD, 35);
-Myreactor->SetFabricationPlant(FP_MOX);
-
-\end{lstlisting}
-\end{minipage}
-\end{center}
+\end{table}
 
 
-
-
-\section{CLASSBackEnd}
+\section{CLASSBackEnd\label{sec:CLASSBackEnd}}
 The CLASSBackEnd class is a master class which aims to regroup all common properties of the fuel back-end facilities. All other back-end facilities in CLASS inherit of the CLASSBackEnd.\\
 In CLASS, a CLASSBackEnd does not control its upstream. Its incoming material flux is pushed by its upstream facility (a Reactor, or an other CLASSBackEnd). It only controls its downstream flux.\\
 \textbf{This object is not supposed to be used explicitly in a CLASS input.}
@@ -335,8 +162,7 @@ Pool is a CLASSBack end with an associated downstream factory. All incoming mate
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
-Storage *Stock = new Storage(aCLASSLogger);
-Pool *MyPool = new Pool(aCLASSLogger,Stock, 5*365.25*24.*3600);
+Pool *MyPool = new Pool(aCLASSLogger, aCLASSBackEnd, 5*365.25*24.*3600);
 \end{lstlisting}
 \end{minipage}
 \end{center}
@@ -350,10 +176,225 @@ Pool *MyPool = new Pool(aCLASSLogger, 5*365.25*24.*3600);
 \end{minipage}
 \end{center}
 
-\subsection{SeparationPlant\label{sec:sepplant}}
+\subsection{SeparationPlant\label{sec:SeparationPlant}}
+The role of the SeparationPlant is to separate an incoming \hyperref[sec:IsotopicVector]{IsotopicVector} from a facility into an arbitrary number of outgoing \hyperref[sec:CLASSBackEnd]{CLASSBackEnd}.\\
+To define a SeparationPlant proceed as follow :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+SeparationPlant* MySeparationPlant = new SeparationPlant(aCLASSLogger);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+The separation process is instantaneous and it follow the isotopic separation efficiency. It must be given as an IsotopicVector containing the separation efficiency for each nucleus. Note that it is possible to separate the incoming \hyperref[sec:IsotopicVector]{IsotopicVector} in many, the users must provide as many isotopic separation efficiency as outgoing \hyperref[sec:CLASSBackEnd]{CLASSBackEnd}.\\
+In addition of a outgoing CLASSBackEnd and an associated isotopic separation efficiency, the user must provide a date for the separation to be effective. To do so :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+IsotopicVector IV_MA;
+IV_MA.Add(93, 237, 0, 1.);
+IV_MA.Add(95, 242, 1, 1.);
+IV_MA.Add(96, 245, 0, 1.);
+//...
+MySeparationPlant->SetBackEndDestination(aCLASSBackEnd1, 
+					IV_MA, 
+					2000*365.25*24.3600);
+
+IsotopicVector IV_Pu;
+IV_Pu.Add(94, 238, 0, 0.8);
+IV_Pu.Add(94, 239, 0, 0.8);
+//...
+MySeparationPlant->SetBackEndDestination(aCLASSBackEnd2, 
+					IV_Pu, 
+					2005*365.25*24.3600);
+					
+IsotopicVector IV_U;
+IV_U += 0.5*ZAI(92, 235, 0);
+IV_U += 0.5*ZAI(92, 238, 0);
+//...
+MySeparationPlant->SetBackEndDestination(aCLASSBackEnd3, 
+					IV_U, 
+					2015*365.25*24.3600);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+In the present example, the separation of Minor Actinides start in 2000 sending it to the CLASSBackEnd \textit{aCLASSBackEnd1} (the rest going to the WASTE). The separation of the plutonium start in 2005 (send in the \textit{aCLASSBackEnd2}) and the separation of uranium in 2010.\\
+Note that between 2005 and 2010, both MA and Pu are separated and sent respectively to \textit{aCLASSBackEnd1} and \textit{aCLASSBackEnd2}, all the remaining isotopes are sent to the WASTE. After 2010, MA, Pu and U are separated and sent to their respective CLASSBackEnd facilities, the rest is still send to WASTE.\\
+Furthermore, the separation of Actinides Minor has an efficiency of 100\%, Pu of 80\% and U of 50\%.
+
+\section{Fabrication Plant\label{sec:FabricationPlant}}
+The FabricationPlant is the facility which takes care about the fuel Fabrication. The "action" in FabricationPlant appends before the beginning of Cycle of a reactor: One fabrication time (Fabrication duration) before the BOC, it start the building process of the fuel.\\
+First it sort the different stock in the different input Storage according the users priority. Then take the EquivalenceModel in PhysicsModels of the reactor, ask it how to build a fuel with the correct properties using some stock available. The EquivalenceModel provide a list a fraction to take in each stock. According to this fraction list, the FabricationPlant take the fraction is each stock and build the reprocessed fuel.
+Once the reprocess fuel is made, it ask to the PhyscisModel to calculate its evolution and store it in EvolutionData form until the reactor load the fuel.\\
+Between the fuel fabrication and the fuel loading in the reactor, the deplay through decay of the fuel is of course taking into account.\\
+Note that, the FabricationPlant provide to the EquivalenceModel a list of stock which have virtually decay during the fabrication time in order to build a proper fuel.
+
+To setup a FabricationPlant do as follow :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+FabricationPlant *MyFabricationPlant = new FabricationPlant(gCLASS->GetLog(), 1*year);
+MyFabricationPlant->SetFiFo();
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+In the previous example, the SetFifo() method set the first in first out priority for the stock usage.
+
+One must also provide a list of Storage used to extract the Fissile part of the fuel by using :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+MyFabricationPlant->AddFissileStorage(Stock);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+And if necessary it is possible to storage to extract fertile isotopes using :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+MyFabricationPlant->AddFertileStorage(Stock);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+If no Fertile Storage are defined, the fertile part is taken from outside of the Scenario.
+By default the unuse part of the stock is send to WASTE.But it is possible to set a storage where the unuse part of the stock using :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+MyFabricationPlant->SetReUsableStorage(ReUsable);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\section{PathWay between Faiclity}
+As explain previously, there are 3 different facility family, the FabricationPlant, the reactor, and the CLASSBackEnd.
+The CLASSBackEnd facilities can't pull material inside, there is always a other facility which push material inside the CLASSBackEnd, but some can also push material inside other facilities: the SeparationPlant and the Pool. The Storage can only store materials.\\
+The reactor take is fuel in a FabricationPlant and push the irradiated fuel in a CLASSBackEnd.\\
+The FabricationPlant take its materials inside storage and stock the reprocessed fuel its makes unties the BoC.
+We propose in the following 4 example of pathway between difference facilities. The point here is only to illustrated possible pathway, but the illustration may not be exhaustive. Furthermore, almost any composition between these examples could be made.
 
 
-\section{Fabrication Plant\label{sec:FP}}
+\subsection{Reactor with fixed fuel and a Storage}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.4\textwidth]{R-S} 
+\caption{Shematic Pathway\label{fig:R-S} }
+\end{figure}
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+CLASSLogger *Logger = new CLASSLogger("CLASS_OUTPUT.log",1,2);  
+EvolutionData* myFuel_EvolutionData = new EvolutionData(Logger, "/PATH/EvolData.dat");
+
+Storage* MyStorage = new Storage(Logger);
+
+Reactor *MyReactor = new Reactor(Logger, myFuel_EvolutionData, MyStorage, 0, 40*365.25*24.3600, 900E6, 100, 45, 1);	
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\subsection{Reactor with fixed fuel, a Pool and a Storage}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.6\textwidth]{R-P-S} 
+\caption{Shematic Pathway\label{fig:R-P-S} }
+\end{figure}
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+CLASSLogger *Logger = new CLASSLogger("CLASS_OUTPUT.log",1,2);  
+EvolutionData* myFuel_EvolutionData = new EvolutionData(Logger, "/PATH/EvolData.dat");
+
+Storage* MyStorage = new Storage(Logger);
+Pool* MyPool = new Pool(Logger, MyStorage, 5*365.25*24*3600);
+
+Reactor *MyReactor = new Reactor(Logger, myFuel_EvolutionData, MyPool, 0, 40*365.25*24.3600, 900E6, 100, 45, 1);	
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\subsection{Reactor with fixed fuel, two SeprationPlant, a Pool and four Storage}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1\textwidth]{R-SP-P_S-S-SP_S_S} 
+\caption{Shematic Pathway\label{fig:R-SP-P_S-S-SP_S_S} }
+\end{figure}
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+CLASSLogger *Logger = new CLASSLogger("CLASS_OUTPUT.log",1,2);  
+EvolutionData* myFuel_EvolutionData = new EvolutionData(Logger, "/PATH/EvolData.dat");
+
+Storage* MyStorage1 = new Storage(Logger);
+Storage* MyStorage2 = new Storage(Logger);
+Storage* MyStorage3 = new Storage(Logger);
+Storage* MyStorage4 = new Storage(Logger);
+
+Pool* MyPool1 = new Pool(Logger, MyStorage1, 5*365.25*24*3600);
+
+// SeparationPlant separate U5 from U8 which goes in Storage 3 and 4.
+SeparationPlan* MySeparation1 = new SeparationPlant(Logger);
+IsotopicVector IV_U8;
+IV_U8.Add(92, 238, 0, 1);
+MySeparationPlant1->SetBackEndDestination(MyStorage3, IV_U8, 0);
+					
+IsotopicVector IV_U5;
+IV_U5 += 1*ZAI(92, 235, 0);
+MySeparationPlant1->SetBackEndDestination(MyStorage4, IV_U5, 0);
+					
+
+// SeparationPlant separate Am Pu and U which goes respectively in myPool1, myStorage2 and mySeparationPlan1.
+SeparationPlan* MySeparation2 = new SeparationPlant(Logger);
+IsotopicVector IV_MA;
+IV_MA.Add(95, 242, 1, 1.);
+MySeparationPlant2->SetBackEndDestination(MyPool1, IV_MA, 0);
+
+IsotopicVector IV_Pu;
+IV_Pu.Add(94, 239, 0, 0.8);
+MySeparationPlant2->SetBackEndDestination(MyStorage2, IV_Pu, 0);
+					
+IsotopicVector IV_U;
+IV_U.Add(92, 238, 0, 0.5);
+IV_U.Add(92, 235, 0, 0.5);
+MySeparationPlant2->SetBackEndDestination(MySeparationPlant1, IV_U, 0);
+
+Reactor *MyReactor = new Reactor(Logger, myFuel_EvolutionData, MySeparation2, 0, 40*365.25*24.3600, 900E6, 100, 45, 1);	
+
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+\subsection{Reactor, a FabricationPlant, a Pool and a Storage}
+
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+CLASSLogger *Logger = new CLASSLogger("CLASS_OU TPUT.log",1,2);  
+
+IM_RK4 *IMRK4 = new IM_RK4(Logger);
+EQM_LIN_PWR_MOX* EQMLINPWRMOX = new EQM_LIN_PWR_MOX(Logger, "/PATH/EQ_Lin.dat");
+EQM_QUAD_PWR_MOX* EQMQUADPWRMOX = new EQM_QUAD_PWR_MOX(Logger, "/PATH/DBParam.dat");
+PhysicsModels* myFuel_PhysicsModel = new PhysicsModels(XSMOX, EQMQUADPWRMOX, IMRK4);
+
+Storage* MyStorage = new Storage(Logger);
+Pool* MyPool = new Pool(Logger, MyStorage, 5*365.25*24*3600);
+
+FabricationPlant* myFabrication = new FabricationPlant(Logger, 2*365.25*24*3600);
+
+Reactor *MyReactor = new Reactor(Logger, myFuel_PhysicsModel, myFabrication, MyPool, 0, 40*365.25*24.3600, 900E6, 100, 45, 1);	
+\end{lstlisting}
+\end{minipage}
+\end{center}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{FP_R_P_S} 
+\caption{Shematic Pathway\label{fig:FP_R_P_S} }
+\end{figure}
 
 \chapter{Other objects}
 \section{ZAI\label{sec:ZAI}}
@@ -370,7 +411,7 @@ ZAI U238 = ZAI(92, 238, 0);
 This class includes the mains logical comparators (\emph{e.g} ==, >, !=). Fill free to read the doxygen for more details on the methods associated to this class. (\emph{e.g} A(), Z(), I(), N()...) \cite{doxygen}.
 %\vspace{4cm}
 
-\section{IsotopicVector\label{sec:IV}}
+\section{IsotopicVector\label{sec:IsotopicVector}}
 \subsection{Generality}
 The IsotopicVector object is a collection of ZAI, for each ZAI a number of nuclei is associated (IsotopicVector is a c++ map of ZAI and double, which corresponds to a sorted array of ZAI and its quantity).\\
 Two pincipales operation have been defined on IsotopicVector. 
@@ -434,41 +475,8 @@ If a nucleus A is present in both IsotopicVector, with respective quantity $\alp
 
 \textit{By exemple, this method can be used to apply separation efficiency: one IsotopicVector containing real material and the other one containing separation efficiency of each nucleus.}
 
-\section{Log management : CLASSLogger}\label{sec:logclass}
-In CLASS, all messages are handled by the CLASSLogger object. There are 4 verbose levels, see table~\ref{tab:verblevel}.
-
-\begin{table}[H]
-\begin{center}
-\caption{Verbose levels}
-\label{tab:verblevel}
-\begin{tabular}{|c|c|l|}
-\hline
-level \# & meaning & informations\\
-\hline
-0 & ERROR & This is the default. \textit{It makes the code to stop}\\
-\hline
-1 & WARNING & LVL 0 + something may go wrong but the code continue running\\
-\hline
-2 & INFO &  LVL 1 + simple informations about ongoing process \\
-\hline
-3 & DEBUG & LVL 2 + each method begin and end \\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-There are two outputs for these messages : the standard output (terminal) and a logfile. For each output a verbose level can be assigned as follow :
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}
-CLASSLogger *Logger = new CLASSLogger("CLASS_OUTPUT.log",1,2);  
-\end{lstlisting}
-\end{minipage}
-\end{center}
-In the preceding example, verbose level 1 (WARNING) has been set for the terminal output and level 2 (INFO) for the second output which is the logfile named CLASS\_OUTPUT.log. 
-
 \section{EvolutionData}\label{sec:EvolutionData}
-An EvolutionData aims to describe the evolution of an IsotopicVector through a physical process (decay or irradiation). The Decay case is fully described in section~\ref{sec:DecayDB}.\\
+An EvolutionData aims to describe the evolution of an \hyperref[sec:IsotopicVector]{IsotopicVector} through a physical process (decay or irradiation). The Decay case is fully described in section~\ref{sec:DecayDB}.\\
 
 In case of irradiation, it may also contains the evolution of the one group cross section, the evolution of the neutron flux and the keff and are not mandatory. Note that neutron flux and keff are not used in CLASS. The EvolutionData MUST contain the power and can contain the heavy metal mass, the fuel type, reactor type and the cycle time.\\
 These EvolutionData can be loaded into CLASS from a formatted ASCII file see section~\ref{sec:EDformat} as follow :
@@ -477,7 +485,7 @@ These EvolutionData can be loaded into CLASS from a formatted ASCII file see sec
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
 CLASSLogger *Logger = new CLASSLogger("CLASS_OUTPUT.log",1,2);  
-
+ 
 EvolutionData*  MyEvolutionData = new EvolutionData(Logger, "/PATH/Data.dat");
 \end{lstlisting}
 \end{minipage}
@@ -551,8 +559,8 @@ The radioactive decay is handled by a DecayDataBank. The DecayDataBank contains 
 Each EvolutionData describes the evolution of the nucleus and all its daughters as a function of the time. The depletion of an isotopic vector corresponds to the sum of all its nucleus depletion contribution.\\
 
 In other words, in CLASS, for each nucleus of the chart, a depletion calculation has been performed and compiled in a DecayDataBank.\\
-The determination  of an IsotopicVector depletion is performed as follow :\\
-First, one determines the depletion of each nucleus of the IsotopicVector following the DecayDataBank, then sums all those contributions.
+The determination  of an \hyperref[sec:IsotopicVector]{IsotopicVector} depletion is performed as follow :\\
+First, one determines the depletion of each nucleus of the \hyperref[sec:IsotopicVector]{IsotopicVector} following the DecayDataBank, then sums all those contributions.
 
 DecayDataBank can be defined as follow :
 
@@ -560,10 +568,8 @@ DecayDataBank can be defined as follow :
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
 CLASSLogger *Logger = new CLASSLogger("CLASS_OUTPUT.log",1,2);
-Scenario *gCLASS = new Scenario(Logger);
 
 DecayDataBank* DecayDB = new DecayDataBank(Logger, "/PATH/Decay.idx");
-gCLASS->SetDecayDataBase(DecayDB);
 \end{lstlisting}
 \end{minipage}
 \end{center}
@@ -579,5 +585,38 @@ Zn An In PATH/ZAIn.dat
 \end{minipage}
 \end{center}
 A DecayDataBank can be find in \$PATH\_TO\_CLASS/Data/@@@.
-\vspace{3cm}
+
+
+\section{Log management : CLASSLogger}\label{sec:CLASSLogger}
+In CLASS, all messages are handled by the CLASSLogger object. There are 4 verbose levels, see table~\ref{tab:verblevel}.
+
+\begin{table}[H]
+\begin{center}
+\caption{Verbose levels}
+\label{tab:verblevel}
+\begin{tabular}{|c|c|l|}
+\hline
+level \# & meaning & informations\\
+\hline
+0 & ERROR & This is the default. \textit{It makes the code to stop}\\
+\hline
+1 & WARNING & LVL 0 + something may go wrong but the code continue running\\
+\hline
+2 & INFO &  LVL 1 + simple informations about ongoing process \\
+\hline
+3 & DEBUG & LVL 2 + each method begin and end \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+There are two outputs for these messages : the standard output (terminal) and a logfile. For each output a verbose level can be assigned as follow :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+CLASSLogger *Logger = new CLASSLogger("CLASS_OUTPUT.log",1,2);  
+\end{lstlisting}
+\end{minipage}
+\end{center}
+In the preceding example, verbose level 1 (WARNING) has been set for the terminal output and level 2 (INFO) for the second output which is the logfile named CLASS\_OUTPUT.log. 
 %%%%%%%%%%%%%%%%%%%
