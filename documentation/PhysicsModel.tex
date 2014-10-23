@@ -105,7 +105,7 @@ EQM_QUAD_PWR_MOX* Equivalence = new	EQM_QUAD_PWR_MOX( LogObject, AlphasFile );
 \end{minipage}
 \end{center}
 
-With LogObject a \hyperref[sec:logclass]{CLASSLogger} object (see section~\ref{sec:logclass}) and AlphasFile a string which is the complete path to the file containing the weights (the $\alpha$ parameters)
+With LogObject a \hyperref[sec:CLASSLogger]{CLASSLogger} object (see section~\ref{sec:CLASSLogger}) and AlphasFile a string which is the complete path to the file containing the weights (the $\alpha$ parameters)
 \\
 \\
 
@@ -142,7 +142,7 @@ EQM_MLP_PWR_MOX* Equivalence = new	EQM_MLP_PWR_MOX( LogObject, TMVAWeightPath );
 \end{minipage}
 \end{center}
 
-With LogObject a \hyperref[sec:logclass]{CLASSLogger} object (see section~\ref{sec:logclass}) and TMVAWeightPath a string containing the path to the .xml file. 
+With LogObject a \hyperref[sec:CLASSLogger]{CLASSLogger} object (see section~\ref{sec:CLASSLogger}) and TMVAWeightPath a string containing the path to the .xml file. 
 
 
 In order to make his own .xml file one need to have a training data containing the fresh fuel composition and the achievable burn-up of many examples. The fuel composition is characterized by the mean of :
@@ -321,11 +321,11 @@ double EQM_NAME::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fe
 \end{minipage}
 \end{center}
 
-In the constructor (EQM\_NAME::EQM\_NAME) you have to fill two isotopic vectors named \textbf{fFissileList} and \textbf{fFertileList}. Don't declare these isotopic vector in the .hxx, there are already declared in the file src/EquivalenceModel.hxx. fFissileList is used by the FabricationPlant to do the chemical separation of the fissile element from the other present in stock. For instance, for the plutonium, add the ZAI $^{238}Pu$, $^{239}Pu$, $^{240}Pu$, $^{241}Pu$ and $^{242}Pu$. fFertile List is used by the FabricationPlant the same way fFissileList is used but you have to define a default IsotopicVector to be used if you didn't provide a fertile stock to your FabricationPlant.  In the example given above the fertile is depleted uranium and  the proportion of each isotope is given ($^{234}U$ is unheeded). Now you have to build the function \textbf{GetFissileMolarFraction(IsotopicVector Fissil, IsotopicVector Fertil, double BurnUp)}. Its parameters are provided by the FabricationPlant and are :
+In the constructor (EQM\_NAME::EQM\_NAME) you have to fill two isotopic vectors named \textbf{fFissileList} and \textbf{fFertileList}. Don't declare these isotopic vector in the .hxx, there are already declared in the file src/EquivalenceModel.hxx. fFissileList is used by the FabricationPlant to do the chemical separation of the fissile element from the other present in stock. For instance, for the plutonium, add the ZAI $^{238}Pu$, $^{239}Pu$, $^{240}Pu$, $^{241}Pu$ and $^{242}Pu$. fFertile List is used by the FabricationPlant the same way fFissileList is used but you have to define a default \hyperref[sec:IsotopicVector]{IsotopicVector} to be used if you didn't provide a fertile stock to your FabricationPlant.  In the example given above the fertile is depleted uranium and  the proportion of each isotope is given ($^{234}U$ is unheeded). Now you have to build the function \textbf{GetFissileMolarFraction(IsotopicVector Fissil, IsotopicVector Fertil, double BurnUp)}. Its parameters are provided by the FabricationPlant and are :
 
 \begin{itemize}
-\item IsotopicVector Fissil : it is the proportion of each nucleus you give in the fFissileList plus the proportion of the nuclei that appears during the fabrication time (time given in the FabricationPlant constructor, is default is 2 years)
-\item IsotopicVector Fertil :  it is the proportion of each nucleus you give in the fFertileList plus the proportion of the nuclei that appears during the fabrication time. If you didn't provide any fertile stock to your FabricationPlant then it's the default vector given in the EQM\_NAME constructor.
+\item \hyperref[sec:IsotopicVector]{IsotopicVector} Fissil : it is the proportion of each nucleus you give in the fFissileList plus the proportion of the nuclei that appears during the fabrication time (time given in the FabricationPlant constructor, is default is 2 years)
+\item \hyperref[sec:IsotopicVector]{IsotopicVector} Fertil :  it is the proportion of each nucleus you give in the fFertileList plus the proportion of the nuclei that appears during the fabrication time. If you didn't provide any fertile stock to your FabricationPlant then it's the default vector given in the EQM\_NAME constructor.
 \item double BurnUp : The maximal average burn-up for your fuel to reach (in GWd/tHM).
 \end{itemize}
 Fill free to have a look at the models present in \$CLASS\_PATH/source/Model/Equivalence to get inspiration.
@@ -375,7 +375,7 @@ int main()
 \end{minipage}
 \end{center}
 
-With LogObject a \hyperref[sec:logclass]{CLASSLogger} object (see section~\ref{sec:logclass}) and PathToIdxFile  a string containing the path to the .idx file. The .idx file lists all the EvolutionData (see section~\ref{sec:EvolutionData}) of the data base. This file is formatted as follow :
+With LogObject a \hyperref[sec:CLASSLogger]{CLASSLogger} object (see section~\ref{sec:CLASSLogger}) and PathToIdxFile  a string containing the path to the .idx file. The .idx file lists all the EvolutionData (see section~\ref{sec:EvolutionData}) of the data base. This file is formatted as follow :
 
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -705,7 +705,7 @@ int main()
 \end{lstlisting}
 \end{minipage} 
 \end{center}
-LogObject is a  \hyperref[sec:logclass]{CLASSLogger} object (see section~\ref{sec:logclass}).
+LogObject is a  \hyperref[sec:CLASSLogger]{CLASSLogger} object (see section~\ref{sec:CLASSLogger}).
 
 \subsection{How to build an Irradiation Model}
 The strength of CLASS is to allow the user to build his own Physics models, this section explains how to build a new Bateman solver (Irradiation Model) and to incorporate it into CLASS.
