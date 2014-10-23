@@ -1,0 +1,165 @@
+% !TEX root = USEGUIDE.tex
+\part{Introduction}
+code de scenar tatati c'est gnial ça sert à ça ça et ça ...
+donner le forge in2p3
+
+\part{First Steps}
+\chapter{Package Contents}
+Ya quoi dans ce que je viens de downloader
+\chapter{Install procedure}
+
+\section{Requirement}
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{itemize}
+\item User skills : Good knowledge of C++. Abilities in using Root (cern). Experience in depletion codes and neutron transport codes.
+\item OS : CLASS is known to work under Linux (64  bits) and MacOSX (64 bits). It  has never been tested on any Windows distribution.
+\item Root (CERN) :  
+CLASS uses Root to store output data. 
+The graphical user interface CLASSGui is based on Root.
+Some algorithms uses the TMVA module of Root.
+ \item C++ compiler :  we recommend to use a gnu compiler like gcc4.8. 
+If your platform is DARWIN (Mackintosh OSX) we strongly recommend not to use the clang compiler\\
+You should install macport. then types this following command in terminal :\\
+\begin{lstlisting}[style=terminal]
+sudo port install gcc48
+sudo port select --set gcc mp-gcc48
+\end{lstlisting}
+\end{itemize}
+\end{minipage}
+\end{center}
+
+\begin{center}
+\line(1,0){250}
+\end{center}
+
+\begin{large}
+\begin{center}
+\textbf{IMPORTANT NOTE : } \\
+\end{center}
+
+\end{large} 
+The actual root package (version 5.34/20 ) and earlier (and maybe latter) has a memory leak issue when using TMVA leading to a \textbf{freeze of your computer.}
+To avoid this dramatical error to happen do the following : \\
+If the thread 
+\href{http://root.cern.ch/phpBB3/viewtopic.php?f=3&t=18360&p=78586&hilit=TMVA#p78586}{RootTalk}
+\footnote{http://root.cern.ch/phpBB3/viewtopic.php?f=3\&t=18360\&p=78586\&hilit=TMVA\#p78586} 
+or \href{https://sft.its.cern.ch/jira/browse/ROOT-6551}{RootSupport} \footnote{https://sft.its.cern.ch/jira/browse/ROOT-6551}
+indicates status solved then download and install  the more recent ROOT version.\\
+If the status is still unresolved proceed as follow : \\
+Open with your favourite text editor the file  \$ROOTSYS/tmva/src/Reader.cxx (\$ROOTSYS is the path to your ROOT installation folder) and replace the following :\\
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+TMVA::Reader::~Reader( void )
+{
+   // destructor
+
+   delete fDataSetManager; // DSMTEST
+
+   delete fLogger;
+}
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+by :\\
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+TMVA::Reader::~Reader( void )
+{
+   // destructor
+   std::map<TString, IMethod* >::iterator itr;
+   for( itr = fMethodMap.begin(); itr != fMethodMap.end(); itr++) {
+      delete itr->second;
+   }
+   fMethodMap.clear();
+
+   delete fDataSetManager; // DSMTEST
+
+   delete fLogger;
+}
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+then type in your terminal : 
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[style=terminal]
+cd $ROOTSYS
+sudo make -j
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\begin{center}
+\line(1,0){250}
+\end{center}
+
+
+\section{Installation}
+Decompress the CLASS.tar.gz in your wanted location \footnote{ \$CLASS\_PATH is the path of your CLASS installation folder}. Then type in terminal:\\
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[style=terminal]
+cd $CLASS_PATH/
+mkdir lib
+cd  source/src
+make -j 
+make install
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+Then to install the Graphical User Interface :
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[style=terminal]
+cd $CLASS_PATH/gui
+mkdir bin
+make -j
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+Finally add the following environment variables  (in your .tcsh or .csh ):
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+setenv CLASS_PATH YourPathToCLASS
+setenv CLASS_lib ${CLASS_PATH}/lib
+setenv CLASS_include ${CLASS_PATH}/source/include
+setenv PATH ${PATH}:${CLASS_PATH}/bin/gui
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\chapter{CLASS Execution}
+CLASS is a set of C++ libraries, there is no CLASS binary file. A CLASS executable has to be build by user using objects and methods defined in the CLASS package. \\
+The compilation line for generating your executable from a .cxx file is the following :
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[style=terminal]
+g++ -o CLASS_exec YourScenario.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\chapter{News, forum, troubleshooting, doxygen ...}
+CLASS has a \href{https://forge.in2p3.fr/projects/classforge}{forge}\footnote{https://forge.in2p3.fr/projects/classforge} hosted by the IN2P3  where you can find :
+
+\begin{itemize}
+\item \href{https://forge.in2p3.fr/projects/classforge/boards}{A forum}\footnote{https://forge.in2p3.fr/projects/classforge/boards} where you are invited to post your trouble about CLASS installation and usage. You may find the answer to your trouble on a already posted thread.
+\item \href{https://forge.in2p3.fr/projects/classforge/embedded/annotated.html}{A doxygen}\footnote{https://forge.in2p3.fr/projects/classforge/embedded/annotated.html} where all the CLASS objects and methods are defined and explained.
+\item \href{https://forge.in2p3.fr/projects/classforge/news}{News}\footnote{https://forge.in2p3.fr/projects/classforge/news} : All the news related to CLASS
+\end{itemize}
+A \href{classuser-l@ccpntc02.in2p3.fr}{Mailing List}\footnote{classuser-l@ccpntc02.in2p3.fr} also exist in order to be warned of all the change inside CLASS and to allow user to exchange directly on the code. One can join the mailing list through the following  \href{http://listserv.in2p3.fr/cgi-bin/wa?SUBED1=classuser-l&A=1}{link}\footnote{http://listserv.in2p3.fr/cgi-bin/wa?SUBED1=classuser-l\&A=1}.
