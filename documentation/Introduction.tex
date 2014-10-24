@@ -103,34 +103,7 @@ sudo make -j
 
 
 \section{Installation}
-Decompress the CLASS.tar.gz in your wanted location \footnote{ \$CLASS\_PATH is the path of your CLASS installation folder}. Then type in terminal:\\
-
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}[style=terminal]
-cd $CLASS_PATH/
-mkdir lib
-cd  source/src
-make -j 
-make install
-\end{lstlisting}
-\end{minipage}
-\end{center}
-
-Then to install the Graphical User Interface :
-
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}[style=terminal]
-cd $CLASS_PATH/gui
-mkdir bin
-make -j
-\end{lstlisting}
-\end{minipage}
-\end{center}
-
-Finally add the following environment variables  (in your .tcsh or .csh ):
-
+Decompress the CLASS.tar.gz in your wanted location. Then, you have to add some environment variables. If your using tcsh  edit the file \$HOME/.tcshrc, and copy past the following  changing \emph{YourPathToCLASS} by the path  of your CLASS installation folder:
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -141,6 +114,29 @@ setenv PATH ${PATH}:${CLASS_PATH}/bin/gui
 \end{lstlisting}
 \end{minipage}
 \end{center}
+ Then type in terminal:
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[style=terminal]
+source $HOME/.tcshrc
+cd $CLASS_PATH/
+mkdir lib
+cd  source/src
+make -j 
+make install
+\end{lstlisting}
+\end{minipage}
+\end{center}
+Then to install the Graphical User Interface :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[style=terminal]
+cd $CLASS_PATH/gui
+make -j
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
 
 \chapter{CLASS Execution}
 CLASS is a set of C++ libraries, there is no CLASS binary file. A CLASS executable has to be build by user using objects and methods defined in the CLASS package. \\
