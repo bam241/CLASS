@@ -652,9 +652,9 @@ Furthermore, one need to add a DecayDataBase to the Scenario, using :
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
-EvolutionData*  MyEvolutionData = new EvolutionData(Logger, "/PATH/Data.dat");
+DecayDataBank* DecayDB = new DecayDataBank(Logger, "/PATH/Decay.idx");
 
-gCLASS->SetDecayDataBase(MyEvolutionData);
+gCLASS->SetDecayDataBase(DecayDB);
 \end{lstlisting}
 \end{minipage}
 \end{center}
@@ -670,30 +670,30 @@ In addition to all facilies added to the Scenario, the output contain also other
 \label{tab:verblevel}
 \begin{tabular}{|c|c|l|}
 \hline
-Output Name	&	Unit 		&	description\\
+Output Name			&	Unit 				&	description\\
 \hline
-AbsoluteTime	&	Number [Second]	&	Time at the step\\	
+AbsoluteTime			&	Number [Second]			&	Time at the step\\	
 \hline
-ParcPower	&	Number [Watt]	&	Effective thermal power of the Scenario \\
-		&			&	\textit{only working reactor are taked into account}\\	
+\multirow{2}{*}{ParcPower}	&	\multirow{2}{*}{Number [Watt]}	&	Effective thermal power of the Scenario \\
+				&					&	\textit{only working reactor are taked into account}\\	
 \hline
-WASTE		&	IsotopicVector	&	Waste produced by the scenario\\	
+WASTE				&	IsotopicVector			&	Waste produced by the scenario\\	
 \hline
-STOCK		&	IsotopicVector	&	All the material in all the Storage\\
+STOCK				&	IsotopicVector			&	All the material in all the Storage\\
 \hline
-OUTINCOME	&	IsotopicVector	&	All material taking from outside the Scenario\\
+OUTINCOME			&	IsotopicVector			&	All material taking from outside the Scenario\\
 \hline
-COOLING		&	IsotopicVector	&	All the material present in all the Pool\\
+COOLING				&	IsotopicVector			&	All the material present in all the Pool\\
 \hline
-FUELFABRICATION	&	IsotopicVector	&	All the material present in all the FabricationPlant\\
+FUELFABRICATION			&	IsotopicVector			&	All the material present in all the FabricationPlant\\
 \hline
-REACTOR		&	IsotopicVector	&	All the material present in all the Reactor\\
+REACTOR				&	IsotopicVector			&	All the material present in all the Reactor\\
 \hline
-INCYLE		&	IsotopicVector	&	All the material in the cycle\\
-		&			&	\textit{Reactor + Pool + Fabrication + Storage}\\
+\multirow{2}{*}{INCYLE}		&	\multirow{2}{*}{IsotopicVector}	&	All the material in the cycle\\
+				&					&	\textit{Reactor + Pool + Fabrication + Storage}\\
 \hline
-TOTAL		&	IsotopicVector	&	All the material in the Scenario\\ 
-		&			&	\textit{Reactor + Pool + Fabrication + Storage + Waste}\\	
+\multirow{2}{*}{TOTAL}		&	\multirow{2}{*}{IsotopicVector}	&	All the material in the Scenario\\ 
+				&					&	\textit{Reactor + Pool + Fabrication + Storage + Waste}\\	
 \hline
 \end{tabular}
 \end{center}
