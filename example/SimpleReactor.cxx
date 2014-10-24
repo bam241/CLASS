@@ -1,3 +1,16 @@
+/*************************************************/
+//              DESCRIPTION
+// Simple scenario :
+// This park is constituted by a simple PWR UOX
+// Reactor and a Storage.
+//   _______     _______
+//  |       |   |       |
+//  |Reactor| =>|Storage|
+//  |_______|   |_______|
+//
+// The spent fuel goes to a Storage
+//The scenario is run for 40 years
+/*************************************************/
 #include "CLASSHeaders.hxx"
 #include <sstream>
 #include <iomanip>
