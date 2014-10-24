@@ -112,7 +112,7 @@ double EQM_QUAD_PWR_MOX::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 	PuCompo[2] += Fissile.GetZAIIsotopicQuantity(ZAIList[5])/Sum;
 	double A = 0;
 
-	if(PuCompo[0] <= PuCompo[2] && PuCompo[0] <= PuCompo[4] && PuCompo[1] + PuCompo[3] >= 40 && PuCompo[1] >0 )
+	if(PuCompo[0] <= PuCompo[2] && PuCompo[0] <= PuCompo[4] && PuCompo[1] + PuCompo[3] >= 0.40 && PuCompo[1] >0 )
 	{
 		int par = 0;
 		for(int j = 0 ; j < 5 ; j++)
@@ -126,6 +126,10 @@ double EQM_QUAD_PWR_MOX::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 			}
 		}
 		A += fFuelParameter[par];
+	}
+	else
+	{
+		cout << "oups dans le cul" << endl;
 	}
 	return A;
 }
