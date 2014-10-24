@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 	CLASSRead* DataRead = new CLASSRead(VFileName[0]);
 	for (int i = 1; i < (int)VFileName.size(); i++)
 	{
-		cout << "FIle "<<  i << endl;
+		cout << "File "<<  i << endl;
 		DataRead->AddFile(VFileName[i]);
 	}
 	DataRead->ReadName();
