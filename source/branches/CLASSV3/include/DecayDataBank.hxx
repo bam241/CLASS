@@ -66,7 +66,7 @@ class DecayDataBank : public CLASSObject
 	 \param setlog if the log are stored in the CLASSLogger
 	 \param olfreadmethod true if the old format of EvolutionData are used (ie without the key word such as Inv, XSFiss...)
 	 */
-	DecayDataBank(CLASSLogger* Log, string DB_index_file, bool setlog = true, bool olfreadmethod = true );
+	DecayDataBank(CLASSLogger* Log, string DB_index_file, bool olfreadmethod = false );
 	//}
 	
 	//{

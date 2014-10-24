@@ -35,7 +35,6 @@ Pool::Pool(CLASSLogger* log, cSecond coolingtime):CLASSBackEnd(log, coolingtime,
 
 
 	fCycleTime = (cSecond)coolingtime;
-	fIsStarted = false;
 	fPutToWaste = true;
 	fCoolingLastIndex = 0;
 
@@ -60,7 +59,6 @@ Pool::Pool(CLASSLogger* log, CLASSBackEnd* storage, cSecond coolingtime):CLASSBa
 	fOutBackEndFacility = storage;
 	SetIsStorageType(false);
 
-	fIsStarted = false;
 	fPutToWaste = false;
 	fCoolingLastIndex = 0;
 	SetName("P_Pool.");
@@ -124,7 +122,7 @@ void Pool::RemoveIVCooling(int i)		//!< Remove a Cooling IsotopicVector
 
 	fIVArray.erase(fIVArray.begin()+i);
 	fIVArrayArrivalTime.erase( fIVArrayArrivalTime.begin()+i);
-	fCoolingIndex.erase(fCoolingIndex.begin()+i); 
+	fCoolingIndex.erase(fCoolingIndex.begin()+i);
 
 }
 
@@ -190,15 +188,7 @@ void Pool::Evolution(cSecond t)
 {
 
 	// Check if the Pool has been created ...
-	if(t<GetCreationTime()) return;
 	if(t == fInternalTime && t!=0) return;
-	
-	if(fInternalTime == 0 && !fIsStarted)
-	{
-		fInternalTime = GetCreationTime();
-		fIsStarted = true;
-	}
-
 	// Make the evolution for the Cooling IV ...
 	CoolingEvolution(t);
 	

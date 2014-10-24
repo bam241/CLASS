@@ -35,7 +35,7 @@ DecayDataBank::DecayDataBank():CLASSObject(new CLASSLogger("DecayDataBank.log"))
 //________________________________________________________________________
 //________________________________________________________________________
 
-DecayDataBank::DecayDataBank(CLASSLogger* log, string DB_index_file, bool setlog, bool olfreadmethod):CLASSObject(log)
+DecayDataBank::DecayDataBank(CLASSLogger* log, string DB_index_file, bool olfreadmethod):CLASSObject(log)
 {
 	
 	fDataBaseIndex = DB_index_file;
@@ -88,7 +88,7 @@ DBGL
 			if(rZ == zai.Z() && rA == zai.A() && rI == zai.I() )
 			{
 				string file_name = StringLine::NextWord(line,start);
-				EvolutionData evolutionproduct = EvolutionData(GetLog(), file_name);
+				EvolutionData evolutionproduct = EvolutionData(GetLog(), file_name, fOldReadMethod);
 #pragma omp critical(DBupdate)
 				{fDecayDataBank.insert( pair<ZAI ,EvolutionData >(zai, evolutionproduct) );}
 				returnIV = evolutionproduct.GetIsotopicVectorAt(dt);
