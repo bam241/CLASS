@@ -621,5 +621,114 @@ CLASSLogger *Logger = new CLASSLogger("CLASS_OUTPUT.log",1,2);
 In the preceding example, verbose level 1 (WARNING) has been set for the terminal output and level 2 (INFO) for the second output which is the logfile named CLASS\_OUTPUT.log. 
 
 \chapter{Scenario/Park}
+The Scenario object aims to describe the full scenario, regrouping all facilities inside a full park or fleet.
+
+\section{Fill the scenario}
+Each facilities to be able to evolve during a dynamic fuel cycle calculation need to be added inside the scenario. To do so five adding method have been implemented :
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+CLASSLogger *Logger = new CLASSLogger("CLASS_OUTPUT.log",1,2);
+Scenario *gCLASS=new Scenario(Logger, 1977*year);
+
+gCLASS->AddPool(myPool);					
+gCLASS->AddReactor(myReactor);				
+gCLASS->AddStorage(myStorage);				
+gCLASS->AddFabricationPlant(myFabricationplant);
+gCLASS->AddSeparationPlant(mySeparationplant);
+//or
+gCLASS->Add(myPool);
+gCLASS->Add(myReactor);				
+gCLASS->Add(myStorage);				
+gCLASS->Add(myFabricationplant);
+gCLASS->Add(mySeparationplant);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+Furthermore, one need to add a DecayDataBase to the Scenario, using :
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+EvolutionData*  MyEvolutionData = new EvolutionData(Logger, "/PATH/Data.dat");
+
+gCLASS->SetDecayDataBase(MyEvolutionData);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+\section{OutPut}
+\subsection{General Output}
+In addition to all facilies added to the Scenario, the output contain also other general information.
+
+\begin{table}[H]
+\begin{center}
+\caption{General Information in CLASS Output}
+\label{tab:verblevel}
+\begin{tabular}{|c|c|l|}
+\hline
+Output Name	&	Unit 		&	description\\
+\hline
+AbsoluteTime	&	Number [Second]	&	Time at the step\\	
+\hline
+ParcPower	&	Number [Watt]	&	Effective thermal power of the Scenario \\
+		&			&	\textit{only working reactor are taked into account}\\	
+\hline
+WASTE		&	IsotopicVector	&	Waste produced by the scenario\\	
+\hline
+STOCK		&	IsotopicVector	&	All the material in all the Storage\\
+\hline
+OUTINCOME	&	IsotopicVector	&	All material taking from outside the Scenario\\
+\hline
+COOLING		&	IsotopicVector	&	All the material present in all the Pool\\
+\hline
+FUELFABRICATION	&	IsotopicVector	&	All the material present in all the FabricationPlant\\
+\hline
+REACTOR		&	IsotopicVector	&	All the material present in all the Reactor\\
+\hline
+INCYLE		&	IsotopicVector	&	All the material in the cycle\\
+		&			&	\textit{Reactor + Pool + Fabrication + Storage}\\
+\hline
+TOTAL		&	IsotopicVector	&	All the material in the Scenario\\ 
+		&			&	\textit{Reactor + Pool + Fabrication + Storage + Waste}\\	
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{Output names}
+The CLASS output is done in ROOT format, each element of the Scenario is added to a ROOT TTree, filled at each time step.
+By default the output file name is "CLASS\_Default.root" and the ROOT TTree name is "Data". It is possible to change those names using :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+gCLASS->SetOutputFileName("MyFileName.root");	
+gCLASS->SetOutputTreeName("MyTTreeName");
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\subsection{Output Frequency}
+By default the output is done every years of simulation. To have more frequent (or less) output use :
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+gCLASS->SetTimeStep(365.25*24*3600/12); // monthly output	
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+
+
+
+
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%
