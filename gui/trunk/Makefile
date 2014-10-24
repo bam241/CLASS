@@ -38,18 +38,27 @@ main	=  CLASSGui
 
 OBJS    = $(subO) $(mainO) 
 
+
+
+
+
 all:    $(OBJS)
 		
 	$(LD) $(LDFLAGS) $(OBJS) $(LIBS) $(GLIBS) -o $(main)
-	mv  $(main) bin/
+	@mkdir -p bin
+	@mv  $(main) bin/
 	@echo "$(main) done"
+	@echo "CLASSGui is now available in $(CLASS_PATH)/Gui/bin !!"
+
+
 
 clean:
 		@rm -f $(OBJS)
 
+
+
 .SUFFIXES: .cxx
 
-###
 CLASSRead.o:	CLASSRead.hxx \
 		CLASSPlotElement.hxx
 
