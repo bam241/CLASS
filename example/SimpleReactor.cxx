@@ -1,9 +1,4 @@
 #include "CLASSHeaders.hxx"
-#include "XS/XSM_MLP.hxx"
-#include "Irradiation/IM_RK4.hxx"
-#include "Equivalence/EQM_MLP_PWR_MOX.hxx"
-#include "Equivalence/EQM_LIN_PWR_MOX.hxx"
-#include "XS/XSM_CLOSEST.hxx"
 #include <sstream>
 #include <iomanip>
 #include <math.h>
