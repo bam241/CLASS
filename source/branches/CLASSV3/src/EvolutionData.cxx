@@ -887,8 +887,7 @@ void EvolutionData::ReadInfo()
 	ifstream InfoDB(InfoDBFile.c_str());				// Open the File
 	if(!InfoDB)
 	{
-		ERROR << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
-		exit(1);
+		WARNING << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
 	}
 
 	int start = 0;
