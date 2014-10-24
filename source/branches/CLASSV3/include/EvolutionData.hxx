@@ -82,7 +82,7 @@ public :
 	 \param oldread true if the oldmethod should be use to read the DatBase File
 	 \param zai set the ZAI if you want to add a stable nuclei.
 	 */
-	EvolutionData(CLASSLogger* log, string DB_file, bool oldread = true, ZAI zai = ZAI(0,0,0) );
+	EvolutionData(CLASSLogger* log, string DB_file, bool oldread = false, ZAI zai = ZAI(0,0,0) );
 	//}
 
 

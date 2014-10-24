@@ -360,14 +360,11 @@ EvolutionData::EvolutionData():CLASSObject()
 	//________________________________________________________________________
 EvolutionData::EvolutionData(CLASSLogger* log):CLASSObject(log)
 {
-	
 	fIsCrossSection = false;
 	fPower = 0;
 	fCycleTime = 0;
 	fKeff = 0;
 	fFlux = 0;
-
-	
 }
 
 	//________________________________________________________________________

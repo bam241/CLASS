@@ -64,8 +64,8 @@ public :
 	IsotopicVector		GetActinidesComposition()	const;			//!< Return the Actinides composition of the "z" atom
 	double	GetZAIIsotopicQuantity(const ZAI& zai)		const;			///< Return the quantity of the ZAI
 	double	GetZAIIsotopicQuantity(const int z, const int a, const int i) const;	///< Return the quantity of the ZAI
-	double	GetTotalMass() const;								//!< Return the mass (in tons) of the isotopic vector
-	double	MeanMolar() const;									//<! Return the mean molar mass of the isotopic vector
+	double	GetTotalMass() const;							//!< Return the mass (in tons) of the isotopic vector
+	double	MeanMolar() const;							//<! Return the mean molar mass of the isotopic vector
 	
 	vector<int>		GetChemicalSpecies()		const;			//!< Return the Species Species contained
 	int			GetZAIQuantity()		const
@@ -148,9 +148,10 @@ IsotopicVector operator*(IsotopicVector const& IVA, double F);
 IsotopicVector operator*(ZAI const& zai, double F);
 IsotopicVector operator*(double F, IsotopicVector const& IVA);
 IsotopicVector operator*(double F, ZAI const& zai);
-IsotopicVector operator*(IsotopicVector const& IVa, IsotopicVector const& IVb);
 IsotopicVector operator+(IsotopicVector const& IVa, IsotopicVector const& IVb);
 IsotopicVector operator-(IsotopicVector const& IVa, IsotopicVector const& IVb);
+
+IsotopicVector operator*(IsotopicVector const& IVa, IsotopicVector const& IVb);
 
 
 double 	RelativDistance(IsotopicVector IV1, IsotopicVector IV2 );

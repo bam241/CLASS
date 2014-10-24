@@ -47,7 +47,6 @@ CLASSLogger::CLASSLogger()
 		else
 			fError->SetSecondOutput(std::cout);
 	}
-
 	if(VerboseLvl >= 1)
 	{
 		if (!fWarning)
@@ -69,8 +68,6 @@ CLASSLogger::CLASSLogger()
 		else
 			fDebug->SetSecondOutput(std::cout);
 	}
-
-
 	if(OutputLvl >= 0)
 	{
 		if (!fError)

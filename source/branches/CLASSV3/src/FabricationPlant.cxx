@@ -156,7 +156,6 @@ DBGL
 	//________________________________________________________________________
 void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 {
-	DBGV( " IN"<< "in ");
 	if(fFissileStorage.size() == 0)
 	{
 		ERROR << " One need at least one Fissile storage to build fuel " << endl;
@@ -191,8 +190,11 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 
 	vector<double> LambdaArray =  FuelType.GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fFissileArray, fFertileArray);
 
+	double  LambdaSum = 0;
+	for(int i = 0; i < (int)fFissileArray.size();i++)
+		LambdaSum += LambdaArray[i];
 
-	if(LambdaArray[0] != -1)
+	if(LambdaArray[0] != -1 && LambdaSum > 0 )
 	{
 		IsotopicVector IV = BuildFuelFromEqModel(LambdaArray);
 		EvolutionData EvolDB = FuelType.GenerateEvolutionData( GetDecay(IV,fCycleTime), R_CycleTime, R_Power);
