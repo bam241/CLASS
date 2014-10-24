@@ -422,6 +422,8 @@ void IsotopicVector::Remove(const IsotopicVector& isotopicvector)
 //________________________________________________________________________
 void IsotopicVector::Need(const ZAI& zai, double quantity)
 {
+	cout << "Negative quantity for ZAI " << zai.Z() << " " << zai.A() << " " << zai.I() << " in this IsotopicVector" << endl;
+
 	pair<map<ZAI, double>::iterator, bool> IResult;
 	if(quantity > 0)
 	{

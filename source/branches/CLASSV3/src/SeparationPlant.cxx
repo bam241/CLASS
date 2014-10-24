@@ -30,11 +30,11 @@ SeparationPlant::SeparationPlant():CLASSBackEnd(-2)
 }
 
 //________________________________________________________________________
-SeparationPlant::SeparationPlant(CLASSLogger* log, cSecond separationtime):CLASSBackEnd(log, separationtime, -2)
+SeparationPlant::SeparationPlant(CLASSLogger* log):CLASSBackEnd(log, -2)
 {
 
 
-	fCycleTime = (cSecond)separationtime;
+	fCycleTime = 0;
 	fIsStarted = false;
 	fPutToWaste = true;
 	fCoolingLastIndex = 0;
@@ -63,7 +63,7 @@ SeparationPlant::~SeparationPlant()
 //________________________________________________________________________
 
 //________________________________________________________________________
-void SeparationPlant::SetStorageDestination(CLASSBackEnd* storagedestination, IsotopicVector isotopicvector, cSecond destinationstartingtime)
+void SeparationPlant::SetBackEndDestination(CLASSBackEnd* storagedestination, IsotopicVector isotopicvector, cSecond destinationstartingtime)
 {
 	DBGL
 
@@ -110,7 +110,7 @@ DBGL
 		if(CurrentTime >= fDestinationStorageStartingTime[fds])
 		{
 			IsotopicVector IVtmp;
-			IVtmp = IV.GetThisComposition(fDestinationStorageIV[fds]);
+			IVtmp = IV*fDestinationStorageIV[fds];
 			fDestinationStorage[fds]->AddIV(IVtmp);
 			IV -= IVtmp;
 		}

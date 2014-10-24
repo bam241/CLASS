@@ -52,7 +52,7 @@ public :
 	 \param Log CLASSLogger used for the log...
 	 \param separationtime duration of the SeparationPlant
 	 */
-	SeparationPlant(CLASSLogger* Log, cSecond separationtime = 0. *3600.*24.*365.25); //!<
+	SeparationPlant(CLASSLogger* Log); //!<
 	//}
 
 
@@ -71,7 +71,7 @@ public :
 	//@{
 
 
-	void SetStorageDestination(CLASSBackEnd*  storagedestination, IsotopicVector isotopicvector, cSecond destinationstartingtime);
+	void SetBackEndDestination(CLASSBackEnd*  storagedestination, IsotopicVector isotopicvector, cSecond destinationstartingtime);
 
 	void AddIV(IsotopicVector IV);
 
