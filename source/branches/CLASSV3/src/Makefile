@@ -1,9 +1,7 @@
 # Directory containing libraries
-LIBDIR          = ../../lib
-# Base directory containing includes for libmctal and libvalerr
-EXTERNINC	= ../external
+LIBDIR          = $(CLASS_lib)
 # Directory containing includes for CLASS
-LOCALINC	= ../include
+LOCALINC	= $(CLASS_include)
 
 
 EQM		= ../Model/Equivalence
