@@ -91,7 +91,7 @@ void Storage::AddIV(IsotopicVector isotopicvector)
 //________________________________________________________________________
 void Storage::TakeFractionFromStock(int IVId,double fraction)
 {
-
+DBGL
 	if(GetParc())
 	{
 		if(GetParc()->GetStockManagement() )
@@ -103,8 +103,6 @@ void Storage::TakeFractionFromStock(int IVId,double fraction)
 			else
 			{
 				AddCumulativeIVOut(fIVArray[IVId]*fraction);
-
-				fInsideIV	-= fIVArray[IVId] * fraction;
 				fIVArray[IVId]  -= fIVArray[IVId] * fraction;
 			}
 
@@ -125,15 +123,12 @@ void Storage::TakeFractionFromStock(int IVId,double fraction)
 		else
 		{
 			AddCumulativeIVOut(fIVArray[IVId]*fraction);
-
-			fInsideIV	-= fIVArray[IVId] * fraction;
 			fIVArray[IVId]  -= fIVArray[IVId] * fraction;
 		}
 
 	}
-	
-	
-
+	UpdateInsideIV();	
+	DBGL
 }
 
 void Storage::TakeFromStock(IsotopicVector isotopicvector)
@@ -171,7 +166,7 @@ DBGL
 
 	RemoveEmptyStocks();
 
-	int EvolutionTime = t - fInternalTime;
+	cSecond EvolutionTime = t - fInternalTime;
 
 	fInsideIV = 	GetDecay(fInsideIV , EvolutionTime);
 
@@ -191,11 +186,13 @@ void Storage::Evolution(cSecond t)
 	if(t == fInternalTime && t!=0) return;
 	// Make the evolution for the Storage ...
 	StorageEvolution(t);
+
+	// Update Inside IV;
+	UpdateInsideIV();	
+
 	// ... And Finaly update the AbsoluteInternalTime
 	fInternalTime = t;
 	
-
-
 }
 
 void Storage::Write(string filename, cSecond date)
