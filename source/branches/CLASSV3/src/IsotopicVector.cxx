@@ -392,10 +392,11 @@ void IsotopicVector::Remove(const ZAI& zai, double quantity)
 		if ( it != fIsotopicQuantity.end() )
 		{
 			if (it->second > quantity)
-			it->second = it->second - quantity;
+				it->second = it->second - quantity;
 			else
 			{
-				Need(zai, quantity - it->second );
+				if( (it->second - quantity)/it->second > 1e-16 ) // to fit with double precision : 16 digits
+					Need(zai, quantity - it->second );
 				it->second = 0;
 			}
 		}
@@ -422,11 +423,12 @@ void IsotopicVector::Remove(const IsotopicVector& isotopicvector)
 //________________________________________________________________________
 void IsotopicVector::Need(const ZAI& zai, double quantity)
 {
-	cout << "Negative quantity for ZAI " << zai.Z() << " " << zai.A() << " " << zai.I() << " in this IsotopicVector" << endl;
+	if(quantity < 0.5) quantity = 0;
 
 	pair<map<ZAI, double>::iterator, bool> IResult;
 	if(quantity > 0)
-	{
+	{	cout << "Negative quantity : "<<quantity <<" for ZAI " << zai.Z() << " " << zai.A() << " " << zai.I() << " in this IsotopicVector" << endl;
+		exit(0);
 		IResult = fIsotopicQuantityNeeded.insert( pair<ZAI ,double>(zai, quantity));
 		if(!IResult.second)
 		IResult.first->second += quantity;

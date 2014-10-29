@@ -100,6 +100,8 @@ void FabricationPlant::Evolution(cSecond t)
 	if(t == fInternalTime && t != 0) return;
 		// Make the evolution for the FabricationPlant ...
 	FabricationPlantEvolution(t);
+		//Update Inside IsotopicVector
+	UpdateInsideIV();
 		// ... And Finaly update the AbsoluteInternalTime
 	fInternalTime = t;
 	
@@ -109,41 +111,44 @@ void FabricationPlant::Evolution(cSecond t)
 void FabricationPlant::FabricationPlantEvolution(cSecond t)
 {
 DBGL
-	IsotopicVector fInsideIV;
-
-
 	map<int ,cSecond >::iterator it;
 	for( it = fReactorNextStep.begin(); it!= fReactorNextStep.end(); it++ )
 	{
 		double R_CreactionTime = GetParc()->GetReactor()[ (*it).first ]->GetCreationTime();
 		double R_LifeTime = GetParc()->GetReactor()[ (*it).first ]->GetLifeTime();
+
+		int ReactorId = (*it).first;
+		pair<CLASSFuel, double> R_Fuel = GetParc()->GetReactor()[ReactorId]->GetFuelPlan()->GetFuelAt( t + GetCycleTime() );
+		double R_BU = R_Fuel.second;
+		double R_Power = GetParc()->GetReactor()[ReactorId]->GetPower();
+		double R_HMMass = GetParc()->GetReactor()[ReactorId]->GetHeavyMetalMass();
+		cSecond R_CycleTime = cSecond (R_BU / R_Power * R_HMMass * 1e9 *3600*24);
+		if( R_CycleTime < GetCycleTime())
+		{
+			ERROR << "Reactor Cycle Time is shorter than Fabrication Time of the fuel, we cannot deal it upto now!!!"<< endl;
+			exit(1);
+		}
+
 		if( t + GetCycleTime() >= R_CreactionTime
 		   && t + GetCycleTime() < R_CreactionTime + R_LifeTime)
 		{
 			if( (*it).second == t )
 			{
-				int ReactorId = (*it).first;
-				pair<CLASSFuel, double> R_Fuel = GetParc()->GetReactor()[ReactorId]->GetFuelPlan()->GetFuelAt( t + GetCycleTime() );
 #pragma omp critical(FuelBuild)
 				{
 					if( R_Fuel.first.GetPhysicsModels() )
 					{
 						BuildFuelForReactor( (*it).first, t );
 					}
+					(*it).second += R_CycleTime;
 				}
 
-				double R_BU = R_Fuel.second;
-				double R_Power = GetParc()->GetReactor()[ReactorId]->GetPower();
-				double R_HMMass = GetParc()->GetReactor()[ReactorId]->GetHeavyMetalMass();
-				(*it).second += (cSecond) (R_BU / R_Power * R_HMMass * 1e9 *3600*24);
 			}
-			else if ( (*it).second - GetParc()->GetReactor()[ (*it).first ]->GetCycleTime() + GetCycleTime() > t )
+			else if ( (*it).second - R_CycleTime + GetCycleTime() >= t && (*it).second - R_CycleTime  < t )
 			{
 				map<int ,IsotopicVector >::iterator it2 = fReactorFuturIV.find( (*it).first );
 				if (it2 != fReactorFuturIV.end())
-					(*it2).second = GetDecay((*it2).second, t - fInternalTime );
-
-				fInsideIV += (*it2).second;
+					(*it2).second = GetDecay((*it2).second, t - fInternalTime );		
 			}
 		}
 	}
@@ -152,10 +157,23 @@ DBGL
 DBGL
 }
 
+void FabricationPlant::UpdateInsideIV()
+{
+	DBGL
+	fInsideIV = IsotopicVector();
+
+	map< int,IsotopicVector >::iterator it;
+	for( it = fReactorFuturIV.begin(); it != fReactorFuturIV.end(); it++ )
+		fInsideIV += (*it).second;
+
+	DBGL
+}
+
 
 	//________________________________________________________________________
 void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 {
+	DBGL
 	if(fFissileStorage.size() == 0)
 	{
 		ERROR << " One need at least one Fissile storage to build fuel " << endl;
@@ -213,7 +231,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 		}
 		fInsideIV += IV;
 		AddCumulativeIVIn(IV);
-
+		DBGL
 		return;
 	}
 	else
@@ -261,7 +279,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 
 
 
-		}
+		}DBGL
 		return;
 	}
 DBGL
@@ -440,21 +458,20 @@ void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel)
 	//________________________________________________________________________
 void FabricationPlant::TakeReactorFuel(int Id)
 {
-	
-	
+DBGL
 	IsotopicVector IV;
 	map<int ,IsotopicVector >::iterator it2 = fReactorFuturIV.find( Id );
-	AddCumulativeIVOut(it2->second);
-	fInsideIV -= (*it2).second;
 
+	AddCumulativeIVOut(it2->second);
 
 	if (it2 != fReactorFuturIV.end())
 		(*it2).second = IV;
 
-
 	map< int,EvolutionData >::iterator it = fReactorFuturDB.find(Id);
 	(*it).second = EvolutionData();
 
+	UpdateInsideIV();
+DBGL
 }
 
 //________________________________________________________________________
@@ -481,9 +498,10 @@ DBGL
 			int IV_N = fFissileArrayAdress[i].second;
 
 			pair<IsotopicVector, IsotopicVector> Separated_Lost;
-			Separated_Lost = Separation( fFissileStorage[Stor_N]->GetIVArray()[IV_N]*LambdaArray[i], fFertileList);
+			Separated_Lost = Separation( fFissileStorage[Stor_N]->GetIVArray()[IV_N]*LambdaArray[i], fFissileList );
 			BuildedFuel += Separated_Lost.first;
 			Lost += Separated_Lost.second;
+
 		}
 	}
 
@@ -497,7 +515,7 @@ DBGL
 				int IV_N = fFertileArrayAdress[i].second;
 
 				pair<IsotopicVector, IsotopicVector> Separated_Lost;
-				Separated_Lost = Separation( fFertileStorage[Stor_N]->GetIVArray()[IV_N]*LambdaArray[i], fFissileList);
+				Separated_Lost = Separation( fFertileStorage[Stor_N]->GetIVArray()[IV_N]*LambdaArray[i], fFertileList);
 				BuildedFuel += Separated_Lost.first;
 				Lost += Separated_Lost.second;
 			}
@@ -565,14 +583,12 @@ DBGL
 	//________________________________________________________________________
 pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector isotopicvector, IsotopicVector ExtractedList)
 {
-	
+DBGL
 		//[0] = re-use ; [1] = waste
-	IsotopicVector LostPart  = isotopicvector.GetThisComposition(ExtractedList) * fSeparationLostFraction;
-
-	IsotopicVector SeparatedPart  = isotopicvector.GetThisComposition(ExtractedList) - LostPart;
-	LostPart = isotopicvector - SeparatedPart;
-
-
+	IsotopicVector LostInReprocessing  = isotopicvector.GetThisComposition(ExtractedList) * fSeparationLostFraction;
+	IsotopicVector SeparatedPart  = isotopicvector.GetThisComposition(ExtractedList) - LostInReprocessing;
+	IsotopicVector LostPart = isotopicvector - SeparatedPart;
+DBGL
 	return pair<IsotopicVector, IsotopicVector> (SeparatedPart, LostPart);
 }
 

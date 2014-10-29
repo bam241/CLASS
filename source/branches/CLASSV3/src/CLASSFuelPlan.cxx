@@ -38,31 +38,29 @@ pair< CLASSFuel, double > CLASSFuelPlan::GetFuelAt(cSecond t)
 	pair< CLASSFuel, double > FuelAtT = fLoadingPlan.begin()->second;
 
 	map< cSecond, pair< CLASSFuel, double > >::iterator it;
-	bool AfterPrevious = false;
-	bool AfterNext = true;
+
+	cSecond ThisFuelTime;
+
 	for (it = fLoadingPlan.begin(); it != fLoadingPlan.end(); it++ )
 	{
-		if (t < (*it).first )
-			AfterNext = false;
-		else
-			AfterNext = true;
-
-		if (AfterPrevious && !AfterNext)
-		{
-			DBGL
-			return FuelAtT;
-		}
-		else if (!AfterPrevious && !AfterNext)
-		{
-			WARNING << "The time asked is before the first laoding time..."<< endl;
-			WARNING << "The first Fuel will be loaded... Check your FuelPLan!!!!!" << endl;
-			DBGL
-			return FuelAtT;
-		}
-		else
+		if( it == fLoadingPlan.begin())
 		{
 			FuelAtT = (*it).second;
-			AfterPrevious = true;
+		}
+		else
+		{
+			ThisFuelTime = (*it).first;
+
+			if( t < ThisFuelTime )
+			{
+				DBGL
+				return FuelAtT;
+			}
+			else
+			{
+				FuelAtT = (*it).second;
+			}
+
 		}
 	}
 

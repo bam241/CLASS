@@ -58,6 +58,16 @@ void CLASSBackEnd::AddIV(IsotopicVector isotopicvector)
 
 
 }
+//________________________________________________________________________
+void CLASSBackEnd::UpdateInsideIV()
+{
+	DBGL
+	fInsideIV = IsotopicVector();
+	for(int i = 0; i < (int)fIVArray.size(); i++)
+		fInsideIV += fIVArray[i];
+	DBGL
+}
+
 
 //________________________________________________________________________
 //	Get Decay

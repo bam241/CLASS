@@ -43,7 +43,6 @@ Pool::Pool(CLASSLogger* log, cSecond coolingtime):CLASSBackEnd(log, coolingtime,
 
 	
 	INFO	<< " A new Pool has been define :" << endl;
-	INFO	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
 	INFO	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
 	WARNING	<< " All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
 
@@ -66,7 +65,6 @@ Pool::Pool(CLASSLogger* log, CLASSBackEnd* storage, cSecond coolingtime):CLASSBa
 	
 
 	INFO	<< " A new Pool has been define :" << endl;
-	INFO	<< "\t Creation time set at \t " << (double)(GetCreationTime()/3600/24/365.25) << " year" << endl;
 	INFO	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
 
 	DBGL
@@ -123,7 +121,7 @@ void Pool::RemoveIVCooling(int i)		//!< Remove a Cooling IsotopicVector
 	fIVArray.erase(fIVArray.begin()+i);
 	fIVArrayArrivalTime.erase( fIVArrayArrivalTime.begin()+i);
 	fCoolingIndex.erase(fCoolingIndex.begin()+i);
-
+	UpdateInsideIV();
 }
 
 
@@ -148,8 +146,6 @@ DBGL
 	int RemainingCoolingTime;
 	cSecond EvolutionTime = t - fInternalTime;
 
-	fInsideIV = IsotopicVector();
-
 #pragma omp parallel for
 	for ( int i = 0 ; i < (int)fIVArray.size() ; i++)
 	{
@@ -173,7 +169,6 @@ DBGL
 		else if (  fIVArrayArrivalTime[i] != t )
 		{
 			fIVArray[i] = GetDecay( fIVArray[i] , EvolutionTime);
-			fInsideIV += fIVArray[i];
 		}
 	}
 #pragma omp critical(DeleteCoolingIVPB)
@@ -191,7 +186,8 @@ void Pool::Evolution(cSecond t)
 	if(t == fInternalTime && t!=0) return;
 	// Make the evolution for the Cooling IV ...
 	CoolingEvolution(t);
-	
+	// Update Inside IV
+	UpdateInsideIV();
 	// ... And Finaly update the AbsoluteInternalTime
 	fInternalTime = t;
 	
