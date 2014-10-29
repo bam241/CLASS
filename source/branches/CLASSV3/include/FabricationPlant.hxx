@@ -146,7 +146,7 @@ public :
 	void DumpStock(vector<double> lambdaArray);			//!< Update the Stock status after building process
 
 	void TakeReactorFuel(int ReactorId) ;				//!< Remove the Fuel of reactor ReactorId
-
+	void UpdateInsideIV();
 
 	IsotopicVector BuildFuelFromEqModel(vector<double> LambdaArray);
 	void BuildFissileArray();
@@ -168,7 +168,7 @@ protected :
 
 
 //********* Internal Parameter *********//
-	IsotopicVector	 fSeparationLostFraction;	///< The speration efficiency Table
+	IsotopicVector	 fSeparationLostFraction;	///< The lost fraction Table during separation (1- efficiency)
 	map<int, cSecond >	fReactorNextStep;	///< Next Time Step to Build a New Fuel
 
 #ifndef __CINT__

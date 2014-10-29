@@ -95,6 +95,7 @@ class CLASSBackEnd : public CLASSFacility
 
 	//@}
 	virtual void Evolution(cSecond t)	{}	//!< Performe the Evolution to the Time t
+	void UpdateInsideIV();
 
 
 	protected :
