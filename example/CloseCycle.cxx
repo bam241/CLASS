@@ -49,9 +49,9 @@ int main(int argc, char** argv)
 
 	/*===Reactor data base===*/
 
-	XSM_MLP* XSMOX = new XSM_MLP(gCLASS->GetLog(), "/scratch/leniau/BasesDeDonnees/BASESCLASS/MLP_MOX/XS");//Defining the XS Predictor
+	XSM_MLP* XSMOX = new XSM_MLP(gCLASS->GetLog(), "../DATA_BASES/PWR/MOX/XSModel/30Wg_FullMOX");//Defining the XS Predictor
 	IM_RK4 *IMRK4 = new IM_RK4(gCLASS->GetLog());													  //Bateman's equation solver method (RungeKutta4)
-	EQM_MLP_MOX* EQMLINPWRMOX = new EQM_MLP_MOX(gCLASS->GetLog(),"/scratch/leniau/BasesDeDonnees/BASESCLASS/MLP_MOX/Equivalence/TMVARegression_MLP_Equivalence0.weights.xml");//Defining the EquivalenceModel
+	EQM_MLP_MOX* EQMLINPWRMOX = new EQM_MLP_MOX(gCLASS->GetLog(),"../DATA_BASES/PWR/MOX/EQModel/EQM_MLP_PWR_MOX_3batch.xml");//Defining the EquivalenceModel
 
 	PhysicsModels* PHYMOD = new PhysicsModels(XSMOX, EQMLINPWRMOX, IMRK4); 							 //The PhysicsModels containing the 3 object previously defined
 

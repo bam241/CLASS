@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
 	/*===Reactor data base===*/
 	//The file STD900.dat correspond to a fuel evolution of a UOX PWR (see manual for details)
-	EvolutionData *STD900 = new EvolutionData(gCLASS->GetLog(), "../DATA_BASES/PWR/UOX/STD900/STD900.dat");
+	EvolutionData *STD900 = new EvolutionData(gCLASS->GetLog(), "../DATA_BASES/PWR/UOX/STD900.dat");
 	/******FACILITIES*********************************/
 	/*===A Stock===*/
 	Storage *Stock = new Storage(gCLASS->GetLog()); //Definition of the stock
