@@ -224,6 +224,7 @@ public :
 	 \name Set Method
 	 */
 	//@{
+	void	SetFuelPlan(CLASSFuelPlan* fuelplan)	{ fFuelPlan = fuelplan; }	//!< return the LoadingPlan
 
 
 	void	SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}	//!< Set the HeavyMetal Mass in the Core at the begining of the cycle
