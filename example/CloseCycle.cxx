@@ -59,15 +59,18 @@ int main(int argc, char** argv)
 	/******FACILITIES*********************************/
 	/*===A Stock===*/
 	Storage *Stock = new Storage(gCLASS->GetLog()); // Definition of the stock
-	Stock->SetName("Stock_MOX"); 					// Its name
+	Stock->SetName("Stock"); 					// Its name
 	//Fill the stock with an initial amount of Plutonium
 	// In order to allow the PWR_MOX to work
-	Stock->AddToStock(ZAI(94,238,0) * 4e27);
-	Stock->AddToStock(ZAI(94,239,0) * 6.4e28);
-	Stock->AddToStock(ZAI(94,240,0) * 1.6e28);
-	Stock->AddToStock(ZAI(94,241,0) * 1.0e28);
-	Stock->AddToStock(ZAI(94,242,0) * 6e27);
+	IsotopicVector InitialIV;
+	InitialIV.Add(94,238,0,4e27  );
+	InitialIV.Add(94,239,0,6.4e28);
+	InitialIV.Add(94,240,0,1.6e28);
+	InitialIV.Add(94,241,0,9.0e27);
+	InitialIV.Add(94,242,0,6e27  );
+	InitialIV.Add(95,241,0,1e27  );
 	gCLASS->Add(Stock); 	//Adding the stock to the Scenario 
+	Stock->AddToStock(InitialIV);
 
 	/*===A Pool===*/
 	Pool *Cooling_MOX = new Pool(gCLASS->GetLog(),Stock, 5*year); //After 5 years of cooling, the pool sends its content to "Stock"
@@ -81,6 +84,7 @@ int main(int argc, char** argv)
 	FP_MOX->AddFissileStorage(Stock);	//Tell the FP to look in Stock for fissionable material 
 	//FP_MOX->AddFertileStorage(Stock2);//Tell the FP to look in Stock2 for fertile material 
 	//If fertile stock is not defined (like here), CLASS get fertile from nature (OUTCOMING vector)
+	//FP_MOX->SetReUsableStorage(wastestock);//By default the fabricationplant get the list of nuclei defined in the EquivalenceModel (here EQM_MLP_MOX) from stock and send the others nuclei in WASTE. If user want these nuclei to go in another stock  he can use the SetReUsableStorage function
 	gCLASS->AddFabricationPlant(FP_MOX);
 
 
@@ -89,7 +93,7 @@ int main(int argc, char** argv)
 	double	Power_CP0 = 2660e6;	    //Thermal power (in W)
 	double  BurnUp    = 35; 		//35 GWd/tHM
 
-	cSecond StartingTime =  1980*year;
+	cSecond StartingTime =  1985*year;
 	cSecond LifeTime     =  40*year;
 					
 	Reactor* PWR_MOX = new Reactor(gCLASS->GetLog(),// Log
