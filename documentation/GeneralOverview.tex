@@ -9,7 +9,7 @@ image : shéma de principe de class
 \chapter{Facilities descriptions}
 All the facilities in CLASS project are regrouped inside a large group called CLASSFacility (and inherit of all the properties of the CLASSFacility in a C++ way). Inside the CLASSFacility, 3 different types has been defined, the reactor, the FabricationPlant (or more generally, all the fuel cycle front-end facilities) and the backend facilities. 
 \section{CLASSFacility\label{sec:CLASSFacility}}
-The CLASSFacility should never be used directly in the main CLASS program (the one made to perform the simulation).  The aim of these object is to regroup all the common properties of the nuclear facilities, such as common variables, methods, and builder. 
+The CLASSFacility should never be used directly in the main CLASS program (the one made to perform the simulation).  The aim of this object is to regroup all the common properties of the nuclear facilities, such as common variables, methods, and builder. 
 
 
 \section{Reactor\label{sec:reactor}}
@@ -141,13 +141,34 @@ myRe\_CycleTime 	& \hyperref[sec:cSecond]{cSecond}			& the cycle time 			& secon
 \end{center}
 \end{table}
 
+\subsection{CLASSFuelPlan}
+A reactor may changes of fuel type during its lifetime. To handle this, the user can destroy the reactor and build a new one with an other kind of fuel. In order to make the process more flexible, the CLASSFuelPlan has been added to the CLASS package. The following example explains how to make a reactor to change its fuel type and burn-up, ... 
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}
+Reactor* MyReactor = new Reactor(gCLASS->GetLog(),        //Log
+                                        EvolutionData0,            // DB
+                                        Stock,                 // BackEnd
+                                        StartingTime,      // Starting time
+                                        LifeTime,            // Time of life
+                                        Power_CP0,       // Power
+                                        HMMass,    // HM mass
+                                        BU0,            // BurnUp
+                                        0.8);  //Load factor
+                                        
+MyReactor->GetFuelPlan()->AddFuel( ChangingFuelTime0, EvolutionData1, BU1);
+MyReactor->GetFuelPlan()->AddFuel( ChangingFuelTime1, PhyMod, BU2);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+At \emph{ChangingFuelTime0} the reactor changes its fuel from \emph{EvolutionData0} to \emph{EvolutionData1} and its Burn-up from \emph{BU0} to \emph{BU1}. At \emph{ChangingFuelTime1}, the reactor uses reprocessed fuel using the \hyperref[sec:PhysicsModels]{PhysicsModels}  \emph{PhyMod}.
 
 \section{CLASSBackEnd\label{sec:CLASSBackEnd}}
 The CLASSBackEnd class is a master class which aims to regroup all common properties of the fuel back-end facilities. All other back-end facilities in CLASS inherit of the CLASSBackEnd.\\
 In CLASS, a CLASSBackEnd does not control its upstream. Its incoming material flux is pushed by its upstream facility (a Reactor, or an other CLASSBackEnd). It only controls its downstream flux.\\
 \textbf{This object is not supposed to be used explicitly in a CLASS input.}
-\subsection{Storage}
-Storage is a CLASSBack end without associated downstream factory. All the incoming material are stored individually. During the storage, the depletion by decay is taken into account. The storage has to be defined as follow :
+\subsection{Storage}\label{sec:Storage}
+Storage is a CLASSBack end without associated downstream factory. All the incoming material are stored individually in different \hyperref[sec:IsotopicVector]{IsotopicVector} (see figure~\ref{fig:StorageIV}). During the storage, the depletion by decay is taken into account. The storage has to be defined as follow :
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -156,9 +177,14 @@ Storage *Stock = new Storage(aCLASSLogger);
 \end{minipage}
 \end{center}
  
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.4\textwidth]{Storage_IV.png} 
+\caption{ Storage \label{fig:StorageIV} }
+\end{figure} 
  
 \subsection{Pool\label{sec:pool}}
-Pool is a CLASSBack end with an associated downstream factory. All incoming material will be pushed in the downstream factory after a set time, so called CoolingTime. All the incoming material are stored individually. During the cooling process, the depletion by decay is taken into account. The storage has to be defined as follow :
+Pool is a CLASSBackEnd with an associated downstream factory. All incoming material will be pushed in the downstream factory after a set time, so called CoolingTime. All the incoming material are stored individually in different \hyperref[sec:IsotopicVector]{IsotopicVector} (the same way as the \hyperref[sec:Storage]{Storage}) . During the cooling process, the depletion by decay is taken into account. The Pool has to be defined as follow :
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -167,7 +193,7 @@ Pool *MyPool = new Pool(aCLASSLogger, aCLASSBackEnd, 5*365.25*24.*3600);
 \end{minipage}
 \end{center}
 In the previous example, a 5 years cooling time has been used.
-If no downstream facility is set, all the material will be pushed after cooling to the WASTE of the Scenario. To do so :
+If no downstream facility is set, all the material will be sent, after the cooling time, to the WASTE of the Scenario. To do so :
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -187,21 +213,21 @@ SeparationPlant* MySeparationPlant = new SeparationPlant(aCLASSLogger);
 \end{minipage}
 \end{center}
 
-The separation process is instantaneous and it follow the isotopic separation efficiency. It must be given as an IsotopicVector containing the separation efficiency for each nucleus. Note that it is possible to separate the incoming \hyperref[sec:IsotopicVector]{IsotopicVector} in many, the users must provide as many isotopic separation efficiency as outgoing \hyperref[sec:CLASSBackEnd]{CLASSBackEnd}.\\
-In addition of a outgoing CLASSBackEnd and an associated isotopic separation efficiency, the user must provide a date for the separation to be effective. To do so :
+The separation process is instantaneous and it uses isotopic separation efficiencies. Efficiencies must be given as an \hyperref[sec:IsotopicVector]{IsotopicVector} containing the separation efficiency for each nucleus. Note that it is possible to separate the incoming \hyperref[sec:IsotopicVector]{IsotopicVector} in many, the users must provide as many isotopic separation efficiency as outgoing \hyperref[sec:CLASSBackEnd]{CLASSBackEnd}.\\
+In addition of an outgoing CLASSBackEnd and an associated isotopic separation efficiency, the user must provide a date for the separation to be effective. To do so :
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
-IsotopicVector IV_MA;
+IsotopicVector IV_MA; //Define Minor Actinides (MA) separation efficiencies
 IV_MA.Add(93, 237, 0, 1.);
 IV_MA.Add(95, 242, 1, 1.);
 IV_MA.Add(96, 245, 0, 1.);
 //...
-MySeparationPlant->SetBackEndDestination(aCLASSBackEnd1, 
-					IV_MA, 
-					2000*365.25*24.3600);
+MySeparationPlant->SetBackEndDestination(aCLASSBackEnd1 //destination of MA
+					IV_MA, //Efficiencies
+					2000*365.25*24.3600);//Time when the separation begin
 
-IsotopicVector IV_Pu;
+IsotopicVector IV_Pu; //Defined Plutonium separation efficiencies
 IV_Pu.Add(94, 238, 0, 0.8);
 IV_Pu.Add(94, 239, 0, 0.8);
 //...
@@ -219,16 +245,18 @@ MySeparationPlant->SetBackEndDestination(aCLASSBackEnd3,
 \end{lstlisting}
 \end{minipage}
 \end{center}
-In the present example, the separation of Minor Actinides start in 2000 sending it to the CLASSBackEnd \textit{aCLASSBackEnd1} (the rest going to the WASTE). The separation of the plutonium start in 2005 (send in the \textit{aCLASSBackEnd2}) and the separation of uranium in 2010.\\
-Note that between 2005 and 2010, both MA and Pu are separated and sent respectively to \textit{aCLASSBackEnd1} and \textit{aCLASSBackEnd2}, all the remaining isotopes are sent to the WASTE. After 2010, MA, Pu and U are separated and sent to their respective CLASSBackEnd facilities, the rest is still send to WASTE.\\
+In the present example defined above, the separation of Minor Actinides start in 2000, this separated material is sent to the CLASSBackEnd \textit{aCLASSBackEnd1} (the rest goes to the WASTE). The separation of the plutonium start in 2005 (the separated Pu is sent to \textit{aCLASSBackEnd2}) and the separation of uranium take place in 2010.\\
+Note that between 2005 and 2010, both MA and Pu are separated and sent respectively to \textit{aCLASSBackEnd1} and \textit{aCLASSBackEnd2}, all the remaining isotopes are sent to the WASTE. After 2010, MA, Pu and U are separated and sent to their respective CLASSBackEnd facilities, the rest is still sent to WASTE.\\
 Furthermore, the separation of Actinides Minor has an efficiency of 100\%, Pu of 80\% and U of 50\%.
+Please refer to \$CLASS\_PATH/example/Separation.cxx for a simple CLASS input using the SeparationPlant.
+
 
 \section{Fabrication Plant\label{sec:FabricationPlant}}
-The FabricationPlant is the facility which takes care about the fuel Fabrication. The "action" in FabricationPlant appends before the beginning of Cycle of a reactor: One fabrication time (Fabrication duration) before the BOC, it start the building process of the fuel.\\
-First it sort the different stock in the different input Storage according the users priority. Then take the EquivalenceModel in PhysicsModels of the reactor, ask it how to build a fuel with the correct properties using some stock available. The EquivalenceModel provide a list a fraction to take in each stock. According to this fraction list, the FabricationPlant take the fraction is each stock and build the reprocessed fuel.
-Once the reprocess fuel is made, it ask to the PhyscisModel to calculate its evolution and store it in EvolutionData form until the reactor load the fuel.\\
-Between the fuel fabrication and the fuel loading in the reactor, the deplay through decay of the fuel is of course taking into account.\\
-Note that, the FabricationPlant provide to the EquivalenceModel a list of stock which have virtually decay during the fabrication time in order to build a proper fuel.
+The FabricationPlant is the facility which takes care of the fuel Fabrication. The "action" in FabricationPlant appends before the beginning of cycle of a reactor: One fabrication time (Fabrication duration) before the BOC, it start the building process of the fuel.\\
+First the FabricationPlant sorts the different \hyperref[sec:IsotopicVector]{IsotopicVector}s in the different inputs  \hyperref[sec:Storage]{Storage} according to the user priorities. Then it asks to the \hyperref[sec:EquivalenceModel]{EquivalenceModel} in \hyperref[sec:PhysicsModels]{PhysicsModels} of the reactor how to build a fuel with the correct properties using the available \hyperref[sec:IsotopicVector]{IsotopicVector}s contained in the \hyperref[sec:Storage]{Storage}. The \hyperref[sec:EquivalenceModel]{EquivalenceModel} provide a list of fraction to take in each \hyperref[sec:IsotopicVector]{IsotopicVector}s in the Storage . According to this fraction list, the FabricationPlant takes the fraction in each \hyperref[sec:IsotopicVector]{IsotopicVector} and build the reprocessed fuel.
+Once the reprocessed fuel is made, it asks to the PhyscisModel to calculate its depletion and store the result in an \hyperref[sec:EvolutionData]{EvolutionData}  The reactor takes this  \hyperref[sec:EvolutionData]{EvolutionData} at its begining of cycle.\\
+Between the fuel fabrication and the loading of the fuel in the reactor, the depletion of the fresh fuel by decay is taken into account.\\
+Note that, the FabricationPlant provide to the \hyperref[sec:EquivalenceModel]{EquivalenceModel} a list of stock which has virtually decay during the fabrication time in order to build a proper fuel.
 
 To setup a FabricationPlant do as follow :
 \begin{center}
@@ -240,9 +268,9 @@ MyFabricationPlant->SetFiFo();
 \end{minipage}
 \end{center}
 
-In the previous example, the SetFifo() method set the first in first out priority for the stock usage.
+In the previous example, the SetFifo() method set the first in first out priority for the stock usage. It means that the older \hyperref[sec:IsotopicVector]{IsotopicVector} of the Storage is taken in priority by the FabricationPlant. If the younger \hyperref[sec:IsotopicVector]{IsotopicVector} is wanted to be taken in priority : one should use SetFiFo(false).
 
-One must also provide a list of Storage used to extract the Fissile part of the fuel by using :
+The Storage used to extract the fissile part of the fuel is set using :
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -250,7 +278,7 @@ MyFabricationPlant->AddFissileStorage(Stock);
 \end{lstlisting}
 \end{minipage}
 \end{center}
-And if necessary it is possible to storage to extract fertile isotopes using :
+And if necessary it is possible to define a  \hyperref[sec:Storage]{Storage} where  fertile isotopes will be extracted, using :
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -259,24 +287,26 @@ MyFabricationPlant->AddFertileStorage(Stock);
 \end{minipage}
 \end{center}
 If no Fertile Storage are defined, the fertile part is taken from outside of the Scenario.
-By default the unuse part of the stock is send to WASTE.But it is possible to set a storage where the unuse part of the stock using :
+By default the unused part of the stock is sent to WASTE. But it is possible to set a storage where the unused part of the stock will be stored, using :
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
-MyFabricationPlant->SetReUsableStorage(ReUsable);
+MyFabricationPlant->SetReUsableStorage(Stock);
 \end{lstlisting}
 \end{minipage}
 \end{center}
 
-\section{PathWay between Faiclity}
-As explain previously, there are 3 different facility family, the FabricationPlant, the reactor, and the CLASSBackEnd.
-The CLASSBackEnd facilities can't pull material inside, there is always a other facility which push material inside the CLASSBackEnd, but some can also push material inside other facilities: the SeparationPlant and the Pool. The Storage can only store materials.\\
-The reactor take is fuel in a FabricationPlant and push the irradiated fuel in a CLASSBackEnd.\\
-The FabricationPlant take its materials inside storage and stock the reprocessed fuel its makes unties the BoC.
-We propose in the following 4 example of pathway between difference facilities. The point here is only to illustrated possible pathway, but the illustration may not be exhaustive. Furthermore, almost any composition between these examples could be made.
+Please refer to \$CLASS\_PATH/example/CloseCycle.cxx for a simple CLASS input using the FabricationPlant
+.
+\section{Pathway between Facilities}
+As explain previously, there are 3 different facility family, the FabricationPlant, the reactor, and the CLASSBackEnd. All the facilities of type CLASSBackEnd can't get material from other facilities by itself. It is always an other facility which sends material in the CLASSBackEnd. An another hand some CLASSBackEnd facilities can send material inside other facilities: the SeparationPlant and the Pool. The Storage can only store materials.\\
+The reactor takes its fuel from a FabricationPlant and sends the irradiated fuel in a CLASSBackEnd.\\
+The FabricationPlant takes its materials from a storage and stored the reprocessed fuel until the begining of cycle of the Reactor.
+In the following, 4 examples of pathways between facilities are listed. These examples are here to illustrate the possible pathways. These examples are not exhaustive. Furthermore, almost any composition between these examples could be made. 
 
 
 \subsection{Reactor with fixed fuel and a Storage}
+Please refer to the CLASS input \$CLASS\_PATH/example/SimpleReactor.cxx
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.4\textwidth]{R-S} 
@@ -296,6 +326,7 @@ Reactor *MyReactor = new Reactor(Logger, myFuel_EvolutionData, MyStorage, 0, 40*
 \end{center}
 
 \subsection{Reactor with fixed fuel, a Pool and a Storage}
+Please refer to the CLASS input \$CLASS\_PATH/example/SimpleReactor2.cxx
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.6\textwidth]{R-P-S} 
@@ -317,6 +348,7 @@ Reactor *MyReactor = new Reactor(Logger, myFuel_EvolutionData, MyPool, 0, 40*365
 \end{center}
 
 \subsection{Reactor with fixed fuel, two SeprationPlant, a Pool and four Storage}
+Please refer to the CLASS input \$CLASS\_PATH/example/Separation.cxx
 \begin{figure}[h!]
 \centering
 \includegraphics[width=1\textwidth]{R-SP-P_S-S-SP_S_S} 
@@ -369,8 +401,7 @@ Reactor *MyReactor = new Reactor(Logger, myFuel_EvolutionData, MySeparation2, 0,
 
 
 \subsection{Reactor, a FabricationPlant, a Pool and a Storage}
-
-
+Please refer to the CLASS input \$CLASS\_PATH/example/CloseCycle.cxx
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -399,7 +430,7 @@ Reactor *MyReactor = new Reactor(Logger, myFuel_PhysicsModel, myFabrication, MyP
 \chapter{Other objects}
 \section{ZAI\label{sec:ZAI}}
 The ZAi object represents a nucleus, from its charge number, mass number and isomeric state.\\
-The object save  the charge number Z, the mass number A and the isomeric state I  of a nucleus : I=0 for ground state , I=1 for the first isomeric state ...\\
+The object save  the charge number Z, the mass number A and the isomeric state I of a nucleus : I=0 for ground state , I=1 for the first isomeric state ...\\
 To declare a ZAI object proceed as follow :
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -413,8 +444,8 @@ This class includes the mains logical comparators (\emph{e.g} ==, >, !=). Fill f
 
 \section{IsotopicVector\label{sec:IsotopicVector}}
 \subsection{Generality}
-The IsotopicVector object is a collection of ZAI, for each ZAI a number of nuclei is associated (IsotopicVector is a c++ map of ZAI and double, which corresponds to a sorted array of ZAI and its quantity).\\
-Two pincipales operation have been defined on IsotopicVector. 
+The IsotopicVector object is a collection of ZAI. For each ZAI a quantity of nuclei is associated (IsotopicVector is a c++ map of ZAI and double, which corresponds to a sorted array of ZAI and its quantity).\\
+Two main operations have been defined in the IsotopicVector class. 
 The following illustrates the possible operation allowed for IsotopicVectors :
 \paragraph{Definiton \& Addition of nuclei}
 \begin{center}
@@ -447,18 +478,14 @@ IsotopicVector IV_sum = IV_1 + IV2; // IV_sum will be equal to 11 IV_1
 \end{minipage}
 \end{center}
 
-Some additional operations have been also implemented, such as subtraction. It works as the sum, but if the result of the subtraction is negative for some nuclei, those nuclei are set to zero and the difference is added to the, so called, \textit{fIsotopicQuantityNeeded}. If so, a WARNING will be written on the terminal.\\
-@@ Link WARNING \\
-\textbf{To insure the quality and the reliability of the simulation, the fIsotopicQuantityNeeded MUST remain empty.}
-
+Some additional operations have been also implemented, such as subtraction. It works as the sum, but if the result of the subtraction is negative for some nuclei, those nuclei are set to zero and the difference is added to the, so called, \textit{fIsotopicQuantityNeeded}. If so, an ERROR will be written on the terminal and CLASS stops (see section~\ref{sec:CLASSLogger}).\\
 
 \subsection{Print method}
 You can use the Print() method to write the composition of an IsotopicVector.
-When printing the IsotopicVector composition present nuclei, as well as the \textit{needed} one, are written with their corresponding quantity (unit: nucleus number).\\
-
+This method print all the quantities of all the ZAI present in the IsotopicVector (unit: quantity of nuclei ).\\
 
 \subsection{GetTotalMass}
-Return the mass of the IsotopicVector in tons using :
+Return the mass of the IsotopicVector \textbf{in tons} using :
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -476,9 +503,9 @@ If a nucleus A is present in both IsotopicVector, with respective quantity $\alp
 \textit{By exemple, this method can be used to apply separation efficiency: one IsotopicVector containing real material and the other one containing separation efficiency of each nucleus.}
 
 \section{EvolutionData}\label{sec:EvolutionData}
-An EvolutionData aims to describe the evolution of an \hyperref[sec:IsotopicVector]{IsotopicVector} through a physical process (decay or irradiation). The Decay case is fully described in section~\ref{sec:DecayDB}.\\
+An EvolutionData aims to describe the evolution of an \hyperref[sec:IsotopicVector]{IsotopicVector} through a physical process (decay or irradiation). The decay case is fully described in section~\ref{sec:DecayDB}.\\
 
-In case of irradiation, it may also contains the evolution of the one group cross section, the evolution of the neutron flux and the keff and are not mandatory. Note that neutron flux and keff are not used in CLASS. The EvolutionData MUST contain the power and can contain the heavy metal mass, the fuel type, reactor type and the cycle time.\\
+In case of irradiation, it may also contains the evolution of the one group cross section.  The evolution of the neutron flux and of the keff can be supplied but its not mandatory.  The EvolutionData MUST contain the power and the he heavy metal mass and it can contain the fuel type, reactor type and the cycle time.\\
 These EvolutionData can be loaded into CLASS from a formatted ASCII file see section~\ref{sec:EDformat} as follow :
 
 \begin{center}
@@ -547,7 +574,7 @@ Each EvolutionName.dat files comes with a EvolutionName.info file, which describ
 \begin{lstlisting}
 Reactor "ReactorName"		//What ever string without space
 Fueltype "FuelName"			//What ever string without space
-CycleTime "t"						//The final time simulated (@@BaM)
+CycleTime "t"						//The final time simulated (years)
 ConstantPower "P"				//Simulated power (in W)
 \end{lstlisting}
 \end{minipage}
@@ -584,8 +611,7 @@ Zn An In PATH/ZAIn.dat
 \end{lstlisting}
 \end{minipage}
 \end{center}
-A DecayDataBank can be find in \$PATH\_TO\_CLASS/Data/@@@.
-
+A DecayDataBank can be find in \$CLASS\_PATH/DATA\_BASES/DECAY/ALL/
 
 \section{Log management : CLASSLogger}\label{sec:CLASSLogger}
 In CLASS, all messages are handled by the CLASSLogger object. There are 4 verbose levels, see table~\ref{tab:verblevel}.
@@ -624,7 +650,7 @@ In the preceding example, verbose level 1 (WARNING) has been set for the termina
 The Scenario object aims to describe the full scenario, regrouping all facilities inside a full park or fleet.
 
 \section{Fill the scenario}
-Each facilities to be able to evolve during a dynamic fuel cycle calculation need to be added inside the scenario. To do so five adding method have been implemented :
+In order to evolve during a dynamic fuel cycle calculation, each facility need to be added in the scenario. To do so, five "adding methods" have been implemented :
 
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -662,12 +688,12 @@ gCLASS->SetDecayDataBase(DecayDB);
 
 \section{OutPut}
 \subsection{General Output}
-In addition to all facilies added to the Scenario, the output contain also other general information.
+In addition to all facilities added to the Scenario, the output contain also other general information, see table~\ref{tab:geninfo}.
 
 \begin{table}[H]
 \begin{center}
 \caption{General Information in CLASS Output}
-\label{tab:verblevel}
+\label{tab:geninfo}
 \begin{tabular}{|c|c|l|}
 \hline
 Output Name			&	Unit 				&	description\\
@@ -681,7 +707,7 @@ WASTE				&	IsotopicVector			&	Waste produced by the scenario\\
 \hline
 STOCK				&	IsotopicVector			&	All the material in all the Storage\\
 \hline
-OUTINCOME			&	IsotopicVector			&	All material taking from outside the Scenario\\
+OUTINCOME			&	IsotopicVector			&	All material taken from outside the Scenario\\
 \hline
 COOLING				&	IsotopicVector			&	All the material present in all the Pool\\
 \hline
@@ -700,7 +726,7 @@ REACTOR				&	IsotopicVector			&	All the material present in all the Reactor\\
 \end{table}
 
 \subsection{Output names}
-The CLASS output is done in ROOT format, each element of the Scenario is added to a ROOT TTree, filled at each time step.
+The CLASS output is saved in a ROOT format, each element of the Scenario is added to a ROOT TTree, filled at each time step.
 By default the output file name is "CLASS\_Default.root" and the ROOT TTree name is "Data". It is possible to change those names using :
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -712,7 +738,7 @@ gCLASS->SetOutputTreeName("MyTTreeName");
 \end{center}
 
 \subsection{Output Frequency}
-By default the output is done every years of simulation. To have more frequent (or less) output use :
+By default, a snapshot of the scenario is done every years. To change this frequency use :
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}

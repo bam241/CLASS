@@ -2,14 +2,14 @@
 
 \part{Physics Models\label{sec:PhysicsModels}}
 \chapter{Description and implementation}
-A Physics Models is related to one or several reactors , it is a container of three models :
+A PhysicsModels is related to one or several reactors, it is a container of three models :
 \begin{itemize}
 \item Equivalence Model : Tells to the Fabrication Plant how to build the fuel.
 \item XS Model : "Calculates" the mean  cross sections of this fuel and sends it to the Bateman Solver.
-\item Irradiation Model : It is the Bateman Solver. User can choose between different numerical method.
+\item Irradiation Model : It is the Bateman Solver. User can choose between different numerical methods.
 \end{itemize}
 
-A Physics model is called in the CLASS input like the following example :
+A PhysicsModels is called in the CLASS input like the following example :
 
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -36,9 +36,9 @@ int main()
 \end{minipage}
 \end{center}
 
-In this latter example a Physics model called "PHYMOD" is defined, it contains the bateman solver "Solver" which is the Runge Kutta ($4^{th}$ order) method. The mean cross sections predictor, "XS",  used is  based on a Multi Layer Perceptron. The Equivalence Model "Equivalence" is the one used for PWR MOX fuels. The arguments of the 3 objects constructor are explained in its corresponding sections.
+In this latter example a PhysicsModels called "PHYMOD" is defined, it contains the bateman solver "Solver" which is the Runge Kutta ($4^{th}$ order) method. The mean cross sections predictor, "XS",  used is  based on a Multi Layer Perceptron. The Equivalence Model "Equivalence" is the one used for PWR MOX fuels. The arguments of the 3 objects constructor are explained in its corresponding sections.
 
-All the existing models are define in the following sections, furthermore, the way to build its own Model is presented.
+All the existing models are defined in the following sections, furthermore, the way to build a new model is presented.
 
 
 
@@ -46,10 +46,10 @@ All the existing models are define in the following sections, furthermore, the w
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %%		EQUIVALENCE MODEL
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Equivalence Model}\label{sec:Equivalence}
+\chapter{Equivalence Model}\label{sec:EquivalenceModel}
 The aim of an equivalence model is to predict the content of fissile element needed in a fuel to reach a given burn-up or to satisfied criticality conditions.
 \section{Available Equivalence Models}
-The CLASS package contains, for the moment, 4 different equivalence models where three are related to the building of fuels for a PWR-MOX and one to the building of  PWR-UOX fuels :
+The CLASS package contains, at the moment, 4 different equivalence models where three are related to the building of fuels for a PWR-MOX and one to the building of  PWR-UOX fuels :
 \subsection{PWR-MOX models :}
 The following models returns the molar fraction $\%_{Pu}$ of plutonium needed to reach a given burn-up according to the plutonium isotopic composition available in stocks.
 
@@ -69,7 +69,7 @@ The $\%_{Pu}$ is calculated according a quadratic model. See equation~\ref{eq:EQ
 \begin{equation}\label{eq:EQM_QUAD_MOX}
 \%_{Pu} = \alpha_{0} +   \sum_{i\in Pu}^{N} \left(\alpha_{i} \cdot n_{i}\ + \sum_{j\leq i} \alpha_{ij} \cdot n_{i}\cdot n_{j}\right),
 \end{equation}
-where $n_{i}$ is the molar proportion (in $\%mol.$) of isotope $i$ \footnote{from $^{238}Pu$ to $^{242}Pu$} in the fresh plutonium vector.  $\alpha_{ij}$, $\alpha_{i}$ and $\alpha_{0}$  are the weights resulting from a minimization procedure and are related to one targeted burn-up and one fuel management. Furthermore, $^{241}Am$ from $^{241}Pu$ decay is not one of the considered component of the model ($n_{i}$), instead the model considers a fixed time since plutonium separation. For instance the $\alpha$ given in file \$CLASS\_PATH/DataBase/Equivalence/PWR\_MOX\_45GW\_3Batch\_2y.dat
+where $n_{i}$ is the molar proportion (in $\%mol.$) of isotope $i$ \footnote{from $^{238}Pu$ to $^{242}Pu$} in the fresh plutonium vector.  $\alpha_{ij}$, $\alpha_{i}$ and $\alpha_{0}$  are the weights resulting from a minimization procedure and are related to one targeted burn-up and one fuel management. Furthermore, $^{241}Am$ from $^{241}Pu$ decay is not one of the considered component of the model ($n_{i}$), instead the model considers a fixed time since plutonium separation. For instance the $\alpha$ given in file \$CLASS\_PATH/DATA\_BASES/PWR/MOX/EQModel/@@BAM
 are representative of a PWR-MOX with a maximal burn-up of $45GWd/tHM$, a fuel management of 3 batches, and a time between separation and irradiation of 2 years.
 
 The file containing the weights is formatted as follow :
@@ -152,7 +152,7 @@ In order to make his own .xml file one need to have a training data containing t
 \item The $^{235}U$ content in the depleted uranium.
 \end{itemize}
 
-The file \$CLASS\_PATH/DataBases/Equivalence/EQM\_MLP\_PWR\_MOX\_3batch.xml has been generated from the file \$CLASS\_PATH/Utils/Equivalence/PWR\_MOX\_MLP/Train\_MLP.cxx 
+The file \$CLASS\_PATH/DATA\_BASES/PWR/MOX/EQModel/EQM\_MLP\_PWR\_MOX\_3batch.xml has been generated from the file \$CLASS\_PATH/Utils/Equivalence/PWR\_MOX\_MLP/Train\_MLP.cxx 
 To train a new MLP from your own training sample proceed as follow : 
 \begin{center}
 \begin{minipage}{\textwidth} 
@@ -222,18 +222,12 @@ To make your YourTrainingData.root file you have to fill a TTree with your data.
 \end{center}
 
 Then, build the arrays fU5\_enrichment, fPu8 ... with your data, compile and execute.
-For more informations about this model please refer to [@@Papier BaL].
-\\
-\\
+For more informations about this model please refer to [@@Papier BaL].\\
 \textbf{Available weight file (.xml) : }
-
-\begin{center}
-\begin{minipage}{\textwidth}
 \begin{itemize}
-\item \textbf{\$CLASS\_PATH/DataBases/Equivalence/EQM\_MLP\_PWR\_MOX\_3batch.xml} : Generated with 5000 MURE evolutions with different fuel composition, using a full mirrored assembly calculation with JEFF3.1.1 cross section and fission yield data bases. Valid for mono-recycling of plutonium and a fuel management of 3 batches. More details about the generation of this .xml file can be found in reference[@@@BaL paper].
+\item \textbf{\$CLASS\_PATH/DATA\_BASES/PWR/MOX/EQModel/EQM\_MLP\_PWR\_MOX\_3batch.xml} : Generated with 5000 MURE evolutions with different fuel composition, using a full mirrored assembly calculation with JEFF3.1.1 cross section and fission yield data bases. Valid for mono-recycling of plutonium and a fuel management of 3 batches. More details about the generation of this .xml file can be found in reference[@@@BaL paper].
 \end{itemize}
-\end{minipage}
-\end{center}
+
 
 \subsection{PWR-UOX model :}
 
@@ -324,8 +318,8 @@ double EQM_NAME::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fe
 In the constructor (EQM\_NAME::EQM\_NAME) you have to fill two isotopic vectors named \textbf{fFissileList} and \textbf{fFertileList}. Don't declare these isotopic vector in the .hxx, there are already declared in the file src/EquivalenceModel.hxx. fFissileList is used by the FabricationPlant to do the chemical separation of the fissile element from the other present in stock. For instance, for the plutonium, add the ZAI $^{238}Pu$, $^{239}Pu$, $^{240}Pu$, $^{241}Pu$ and $^{242}Pu$. fFertile List is used by the FabricationPlant the same way fFissileList is used but you have to define a default \hyperref[sec:IsotopicVector]{IsotopicVector} to be used if you didn't provide a fertile stock to your FabricationPlant.  In the example given above the fertile is depleted uranium and  the proportion of each isotope is given ($^{234}U$ is unheeded). Now you have to build the function \textbf{GetFissileMolarFraction(IsotopicVector Fissil, IsotopicVector Fertil, double BurnUp)}. Its parameters are provided by the FabricationPlant and are :
 
 \begin{itemize}
-\item \hyperref[sec:IsotopicVector]{IsotopicVector} Fissil : it is the proportion of each nucleus you give in the fFissileList plus the proportion of the nuclei that appears during the fabrication time (time given in the FabricationPlant constructor, is default is 2 years)
-\item \hyperref[sec:IsotopicVector]{IsotopicVector} Fertil :  it is the proportion of each nucleus you give in the fFertileList plus the proportion of the nuclei that appears during the fabrication time. If you didn't provide any fertile stock to your FabricationPlant then it's the default vector given in the EQM\_NAME constructor.
+\item \hyperref[sec:IsotopicVector]{IsotopicVector} Fissile : it is the proportion of each nucleus you give in the fFissileList plus the proportion of the nuclei that appears during the fabrication time (time given in the FabricationPlant constructor, is default is 2 years)
+\item \hyperref[sec:IsotopicVector]{IsotopicVector} Fertile :  it is the proportion of each nucleus you give in the fFertileList plus the proportion of the nuclei that appears during the fabrication time. If you didn't provide any fertile stock to your FabricationPlant then it's the default vector given in the EQM\_NAME constructor.
 \item double BurnUp : The maximal average burn-up for your fuel to reach (in GWd/tHM).
 \end{itemize}
 Fill free to have a look at the models present in \$CLASS\_PATH/source/Model/Equivalence to get inspiration.
@@ -345,7 +339,7 @@ Move your  EQM\_NAME.hxx and  EQM\_NAME.cxx in \$CLASS\_PATH/source/Model/Equiva
 %%		XS MODEL
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{XS Model}
-The aim of a mean cross section model (XSModel) is to predict the mean cross sections of a fuel built by an EquivalenceModel (EQM) (see section \ref{sec:Equivalence}). The mean cross sections are required to compute fuel depletion in a reactor.
+The aim of a mean cross section model (XSModel) is to predict the mean cross sections of a fuel built by an EquivalenceModel (EQM) (see section \ref{sec:EquivalenceModel}). The mean cross sections are required to compute fuel depletion in a reactor.
 
 \section{Available XS Models}
 There is, for the moment, 2 XSModel in CLASS : 
@@ -469,12 +463,17 @@ Z A I Name (input MLP) :
 \end{lstlisting}
 \end{minipage}
 \end{center}
+\textbf{Available XSM\_MLP : }
+\begin{itemize}
+\item \$CLASS\_PATH/DATA\_BASES/PWR/MOX/XSModel/30Wg\_FullMOX :
+The weight files and .nfo file contained in this folder are representative of a PWR MOX. With the MOX coming from PWR UO2 spent fuels. The specific power is 30W/g oxide. To perform this data base, MURE depletion calculations have been performed using a full MOX assembly with mirror boundaries. 
+\end{itemize}
 
 \textcolor{blue}{\large{\textbf{Training MLPs for cross sections prediction :}}}\\
 
 \textbf{\underline{ Preparation of the training sample :} }\\
 \\
-Like for the equivalence model, first of all you have to create a training sample. This is one of the most important thing since the way of filling the hyperspace of the MLP inputs will influence the accuracy of your model. We suggest to used the Latin Hyper Cube method [@@@REFF] to generate many fresh fuel compositions, then, calculates with your favourite neutron transport code (MCNP, MORET, SERPENT ...) the mean cross sections of each fresh fuel for different irradiation time. Please refer to [REFFFBAL MLPXS] for more informations about the space filling and the validation of this cross sections predictor .
+Like for the equivalence model, first of all you have to create a training sample. This is one of the most important thing since the way of filling the hyperspace of the MLP inputs will influence the accuracy of your model. We suggest to used the Latin Hyper Cube method [@@@REFF] to generate many fresh fuel compositions, then, calculates with your favourite neutron transport code (MCNP, MORET, SERPENT ...) the mean cross sections of each fresh fuel for different irradiation time. Please refer to [REFFFBAL MLPXS] for more informations about the space filling and the validation of this cross sections predictor.
 Once all your calculations are complete you have to convert them into the .dat format (see code frame~\ref{lst:DatFormat}).
 Then type :
 
@@ -788,10 +787,10 @@ After making the appropriate changes in this two files to make the function \tex
  \$CLASS\_PATH/source/Model/Irradiation/*xx to get inspiration ),  two choices are offered to you. You can compile the two files of your model with your CLASS input or you can add this model to the CLASS package. The second option will modify the CLASS software and we will be no longer able to troubleshoot your scenario. So use the second option only if you are a completely independent user !
 
 
-\subsection{Compile your cross section model with your CLASS executable :}
+\subsection{Compile your Irradiation model with your CLASS executable :}
 @@BAM
 
-\subsection{Your cross section model in the CLASS library :}
+\subsection{Your Irradiation model in the CLASS library :}
 Move your  IRM\_NAME.hxx and  IRM\_NAME.cxx in \$CLASS\_PATH/source/Model/Irradiation/. Then open with your favourite text editor the file \\ \$CLASS\_PATH/source/src/Makefile, find "OBJMODEL" and add \$(IM)/IRM\_NAME.o within the others \$(IM) objects. Then re-compile CLASS, fix the compilation errors ;) and voilà your irradiation model is now available in the CLASS library.
 
 
