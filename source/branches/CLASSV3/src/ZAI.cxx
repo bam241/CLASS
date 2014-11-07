@@ -28,7 +28,6 @@ ZAI ZAI::operator=(ZAI IVa)
 ZAI::ZAI()
 {
 		
-	fName="";
 	fZ=0;
 	fA=0;
 	fI=0;

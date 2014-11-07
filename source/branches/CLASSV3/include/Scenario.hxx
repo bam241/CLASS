@@ -187,7 +187,10 @@ public :
 							/// \li 16 fuel Fabrication
 
 	void	Evolution(cSecond t);			///< Perform the Evolution
-	void	PoolEvolution();			///< Perform TF Evolution
+	void	BackEndEvolution();			///< Perform BackEnd Evolution
+	void	PoolEvolution();			///< Perform Pool Evolution
+	void	PoolDump();
+
 	void	ReactorEvolution();			///< Perform the Reactor Evolution
 	void	FabricationPlantEvolution();		///< Perform the FabricationPlant Evolution
 	void	StorageEvolution();			///< Perform the Storage Evolution

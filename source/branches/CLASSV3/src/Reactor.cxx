@@ -251,13 +251,9 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 
 	fHeavyMetalMass = HMMass;
 
-	map<ZAI ,double>::iterator it;
-	map<ZAI ,double> isotopicquantity = evolutivedb->GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
-	double M0 = 0;
-	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
+	double M0 = cZAIMass.GetMass( evolutivedb->GetIsotopicVectorAt(0.).GetActinidesComposition() );
 
-	fEvolutionDB = *evolutivedb * (fHeavyMetalMass/M0);
+	fEvolutionDB = (*evolutivedb) * (fHeavyMetalMass/M0);
 
 	fBurnUp = BurnUp;
 	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);
@@ -306,13 +302,9 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 
 	fHeavyMetalMass = HMMass;
 
-	map<ZAI ,double>::iterator it;
-	map<ZAI ,double> isotopicquantity = evolutivedb->GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
-	double M0 = 0;
-	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
+	double M0 = cZAIMass.GetMass( evolutivedb->GetIsotopicVectorAt(0.).GetActinidesComposition() );
 
-	fEvolutionDB = *evolutivedb * (fHeavyMetalMass/M0);
+	fEvolutionDB = (*evolutivedb) * (fHeavyMetalMass/M0);
 
 	fBurnUp = BurnUp;
 
@@ -391,11 +383,7 @@ void Reactor::SetBurnUp(double BU)
 //________________________________________________________________________
 void Reactor::SetEvolutionDB(EvolutionData evolutionDB)
 {
-	map<ZAI ,double>::iterator it;
-	map<ZAI ,double> isotopicquantity = evolutionDB.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
-	double M0 = 0;
-	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
+	double M0 = cZAIMass.GetMass( evolutionDB.GetIsotopicVectorAt(0.).GetActinidesComposition() );
 	fEvolutionDB = evolutionDB * (fHeavyMetalMass/M0);
 
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );

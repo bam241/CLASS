@@ -586,6 +586,16 @@ void Scenario::BuildTimeVector(cSecond t)
 //___________________________ Evolution Method ___________________________
 //________________________________________________________________________
 
+void Scenario::BackEndEvolution()
+{
+	DBGL
+	StorageEvolution();
+	PoolEvolution();
+
+	PoolDump();
+	DBGL
+}
+
 void Scenario::PoolEvolution()
 {
 	DBGL
@@ -593,8 +603,6 @@ void Scenario::PoolEvolution()
 	for(int i = 0; i < (int) fPool.size();i++)
 		fPool[i]->Evolution(fAbsoluteTime);
 
-	for(int i = 0; i < (int) fPool.size();i++)
-		fPool[i]->Dump();
 	DBGL
 }
 
@@ -615,6 +623,15 @@ void Scenario::FabricationPlantEvolution()
 	for(int i = 0; i < (int) fFabricationPlant.size();i++)
 		fFabricationPlant[i]->Evolution(fAbsoluteTime);
 
+	DBGL
+}
+
+
+void Scenario::PoolDump()
+{
+	DBGL
+	for(int i = 0; i < (int) fPool.size();i++)
+		fPool[i]->Dump();
 	DBGL
 }
 
@@ -656,12 +673,8 @@ void Scenario::Evolution(cSecond t)
 		fWaste = fDecayDataBase->GetDecay(fWaste, (*it).first - fAbsoluteTime);
 		fAbsoluteTime = (*it).first;
 
-
-		if( (*it).second & 1 || (*it).second & 4 || (*it).second & 8 || (*it).second & 16 )
-			StorageEvolution();
-
 		if( (*it).second & 1 || (*it).second & 2 || (*it).second & 4 || (*it).second & 8 || (*it).second & 16 )
-			PoolEvolution();
+			BackEndEvolution();
 
 		if( (*it).second & 1 || (*it).second & 2 || (*it).second & 4 || (*it).second & 16 )
 			FabricationPlantEvolution();

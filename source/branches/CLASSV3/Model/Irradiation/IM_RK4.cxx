@@ -117,22 +117,9 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	ReactorType = XSSet.GetReactorType();
 
 	double M_ref = XSSet.GetHeavyMetalMass();
-	double M = 0;
+	double M = cZAIMass.GetMass(isotopicvector.GetActinidesComposition());
 	double Power_ref =  XSSet.GetPower();
 
-	// Get the mass of the fuel to irradiate in order to perform the evolution at fixed burnup (the burnup step of the calculation will match the burnup step of the XSSet
-	{
-		map<ZAI, double >::iterator it ;
-
-
-		IsotopicVector IVtmp = isotopicvector.GetActinidesComposition();
-		map<ZAI, double >isotopicquantity = IVtmp.GetIsotopicQuantity();
-
-		for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-			M += isotopicvector.GetActinidesComposition().GetZAIIsotopicQuantity( (*it).first )*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
-		isotopicquantity.clear();
-
-	}
 
 	int NStep = XSSet.GetFissionXS().begin()->second->GetN();
 	double* DBTimeStep = XSSet.GetFissionXS().begin()->second->GetX();
