@@ -166,9 +166,10 @@ vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 			for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
 				nPu_0 += (*it).second;
 
-			isotopicquantity = (FullUsedStock.GetSpeciesComposition(94) + ZAI(94,241,0)*FullUsedStock.GetZAIIsotopicQuantity(95,241,0)).GetIsotopicQuantity(); //Add the 241Am as 241Pu... the Pu is not old in the Eq Model but is in the FissileArray....;
-			for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-				MPu_0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/Na*1e-6;
+			IsotopicVector IV_Pm_Am = (FullUsedStock.GetSpeciesComposition(94)
+						   + ZAI(94,241,0)*FullUsedStock.GetZAIIsotopicQuantity(95,241,0));
+			//Add the 241Am as 241Pu... the Pu is not old in the Eq Model but is in the FissileArray....;
+			MPu_0 += cZAIMass.GetMass(IV_Pm_Am);
 		}
 		stock = FissilArray[N_FissilStock_OnCheck];
 		double nPu_1 = 0;
@@ -188,12 +189,11 @@ vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 				}
 			}
 
-			isotopicquantity = (stock.GetSpeciesComposition(94) + ZAI(94,241,0)*stock.GetZAIIsotopicQuantity(95,241,0)).GetIsotopicQuantity(); //Add the 241Am as 241Pu... the Pu is not old in the Eq Model but is in the FissileArray....
-			for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-				if ((*it).first.A() >= 238 && (*it).first.A() <= 242)
-				{
-					MPu_1 += (*it).second * (cZAIMass.fZAIMass.find( (*it).first )->second)/Na*1e-6;
-				}
+			isotopicquantity = (stock.GetSpeciesComposition(94) + ZAI(94,241,0)*stock.GetZAIIsotopicQuantity(95,241,0)).GetIsotopicQuantity();
+			IsotopicVector IV_Pm_Am = (stock.GetSpeciesComposition(94)
+						   + ZAI(94,241,0)*stock.GetZAIIsotopicQuantity(95,241,0));
+			//Add the 241Am as 241Pu... the Pu is not old in the Eq Model but is in the FissileArray....
+			MPu_1 += cZAIMass.GetMass(IV_Pm_Am);
 
 			isotopicquantity = FullUsedStock.GetSpeciesComposition(94).GetIsotopicQuantity();
 			for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
@@ -210,13 +210,13 @@ vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 
 		double N1 = (BurnUp - fFuelParameter[6]) * NT;
 		double N2 = -Sum_AlphaI_nPuI0;
-		double N3 = -fFuelParameter[0] * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997
-						       + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 )
-		* (HMMass*1e6 - MPu_0*1e6);
+		double N3 = -fFuelParameter[0] * Na / (cZAIMass.GetMass( ZAI(92,238,0) )*0.997
+						       + cZAIMass.GetMass( ZAI(92,235,0) )*0.003 )
+							* (HMMass*1e6 - MPu_0*1e6);
 
 		double D1 = Sum_AlphaI_nPuI;
-		double D2 = -fFuelParameter[0] * MPu_1*1e6 * Na / (cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997
-								   + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 ) ;
+		double D2 = -fFuelParameter[0] * MPu_1*1e6 * Na / (cZAIMass.GetMass( ZAI(92,238,0) )*0.997
+								   + cZAIMass.GetMass( ZAI(92,235,0) )*0.003 );
 
 		StockFactionToUse = (N1 + N2 + N3) / (D1 + D2);
 
@@ -241,7 +241,7 @@ vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 
 			FuelBuild = true;
 
-			double U8_Quantity = (HMMass - (MPu_0+StockFactionToUse*MPu_1 ))/(cZAIMass.fZAIMass.find( ZAI(92,238,0) )->second*0.997 + cZAIMass.fZAIMass.find( ZAI(92,235,0) )->second*0.003 )*Na/1e-6;
+			double U8_Quantity = (HMMass - (MPu_0+StockFactionToUse*MPu_1 ))/(cZAIMass.GetMass( ZAI(92,238,0))*0.997 + cZAIMass.GetMass( ZAI(92,235,0))*0.003 )*Na/1e-6;
 
 			lambda.back() = U8_Quantity / FertilArray[0].GetSumOfAll();
 		}
