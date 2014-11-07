@@ -455,7 +455,7 @@ IsotopicVector IV_1;
 IsotopicVector IV_2;
 
 IV_1 += 23 * ZAI(92, 238, 0); // Add 23 nucleus of uranium 238 to ZAI_1
-IV_1 += 52 * ZAI(92, 235, 0); // Add 52 nucleus of uranium 235 to ZAI_1
+IV_1.Add(92, 235, 0, 52);     // Add 52 nucleus of uranium 235 to ZAI_1
 \end{lstlisting}
 \end{minipage}
 \end{center}
@@ -478,7 +478,7 @@ IsotopicVector IV_sum = IV_1 + IV2; // IV_sum will be equal to 11 IV_1
 \end{minipage}
 \end{center}
 
-Some additional operations have been also implemented, such as subtraction. It works as the sum, but if the result of the subtraction is negative for some nuclei, those nuclei are set to zero and the difference is added to the, so called, \textit{fIsotopicQuantityNeeded}. If so, an ERROR will be written on the terminal and CLASS stops (see section~\ref{sec:CLASSLogger}).\\
+Some additional operations have been also implemented, such as subtraction. It works as the sum, but if the result of the subtraction is negative for some nuclei, those nuclei are set to zero and the difference is added to the, so called, \textit{fIsotopicQuantityNeeded}. If so, an WARNING will be written on the terminal (see section~\ref{sec:CLASSLogger}).\\
 
 \subsection{Print method}
 You can use the Print() method to write the composition of an IsotopicVector.
@@ -498,8 +498,10 @@ double TotalMass = IV.GetTotalMass();
 \subsection{Multiplication between IsotopicVector}
 The result of this operation is an IsotopicVector, where each nucleus quantity is the product of the corresponding nucleus quantity of the two IsotopicVector.\\
 In other words :\\
-If a nucleus A is present in both IsotopicVector, with respective quantity $\alpha$ and $\beta$, the resulting IsotopicVector will contain $\alpha\times\beta$ nucleus A. If the nucleus A is not present in both IsotopicVector, the resulting IsotopicVector will not contain the nucleus A.\\
-
+If a nucleus A is present in both IsotopicVector, with respective quantity $\alpha$ and $\beta$, the resulting IsotopicVector will contain $\alpha\times\beta$ nucleus A. If the nucleus A is not present in both IsotopicVector, the resulting IsotopicVector will not contain the nucleus A, as follow equation \eqref{eq:IVMult} :\\
+\begin{equation}
+IV_3 = IV_1\times IV_2 = \sum_{i\in(IV_1+IV_2)} \left(n_{1i}\times n_{2i}\right) ZAI_i \label{eq:IVMult}
+\end{equation}
 \textit{By exemple, this method can be used to apply separation efficiency: one IsotopicVector containing real material and the other one containing separation efficiency of each nucleus.}
 
 \section{EvolutionData}\label{sec:EvolutionData}
