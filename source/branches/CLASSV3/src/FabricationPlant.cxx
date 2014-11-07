@@ -442,11 +442,8 @@ void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel)
 {
 	
 	fSubstitutionFuel = true;
-	map<ZAI ,double>::iterator it;
-	map<ZAI ,double> isotopicquantity = fuel.GetIsotopicVectorAt(0.).GetActinidesComposition().GetIsotopicQuantity();
-	double M0 = 0;
-	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-		M0 += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
+
+	double M0 = cZAIMass.GetMass( fuel.GetIsotopicVectorAt(0.).GetActinidesComposition() );
 	fSubstitutionEvolutionData = fuel / M0;
 
 }

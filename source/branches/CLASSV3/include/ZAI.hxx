@@ -79,7 +79,6 @@ public:
 
 protected :
  	
- 	string 	fName;		///< Name of the ZAI
 	short	fZ;		///< number of protons
 	short	fA;		///< number of nucleons (A=0 means natural isotopes) 
 	short	fI;		///< Isomeric state

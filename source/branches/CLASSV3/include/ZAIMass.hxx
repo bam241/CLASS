@@ -6,7 +6,7 @@
  \brief Header file for ZAIMass classes.
  
  
- @author BaM
+ @author BaM & BaL
  @version 2.0
  */
 
@@ -35,13 +35,15 @@ public:
 		///< Normal Destructor.
 	~ZAIMass();
 	
-	map<ZAI, double> fZAIMass; //! ZAI mass list
 
 
 	double GetMass(ZAI zai ) const;
-	double GetMass(const int Z, const int A ) const { return GetMass( ZAI(Z, A, 0) ); }
+	double GetMass(const int Z, const int A )    const { return GetMass( ZAI(Z, A, 0) ); }
 
-	double GetMass(const IsotopicVector IV) const; //return Mass of HM in tons
+	double GetMass(const IsotopicVector IV)    const; //return Mass of IV in tons
+
+private:
+	map<ZAI, double> fZAIMass; //! ZAI mass list
 
 
 };

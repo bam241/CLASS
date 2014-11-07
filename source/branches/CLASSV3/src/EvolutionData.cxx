@@ -654,22 +654,7 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 		
 	}while ( !DecayDB.eof() );
 
-	double M = 0;
-	{
-		map<ZAI, double >::iterator it ;
-
-
-		IsotopicVector IVtmp = GetIsotopicVectorAt(0.).GetActinidesComposition();
-		map<ZAI, double >isotopicquantity = IVtmp.GetIsotopicQuantity();
-
-		for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++ )
-		{
-			M += (*it).second*cZAIMass.fZAIMass.find( (*it).first )->second/AVOGADRO*1e-6;
-		}
-		isotopicquantity.clear();
-
-	}
-	fHeavyMetalMass = M;
+	fHeavyMetalMass = cZAIMass.GetMass( GetIsotopicVectorAt(0.).GetActinidesComposition() );
 
 	DecayDB.close();
 

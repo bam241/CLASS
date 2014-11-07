@@ -37,7 +37,7 @@ ZAIMass::ZAIMass()
 	double MassUnity,MassDec,error;
 	while (infile>>Z>>A>>Name>>MassUnity>>MassDec>>error)
 	{
-		double Masse=MassUnity+MassDec*1e-6;
+		double Masse = MassUnity + MassDec * 1e-6;
 		fZAIMass.insert( pair< ZAI,double >( ZAI(Z,A,0), Masse ) );
 	}
 

@@ -137,6 +137,7 @@ public :
 	protected :
 
 	map<ZAI ,double>	fIsotopicQuantity;		///< Isotopic vector composition in Atome Number
+	
 	map<ZAI ,double>	fIsotopicQuantityNeeded;	///< Isotopic vector request and not present
 
 	ClassDef(IsotopicVector,1);
