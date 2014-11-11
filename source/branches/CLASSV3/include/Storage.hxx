@@ -104,8 +104,6 @@ public :
 	 */
 	//@{
 		
-	void AddToFullStock(IsotopicVector isotopicvector)	{ fInsideIV += isotopicvector; }	//!< Add a IsotopicVector to the Storage
-
 	void TakeFractionFromStock(int IVId,double fraction);						//!< Take a part from an IV in sotck;
 	void TakeFromStock(IsotopicVector isotopicvector);						//!<
 
