@@ -84,8 +84,7 @@ void Storage::AddIV(IsotopicVector isotopicvector)
 		fIVArray.push_back(isotopicvector);
 		fIVArrayArrivalTime.push_back(fInternalTime);
 	}
-	AddToFullStock(isotopicvector);
-
+	UpdateInsideIV();
 }
 
 //________________________________________________________________________
@@ -168,8 +167,6 @@ DBGL
 
 	cSecond EvolutionTime = t - fInternalTime;
 
-	fInsideIV = 	GetDecay(fInsideIV , EvolutionTime);
-
 #pragma omp parallel for
 	for (int i=0; i <(int) fIVArray.size() ; i++)
 	{
@@ -185,10 +182,10 @@ void Storage::Evolution(cSecond t)
 	// Check if the Storage has been created ...
 	if(t == fInternalTime && t!=0) return;
 	// Make the evolution for the Storage ...
-	StorageEvolution(t);
 
+	StorageEvolution(t);
 	// Update Inside IV;
-	UpdateInsideIV();	
+	UpdateInsideIV();
 
 	// ... And Finaly update the AbsoluteInternalTime
 	fInternalTime = t;
@@ -209,7 +206,7 @@ void Storage::Write(string filename, cSecond date)
 void Storage::RemoveEmptyStocks()
 {
 	for(int i = (int)fIVArray.size()-1 ; i >=0; i--) //Removing empty Stock
-		if(Norme(fIVArray[i]) == 0)
+		if(fIVArray[i].GetSumOfAll() == 0)
 		{
 			fIVArray.erase(fIVArray.begin()+i);
 			fIVArrayArrivalTime.erase(fIVArrayArrivalTime.begin()+i);
