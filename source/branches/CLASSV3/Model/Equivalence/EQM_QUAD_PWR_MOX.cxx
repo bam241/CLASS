@@ -129,7 +129,7 @@ double EQM_QUAD_PWR_MOX::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 	}
 	else
 	{
-		cout << "oups dans le cul" << endl;
+		cout << "the composition is not in the range of the Model" << endl;
 	}
 	return A;
 }
