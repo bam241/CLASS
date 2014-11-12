@@ -38,7 +38,7 @@ vector< map < ZAI, vector<double> > > fXSFis;	// map of fission cross section fX
 vector< map < ZAI, vector<double> > > fXSCap;
 vector< map < ZAI, vector<double> > > fXSN2N;
 
-vector<IsotopicVector> fPuCompoInit;	//Fresh fuel composition
+vector<IsotopicVector> fActinideCompoInit;	//Fresh fuel composition
 
 int fNOfTimeStep=0; //number of time step in the Evolution
 

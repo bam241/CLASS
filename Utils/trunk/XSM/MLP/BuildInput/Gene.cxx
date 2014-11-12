@@ -184,21 +184,21 @@ void DumpInputNeuron(string filename)
 	//Fill containing all the output of the networks to train
 	 ofstream  InputNetwork("TrainingInput.cxx");
 
-	 int NumOfBase=fPuCompoInit.size();
+	 int NumOfBase=fActinideCompoInit.size();
 	for(int b=0;b<NumOfBase;b++) 
 	{ 
 	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 	//@@@Change the input value according to your fresh fuel compo 
 	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 															//   (Z , A ,I)
-		U5 			=  fPuCompoInit[b].GetZAIIsotopicQuantity(ZAI(92,235,0));
-		U8 			=  fPuCompoInit[b].GetZAIIsotopicQuantity(ZAI(92,238,0));
-		Pu8  	  	=  fPuCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,238,0));
-		Pu9  	  	=  fPuCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,239,0));
-		Pu10 	  	=  fPuCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,240,0));
-		Pu11 	  	=  fPuCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,241,0));
-		Pu12 	  	=  fPuCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,242,0));
-		Am1 	  	=  fPuCompoInit[b].GetZAIIsotopicQuantity(ZAI(95,241,0));
+		U5 			=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(92,235,0));
+		U8 			=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(92,238,0));
+		Pu8  	  	=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,238,0));
+		Pu9  	  	=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,239,0));
+		Pu10 	  	=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,240,0));
+		Pu11 	  	=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,241,0));
+		Pu12 	  	=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,242,0));
+		Am1 	  	=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(95,241,0));
 	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//				
 			for(int Tstep=0 ;Tstep<fNOfTimeStep;Tstep++ )	
 			{	
@@ -481,7 +481,7 @@ void ReadAndFill(string jobname)
 		}	
 	}
 	
-	fPuCompoInit.push_back(CompoBasei);
+	fActinideCompoInit.push_back(CompoBasei);
 
 GoodJobName.push_back(jobname);
 
