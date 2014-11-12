@@ -365,7 +365,9 @@ void ReadAndFill(string jobname)
 			A.push_back(a);
 			I.push_back(i);
 			if(!fIsAllNucleiAlreadyFill)
-			{	fAllNuclei.push_back(zaitmp);
+			{	
+				if(z>89)
+					fAllNuclei.push_back(zaitmp);
 				fTime=vT;	
 			}	
 
