@@ -665,7 +665,14 @@ Then, edit these two files to make the function XSM\_NAME::GetCrossSections to r
 Now that your cross section model is ready, two choices are offered to you. You can compile the two files of your model with your CLASS input or you can add this model to the CLASS package. The second option will modify the CLASS software and we will be no longer able to troubleshoot your scenario. So use the second option only if you are a completely independent user !
 
 \subsection{Compile your cross section model with your CLASS executable :}
-@@BAM
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=lst:Compile]
+g++ -g -O -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` 
+	`root-config --libs` -fopenmp -lgomp -Wunused-result -c My_XS-MODEL.cxx
+\end{lstlisting}
+\end{minipage} 
+\end{center}
 
 \subsection{Your cross section model in the CLASS library :}
 Move your  XSM\_NAME.hxx and  XSM\_NAME.cxx in \$CLASS\_PATH/source/Model/XS/. Then open with your favourite text editor the file \\ \$CLASS\_PATH/source/src/Makefile, find "OBJMODEL" and add \$(XSM)/XSM\_NAME.o within the others \$(XSM) objects. Then re-compile CLASS, fix the compilation errors ;) and voilà your cross section model is now available in the CLASS library.
