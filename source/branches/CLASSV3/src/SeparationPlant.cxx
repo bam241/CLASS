@@ -37,7 +37,6 @@ SeparationPlant::SeparationPlant(CLASSLogger* log):CLASSBackEnd(log, -2)
 	fCycleTime = 0;
 	fIsStarted = false;
 	fPutToWaste = true;
-	fCoolingLastIndex = 0;
 
 	fOutBackEndFacility = 0;
 	SetName("C_SeparationPlant.");
