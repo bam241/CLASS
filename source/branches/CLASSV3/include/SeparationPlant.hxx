@@ -133,14 +133,7 @@ protected :
 	bool			fPutToWaste;	//!< True if IV goes to waste after cooling false instead
 	vector<CLASSBackEnd* > 	fDestinationStorage;	//!< Vector containing destination storage of the IV in the Separation Plant
 	vector<IsotopicVector >	fDestinationStorageIV;	//!< Vector containing destination storage of the IV in the Separation Plant
-	vector<cSecond>			fDestinationStorageStartingTime; 	//!< Vector containing destination storage starting time of the IV in the Separation Plant
-
-//********* Isotopic Quantity *********//
-//--------- Cooling ---------//
-	vector<int>		fCoolingIndex;		///< Vector of the Cooling Index
-	int			fCoolingLastIndex;	//!< Number of Cooling IV Treated
-	vector<int>		fCoolingEndOfCycle;	//!< Index of the Cooling IV reaching the End of a Cooling Cycle
-
+	vector<cSecond>		fDestinationStorageStartingTime; 	//!< Vector containing destination storage starting time of the IV in the Separation Plant
 
 //********* Private Method *********//
 
