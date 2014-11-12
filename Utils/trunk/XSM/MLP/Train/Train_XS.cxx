@@ -135,17 +135,7 @@ void Train_XS_Time(int INDICE)
    std::stringstream Name;
    Name<<   OUTPUT[INDICE];
    // Neural network (MLP)                                                                                    
-      factory->BookMethod( TMVA::Types::kMLP, Name.str().c_str(), "!H:!V:VarTransform=Norm:
-                                                                      NeuronType=tanh:
-                                                                      NCycles=20000:
-                                                                      HiddenLayers=N,N:
-                                                                      TestRate=6:
-                                                                      TrainingMethod=BFGS:
-                                                                      Sampling=0.3:
-                                                                      SamplingEpoch=0.8:
-                                                                      ConvergenceImprove=1e-6:
-                                                                      ConvergenceTests=15:
-                                                                      !UseRegulator" );
+      factory->BookMethod( TMVA::Types::kMLP, Name.str().c_str(), "!H:!V:VarTransform=Norm:NeuronType=tanh:NCycles=20000:HiddenLayers=N,N:TestRate=6:TrainingMethod=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests=15:!UseRegulator" );
 
    // --------------------------------------------------------------------------------------------------
 
