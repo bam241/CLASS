@@ -1,0 +1,165 @@
+﻿/**************************************************************************/
+/*                                                                        */
+/*                                                                        */
+/*                           CLASS version 2.0                            */
+/*                      Installation procedure and FAQ                    */
+/*                                04/06/2013                              */
+/*                                                                        */
+/**************************************************************************/
+CLASS development team:
+    - B. Mouginot, Subatech Nantes
+    - M. Ernoult, IPN Orsay
+
+CLASS development team can be joined through https://forge.in2p3.fr/projects/classforge
+
+----------------------------
+CLASS GENERAL PRESENTATION :
+----------------------------
+CLASS stand for Core Library for Advanced Scenario Simulation.
+The nuclear reactor simulation community has a requirement to perform complex electro-nuclear scenario simulation. To avoid constraints coming from existing powerful scenario software as COSI, VISION or FAMILY, the open source Core Library for Advance Scenario Simulation (CLASS) is being developed.
+CLASS main asset is its ability to include any kind of reactor, whether the system is innovative or standard. A reactor is fully described by its evolution database that should contain a set of different validated fuel compositions in order to simulate transitional scenarios. CLASS aims to be a useful tool to study scenarios involving Generation IV reactors as well as innovative fuel cycles, like the Thorium cycle.
+
+--------------
+REQUIREMENTS :
+--------------
+In order to be able to use CLASS, you need :
+- a Computer able of compiling C++ code (It native on Linux, for Mac OS need to install "Xcode develloper Tools", for Windows it need a specific installation but Visual C++ work and is free)
+- the root library (downloadable on http://root.cern.ch/drupal/)
+- an OpenMP library (often include inside the standard c++ libraries and compiler, more informations can be found on http://openmp.org/wp/)
+
+--------------
+INSTALLATION :
+--------------
+
+--> Getting the Source <--
+Before the beginning of the installation you will need to recuperate some files.
+
+First, the sources of the CLASS package. 
+A stable version is down-loadable on https://forge.in2p3.fr/projects/classforge/files. They are organized in 4 folder : Doxygen containing an html guide to all functions existing in the code; external for the libraries used by CLASS but not coded and maintained by the CLASS development team, include for the header of the CLASS objects and functions and src for the main code.
+
+Second, some Databank.
+At least a decay databank following the isotopes produced during the decay of radio-active elements. Reactors databanks will be needed for each reactor type and each fuel type you want to pout in your scenarios.
+
+Third, rootlogon.C and read.C root macros.
+These two are not essential to run CLASS but allow a much simpler view of the result of CLASS simulations.
+
+When you have all the source, the recommended way is to unpack all of them in a CLASS folder, in order to have a organization like :
+-----------------------------------------
+| CLASS\                                |
+|     -\DataBase\                       |
+|               -\Decay\                |
+|               -\DB1\                  |
+|               -\DB2\                  |
+|               -\...                   |
+|               -Decay.idx              |
+|               -DB1.idx                |
+|               -...                    |
+|     -\source\                         |
+|               -\Doxygen\              |
+|               -\external\             |
+|               -\include\              |
+|               -\src\                  |
+|               -Doxyfile               |
+|     -\Utils\                          |
+|               -read.C                 |
+|               -Example_CLASS.cpp      |
+-----------------------------------------
+
+--> Setting the environment variables <--
+
+If you are using a bash terminal, add to our /home/perso/.bashrc :
+	export CLASS_PATH=/your/way/to/CLASS
+	export CLASS_include=$CLASS_PATH/source/include
+	export CLASS_lib=$CLASS_PATH/lib
+	export LD_LIBRARY_PATH=$CLASS_lib:$LD_LIBRARY_PATH
+
+If you are using a tcsh, add to /home/perso/.tcshrc :
+	setenv CLASS_PATH Your_way_to_CLASS
+	setenv CLASS_include $CLASS_PATH/source/include
+	setenv CLASS_lib $CLASS_PATH/lib
+	setenv LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:$CLASS_lib
+
+Make the lib and the utils folder in your CLASS path :
+	mkdir $CLASS_PATH/lib
+Copy rootlogon.C in your home.
+	cp rootlogon.C /home/perso/.rootlogon.C
+
+--> Compiling the code <--
+To compile the code, you have to go on the CLASS source folder :
+	cd $CLASS_PATH/source/src
+In order to be sure that no old version of class remain in the same folder, clean it :
+	make clean
+Finnaly compile the code. If you have several core available you can use N of them, by using the command :
+	make -j N
+
+You should see many compilation line and à the end, check that the two main package have been created :
+...
+libCLASSpkg.so done
+...
+libCLASSpkg_root.so done
+If it is so, CLASS is compile and ready to use.
+
+--> Linking the DataBase <--
+Before running any simulation, you have to check that the *.idx file of the databanks give the right path for the *.dat files.
+So open your *.idx file.
+It should be  many line like this :
+/home/perso/DataBase/........dat
+Change the /home/perso/ part in order to match with your installation folder.
+
+--> Running The Example <--
+For the test, you should have an example file named : Example_CLASS.cpp.
+Move the example file to your CLASS_PATH : 
+	mv Example_CLASS.cpp $CLASS_PATH/
+Go to the CLASS_PATH :
+	cd $CLASS_PATH
+Open it and change the path to the databank to match your installation scheme.
+Use the following line to compile the program :
+	g++ -o CLASS_exec Example_CLASS.cpp -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
+Then run : 
+	./CLASS_exec
+You should have a nice progression bar like :
+[||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||-]  Processed 100 / 100 Years
+The progress bar represent the progression through the time inside the simulated scenario not the progression through the calcul time.
+The calculation needed at each time is not constant, so the progression of the bar can be really irregular. 
+
+Before leaving, the executable should write :
+	...
+	Writing outTree CLASS_Default.root
+	Deleting outTree : 
+	Closing file : CLASS_Default.root
+If it's the case, then all is OK.
+
+--> Reading the results <--
+If you have correctly installed the .rootlogon.C and the Read.C, it is really easy, jute type :
+root CLASS_Default.root
+IT should open root. In the root console, you have access to many functions.
+To have the graph of the quantity of a isotope in some place of your scenario, you just have to write :
+read(Data, "MyObservable", Z, A, I)
+Where Z, A and I characterize the wanted isotope. MyObservable is the place when the bilan is made, it can have the following values :
+	STOCK
+	FUELFABRICATION
+	COOLING
+	INCREACTOR
+	INCYCLE
+	TOTAL
+	GODINCOME
+	WASTE
+There are also specific functions for reading specific objects : ReadReactor, ReadFabrication, ReadCooling and ReadStorage. The description of these function and the complete list of the function can be found in Read.C.
+
+If you don't have installed the .rootlogon.C, you need to open root and after to write in the root console :
+	#include "TMatrix"
+	.L $CLASS_lib/libCLASSpkg_root.so
+	.L $CLASS_PATH/read.C
+	TFile *_file0 = TFile::Open("CLASS_Default.root")
+
+----------------------------
+FREQUENTLY ASKED QUESTIONS :
+----------------------------
+1. CLASS can't find my DataBank or some EvolutionData
+	Can't open "/home/cramal/CLASS/DataBase/DB_42_45/DB.idx"
+	!!Bad Trouble!! !!!DataBank!!! Bad Database file : /home/cramal/CLASS/DataBase/DB_42_45/DB.idx Can't find the type of the DataBase
+You have made a mistake in the path to your Databank index in your file.
+
+	Can't open "DataBase/DB_42_45/Data/REPMOX_U_238_86.7282__Pu_238_0.138427_239_5.25615_240_2.94485_241_2.37377_242_2.20291__Am_241_0.355667.dat"
+	!!Bad Trouble!! !!!EvolutionData!!! Bad Database file : DataBase/DB_42_45/Data/REPMOX_U_238_86.7282__Pu_238_0.138427_239_5.25615_240_2.94485_241_2.37377_242_2.20291__Am_241_0.355667.dat
+You have probably forgotten to change some path in your *.idx
