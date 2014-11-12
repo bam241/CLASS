@@ -232,7 +232,7 @@ For more informations about this model please refer to [@@Papier BaL].\\
 \subsection{PWR-UOX model :}
 
 \subsubsection{Linear Model: EQM\_LIN\_UOX}
-@@@BAM
+TBFNF : To Be filled in the Near Future...
 
 \section{How to build an Equivalence Model}
 The strength of CLASS is to allow the user to build his own Physics models, this section explains how to build a new equivalence model and to incorporate it into CLASS.
@@ -327,7 +327,17 @@ Fill free to have a look at the models present in \$CLASS\_PATH/source/Model/Equ
 Now that your equivalence model is ready two choices are offered to you. You can compile the two files of your model with your CLASS input or you can add this model to the CLASS package. The second option will modify the CLASS software and we will be no longer able to troubleshoot your scenario. So use the second option only if you are a completely independent user !
 
 \subsection{Compile your equivalence model with your CLASS executable :}
-@@BAM
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=lst:Compile]
+g++ -g -O -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` 
+	`root-config --libs` -fopenmp -lgomp -Wunused-result -c My_MODEL.cxx
+		
+\rm CLASS* ; g++ -o CLASS_exec MyScenario.cxx My_MODEL.o -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
+
+\end{lstlisting}
+\end{minipage} 
+\end{center}
 
 \subsection{Your equivalence model in the CLASS library :}
 Move your  EQM\_NAME.hxx and  EQM\_NAME.cxx in \$CLASS\_PATH/source/Model/Equivalence/. Then open with your favourite text editor the file  \$CLASS\_PATH/source/src/Makefile, find "OBJMODEL" and add \$(EQM)/EQM\_NAME.o within the others \$(EQM) objects. Then re-compile CLASS, fix the compilation errors ;) and voilà your equivalence model is now available in the CLASS library.
@@ -669,7 +679,9 @@ Now that your cross section model is ready, two choices are offered to you. You 
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[label=lst:Compile]
 g++ -g -O -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` 
-	`root-config --libs` -fopenmp -lgomp -Wunused-result -c My_XS-MODEL.cxx
+	`root-config --libs` -fopenmp -lgomp -Wunused-result -c My_MODEL.cxx
+	
+\rm CLASS* ; g++ -o CLASS_exec MyScenario.cxx My_MODEL.o -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
 \end{lstlisting}
 \end{minipage} 
 \end{center}
@@ -795,7 +807,17 @@ After making the appropriate changes in this two files to make the function \tex
 
 
 \subsection{Compile your Irradiation model with your CLASS executable :}
-@@BAM
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=lst:Compile]
+g++ -g -O -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` 
+	`root-config --libs` -fopenmp -lgomp -Wunused-result -c My_MODEL.cxx
+		
+\rm CLASS* ; g++ -o CLASS_exec MyScenario.cxx My_MODEL.o -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
+
+\end{lstlisting}
+\end{minipage} 
+\end{center}
 
 \subsection{Your Irradiation model in the CLASS library :}
 Move your  IRM\_NAME.hxx and  IRM\_NAME.cxx in \$CLASS\_PATH/source/Model/Irradiation/. Then open with your favourite text editor the file \\ \$CLASS\_PATH/source/src/Makefile, find "OBJMODEL" and add \$(IM)/IRM\_NAME.o within the others \$(IM) objects. Then re-compile CLASS, fix the compilation errors ;) and voilà your irradiation model is now available in the CLASS library.
