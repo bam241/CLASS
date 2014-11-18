@@ -249,6 +249,17 @@ IsotopicVector& IsotopicVector::operator*=(const IsotopicVector& IVa)
 }
 
 //________________________________________________________________________
+IsotopicVector& IsotopicVector::operator*=(const double& factor)
+{
+
+	Multiply(factor);
+	
+	return *this;
+	
+}
+
+
+//________________________________________________________________________
 bool IsotopicVector::operator<(const IsotopicVector& isotopicvector) const
 {
 

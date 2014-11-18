@@ -86,8 +86,8 @@ public :
 
 	void SetOutBackEndFacility(CLASSBackEnd* befacility)
 						{  fOutBackEndFacility = befacility;
-						   SetIsStorageType();
-						   fPutToWaste = true; }		//!< Set the Pointer to the Storage
+						   SetIsStorageType(false);
+						   fPutToWaste = false; }		//!< Set the Pointer to the Storage
 
 	void SetPutToWaste(bool val)		{ fPutToWaste = val; }		//!< Set True if IV goes to waste after cooling false instead
 
