@@ -179,7 +179,7 @@ void XSM_MLP::GetMLPWeightFiles()
 		string FileName= fichierLu->d_name ;
 		if(FileName != "." && FileName != ".." )
 		{
-			if(FileName[FileName.size()-3]=='x'  &&  FileName[FileName.size()-2]=='m' && FileName[FileName.size()-1]=='l' )
+			if(FileName[FileName.size()-3]=='x'  &&  FileName[FileName.size()-2]=='m' && FileName[FileName.size()-1]=='l' && FileName[0]!='.' )
 				fWeightFiles.push_back(FileName);
 
 		}
@@ -282,6 +282,7 @@ TTree* XSM_MLP::CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep)
 //________________________________________________________________________
 double XSM_MLP::ExecuteTMVA(string WeightFile,TTree* InputTree)
 {
+	DBGV( "File :" << WeightFile);
 	// --- Create the Reader object
 	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
 
@@ -327,6 +328,7 @@ double XSM_MLP::ExecuteTMVA(string WeightFile,TTree* InputTree)
 	Float_t val = (reader->EvaluateRegression( methodName ))[0];
 
 	delete reader;
+	DBGL
 
 	return (double)val;
 }

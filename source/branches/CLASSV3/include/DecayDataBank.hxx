@@ -57,6 +57,18 @@ class DecayDataBank : public CLASSObject
 	/// Normal Constructor.
 	DecayDataBank();
 	
+
+	//{
+	/// Special Constructor.
+	/*!
+	 Use to load a CLASSLogger
+	 \param CLASSLogger CLASSLogger used for the log...
+	 \param DB_index_file path to the index file
+	 \param setlog if the log are stored in the CLASSLogger
+	 \param olfreadmethod true if the old format of EvolutionData are used (ie without the key word such as Inv, XSFiss...)
+	 */
+	DecayDataBank(string DB_index_file, bool olfreadmethod = false );
+	//}
 	//{
 	/// Special Constructor.
 	/*!
