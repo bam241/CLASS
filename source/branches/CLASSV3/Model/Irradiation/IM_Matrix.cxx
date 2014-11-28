@@ -51,7 +51,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 {
 	DBGL
 	if(fFastDecay.size() == 0)
-		BuildDecayMatrix();
+		NuclearDataInitialization();
 
 
 	string ReactorType;
