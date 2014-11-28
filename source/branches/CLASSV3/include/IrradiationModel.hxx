@@ -134,7 +134,7 @@ class IrradiationModel : public CLASSObject
 	
 
 	void	BuildDecayMatrix();			///w Build the Decay Matrix for the futur evolution...
-	
+	void	NuclearDataInitialization(); //Build Decay matrices & read FpYields if any
 	//@}
 	
 
@@ -165,7 +165,8 @@ class IrradiationModel : public CLASSObject
 	map<ZAI, IsotopicVector>	fSpontaneusYield;	///< Store the Spontaneus fission yield
 	map<ZAI, IsotopicVector>	fReactionYield;		///< Store the reaction fission yield
 	
-
+	string	fSpontaneusYieldFile;	///< Store the Spontaneus fission yield
+	string	fReactionYieldFile;		///< Store the reaction fission yield
 	
 	map<ZAI, int> findex_inver;	///< correspondance matrix from ZAI to the column (or line) of the different Reaction/Decay matrix
 	map<int, ZAI> findex;		///< correspondance matrix from the column (or line) of the different Reaction/Decay matrix to the ZAI
