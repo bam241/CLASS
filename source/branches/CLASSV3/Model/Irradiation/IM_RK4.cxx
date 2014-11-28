@@ -66,7 +66,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	DBGL
 	if(fFastDecay.size() == 0)
 	{
-		BuildDecayMatrix();
+		NuclearDataInitialization();
 		fNVar = findex_inver.size();
 	}
 
