@@ -174,7 +174,7 @@ DBGL
 				if (decay_name == "a")	{DM=9;stable=false;	daughter_N=(A-Z)-2;	daughter_Z=Z-2;}
 				if (decay_name == "cen"){DM=10;stable=false;	daughter_N=(A-Z);	daughter_Z=Z-1;}
 				if (decay_name == "cep"){DM=11;stable=false;	daughter_N=(A-Z)+1;	daughter_Z=Z-2;}
-				if (decay_name == "it")	{DM=12;stable=false;	daughter_N=(A-Z);	daughter_Z=Z;Iso = I-1;}
+				if (decay_name == "it")	{DM=12;stable=false;	daughter_N=(A-Z);	daughter_Z=Z;}
 				if (decay_name == "db-"){DM=13;stable=false;	daughter_N=(A-Z)-2;	daughter_Z=Z+2;}
 				if (decay_name == "db+"){DM=14;stable=false;	daughter_N=(A-Z)+2;	daughter_Z=Z-2;}
 				if (decay_name == "ita"){DM=15;stable=false;	daughter_N=(A-Z)-2;	daughter_Z=Z-2;}
@@ -198,11 +198,11 @@ DBGL
 						}
 						else if( DM <= 18)
 						{
-							if(fSpontaneusYield.size() == 0 || fReactionYield.size() == 0 || DM == 17 || DM == 18)
+							if(fSpontaneusYield.size() == 0 )
 							{
 								DaughtersMap += 2*BR * ZAI(-2,-2,-2);
 
-								branch_test_f += BR;
+								branch_test_f += 2*BR;
 							}
 							else
 							{
@@ -210,14 +210,14 @@ DBGL
 								map<ZAI, IsotopicVector>::iterator it_yield = fSpontaneusYield.find(ParentZAI);
 								if(it_yield != fSpontaneusYield.end())
 								{
-									DaughtersMap += (BR* (*it_yield).second );
-									branch_test_f += BR* (*it_yield).second.GetSumOfAll() / 2.;
+									DaughtersMap += BR* (*it_yield).second ;
+									branch_test_f += BR* (*it_yield).second.GetSumOfAll();
 
 								}
 								else
 								{
 									DaughtersMap += 2*BR * ZAI(-2,-2,-2);
-									branch_test_f += BR;
+									branch_test_f += 2*BR;
 								}
 							}
 						}
@@ -230,13 +230,15 @@ DBGL
 				// End of While loop
 			}
 
-			double btest = fabs(branch_test + branch_test_f-1.0);
+			double btest = fabs(branch_test + branch_test_f/2.-1.0);
 			if ( btest > 1e-8 && !stable )
-				if(branch_test+branch_test_f > 0)
-					DaughtersMap = DaughtersMap /(branch_test+branch_test_f);
-
-
-
+				{	
+					//cout<<"**"<<ParentZAI.Z()<<" "<<ParentZAI.A()<<" "<<ParentZAI.I()<<" "<<DaughtersMap.GetSumOfAll()<<endl;
+					DaughtersMap = DaughtersMap / (branch_test+branch_test_f/2.);
+				//	cout<<ParentZAI.Z()<<" "<<ParentZAI.A()<<" "<<ParentZAI.I()<<" "<<DaughtersMap.GetSumOfAll()<<endl;
+				}	
+				
+					
 			if (HalfLife < fShorstestHalflife && !stable)
 				fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ParentZAI, DaughtersMap.GetIsotopicQuantity() ) );
 			else if (stable)
@@ -396,7 +398,7 @@ DBGL
 
 				}
 			}
-			fDecayMatrix[i][i] += -log(2.)/(*it).second.first;
+			fDecayMatrix[i][i] -= log(2.)/(*it).second.first;
 
 			i++;
 
@@ -450,78 +452,112 @@ map< ZAI,IsotopicVector > IrradiationModel::ReadFPYield(string Yield)
 	int start = 0;
 
 	getline(infile, line);
-
+	vector<ZAI> Fissile;
+	vector<IsotopicVector> FPYields;
 	do
 	{
 		int Z = atof(StringLine::NextWord(line, start, ' ').c_str());
 		int A = atof(StringLine::NextWord(line, start, ' ').c_str());
-		int I = 0;
-
-		//		if(Z!=0 && A!=0)
-		{
-			pair<map<ZAI, IsotopicVector>::iterator, bool> IResult;
-			IResult = Yield_map.insert(pair<ZAI,IsotopicVector>(ZAI(Z,A,I),EmptyIV) );
-			if(!IResult.second)
-			{
-				ERROR << " Many accurance of ZAI " << Z << " " << A << " in " << Yield << " file!! " << endl;
-				exit(1);
-
-			}
-		}
+		int I = atof(StringLine::NextWord(line, start, ' ').c_str());
+		Fissile.push_back(ZAI(Z,A,I));
+		FPYields.push_back(EmptyIV);
+		
 	}while(start < (int)line.size()-1);
 
+	getline(infile, line);
 	do
 	{
 		start = 0;
 
-		getline(infile, line);
 		int Z = atof(StringLine::NextWord(line, start, ' ').c_str());
 		int A = atof(StringLine::NextWord(line, start, ' ').c_str());
 		int I = atof(StringLine::NextWord(line, start, ' ').c_str());
-		map<ZAI, IsotopicVector>::iterator it = Yield_map.begin();
+		int i=0;
+		bool NucleiFound=false;
 		do
 		{
-			if (it == Yield_map.end())
-			{
-				ERROR << " Many accurance of the PF " << Z << " " << A << " in " << Yield << " file!! ";
-				ERROR << "(Number of yield does not match the number of ZAI that fission !!!" << endl;
-				exit(1);
-
-			}
-
 			double Yield_values = atof(StringLine::NextWord(line, start, ' ').c_str());
-			(*it).second +=  Yield_values * ZAI(Z,A,I);
+			//	cout<<"****Searching for ZAI : "<<Z<<" "<<A<<" "<<I<<endl;
+			while(!NucleiFound && Z<200)
+			{	//Is in the non cut nuclei chart ?
+				map<ZAI, int>::iterator findNonCut_it = findex_inver.find( ZAI(Z,A,I) );
+				if( findNonCut_it != findex_inver.end() )
+					NucleiFound=true;
+					//cout<<"Find in non cut"<<endl;
+					
+				else
+				{	//Is in the cutted nuclei chart ?
+					map<ZAI, map<ZAI,double> >::iterator findFastDecay_it = fFastDecay.find(ZAI(Z,A,I));
+					if( findFastDecay_it != fFastDecay.end() )
+						NucleiFound=true;
+					
+     				//if after a SF the FP does not exist, make either beta- (for gs) or Isomeric transition
+     				// to find an existing one (in the chart)
+					else
+					{	//cout<<"Artificial decay ... "<<endl;
+						if(I>0)//Isomeric Decay
+							I--;
+						else//Beta- decay
+							Z++;	
+						//cout<<"new ZAI "<<Z<<" "<<A<<" "<<I<<" "<<endl;				
+					}
+				}	
+			}
+			if(!NucleiFound)
+			{	WARNING<<"Nuclei not found in chart "<<endl;}
 
-			it++;
+			else
+				FPYields[i] +=  Yield_values * ZAI(Z,A,I);
+
+			i++;
+
 		}while(start < (int)line.size()-1);
 
-
-
+		getline(infile, line);
 
 	} while (!infile.eof());
+
+
+	for(int i=0 ; i<(int) Fissile.size() ; i++)
+	{
+		pair<map<ZAI, IsotopicVector>::iterator, bool> IResult;
+		IResult = Yield_map.insert(pair<ZAI,IsotopicVector>(Fissile[i],FPYields[i]));
+		if(!IResult.second)
+		{
+		ERROR << " Many occurances of ZAI  file!! " << Fissile[i].Z()<<" "<<Fissile[i].A()<<" "<<Fissile[i].I()<<" "<<endl;
+		exit(1);
+		}
+	}
+
 	return Yield_map;
 }
 
 //________________________________________________________________________
-void IrradiationModel::LoadFPYield(string SponfaneusYield, string ReactionYield)
+void IrradiationModel::LoadFPYield(string SpontaneusYield, string ReactionYield)
 {
-
-	fSpontaneusYield = ReadFPYield(SponfaneusYield);
-	fReactionYield = ReadFPYield(ReactionYield);
+	fSpontaneusYieldFile = SpontaneusYield;
+	fReactionYieldFile   = ReactionYield;	
 	fZAIThreshold = 0;
 }
+//________________________________________________________________________
+void IrradiationModel::NuclearDataInitialization()
+{
 
+	BuildDecayMatrix();
 
+	if(fSpontaneusYieldFile!="")
+		fSpontaneusYield = ReadFPYield(fSpontaneusYieldFile);
 
-
-
+	if(fReactionYieldFile!="")
+		fReactionYield = ReadFPYield(fReactionYieldFile);
+}
 //________________________________________________________________________
 /*				Reaction Stuff			*/
 //________________________________________________________________________
 TMatrixT<double> IrradiationModel::GetFissionXsMatrix(EvolutionData EvolutionDataStep,double TStep)
 {
 DBGL
-	map<ZAI ,TGraph* >::iterator it;
+	map<ZAI ,TGraph* >::iterator it_XS;
 	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
 	for(int i = 0; i < (int)findex.size(); i++)
 		for(int j = 0; j < (int)findex.size(); j++)
@@ -531,38 +567,42 @@ DBGL
 
 	map<ZAI ,TGraph* > FissionXS = EvolutionDataStep.GetFissionXS();
 
-	for(it = FissionXS.begin() ; it != FissionXS.end(); it++)
-	{
-		map<ZAI, int>::iterator findex_inver_it = findex_inver.find( (*it).first );
+	for(it_XS = FissionXS.begin() ; it_XS != FissionXS.end(); it_XS++)	//loop on fissionable nuclei
+	{	
+	//	cout<<"***************"<<(*it_XS).first.Z()<<" "<<(*it_XS).first.A()<<" "<<(*it_XS).first.I()<<endl;
+
+		map<ZAI, int>::iterator findex_inver_it = findex_inver.find( (*it_XS).first );
 		if( findex_inver_it != findex_inver.end() )
 		{
-			double y = (*it).second->Eval(TStep);
-			BatemanMatrix[ findex_inver_it->second ][ findex_inver_it->second ] += -y* 1e-24;
+			double XS_Value = (*it_XS).second->Eval(TStep);
+			BatemanMatrix[ findex_inver_it->second ][ findex_inver_it->second ] += -XS_Value* 1e-24;
 
-			if(fSpontaneusYield.size() == 0 || fReactionYield.size() == 0)
-				BatemanMatrix[1][ findex_inver_it->second ] += 2*y* 1e-24;
+			if(fReactionYield.size() == 0)
+				BatemanMatrix[1][ findex_inver_it->second ] += 2*XS_Value* 1e-24;
 			else
 			{
-				map<ZAI, IsotopicVector>::iterator it_yield = fReactionYield.find( (*it).first );
+				map<ZAI, IsotopicVector>::iterator it_yield = fReactionYield.find( (*it_XS).first );
 
 				if( it_yield != fReactionYield.end())
 				{
-					map<ZAI ,double>::iterator it_IVQ;
-					map<ZAI ,double> IVQ = (*it_yield).second.GetIsotopicQuantity();
+					map<ZAI ,double>::iterator it_FissionProductMap;
+					map<ZAI ,double> FissionProductMap = (*it_yield).second.GetIsotopicQuantity();
 
-					for( it_IVQ = IVQ.begin(); it_IVQ != IVQ.end(); it_IVQ++ )
-					{
-						map<ZAI, int>::iterator findex_it_PF = findex_inver.find( (*it_IVQ).first );
+					for( it_FissionProductMap = FissionProductMap.begin(); it_FissionProductMap != FissionProductMap.end(); it_FissionProductMap++ )//loop on fission product
+					{	//cout<<(*it_FissionProductMap).first.Z()<<" "<<(*it_FissionProductMap).first.A()<<" "<<(*it_FissionProductMap).first.I()<<" "<<(*it_FissionProductMap).second<<endl;						
+						map<ZAI, int>::iterator findex_it_PF = findex_inver.find( (*it_FissionProductMap).first );
 
 						if(findex_it_PF != findex_inver.end() )
-							BatemanMatrix[(*findex_it_PF).second][ (*findex_inver_it).second ] += (*it_IVQ).second*y* 1e-24;
+						{	BatemanMatrix[(*findex_it_PF).second][ (*findex_inver_it).second ] += (*it_FissionProductMap).second*XS_Value* 1e-24;
+							
+						}	
 						else
 						{
-							map<ZAI, map<ZAI, double> >::iterator it_FD = fFastDecay.find( (*it_IVQ).first);
+							map<ZAI, map<ZAI, double> >::iterator it_FD = fFastDecay.find( (*it_FissionProductMap).first);
 
 							if( it_FD == fFastDecay.end() )
 							{
-								BatemanMatrix[1][ (*findex_inver_it).second ] += (*it_IVQ).second * y * 1e-24  ;
+								BatemanMatrix[1][ (*findex_inver_it).second ] += (*it_FissionProductMap).second * XS_Value * 1e-24  ;
 							}
 							else
 							{
@@ -574,10 +614,11 @@ DBGL
 									findex_it_PF = findex_inver.find( (*it5).first );
 									if( findex_it_PF == findex_inver.end() )
 										BatemanMatrix[0][findex_inver_it->second] +=
-										(*it_IVQ).second * y * 1e-24 * (*it5).second;
+										(*it_FissionProductMap).second * XS_Value * 1e-24 * (*it5).second;
 									else
-										BatemanMatrix[(*findex_it_PF).second][findex_inver_it->second]+=
-										(*it_IVQ).second * y * 1e-24 * (*it5).second;
+									{	BatemanMatrix[(*findex_it_PF).second][findex_inver_it->second]+=
+										(*it_FissionProductMap).second * XS_Value * 1e-24 * (*it5).second;
+									}	
 								}
 							}
 
@@ -586,7 +627,8 @@ DBGL
 					}
 				}
 				else
-					BatemanMatrix[1][ findex_inver_it->second ] += 2*y* 1e-24;
+					BatemanMatrix[1][ findex_inver_it->second ] += 2*XS_Value* 1e-24;
+
 
 			}
 		}
@@ -609,11 +651,34 @@ DBGL
 
 	map<ZAI, map<ZAI, double> > Capture;
 	{	// 241Am
-		map<ZAI, double> toAdd ;
-		toAdd.insert(pair<ZAI, double> ( ZAI(96,242,0) , 0.8733*0.827) ); //directly cut the Am242 as in MURE
-		toAdd.insert(pair<ZAI, double> ( ZAI(94,242,0) , 0.8733*0.173) ); //directly cut the Am242 as in MURE
-		toAdd.insert(pair<ZAI, double> ( ZAI(95,242,1) , 0.1267) );
-		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,241,0), toAdd ) );
+		map<ZAI, double> Am1Case ;
+		Am1Case.insert(pair<ZAI, double> ( ZAI(96,242,0) , 0.8733*0.827) ); //directly cut the Am242 as in MURE
+		Am1Case.insert(pair<ZAI, double> ( ZAI(94,242,0) , 0.8733*0.173) ); //directly cut the Am242 as in MURE
+		Am1Case.insert(pair<ZAI, double> ( ZAI(95,242,1) , 0.1267) );
+		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(95,241,0), Am1Case ) );
+		// 165Ho
+		map<ZAI, double> Ho165Case ;
+		Ho165Case.insert(pair<ZAI, double> ( ZAI(68,166,0) , 0.9490) ); 
+		Ho165Case.insert(pair<ZAI, double> ( ZAI(67,166,1) , 1-0.9490 ) ); 
+		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(67,165,0), Ho165Case ) );
+		// 147Pm
+		map<ZAI, double> Pm147Case ;
+		Pm147Case.insert(pair<ZAI, double> ( ZAI(61,148,0) , 0.5330) ); 
+		Pm147Case.insert(pair<ZAI, double> ( ZAI(61,148,1) , 1-0.5330 ) ); 
+		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(61,147,0), Pm147Case ) );
+		// 109Ag
+		map<ZAI, double> Ag109Case ;
+		Ag109Case.insert(pair<ZAI, double> ( ZAI(48,110,0) , 0.9970*0.9508) ); 
+		Ag109Case.insert(pair<ZAI, double> ( ZAI(46,110,0) , 0.0030*0.9508) ); 
+		Ag109Case.insert(pair<ZAI, double> ( ZAI(47,110,1) , 1-0.9508 ) ); 
+		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(47,109,0), Ag109Case ) );
+		// 107Ag
+		map<ZAI, double> Ag107Case ;
+		Ag107Case.insert(pair<ZAI, double> ( ZAI(48,108,0) , 0.9715*0.9895) ); 
+		Ag107Case.insert(pair<ZAI, double> ( ZAI(46,108,0) , 0.0285*0.9895) ); 
+		Ag107Case.insert(pair<ZAI, double> ( ZAI(47,108,1) , 1-0.9895) ); 
+		Capture.insert( pair< ZAI, map<ZAI, double> > ( ZAI(47,107,0), Ag107Case ) );
+
 	}
 
 
