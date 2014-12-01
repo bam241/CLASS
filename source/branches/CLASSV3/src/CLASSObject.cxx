@@ -1,7 +1,5 @@
 #include "CLASSObject.hxx"
 
-#include "CLASSLogger.hxx"
-
 using namespace std;
 
 	//________________________________________________________________________

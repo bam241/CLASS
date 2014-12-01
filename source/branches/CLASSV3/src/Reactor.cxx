@@ -7,8 +7,6 @@
 #include "Scenario.hxx"
 #include "CLASSConstante.hxx"
 
-#include "CLASSLogger.hxx"
-
 #include <iostream>
 #include <cmath>
 #include <omp.h>
