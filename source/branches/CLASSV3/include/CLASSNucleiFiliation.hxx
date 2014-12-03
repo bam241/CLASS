@@ -36,31 +36,63 @@ public:
 	//@{
 	
 	CLASSNucleiFiliation();	///< Default constructor
-	//}
 	
-	CLASSNucleiFiliation(CLASSNucleiFiliation CNF);
+	CLASSNucleiFiliation(CLASSNucleiFiliation CNF); ///< Copy Constructor
 	
 	
 	~CLASSNucleiFiliation();	///< Normal Destructor.
 	
-	void AddDaughterToZAI(ZAI Mother, IsotopicVector Daughter );
-	
-	
-	IsotopicVector GetFiliation(ZAI Mother);
+	//}
 
+	
+	//********* Get Method *********//
+	
+	/*!
+	 \name Get Method
+	 */
+	//@{
 	map<ZAI, IsotopicVector> GetNucleiFIliation() const {return fNucleiFiliation;}
 
+	IsotopicVector GetFiliation(ZAI Mother);
+	
+	//}
+	
+	//********* Add Method *********//
+	
+	/*!
+	 \name Adding Method
+	 */
+	//@{
+	
+	
+	void AddDaughterToZAI(ZAI Mother, IsotopicVector Daughter );
+	
+	//}
+
+
+	//********* Modification Method *********//
+	
+	/*!
+	 \name Modification Method
+	 */
+	//@{
+	
 	
 	void FiliationCleanUp(map<ZAI, int> GoodNuclei, CLASSNucleiFiliation CuttedNuclei);
 
 	void SelfFiliationCleanUp(map<ZAI, int> GoodNuclei);
 	
+	
+	
+
 	void NormalizeBranchingRatio(double Value = 1);
 
 	void NormalizeBranchingRatio(ZAI Mother, double Value);
 
+	//}
 	
-	protected :
+	
+protected :
 	
 	map<ZAI, IsotopicVector> fNucleiFiliation;
 	
