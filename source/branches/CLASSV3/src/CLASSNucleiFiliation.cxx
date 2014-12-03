@@ -42,7 +42,7 @@ CLASSNucleiFiliation::~CLASSNucleiFiliation()
 
 
 //________________________________________________________________________
-void CLASSNucleiFiliation::AddDaughterToZAI(ZAI Mother, IsotopicVector Daughter )
+void CLASSNucleiFiliation::Add(ZAI Mother, IsotopicVector Daughter )
 {
 	DBGL
 	
@@ -182,8 +182,20 @@ void CLASSNucleiFiliation::NormalizeBranchingRatio(ZAI Mother, double Value)
 
 
 
+//________________________________________________________________________
 
-
+vector<ZAI> CLASSNucleiFiliation::GetZAIList() const
+{
+	
+	map<ZAI ,IsotopicVector > IsotopicQuantity = GetNucleiFIliation();
+	map<ZAI ,IsotopicVector >::iterator it;
+	vector<ZAI> zailist;
+	for( it = IsotopicQuantity.begin(); it != IsotopicQuantity.end(); it++)
+		zailist.push_back( (*it).first );
+	
+	return zailist;
+	
+}
 
 
 

@@ -86,24 +86,14 @@ string IrradiationModel::GetDecay(string DecayModes, double &BR,int &Iso, int &S
 }
 
 //________________________________________________________________________
-void IrradiationModel::BuildDecayMatrix()
+void IrradiationModel::LoadDecay()
 {
 DBGL
-	fDecayMatrix.Clear();
 
-	// List of Decay Time and Properties
-	map<ZAI, pair<double, map< ZAI, double > > > ZAIDecay;
+	// Add TMP and PF as a stable nuclei in the normal decay lsit
+	fNormalDecay.Add(ZAI(-3,-3,-3), IsotopicVector() );		// TMP
+	fNormalDecay.Add(ZAI(-2,-2,-2), IsotopicVector() );		// PF
 
-	{	// TMP
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-3,-3,-3) , 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(-3,-3,-3), pair<double, map< ZAI, double > > ( 1e28 ,toAdd )) ) ;
-	}
-	{	// PF
-		map< ZAI, double > toAdd;
-		toAdd.insert(pair<ZAI, double> ( ZAI(-2,-2,-2), 1) );
-		ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >( ZAI(-2,-2,-2), pair<double, map< ZAI, double > > ( 1e28 ,toAdd )) ) ;
-	}
 
 
 	string DataFullPathName = GetDataDirectoryName()+ GetDataFileName();
@@ -147,7 +137,7 @@ DBGL
 			double branch_test_f=0;
 
 			ZAI ParentZAI = ZAI(Z,A,I);
-			IsotopicVector DaughtersMap;
+			IsotopicVector DaughtersIV;
 			bool stable = true;
 
 			while(start<int(DecayModes.size()))
@@ -193,14 +183,14 @@ DBGL
 					{
 						if(DM <= 15)
 						{
-							DaughtersMap += BR * DaughterZAI;
+							DaughtersIV += BR * DaughterZAI;
 							branch_test+=BR;
 						}
 						else if( DM <= 18)
 						{
 							if(fSpontaneusYield.size() == 0 )
 							{
-								DaughtersMap += 2*BR * ZAI(-2,-2,-2);
+								DaughtersIV += 2*BR * ZAI(-2,-2,-2);
 
 								branch_test_f += 2*BR;
 							}
@@ -210,13 +200,13 @@ DBGL
 								map<ZAI, IsotopicVector>::iterator it_yield = fSpontaneusYield.find(ParentZAI);
 								if(it_yield != fSpontaneusYield.end())
 								{
-									DaughtersMap += BR* (*it_yield).second ;
+									DaughtersIV += BR* (*it_yield).second ;
 									branch_test_f += BR* (*it_yield).second.GetSumOfAll();
 
 								}
 								else
 								{
-									DaughtersMap += 2*BR * ZAI(-2,-2,-2);
+									DaughtersIV += 2*BR * ZAI(-2,-2,-2);
 									branch_test_f += 2*BR;
 								}
 							}
@@ -232,180 +222,67 @@ DBGL
 
 			double btest = fabs(branch_test + branch_test_f/2.-1.0);
 			if ( btest > 1e-8 && !stable )
-				{	
-					//cout<<"**"<<ParentZAI.Z()<<" "<<ParentZAI.A()<<" "<<ParentZAI.I()<<" "<<DaughtersMap.GetSumOfAll()<<endl;
-					DaughtersMap = DaughtersMap / (branch_test+branch_test_f/2.);
-				//	cout<<ParentZAI.Z()<<" "<<ParentZAI.A()<<" "<<ParentZAI.I()<<" "<<DaughtersMap.GetSumOfAll()<<endl;
-				}	
+				DaughtersIV = DaughtersIV / (branch_test+branch_test_f/2.);
+			
 				
 					
 			if (HalfLife < fShorstestHalflife && !stable)
-				fFastDecay.insert( pair< ZAI, map<ZAI, double> > ( ParentZAI, DaughtersMap.GetIsotopicQuantity() ) );
+				fFastDecay.Add( ParentZAI, DaughtersIV );	// Fill the FastDecay by the Daughter IV
 			else if (stable)
 			{
-				IsotopicVector StableIV = ParentZAI *1;
-				ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >
-						(ParentZAI, pair<double, map< ZAI, double > >
-						 ( 1e36, StableIV.GetIsotopicQuantity()) ) );
+				fNormalDecay.Add(ParentZAI, IsotopicVector() ); // Fill the NormalDecay with a empty IV (mother is stable)
 			}
 			else
-				ZAIDecay.insert( pair< ZAI, pair<double, map< ZAI, double > > >
-						(ParentZAI, pair<double, map< ZAI, double > >
-						 ( HalfLife, DaughtersMap.GetIsotopicQuantity()) ) );
+				fNormalDecay.Add( ParentZAI,  ln(2)/HalfLife * DaughtersIV ); // FIll the NormalDecay with the daughter IV scaled by the decay constante.
 
 
 		}
 
 	} while (!infile.eof());
+	
+	
+	//Build the Matrix index :
+	fReverseMatrixIndex = fNormalDecay.GetZAIList();
+	for(int i = 0; i< (int)fReverseMatrixIndex.size(); i++)
+		fMatrixIndex.insert(pair<ZAI, int> (fReverseMatrixIndex[i], i) );
+	
+	
+	fFastDecay.SelfFiliationCleanUp(fMatrixIndex);
+	fNormalDecay.FiliationCleanUp(fMatrixIndex, fFastDecay);
 
-	{
-		int i = 0;
-		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
-		for(it = ZAIDecay.begin() ; it != ZAIDecay.end(); it++)
-		{
-			findex.insert( pair<int, ZAI > ( i, (*it).first ) );
-			findex_inver.insert( pair<ZAI, int > ( (*it).first , i ));
-			i++;
-		}
-	}
+
 DBGL
-	// Fill the Decay Part of the Bateman Matrix Always the same !
-	bool FastDecayValidation  = false;
-	while (!FastDecayValidation)
-	{
-		map<ZAI, map<ZAI, double> > FastDecayCopy = fFastDecay;
-
-		map<ZAI, map<ZAI, double> >::iterator	FD_it;
-		map<ZAI, map<ZAI, double> >::iterator	FD_it_Origin;
+}
 
 
-		for(FD_it = FastDecayCopy.begin(); FD_it != FastDecayCopy.end(); FD_it++)
-		{
-
-			FD_it_Origin = fFastDecay.find(FD_it->first);
-
-			map<ZAI, double> BR = (*FD_it).second;
-			map<ZAI, double>::iterator BR_it;
-
-			for(BR_it = BR.begin(); BR_it != BR.end(); BR_it++)
-			{
-
-				map<ZAI, int>::iterator it_index = findex_inver.find( (*BR_it).first );
-
-				if( it_index == findex_inver.end() )
-				{
-					map<ZAI, map<ZAI, double> >::iterator FD2_it = FastDecayCopy.find((*BR_it).first);
-					if( FD2_it != FastDecayCopy.end() )
-					{
-						map<ZAI, double>::iterator BR2_it;
-						(*FD_it_Origin).second.erase((*BR_it).first);
-
-						for (BR2_it = (*FD2_it).second.begin(); BR2_it != (*FD2_it).second.end(); BR2_it++)
-						{
-
-							pair<map<ZAI, double>::iterator, bool> IResult;
-							IResult = (*FD_it_Origin).second.insert( pair<ZAI, double> ( (*BR2_it).first, (*BR_it).second * (*BR2_it).second ) );
-
-							if( !IResult.second)
-								(*IResult.first).second += (*BR_it).second * (*BR2_it).second ;
-
-
-						}
-
-					}
-					else
-					{
-						(*FD_it_Origin).second.erase( (*BR_it).first );
-						pair< map<ZAI, double>::iterator, bool> IResult;
-						IResult = (*FD_it_Origin).second.insert( pair<ZAI, double> ( ZAI(-3,-3,-3), (*BR_it).second) );
-						if( !IResult.second)
-							(*IResult.first).second += (*BR_it).second ;
-					}
-
-
-
-				}
-			}
-
-		}
-
-
-		FastDecayValidation = true;
-		for(FD_it = fFastDecay.begin(); FD_it != fFastDecay.end(); FD_it++)
-		{
-			map<ZAI, double>::iterator BR_it;
-			for (BR_it = (*FD_it).second.begin(); BR_it != (*FD_it).second.end(); BR_it++)
-			{
-				map<ZAI, int>::iterator Index_it = findex_inver.find( (*BR_it).first );
-				map<ZAI, map<ZAI, double> >::iterator FD2_it = fFastDecay.find( (*BR_it).first );
-				if(Index_it == findex_inver.end() && FD2_it == fFastDecay.end())
-					FastDecayValidation = false;
-			}
-		}
-	}
-DBGL
-
+void IrradiationModel::BuildDecayMatrix()
+{
+	
+	fDecayMatrix.Clear();
+	
 	fDecayMatrix.ResizeTo(findex.size(),findex.size());
 	for(int i = 0; i < (int)findex.size(); i++)
 		for(int j = 0; j < (int)findex.size(); j++)
 			fDecayMatrix[i][j] = 0;
-
-
-
-
+	
+	for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
 	{
-		int i = 0;
-		map<ZAI, pair<double, map< ZAI, double > > >::iterator it;
-		for(it = ZAIDecay.begin() ; it != ZAIDecay.end(); it++)
+		
+		IsotopicVector DaughterIV = fNormalDecay.GetFiliation(fReverseMatrixIndex[i]);
+		vector<ZAI> DaughterZAIList = DaughterIV.GetZAIList();
+		
+		for(int j = 0; j < (int)DaughterZAIList.size(); j++)
 		{
-			map< ZAI, double >::iterator it2;
-			map< ZAI, double > decaylist = (*it).second.second;
-			for(it2 = decaylist.begin(); it2!= decaylist.end(); it2++)
-			{
-
-				map<ZAI, int >::iterator it3 = findex_inver.find( (*it2).first );
-				if( it3 != findex_inver.end() )
-				{
-					fDecayMatrix[(*it3).second][i] += log(2.)/(*it).second.first * (*it2).second;
-				}
-				else
-				{
-					map<ZAI, map<ZAI, double> >::iterator it4 = fFastDecay.find( (*it2).first );
-
-					if( it4 == fFastDecay.end() )
-					{
-
-
-						fDecayMatrix[0][i] += log(2.)/(*it).second.first * (*it2).second;
-					}
-					else
-					{
-						map< ZAI, double >::iterator it5;
-						map< ZAI, double > decaylist2 = (*it4).second;
-						for(it5 = decaylist2.begin(); it5!= decaylist2.end(); it5++)
-						{
-							it3 = findex_inver.find( (*it5).first );
-							if( it3 == findex_inver.end() )
-								fDecayMatrix[0][i] += log(2.)/(*it).second.first * (*it2).second * (*it5).second;
-
-							else
-							{
-								fDecayMatrix[(*it3).second][i] += log(2.)/(*it).second.first * (*it2).second * (*it5).second;
-
-							}
-						}
-					}
-
-				}
-			}
-			fDecayMatrix[i][i] -= log(2.)/(*it).second.first;
-
-			i++;
-
-
+			if(fMatrixIndex.find(DaughterZAIList[j]) != fMatrixIndex.end() )
+				fDecayMatrix[fMatrixIndex[ DaughterZAIList[j] ]][i] += DaughterIV.GetQuantity(DaughterZAIList[j]);
+			else
+				fDecayMatrix[0][i] += DaughterIV.GetQuantity(DaughterZAIList[j]);
+			
 		}
+		
 	}
-DBGL
+	
+	DBGL
 }
 
 //________________________________________________________________________
@@ -543,6 +420,8 @@ void IrradiationModel::LoadFPYield(string SpontaneusYield, string ReactionYield)
 void IrradiationModel::NuclearDataInitialization()
 {
 
+	LoadDecay();
+	
 	BuildDecayMatrix();
 
 	if(fSpontaneusYieldFile!="")

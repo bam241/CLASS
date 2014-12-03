@@ -55,6 +55,9 @@ public:
 
 	IsotopicVector GetFiliation(ZAI Mother);
 	
+	vector<ZAI>		GetZAIList()	const;			//!< Return the list of mother ZAI present in the Filiation list
+
+	
 	//}
 	
 	//********* Add Method *********//
@@ -65,7 +68,7 @@ public:
 	//@{
 	
 	
-	void AddDaughterToZAI(ZAI Mother, IsotopicVector Daughter );
+	void Add(ZAI Mother, IsotopicVector Daughter );
 	
 	//}
 

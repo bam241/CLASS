@@ -15,7 +15,9 @@
 #include "CLASSObject.hxx"
 #include "TMatrix.h"
 #include "IsotopicVector.hxx"
+#include "CLASSNucleiFiliation.hxx"
 #include "EvolutionData.hxx"
+
 
 #include <map>
 #include <vector>
@@ -134,6 +136,8 @@ class IrradiationModel : public CLASSObject
 	
 
 	void	BuildDecayMatrix();			///w Build the Decay Matrix for the futur evolution...
+	void    LoadDecay();
+
 	void	NuclearDataInitialization(); //Build Decay matrices & read FpYields if any
 	//@}
 	
@@ -161,15 +165,17 @@ class IrradiationModel : public CLASSObject
 	
 	TMatrixT<double>		fDecayMatrix;	///< Matrix with half life of each nuclei
 	map<ZAI, double >		fFissionEnergy;	///< Store the Energy per fission use for the flux normalisation.
-	map<ZAI, map<ZAI, double> >	fFastDecay;	///< Store the cut decay
+	CLASSNucleiFiliation		fFastDecay;	///< Store the cut decay
+	CLASSNucleiFiliation		fNormalDecay;	///< Store the dealed decay
+	
 	map<ZAI, IsotopicVector>	fSpontaneusYield;	///< Store the Spontaneus fission yield
 	map<ZAI, IsotopicVector>	fReactionYield;		///< Store the reaction fission yield
 	
 	string	fSpontaneusYieldFile;	///< Store the Spontaneus fission yield
 	string	fReactionYieldFile;		///< Store the reaction fission yield
 	
-	map<ZAI, int> findex_inver;	///< correspondance matrix from ZAI to the column (or line) of the different Reaction/Decay matrix
-	map<int, ZAI> findex;		///< correspondance matrix from the column (or line) of the different Reaction/Decay matrix to the ZAI
+	map<ZAI, int> fMatrixIndex;		///< correspondance matrix from ZAI to the column (or line) of the different Reaction/Decay matrix
+	vector<ZAI> fReverseMatrixIndex;	///< correspondance matrix from the column (or line) of the different Reaction/Decay matrix to the ZAI
 	
 	//{
 	/// Return the Fission XS Matrix at the time TStep
