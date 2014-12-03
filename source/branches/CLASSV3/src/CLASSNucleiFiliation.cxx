@@ -65,10 +65,10 @@ IsotopicVector CLASSNucleiFiliation::GetFiliation(ZAI Mother)
 	DBGL
 	map<ZAI, IsotopicVector>::iterator it_Filiation;
 	
-	it_Filiation = fNucleiFiliation.find(Mother);
+	it_Filiation = fNucleiFiliation.find(Mother);	// search for the ZAI in the map
 
 	DBGL
-	if(it_Filiation != fNucleiFiliation.end())
+	if(it_Filiation != fNucleiFiliation.end())	// test if it is present in the map
 		return it_Filiation->second;
 	else
 		return ZAI(-1,-1,-1)*1;		// return -1 -1 _1 ZAI if unknown nuclei....
@@ -80,11 +80,11 @@ void CLASSNucleiFiliation::FiliationCleanUp(map<ZAI, int> GoodNuclei, CLASSNucle
 {
 	DBGL
 	map<ZAI, IsotopicVector>::iterator it_Filiation;
-	for(it_Filiation = fNucleiFiliation.begin(); it_Filiation != fNucleiFiliation.end(); it_Filiation++)
+	for(it_Filiation = fNucleiFiliation.begin(); it_Filiation != fNucleiFiliation.end(); it_Filiation++) // loop on the filiation map (on the Mother ZAI)
 	{
-		vector<ZAI> DautherList = it_Filiation->second.GetZAIList();
+		vector<ZAI> DautherList = it_Filiation->second.GetZAIList();		// recover for each mother ZAI, the list of its daughter ZAI
 		
-		for (int i = 0; i < (int)DautherList.size(); i++)
+		for (int i = 0; i < (int)DautherList.size(); i++)			// Loop on the Daughter ZAI
 		{
 			if(GoodNuclei.find(DautherList[i]) == GoodNuclei.end() ) // if the ZAI is not in a dealed nuclei (cutted or unknown)
 			{
@@ -113,18 +113,17 @@ void CLASSNucleiFiliation::SelfFiliationCleanUp(map<ZAI, int> GoodNuclei)
 
 	bool Cleaned = false;
 	
-	while (!Cleaned)
+	while (!Cleaned)	// loop until all the map is cleaned (all cut have been done)
 	{
 		
 		Cleaned = true;
-		CLASSNucleiFiliation CuttedNuclei(*this);
-		
+	
 		map<ZAI, IsotopicVector>::iterator it_Filiation;
-		for(it_Filiation = fNucleiFiliation.begin(); it_Filiation != fNucleiFiliation.end(); it_Filiation++)
+		for(it_Filiation = fNucleiFiliation.begin(); it_Filiation != fNucleiFiliation.end(); it_Filiation++) // Loop on the mother ZAI
 		{
-			vector<ZAI> DautherList = it_Filiation->second.GetZAIList();
+			vector<ZAI> DautherList = it_Filiation->second.GetZAIList(); // Get the list of daughter ZAI
 			
-			for (int i = 0; i < (int)DautherList.size(); i++)
+			for (int i = 0; i < (int)DautherList.size(); i++)		//Loop on daughter
 			{
 				if(GoodNuclei.find(DautherList[i]) == GoodNuclei.end() ) // if the ZAI is not in a dealed nuclei (cutted or unknown)
 				{
@@ -134,7 +133,7 @@ void CLASSNucleiFiliation::SelfFiliationCleanUp(map<ZAI, int> GoodNuclei)
 					it_Filiation->second -= Daughter_BR * DautherList[i];			// Remove it from the daughter list
 					
 					
-					IsotopicVector FastDecayChain = CuttedNuclei.GetFiliation(DautherList[i]); // Get the fast decay chain of it
+					IsotopicVector FastDecayChain = (*this).GetFiliation(DautherList[i]); // Get the fast decay chain of it
 					
 					if(FastDecayChain.GetQuantity(-1, -1, -1) != 0) // Check if the FastDecayChain is known
 						it_Filiation->second += Daughter_BR * FastDecayChain; // Add the FastDecayCHain & apply the BR for the cutted Daughter
