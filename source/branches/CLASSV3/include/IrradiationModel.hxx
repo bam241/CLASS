@@ -75,7 +75,7 @@ class IrradiationModel : public CLASSObject
 	double  GetShorstestHalflife()	const { return fShorstestHalflife; }
 	
 
-	TMatrixT<double> GetNuclearProcessMatrix(ZAI Mother, IsotopicVector ProductedIV, double XSValue = 1);
+	void GetNuclearProcessMatrix(TMatrixT<double> &myMatrix, ZAI Mother, IsotopicVector ProductedIV, double XSValue = 1);
 	
 	void BuildReactionFiliation();
 
@@ -177,6 +177,7 @@ class IrradiationModel : public CLASSObject
 	
 	CLASSNucleiFiliation	fFastDecay;	///< Store the cut decay
 	CLASSNucleiFiliation	fNormalDecay;	///< Store the dealed decay
+	IsotopicVector			fDecayConstante;
 	
 	CLASSNucleiFiliation	fSpontaneusYield;	///< Store the Spontaneus fission yield
 	CLASSNucleiFiliation	fReactionYield;		///< Store the reaction fission yield

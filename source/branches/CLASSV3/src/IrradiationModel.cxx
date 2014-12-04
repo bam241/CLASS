@@ -34,6 +34,7 @@ IrradiationModel::IrradiationModel():CLASSObject()
 	fDataDirectoryName = getenv("CLASS_PATH");
 	fDataDirectoryName += "/data/";
 	fDataFileName = "chart.JEF3T";
+
 }
 
 IrradiationModel::IrradiationModel(CLASSLogger* log):CLASSObject(log)
@@ -45,9 +46,13 @@ IrradiationModel::IrradiationModel(CLASSLogger* log):CLASSObject(log)
 	fDataDirectoryName = getenv("CLASS_PATH");
 	fDataDirectoryName += "/data/";
 	fDataFileName = "chart.JEF3T";
+
+	fNormalDecay = CLASSNucleiFiliation( log );
+	fFastDecay   = CLASSNucleiFiliation( log );
+
+	fCaptureReaction= CLASSNucleiFiliation( log );
+	fn2nReaction	= CLASSNucleiFiliation( log );
 }
-
-
 //________________________________________________________________________
 //________________________________________________________________________
 /*				Physics				*/
@@ -233,21 +238,23 @@ void IrradiationModel::LoadDecay()
 				fNormalDecay.Add(ParentZAI, IsotopicVector() ); // Fill the NormalDecay with a empty IV (mother is stable)
 			}
 			else
-				fNormalDecay.Add( ParentZAI,  log(2)/HalfLife * DaughtersIV ); // FIll the NormalDecay with the daughter IV scaled by the decay constante.
-			
-			
+			{
+				fNormalDecay.Add( ParentZAI,  DaughtersIV ); // FIll the NormalDecay with the daughter IV scaled by the decay constante.
+				fDecayConstante += ParentZAI*log(2)/HalfLife;
+			}
 		}
 		
 	} while (!infile.eof());
-	
+	DBGL
 	
 	//Build the Matrix index :
 	fReverseMatrixIndex = fNormalDecay.GetZAIList();
 	for(int i = 0; i< (int)fReverseMatrixIndex.size(); i++)
 		fMatrixIndex.insert(pair<ZAI, int> (fReverseMatrixIndex[i], i) );
 	
-	
+	DBGL
 	fFastDecay.SelfFiliationCleanUp(fMatrixIndex);
+	DBGL
 	fNormalDecay.FiliationCleanUp(fMatrixIndex, fFastDecay);
 	
 	
@@ -270,7 +277,7 @@ void IrradiationModel::BuildDecayMatrix()
 	{
 		
 		IsotopicVector DaughterIV = fNormalDecay.GetFiliation(fReverseMatrixIndex[i]);
-		fDecayMatrix += (*this).GetNuclearProcessMatrix(fReverseMatrixIndex[i], DaughterIV);
+		(*this).GetNuclearProcessMatrix(fDecayMatrix, fReverseMatrixIndex[i], DaughterIV, fDecayConstante.GetQuantity(fReverseMatrixIndex[i]) );
 		
 	}
 	
@@ -278,15 +285,10 @@ void IrradiationModel::BuildDecayMatrix()
 }
 
 
-TMatrixT<double> IrradiationModel::GetNuclearProcessMatrix(ZAI Mother, IsotopicVector ProductedIV, double XSValue)
+void IrradiationModel::GetNuclearProcessMatrix(TMatrixT<double> &NuclearProcessMatrix, ZAI Mother, IsotopicVector ProductedIV, double XSValue)
 {
 	DBGL
-	
-	TMatrixT<double> NuclearProcessMatrix = TMatrixT<double>( fReverseMatrixIndex.size(), fReverseMatrixIndex.size() );
-	for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
-		for(int j = 0; j < (int)fReverseMatrixIndex.size(); j++)
-			NuclearProcessMatrix[i][j] = 0;
-	
+		
 	vector<ZAI> ProductedZAIList = ProductedIV.GetZAIList();
 	
 	if(fMatrixIndex.find(Mother) != fMatrixIndex.end())
@@ -300,17 +302,16 @@ TMatrixT<double> IrradiationModel::GetNuclearProcessMatrix(ZAI Mother, IsotopicV
 		for(int j = 0; j < (int)ProductedZAIList.size(); j++)
 		{
 			if(fMatrixIndex.find(ProductedZAIList[j]) != fMatrixIndex.end() )
-				NuclearProcessMatrix[fMatrixIndex[ ProductedZAIList[j] ]][i] += ProductedIV.GetQuantity(ProductedZAIList[j])*XSValue;
+			{	NuclearProcessMatrix[fMatrixIndex[ ProductedZAIList[j] ]][i] += ProductedIV.GetQuantity(ProductedZAIList[j])*XSValue;
+				//cout<<ProductedIV.GetQuantity(ProductedZAIList[j])*XSValue<<endl;
+			}	
 			else
 				NuclearProcessMatrix[0][i] += ProductedIV.GetQuantity(ProductedZAIList[j])*XSValue;
 		}
 	}
 	else
 		WARNING << " Can't have nuclear process on this nucleus, ZAI : " << Mother.Z() << " " << Mother.A() << " " << Mother.I() << " its halflife seems to be below the threshold!" << endl;
-	
-	
-	return NuclearProcessMatrix;
-	
+		
 	DBGL
 }
 
@@ -350,7 +351,7 @@ CLASSNucleiFiliation IrradiationModel::ReadFPYield(string Yield)
 {
 	DBGL
 	
-	CLASSNucleiFiliation MyYield;
+	CLASSNucleiFiliation MyYield = CLASSNucleiFiliation( fLog );
 	
 	ifstream infile(Yield.c_str());
 	if(!infile)
@@ -507,7 +508,8 @@ void 	IrradiationModel::BuildReactionFiliation()
 		}
 		if(fn2nReaction.GetFiliation(fReverseMatrixIndex[i]).GetQuantity(ZAI(-1,-1,-1))  == 1 )
 		{
-			fn2nReaction.Add(fReverseMatrixIndex[i], ZAI(Z,A-1)*1);
+			if(A>1)
+				fn2nReaction.Add(fReverseMatrixIndex[i], ZAI(Z,A-1)*1);
 		}
 	}
 	
@@ -548,11 +550,11 @@ TMatrixT<double> IrradiationModel::GetFissionXsMatrix(EvolutionData EvolutionDat
 		IsotopicVector FissionProductIV = fReactionYield.GetFiliation(Mother);		// Get the Isotopicvector produced by the reaction
 		
 		if(FissionProductIV.GetQuantity(ZAI(-1,-1,-1)) != 1)						// Check if ZAI is dealed
-			FissionMatrix += GetNuclearProcessMatrix( Mother, FissionProductIV,  XS_Value );	// add the Nuclear process in the Reaction Matrix
+			GetNuclearProcessMatrix( FissionMatrix, Mother, FissionProductIV,  XS_Value );	// add the Nuclear process in the Reaction Matrix
 		else
 		{
 			WARNING << "Don't have fission Yield for this nuclei, ZAI : " << Mother.Z() << " " << Mother.A() << " " << Mother.I() << endl;
-			FissionMatrix += GetNuclearProcessMatrix( Mother, ZAI(-2, -2, -2) * 2 , XS_Value );	// add the Nuclear process in the Reaction Matrix
+			GetNuclearProcessMatrix(FissionMatrix, Mother, ZAI(-2, -2, -2) * 2 , XS_Value );	// add the Nuclear process in the Reaction Matrix
 		}
 		
 		
@@ -573,10 +575,10 @@ TMatrixT<double> IrradiationModel::GetCaptureXsMatrix(EvolutionData EvolutionDat
 	
 	// ----------------  A(n,Gamma) A+1
 	
-	map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetFissionXS();
+	map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetCaptureXS();
 	map<ZAI ,TGraph* >::iterator it_XS;
 	
-	for(it_XS = CaptureXS.begin() ; it_XS != CaptureXS.end(); it_XS++)	//loop on fissionable nuclei
+	for(it_XS = CaptureXS.begin() ; it_XS != CaptureXS.end(); it_XS++)	//loop on nuclei
 	{
 		ZAI Mother = (*it_XS).first;					// Note the Mother ZAI (not necessary but help for reading the code)
 		double XS_Value = (*it_XS).second->Eval(TStep) * 1e-24;		// Get Cross section values
@@ -584,7 +586,7 @@ TMatrixT<double> IrradiationModel::GetCaptureXsMatrix(EvolutionData EvolutionDat
 		IsotopicVector CaptureProductIV = fCaptureReaction.GetFiliation(Mother);		// Get the Isotopicvector produced by the reaction
 		
 		if(CaptureProductIV.GetQuantity(ZAI(-1,-1,-1)) != 1)						// Check if ZAI is dealed
-			CaptureMatrix += GetNuclearProcessMatrix( Mother, CaptureProductIV,  XS_Value );	// add the Nuclear process in the Reaction Matrix
+			GetNuclearProcessMatrix(CaptureMatrix, Mother, CaptureProductIV,  XS_Value );	// add the Nuclear process in the Reaction Matrix
 		else
 			WARNING << "Can't have capture reaction on this nuclei, ZAI : " << Mother.Z() << " " << Mother.A() << " " << Mother.I() << endl;
 			
@@ -611,10 +613,10 @@ TMatrixT<double> IrradiationModel::Getn2nXsMatrix(EvolutionData EvolutionDataSte
 	
 	// ----------------  A(n,2n) A-1
 	
-	map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetFissionXS();
+	map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.Getn2nXS();
 	map<ZAI ,TGraph* >::iterator it_XS;
 	
-	for(it_XS = CaptureXS.begin() ; it_XS != CaptureXS.end(); it_XS++)	//loop on fissionable nuclei
+	for(it_XS = CaptureXS.begin() ; it_XS != CaptureXS.end(); it_XS++)	//loop on nuclei
 	{
 		ZAI Mother = (*it_XS).first;					// Note the Mother ZAI (not necessary but help for reading the code)
 		double XS_Value = (*it_XS).second->Eval(TStep) * 1e-24;		// Get Cross section values
@@ -622,7 +624,7 @@ TMatrixT<double> IrradiationModel::Getn2nXsMatrix(EvolutionData EvolutionDataSte
 		IsotopicVector n2nProductIV = fn2nReaction.GetFiliation(Mother);		// Get the Isotopicvector produced by the reaction
 		
 		if(n2nProductIV.GetQuantity(ZAI(-1,-1,-1)) != 1)						// Check if ZAI is dealed
-			n2nMatrix += GetNuclearProcessMatrix( Mother, n2nProductIV,  XS_Value );	// add the Nuclear process in the Reaction Matrix
+			GetNuclearProcessMatrix(n2nMatrix, Mother, n2nProductIV,  XS_Value );	// add the Nuclear process in the Reaction Matrix
 		else
 			WARNING << "Can't have n,2n reaction on this nuclei, ZAI : " << Mother.Z() << " " << Mother.A() << " " << Mother.I() << endl;
 		

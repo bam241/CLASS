@@ -23,7 +23,9 @@ using namespace std;
 CLASSNucleiFiliation::CLASSNucleiFiliation():CLASSObject()
 {
 }
-
+CLASSNucleiFiliation::CLASSNucleiFiliation(CLASSLogger* log):CLASSObject(log)
+{
+}
 
 CLASSNucleiFiliation::CLASSNucleiFiliation(const CLASSNucleiFiliation& CNF):CLASSObject()
 {
@@ -60,7 +62,7 @@ void CLASSNucleiFiliation::Add( ZAI Mother, IsotopicVector Daughter )
 //________________________________________________________________________
 IsotopicVector CLASSNucleiFiliation::GetFiliation(ZAI Mother)
 {
-	DBGL
+	DBGV(Mother.Z()<<" "<<Mother.A()<<" "<<Mother.I());
 	map<ZAI, IsotopicVector>::iterator it_Filiation;
 	
 	it_Filiation = fNucleiFiliation.find(Mother);	// search for the ZAI in the map
@@ -164,9 +166,8 @@ void CLASSNucleiFiliation::SelfFiliationCleanUp(map<ZAI, int> GoodNuclei)
 	
 	while (!Cleaned)	// loop until all the map is cleaned (all cut have been done)
 	{
-		
-		Cleaned = true;
-	
+		int count = 0;
+		map<ZAI, IsotopicVector> CopyfNucleiFiliation = fNucleiFiliation;
 		map<ZAI, IsotopicVector>::iterator it_Filiation;
 		for(it_Filiation = fNucleiFiliation.begin(); it_Filiation != fNucleiFiliation.end(); it_Filiation++) // Loop on the mother ZAI
 		{
@@ -175,27 +176,52 @@ void CLASSNucleiFiliation::SelfFiliationCleanUp(map<ZAI, int> GoodNuclei)
 			for (int i = 0; i < (int)DautherList.size(); i++)		//Loop on daughter
 			{
 				if(GoodNuclei.find(DautherList[i]) == GoodNuclei.end() ) // if the ZAI is not in a dealed nuclei (cutted or unknown)
-				{
-					Cleaned = false;
-					
-					double Daughter_BR = it_Filiation->second.GetQuantity(DautherList[i]);	// Get the quantity of the ZAI
-					it_Filiation->second -= Daughter_BR * DautherList[i];			// Remove it from the daughter list
-					
-					
+				{	count++;
+					map<ZAI, IsotopicVector>::iterator it_FiliationCopy = CopyfNucleiFiliation.find(it_Filiation->first)  ;
+
+					double Daughter_BR = it_FiliationCopy->second.GetQuantity(DautherList[i]);	// Get the quantity of the ZAI
+					it_FiliationCopy->second -= Daughter_BR * DautherList[i];			// Remove it from the daughter list					
 					IsotopicVector FastDecayChain = (*this).GetFiliation(DautherList[i]); // Get the fast decay chain of it
-					
-					if(FastDecayChain.GetQuantity(-1, -1, -1) != 0) // Check if the FastDecayChain is known
-						it_Filiation->second += Daughter_BR * FastDecayChain; // Add the FastDecayCHain & apply the BR for the cutted Daughter
+
+					if(FastDecayChain.GetQuantity(-1, -1, -1) == 0) // Check if the FastDecayChain is known
+						it_FiliationCopy->second += Daughter_BR * FastDecayChain; // Add the FastDecayCHain & apply the BR for the cutted Daughter
 					else
-					{
-						WARNING << "Cleaning up the FastDecay Filiation, I found an unknwon nuclei, should not append !!!" << endl;
-						it_Filiation->second += Daughter_BR * ZAI(-3,-3,-3); // Add a TMP nuclei the daughter nuclei is not known at all...
+					{					
+						ZAI Mother = DautherList[i];
+						while (FastDecayChain.GetQuantity(-1, -1, -1) != 0 && GoodNuclei.find(Mother) == GoodNuclei.end())
+						{
+							Mother = GetArtificialDecay(Mother);			// Do an Artifial decay on the nuclei
+							FastDecayChain = (*this).GetFiliation(Mother); // Get the fast decay chain of it
+						}
+
+						if(GoodNuclei.find(Mother) != GoodNuclei.end())
+							it_FiliationCopy->second += Mother * Daughter_BR;
+						
+						else if ( FastDecayChain.GetQuantity(-1, -1, -1) == 0)
+							it_FiliationCopy->second += FastDecayChain * Daughter_BR;
+						
+						else
+						{
+							ERROR << "Problem in Articial Decay!! check it!!" << endl;
+							exit(1);
+						}
+
 					}
 				}
 			}
 			
 		}
-	
+		fNucleiFiliation = CopyfNucleiFiliation;
+			Cleaned = true;
+		for(it_Filiation = fNucleiFiliation.begin(); it_Filiation != fNucleiFiliation.end(); it_Filiation++) // Loop on the mother ZAI
+		{
+			vector<ZAI> DautherList = it_Filiation->second.GetZAIList(); // Get the list of daughter ZAI
+			
+			for (int i = 0; i < (int)DautherList.size(); i++)		//Loop on daughter
+				if(GoodNuclei.find(DautherList[i]) == GoodNuclei.end() ) // if the ZAI is not in a dealed nuclei (cutted or unknown)
+					Cleaned = false;
+		}
+
 	}
 	
 	NormalizeBranchingRatio();

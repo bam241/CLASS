@@ -417,7 +417,8 @@ void IsotopicVector::Remove(const ZAI& zai, double quantity)
 		}
 	}
 
-
+	if(it->second == 0)
+		fIsotopicQuantity.erase(it);
 }
 
 //________________________________________________________________________
