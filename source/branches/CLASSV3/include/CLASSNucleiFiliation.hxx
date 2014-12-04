@@ -37,7 +37,7 @@ public:
 	
 	CLASSNucleiFiliation();	///< Default constructor
 	
-	CLASSNucleiFiliation(CLASSNucleiFiliation CNF); ///< Copy Constructor
+	CLASSNucleiFiliation(const CLASSNucleiFiliation& CNF); ///< Copy Constructor
 	
 	
 	~CLASSNucleiFiliation();	///< Normal Destructor.
@@ -55,8 +55,12 @@ public:
 
 	IsotopicVector GetFiliation(ZAI Mother);
 	
-	vector<ZAI>		GetZAIList()	const;			//!< Return the list of mother ZAI present in the Filiation list
-
+	vector<ZAI> GetZAIList() const;			//!< Return the list of mother ZAI present in the Filiation list
+	
+	
+	int size() const{return (int)fNucleiFiliation.size();}
+	
+	ZAI GetArtificialDecay(ZAI Mother);
 	
 	//}
 	
@@ -100,7 +104,6 @@ protected :
 	map<ZAI, IsotopicVector> fNucleiFiliation;
 	
 	
-	ClassDef(CLASSNucleiFiliation,1);
 };
 
 
