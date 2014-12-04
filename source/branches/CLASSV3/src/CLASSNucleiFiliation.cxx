@@ -4,7 +4,7 @@
 
 #include <map>
 #include <vector>
-#include "stdlib.h"
+#include <cmath>
 
 using namespace std;
 
@@ -19,17 +19,15 @@ using namespace std;
 //________________________________________________________________________
 //____________________________InClass Operator____________________________
 //________________________________________________________________________
-ClassImp(CLASSNucleiFiliation)
-
 
 CLASSNucleiFiliation::CLASSNucleiFiliation():CLASSObject()
 {
 }
 
 
-CLASSNucleiFiliation::CLASSNucleiFiliation(CLASSNucleiFiliation CNF):CLASSObject()
+CLASSNucleiFiliation::CLASSNucleiFiliation(const CLASSNucleiFiliation& CNF):CLASSObject()
 {
-	fNucleiFIliation = CNF.GetNucleiFIliation();
+	fNucleiFiliation = CNF.GetNucleiFIliation();
 }
 
 
@@ -42,7 +40,7 @@ CLASSNucleiFiliation::~CLASSNucleiFiliation()
 
 
 //________________________________________________________________________
-void CLASSNucleiFiliation::Add(ZAI Mother, IsotopicVector Daughter )
+void CLASSNucleiFiliation::Add( ZAI Mother, IsotopicVector Daughter )
 {
 	DBGL
 	
@@ -94,17 +92,68 @@ void CLASSNucleiFiliation::FiliationCleanUp(map<ZAI, int> GoodNuclei, CLASSNucle
 				
 				IsotopicVector FastDecayChain = CuttedNuclei.GetFiliation(DautherList[i]); // Get the fast decay chain of it
 				
-				if(FastDecayChain.GetQuantity(-1, -1, -1) != 0) // Check if the FastDecayChain is known
+				if(FastDecayChain.GetQuantity(-1, -1, -1) == 0) // Check if the FastDecayChain is known
 					it_Filiation->second += Daughter_BR * FastDecayChain; // Add the FastDecayCHain & apply the BR for the cutted Daughter
 				else
-					it_Filiation->second += Daughter_BR * ZAI(-3,-3,-3); // Add a TMP nuclei the daughter nuclei is not known at all...
-				
+				{
+					
+					ZAI Mother = DautherList[i];
+					while (FastDecayChain.GetQuantity(-1, -1, -1) != 0 || GoodNuclei.find(Mother) == GoodNuclei.end())
+					{
+						Mother = GetArtificialDecay(Mother);			// Do an Artifial decay on the nuclei
+						FastDecayChain = CuttedNuclei.GetFiliation(Mother); // Get the fast decay chain of it
+					}
+					
+					if(GoodNuclei.find(Mother) != GoodNuclei.end())
+						it_Filiation->second += Mother * Daughter_BR;
+					
+					else if ( FastDecayChain.GetQuantity(-1, -1, -1) == 0)
+						it_Filiation->second += FastDecayChain * Daughter_BR;
+					
+					else
+					{
+						ERROR << "Problem in Articial Decay!! check it!!" << endl;
+						exit(1);
+					}
+
+				}
 			}
 		}
 		
 	}
 	DBGL
 }
+
+ZAI CLASSNucleiFiliation::GetArtificialDecay(ZAI Mother)
+{
+	DBGL
+
+	int A = Mother.A();
+	int Z = Mother.Z();
+	int I = Mother.I();
+	
+	if(I!=0)
+		return ZAI(Z,A,I-1);
+	else
+	{
+		//Coef Ac & As of Bette & Weisacker are approximativ but enough precise for this application....
+		double Ac = 0.695;
+		double As = 23.2;
+		
+		double ZTh = A/2 * ( 1 )/ ( 1 + Ac / (4*As) * pow(A,2/3) );  // Stable Z from isobarn calculation using Bette & Weisacker formula.
+	
+		
+		if( Z > ZTh )		// Then Beta+
+			return ZAI(Z-1,A,I);
+		else			// Then Beta-
+			return ZAI(Z+1,A,I);
+		
+	}
+	
+	
+	DBGL
+}
+
 
 //________________________________________________________________________
 void CLASSNucleiFiliation::SelfFiliationCleanUp(map<ZAI, int> GoodNuclei)
@@ -138,14 +187,18 @@ void CLASSNucleiFiliation::SelfFiliationCleanUp(map<ZAI, int> GoodNuclei)
 					if(FastDecayChain.GetQuantity(-1, -1, -1) != 0) // Check if the FastDecayChain is known
 						it_Filiation->second += Daughter_BR * FastDecayChain; // Add the FastDecayCHain & apply the BR for the cutted Daughter
 					else
+					{
+						WARNING << "Cleaning up the FastDecay Filiation, I found an unknwon nuclei, should not append !!!" << endl;
 						it_Filiation->second += Daughter_BR * ZAI(-3,-3,-3); // Add a TMP nuclei the daughter nuclei is not known at all...
-					
+					}
 				}
 			}
 			
 		}
 	
 	}
+	
+	NormalizeBranchingRatio();
 	DBGL
 }
 

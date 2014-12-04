@@ -20,6 +20,7 @@ OBJS		= 	CLASSLogger.o \
 			ZAI.o ZAIDict.o \
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAIMass.o \
+			CLASSNucleiFiliation.o \
 			CLASSObject.o CLASSObjectDict.o\
 			CLASSFacility.o CLASSFacilityDict.o\
 			FabricationPlant.o FabricationPlantDict.o \

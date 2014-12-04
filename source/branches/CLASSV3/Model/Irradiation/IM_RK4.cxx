@@ -67,7 +67,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	if(fFastDecay.size() == 0)
 	{
 		NuclearDataInitialization();
-		fNVar = findex_inver.size();
+		fNVar = fReverseMatrixIndex.size();
 	}
 
 	SetTheMatrixToZero();
@@ -79,12 +79,12 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	vector< TMatrixT<double> > NMatrix ;//  TMatrixT<double>(decayindex.size(),1))
 	{	// Filling the t=0 State;
 		map<ZAI, double > isotopicquantity = isotopicvector.GetIsotopicQuantity();
-		TMatrixT<double>  N_0Matrix =  TMatrixT<double>( findex.size(),1) ;
-		for(int i = 0; i < (int)findex.size(); i++)
+		TMatrixT<double>  N_0Matrix =  TMatrixT<double>( fReverseMatrixIndex.size(),1) ;
+		for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
 			N_0Matrix[i] = 0;
 
 		map<ZAI, double >::iterator it ;
-		for(int i = 0; i < (int)findex.size(); i++)
+		for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
 			N_0Matrix[i] = 0;
 
 		for(it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
@@ -93,11 +93,12 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 			map<ZAI, int >::iterator it2;
 
 			if( (*it).first.Z() < fZAIThreshold )
-				it2 = findex_inver.find( ZAI(-2,-2,-2) );
-			else it2 = findex_inver.find( (*it).first );
+				it2 = fMatrixIndex.find( ZAI(-2,-2,-2) );
+			else it2 = fMatrixIndex.find( (*it).first );
 
-			if(it2 == findex_inver.end() )		//If not in index should be TMP, can't be fast decay for new Fuel !!!
-				it2 = findex_inver.find( ZAI(-3,-3,-3) );
+			if(it2 == fMatrixIndex.end() )		//If not in index should be TMP, can't be fast decay for new Fuel !!!
+				it2 = fMatrixIndex.find( ZAI(-3,-3,-3) );
+			
 			N_0Matrix[ (*it2).second ][0] = (*it).second ;
 
 
@@ -131,13 +132,13 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 
 	double  Flux[NStep];
 
-	TMatrixT<double> FissionEnergy = TMatrixT<double>(findex.size(),1);
-	for(int i = 0; i < (int)findex.size(); i++)
+	TMatrixT<double> FissionEnergy = TMatrixT<double>(fReverseMatrixIndex.size(),1);
+	for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
 		FissionEnergy[i] = 0;
 
 	{
 		map< ZAI, int >::iterator it;
-		for(it = findex_inver.begin(); it != findex_inver.end(); it++)
+		for(it = fMatrixIndex.begin(); it != fMatrixIndex.end(); it++)
 		{
 			map< ZAI, double >::iterator it2 = fFissionEnergy.find(it->first);
 			if(it2 == fFissionEnergy.end())
@@ -161,10 +162,10 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 		double TStepMax = ( (DBTimeStep[i+1]-DBTimeStep[i] ) ) * Power_ref/M_ref / Power*M ;	// Get the next Time step
 
 
-		TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
-		TMatrixT<double> BatemanReactionMatrix = TMatrixT<double>(findex.size(),findex.size());
+		TMatrixT<double> BatemanMatrix = TMatrixT<double>(fReverseMatrixIndex.size(),fReverseMatrixIndex.size());
+		TMatrixT<double> BatemanReactionMatrix = TMatrixT<double>(fReverseMatrixIndex.size(),fReverseMatrixIndex.size());
 
-		TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(findex.size(),1);
+		TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(fReverseMatrixIndex.size(),1);
 		NEvolutionMatrix = NMatrix.back();
 
 
@@ -182,7 +183,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 		for(int k=0; k < InsideStep; k++)
 		{
 			double ESigmaN = 0;
-			for (int j = 0; j < (int)findex.size() ; j++)
+			for (int j = 0; j < (int)fReverseMatrixIndex.size() ; j++)
 				ESigmaN -= FissionXSMatrix[i][j][j]*NEvolutionMatrix[j][0]*1.6e-19*FissionEnergy[j][0];
 			// Update Flux
 			double Flux_k = Power/ESigmaN;
@@ -224,14 +225,14 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	EvolutionData GeneratedDB = EvolutionData(GetLog());
 
 	double ESigmaN = 0;
-	for (int j = 0; j < (int)findex.size() ; j++)
+	for (int j = 0; j < (int)fReverseMatrixIndex.size() ; j++)
 		ESigmaN -= FissionXSMatrix.back()[j][j]*NMatrix.back()[j][0]*1.6e-19*FissionEnergy[j][0];
 
 	Flux[NStep-1] = Power/ESigmaN;
 
 	GeneratedDB.SetFlux( new TGraph(NStep, timevector, Flux)  );
 
-	for(int i = 0; i < (int)findex.size(); i++)
+	for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
 	{
 		double ZAIQuantity[NMatrix.size()];
 		double FissionXS[NStep];
@@ -247,10 +248,10 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 			n2nXS[j]	= n2nXSMatrix[j][i][i];
 		}
 
-		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NMatrix.size(), timevector, ZAIQuantity)));
-		GeneratedDB.FissionXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NStep, timevector, FissionXS)));
-		GeneratedDB.CaptureXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NStep, timevector, CaptureXS)));
-		GeneratedDB.n2nXSInsert(pair<ZAI, TGraph*> (findex.find(i)->second, new TGraph(NStep, timevector, n2nXS)));
+		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NMatrix.size(), timevector, ZAIQuantity)));
+		GeneratedDB.FissionXSInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NStep, timevector, FissionXS)));
+		GeneratedDB.CaptureXSInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NStep, timevector, CaptureXS)));
+		GeneratedDB.n2nXSInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NStep, timevector, n2nXS)));
 	}
 	DBGL
 	GeneratedDB.SetPower(Power );
@@ -292,7 +293,7 @@ void IM_RK4::SetTheMatrixToZero()
 {
 	ResetTheMatrix();
 
-	fNVar = findex.size();
+	fNVar = fReverseMatrixIndex.size();
 	fTheMatrix = new double*[fNVar];
 
 #pragma omp parallel for
@@ -347,16 +348,16 @@ void IM_RK4::BuildEqns(double t, double *N, double *dNdt)
 void IM_RK4::SetTheMatrix(TMatrixT<double> BatemanMatrix)
 {
 	for (int k = 0; k < (int)fNVar; k++)
-		for (int l = 0; l < (int)findex_inver.size(); l++)
+		for (int l = 0; l < (int)fMatrixIndex.size(); l++)
 			fTheMatrix[l][k] = BatemanMatrix[l][k];
 }
 
 //________________________________________________________________________
 TMatrixT<double> IM_RK4::GetTheMatrix()
 {
-	TMatrixT<double> BatemanMatrix = TMatrixT<double>(findex.size(),findex.size());
+	TMatrixT<double> BatemanMatrix = TMatrixT<double>(fReverseMatrixIndex.size(),fReverseMatrixIndex.size());
 	for (int k = 0; k < (int)fNVar; k++)
-		for (int l = 0; l < (int)findex_inver.size(); l++)
+		for (int l = 0; l < (int)fMatrixIndex.size(); l++)
 			BatemanMatrix[l][k] = fTheMatrix[l][k];
 
 	return BatemanMatrix;
@@ -372,7 +373,7 @@ void IM_RK4::SetTheNucleiVector(TMatrixT<double> NEvolutionMatrix)
 //________________________________________________________________________
 TMatrixT<double> IM_RK4::GetTheNucleiVector()
 {
-	TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(findex.size(),1);
+	TMatrixT<double> NEvolutionMatrix = TMatrixT<double>(fReverseMatrixIndex.size(),1);
 	for (int k = 0; k < (int)fNVar; k++)
 		NEvolutionMatrix[k][0] = fTheNucleiVector[k];
 	
