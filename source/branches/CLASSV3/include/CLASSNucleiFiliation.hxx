@@ -36,6 +36,8 @@ public:
 	//@{
 	
 	CLASSNucleiFiliation();	///< Default constructor
+	CLASSNucleiFiliation(CLASSLogger* log);	///< Default constructor
+
 	
 	CLASSNucleiFiliation(const CLASSNucleiFiliation& CNF); ///< Copy Constructor
 	
