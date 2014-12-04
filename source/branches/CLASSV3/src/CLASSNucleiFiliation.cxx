@@ -98,7 +98,7 @@ void CLASSNucleiFiliation::FiliationCleanUp(map<ZAI, int> GoodNuclei, CLASSNucle
 				{
 					
 					ZAI Mother = DautherList[i];
-					while (FastDecayChain.GetQuantity(-1, -1, -1) != 0 || GoodNuclei.find(Mother) == GoodNuclei.end())
+					while (FastDecayChain.GetQuantity(-1, -1, -1) != 0 && GoodNuclei.find(Mother) == GoodNuclei.end())
 					{
 						Mother = GetArtificialDecay(Mother);			// Do an Artifial decay on the nuclei
 						FastDecayChain = CuttedNuclei.GetFiliation(Mother); // Get the fast decay chain of it
