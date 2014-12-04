@@ -402,7 +402,6 @@ CLASSNucleiFiliation IrradiationModel::ReadFPYield(string Yield)
 		MyYield.Add( Fissile[i], FPYields[i] );
 	
 	
-	MyYield.FiliationCleanUp(fMatrixIndex, fFastDecay);		// remove the cutted nuclei....
 	DBGL
 	return MyYield;
 }
@@ -419,14 +418,19 @@ void IrradiationModel::NuclearDataInitialization()
 {
 	DBGL
 	
+	if(fSpontaneusYieldFile!="")
+		fSpontaneusYield = ReadFPYield(fSpontaneusYieldFile);
+	if(fReactionYieldFile!="")
+		fReactionYield = ReadFPYield(fReactionYieldFile);
+
 	LoadDecay();
 	
 	
 	if(fSpontaneusYieldFile!="")
-		fSpontaneusYield = ReadFPYield(fSpontaneusYieldFile);
-	
+		fSpontaneusYield.FiliationCleanUp(fMatrixIndex, fFastDecay);		// remove the cutted nuclei....
 	if(fReactionYieldFile!="")
-		fReactionYield = ReadFPYield(fReactionYieldFile);
+		fReactionYield.FiliationCleanUp(fMatrixIndex, fFastDecay);		// remove the cutted nuclei....
+
 	
 	BuildDecayMatrix();
 	BuildReactionFiliation();
@@ -582,10 +586,10 @@ TMatrixT<double> IrradiationModel::GetCaptureXsMatrix(EvolutionData EvolutionDat
 		if(CaptureProductIV.GetQuantity(ZAI(-1,-1,-1)) != 1)						// Check if ZAI is dealed
 			CaptureMatrix += GetNuclearProcessMatrix( Mother, CaptureProductIV,  XS_Value );	// add the Nuclear process in the Reaction Matrix
 		else
-		{
 			WARNING << "Can't have capture reaction on this nuclei, ZAI : " << Mother.Z() << " " << Mother.A() << " " << Mother.I() << endl;
-			CaptureMatrix += GetNuclearProcessMatrix( Mother, ZAI(-3, -3, -3)*1 , XS_Value );		// add the Nuclear process in the Reaction Matrix
-		}
+			
+		
+	
 		
 		
 	}
@@ -620,10 +624,7 @@ TMatrixT<double> IrradiationModel::Getn2nXsMatrix(EvolutionData EvolutionDataSte
 		if(n2nProductIV.GetQuantity(ZAI(-1,-1,-1)) != 1)						// Check if ZAI is dealed
 			n2nMatrix += GetNuclearProcessMatrix( Mother, n2nProductIV,  XS_Value );	// add the Nuclear process in the Reaction Matrix
 		else
-		{
 			WARNING << "Can't have n,2n reaction on this nuclei, ZAI : " << Mother.Z() << " " << Mother.A() << " " << Mother.I() << endl;
-			n2nMatrix += GetNuclearProcessMatrix( Mother, ZAI(-3, -3, -3)*1 , XS_Value );	// add the Nuclear process in the Reaction Matrix
-		}
 		
 		
 	}
