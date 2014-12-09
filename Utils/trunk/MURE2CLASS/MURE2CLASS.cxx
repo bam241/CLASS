@@ -282,6 +282,7 @@ int main(int argc, char** argv)
 					{
 						ZAI zai(NR.Z, NR.A, NR.I, NR.Proportion);
 						zai1.push_back(zai);
+						//cout<<zai.Z()<<" "<<zai.A()<<" "<<zai.I()<<" "<<zai.Prop()<<endl;
 						//if (t==0 && NR.Proportion>=2e+25) cout << NR.Z << "  " << NR.A << "  " << NR.I << "  " << NR.Proportion << endl;
 					}
 
@@ -617,8 +618,8 @@ int main(int argc, char** argv)
 		}
 		else
 		{
-			for(int i=0; i < zai3[0].size(); i++)
-			{
+			for(int i=0; i < zai3[0][0].size(); i++)
+			{	
 				Output << "Inv " << zai3[0][0][i].Z() << " " << zai3[0][0][i].A() << " " << zai3[0][0][i].I() << " ";
 				for (int t=StepToSkip; t<vTime.size(); t++)
 				{
