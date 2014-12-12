@@ -84,12 +84,14 @@ string itoa(int num)
 //________________________________________________________________________
 CLASSRead::CLASSRead(TString filename)
 {
-	fFileIn = TFile::Open(filename);
+	TFile *FileIn;
+	FileIn = TFile::Open(filename);
+	fFileIn.push_back(FileIn);
 
-	for( int i =0; i < fFileIn->GetNkeys(); i++)
+	for( int i =0; i < fFileIn.back()->GetNkeys(); i++)
 	{
 		//cout<<"KeyNum "<<i<<endl;
-		fData.push_back( (TTree*)gDirectory->Get(fFileIn->GetListOfKeys()->At(fFileIn->GetNkeys()-1)->GetName() ) );
+		fData.push_back( (TTree*)gDirectory->Get(fFileIn.back()->GetListOfKeys()->At(fFileIn.back()->GetNkeys()-1)->GetName() ) );
 	}
 
 	fCNuclei = 0;
@@ -112,7 +114,8 @@ CLASSRead::~CLASSRead()
 {
 	for(int i=fData.size()-1; i !=0; i--)
 		delete fData[i];
-	delete fFileIn;
+	for(int i=fFileIn.size()-1; i !=0; i--)
+		delete fFileIn[i];
 }
 
 
@@ -122,11 +125,12 @@ CLASSRead::~CLASSRead()
 void CLASSRead::AddFile(TString filename)
 {
 
-	fFileIn = TFile::Open(filename);
-
-	for( int i =0; i < fFileIn->GetNkeys(); i++)
+	TFile *FileIn;
+	FileIn = TFile::Open(filename);
+	fFileIn.push_back(FileIn);
+	for( int i =0; i < fFileIn.back()->GetNkeys(); i++)
 	{
-		fData.push_back( (TTree*)gDirectory->Get(fFileIn->GetListOfKeys()->At(i)->GetName() ) );
+		fData.push_back( (TTree*)gDirectory->Get(fFileIn.back()->GetListOfKeys()->At(i)->GetName() ) );
 	}
 }
 
@@ -731,8 +735,8 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 
 	Long64_t Time = 0;
 	fData[toplot[0].fTreeId]->SetBranchAddress("AbsTime", &Time);
+	
 	double Power = 0;
-
 	fData[toplot[0].fTreeId]->SetBranchAddress("ParcPower", &Power);
 
 
