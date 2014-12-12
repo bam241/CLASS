@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 	;
 	for(int i=0;i<NumberOfFile;i++)
 		VFileName.push_back(string(argv[i+1]));
-
+	//cout << "toto"<< endl;
 	
 	CLASSRead* DataRead = new CLASSRead(VFileName[0]);
 	for (int i = 1; i < (int)VFileName.size(); i++)
@@ -31,6 +31,7 @@ int main(int argc, char** argv)
 	}
 	DataRead->ReadName();
 	DataRead->ReadZAI();
+	cout << "Bienvenue dans le GUI"<< endl;
 
 	
 	argc=1; //avoid to change directory by root TApplication...

@@ -143,15 +143,15 @@ void MainWin::Start(vector<string> VFileName)
 	TGLayoutHints* fL5555 = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX , 5, 5, 5, 5);
 	TGLayoutHints* fL2222 = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX,2, 2, 2, 2);
 	TGLayoutHints* fL2200 = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX,2, 2, 0, 0);
-	TGLayoutHints* fL55100 = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX,5, 5, 10, 0);
+	TGLayoutHints* fL55100 = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX,5, 5, 0, 0);
 	//
 	// the Main frame where all will be insert
 	//
 
-	fGeneF0 = new TGVerticalFrame(this, 250, 150);
+	fGeneF0 = new TGVerticalFrame(this, 100, 150);
 	AddFrame(fGeneF0, fL5555);
-	SetHeight(220);
-	SetWidth(160);
+	SetHeight(150);
+	SetWidth(60);
 	int MAXPATHLEN=256;
 	char cDir[MAXPATHLEN];
 	getcwd(cDir, MAXPATHLEN);
@@ -166,7 +166,7 @@ void MainWin::Start(vector<string> VFileName)
 	
 	/***************** LES Differents Parcs  ***********************/
 	
-	fParcTab = new TGTab(fGeneF0,250,150);
+	fParcTab = new TGTab(fGeneF0,100,150);
 	fGeneF0->AddFrame(fParcTab,fL2222);
 	fParcTab->Associate(this);
 	
@@ -185,7 +185,7 @@ void MainWin::Start(vector<string> VFileName)
 	
 	for(int i = 0; i < fNumberOfParc; i++)
 	{
-		fFacilitiesTab[i] = new TGTab(fParcTabFoil[i],200,150);
+		fFacilitiesTab[i] = new TGTab(fParcTabFoil[i],100,150);
 		fParcTabFoil[i]->AddFrame(fFacilitiesTab[i],fL2222);
 		fFacilitiesTab[i]->Associate(this);
 		
@@ -219,7 +219,7 @@ void MainWin::Start(vector<string> VFileName)
 		fItemTab[i] = new TGTab*[5];
 		for(int j = 0; j < 5; j++)
 		{
-			fItemTab[i][j] = new TGTab(fFacilitiesTabFoil[i][j],200,150);//@@ hxx non défini
+			fItemTab[i][j] = new TGTab(fFacilitiesTabFoil[i][j],100,150);//@@ hxx non défini
 			fFacilitiesTabFoil[i][j]->AddFrame(fItemTab[i][j]);
 			fItemTab[i][j]->Associate(this);
 			//construire les foils en fonction du nombre de item possible par foil
@@ -231,10 +231,10 @@ void MainWin::Start(vector<string> VFileName)
 	for(int j = 0; j < 5; j++)
 		FillItemTab(j);
 
-	fMiscenalanus = new TGHorizontalFrame(fGeneF0, 400, 50 );
+	fMiscenalanus = new TGHorizontalFrame(fGeneF0, 50, 50 );
 	fGeneF0->AddFrame(fMiscenalanus,fL5555);
 
-	fMiscenalanus0 = new TGVerticalFrame(fMiscenalanus, 400, 50 );
+	fMiscenalanus0 = new TGVerticalFrame(fMiscenalanus, 50, 50 );
 	fMiscenalanus->AddFrame(fMiscenalanus0,fL5555);
 
 	fCheckIVPlot = new TGCheckButton*[3];
@@ -256,7 +256,7 @@ void MainWin::Start(vector<string> VFileName)
 	fMiscenalanus0->AddFrame(fCheckIVPlot[2],fL2222);
 	fCheckIVPlot[2]->Associate(this);
 
-	fMiscenalanus1 = new TGVerticalFrame(fMiscenalanus, 400, 50 );
+	fMiscenalanus1 = new TGVerticalFrame(fMiscenalanus, 50, 50 );
 	fMiscenalanus->AddFrame(fMiscenalanus1,fL5555);
 
 	fCheckSumOfSelected = new TGCheckButton(fMiscenalanus1,"Sum Of Selected");
@@ -275,7 +275,7 @@ void MainWin::Start(vector<string> VFileName)
 
 	// The Plot, Save, Macro and Quit buttons
 	//
-	fPlotSaveQuitFrame = new TGHorizontalFrame(fGeneF0, 400, 50 );
+	fPlotSaveQuitFrame = new TGHorizontalFrame(fGeneF0, 100, 50 );
 	fGeneF0->AddFrame(fPlotSaveQuitFrame,fL5555);
 	fButtonPlot = new TGTextButton(fPlotSaveQuitFrame,"&Plot (All)",M_BUTTON_PLOT);
 	fButtonSave = new TGTextButton(fPlotSaveQuitFrame,"&Save Data",M_BUTTON_SAVE);
@@ -294,7 +294,7 @@ void MainWin::Start(vector<string> VFileName)
 	Move(410,30);
 	fMainWidth=fGeneF0->GetWidth();
 
-	Resize(550,820); 					// fit to the exact size
+	Resize(550,670); 					// fit to the exact size
 
 
 }
@@ -691,7 +691,7 @@ void MainWin::FillTotalTab()
 //_____________________________________________________________________________________________
 void MainWin::FillReactorTab()
 {
-	int Nline=15-WIDE;
+	int Nline=7-WIDE;
 	int Ncol=6+WIDE;
 	
 	fTabFoilReactor= new TGCompositeFrame**[fNumberOfParc];
@@ -756,7 +756,7 @@ void MainWin::FillReactorTab()
 //_____________________________________________________________________________________________
 void MainWin::FillStockTab()
 {
-	int Nline=15-WIDE;
+	int Nline=7-WIDE;
 	int Ncol=6+WIDE;
 	
 	fTabFoilStock= new TGCompositeFrame**[fNumberOfParc];
@@ -817,7 +817,7 @@ void MainWin::FillStockTab()
 //_____________________________________________________________________________________________
 void MainWin::FillPoolTab()
 {
-	int Nline=15-WIDE;
+	int Nline=7-WIDE;
 	int Ncol=6+WIDE;
 	
 	fTabFoilPool= new TGCompositeFrame**[fNumberOfParc];
@@ -881,7 +881,7 @@ void MainWin::FillPoolTab()
 //_____________________________________________________________________________________________
 void MainWin::FillFabricationTab()
 {
-	int Nline=15-WIDE;
+	int Nline=7-WIDE;
 	int Ncol=6+WIDE;
 	
 	fTabFoilFab= new TGCompositeFrame**[fNumberOfParc];
@@ -958,7 +958,7 @@ TGTransientFrame(p, main, w, h, options)
 	if(event=="SaveAs") SaveAs();
 	// Frame for Ok/Cancel button
 	//
-	fSH2=new TGHorizontalFrame(this, 200, 20,kFixedWidth);
+	fSH2=new TGHorizontalFrame(this, 100, 20,kFixedWidth);
 	AddFrame(fSH2,new TGLayoutHints(kLHintsBottom | kLHintsRight,0,0,10,0));
 	
 	fButtonOK = new TGTextButton(fSH2, "&Ok",M_BUT_OK);

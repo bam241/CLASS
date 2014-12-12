@@ -82,7 +82,7 @@ private :
 	
 	
 	vector< TTree* > fData;
-	TFile*	fFileIn;
+	vector<TFile* >	 fFileIn;
 
 	TGraph** fGraph;
 	TGraph* fGraphSumOfSelected;
