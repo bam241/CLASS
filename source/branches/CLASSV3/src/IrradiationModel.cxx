@@ -453,33 +453,35 @@ void 	IrradiationModel::BuildReactionFiliation()
 			fCaptureReaction.Add( ZAI(95,241,0), ZAI(95,242,1) * 0.1267 );
 		}
 		
-		// 165Ho(n,Gamma)
-		{
-			fCaptureReaction.Add( ZAI(67,165,0), ZAI(68,166,0) * 0.9490 ); //
-			fCaptureReaction.Add( ZAI(67,165,0), ZAI(67,166,1) * 0.0510 ); //
-		}
-		
-		// 147Pm(n,Gamma)
-		{
-			fCaptureReaction.Add( ZAI(61,147,0), ZAI(61,148,0) * 0.5330 );
-			fCaptureReaction.Add( ZAI(61,147,0), ZAI(61,148,1) * 0.4670 );
+		if(fReactionYieldFile!="")
+		{// 165Ho(n,Gamma)
+			{
+				fCaptureReaction.Add( ZAI(67,165,0), ZAI(68,166,0) * 0.9490 ); //
+				fCaptureReaction.Add( ZAI(67,165,0), ZAI(67,166,1) * 0.0510 ); //
+			}
 			
-		}
-		
-		// 109Ag(n, Gamma)
-		{
-			fCaptureReaction.Add( ZAI(47,109,0), ZAI(48,110,0) * 0.9970*0.9508);
-			fCaptureReaction.Add( ZAI(47,109,0), ZAI(46,110,0) * 0.0030*0.9508);
-			fCaptureReaction.Add( ZAI(47,109,0), ZAI(47,110,1)         *0.0492);
-		}
-		
-		
-		// 107Ag(n, Gamma)
-		{
-			fCaptureReaction.Add( ZAI(47,107,0), ZAI(48,108,0) * 0.9715*0.9895 );
-			fCaptureReaction.Add( ZAI(47,107,0), ZAI(46,108,0) * 0.0285*0.9895 );
-			fCaptureReaction.Add( ZAI(47,107,0), ZAI(47,108,1)         *0.0105 );
-		}
+			// 147Pm(n,Gamma)
+			{
+				fCaptureReaction.Add( ZAI(61,147,0), ZAI(61,148,0) * 0.5330 );
+				fCaptureReaction.Add( ZAI(61,147,0), ZAI(61,148,1) * 0.4670 );
+				
+			}
+			
+			// 109Ag(n, Gamma)
+			{
+				fCaptureReaction.Add( ZAI(47,109,0), ZAI(48,110,0) * 0.9970*0.9508);
+				fCaptureReaction.Add( ZAI(47,109,0), ZAI(46,110,0) * 0.0030*0.9508);
+				fCaptureReaction.Add( ZAI(47,109,0), ZAI(47,110,1)         *0.0492);
+			}
+			
+			
+			// 107Ag(n, Gamma)
+			{
+				fCaptureReaction.Add( ZAI(47,107,0), ZAI(48,108,0) * 0.9715*0.9895 );
+				fCaptureReaction.Add( ZAI(47,107,0), ZAI(46,108,0) * 0.0285*0.9895 );
+				fCaptureReaction.Add( ZAI(47,107,0), ZAI(47,108,1)         *0.0105 );
+			}
+		}	
 	}
 	
 	
