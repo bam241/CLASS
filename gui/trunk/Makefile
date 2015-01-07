@@ -17,7 +17,7 @@ CXXFLAGS      += -g -I$(LOCALINC)
 LD            = $(CXX)
 LIBS          += -L$(LIBDIR) -lCLASSpkg -lgomp
 LDFLAGS       = -g
-GLIBS         = $(ROOTGLIBS)
+GLIBS         = $(ROOTGLIBS) -lTMVA
 
 CXXFLAGS     += -g $(ROOTCFLAGS)
 
@@ -54,7 +54,7 @@ all:    $(OBJS)
 
 clean:
 		@rm -f $(OBJS)
-
+		@rm -f ./bin/CLASSGui
 
 
 .SUFFIXES: .cxx
