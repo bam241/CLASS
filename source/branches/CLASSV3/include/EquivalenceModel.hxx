@@ -7,7 +7,7 @@
  \brief Header file for EquivalenceModel class.
  
  
- @author BaM
+ @author BLG,BaM
  @version 2.0
  */
 
@@ -21,10 +21,16 @@ using namespace std;
 //-----------------------------------------------------------------------------//
 /*!
  Define a EquivalenceModel.
- The aim of these class is synthetyse all the commum properties to all Equivalence Model.
- 
- 
- @author BaM
+ The aim of these class is synthetyse all the commum properties to all 
+ Equivalence Model.
+
+ !!!!!!!!!!!!!!!!CAUTION!!!!!!!!!!!!!
+Never instantiate EquivalenceModel in your CLASS input but it's derivated class
+see @../Model/Equivalence/EQM_LIN_PWR_MOX.hxx  
+see @../Model/Equivalence/EQM_QUAD_PWR_MOX.hxx
+see @../Model/Equivalence/EQM_MLP_PWR_MOX.hxx
+
+ @author BLG,BaM
  @version 3.0
  */
 //________________________________________________________________________
@@ -52,7 +58,7 @@ class EquivalenceModel : public CLASSObject
 	virtual	 vector<double> BuildFuel(double BurnUp, double HMMass, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray );
 	//}
 	virtual void GuessLambda(vector<double>& lambda,int FirstStockID, int LastStockID, double DeltaM, vector<IsotopicVector> Stocks, double  HMMass);
-	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp) {return 0;} //!< Return the molar fraction of fissile element in the fuel accodring to the Burnup, and a given fuel composition (this is the heart of the equivalence model) 
+	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp) = 0; /*{return 0;}*/ //!< Return the molar fraction of fissile element in the fuel accodring to the Burnup, and a given fuel composition (this is the heart of the equivalence model) 
 
 	
 
@@ -61,7 +67,13 @@ class EquivalenceModel : public CLASSObject
 
 	void SetFertileList(IsotopicVector IV) {fFertileList = IV;}//!<set the fertile list
 	void SetFissileList(IsotopicVector IV) {fFissileList = IV;}//!<set the fissile list
-
+	/// Check either the IsotopicVector IV is in the validity domain of the models.
+	/*!
+	 return true if IV is in ValidityDomain
+	 return false + a warning if IV is not in ValidityDomain
+	 \param vector<IsotopicVector> IV, Fresh fuel composition
+	 */
+	//virtual  bool isIVInDomain(IsotopicVector IVFiss, double BU = 0 ) =0;
 	
 	protected :
 
