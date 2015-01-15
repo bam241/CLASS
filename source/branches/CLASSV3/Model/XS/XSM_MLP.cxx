@@ -91,19 +91,24 @@ void XSM_MLP::GetDataBaseInformation()
 			size_t foundPower = line.find("Thermal Power (W) :");
 			size_t foundTime  = line.find("Time (s) :");
 			size_t foundZAI	  = line.find("Z A I Name (input MLP) :");
+			size_t foundDomain = line.find("Fuel range (Z A I min max) :");
+
 			int pos=0;
 			if(foundRType != std::string::npos)
 			{	StringLine::NextWord(line,pos,':');
 				fDataBaseRType = atof( (StringLine::NextWord(line,pos,':')).c_str() );
 			}
+			 pos=0;
 			if(foundFType != std::string::npos)
 			{	StringLine::NextWord(line,pos,':');
 				fDataBaseFType = atof( (StringLine::NextWord(line,pos,':')).c_str() );
 			}
+			pos=0;
 			if(foundHM != std::string::npos)
 			{	StringLine::NextWord(line,pos,':');
 				fDataBaseHMMass = atof( (StringLine::NextWord(line,pos,':')).c_str() );
 			}
+			pos=0;
 			if(foundPower !=std::string::npos)
 			{	StringLine::NextWord(line,pos,':');
 				fDataBasePower = atof( (StringLine::NextWord(line,pos,':') ).c_str() );
@@ -115,23 +120,51 @@ void XSM_MLP::GetDataBaseInformation()
 				while( pos< (int)line.size() )
 					fMLP_Time.push_back( atof( (StringLine::NextWord(line,pos,' ')).c_str() ));
 			}
-
+ 			pos=0;
 			if(foundZAI != std::string::npos)
-			{
-				while(!FILE.eof())
-				{
-					int Z=-4;
-					int A=-4;
-					int I=-4;
-					string Name;
+			{	string Z;
+				string A;
+				string I;
+				string Name;
+				int posoflinebeforbadline=0;
+				do
+				{	posoflinebeforbadline = FILE.tellg();
 					getline(FILE, line);
 					stringstream ssline;
 					ssline<<line;
 					ssline>>Z>>A>>I>>Name;
-					//cout<<Z<<" "<<A<<" "<<I<<" "<<Name<<endl;
-					fMapOfTMVAVariableNames.insert( pair<ZAI,string>(ZAI(Z,A,I),Name) );
+					if(StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I) )
+					{	
+						fMapOfTMVAVariableNames.insert( pair<ZAI,string>(ZAI(atoi(Z.c_str()),atoi(A.c_str()),atoi(I.c_str())),Name) );
+					}
+
+				}while((StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I)) && !FILE.eof());
+
+				FILE.seekg(posoflinebeforbadline); //return one line before
+
+			}
+			if(foundDomain != std::string::npos)
+			{	string Z;
+				string A;
+				string I;
+				string min;
+				string max;
+				int posoflinebeforbadline=0;
+				do
+				{	posoflinebeforbadline = FILE.tellg();
+					getline(FILE, line);
+					stringstream ssline;
+					ssline<<line;
+					ssline>>Z>>A>>I>>min>>max;
+					if(StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I) && StringLine::IsDouble(min) && StringLine::IsDouble(max) )
+					{	
+						fFreshFuelDomain.insert( pair<ZAI,pair<double,double> >(ZAI(atoi(Z.c_str()),atoi(A.c_str()),atoi(I.c_str())),make_pair(atof(min.c_str()),atof(max.c_str()))) );
+					}
 
 				}
+				while((StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I) )&& !FILE.eof());
+				FILE.seekg(posoflinebeforbadline); //return one line before
+
 			}
 
 		}
@@ -155,6 +188,10 @@ void XSM_MLP::GetDataBaseInformation()
 
 	for (it= fMapOfTMVAVariableNames.begin();it!=fMapOfTMVAVariableNames.end();it++)
 		INFO<<"\t\t\t"<< it->first.Z()<<" "<<it->first.A()<<" "<<it->second<<endl;
+
+	INFO<<"\t\tFuel range"<<endl;
+	for (map<ZAI,pair<double,double> >::iterator it_dom = fFreshFuelDomain.begin();it_dom!=fFreshFuelDomain.end();it_dom++)
+		INFO<<"\t\t\t"<< it_dom->second.first<<" <= "<<it_dom->first.Z()<<" "<<it_dom->first.A()<<" "<<it_dom->first.I()<<" <= "<<it_dom->second.second<<endl;;
 
 
 }
@@ -352,29 +389,30 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 		int I=-2;
 		int Reaction=-2;
 		ReadWeightFile( fWeightFiles[i], Z, A, I, Reaction);
-
-		for(int TimeStep=0;TimeStep<int(fMLP_Time.size());TimeStep++)
-		{
-			TTree* InputTree = CreateTMVAInputTree(IV,TimeStep);
-
-			pair< map<ZAI, TGraph*>::iterator, bool> IResult;
-
-			IResult = ExtrapolatedXS[Reaction].insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph() ) );
-
-			double XSValue = ExecuteTMVA(fWeightFiles[i],InputTree );
-			if(IResult.second )
+		if( Z >= GetZAIThreshold() )
+		{	
+			for(int TimeStep=0;TimeStep<int(fMLP_Time.size());TimeStep++)
 			{
-				(IResult.first)->second->SetPoint(0, (double)GetMLPTime()[TimeStep], XSValue );
+				TTree* InputTree = CreateTMVAInputTree(IV,TimeStep);
 
-			}
-			else
-			{
-				(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)GetMLPTime()[TimeStep], XSValue );
-			}
+				pair< map<ZAI, TGraph*>::iterator, bool> IResult;
 
-			delete InputTree;
+				IResult = ExtrapolatedXS[Reaction].insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph() ) );
+
+				double XSValue = ExecuteTMVA(fWeightFiles[i],InputTree );
+				if(IResult.second )
+				{
+					(IResult.first)->second->SetPoint(0, (double)GetMLPTime()[TimeStep], XSValue );
+
+				}
+				else
+				{
+					(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)GetMLPTime()[TimeStep], XSValue );
+				}
+
+				delete InputTree;
+  			}
   		}
-
 	}
 
 	/**********Sorting TGraph*********/
@@ -460,22 +498,23 @@ EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 		int Reaction=-2;
 		int TimeStep=-2;
 		ReadWeightFileStep( fWeightFiles[i], Z, A, I, Reaction, TimeStep);
-
-		ZAI zaitmp = ZAI(Z,A,I);
-
-		pair< map<ZAI, TGraph*>::iterator, bool> IResult;
-
-		IResult = ExtrapolatedXS[Reaction].insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph() ) );
-
-		if( IResult.second )
-		{
-			(IResult.first)->second->SetPoint(0, (double)GetMLPTime()[TimeStep], ExecuteTMVA(fWeightFiles[i],InputTree) );
+		if( Z >= GetZAIThreshold() )
+		{	
+			ZAI zaitmp = ZAI(Z,A,I);
+	
+			pair< map<ZAI, TGraph*>::iterator, bool> IResult;
+	
+			IResult = ExtrapolatedXS[Reaction].insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph() ) );
+	
+			if( IResult.second )
+			{
+				(IResult.first)->second->SetPoint(0, (double)GetMLPTime()[TimeStep], ExecuteTMVA(fWeightFiles[i],InputTree) );
+			}
+			else
+			{
+				(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)GetMLPTime()[TimeStep], ExecuteTMVA(fWeightFiles[i],InputTree) );
+			}
 		}
-		else
-		{
-			(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)GetMLPTime()[TimeStep], ExecuteTMVA(fWeightFiles[i],InputTree) );
-		}
-
 	}
 
 	/**********Sorting TGraph*********/
