@@ -58,7 +58,7 @@ class IrradiationModel : public CLASSObject
 	 \param double Power, constant power to use for irradation
 	 \param double irradiationtime, time of the irradiation
 	 */
-	virtual	 EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime) { return EvolutionData();}
+	virtual	 EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime) = 0 ; //{ return EvolutionData();}
 	//}
 
 	
@@ -157,7 +157,8 @@ class IrradiationModel : public CLASSObject
 	
 	//@}
 	
-	
+	int  GetZAIThreshold(){return fZAIThreshold;}
+
 	
 	
 	
@@ -185,9 +186,9 @@ class IrradiationModel : public CLASSObject
 	CLASSNucleiFiliation	fCaptureReaction;		///< Store the reaction Capture Filiation
 	CLASSNucleiFiliation	fn2nReaction;		///< Store the reaction n,2n Filiation
 	
-	string	fSpontaneusYieldFile;	///< Store the Spontaneus fission yield
-	string	fReactionYieldFile;		///< Store the reaction fission yield
-	
+	string	fSpontaneusYieldFile;	///< Store the name of the Spontaneus fission yield file
+	string	fReactionYieldFile;		///< Store the name of the reaction fission yield file
+
 	
 	//{
 	/// Return the Fission XS Matrix at the time TStep
