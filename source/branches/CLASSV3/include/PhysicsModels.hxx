@@ -31,7 +31,8 @@ typedef long long int cSecond;
 	Equivalence_Model = Linear,Quadratique, MLP ... 
 
 	this one is bateman solvers related : 
-	(or it may be link to a evolution code (like MURE), not yet implemented but envisaged)
+	(or it may be link to a evolution code (like MURE,DRAGON), not yet
+	implemented but envisaged)
 	IrradiationModel = RK4 or Matrix
 
 
@@ -73,9 +74,9 @@ class PhysicsModels : public CLASSObject
 
  private :
 
- 	XSModel* 		fXSModel;
-	EquivalenceModel*	fEquivalenceModel;
-	IrradiationModel*	fIrradiationModel;
+ 	XSModel* 		fXSModel;              //!< The XSModel (Mean cross sections prediction)
+	EquivalenceModel*	fEquivalenceModel; //!< The EquivalenceModel (Fresh fissile content prediction)
+	IrradiationModel*	fIrradiationModel; //!< The IrradiationModel (The Bateman's solver)
 
 
 
