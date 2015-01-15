@@ -253,6 +253,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 				if(!IResult.second)
 					IResult.first->second = EmptyIV;
 			}
+			ResetArrays();
 		}
 		else
 		{
@@ -563,8 +564,15 @@ DBGL
 	else
 		GetParc()->AddOutIncome( fFertileArray[0]*LambdaArray.back() );
 
+	ResetArrays();
 
-	//Clear the Building Array (Fissile and Fertile)
+
+DBGL
+}
+//________________________________________________________________________
+void FabricationPlant::ResetArrays()
+{
+		//Clear the Building Array (Fissile and Fertile)
 	fFissileArray.clear();
 	fFissileArrayTime.clear();
 	fFissileArrayAdress.clear();
@@ -573,11 +581,8 @@ DBGL
 	fFertileArrayAdress.clear();
 
 	fFertileList = fFissileList = IsotopicVector();
-
-DBGL
 }
-
-	//________________________________________________________________________
+//________________________________________________________________________
 pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector isotopicvector, IsotopicVector ExtractedList)
 {
 DBGL

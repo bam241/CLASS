@@ -184,6 +184,7 @@ protected :
 	bool	fSubstitutionFuel;		//!< true if a subtitution fuel as been set
 
 	void	FabricationPlantEvolution(cSecond t);	//!< Deal the FabricationPlant Evolution
+	void 	ResetArrays(); //!< empty the fFertileArray and fFissileArray
 
 
 #ifndef __CINT__
