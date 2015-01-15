@@ -12,7 +12,7 @@ using namespace std;
  \brief Header file for StingLine class. 
 */
 
-// Class extracting fields from a string / line.
+//! Class extracting fields from a string / line.
 /*!
  The aim of this class is to provide tools to extract fields ("word") from
  a string and convert a string in Upper/Lower case. 
@@ -43,13 +43,13 @@ using namespace std;
  cout<<the<<endl<<temperature_is<<endl<<T<<endl;
  \endcode
  @author PTO
- @version 2.01
+ @version 0.1
 */
 
 class StringLine
 {
  public:
-	// Find the next word in a line.
+	//! Find the next word in a line.
 	/*!
 	 Find Next word in a line starting from position "start" in the line. If an alternative
 	 separator is given, the word length is defined by the first position of sep or alt_sep found.
@@ -60,7 +60,7 @@ class StringLine
 	 \param alt_sep : the alternative separator between 2 words (default='')
 	*/
 	static string NextWord(string Line,int &start,char sep=' ', char alt_sep='\0');
-	// Find the previous word in a line.
+	//! Find the previous word in a line.
 	/*!
 	 Find Previous word in a line starting from position "start" in the line. If an alternative
 	 separator is given, the word length is defined by the first position of sep or alt_sep found.
@@ -71,10 +71,10 @@ class StringLine
 	 \param alt_sep : the alternative separator between 2 words (default='')
 	*/
 	static string PreviousWord(string Line,int &start,char sep=' ', char alt_sep='\0');
- 	static void ToLower(string &Line); // convert a string to Lower case
- 	static void ToUpper(string &Line); // convert a string to Upper case
+ 	static void ToLower(string &Line); //!< convert a string to Lower case
+ 	static void ToUpper(string &Line); //!< convert a string to Upper case
 
-	// Find \p search in \p Line from the begining.
+	//! Find \p search in \p Line from the begining.
 	/*!
 	 returns the position, starting from the begenning of the first occurence 
 	 of \p search in \p Line if it is found, else returns -1 
@@ -82,7 +82,7 @@ class StringLine
 	 \param Line : where to search
 	*/
 	static int Find(const char *search,string Line);
-	// Find \p search in \p Line from the end.
+	//! Find \p search in \p Line from the end.
 	/*!
 	 returns the position, starting from the end of the first occurence 
 	 of \p search in \p Line if it is found, else returns -1 
@@ -90,7 +90,7 @@ class StringLine
 	 \param Line : where to search
 	*/
 	static int rFind(const char *search,string Line);
-	 // convert a input type (\p in_T) to another (\p out_T).
+	 //! convert a input type (\p in_T) to another (\p out_T).
 	/*!
 	 Example: 	
 	 \code
@@ -101,7 +101,30 @@ class StringLine
 	 \param t : the input value
 	*/
 	template <class out_T, class in_T> static  out_T convert(const in_T & t);
-	// Find the start of a word in a line.
+	 //! try to convert a string to a number.
+	/*!
+	 Example: 	
+	 \code
+	 string s="32.12";
+	 double d;
+	 if(StringLine::ToNumber(d,s,std::dec))
+	 	cout<<"double="<<d<<endl;
+	 string hexanum="ff";
+	 int i;
+	 if(StringLine::ToNumber(i,hexanum,std::hex))
+	 	cout<<"int="<<i<<endl;
+	 \endcode
+	 \param s : the input string
+	 \param t : the output value
+	 \param f : string format (ie hex, dec, oct)
+	*/
+	template <class T> static bool ToNumber(T& t, const std::string& s, std::ios_base& (*f)(std::ios_base&))
+	{
+ 	 if(s.size()==0) return true;
+	 std::istringstream iss(s);
+ 	 return !(iss >> f >> t).fail();
+	}
+	//! Find the start of a word in a line.
 	/*!
 	 \param Line : a line containing words
 	 \param CurrentPosition : from where to start to find the begining of a word
@@ -109,7 +132,7 @@ class StringLine
 	 \param alt_sep : the alternative separator between 2 words (default='')
 	*/
  	static int GetStartWord(string Line,int CurrentPosition,char sep=' ', char alt_sep='\0');
-	// Find the end of a word in a line.
+	//! Find the end of a word in a line.
 	/*!
 	 \param Line : a line containing words
 	 \param CurrentPosition : from where to start to find the end of a word
@@ -117,13 +140,14 @@ class StringLine
 	 \param alt_sep : the alternative separator between 2 words (default='')
 	*/
 	static int GetEndWord(string Line,int CurrentPosition,char sep=' ', char alt_sep='\0');
-	// Replace a sub-string by an other in a string.
+	//! Replace a sub-string by an other in a string.
 	/*!
 	 \param InLine : the string  which contains the sub-string to replace
 	 \param ToReplace : the sub-string to replace
 	 \param By : the sub-string  ToReplace is replaced by the sub-string By in Inline
 	*/
-	string ReplaceAll(string InLine, string ToReplace, string By);
+	static string ReplaceAll(string InLine, string ToReplace, string By);
+	static bool IsDouble(const std::string& s);
 };
 
 
@@ -270,6 +294,13 @@ inline string StringLine::ReplaceAll(string InLine, string ToReplace, string By)
 		pos=InLine.find(ToReplace,start);
 	}
 	return InLine;
-	
 }
+//_________________________________________________________________________________
+inline bool StringLine::IsDouble(const std::string& s)
+{
+	std::istringstream i(s);
+	double temp;
+	return ( (i >> temp) ? true : false );
+}
+
 #endif
