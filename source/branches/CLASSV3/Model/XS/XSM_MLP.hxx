@@ -44,7 +44,7 @@ class XSM_MLP : public XSModel
 	/// CONSTRUCTOR
 	/*!
 	 \param string TMVA_Weight_Directory The directory where all the TMVA weight are located
-	 \param string InformationFile, Name of the information file located in TMVA_Weight_Directory (defeult: Data_Base_Info.nfo)
+	 \param string InformationFile, Name of the information file located in TMVA_Weight_Directory (default: Data_Base_Info.nfo)
 	 \param bool IsTimeStep, if true , one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
 
 	 */
@@ -54,7 +54,7 @@ class XSM_MLP : public XSModel
 	//{
 
 
- 	EvolutionData GetCrossSections(IsotopicVector IV,double t=0) ;//!< Return calculated cross section by the MLP regression
+ 	virtual EvolutionData GetCrossSections(IsotopicVector IV,double t=0) ;//!< Return calculated cross section by the MLP regression
 
 
 	private :

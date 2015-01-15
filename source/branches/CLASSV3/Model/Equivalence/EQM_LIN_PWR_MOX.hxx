@@ -35,7 +35,7 @@ class EQM_LIN_PWR_MOX : public EquivalenceModel
 	EQM_LIN_PWR_MOX(CLASSLogger* log, string WeightPath);
 	~EQM_LIN_PWR_MOX();
 
-	vector<double> BuildFuel(double BurnUp, double HMMass, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray );
+	virtual vector<double> BuildFuel(double BurnUp, double HMMass, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray );
 
 	private :
 
