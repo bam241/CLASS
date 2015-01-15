@@ -47,7 +47,7 @@ class IM_Matrix : public IrradiationModel
 	 \param IsotopicVector IV isotopic vector to irradiate
 	 \param EvolutionData XSSet set of corss section to use to perform the evolution calculation
 	 */
-	EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime);
+	virtual EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime);
 	//}
 
 
