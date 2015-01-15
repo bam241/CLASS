@@ -599,9 +599,16 @@ void IsotopicVector::Write(string filename, cSecond time) const
 void IsotopicVector::Print(string option) const
 {
 
-	cout << "**************************" << endl;
-	cout << "*Isotopic Vector Property*" << endl;
-	cout << "**************************" << endl << endl;
+	cout<<sPrint();
+
+}
+//________________________________________________________________________
+string IsotopicVector::sPrint() const
+{
+	stringstream ss;
+	ss << "**************************" << endl;
+	ss << "*Isotopic Vector Property*" << endl;
+	ss << "**************************" << endl << endl;
 
 	bool QuantityPrint = false;
 	bool DBPrint = false;
@@ -610,38 +617,37 @@ void IsotopicVector::Print(string option) const
 
 	if(QuantityPrint)
 	{
-		cout << "*Isotopic Vector Quantity*" << endl;
+		ss << "*Isotopic Vector Quantity*" << endl;
 		map<ZAI ,double> IsotopicQuantity = GetIsotopicQuantity();
 		map<ZAI ,double >::iterator it;
 		for(it = IsotopicQuantity.begin();it != IsotopicQuantity.end(); it++)
 		{
-			cout << (*it).first.Z() << " ";
-			cout << (*it).first.A() << " ";
-			cout << (*it).first.I() << " ";
-			cout << ": " << (*it).second;
-			cout << endl;
+			ss << (*it).first.Z() << " ";
+			ss << (*it).first.A() << " ";
+			ss << (*it).first.I() << " ";
+			ss << ": " << (*it).second;
+			ss << endl;
 		}
-		cout << endl;
-		cout << "*Isotopic Vector Quantity Needed*" << endl;
+		ss << endl;
+		ss << "*Isotopic Vector Quantity Needed*" << endl;
 		map<ZAI ,double> IsotopicQuantityNeeded = GetIsotopicQuantityNeeded();
 		for(it = IsotopicQuantityNeeded.begin(); it != IsotopicQuantityNeeded.end(); it++)
 		{
-			cout << (*it).first.Z() << " ";
-			cout << (*it).first.A() << " ";
-			cout << (*it).first.I() << " ";
-			cout << ": " << (*it).second;
-			cout << endl;
+			ss << (*it).first.Z() << " ";
+			ss << (*it).first.A() << " ";
+			ss << (*it).first.I() << " ";
+			ss << ": " << (*it).second;
+			ss << endl;
 		}
-		cout << endl;
+		ss << endl;
 	}
 	if(DBPrint)
 	{
-		cout << "****Isotopic Vector DB****" << endl;
+		ss << "****Isotopic Vector DB****" << endl;
 	}
-
+return ss.str();
 }
-
-
+//________________________________________________________________________
 void IsotopicVector::PrintList(string option) const
 {
 	bool QuantityPrint = false;
