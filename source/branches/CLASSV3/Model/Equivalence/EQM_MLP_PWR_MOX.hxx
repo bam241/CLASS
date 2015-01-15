@@ -35,7 +35,7 @@ class EQM_MLP_MOX : public EquivalenceModel
 	EQM_MLP_MOX(string TMVAWeightPath);	//!< Constructor  string TMVAWeightPath => PATH/TMVAWeight.xml (path to tmva weight)
 	EQM_MLP_MOX(CLASSLogger* log, string TMVAWeightPath);	//!< Constructor CLASSLogger* log ,string TMVAWeightPath => PATH/TMVAWeight.xml
 
-	double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp); //!<Return the molar fraction of fissile element thanks to a Multi Layer Perceptron
+	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp); //!<Return the molar fraction of fissile element thanks to a Multi Layer Perceptron
 
 	private :
 	TTree* CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);//!<Create input tmva tree to be read by ExecuteTMVA
