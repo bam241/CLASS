@@ -134,7 +134,9 @@ public :
 
 	void	Write(string filename, cSecond time = -1 ) const;	///< Write the Content of the IV in the filename file
 
-	void	Print(string o =" ") const ;				///< Print the composition of the IV
+	void	Print(string o =" ") const ;				///< Print the composition of the IV in terminal
+	string	sPrint() const ;				///< Print the composition of the IV in a string
+
 	void	PrintList(string o =" ") const ;			///< Print the composition of the IV
 
 	//@}
