@@ -27,6 +27,9 @@ PhysicsModels::PhysicsModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel
 	fXSModel		= XS;
 	fEquivalenceModel	= EM;
 	fIrradiationModel	= IM;
+	
+	int Z_ZAIThreshold = fIrradiationModel->GetZAIThreshold();
+	fXSModel->SetZAIThreshold(Z_ZAIThreshold);
 
 
 }
@@ -37,6 +40,9 @@ PhysicsModels::PhysicsModels(CLASSLogger* log, XSModel* XS, EquivalenceModel* EM
 	fXSModel		= XS;
 	fEquivalenceModel	= EM;
 	fIrradiationModel	= IM;
+	
+	int Z_ZAIThreshold = fIrradiationModel->GetZAIThreshold();
+	fXSModel->SetZAIThreshold(Z_ZAIThreshold);
 
 
 }
@@ -45,9 +51,6 @@ PhysicsModels::PhysicsModels(CLASSLogger* log, XSModel* XS, EquivalenceModel* EM
 EvolutionData PhysicsModels::GenerateEvolutionData(IsotopicVector IV, double cycletime, double Power)
 {
 	fXSModel->isIVInDomain(IV);
-
-	int Z_ZAIThreshold = fIrradiationModel->GetZAIThreshold();
-	fXSModel->SetZAIThreshold(Z_ZAIThreshold);
 
 	return fIrradiationModel->GenerateEvolutionData(IV, fXSModel->GetCrossSections(IV), Power, cycletime);
 }
