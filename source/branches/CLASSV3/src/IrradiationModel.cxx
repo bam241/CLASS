@@ -303,8 +303,7 @@ void IrradiationModel::GetNuclearProcessMatrix(TMatrixT<double> &NuclearProcessM
 		{
 			if(fMatrixIndex.find(ProductedZAIList[j]) != fMatrixIndex.end() )
 			{	NuclearProcessMatrix[fMatrixIndex[ ProductedZAIList[j] ]][i] += ProductedIV.GetQuantity(ProductedZAIList[j])*XSValue;
-				//cout<<ProductedIV.GetQuantity(ProductedZAIList[j])*XSValue<<endl;
-			}	
+			}
 			else
 				NuclearProcessMatrix[0][i] += ProductedIV.GetQuantity(ProductedZAIList[j])*XSValue;
 		}
