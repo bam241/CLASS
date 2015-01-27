@@ -205,7 +205,6 @@ void XSM_MLP::GetMLPWeightFiles()
 	rep = opendir(fTMVAWeightFolder.c_str());
 	if (rep == NULL)
 	{
-		perror("");
         ERROR<<" Reading error for TMVA weight folder  "<<fTMVAWeightFolder.c_str()<<" : "<<strerror(errno)<<endl;
 		exit(1);
 	}
