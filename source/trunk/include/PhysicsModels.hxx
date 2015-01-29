@@ -28,11 +28,11 @@ These class aim is basicaly to store 3 differents physics model :
 	
  The 2 following are data base related (for one Reactor and one fuel type ) :
 User can either define his own (see manual) or uses the provided ones  :
-\li XSModel (@see XSModel.hxx) : Mean cross section prediction (Closest, MLP )
-\li EquivalenceModel (@see EquivalenceModel.hxx) : Fissile content prediction ( Linear,Quadratique, MLP , Baker & Ross, ...)
+\li XSModel : Mean cross section prediction (Closest, MLP )
+\li EquivalenceModel : Fissile content prediction ( Linear,Quadratique, MLP , Baker & Ross, ...)
 
  This one is bateman solvers related :
-\li IrradiationModel (@see IrradiationModel.hxx) : can be Runge Kutta 4 or Matrix
+\li IrradiationModel : can be Runge Kutta 4 or Matrix
 
 
  @authors BLG,BaM
