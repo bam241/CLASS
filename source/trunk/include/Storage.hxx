@@ -104,8 +104,8 @@ public :
 	 */
 	//@{
 		
-	void TakeFractionFromStock(int IVId,double fraction);						//!< Take a part from an IV in sotck;
-	void TakeFromStock(IsotopicVector isotopicvector);						//!<
+	void TakeFractionFromStock(int IVId,double fraction);		//!< Take a part from an IV in sotck;
+	void TakeFromStock(IsotopicVector isotopicvector);		//!<
 
 
 	void AddIV(IsotopicVector isotopicvector);					//!< Add an Isotopicvector to the IVArray

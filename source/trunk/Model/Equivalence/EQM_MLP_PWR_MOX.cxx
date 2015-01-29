@@ -126,8 +126,6 @@ TTree* EQM_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fer
 	U5_enrichment = U5 / UTOT;
 
 	BU=BurnUp;
-	//cout<<"Pu8 "<<Pu8 <<" Pu9 "<< Pu9 <<" Pu10 "<< Pu10 << " Pu11 "<< Pu11 <<" Pu12 "<<Pu12 <<" Am1 "<<Am1<<endl;
-	//cout<<"BU "<<BU<<" U5_enrichment "<<U5_enrichment<<endl;
 	if(Pu8 + Pu9 + Pu10 + Pu11 + Pu12 + Am1 > 1.00001 )//?????1.00001??? I don't know it! goes in condition if =1 !! may be float/double issue ...
 	{
 		ERROR << Pu8 << " " << Pu9 << " " << Pu10 << " " << Pu11 << " " << Pu12 << " " << Am1 << endl;

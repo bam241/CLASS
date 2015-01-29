@@ -310,7 +310,7 @@ void IrradiationModel::GetNuclearProcessMatrix(TMatrixT<double> &NuclearProcessM
 		}
 	}
 	else
-		WARNING << " Can't have nuclear process on this nucleus, ZAI : " << Mother.Z() << " " << Mother.A() << " " << Mother.I() << " its halflife seems to be below the threshold!" << endl;
+		WARNING << " Can't have nuclear process on this nucleus, ZAI " << Mother.Z() << " " << Mother.A() << " " << Mother.I() << " : its halflife seems to be below the threshold!" << endl;
 		
 	DBGL
 }
@@ -580,7 +580,9 @@ TMatrixT<double> IrradiationModel::GetFissionXsMatrix(EvolutionData EvolutionDat
 			GetNuclearProcessMatrix( FissionMatrix, Mother, FissionProductIV,  XS_Value );	// add the Nuclear process in the Reaction Matrix
 		else
 		{
-			WARNING << "Don't have fission Yield for this nuclei, ZAI : " << Mother.Z() << " " << Mother.A() << " " << Mother.I() << endl;
+			if(fReactionYieldFile!="")
+				WARNING << "Don't have fission Yield for this nuclei, ZAI : " << Mother.Z() << " " << Mother.A() << " " << Mother.I() << endl;
+			
 			GetNuclearProcessMatrix(FissionMatrix, Mother, ZAI(-2, -2, -2) * 2 , XS_Value );	// add the Nuclear process in the Reaction Matrix
 		}
 		

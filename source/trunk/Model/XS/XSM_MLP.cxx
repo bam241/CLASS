@@ -402,12 +402,12 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 				double XSValue = ExecuteTMVA(fWeightFiles[i],InputTree );
 				if(IResult.second )
 				{
-					(IResult.first)->second->SetPoint(0, (double)GetMLPTime()[TimeStep], XSValue );
+					(IResult.first)->second->SetPoint(0, (double)fMLP_Time[TimeStep], XSValue );
 
 				}
 				else
 				{
-					(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)GetMLPTime()[TimeStep], XSValue );
+					(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)fMLP_Time[TimeStep], XSValue );
 				}
 
 				delete InputTree;
@@ -477,7 +477,6 @@ void XSM_MLP::ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &R
 EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 {DBGL
 	TTree* InputTree=CreateTMVAInputTree(IV);
-	//cout<<"=====Building Evolution Data From TMVA MLP====="<<endl;
 
 	EvolutionData EvolutionDataFromMLP = EvolutionData();
 
@@ -508,11 +507,11 @@ EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 	
 			if( IResult.second )
 			{
-				(IResult.first)->second->SetPoint(0, (double)GetMLPTime()[TimeStep], ExecuteTMVA(fWeightFiles[i],InputTree) );
+				(IResult.first)->second->SetPoint(0, (double)fMLP_Time[TimeStep], ExecuteTMVA(fWeightFiles[i],InputTree) );
 			}
 			else
 			{
-				(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)GetMLPTime()[TimeStep], ExecuteTMVA(fWeightFiles[i],InputTree) );
+				(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)fMLP_Time[TimeStep], ExecuteTMVA(fWeightFiles[i],InputTree) );
 			}
 		}
 	}
