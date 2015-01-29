@@ -59,7 +59,9 @@ class EquivalenceModel : public CLASSObject
 	//}
 	virtual void GuessLambda(vector<double>& lambda,int FirstStockID, int LastStockID, double DeltaM, vector<IsotopicVector> Stocks, double  HMMass);
 	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp) = 0; /*{return 0;}*/ //!< Return the molar fraction of fissile element in the fuel accodring to the Burnup, and a given fuel composition (this is the heart of the equivalence model) 
-
+	
+	void SetBuildFuelFirstGuess(double FirstGuess){fFirstGuessFissilContent = FirstGuess;}//!<set the initialization value for BuildFuel algorithm
+	double GetBuildFuelFirstGuess(){return fFirstGuessFissilContent;}
 	
 
 	IsotopicVector GetFertileList() {return fFertileList;}	//!<return the fertile list
@@ -67,13 +69,7 @@ class EquivalenceModel : public CLASSObject
 
 	void SetFertileList(IsotopicVector IV) {fFertileList = IV;}//!<set the fertile list
 	void SetFissileList(IsotopicVector IV) {fFissileList = IV;}//!<set the fissile list
-	/// Check either the IsotopicVector IV is in the validity domain of the models.
-	/*!
-	 return true if IV is in ValidityDomain
-	 return false + a warning if IV is not in ValidityDomain
-	 \param vector<IsotopicVector> IV, Fresh fuel composition
-	 */
-	//virtual  bool isIVInDomain(IsotopicVector IVFiss, double BU = 0 ) =0;
+
 	
 	protected :
 
@@ -83,6 +79,7 @@ class EquivalenceModel : public CLASSObject
 	IsotopicVector fFissileList;	//!< contain the list of zai, needed as fissile, taken in a stock before fabrication
 					//!< if no stock are provided the fuel will not be made
 
+	double fFirstGuessFissilContent;//!< fissile content for BuildFuel initialization (in weight proportion)
 
 	private :
 
