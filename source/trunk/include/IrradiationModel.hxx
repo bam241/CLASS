@@ -36,8 +36,9 @@ class CLASSLogger;
  An IrradiationModel is a Bateman equation solving method.
  This is the mother class.
  see derivated classes :
- \@see ../Model/Irradiation/IM_Matrix.hxx
- \@see ../Model/Irradiation/IM_RK4.hxx
+ \li @see ../Model/Irradiation/IM_Matrix.hxx
+ \li @see ../Model/Irradiation/IM_RK4.hxx
+ 
  The aim of these class is to include all the commum properties of all the
  derivated Irradiation Model.
  
