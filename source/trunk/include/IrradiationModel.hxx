@@ -79,6 +79,7 @@ class IrradiationModel : public CLASSObject
 	
 	void BuildReactionFiliation();
 
+	string GetSpectrumType(){return fSpectrumType;}					///< Set the type of neutron spectrum (thermal or fast)
 
 	//@}
 	
@@ -127,7 +128,7 @@ class IrradiationModel : public CLASSObject
 	void SetShortestHalfLife(double halflife)	{ fShorstestHalflife = halflife;}	///< Set the Half Life cut
 	void LoadFPYield(string SponfaneusYield, string ReactionYield);				///< Build Fision Yields maps;
 	
-	
+	void SetSpectrumType(string type);					///< Set the type of neutron spectrum (thermal or fast)
 	
 	
 	
@@ -189,6 +190,7 @@ class IrradiationModel : public CLASSObject
 	string	fSpontaneusYieldFile;	///< Store the name of the Spontaneus fission yield file
 	string	fReactionYieldFile;		///< Store the name of the reaction fission yield file
 
+	string	fSpectrumType;			///< Type of the spectrum : thermal or fast. (needed for Isomeric branching ratios)
 	
 	//{
 	/// Return the Fission XS Matrix at the time TStep
