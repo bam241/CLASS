@@ -8,7 +8,7 @@
  
  
  @author BLG,BaM
- @version 2.0
+ @version 3.0
  */
 
 #include "IsotopicVector.hxx"
@@ -24,12 +24,14 @@ using namespace std;
  The aim of these class is synthetyse all the commum properties to all 
  Equivalence Model.
 
- !!!!!!!!!!!!!!!!CAUTION!!!!!!!!!!!!!
+\warning {
 Never instantiate EquivalenceModel in your CLASS input but it's derivated class
-see @../Model/Equivalence/EQM_LIN_PWR_MOX.hxx  
-see @../Model/Equivalence/EQM_QUAD_PWR_MOX.hxx
-see @../Model/Equivalence/EQM_MLP_PWR_MOX.hxx
-
+@see ../Model/Equivalence/EQM_BakerRoss_FBR_MOX.cxx
+@see ../Model/Equivalence/EQM_LIN_PWR_MOX.cxx
+@see ../Model/Equivalence/EQM_MLP_PWR_MOX.cxx
+@see ../Model/Equivalence/EQM_POL_PWR_UO2.cxx
+@see ../Model/Equivalence/EQM_QUAD_PWR_MOX.cxx
+}
  @author BLG,BaM
  @version 3.0
  */
@@ -44,24 +46,23 @@ class EquivalenceModel : public CLASSObject
 	EquivalenceModel(CLASSLogger* log);
 
 	virtual ~EquivalenceModel();
-
-	/// virtual method called to build a reprocessed fuel as a function of the burnup requierement the stock, mass....
-	/*!
+    //{
+    /// BuildFuel function.
+    /*!
 	 Build the fuel following the equivalance model with the proper requierment in term of mass, burnup....
-	 \param double BurnUp desireted burnup reached by the fuel at the end of irradiation
-	 \param double HMMass, needed Heavy metal mass needed
+	 \param double burnup reached by the fuel at the end of irradiation
+	 \param double HMMass, Heavy metal mass needed
 	 \param vector<double> &lambda, fraction of the stock to take (initialy should be 0)
-	 \param vector<IsotopicVector> FissilArray, isotopicvectors to use to get the fissil part of the fuel
-	 \param vector<IsotopicVector> FertilArray, isotopicvectors to use to get the fertil part of the fuel (if empty take it from the OutIncome)
+	 \param vector<IsotopicVector> FissilArray, isotopicvectors to use to get the fissile part of the fuel
+	 \param vector<IsotopicVector> FertilArray, isotopicvectors to use to get the fertile part of the fuel (if empty take it from the OutIncome)
 	 */
-	
 	virtual	 vector<double> BuildFuel(double BurnUp, double HMMass, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray );
 	//}
-	virtual void GuessLambda(vector<double>& lambda,int FirstStockID, int LastStockID, double DeltaM, vector<IsotopicVector> Stocks, double  HMMass);
-	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp) = 0; /*{return 0;}*/ //!< Return the molar fraction of fissile element in the fuel accodring to the Burnup, and a given fuel composition (this is the heart of the equivalence model) 
+	virtual void GuessLambda(vector<double>& lambda,int FirstStockID, int LastStockID, double DeltaM, vector<IsotopicVector> Stocks, double  HMMass); //!< Guess a portion of IsotopicVectors to take (dichotomy)
+	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp) = 0; //!< Return the molar fraction of fissile element in the fuel according to the burnup, and a given fuel composition (this is the heart of the equivalence model)
 	
-	void SetBuildFuelFirstGuess(double FirstGuess){fFirstGuessFissilContent = FirstGuess;}//!<set the initialization value for BuildFuel algorithm
-	double GetBuildFuelFirstGuess(){return fFirstGuessFissilContent;}
+	void SetBuildFuelFirstGuess(double FirstGuess){fFirstGuessFissilContent = FirstGuess;} //!<set the initialization value for BuildFuel algorithm
+	double GetBuildFuelFirstGuess(){return fFirstGuessFissilContent;} //!<Get the initialization value for BuildFuel algorithm
 	
 
 	IsotopicVector GetFertileList() {return fFertileList;}	//!<return the fertile list
