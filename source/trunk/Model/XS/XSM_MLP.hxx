@@ -48,7 +48,7 @@ class XSM_MLP : public XSModel
 	 \param bool IsTimeStep, if true , one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
 
 	 */
-	XSM_MLP(string TMVA_Weight_Directory,string InformationFile="",bool IsTimeStep=true);
+	XSM_MLP(string TMVA_Weight_Directory,string InformationFile="",bool IsTimeStep=false);
 	XSM_MLP(CLASSLogger* Log,string TMVA_Weight_Directory,string InformationFile="",bool IsTimeStep=false);
 	~XSM_MLP();
 	//{
