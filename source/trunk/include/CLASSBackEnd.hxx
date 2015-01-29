@@ -55,7 +55,7 @@ class CLASSBackEnd : public CLASSFacility
 	vector<cSecond>	GetIVArrayArrivalTime()	const	{ return fIVArrayArrivalTime;}	//!<Return the pointer to the OUtBackEndFacility
 
 	int		GetIVNumber()		const	{ return fIVArray.size();}
-	bool		GetStorageType()	const	{ return fIsStorageType;}	//!< Return the storageType
+	bool		GetStorageType()	const	{ return fIsStorageType;}		//!< Return the storageType
 	IsotopicVector  GetIV(int i)		const	{ if(i < (int)fIVArray.size()) return fIVArray[i];
 								else return IsotopicVector(); }
 #ifndef __CINT__
@@ -91,7 +91,7 @@ class CLASSBackEnd : public CLASSFacility
 	 */
 	//@{
 	virtual void	AddIV(IsotopicVector isotopicvector);	//!< Add an Isotopicvector to the IVArray
-	void		ClearIVArray();					//!< Empty the IVArray removing all fuel stored
+	void		ClearIVArray();				//!< Empty the IVArray removing all fuel stored
 
 	//@}
 	virtual void Evolution(cSecond t)	{}	//!< Performe the Evolution to the Time t

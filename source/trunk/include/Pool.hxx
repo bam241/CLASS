@@ -48,9 +48,8 @@ public :
 	//{
 	/// Special Constructor.
 	/*!
-	 Make a new EvolutionData
+	 Make a new Pool
 	 \param Log CLASSLogger used for the log...
-	 \param abstime time to start the Pool
 	 \param coolingtime duration of the cooling.
 	 */
 	Pool(CLASSLogger* Log, cSecond coolingtime = 5*3600.*24.*365.25); //!<
@@ -60,10 +59,9 @@ public :
 	//{
 	/// Special Special Constructor.
 	/*!
-	 Make a new EvolutionData
+	 Make a new Pool
 	 \param Log CLASSLogger used for the log...
-	 \param Storage storage which get the fuel after the cooling
-	 \param abstime time to start the Pool
+	 \param CLASSBackEnd backend which get the fuel after the cooling
 	 \param coolingtime duration of the cooling.
 	 */
 	Pool(CLASSLogger* log, CLASSBackEnd* Storage,
