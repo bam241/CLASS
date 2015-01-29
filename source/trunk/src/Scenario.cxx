@@ -49,7 +49,7 @@ Scenario::Scenario():CLASSObject(new CLASSLogger("CLASS_OUTPUT.log"))
 {
 
 	fNewTtree = true;
-	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
+	fPrintStep = (cSecond)(cYear);  // One Step per Year
 	fAbsoluteTime = 0;
 	fStartingTime = fAbsoluteTime;
 
@@ -65,7 +65,7 @@ Scenario::Scenario():CLASSObject(new CLASSLogger("CLASS_OUTPUT.log"))
 	// Warning
 
 	INFO 	<< "!!INFO!! !!!Scenario!!! Parc has been define :" << endl;
-	INFO	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	INFO	<< "\t Print  set at : " << (double)(fPrintStep/cYear) << " year" << endl;
 	INFO	<< "\t StockManagement set at : true" << endl;
 	INFO	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
 	INFO	<< "\t Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
@@ -78,7 +78,7 @@ Scenario::Scenario(cSecond abstime):CLASSObject(new CLASSLogger())
 {
 
 	fNewTtree = true;
-	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
+	fPrintStep = (cSecond)(cYear);  // One Step per Year
 	fAbsoluteTime = abstime;
 	fStartingTime = fAbsoluteTime;
 
@@ -94,7 +94,7 @@ Scenario::Scenario(cSecond abstime):CLASSObject(new CLASSLogger())
 	// Warning
 
 	INFO 	<< "!!INFO!! !!!Scenario!!! Parc has been define :" << endl;
-	INFO	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	INFO	<< "\t Print  set at : " << (double)(fPrintStep/cYear) << " year" << endl;
 	INFO	<< "\t StockManagement set at : true" << endl;
 	INFO	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
 	INFO	<< "\t Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
@@ -108,7 +108,7 @@ Scenario::Scenario(CLASSLogger* log, cSecond abstime):CLASSObject(log)
 
 
 	fNewTtree = true;
-	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
+	fPrintStep = (cSecond)(cYear);  // One Step per Year
 	fAbsoluteTime = abstime;
 	fStartingTime = fAbsoluteTime;
 
@@ -127,7 +127,7 @@ Scenario::Scenario(CLASSLogger* log, cSecond abstime):CLASSObject(log)
 
 
 	INFO 	<< " Parc has been define :" << endl;
-	INFO	<< " Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	INFO	<< " Print  set at : " << (double)(fPrintStep/cYear) << " year" << endl;
 	INFO	<< " StockManagement set at : true" << endl;
 	INFO	<< " OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
 	INFO	<< " Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
@@ -140,7 +140,7 @@ Scenario::Scenario(cSecond abstime, CLASSLogger* log):CLASSObject(log)
 {
 
 	fNewTtree = true;
-	fPrintStep = (cSecond)(3600*24*365.25);  // One Step per Year
+	fPrintStep = (cSecond)(cYear);  // One Step per Year
 	fAbsoluteTime = abstime;
 	fStartingTime = fAbsoluteTime;
 
@@ -156,7 +156,7 @@ Scenario::Scenario(cSecond abstime, CLASSLogger* log):CLASSObject(log)
 	// Warning
 
 	INFO 	<< "!!INFO!! !!!Scenario!!! Parc has been define :" << endl;
-	INFO	<< "\t Print  set at : " << (double)(fPrintStep/3600/24/365.25) << " year" << endl;
+	INFO	<< "\t Print  set at : " << (double)(fPrintStep/cYear) << " year" << endl;
 	INFO	<< "\t StockManagement set at : true" << endl;
 	INFO	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
 	INFO	<< "\t Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
@@ -701,8 +701,8 @@ void Scenario::Evolution(cSecond t)
 void Scenario::ProgressPrintout(cSecond t)
 {
 
-	double Time = (fAbsoluteTime-fStartingTime)/3600/24/365.25 ;
-	double Total = (t-fStartingTime)/3600/24/365.25;
+	double Time = (fAbsoluteTime-fStartingTime)/cYear ;
+	double Total = (t-fStartingTime)/cYear;
 
 	// Reset the line
 	for(int i = 0; i < 10; i++)
@@ -873,7 +873,7 @@ void Scenario::Print()
 
 	for(int i = 0; i < (int) fPool.size();i++)
 	{
-		INFO << "!!!!!!!!!STEP : " << fAbsoluteTime/(int)(3600*24*365.25) << endl;
+		INFO << "!!!!!!!!!STEP : " << fAbsoluteTime/(int)(cYear) << endl;
 		INFO << "Pool : " << endl;
 		INFO << "Cooling ";
 		INFO << fPool[i]->GetIVArray().size()<< endl;

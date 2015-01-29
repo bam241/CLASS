@@ -43,7 +43,7 @@ Pool::Pool(CLASSLogger* log, cSecond coolingtime):CLASSBackEnd(log, coolingtime,
 
 	
 	INFO	<< " A new Pool has been define :" << endl;
-	INFO	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
+	INFO	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/cYear) << " year" << endl;
 	WARNING	<< " All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
 
 	DBGL
@@ -65,7 +65,7 @@ Pool::Pool(CLASSLogger* log, CLASSBackEnd* storage, cSecond coolingtime):CLASSBa
 	
 
 	INFO	<< " A new Pool has been define :" << endl;
-	INFO	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
+	INFO	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/cYear) << " year" << endl;
 
 	DBGL
 
@@ -153,7 +153,7 @@ DBGL
 		{
 			if (t -  fIVArrayArrivalTime[i] > fCycleTime) // Warning & Quit
 			{
-				ERROR << " Cooling Step : " << t/3600./24/365.25<< " :" << " an evolution Step is probably missing ! " << " " << endl;
+				ERROR << " Cooling Step : " << t/cYear<< " :" << " an evolution Step is probably missing ! " << " " << endl;
 				exit (1);
 			}
    
