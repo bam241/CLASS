@@ -55,7 +55,8 @@ class IrradiationModel : public CLASSObject
 	IrradiationModel();
 
 	IrradiationModel(CLASSLogger* log);
-
+	
+	//{
 	/// virtual method called to perform the irradiation calculation using a set of cross section.
 	/*!
 	 Perform the Irradiation Calcultion using the XSSet data
