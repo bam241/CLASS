@@ -20,9 +20,9 @@ typedef long long int cSecond;
 //-----------------------------------------------------------------------------//
 /*!
  Define an Isotopicvector.
- An isotopicVector is a map of ZAI (@see ZAI.hxx) and double (e.g number of atoms).
+ An isotopicVector is a map of ZAI and double (e.g number of atoms).
  Its aim is to define a radioactive sample.
-
+ 
  @author BaM, MArc
  @version 2.0
  */
