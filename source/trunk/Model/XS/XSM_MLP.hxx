@@ -41,19 +41,31 @@ class XSM_MLP : public XSModel
 	 */
 	//@{
 
-	/// CONSTRUCTOR
+	//{
+	/// Normal Constructor
 	/*!
-	 \param string TMVA_Weight_Directory The directory where all the TMVA weight are located
-	 \param string InformationFile, Name of the information file located in TMVA_Weight_Directory (default: Data_Base_Info.nfo)
-	 \param bool IsTimeStep, if true , one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
+	 \param TMVA_Weight_Directory : The directory where all the TMVA weight are located
+	 \param InformationFile : Name of the information file located in TMVA_Weight_Directory (default : Data_Base_Info.nfo)
+	 \param IsTimeStep : if true , one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
 
 	 */
 	XSM_MLP(string TMVA_Weight_Directory,string InformationFile="",bool IsTimeStep=false);
+	//}
 	
+	//{
+	/// CLASSLogger Constructor
+	/*!
+	 \param log : The CLASSLogger
+	 \param TMVA_Weight_Directory : The directory where all the TMVA weight are located
+	 \param InformationFile : Name of the information file located in TMVA_Weight_Directory (default : Data_Base_Info.nfo)
+	 \param IsTimeStep : if true , one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
+	 
+	 */
 	XSM_MLP(CLASSLogger* Log,string TMVA_Weight_Directory,string InformationFile="",bool IsTimeStep=false);
+	//}
 	
 	~XSM_MLP();
-	//{
+	//@}
 
 
  	virtual EvolutionData GetCrossSections(IsotopicVector IV,double t=0);	//!< Return calculated cross section by the MLP regression
@@ -84,7 +96,7 @@ class XSM_MLP : public XSModel
 	
 	double fDataBasePower;		//<!Power of the data base (read from fMLPInformationFile )
  	double fDataBaseHMMass;		//<!Heavy metal mass of the data base (read from fMLPInformationFile )
- 	string fDataBaseFType;		//<! Reactor Type (e.g PWR, RNR, ADS..)
+ 	string fDataBaseFType;		//<! Reactor Type (e.g PWR, FBR-Na, ADS..)
  	string fDataBaseRType;		//<! Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
 	
  	bool fIsStepTime;		//<!true if one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
