@@ -42,7 +42,10 @@ class CLASSBackEnd : public CLASSFacility
     //{
     /// Default Constructor.
     /*!Create an empty CLASSBackEnd
-     \param type -2 :SeparationPlant -1 : Storage ; 8 :Pool
+     \param type 
+     \li -2 :SeparationPlant 
+     \li -1 : Storage 
+     \li 8 :Pool
      */
     CLASSBackEnd(int type = 0);
     //{
@@ -50,8 +53,10 @@ class CLASSBackEnd : public CLASSFacility
     /*!
      Create an empty CLASSBackEnd loading a CLASSLogger
      \param CLASSLogger CLASSLogger used for the log...
-     \param type -2 :SeparationPlant -1 : Storage ; 8 :Pool
-     */
+     \param type
+     \li -2 :SeparationPlant
+     \li -1 : Storage
+     \li 8 :Pool     */
     CLASSBackEnd(CLASSLogger* log,int type = 0);
     //{
     /// Cycle time Constructor.
