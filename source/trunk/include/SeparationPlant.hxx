@@ -49,7 +49,7 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new SeparationPlant
-	 \param Log CLASSLogger used for the log...
+	 \param log : used for the log.
 	 \param separationtime duration of the SeparationPlant
 	 */
 	SeparationPlant(CLASSLogger* Log); //!<

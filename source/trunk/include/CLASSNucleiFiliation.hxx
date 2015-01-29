@@ -44,7 +44,7 @@ public:
 	
 	~CLASSNucleiFiliation();	///< Normal Destructor.
 	
-	//}
+	//@}
 
 	
 	//********* Get Method *********//

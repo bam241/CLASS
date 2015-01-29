@@ -39,17 +39,50 @@ typedef long long int cSecond;
 class CLASSFuelPlan : public CLASSObject
 {
 	public :
-	///< Normal Constructor.
-	CLASSFuelPlan();
-	CLASSFuelPlan(CLASSLogger* log);
-
-	void AddFuel(cSecond time,  CLASSFuel fuel, double BurnUp);
+	/*!
+	 \name Constructor/Desctructor
+	 */
+	//@{
 	
-	void AddFuel(cSecond time,  EvolutionData* fuel, double BurnUp) {AddFuel( time, CLASSFuel(fuel), BurnUp);}
-	void AddFuel(cSecond time,  PhysicsModels* fuel, double BurnUp) {AddFuel( time, CLASSFuel(fuel), BurnUp);}
+	//{
+	/// CLASSFuelPlan Constructor.
+	/*!
+	 Make a new CLASSFuelPlan
+	 */
+	CLASSFuelPlan();
+	//}
+	
+	//{
+	/// CLASSFuelPlan Constructor.
+	/*!
+	 Make a new CLASSFuelPlan
+	 \param log : used for the log.
+	 */	CLASSFuelPlan(CLASSLogger* log);
+	//}
+	//@}
 
-	pair< CLASSFuel, double> GetFuelAt(cSecond t);
+	/*!
+	 \name Adding Method
+	 */
+	//@{
+	
+	void AddFuel(cSecond time,  CLASSFuel fuel, double BurnUp);	//!< Add A new CLASSFuel at the corresponding time and Burnup
+	void AddFuel(cSecond time,  EvolutionData* fuel, double BurnUp)
+			{ AddFuel( time, CLASSFuel(fuel), BurnUp); }	//!< Add A new EvolutionData at the corresponding time and Burnup
+	void AddFuel(cSecond time,  PhysicsModels* fuel, double BurnUp)
+			{ AddFuel( time, CLASSFuel(fuel), BurnUp); }	//!< Add A new Physicis Model at the corresponding time and Burnup
 
+	//a}
+	
+	/*!
+	 \name Get Method
+	 */
+	//@{
+
+	pair< CLASSFuel, double> GetFuelAt(cSecond t);			//!< Get fuel and associated Burnup loaded at the time t
+
+	
+	//@}
 	using CLASSObject::SetName;
 	using CLASSObject::GetName;
 	protected :
@@ -57,7 +90,7 @@ class CLASSFuelPlan : public CLASSObject
 
 	private :
 
-	map< cSecond, pair< CLASSFuel, double > >	fLoadingPlan;	///< Loading PLan to change the EvolutionData (and the associetedBurnup) according to the Plan
+	map< cSecond, pair< CLASSFuel, double > >	fLoadingPlan;	///< Loading PLan to change the EvolutionData (and the associeted Burnup) according to the Plan
 
 };
 

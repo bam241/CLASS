@@ -49,7 +49,7 @@ public :
 	/// CLASSLogger Constructor.
 	/*!
 	 Use create an empty Stotarage loading a CLASSLogger
-	 \param CLASSLogger CLASSLogger used for the log...
+	 \param CLASSLogger CLASSLogger used for the log.
 	 */
  	Storage(CLASSLogger* log);
 	//}
@@ -59,7 +59,7 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new reactor
-	 \param CLASSLogger CLASSLogger used for the log...
+	 \param CLASSLogger CLASSLogger used for the log.
 	 \param evolutivedb DataBank for decay management
 	 */
 	Storage(CLASSLogger* log, DecayDataBank* evolutivedb);
@@ -139,7 +139,7 @@ public :
 	/// Write the Isotope composition of all IsotopicVector stored.
 	/*!
 	 Make a new reactor
-	 \param filenam CLASSLogger used for the log...
+	 \param filenam CLASSLogger used for the log.
 	 \param data only use to srite a date in the file, theyr is not treatment of the date in this method....
 	 */
 	void Write(string filename,cSecond date = -1);

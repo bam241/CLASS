@@ -61,22 +61,21 @@ class DecayDataBank : public CLASSObject
 	//{
 	/// Special Constructor.
 	/*!
-	 Use to load a CLASSLogger
-	 \param CLASSLogger CLASSLogger used for the log...
-	 \param DB_index_file path to the index file
-	 \param setlog if the log are stored in the CLASSLogger
-	 \param olfreadmethod true if the old format of EvolutionData are used (ie without the key word such as Inv, XSFiss...)
+	 Use to load a DecayDataBank
+	 \param DB_index_file : path to the index file
+	 \param setlog if the : log are stored in the CLASSLogger
+	 \param olfreadmethod : true if the old format of EvolutionData are used (ie without the key word such as Inv, XSFiss...)
 	 */
 	DecayDataBank(string DB_index_file, bool olfreadmethod = false );
 	//}
 	//{
 	/// Special Constructor.
 	/*!
-	 Use to load a CLASSLogger
-	 \param CLASSLogger CLASSLogger used for the log...
-	 \param DB_index_file path to the index file
-	 \param setlog if the log are stored in the CLASSLogger
-	 \param olfreadmethod true if the old format of EvolutionData are used (ie without the key word such as Inv, XSFiss...)
+	 Use to load a DecayDataBank
+	 \param Log : CLASSLogger used for the log.
+	 \param DB_index_file : path to the index file
+	 \param setlog : if the log are stored in the CLASSLogger
+	 \param olfreadmethod : true if the old format of EvolutionData are used (ie without the key word such as Inv, XSFiss...)
 	 */
 	DecayDataBank(CLASSLogger* Log, string DB_index_file, bool olfreadmethod = false );
 	//}
@@ -107,14 +106,11 @@ class DecayDataBank : public CLASSObject
 	 \name Get Method
 	 */
 	//@{
-	map<ZAI ,EvolutionData >	GetDecayDataBank()	const	{ return fDecayDataBank; }	//!< Return the DecayDataBank
-	string 				GetDataBaseIndex()	const	{ return fDataBaseIndex; }	//!< Return the index Name
-	bool 				IsDefine(const ZAI& zai)	const;					//!< True the key is define, false unstead
-	
-	string	GetDataFileName()	const { return fDataFileName; }
-	string	GetDataDirectoryName()  const { return fDataDirectoryName; }
-	
-	double  GetShorstestHalflife()	const { return fShorstestHalflife; }
+	map<ZAI ,EvolutionData > GetDecayDataBank()	const	{ return fDecayDataBank; }	//!< Return the DecayDataBank
+	bool 			IsDefine(const ZAI& zai)	const;				//!< True the key is define, false unstead
+
+	string 			GetDataBaseIndex()	const	{ return fDataBaseIndex; }	//!< Return the index Name
+
 	IsotopicVector		GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at the t time
 
 	//@}
@@ -129,11 +125,12 @@ class DecayDataBank : public CLASSObject
 	 */
 	//@{
 	
-	void SetDecayDataBank(map<ZAI ,EvolutionData > mymap)	{ fDecayDataBank = mymap; }	//!< Set the DecayDataBank map
+	void SetDecayDataBank(map<ZAI ,EvolutionData > mymap)
+						{ fDecayDataBank = mymap; }	//!< Set the DecayDataBank map
 	
-	void SetDataBaseIndex(string database) { fDataBaseIndex = database;; ReadDataBase(); }	//!< Set the Name of the database index
+	void SetDataBaseIndex(string database)	{ fDataBaseIndex = database;; ReadDataBase(); }	//!< Set the Name of the database index
 	
-	void SetOldReadMethod(bool val)			{ fOldReadMethod = val; ReadDataBase();}			///< use the old reading method
+	void SetOldReadMethod(bool val)		{ fOldReadMethod = val; ReadDataBase();}			///< use the old reading method
 	
 	//}
 	
@@ -147,7 +144,6 @@ class DecayDataBank : public CLASSObject
 	 \name Evolution Method
 	 */
 	//@{
-	
 	
 	IsotopicVector	Evolution(const ZAI& zai, double dt);	///< Return the Product IsotopicVector evolution from zai during a dt time
 	
@@ -173,16 +169,8 @@ class DecayDataBank : public CLASSObject
 	
 	protected :
 	
-	double  fShorstestHalflife;
-	int	fZAIThreshold;	//!< Highest Mass deal bye the evolution (default 90)
-	
-	string			fDataFileName;		///< Name of the decay list
-	string			fDataDirectoryName;	///< Path to the decay list file
-	
 	map<ZAI, EvolutionData>	fDecayDataBank;		///< DataBanck map
-	
- 	string			fDataBaseIndex;			///< Name of the index
-	
+ 	string			fDataBaseIndex;		///< Name of the index
 	bool			fOldReadMethod;		///< use old DB format
 	
 };
