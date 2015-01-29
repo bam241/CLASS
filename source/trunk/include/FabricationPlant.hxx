@@ -27,13 +27,18 @@ typedef long long int cSecond;
 //-----------------------------------------------------------------------------//
 /*!
  Define a FabricationPLant.
- The aim of these class is describe the deal all the reprocessed fuel.
- It includes the fabrication of the fuel from a stock of used fuel, using the aproprieted algrorythm, and the storage of this fuel before putting it into a reactor.
- The parameter used for the fuel fabrication are recover from the DataBank.
- The Databank MUST include an equivalence model to build the fuel. This model is not necessary provided, each user need to put his own. By default a equivalence model is provided for PWR MOX fuel.
+ The aim of these class is to manage the manufacturing of reprocessed fuel.
+ It includes the fabrication of the fuel from a stock of spent fuel, using the appropriate
+ algrorithm, and the storage of the fresh fuel until reactor loading.
+ The parameters used for the fuel fabrication are recover from a PhysicsModels.
+ The PhysicsModels MUST include an EquivalenceModel to build the fuel.
+Some EquivalenceMOdel are available in the CLASS package, but an user can make his own.
 
- The FabricationPlant once the fuel is builded, also store the corresponding EvolutionData generated using the DataBank.
-
+Once the fuel is built, the FabricationPlant store the corresponding EvolutionData 
+ generated using the PhysicsModels.
+\@see PhysicsModels.hxx
+\@see EquivalenceModel.hxx
+ 
  @author BaM
  @version 2.0
  */
@@ -62,11 +67,9 @@ public :
 	//{
 	/// Special Constructor.
 	/*!
-	 Make a new FabricationPlant evolution
-	 \param CLASSLogger CLASSLogger used for the log...
-	 \param storage storage used to build the reprocessed fuel
-	 \param reusable storage used to store all separated material not used in the fabrication process
-	 \param fabricationtime duration of the fabrication process (2 years by default).
+	 Make a new FabricationPlant
+	 \param CLASSLogger CLASSLogger used for the log.
+	 \param fabricationtime duration of the fabrication process (default : 2 years).
 	 */
 	FabricationPlant(CLASSLogger* log, double fabricationtime = 365.25*24*3600*2);
 	//}
@@ -87,15 +90,15 @@ public :
 
 	void SetDecayDataBank(DecayDataBank* decayDB) {fDecayDataBase = decayDB;}	//! Set the Decay DataBank
 
-	void SetFiFo(bool bval = true)	{ fFiFo = bval;}	//!< Set the chronological priority (true for chronological, false unstead)
+	void SetFiFo(bool bval = true)	{ fFiFo = bval;}				//!< Set the chronological priority (true for chronological, false instead)
 	
-	void SetSubstitutionFuel(EvolutionData fuel);				//!< To use a subtition fuel if the fabrication fail (not enough material in stock)
+	void SetSubstitutionFuel(EvolutionData fuel);					//!< To use a subtition fuel if the fabrication fail (not enough material in stock)
 	
 	void AddReactor(int reactorid, double creationtime)
 			{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }	//!< Add a new reactor
 
 #ifndef __CINT__
-	void SetReUsableStorage(Storage* store) { fReUsable = store; fIsReusable = true;}
+	void SetReUsableStorage(Storage* store) { fReUsable = store; fIsReusable = true;} //!< Set the Storage where all the separated matetial not used in the fabrication process will be sent. (if not present it goes to WASTE)
 #endif
 
 	using CLASSFacility::SetName;
@@ -113,8 +116,8 @@ public :
 	//@{
 	
 #ifndef __CINT__
-	vector<Storage*>	GetFissileStorage()		{ return fFissileStorage; }		//!< Return the Pointer to the Storage
-	vector<Storage*>	GetFertileStorage()		{ return fFertileStorage; }		//!< Return the Pointer to the Storage
+	vector<Storage*>	GetFissileStorage()		{ return fFissileStorage; }		//!< Return the Pointer to the fissile Storage
+	vector<Storage*>	GetFertileStorage()		{ return fFertileStorage; }		//!< Return the Pointer to the fertile Storage
 
 	EvolutionData GetReactorEvolutionDB(int ReactorId);			//!< Return the EvolutionData of Reactor ReactorId
 #endif
@@ -129,8 +132,8 @@ public :
 
 
 #ifndef __CINT__
-	void AddFissileStorage(Storage* stock) { fFissileStorage.push_back(stock); } //!< Add a new Storage to the list of Fissile material provider...
-	void AddFertileStorage(Storage* stock) { fFertileStorage.push_back(stock); } //!< Add a new Storage to the list of Fertile material provider...
+	void AddFissileStorage(Storage* stock) { fFissileStorage.push_back(stock); } //!< Add a new Storage to the list of Fissile material provider.
+	void AddFertileStorage(Storage* stock) { fFertileStorage.push_back(stock); } //!< Add a new Storage to the list of Fertile material provider.
 #endif
 
 //********* Fabrication & Evolution Method *********//
@@ -140,23 +143,23 @@ public :
 	 */
 	//@{
 
-	void SetSeparartionEfficiencyIV(ZAI zai, double factor);	///< Add Valorisable Element
-	void Evolution(cSecond t);					//!< Perform the Evolution
+	void SetSeparartionEfficiencyIV(ZAI zai, double factor);	//!< Set the extraction efficiency of zai to factor (0<=factor<=1)
+	void Evolution(cSecond t);					//!< Perform the FabricationPlant Evolution
 	
 	void DumpStock(vector<double> lambdaArray);			//!< Update the Stock status after building process
 
-	void TakeReactorFuel(int ReactorId) ;				//!< Remove the Fuel of reactor ReactorId
+	void TakeReactorFuel(int ReactorId) ;				//!< Remove the Fuel of reactor ReactorId from stock
 	void UpdateInsideIV();
 
-	IsotopicVector BuildFuelFromEqModel(vector<double> LambdaArray);
-	void BuildFissileArray();
-	void BuildFertileArray();
+	IsotopicVector BuildFuelFromEqModel(vector<double> LambdaArray); //!<Build the fresh fuel for the reactor according the results of the EquivalenceModel (\@see  EquivalenceModel)
+	void BuildFissileArray();					//!< virtualy extract fissile nuclei from Storage according EquivalenceModel fFissileList and make it virtually decay FabricationTime
+	void BuildFertileArray();					//!< virtualy extract fertile nuclei from Storage according EquivalenceModel fFertileList and make it virtually decay FabricationTime
 
 #ifndef __CINT__
 	void BuildFuelForReactor(int ReactorId, cSecond t);			//!< Build a Fuel for the reactor ReactorId
 #endif
 
-	void SortArray(int i);
+	void SortArray(int i); //!< Sort IsotopicVector array according priority preferences (e.g first in first out)
 
 	//@}
 
@@ -179,29 +182,30 @@ protected :
 
 
 
-	bool	fFiFo;	//!< Set the First In First Out
+	bool	fFiFo;					//!< First In First Out flag
 
-	bool	fSubstitutionFuel;		//!< true if a subtitution fuel as been set
+	bool	fSubstitutionFuel;			//!< true if a subtitution fuel as been set
 
 	void	FabricationPlantEvolution(cSecond t);	//!< Deal the FabricationPlant Evolution
-	void 	ResetArrays(); //!< empty the fFertileArray and fFissileArray
+	void 	ResetArrays();				//!< empty the fFertileArray and fFissileArray
 
 
 #ifndef __CINT__
 	
-	vector<Storage*>	fFissileStorage;		//!< Pointer to the Storage to recycle used to get the fissile part of the fuel
-	vector<IsotopicVector>  fFissileArray;
-	vector<cSecond>		fFissileArrayTime;
+	vector<Storage*>	fFissileStorage;	//!< Pointer to the Storage used to get the fissile part of the fuel
+	vector<IsotopicVector>  fFissileArray;		//!< The vector of isotopicVector use as fissile material
+	vector<cSecond>		fFissileArrayTime;	//!< Time when a IsotopicVector arrives in its storage
 	vector< pair<int,int> > fFissileArrayAdress;
-	IsotopicVector		fFissileList;
+	IsotopicVector		fFissileList;		//!< The List of fissile ZAI to consider
 
-	vector<Storage*>	fFertileStorage;		//!< Pointer to the Storage to recycle used to get the fertile part of the fuel
-	vector<IsotopicVector>  fFertileArray;
-	vector<cSecond>		fFertileArrayTime;
+	vector<Storage*>	fFertileStorage;	//!< Pointer to the Storage used to get the fertile part of the fuel
+	vector<IsotopicVector>  fFertileArray;		//!< The vector of isotopicVector used as fissile material
+	vector<cSecond>		fFertileArrayTime;	//!< Time when a IsotopicVector arrives in its storage
+
 	vector< pair<int,int> > fFertileArrayAdress;
-	IsotopicVector		fFertileList;
+	IsotopicVector		fFertileList;		//!< The List of fertile ZAI to consider
 
-	Storage*	fReUsable;			//!< Pointer to the Storage using for recycling unused Product
+	Storage*	fReUsable;			//!< Pointer to the Storage using for storing unused Product
 	bool		fIsReusable;
 
 	EvolutionData	fSubstitutionEvolutionData;	//!< EvolutionData of the subtitution fuel
