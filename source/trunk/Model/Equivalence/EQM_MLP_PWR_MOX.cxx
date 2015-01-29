@@ -42,6 +42,8 @@ EQM_MLP_MOX::EQM_MLP_MOX(string TMVAWeightPath):EquivalenceModel(new CLASSLogger
 	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
 	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
 
+	SetBuildFuelFirstGuess(0.04);
+
 	INFO<<"__An equivalence model of PWR MOX has been define__"<<endl;
 	INFO<<"\tThis model is based on a multi layer perceptron"<<endl;
 	INFO<<"\t\tThe TMVA weight file is :"<<endl;
@@ -66,6 +68,8 @@ EQM_MLP_MOX::EQM_MLP_MOX(CLASSLogger* log, string TMVAWeightPath):EquivalenceMod
 
 	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
 	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
+
+	SetBuildFuelFirstGuess(0.04);
 
 	INFO<<"__An equivalence model of PWR MOX has been define__"<<endl;
 	INFO<<"\tThis model is based on a multi layer perceptron"<<endl;
