@@ -133,11 +133,11 @@ void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int 
 		LAMBDA_TOT+=lambda[i]	;
 
 
-	if( LAMBDA_TOT == 0 ) //Initialization je cherche les lambda telle que j'ai 5% de HM  !!!
+	if( LAMBDA_TOT == 0 ) //Initialization Looking for lambda such as the fissile content is GetBuildFuelFirstGuess() of HM
 	{	//cout<<"INITIALIZATION"<<endl;
 		double	MASS = 0 ; 
 		int ID_max = 0;
-		while( MASS < 0.05*HMMass )
+		while( MASS < GetBuildFuelFirstGuess()*HMMass )
 		{		
 			double StockMass = Stocks[ID_max].GetTotalMass() * 1e6;
 
