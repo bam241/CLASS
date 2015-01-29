@@ -48,6 +48,7 @@ class CLASSBackEnd : public CLASSFacility
      \li 8 :Pool
      */
     CLASSBackEnd(int type = 0);
+    //}
     //{
     /// CLASSLogger Constructor.
     /*!
@@ -58,6 +59,7 @@ class CLASSBackEnd : public CLASSFacility
      \li -1 : Storage
      \li 8 :Pool     */
     CLASSBackEnd(CLASSLogger* log,int type = 0);
+    //}
     //{
     /// Cycle time Constructor.
     /*!
@@ -67,7 +69,7 @@ class CLASSBackEnd : public CLASSFacility
      \param type -2 :SeparationPlant -1 : Storage ; 8 :Pool
      */
     CLASSBackEnd(CLASSLogger* log, cSecond cycletime, int type = 0);
-    
+  	//}
     //********* Get Method *********//
     /*!
      \name Get Function
