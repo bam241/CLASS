@@ -47,6 +47,7 @@ class CLASSFuel : public CLASSObject
 
 	EvolutionData* GetEvolutionData() {return fEvolutionData;}
 	PhysicsModels* GetPhysicsModels() {return fPhysicsModels;}
+	
 	using CLASSObject::SetName;
 	using CLASSObject::GetName;
 	protected :

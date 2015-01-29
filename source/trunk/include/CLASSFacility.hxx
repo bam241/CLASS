@@ -39,14 +39,87 @@ class Scenario;
 class CLASSFacility : public CLASSObject
 {
 public :
-		///< Normal Constructor.
-	CLASSFacility(int type = 0);
-	CLASSFacility(CLASSLogger* log, int type = 0);
-	CLASSFacility(CLASSLogger* log, cSecond cycletime, int type = 0);
-	CLASSFacility(CLASSLogger* log, cSecond creationtime, cSecond lifetime, int type = 0);
-	CLASSFacility(CLASSLogger* log, cSecond startingtime, cSecond lifetime, cSecond cycletime, int type = 0);
+	/*!
+	 \name Constructor/Desctructor
+	 */
+	//@{
 	
-		//********* Get Method *********//
+	//{
+	/// Normal Constructor.
+	/*!
+	Make a new Facility
+	\param type identification of type of the facility :
+	\li 4 Reactor,
+	\li 8 Pool,
+	\li 16 FabricationPlant.
+	 */
+	
+	CLASSFacility(int type = 0);
+	//}
+
+	//{
+	/// Special Constructor.
+	/*!
+	 Make a new Facility
+	 \param Log CLASSLogger used for the log...
+	 \param type identification of type of the facility :
+	 \li 4 Reactor,
+	 \li 8 Pool,
+	 \li 16 FabricationPlant.
+	 
+	 */
+	CLASSFacility(CLASSLogger* log, int type = 0);
+	//}
+	
+	//{
+	/// Special Constructor.
+	/*!
+	 Make a new Facility
+	 \param Log CLASSLogger used for the log...
+	 \param cycletime duration of the cycle in second.
+	 \param type identification of type of the facility :
+	 \li 4 Reactor,
+	 \li 8 Pool,
+	 \li 16 FabricationPlant.
+	 
+	 */
+	CLASSFacility(CLASSLogger* log, cSecond cycletime, int type = 0);
+	//}
+	
+	//{
+	/// Special Constructor.
+	/*!
+	 Make a new Facility
+	 \param Log CLASSLogger used for the log...
+	 \param creationtime creation date (in second) of the Facility.
+	 \param lifetime operating duration in second.
+	 \param type identification of type of the facility :
+	 \li 4 Reactor,
+	 \li 8 Pool,
+	 \li 16 FabricationPlant.
+	 
+	 */
+	CLASSFacility(CLASSLogger* log, cSecond creationtime, cSecond lifetime, int type = 0);
+	//}
+	
+	//{
+	/// Special Constructor.
+	/*!
+	 Make a new Facility
+	 \param Log CLASSLogger used for the log...
+	 \param creationtime creation date (in second) of the Facility.
+	 \param lifetime operating duration in second.
+	 \param cycletime duration of the cycle in second.
+	 \param type identification of type of the facility :
+	 \li 4 Reactor,
+	 \li 8 Pool,
+	 \li 16 FabricationPlant.
+	 
+	 */
+	CLASSFacility(CLASSLogger* log, cSecond startingtime, cSecond lifetime, cSecond cycletime, int type = 0);
+	//}
+	
+	//********* Get Method *********//
 	/*!
 	 \name Get Function
 	 */
@@ -55,7 +128,7 @@ public :
 	int 		GetId()			const	{ return fId; }			//!< Return the Facility Parc'Is
 	IsotopicVector 	GetInsideIV()		const	{ return fInsideIV; } 		//!< Return the IV contain in the Facility
 
-	int		GetFacilityType()	const	{ return fFacilityType; }
+	int		GetFacilityType()	const	{ return fFacilityType; }	//!< Return the Facility Type id
 
 	cSecond		GetInternalTime()	const	{ return fInternalTime; }	//!< Return Creation Time
 
