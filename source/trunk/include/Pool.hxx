@@ -22,7 +22,7 @@ class DecayDataBank;
 //-----------------------------------------------------------------------------//
 /*!
  Define a Pool.
- The aim of the Class is to manage evolution of all out reactor fuel. from Cooling to Waste or storage
+ This class deal with the management of the spent fuel pool
 
 
  @author BaM
@@ -50,20 +50,20 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new Pool
-	 \param log : used for the log.
-	 \param coolingtime duration of the cooling.
+	 \param Log CLASSLogger used for the log.
+	 \param coolingtime duration of the cooling (default : 5 years).
 	 */
 	Pool(CLASSLogger* Log, cSecond coolingtime = 5*cYear); //!<
 	//}
 
 
 	//{
-	/// Special Special Constructor.
+	/// Special  Constructor.
 	/*!
 	 Make a new Pool
-	 \param log : used for the log.
+	 \param Log CLASSLogger used for the log...
 	 \param CLASSBackEnd backend which get the fuel after the cooling
-	 \param coolingtime duration of the cooling.
+	 \param coolingtime duration of the cooling (default : 5 years).
 	 */
 	Pool(CLASSLogger* log, CLASSBackEnd* Storage,
 			 cSecond coolingtime = 5*cYear); //!<
@@ -86,7 +86,7 @@ public :
 	void SetOutBackEndFacility(CLASSBackEnd* befacility)
 						{  fOutBackEndFacility = befacility;
 						   SetIsStorageType(false);
-						   fPutToWaste = false; }		//!< Set the Pointer to the Storage
+						   fPutToWaste = false; }		//!< Set the pointer to facility at the back end of the pool
 
 	void SetPutToWaste(bool val)		{ fPutToWaste = val; }		//!< Set True if IV goes to waste after cooling false instead
 
@@ -123,8 +123,8 @@ public :
 	//@{
 
 	vector<cSecond>	GetCoolingStartingTime() const
-						{ return GetIVArrayArrivalTime(); }	//!< Return the vector of Cooling Sstarting Time
-	void	RemoveIVCooling(int i);					//!< Remove a Cooling IsotopicVector
+						{ return GetIVArrayArrivalTime(); }	//!< Return vector of the arrival time of each IV in the Pool
+	void	RemoveIVCooling(int i);					//!< Remove a IsotopicVector from cooling
 
 	void	AddIV(IsotopicVector isotopicvector);			//!< Add an Isotopicvector to the IVArray
 	//@}
@@ -140,7 +140,7 @@ public :
 	 */
 	//@{
 
-	void Evolution(cSecond t);		//!< Performe the evolution until the Time t
+	void Evolution(cSecond t);		//!< Perform the evolution until time t
 	void Dump();				//!< Write Modification (exchange between Cooling, Separation and Storage)
 	
 	//@}
@@ -156,12 +156,12 @@ protected :
 //********* Isotopic Quantity *********//
 //--------- Cooling ---------//
 	vector<int>		fCoolingIndex;		///< Vector of the Cooling Index
-	int			fCoolingLastIndex;	//!< Number of Cooling IV Treated
-	vector<int>		fCoolingEndOfCycle;	//!< Index of the Cooling IV reaching the End of a Cooling Cycle
+	int			fCoolingLastIndex;	//!< Number of Cooling IV handle
+	vector<int>		fCoolingEndOfCycle;	//!< Index of the Cooling IV reaching the end of a cooling cycle
 
 
 //********* Private Method *********//
-	void	CoolingEvolution(cSecond t);					//!< Deal the cooling and then send it to Separation
+	void	CoolingEvolution(cSecond t);					//!< Deal the cooling evolution
 
 
 
