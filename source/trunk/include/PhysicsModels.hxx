@@ -57,9 +57,9 @@ class PhysicsModels : public CLASSObject
 	/// XS, EM, IM Contructor
 	/*!
 	 Perform the Irradiation Calcultion using the XSSet data
-	 \param XS : The XSModel (Mean cross section predictor) @see XSModel.hxx
-	 \param EM : The EquivalenceModel (Fissile content predictor) @see EquivalenceModel.hxx
-	 \param IM : The IrradiationModel (Bateman solver) @see IrradiationModel.hxx
+	 \param XS : The XSModel (Mean cross section predictor)
+	 \param EM : The EquivalenceModel (Fissile content predictor)
+	 \param IM : The IrradiationModel (Bateman solver)
 	 */
 	PhysicsModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM );
 	//}
@@ -68,10 +68,10 @@ class PhysicsModels : public CLASSObject
 	/// CLASSLogger Contructor
 	/*!
 	 Perform the Irradiation Calcultion using the XSSet data
-	 \param log : The CLASSLogger @see CLASSLogger.hxx
-	 \param XS : The XSModel (Mean cross section predictor) @see XSModel.hxx
-	 \param EM : The EquivalenceModel (Fissile content predictor) @see EquivalenceModel.hxx
-	 \param IM : The IrradiationModel (Bateman solver) @see IrradiationModel.hxx
+	 \param log : The CLASSLogger 
+	 \param XS : The XSModel (Mean cross section predictor)
+	 \param EM : The EquivalenceModel (Fissile content predictor)
+	 \param IM : The IrradiationModel (Bateman solver)
 	 */
 	PhysicsModels(CLASSLogger* log, XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM );
 	//}
