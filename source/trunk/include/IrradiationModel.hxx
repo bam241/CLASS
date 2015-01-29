@@ -32,9 +32,14 @@ class ZAI;
 class CLASSLogger;
 //-----------------------------------------------------------------------------//
 /*!
- Define a IrradiationModel.
- The aim of these class is synthetyse all the commum properties to all Irradiation Model.
- 
+ Define an IrradiationModel.
+ An IrradiationModel is a Bateman equation solving method.
+ This is the mother class.
+ see derivated classes :
+ \@see ../Model/Irradiation/IM_Matrix.hxx
+ \@see ../Model/Irradiation/IM_RK4.hxx
+ The aim of these class is to include all the commum properties of all the
+ derivated Irradiation Model.
  
  @author BaM
  @version 3.0
@@ -50,15 +55,15 @@ class IrradiationModel : public CLASSObject
 
 	IrradiationModel(CLASSLogger* log);
 
-	/// virtueal method called to perform the irradiation calculation using a set of cross section.
+	/// virtual method called to perform the irradiation calculation using a set of cross section.
 	/*!
 	 Perform the Irradiation Calcultion using the XSSet data
-	 \param IsotopicVector IV isotopic vector to irradiate
-	 \param EvolutionData XSSet set of corss section to use to perform the evolution calculation
-	 \param double Power, constant power to use for irradation
-	 \param double irradiationtime, time of the irradiation
+	 \param IV : isotopic vector to irradiate
+	 \param XSSet : set of mean cross section to use in order to perform the depletion calculation
+	 \param Power : constant power to use for irradation [W]
+	 \param irradiationtime : irradiation time [s]
 	 */
-	virtual	 EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime) = 0 ; //{ return EvolutionData();}
+	virtual	 EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime) = 0 ;
 	//}
 
 	
@@ -69,17 +74,17 @@ class IrradiationModel : public CLASSObject
 	 \name Get Method
 	 */
 	//@{
-	string	GetDataFileName()	const { return fDataFileName; }
-	string	GetDataDirectoryName()  const { return fDataDirectoryName; }
+	string	GetDataFileName()	const { return fDataFileName; }		// File name where decay constants and branching ratios are written.
+	string	GetDataDirectoryName()  const { return fDataDirectoryName; }	//!< Path to fDataFileName
 
-	double  GetShorstestHalflife()	const { return fShorstestHalflife; }
+	double  GetShorstestHalflife()	const { return fShorstestHalflife; }	//!< Nuclei with HL below fShorstestHalflife are cut (replaced by their daughter(s))
 	
 
 	void GetNuclearProcessMatrix(TMatrixT<double> &myMatrix, ZAI Mother, IsotopicVector ProductedIV, double XSValue = 1);
 	
 	void BuildReactionFiliation();
 
-	string GetSpectrumType(){return fSpectrumType;}					///< Set the type of neutron spectrum (thermal or fast)
+	string GetSpectrumType(){return fSpectrumType;}				//!< Set the type of neutron spectrum (thermal or fast)
 
 	//@}
 	
@@ -97,8 +102,9 @@ class IrradiationModel : public CLASSObject
 	//{
 	/// set Fission Energy using a file
 	/*!
-	 // This method fill the Fission Energy map using a file
-	 // \param FissionEnergyFile: filename containing the Fission Energy of some nuclei (form : Z A I Energy)
+	 // This method fill the Fission Energy [eV] map using a file
+	 // \param FissionEnergyFile: filename containing the Fission Energy of some nuclei 
+	 (format : Z A I Energy[eV])
 	 */
 	void SetFissionEnergy(string FissionEnergyFile);
 	//}
@@ -107,8 +113,8 @@ class IrradiationModel : public CLASSObject
 	/// set Fission Energy for a ZAI using ZAI(Z,A,I)
 	/*!
 	 // This method fill the Fission Energy map of a set ZAI
-	 // \param zai ZAI
-	 // \param E Fission energy of the ZAI
+	 // \param zai : the ZAI
+	 // \param E : Energy released by fission for nuclei zai [eV]
 	 */
 	void SetFissionEnergy(ZAI zai, double E);
 	//}
@@ -117,18 +123,18 @@ class IrradiationModel : public CLASSObject
 	/// set Fission Energy for a ZAI using the Z, A, I
 	/*!
 	 // This method fill the Fission Energy map of a set ZAI
-	 // \param Z Z of the ZAI
-	 // \param A A of the ZAI
-	 // \param I I of the ZAI
-	 // \param E Fission energy of the ZAI
+	 // \param Z : Z of the ZAI
+	 // \param A : A of the ZAI
+	 // \param I : I of the ZAI
+	 // \param E : Fission energy of the ZAI [eV]
 	 */
 	void SetFissionEnergy(int Z, int A, int I, double E )   { SetFissionEnergy(ZAI(Z,A,I), E);}
 	//}
 	
-	void SetShortestHalfLife(double halflife)	{ fShorstestHalflife = halflife;}	///< Set the Half Life cut
-	void LoadFPYield(string SponfaneusYield, string ReactionYield);				///< Build Fision Yields maps;
+	void SetShortestHalfLife(double halflife)	{ fShorstestHalflife = halflife;}	//!< Set the Half Life cut
+	void LoadFPYield(string SponfaneusYield, string ReactionYield);				//!< Build Fision Yields maps
 	
-	void SetSpectrumType(string type);					///< Set the type of neutron spectrum (thermal or fast)
+	void SetSpectrumType(string type);					//!< Set the type of neutron spectrum (thermal or fast)
 	
 	
 	
@@ -142,10 +148,10 @@ class IrradiationModel : public CLASSObject
 	//@{
 	
 
-	void	BuildDecayMatrix();			///w Build the Decay Matrix for the futur evolution...
-	void    LoadDecay();
+	void	BuildDecayMatrix();			//!< Build the Decay Matrix for the futur time step
+	void    LoadDecay();				//!< Load the decay properties (HL,BR)
 
-	void	NuclearDataInitialization(); //Build Decay matrices & read FpYields if any
+	void	NuclearDataInitialization();		//!< Build Decay matrices & read FpYields if any
 	//@}
 	
 
@@ -158,7 +164,7 @@ class IrradiationModel : public CLASSObject
 	
 	//@}
 	
-	int  GetZAIThreshold(){return fZAIThreshold;}
+	int  GetZAIThreshold(){return fZAIThreshold;} //!< Gives the threshold (in charge number Z). The nuclei below this threshold are not managed
 
 	
 	
@@ -167,57 +173,57 @@ class IrradiationModel : public CLASSObject
 	
 	double  fShorstestHalflife;	//!< Limit on the half life of nuclei to take it into account
 	int	fZAIThreshold;		//!< Lowest Mass deal by the evolution (default 90)
-	string	fDataFileName;		///< Name of the decay list
-	string	fDataDirectoryName;	///< Path to the decay list file
+	string	fDataFileName;		//!< Name of the decay list
+	string	fDataDirectoryName;	//!< Path to the decay list file
 
-	map<ZAI, double >	fFissionEnergy;	///< Store the Energy per fission use for the flux normalisation.
+	map<ZAI, double >	fFissionEnergy;	//!< Store the Energy per fission use for the flux normalisation.
 	
-	map<ZAI, int> fMatrixIndex;		///< correspondance matrix from ZAI to the column (or line) of the different Reaction/Decay matrix
-	vector<ZAI> fReverseMatrixIndex;	///< correspondance matrix from the column (or line) of the different Reaction/Decay matrix to the ZAI
+	map<ZAI, int> fMatrixIndex;		//!< correspondance matrix from ZAI to the column (or line) of the different Reaction/Decay matrix
+	vector<ZAI> fReverseMatrixIndex;	//!< correspondance matrix from the column (or line) of the different Reaction/Decay matrix to the ZAI
 	
-	TMatrixT<double>	fDecayMatrix;	///< Matrix with half life of each nuclei
+	TMatrixT<double>	fDecayMatrix;	//!< Matrix with half life for each nuclei
 	
-	CLASSNucleiFiliation	fFastDecay;	///< Store the cut decay
-	CLASSNucleiFiliation	fNormalDecay;	///< Store the dealed decay
-	IsotopicVector			fDecayConstante;
+	CLASSNucleiFiliation	fFastDecay;	//!< Store the nuclei being cut (HL threshold)
+	CLASSNucleiFiliation	fNormalDecay;	//!< Store the uncut nuclei
+	IsotopicVector			fDecayConstante; //!< List of decay constants
 	
-	CLASSNucleiFiliation	fSpontaneusYield;	///< Store the Spontaneus fission yield
-	CLASSNucleiFiliation	fReactionYield;		///< Store the reaction fission yield
+	CLASSNucleiFiliation	fSpontaneusYield;	//!< Store the spontaneus fission yield
+	CLASSNucleiFiliation	fReactionYield;		//!< Store the reaction fission yield
 
-	CLASSNucleiFiliation	fCaptureReaction;		///< Store the reaction Capture Filiation
-	CLASSNucleiFiliation	fn2nReaction;		///< Store the reaction n,2n Filiation
+	CLASSNucleiFiliation	fCaptureReaction;	//!< Store the reaction capture Filiation
+	CLASSNucleiFiliation	fn2nReaction;		//!< Store the reaction n,2n Filiation
 	
-	string	fSpontaneusYieldFile;	///< Store the name of the Spontaneus fission yield file
-	string	fReactionYieldFile;		///< Store the name of the reaction fission yield file
+	string	fSpontaneusYieldFile;	//!< Store the name of the spontaneus fission yield file
+	string	fReactionYieldFile;		//!< Store the name of the reaction fission yield file
 
-	string	fSpectrumType;			///< Type of the spectrum : thermal or fast. (needed for Isomeric branching ratios)
+	string	fSpectrumType;			//!< Type of the spectrum : thermal or fast. (needed for Isomeric branching ratios)
 	
 	//{
 	/// Return the Fission XS Matrix at the time TStep
 	/*!
-	 // This Method extract the Fission Cross section of an EvolutionData at the set time
-	 // \param EvolutionDataStep: EvolutionData
-	 // \param TStep:  time
+	 // This method extract the fission cross section of an EvolutionData at the set time
+	 // \param EvolutionDataStep : EvolutionData
+	 // \param TStep : time
 	 */
 	TMatrixT<double> GetFissionXsMatrix(EvolutionData EvolutionDataStep,double TStep);
 	//}
 	
 	//{
-	/// Return the Capture XS Matrix at the time TStep
+	/// Return the capture cross section matrix at the time TStep
 	/*!
-	 // This Method extract the capture Cross section of an EvolutionData at the set time
-	 // \param EvolutionDataStep: EvolutionData
-	 // \param TStep:  time
+	 // This Method extract the capture cross section of an EvolutionData at the set time
+	 // \param EvolutionDataStep : EvolutionData
+	 // \param TStep :  time
 	 */
 	TMatrixT<double> GetCaptureXsMatrix(EvolutionData EvolutionDataStep,double TStep);
 	//}
 	
 	//{
-	/// Return the n2n XS Matrix at the time TStep
+	/// Return the n2n XS matrix at the time TStep
 	/*!
 	 // This Method extract the (n,2n) Cross section of an EvolutionData at the set time
-	 // \param EvolutionDataStep: EvolutionData
-	 // \param TStep:  time
+	 // \param EvolutionDataStep : EvolutionData
+	 // \param TStep :  time
 	 */
 	TMatrixT<double> Getn2nXsMatrix(EvolutionData EvolutionDataStep,double TStep);
 	//}
