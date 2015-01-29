@@ -29,7 +29,8 @@ IrradiationModel::IrradiationModel():CLASSObject()
 {
 	fShorstestHalflife = 3600.*24*2.;
 	fZAIThreshold = 90;
-	
+	fSpectrumType ="thermal";
+
 	
 	fDataDirectoryName = getenv("CLASS_PATH");
 	fDataDirectoryName += "/data/";
@@ -41,7 +42,7 @@ IrradiationModel::IrradiationModel(CLASSLogger* log):CLASSObject(log)
 {
 	fShorstestHalflife = 3600.*24*2.;
 	fZAIThreshold = 90;
-	
+	fSpectrumType ="thermal";
 	
 	fDataDirectoryName = getenv("CLASS_PATH");
 	fDataDirectoryName += "/data/";
@@ -443,54 +444,79 @@ void 	IrradiationModel::BuildReactionFiliation()
 {
 	DBGL
 	
+	//Isomeric Branching ratios :
+
+	double BR_AM_242M = 0;
+	double BR_HO_166M = 0;
+	double BR_PM_148M = 0;
+	double BR_AG_110M = 0;
+	double BR_AG_108M = 0;
+	double BR_NP_236M = 0;
+	if(GetSpectrumType()=="thermal")
+	{ 
+		BR_AM_242M = 0.1267;
+		BR_HO_166M = 0.0510;
+		BR_PM_148M = 0.4670;
+		BR_AG_110M = 0.0492;
+		BR_AG_108M = 0.0105;
+		BR_NP_236M = 0.8;
+	}
+	if(GetSpectrumType()=="fast")
+	{
+		BR_AM_242M = 0.15;
+		BR_HO_166M = 0.0519;
+		BR_PM_148M = 0.4670;
+		BR_AG_110M = 0.0466;
+		BR_AG_108M = 0.0135;
+		BR_NP_236M = 0.8;
+	}
 	// (n,Gamma) Special Reaction.....
 	{
 		// 241Am(n,Gamma)
 		{
-			fCaptureReaction.Add( ZAI(95,241,0), ZAI(96,242,0) * 0.8733*0.827 ); //directly cut the Am242 as in MURE
-			fCaptureReaction.Add( ZAI(95,241,0), ZAI(94,242,0) * 0.8733*0.173 ); //directly cut the Am242 as in MURE
-			fCaptureReaction.Add( ZAI(95,241,0), ZAI(95,242,1) * 0.1267 );
+			fCaptureReaction.Add( ZAI(95,241,0), ZAI(96,242,0) * (1-BR_AM_242M)*0.827 ); //directly cut the Am242 as in MURE
+			fCaptureReaction.Add( ZAI(95,241,0), ZAI(94,242,0) * (1-BR_AM_242M)*0.173 ); //directly cut the Am242 as in MURE
+			fCaptureReaction.Add( ZAI(95,241,0), ZAI(95,242,1) * BR_AM_242M );
 		}
 		
 		if(fReactionYieldFile!="")
 		{// 165Ho(n,Gamma)
 			{
-				fCaptureReaction.Add( ZAI(67,165,0), ZAI(68,166,0) * 0.9490 ); //
-				fCaptureReaction.Add( ZAI(67,165,0), ZAI(67,166,1) * 0.0510 ); //
+				fCaptureReaction.Add( ZAI(67,165,0), ZAI(68,166,0) * (1-BR_HO_166M) ); //
+				fCaptureReaction.Add( ZAI(67,165,0), ZAI(67,166,1) * BR_HO_166M ); //
 			}
 			
 			// 147Pm(n,Gamma)
 			{
-				fCaptureReaction.Add( ZAI(61,147,0), ZAI(61,148,0) * 0.5330 );
-				fCaptureReaction.Add( ZAI(61,147,0), ZAI(61,148,1) * 0.4670 );
+				fCaptureReaction.Add( ZAI(61,147,0), ZAI(61,148,0) * (1-BR_PM_148M) );
+				fCaptureReaction.Add( ZAI(61,147,0), ZAI(61,148,1) * BR_PM_148M );
 				
 			}
 			
 			// 109Ag(n, Gamma)
 			{
-				fCaptureReaction.Add( ZAI(47,109,0), ZAI(48,110,0) * 0.9970*0.9508);
-				fCaptureReaction.Add( ZAI(47,109,0), ZAI(46,110,0) * 0.0030*0.9508);
-				fCaptureReaction.Add( ZAI(47,109,0), ZAI(47,110,1)         *0.0492);
+				fCaptureReaction.Add( ZAI(47,109,0), ZAI(48,110,0) * 0.9970*(1-BR_AG_110M));
+				fCaptureReaction.Add( ZAI(47,109,0), ZAI(46,110,0) * 0.0030*(1-BR_AG_110M));
+				fCaptureReaction.Add( ZAI(47,109,0), ZAI(47,110,1)         *BR_AG_110M);
 			}
 			
 			
 			// 107Ag(n, Gamma)
 			{
-				fCaptureReaction.Add( ZAI(47,107,0), ZAI(48,108,0) * 0.9715*0.9895 );
-				fCaptureReaction.Add( ZAI(47,107,0), ZAI(46,108,0) * 0.0285*0.9895 );
-				fCaptureReaction.Add( ZAI(47,107,0), ZAI(47,108,1)         *0.0105 );
+				fCaptureReaction.Add( ZAI(47,107,0), ZAI(48,108,0) * 0.9715*(1-BR_AG_108M) );
+				fCaptureReaction.Add( ZAI(47,107,0), ZAI(46,108,0) * 0.0285*(1-BR_AG_108M) );
+				fCaptureReaction.Add( ZAI(47,107,0), ZAI(47,108,1)         *BR_AG_108M);
 			}
 		}	
 	}
-	
 	
 	
 	// (n,2n) Special Reaction.....
 	{
 		// 237Np(n,2n)
 		{
-			fn2nReaction.Add(ZAI(93,237,0), ZAI(93,236,0) * 0.2 );
-			fn2nReaction.Add(ZAI(93,237,0), ZAI(93,236,1) * 0.8 );
+			fn2nReaction.Add(ZAI(93,237,0), ZAI(93,236,0) * (1-BR_NP_236M) );
+			fn2nReaction.Add(ZAI(93,237,0), ZAI(93,236,1) * BR_NP_236M);
 		}
 		
 	}
@@ -635,4 +661,16 @@ TMatrixT<double> IrradiationModel::Getn2nXsMatrix(EvolutionData EvolutionDataSte
 	DBGL
 	return n2nMatrix;
 }
+//________________________________________________________________________
+void IrradiationModel::SetSpectrumType(string type)
+{
+	if(type !="fast" && type != "thermal")
+	{	
+		ERROR<<type<<" is not a valid spectrum type"<<endl;
+		ERROR<<"\tSpectrum type must be either fast or thermal"<<endl;
+		exit(0);
+	}
+	else
+		fSpectrumType=type;
 
+}
