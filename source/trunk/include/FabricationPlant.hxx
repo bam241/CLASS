@@ -36,8 +36,8 @@ Some EquivalenceMOdel are available in the CLASS package, but an user can make h
 
 Once the fuel is built, the FabricationPlant store the corresponding EvolutionData 
  generated using the PhysicsModels.
-\@see PhysicsModels.hxx
-\@see EquivalenceModel.hxx
+\li @see PhysicsModels.hxx
+\li @see EquivalenceModel.hxx
  
  @author BaM
  @version 2.0
