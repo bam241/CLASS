@@ -19,8 +19,9 @@ typedef long long int cSecond;
 
 //-----------------------------------------------------------------------------//
 /*!
- Define a Isotopicvector.
- The aim of this Class is to manage any kind of IsotopicVector, and any operation between them : sum, substraction....
+ Define an Isotopicvector.
+ An isotopicVector is a map of ZAI (@see ZAI.hxx) and double (e.g number of atoms).
+ Its aim is to define a radioactive sample.
 
  @author BaM, MArc
  @version 2.0
@@ -56,13 +57,13 @@ public :
 	//@{
 
 	map<ZAI ,double>	GetIsotopicQuantity()		const
-						{ return fIsotopicQuantity; }		//!< Return the IVQuantity map
+						{ return fIsotopicQuantity; }		//!< Return the IsotopicVector as a map
 	map<ZAI ,double>	GetIsotopicQuantityNeeded()	const
-						{ return fIsotopicQuantityNeeded; }	//!< Return the IVQuantityNeeded map
+						{ return fIsotopicQuantityNeeded; }	//!< Return the needed IsotopicVector as a map 
 	IsotopicVector		GetSpeciesComposition(int z)	const;			//!< Return the Species composition of the "z" atom
 	IsotopicVector		GetThisComposition(IsotopicVector IV)	const;		//!< Return the composition according the IV list...
 	vector<ZAI>		GetZAIList()			const;			//!< Return the list of ZAI present in the IV
-	IsotopicVector		GetActinidesComposition()	const;			//!< Return the Actinides composition of the "z" atom
+	IsotopicVector		GetActinidesComposition()	const;			//!< Return the Actinides composition (Z >= 89)
 
 	double	GetZAIIsotopicQuantity(const ZAI& zai)		const;			///< Return the quantity of the ZAI
 	double	GetZAIIsotopicQuantity(const int z, const int a, const int i) const;	///< Return the quantity of the ZAI
@@ -75,7 +76,7 @@ public :
 	double	GetTotalMass() const;							//!< Return the mass (in tons) of the isotopic vector
 	double	MeanMolar() const;							//<! Return the mean molar mass of the isotopic vector
 	
-	vector<int>		GetChemicalSpecies()		const;			//!< Return the Species Species contained
+	vector<int>		GetChemicalSpecies()		const;			//!< Return the list of chemichal species contained
 	int			GetZAIQuantity()		const
 						{return  fIsotopicQuantity.size(); }	//!< Return the number of different ZAI in the IsotopicVector
 
@@ -115,10 +116,10 @@ public :
 	void 	Multiply(double factor);			//!< Multiply the IV by a Factor
 
 
-	IsotopicVector& operator+=(IsotopicVector const& IVb);	//!<....
-	IsotopicVector& operator-=(IsotopicVector const& IVb);	//!<....
-	IsotopicVector& operator*=(IsotopicVector const& IVb);	//!<....
-	IsotopicVector& operator*=(double const& factor);	//!<....
+	IsotopicVector& operator+=(IsotopicVector const& IVb);	//!< Operator += definition
+	IsotopicVector& operator-=(IsotopicVector const& IVb);	//!< Operator -= definition
+	IsotopicVector& operator*=(IsotopicVector const& IVb);	//!< Operator *= definition
+	IsotopicVector& operator*=(double const& factor);	//!< Operator *= definition (scalar)
 	bool operator <(const IsotopicVector& isotopicvector) const;	//!< IsotopicVector Comparator
 
 	//@}
@@ -132,12 +133,12 @@ public :
 	 */
 	//@{
 
-	void	Write(string filename, cSecond time = -1 ) const;	///< Write the Content of the IV in the filename file
+	void	Write(string filename, cSecond time = -1 ) const;	//!< Write the Content of the IV in the filename file
 
-	void	Print(string o =" ") const ;				///< Print the composition of the IV in terminal
-	string	sPrint() const ;				///< Print the composition of the IV in a string
+	void	Print(string o =" ") const ;				//!< Print the composition of the IV in terminal
+	string	sPrint() const ;					//!< Print the composition of the IV in a string
 
-	void	PrintList(string o =" ") const ;			///< Print the composition of the IV
+	void	PrintList(string o =" ") const ;			//!< Print the composition of the IV
 
 	//@}
 	
@@ -147,9 +148,9 @@ public :
 	
 	protected :
 
-	map<ZAI ,double>	fIsotopicQuantity;		///< Isotopic vector composition in Atome Number
+	map<ZAI ,double>	fIsotopicQuantity;		//!< Isotopic vector composition in atomes Number
 	
-	map<ZAI ,double>	fIsotopicQuantityNeeded;	///< Isotopic vector request and not present
+	map<ZAI ,double>	fIsotopicQuantityNeeded;	//!< map where negative value are saved
 
 	ClassDef(IsotopicVector,1);
 };
@@ -166,11 +167,12 @@ IsotopicVector operator-(IsotopicVector const& IVa, IsotopicVector const& IVb);
 IsotopicVector operator*(IsotopicVector const& IVa, IsotopicVector const& IVb);
 
 
-double 	RelativDistance(IsotopicVector IV1, IsotopicVector IV2 );
-double 	Distance(IsotopicVector IV1, IsotopicVector IV2 ,int DistanceType=0, IsotopicVector DistanceParameter=IsotopicVector());
-double	DistanceStandard(IsotopicVector IV1, IsotopicVector IV2);
-double	DistanceAdjusted(IsotopicVector IV1, IsotopicVector IV2, IsotopicVector DistanceParameter);
-double 	Norme(IsotopicVector IV1,int DistanceType=0, IsotopicVector DistanceParameter=IsotopicVector());
+double 	RelativDistance(IsotopicVector IV1, IsotopicVector IV2 ); //!< return the euclidean distance between two IV. The two IV are normalize to unity
+double 	Distance(IsotopicVector IV1, IsotopicVector IV2 ,int DistanceType=0, IsotopicVector DistanceParameter=IsotopicVector()); //!< return weighted euclidean distance between two IV
+
+double	DistanceStandard(IsotopicVector IV1, IsotopicVector IV2); //!< return the euclidean distance between two IV
+double	DistanceAdjusted(IsotopicVector IV1, IsotopicVector IV2, IsotopicVector DistanceParameter); //!< return the weighted euclidean distance between two IV
+double 	Norme(IsotopicVector IV1,int DistanceType=0, IsotopicVector DistanceParameter=IsotopicVector());  //!< return the norm of an IV
 
 
 #endif
