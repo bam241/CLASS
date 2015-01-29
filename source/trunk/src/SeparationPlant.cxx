@@ -44,7 +44,7 @@ SeparationPlant::SeparationPlant(CLASSLogger* log):CLASSBackEnd(log, -2)
 	SetIsStorageType();
 	
 	INFO	<< " A new SeparationPlant has been define :" << endl;
-	INFO	<< "\t The Separation Time set at\t " << (double)(fCycleTime/3600/24/365.25) << " year" << endl;
+	INFO	<< "\t The Separation Time set at\t " << (double)(fCycleTime/cYear) << " year" << endl;
 	WARNING	<< " All Separated Fuel go directly to WASTE after cooling !! " << endl;
 
 

@@ -487,7 +487,7 @@ bool EvolutionData::n2nXSInsert(pair<ZAI, TGraph*> zaitoinsert)
 void EvolutionData::AddAsStable(ZAI zai)
 {
 	
-	double time[2] = {0, (500*365.25*3600*24)};
+	double time[2] = {0, (500*cYear)};
 	double quantity[2] = {1., 1.};
 	
 	fInventoryEvolution.insert(pair<ZAI ,TGraph* >(zai, new TGraph(2, time, quantity) ) );

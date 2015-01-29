@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 
+#include "CLASSConstante.hxx"
 #include "CLASSBackEnd.hxx"
 #include "Storage.hxx"
 #include "IsotopicVector.hxx"

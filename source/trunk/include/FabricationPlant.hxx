@@ -12,6 +12,7 @@
 #include <vector>
 #include <map>
 
+#include "CLASSConstante.hxx"
 #include "CLASSFacility.hxx"
 #include "IsotopicVector.hxx"
 #include "EvolutionData.hxx"
@@ -63,7 +64,6 @@ public :
 	FabricationPlant();	///< Normal constructor
 
 
-
 	//{
 	/// Special Constructor.
 	/*!
@@ -71,7 +71,7 @@ public :
 	 \param CLASSLogger CLASSLogger used for the log.
 	 \param fabricationtime duration of the fabrication process (default : 2 years).
 	 */
-	FabricationPlant(CLASSLogger* log, double fabricationtime = 365.25*24*3600*2);
+	FabricationPlant(CLASSLogger* log, double fabricationtime = cYear*2);
 	//}
 
 	~FabricationPlant(); 	///< Normal Destructor.

@@ -58,7 +58,7 @@ DBGL
 
 	INFO	<< " A FabricationPlant has been define :" << endl;
 	INFO	<< "\t Chronological Stock Priority has been set! "<< endl;
-	INFO	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/3600/24/365.25) << " year" << endl << endl;
+	INFO	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/cYear) << " year" << endl << endl;
 DBGL
 }
 

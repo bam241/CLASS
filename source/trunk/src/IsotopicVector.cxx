@@ -582,7 +582,7 @@ void IsotopicVector::Write(string filename, cSecond time) const
 	cout << "!!Warning!! !!!IsotopicVector!!! \n Can't open \"" << filename << "\"\n" << endl;
 
 	if(time != -1)
-	IVfile << "Time "<< time/365.25/3600./24. << endl;
+	IVfile << "Time "<< time/cYear << endl;
 
 	map<ZAI ,double> IsotopicQuantity = GetIsotopicQuantity();
 	map<ZAI ,double >::iterator it;

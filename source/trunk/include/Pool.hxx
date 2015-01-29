@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 
+#include "CLASSConstante.hxx"
 #include "CLASSBackEnd.hxx"
 #include "IsotopicVector.hxx"
 
@@ -52,7 +53,7 @@ public :
 	 \param log : used for the log.
 	 \param coolingtime duration of the cooling.
 	 */
-	Pool(CLASSLogger* Log, cSecond coolingtime = 5*3600.*24.*365.25); //!<
+	Pool(CLASSLogger* Log, cSecond coolingtime = 5*cYear); //!<
 	//}
 
 
@@ -65,7 +66,7 @@ public :
 	 \param coolingtime duration of the cooling.
 	 */
 	Pool(CLASSLogger* log, CLASSBackEnd* Storage,
-			 cSecond coolingtime = 5*3600.*24.*365.25); //!<
+			 cSecond coolingtime = 5*cYear); //!<
 	//}
 
 
