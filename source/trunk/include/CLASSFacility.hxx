@@ -61,7 +61,7 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new Facility
-	 \param Log CLASSLogger used for the log...
+	 \param log : used for the log.
 	 \param type identification of type of the facility :
 	 \li 4 Reactor,
 	 \li 8 Pool,
@@ -75,7 +75,7 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new Facility
-	 \param Log CLASSLogger used for the log...
+	 \param log : used for the log.
 	 \param cycletime duration of the cycle in second.
 	 \param type identification of type of the facility :
 	 \li 4 Reactor,
@@ -90,7 +90,7 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new Facility
-	 \param Log CLASSLogger used for the log...
+	 \param log : used for the log.
 	 \param creationtime creation date (in second) of the Facility.
 	 \param lifetime operating duration in second.
 	 \param type identification of type of the facility :
@@ -106,7 +106,7 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new Facility
-	 \param Log CLASSLogger used for the log...
+	 \param log : used for the log.
 	 \param creationtime creation date (in second) of the Facility.
 	 \param lifetime operating duration in second.
 	 \param cycletime duration of the cycle in second.

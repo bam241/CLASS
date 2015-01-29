@@ -56,7 +56,7 @@ public :
 	/// CLASSLogger Constructor.
 	/*!
 	 Use create an empty Reactor loading a CLASSLogger
-	 \param CLASSLogger CLASSLogger used for the log...
+	 \param CLASSLogger CLASSLogger used for the log.
 	 */
 	Reactor(CLASSLogger* log);
 	//}
@@ -65,7 +65,7 @@ public :
 	/// Special Constructor for reprocessed fuel using cycletime and Burn-Up.
 	/*!
 	 Make a new reactor
-	 \param CLASSLogger CLASSLogger used for the log...
+	 \param CLASSLogger CLASSLogger used for the log.
 	 \param CLASSBAckEnd Pool used facility wich get the fuel after iradiation
 	 \param creationtime creation time
 	 \param lifetime working time duration.
@@ -82,7 +82,7 @@ public :
 	/// Special Constructor for reprocessed fuel using cycletime and Burn-Up.
 	/*!
 	 Make a new reactor
-	 \param CLASSLogger CLASSLogger used for the log...
+	 \param CLASSLogger CLASSLogger used for the log.
 	 \param CLASSBAckEnd Pool used facility wich get the fuel after iradiation
 	 \param creationtime creation time
 	 \param lifetime working time duration.
@@ -100,7 +100,7 @@ public :
 	 /// Special Constructor for reprocessed fuel using cycletime and Burn-Up.
 	 /*!
 	  Make a new reactor
-	 \param CLASSLogger CLASSLogger used for the log...
+	 \param CLASSLogger CLASSLogger used for the log.
 	 \param fueltypeDB Databank describing the evolution of the fuel
 	 \param CLASSBAckEnd Pool used facility wich get the fuel after iradiation
 	 \param creationtime creation time
@@ -119,7 +119,7 @@ public :
 	/// Special Constructor for reprocessed fuel using Power and Burn-Up.
 	/*!
 	 Make a new reactor
-	 \param CLASSLogger CLASSLogger used for the log...
+	 \param CLASSLogger CLASSLogger used for the log.
 	 \param fueltypeDB Databank describing the evolution of the fuel
 	 \param CLASSBAckEnd Pool used facility wich get the fuel after iradiation
 	 \param creationtime creation time
@@ -139,7 +139,7 @@ public :
 	/// Special Constructor for fixed fuel using Power and Burn-Up.
 	/*!
 	 Make a new reactor
-	 \param CLASSLogger CLASSLogger used for the log...
+	 \param CLASSLogger CLASSLogger used for the log.
 	 \param evolutivedb EvolutionData describing the evolution of the fuel
 	 \param CLASSBAckEnd Pool used facility wich get the fuel after iradiation
 	 \param creationtime creation time
@@ -158,7 +158,7 @@ public :
 	/// Special Constructor for fixed fuel using Power and Burn-Up.
 	/*!
 	 Make a new reactor
-	 \param CLASSLogger CLASSLogger used for the log...
+	 \param CLASSLogger CLASSLogger used for the log.
 	 \param evolutivedb EvolutionData describing the evolution of the fuel
 	 \param CLASSBAckEnd Pool used facility wich get the fuel after iradiation
 	 \param creationtime creation time

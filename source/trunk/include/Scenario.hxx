@@ -56,7 +56,7 @@ public :
 	Scenario(CLASSLogger* Log, cSecond abstime = 0);	///< Log Constructor.
  	/*!
 	 Use to load a CLASSLogger
-	 \param CLASSLogger: CLASSLogger used for the log...
+	 \param CLASSLogger: CLASSLogger used for the log.
 	 */
 	Scenario(cSecond abstime);	///< Time Constructor.
 

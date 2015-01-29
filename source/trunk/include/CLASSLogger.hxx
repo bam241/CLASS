@@ -43,19 +43,19 @@ using namespace std;
 
 
 
+#ifndef _LOGTYPE_CLASS
+#define _LOGTYPE_CLASS
+
 //-----------------------------------------------------------------------------//
 /*!
- Define a CLASSLogger.
- The aim of this class is to centralize the all CLASS software message inside a file.
-
-
+ Define a LogType.
+ The aim of this class is to handel stream in CLASS.
+ 
+ 
  @author BaM
  @version 2.0
  */
 //________________________________________________________________________
-#ifndef _LOGTYPE_CLASS
-#define _LOGTYPE_CLASS
-
 
 
 class LogType
@@ -68,9 +68,15 @@ public:
 	 */
 	//@{
 
-
+	//{
+	/// Normal Constructor.
+	/*!
+	 Make a new LogType
+	 \param Log : ostream output
+	 */
 	LogType(ostream &Log) { fLog = &Log; fLog2 = 0; }	//!< Normal Constructor
-
+	//}
+	
 	~LogType()  {}	//!< Normal Destructor
 
 	//@}
@@ -81,7 +87,7 @@ public:
 	 \name In/Out
 	 */
 	//@{
-	string GetCLASSLoggerName() const { return fCLASSLoggerName; }	//!w return the CLASSLogger name
+	string GetCLASSLoggerName() const { return fCLASSLoggerName; }	//!< return the CLASSLogger name
 
 	LogType &operator<<(std::ostream& (*manip)(std::ostream &))
 	{
@@ -100,14 +106,14 @@ public:
 			*(this->fLog2) << something;
 		 return *this;
 	}
+	//}
 
-
-	void SetSecondOutput(ostream &log) {fLog2 = &log;}
+	void SetSecondOutput(ostream &log) {fLog2 = &log;} // used to direct the stream into two output ostream
 
 	private :
 
-	ostream *fLog;
-	ostream *fLog2;
+	ostream *fLog;				//!< Main ostream output
+	ostream *fLog2;				//!< secondary ostream output
 
 	string fCLASSLoggerName;		//!< Log File name
 };
@@ -119,6 +125,16 @@ public:
 #ifndef _CLASSLogger_CLASS_
 #define _CLASSLogger_CLASS_
 
+//-----------------------------------------------------------------------------//
+/*!
+ Define a CLASSLogger.
+ The aim of this class is to centralize the all CLASS software message inside a file.
+ 
+ 
+ @author BaM
+ @version 2.0
+ */
+//________________________________________________________________________
 
 
 class CLASSLogger
@@ -131,10 +147,24 @@ public:
 	 \name Constructor/Desctructor
 	 */
 	//@{
-	CLASSLogger();
-
-	CLASSLogger(string CLASSLoggerName, int VerboseLvl = 0, int OutputLvl = 1 );	//!< Normal Constructor
-
+	//{
+	/// Normal Constructor.
+	/*!
+	 Make a new LogType
+	 \param CLASSLoggerName : name of the CLASSLogFile wnated for the log
+	 \param VerboseLvl : verbose level in terminal
+	 \param OutputLvl : verbose level in the CLASSLogFile
+	 
+	 The different available levels are :
+	 \li 0 : ERROR only
+	 \li 1 : WARNING + lvl 0
+	 \li 2 : INFO + lvl 1
+	 \li 3 : DEBUG + lvl 2
+	 
+	 */
+	CLASSLogger(string CLASSLoggerName = "CLASS_OUTPUT.log", int VerboseLvl = 0, int OutputLvl = 1 );
+	//}
+	
 	~CLASSLogger();	//!< Normal Destructor
 
 	//@}
@@ -145,14 +175,14 @@ public:
 	 \name In/Out
 	 */
 	//@{
-	string GetCLASSLoggerName() const { return fCLASSLoggerName; }	//!w return the CLASSLogger name
-	int GetMaxOutPutLVL()	const { return fMaxOutPutLVL; }
+	string GetCLASSLoggerName() const { return fCLASSLoggerName; }	//!< return the CLASSLogger name
+	int GetMaxOutPutLVL()	const { return fMaxOutPutLVL; }		//!< Return File Output lvl
 	int GetVerboseLVL()	const { return fVerboseLVL; }
 
-	LogType E() {return *fError;}
-	LogType W() {return *fWarning;}
-	LogType D() {return *fDebug;}
-	LogType I() {return *fInfo;}
+	LogType E() {return *fError;}		//!< Return the ERROR Streamer
+	LogType W() {return *fWarning;}		//!< Return the WARNING Streamer
+	LogType I() {return *fInfo;}		//!< Return the INFO Streamer
+	LogType D() {return *fDebug;}		//!< Return the DEBUG Streamer
 
 //@}
 
@@ -160,15 +190,15 @@ public:
 
 	
 	private :
-	int fMaxOutPutLVL;
+	int fMaxOutPutLVL;			//!< Maximal output/verbose lvl
 	int fVerboseLVL;
 
-	LogType* fError;
-	LogType* fInfo;
-	LogType* fWarning;
-	LogType* fDebug;
+	LogType* fError;			//!< ERROR streamer
+	LogType* fInfo;				//!< INFO streamer
+	LogType* fWarning;			//!< WARNING streamer
+	LogType* fDebug;			//!< DEBUG streamer
 
-	ofstream fOutPutFile;
+	ofstream fOutPutFile;			//!< Log Output File name
 	string fCLASSLoggerName;		//!< Log File name
 };
 

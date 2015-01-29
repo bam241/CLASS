@@ -68,7 +68,7 @@ public :
 	/// CLASSLogger Constructor.
 	/*!
 	 Use create an empty EvolutionData loading a CLASSLogger
-	 \param CLASSLogger CLASSLogger used for the log...
+	 \param CLASSLogger CLASSLogger used for the log.
 	 */
 	EvolutionData(CLASSLogger* log); 	///< Make a new Evolutive Product evolution
 	//}
@@ -77,7 +77,7 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new EvolutionData
-	 \param Log CLASSLogger used for the log...
+	 \param log : used for the log.
 	 \param DB_file path to the DataBase file
 	 \param oldread true if the oldmethod should be use to read the DatBase File
 	 \param zai set the ZAI if you want to add a stable nuclei.
@@ -157,7 +157,7 @@ public :
 	string	GetReactorType()	const { return fReactorType; }			//!< return the type of reactor (string)
 	TGraph*	GetEvolutionTGraph(const ZAI& zai);					//!< return the evolution of the ZAI quantity (TGraph*)
 
-	IsotopicVector	GetIsotopicVectorAt(double t); 		///< Return the Product IsotopicVector at t time
+	IsotopicVector	GetIsotopicVectorAt(double t);					///< Return the Product IsotopicVector at t time
 
 	double	GetHeavyMetalMass()	const	{ return fHeavyMetalMass; }	//!< Return the HeavyMetal Mass in the Core at the begining of the cycle
 
@@ -208,11 +208,11 @@ protected :
 	
 #ifndef __CINT__
 	map<ZAI ,TGraph* >	fInventoryEvolution;	//!< evolution map
-	map<ZAI ,TGraph* >	fFissionXS;	//!< fission cross section map
-	map<ZAI ,TGraph* >	fCaptureXS;	//!< capture cross section map
-	map<ZAI ,TGraph* >	fn2nXS;		//!< (n,2n) cross section map
-	TGraph*	fKeff;				//!< Keff evolution
-	TGraph*	fFlux;				//!< Flux evolution
+	map<ZAI ,TGraph* >	fFissionXS;		//!< fission cross section map
+	map<ZAI ,TGraph* >	fCaptureXS;		//!< capture cross section map
+	map<ZAI ,TGraph* >	fn2nXS;			//!< (n,2n) cross section map
+	TGraph*	fKeff;					//!< Keff evolution
+	TGraph*	fFlux;					//!< Flux evolution
 #endif
 	
 	cSecond	fFinalTime;			///< time of the last point

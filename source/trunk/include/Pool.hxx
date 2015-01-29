@@ -49,7 +49,7 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new Pool
-	 \param Log CLASSLogger used for the log...
+	 \param log : used for the log.
 	 \param coolingtime duration of the cooling.
 	 */
 	Pool(CLASSLogger* Log, cSecond coolingtime = 5*3600.*24.*365.25); //!<
@@ -60,7 +60,7 @@ public :
 	/// Special Special Constructor.
 	/*!
 	 Make a new Pool
-	 \param Log CLASSLogger used for the log...
+	 \param log : used for the log.
 	 \param CLASSBackEnd backend which get the fuel after the cooling
 	 \param coolingtime duration of the cooling.
 	 */

@@ -6,8 +6,8 @@
 /*!
  \file
  \brief Header file for CLASSFuel class.
-
-
+ 
+ 
  @author BaM
  @version 2.0
  */
@@ -25,10 +25,10 @@ using namespace std;
 /*!
  Define a CLASS Object.
  The aim of these class is synthetyse all the commum properties to all CLASS Fuel Element.
-
-
+ 
+ 
  @author BaM
- @version 2.0
+ @version 3.0
  */
 //________________________________________________________________________
 
@@ -37,26 +37,46 @@ using namespace std;
 class CLASSFuel : public CLASSObject
 {
 	public :
-	///< Normal Constructor.
+	/*!
+	 \name Constructor/Desctructor
+	 */
+	//@{
+	
+	//{
+	/// EvolutionData Constructor.
+	/*!
+	 Make a new CLASSObject
+	 /param evo : EvolutionData stored
+	 */
 	CLASSFuel(EvolutionData* evo);
+	//}
+	
+	//{
+	/// PhysicsModels Constructor.
+	/*!
+	 Make a new CLASSObject
+	 /param evo : PhysicsModels stored
+	 */
 	CLASSFuel(PhysicsModels* evo);
-
-
+	//}
+	//@}
+	
+	
 	virtual CLASSFuel* Clone()	{ return new CLASSFuel(*this); } //!< Correct way to copy a CLASSFuel in case of derivation
-
-
-	EvolutionData* GetEvolutionData() {return fEvolutionData;}
-	PhysicsModels* GetPhysicsModels() {return fPhysicsModels;}
+	
+	
+	EvolutionData* GetEvolutionData() {return fEvolutionData;}	//!< Return the EvolutionData (NULL if PhysicsModels)
+	PhysicsModels* GetPhysicsModels() {return fPhysicsModels;}	//!< Return the PhysicsModels (NULL if EvolutionData)
 	
 	using CLASSObject::SetName;
 	using CLASSObject::GetName;
 	protected :
-
-
+	
+	
 	private :
-
-	EvolutionData* fEvolutionData;
-	PhysicsModels* fPhysicsModels;
+	
+	EvolutionData* fEvolutionData;		//!< the EvolutionData (NULL if PhysicsModels)
+	PhysicsModels* fPhysicsModels;		//!< the PhysicsModels (NULL if EvolutionData)
 };
 
 #endif
