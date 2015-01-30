@@ -14,7 +14,11 @@ using namespace std;
 
 //-----------------------------------------------------------------------------//
 /*!
- Define a nuclei as : Z A I.
+ Define a nuclei as 3 integer Z,A,I:
+ \li its charge number : Z
+ \li its mass number : A
+ \li its Isomeric state : I (0 : fundamental, 1 : first isomeric state ,...)
+
  The aim of this class is to discribe each ZAI.
 
  @author BaM
@@ -67,14 +71,14 @@ public:
 
 
 
-	ZAI operator=(ZAI IVa);		//!< ...
+	ZAI operator=(ZAI IVa);		//!<
 	bool operator <(const ZAI& zai)		const	{ return (fZ != zai.Z())?
 							(fZ < zai.Z()) : ( (fA != zai.A())?
-								 (fA < zai.A()) : (fI < zai.I()) ); }
+								 (fA < zai.A()) : (fI < zai.I()) ); }//!< Compartor operator
 
-	bool operator !=(const ZAI& zai)	const	{ return ( fZ != zai.Z() ) || ( fA != zai.A() ) || ( fI != zai.I() ); }
-	bool operator ==(const ZAI& zai)	const	{ return ( fZ == zai.Z()  && fA == zai.A() &&  fI == zai.I()); }
-	void Print()				const	{ cout << fZ << " " << fA << " " << fI << endl;}
+	bool operator !=(const ZAI& zai)	const	{ return ( fZ != zai.Z() ) || ( fA != zai.A() ) || ( fI != zai.I() ); }//!< Compartor operator
+	bool operator ==(const ZAI& zai)	const	{ return ( fZ == zai.Z()  && fA == zai.A() &&  fI == zai.I()); }//!< Compartor operator
+	void Print()				const	{ cout << fZ << " " << fA << " " << fI << endl;}//!< Print in standard output : Z A I
 
 
 protected :
