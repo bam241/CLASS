@@ -45,64 +45,6 @@ string dtoa(double num)
 }
 
 //________________________________________________________________________
-Scenario::Scenario():CLASSObject(new CLASSLogger("CLASS_OUTPUT.log"))
-{
-
-	fNewTtree = true;
-	fPrintStep = (cSecond)(cYear);  // One Step per Year
-	fAbsoluteTime = 0;
-	fStartingTime = fAbsoluteTime;
-
-	fStockManagement = true;
-	fLogTimeStep = false;
-
-	fOutputFileName = "CLASS_Default.root";
-	fOutputTreeName = "Data";
-	fOutFile = 0;
-	fOutT = 0;
-	fParcPower = 0;
-
-	// Warning
-
-	INFO 	<< "!!INFO!! !!!Scenario!!! Parc has been define :" << endl;
-	INFO	<< "\t Print  set at : " << (double)(fPrintStep/cYear) << " year" << endl;
-	INFO	<< "\t StockManagement set at : true" << endl;
-	INFO	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	INFO	<< "\t Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
-
-}
-
-
-//________________________________________________________________________
-Scenario::Scenario(cSecond abstime):CLASSObject(new CLASSLogger())
-{
-
-	fNewTtree = true;
-	fPrintStep = (cSecond)(cYear);  // One Step per Year
-	fAbsoluteTime = abstime;
-	fStartingTime = fAbsoluteTime;
-
-	fStockManagement = true;
-	fLogTimeStep = false;
-
-	fOutputFileName = "CLASS_Default.root";
-	fOutputTreeName = "Data";
-	fOutFile = 0;
-	fOutT = 0;
-	fParcPower = 0;
-
-	// Warning
-
-	INFO 	<< "!!INFO!! !!!Scenario!!! Parc has been define :" << endl;
-	INFO	<< "\t Print  set at : " << (double)(fPrintStep/cYear) << " year" << endl;
-	INFO	<< "\t StockManagement set at : true" << endl;
-	INFO	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	INFO	<< "\t Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
-
-}
-
-
-//________________________________________________________________________
 Scenario::Scenario(CLASSLogger* log, cSecond abstime):CLASSObject(log)
 {
 
@@ -133,33 +75,6 @@ Scenario::Scenario(CLASSLogger* log, cSecond abstime):CLASSObject(log)
 	INFO	<< " Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
 
 
-
-}
-//________________________________________________________________________
-Scenario::Scenario(cSecond abstime, CLASSLogger* log):CLASSObject(log)
-{
-
-	fNewTtree = true;
-	fPrintStep = (cSecond)(cYear);  // One Step per Year
-	fAbsoluteTime = abstime;
-	fStartingTime = fAbsoluteTime;
-
-	fStockManagement = true;
-	fLogTimeStep = false;
-
-	fOutputFileName = "CLASS_Default.root";
-	fOutputTreeName = "Data";
-	fOutFile = 0;
-	fOutT = 0;
-	fParcPower = 0;
-
-	// Warning
-
-	INFO 	<< "!!INFO!! !!!Scenario!!! Parc has been define :" << endl;
-	INFO	<< "\t Print  set at : " << (double)(fPrintStep/cYear) << " year" << endl;
-	INFO	<< "\t StockManagement set at : true" << endl;
-	INFO	<< "\t OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	INFO	<< "\t Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
 
 }
 

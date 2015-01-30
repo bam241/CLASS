@@ -69,7 +69,7 @@ public :
 	/*!
 	 Make a new FabricationPlant
 	 \param log : used for the log.
-	 \param fabricationtime duration of the fabrication process (default : 2 years).
+	 \param fabricationtime duration of the fabrication process (default : 2 years) in [s].
 	 */
 	FabricationPlant(CLASSLogger* log, double fabricationtime = cYear*2);
 	//}
