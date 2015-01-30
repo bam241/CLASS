@@ -76,7 +76,7 @@ public :
 	/*!
 	 Make a new Facility
 	 \param log : used for the log.
-	 \param cycletime duration of the cycle in second.
+	 \param cycletime duration of the cycle in [s],
 	 \param type identification of type of the facility :
 	 \li 4 Reactor,
 	 \li 8 Pool,
@@ -91,8 +91,8 @@ public :
 	/*!
 	 Make a new Facility
 	 \param log : used for the log.
-	 \param creationtime creation date (in second) of the Facility.
-	 \param lifetime operating duration in second.
+	 \param creationtime creation date (in second) of the Facility in [s],
+	 \param lifetime operating duration in [s],
 	 \param type identification of type of the facility :
 	 \li 4 Reactor,
 	 \li 8 Pool,
@@ -107,9 +107,9 @@ public :
 	/*!
 	 Make a new Facility
 	 \param log : used for the log.
-	 \param creationtime creation date (in second) of the Facility.
-	 \param lifetime operating duration in second.
-	 \param cycletime duration of the cycle in second.
+	 \param creationtime creation date (in second) of the Facility in [s],
+	 \param lifetime operating duration in [s],
+	 \param cycletime duration of the cycle in [s],
 	 \param type identification of type of the facility :
 	 \li 4 Reactor,
 	 \li 8 Pool,
@@ -185,9 +185,9 @@ protected :
 	bool		fIsAtEndOfCycle;	///< True if Reaching the End of a Facility Cycle
 
 		
-	cSecond		fInternalTime;		///< Internal Clock
-	cSecond		fInCycleTime;		///< Time spend since the beginning of the last Cycle
-	cSecond		fCycleTime;		///< Cycle duration Time
+	cSecond		fInternalTime;		///< Internal Clock in [s]
+	cSecond		fInCycleTime;		///< Time spend since the beginning of the last Cycle in [s]
+	cSecond		fCycleTime;		///< Cycle duration Time in [s]
 
 	IsotopicVector	fInsideIV;		///< All IV in the Facility (fuel for reactor, total for all others...)
 	IsotopicVector	fCumulativeIVIn;	///< All IV in the Facility (fuel for reactor, total for all others...)
@@ -204,8 +204,8 @@ private :
 
 	Scenario*	fParc;			//!< Pointer to the main Parc
 
-	cSecond		fCreationTime;		///< CLASS Universal Time of Creation
-	cSecond		fLifeTime;		///< Time of life Of the Reactor (Operating's Duration)
+	cSecond		fCreationTime;		///< CLASS Universal Time of Creation in [s]
+	cSecond		fLifeTime;		///< Time of life Of the Reactor (Operating's Duration) in [s]
 
 	ClassDef(CLASSFacility,1);
 };

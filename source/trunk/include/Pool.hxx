@@ -51,7 +51,7 @@ public :
 	/*!
 	 Make a new Pool
 	 \param log : used for the log.
-	 \param coolingtime : duration of the cooling (default : 5 years).
+	 \param coolingtime : duration of the cooling (default : 5 years) in [s].
 	 */
 	Pool(CLASSLogger* Log, cSecond coolingtime = 5*cYear); //!<
 	//}
@@ -63,7 +63,7 @@ public :
 	 Make a new Pool
 	 \param log : used for the log.
 	 \param backend : CLASSBackend which get the fuel after the cooling
-	 \param coolingtime : duration of the cooling (default : 5 years).
+	 \param coolingtime : duration of the cooling (default : 5 years) in [s].
 	 */
 	Pool(CLASSLogger* log, CLASSBackEnd* backend,
 			 cSecond coolingtime = 5*cYear); //!<

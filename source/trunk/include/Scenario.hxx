@@ -2,7 +2,7 @@
 #define _SCENARIO_HXX_
 /*!
  \file
- \brief Header file for CLASS classes. 
+ \brief Header file for CLASS classes.
  */
 
 #include "CLASSObject.hxx"
@@ -29,10 +29,10 @@ class Storage;
 
 //-----------------------------------------------------------------------------//
 /*!
-Define a Scenario .
-The aim of these Scenario is to manage the park and its evolution and to lead all Storage, FabricationPlant, Reactor, Pool.
-
-
+ Define a Scenario .
+ The aim of these Scenario is to manage the park and its evolution and to lead all Storage, FabricationPlant, Reactor, Pool.
+ 
+ 
  @author BaM
  @author Marc
  @version 2.0
@@ -42,36 +42,45 @@ The aim of these Scenario is to manage the park and its evolution and to lead al
 
 class Scenario : public CLASSObject
 {
-public :
-
-//********* Constructor/Destructor Method *********//
-
+	public :
+	
+	//********* Constructor/Destructor Method *********//
+	
 	/*!
 	 \name Constructor/Desctructor
 	 */
 	//@{
-	
-	Scenario();	///< Normal Constructor.
-
-	Scenario(CLASSLogger* Log, cSecond abstime = 0);	///< Log Constructor.
- 	/*!
+	//{
+	/*!
 	 Use to load a CLASSLogger
-	 \param CLASSLogger: CLASSLogger used for the log.
+	 \param log : used for the log.
+	 \param abstime: Starting time of the Parc in second
 	 */
-	Scenario(cSecond abstime);	///< Time Constructor.
-
-
-	Scenario(cSecond abstime, CLASSLogger* log);	///< Time Constructor.
- 	/*!
+	Scenario(CLASSLogger* Log = new CLASSLogger("CLASS_OUTPUT.log"), cSecond abstime = 0);	///< Log Constructor.
+	//}
+	
+	//{
+	/*!
 	 Use to set the starting time of the Parc
 	 \param abstime: Starting time of the Parc in second
 	 */
-
+	Scenario(cSecond abstime)	{ Scenario(new CLASSLogger("CLASS_OUTPUT.log"), abstime); }
+	//}
+	
+	//{
+	/*!
+	 Use to set the starting time of the Parc
+	 \param abstime: Starting time of the Parc in second
+	 \param log : used for the log.
+	 */
+	Scenario(cSecond abstime, CLASSLogger* log)	{ Scenario(log, abstime); }
+	//}
+	
 	~Scenario();	///< Normal Destructor.
 	//@}
-
-
-//********* Get Method *********//
+	
+	
+	//********* Get Method *********//
 	/*!
 	 \name Get Function
 	 */
@@ -83,25 +92,25 @@ public :
 	vector<Pool*>			GetPool()		{ return fPool; }		///< Return the Pool Vector
 	vector<FabricationPlant*>	GetFabricationPlant()	{ return fFabricationPlant; }	///< Return the FabricationPlant Vector
 	DecayDataBank*			GetDecayDataBase() 	{ return fDecayDataBase; }	//!< Return the Pointer to the Decay DataBase
-
+	
 	cSecond				GetPrintSet()		{ return fPrintStep; }		///< Return the Print Step Periodicity
 	bool				GetStockManagement()	{ return fStockManagement; }	///< Return the StockManagement method (True or False)
 	string				GetOutputFileName()	{ return fOutputFileName; }	///< Return the Output File name
 	string				GetOutputTreeName()	{ return fOutputTreeName; }	///< Return the Output ROOT TTree name
-
+	
 	IsotopicVector			GetWaste()		{ return fWaste;}		///< Return the waste IsotopicVcetor
-
+	
 	//@}
-
-
-
-
-//********* Set Method *********//
+	
+	
+	
+	
+	//********* Set Method *********//
 	/*!
 	 \name Set Function
 	 */
 	//@{
-
+	
 	//{
 	/// Set the Printing Step periodicity
 	/*!
@@ -110,7 +119,7 @@ public :
 	 */
 	void	SetTimeStep(cSecond timestep) 				{ fPrintStep = timestep; }
 	//}
-
+	
 	//{
 	/// Set the StockManagement method
 	/*!
@@ -119,7 +128,7 @@ public :
 	 */
 	void	SetStockManagement(bool val)				{ fStockManagement = val; }
 	//}
-
+	
 	//{
 	/// Set the Decay DataBank
 	/*!
@@ -128,7 +137,7 @@ public :
 	 */
 	void	SetDecayDataBase(DecayDataBank* decaydatabase) { fDecayDataBase = decaydatabase; }
 	//}
-
+	
 	//{
 	/// Set the Output File Name
 	/*!
@@ -137,8 +146,8 @@ public :
 	 */
 	void	SetOutputFileName(string name)	{ fOutputFileName = name; }
 	//}
-
-
+	
+	
 	//{
 	/// Set the Output TTree Name
 	/*!
@@ -148,113 +157,116 @@ public :
 	void	SetOutputTreeName(string name)	{ fOutputTreeName = name; }
 	//}
 	//@}
-
+	
 	void SetLogTimeStep(bool val = true)	{fLogTimeStep = true;}
-
-//********* Add Method *********//
+	
+	//********* Add Method *********//
 	/*!
 	 \name Adding Facilities
 	 */
 	//@{
-
+	
 	void	AddPool(Pool* Pool);						///< Add a Pool to the Park
-	void	AddReactor(Reactor* reactor);					///< Add a Reactor to the Park 
+	void	AddReactor(Reactor* reactor);					///< Add a Reactor to the Park
 	void 	AddStorage(Storage* storage);					///< Add a Storage to the Park
 	void 	AddFabricationPlant(FabricationPlant* fabricationplant);	///< Add a Storage to the Park
 	void	AddSeparationPlant(SeparationPlant* separationplant);
-
+	
 	void	Add(Pool* Pool)					{AddPool(Pool);}	///< Add a Pool to the Park
 	void	Add(Reactor* reactor)				{AddReactor(reactor);}	///< Add a Reactor to the Park
 	void 	Add(Storage* storage)				{AddStorage(storage);}	///< Add a Storage to the Park
-	void 	Add(FabricationPlant* fabricationplant)		{AddFabricationPlant(fabricationplant);}///< Add a Storage to the Park
-	void 	Add(SeparationPlant* separationplant)		{AddSeparationPlant(separationplant);}///< Add a Storage to the Park
-
-	//@}
-
+	void 	Add(FabricationPlant* fabricationplant)		{AddFabricationPlant(fabricationplant);}	///< Add a Storage to the Park
+	void 	Add(SeparationPlant* separationplant)		{AddSeparationPlant(separationplant);}		///< Add a Storage to the Park
 	
- 	
-//********* Evolution Method *********//
+	//@}
+	
+	
+	
+	//********* Evolution Method *********//
 	/*!
 	 \name Evolution Method
 	 */
 	//@{
-
+	
 	void	BuildTimeVector(cSecond t);		///< Build the Time Evolution Vector where :
-							/// \li 1 printing,
-							/// \li 2 reactor Studown
-							/// \li 4 start/End of reactor cycle,
-							/// \li 8 end of Cooling,
-							/// \li 16 fuel Fabrication
-
+	/// \li 1 printing,
+	/// \li 2 reactor Studown
+	/// \li 4 start/End of reactor cycle,
+	/// \li 8 end of Cooling,
+	/// \li 16 fuel Fabrication
+	
 	void	Evolution(cSecond t);			///< Perform the Evolution
 	void	BackEndEvolution();			///< Perform BackEnd Evolution
 	void	PoolEvolution();			///< Perform Pool Evolution
 	void	PoolDump();
-
+	
 	void	ReactorEvolution();			///< Perform the Reactor Evolution
 	void	FabricationPlantEvolution();		///< Perform the FabricationPlant Evolution
 	void	StorageEvolution();			///< Perform the Storage Evolution
-
+	
 	//@}
-
-
-
-//-------- IsotopicVector --------//
-
+	
+	
+	
+	//-------- IsotopicVector --------//
+	
 	/*!
 	 \name  IsotopicVector Sum
 	 */
 	//@{
-
-
-	IsotopicVector		GetOutIncome() const		{ return fOutIncome; }		//!< Return the OutIncome Providings IsotopicVector
-	void AddOutIncome(ZAI zai, double quantity)		{ AddOutIncome(zai*quantity); }	//!< Add a ZAI*quantity to OutIncomeIncome
-	void AddOutIncome(IsotopicVector isotopicvector)	{ fOutIncome.Add(isotopicvector); }	//!< Add a isotopicVector to OutIncomeIncome
-	void AddWaste(ZAI zai, double quantity)		{ AddWaste(zai*quantity); }	//!< Add a ZAI*quantity to Waste
-	void AddWaste(IsotopicVector isotopicvector)	{ fWaste.Add(isotopicvector); }	//!< Add a isotopicVector to Waste
-	void AddToPower(double power)			{ fParcPower += power;}		//!< Add power to the installed power in the Parc
-
+	
+	
+	IsotopicVector	GetOutIncome() const		{ return fOutIncome; }		//!< Return the OutIncome Providings IsotopicVector
+	
+	void AddOutIncome(ZAI zai, double quantity)	{ AddOutIncome(zai*quantity); }		//!< Add a ZAI*quantity to OutIncomeIncome
+	void AddOutIncome(IsotopicVector isotopicvector){ fOutIncome.Add(isotopicvector); }	//!< Add a isotopicVector to OutIncomeIncome
+	void AddWaste(ZAI zai, double quantity)		{ AddWaste(zai*quantity); }		//!< Add a ZAI*quantity to Waste
+	void AddWaste(IsotopicVector isotopicvector)	{ fWaste.Add(isotopicvector); }		//!< Add a isotopicVector to Waste
+	void AddToPower(double power)			{ fParcPower += power;}			//!< Add power to the installed power in the Parc
+	
 	//@}
-
-
-
-//********* In/Out related Method *********//
-
+	
+	
+	
+	//********* In/Out related Method *********//
+	
 	/*!
 	 \name  In/Out Method
 	 */
 	//@{
-
-
+	
+	
 	void	ProgressPrintout(cSecond t);		//!< Update the prompt output to the time t
 	
 	void	Print();				//!< Print some information about the Parc
 	void	Write();				//!< Write information in a file
-	void	UpdateParc();				//!< Update the Global IsotopicVector
+	
 	void	OpenOutputTree();			//!< Open and define the Ouput ROOT TTree
 	void	CloseOutputTree();			//!< Close and delete the Ouput ROOT TTree
 	void	OutAttach();				//!< Attach the Branch to the Ouput ROOT TTree
+
 	void	ResetQuantity();			//!< Reset the values of the GLobal IsotopicVector
+	void	UpdateParc();				//!< Update the Global IsotopicVector
 	
 	//@}
-
 	
 	
-protected :
+	
+	protected :
 	bool			fNewTtree;		//!< Tru if we want to define a new TTree in the output File
 	bool			fStockManagement;	///< True if real StockManagement false unstead (Default = true)
 	bool			fLogTimeStep;
 	
-	cSecond			fPrintStep;		///< Time interval between two output update
-	cSecond			fAbsoluteTime;		///< Absolute Clock
-	cSecond			fStartingTime;		///< Starting Time
-	map<cSecond, int>	fTimeStep;		///< Time Step Vector for the evolution :
-							/// \li 1 printing,
-							/// \li 2 reactor Studown
-							/// \li 4 start/End of reactor cycle,
-							/// \li 8 end of Cooling,
-							/// \li 16 fuel Fabrication
-
+	cSecond			fPrintStep;		///< Time interval between two output update in [s]
+	cSecond			fAbsoluteTime;		///< Absolute Clock in [s]
+	cSecond			fStartingTime;		///< Starting Time in [s]
+	map<cSecond, int>	fTimeStep;		///< Time Step  Vector in [s] for the evolution :
+	/// \li 1 printing,
+	/// \li 2 reactor Studown
+	/// \li 4 start/End of reactor cycle,
+	/// \li 8 end of Cooling,
+	/// \li 16 fuel Fabrication
+	
 	
 	vector<Storage*>		fStorage;		///< Vector of Storages
 	vector<Pool*>			fPool;			///< Vector of Pool
@@ -262,7 +274,7 @@ protected :
 	vector<FabricationPlant*>	fFabricationPlant;	///< Vector of FabricationPlant
 	vector<SeparationPlant*>	fSeparationPlant;	///< Vector of FabricationPlant
 	DecayDataBank*			fDecayDataBase;		//!< Pointer to the Decay DataBase
-
+	
 	
 	TFile*		fOutFile;		///< Pointer to the Root Output File
 	string		fOutputFileName;	//! Name of the Output File
@@ -276,12 +288,12 @@ protected :
 	IsotopicVector	fTotalCooling;		///< Sum of all IV in Cooling IV
 	IsotopicVector	fFuelFabrication;	///< Sum of all IV in Fabrication IV
 	IsotopicVector	fTotalInReactor;	///< Sum of all IV in Reactor IV
-
-
+	
+	
 	IsotopicVector	fIVInCycleTotal;	///< Sum of all IV in the cycle (without Waste) IV
 	IsotopicVector	fIVTotal;		///< Sum of all IV in the parc (including Waste) IV
 	double		fParcPower;		///< Sum of the Power of all reactor in the parc
-
+	
 };
 
 

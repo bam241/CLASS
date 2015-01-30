@@ -67,7 +67,7 @@ class CLASSBackEnd : public CLASSFacility
 	/*!
 	 Create an empty CLASSBackEnd loading a CLASSLogger
 	 \param log : used for the log.
-	 \param cycletime Cycle time of the CLASSBackend (e.g. Cooling time for the pool)
+	 \param cycletime Cycle time of the CLASSBackend (e.g. Cooling time for the pool) in [s],
 	 \param type -2 :SeparationPlant -1 : Storage ; 8 :Pool
 	 */
 	CLASSBackEnd(CLASSLogger* log, cSecond cycletime, int type = 0);
@@ -130,8 +130,8 @@ class CLASSBackEnd : public CLASSFacility
 	
 	protected :
 	IsotopicVector		GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at time t
-	vector<IsotopicVector>	fIVArray;					///< Vector containning all the fuel stored.
-	vector<cSecond>		fIVArrayArrivalTime;			///< Vector containning the arrival time of each fuel
+	vector<IsotopicVector>	fIVArray;						///< Vector containning all the fuel stored.
+	vector<cSecond>		fIVArrayArrivalTime;					///< Vector containning the arrival time of each fuel in [s]
 	
 #ifndef __CINT__
 	CLASSBackEnd*		fOutBackEndFacility;					//!< Facility getting the fuel at the end of the cycle
