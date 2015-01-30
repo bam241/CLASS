@@ -51,7 +51,7 @@ public :
 	//{
 	/// CLASSLogger Constructor.
 	/*!
-	 Use create an empty Stotarage loading a CLASSLogger
+	 Use to create an empty Storage with a CLASSLogger
 	 \param log : used for the log.
 	 */
  	Storage(CLASSLogger* log);
@@ -61,9 +61,9 @@ public :
 	//{
 	/// Special Constructor.
 	/*!
-	 Make a new reactor
+	 Make a new Storage
 	 \param log : used for the log.
-	 \param evolutivedb DataBank for decay management
+	 \param evolutivedb : DataBank for decay management
 	 */
 	Storage(CLASSLogger* log, DecayDataBank* evolutivedb);
 	//}
@@ -88,32 +88,20 @@ public :
 
 	//@}
 
-
-//********* Get Method *********//
-
-	/*!
-	 \name Get Method
-	 */
-	//@{
-	//@}
-
-
-
-
 //********* Storage specific Method *********//
 
 	/*!
-	 \name Storage specific Method
+	 \name Storage specific methods
 	 */
 	//@{
 		
 	void TakeFractionFromStock(int IVId,double fraction);		//!< Take a part from an IV in sotck;
-	void TakeFromStock(IsotopicVector isotopicvector);		//!<
+	void TakeFromStock(IsotopicVector isotopicvector);		//!< Take an entire IV from stock
 
 
 	void AddIV(IsotopicVector isotopicvector);					//!< Add an Isotopicvector to the IVArray
 	void AddToStock(IsotopicVector isotopicvector) {AddIV(isotopicvector);}		//!< Add an Isotopicvector to the IVArray
-	void RemoveEmptyStocks(); //!< delete the empty Isotopicvectors contained in IVArray
+	void RemoveEmptyStocks(); //!< delete the empty Isotopicvector(s) contained in IVArray
 
 	//@}
 
