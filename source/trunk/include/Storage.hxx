@@ -21,9 +21,12 @@ class DecayDataBank;
 
 //-----------------------------------------------------------------------------//
 /*!
- Define a Storage.
- The aim of this class is to deal the store used fuel after the cooling dealing the evolution of all radiaoactive nuclei.
-
+ Define a Storage object
+ A Storage is a CLASSBackEnd facility. It is almost the same as a Pool with a
+ infinite cooling time.
+ A CLASSFacility can take IsotopicVector(s) contained in a Storage but a Storage 
+ cannot send its content in other CLASSFacility (its a kind of passive facility)
+ 
  @author BaM
  @version 2.0
  */
@@ -124,7 +127,7 @@ public :
 	 */
 	//@{
 	
-	void Evolution(cSecond t);		//!< Performe the evolution until the Time t
+	void Evolution(cSecond t);		//!< Perform the evolution until time t
 
 	//@}
 
@@ -139,8 +142,8 @@ public :
 	/// Write the Isotope composition of all IsotopicVector stored.
 	/*!
 	 Make a new reactor
-	 \param filenam CLASSLogger used for the log.
-	 \param data only use to srite a date in the file, theyr is not treatment of the date in this method....
+	 \param filename : CLASSLogger used for the log.
+	 \param date : only use to write a date in the file
 	 */
 	void Write(string filename,cSecond date = -1);
 	//}
