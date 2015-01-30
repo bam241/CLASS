@@ -21,26 +21,41 @@ using namespace std;
 
 class IsotopicVector;
 
-///< A ZAIMass .
+//-----------------------------------------------------------------------------//
+/*!
+Define a ZAIMass Object
+ The aims of this class is to handle the molar mass of each ZAI
+ 
+ @author BaM, BaL
+ @version 1.0
+ */
+//________________________________________________________________________
+
 
 class ZAIMass
 {
 	
 	
 public:
-		///< Default constructor
-	ZAIMass();
-		///< Normal Constructor.
-
-		///< Normal Destructor.
-	~ZAIMass();
+	/*!
+	 \name Constructor/Desctructor
+	 */
+	//@{
 	
+	ZAIMass();//!< Normal Constructor.
+	
+	~ZAIMass();//!< Normal Destructor.
+	//@}
 
-
-	double GetMass(ZAI zai ) const;
-	double GetMass(const int Z, const int A )    const { return GetMass( ZAI(Z, A, 0) ); }
-
-	double GetMass(const IsotopicVector IV)    const; //return Mass of IV in tons
+	/*!
+	 \name Fucntions returning molar mass [g/mol]
+	 */
+	//@{
+	double GetMass(ZAI zai ) const; //!< get with ZAI
+	double GetMass(const int Z, const int A )    const { return GetMass( ZAI(Z, A, 0) ); } //!< Get with Z, A
+	//@}
+	
+	double GetMass(const IsotopicVector IV)    const; //return Mass of IV [t]
 
 private:
 	map<ZAI, double> fZAIMass; //! ZAI mass list
