@@ -9,7 +9,7 @@
  \brief Header file for EQM_MLP_MOX class.
 
 
- @author BaM
+ @author BLG
  @version 1.0
  */
 
@@ -22,7 +22,7 @@ using namespace std;
  The aim of these class is to constuct a fuel from an equivalence model
  based on a  Multi layer perceptron
 
- @author BaM
+ @author BLG
  @version 3.0
  */
 //________________________________________________________________________
@@ -31,13 +31,42 @@ using namespace std;
 class EQM_MLP_MOX : public EquivalenceModel
 {
 	public :
-
-	EQM_MLP_MOX(string TMVAWeightPath);	//!< Constructor  string TMVAWeightPath => PATH/TMVAWeight.xml (path to tmva weight)
-	EQM_MLP_MOX(CLASSLogger* log, string TMVAWeightPath);	//!< Constructor CLASSLogger* log ,string TMVAWeightPath => PATH/TMVAWeight.xml
-
-	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp); //!<Return the molar fraction of fissile element thanks to a Multi Layer Perceptron
-
+	/*!
+	 \name Constructor
+	 */
+	//@{
+	//{
+	/// normal constructor
+	/*!
+	 Create a EQM_MLP_MOX 
+	 \param  TMVAWeightPath :  PAth to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
+	 */
+	EQM_MLP_MOX(string TMVAWeightPath);	//!<
+	//}
+	
+	//{
+	/// Logger constructor
+	/*!
+	 Create a EQM_MLP_MOX
+	 \param log : use for log
+	 \param  TMVAWeightPath :  PAth to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
+	 */
+	EQM_MLP_MOX(CLASSLogger* log, string TMVAWeightPath);
+	//}
+	//@}
+	
+	//{
+	/// Return the molar fissile fraction according fissile & ferile content using a Multi Layer Peceptron (MLP)
+	/*!
+	 \param Fissil : The composition of the fissile matter
+	 \param Fertil : The composition of the Fertil matter
+	 \param BurnUp : Maximum achievable burn up envisaged
+	 */
+	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);
+	//}
+	
 	private :
+	
 	TTree* CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);//!<Create input tmva tree to be read by ExecuteTMVA
 	double ExecuteTMVA(TTree* theTree);//!<Execute the MLP according to the input tree created by CreateTMVAInputTree
 
