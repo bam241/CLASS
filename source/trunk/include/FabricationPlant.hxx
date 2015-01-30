@@ -68,7 +68,7 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new FabricationPlant
-	 \param CLASSLogger CLASSLogger used for the log.
+	 \param log : used for the log.
 	 \param fabricationtime duration of the fabrication process (default : 2 years).
 	 */
 	FabricationPlant(CLASSLogger* log, double fabricationtime = cYear*2);

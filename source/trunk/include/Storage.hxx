@@ -52,7 +52,7 @@ public :
 	/// CLASSLogger Constructor.
 	/*!
 	 Use create an empty Stotarage loading a CLASSLogger
-	 \param CLASSLogger CLASSLogger used for the log.
+	 \param log : used for the log.
 	 */
  	Storage(CLASSLogger* log);
 	//}
@@ -62,7 +62,7 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new reactor
-	 \param CLASSLogger CLASSLogger used for the log.
+	 \param log : used for the log.
 	 \param evolutivedb DataBank for decay management
 	 */
 	Storage(CLASSLogger* log, DecayDataBank* evolutivedb);

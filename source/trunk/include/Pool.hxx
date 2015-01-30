@@ -50,8 +50,8 @@ public :
 	/// Special Constructor.
 	/*!
 	 Make a new Pool
-	 \param Log CLASSLogger used for the log.
-	 \param coolingtime duration of the cooling (default : 5 years).
+	 \param log : used for the log.
+	 \param coolingtime : duration of the cooling (default : 5 years).
 	 */
 	Pool(CLASSLogger* Log, cSecond coolingtime = 5*cYear); //!<
 	//}
@@ -61,11 +61,11 @@ public :
 	/// Special  Constructor.
 	/*!
 	 Make a new Pool
-	 \param Log CLASSLogger used for the log...
-	 \param CLASSBackEnd backend which get the fuel after the cooling
-	 \param coolingtime duration of the cooling (default : 5 years).
+	 \param log : used for the log.
+	 \param backend : CLASSBackend which get the fuel after the cooling
+	 \param coolingtime : duration of the cooling (default : 5 years).
 	 */
-	Pool(CLASSLogger* log, CLASSBackEnd* Storage,
+	Pool(CLASSLogger* log, CLASSBackEnd* backend,
 			 cSecond coolingtime = 5*cYear); //!<
 	//}
 

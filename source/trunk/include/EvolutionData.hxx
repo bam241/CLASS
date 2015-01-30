@@ -68,7 +68,7 @@ public :
 	/// CLASSLogger Constructor.
 	/*!
 	 Use create an empty EvolutionData loading a CLASSLogger
-	 \param CLASSLogger CLASSLogger used for the log.
+	 \param log : used for the log.
 	 */
 	EvolutionData(CLASSLogger* log); 	///< Make a new Evolutive Product evolution
 	//}
