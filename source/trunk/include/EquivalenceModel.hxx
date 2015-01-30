@@ -24,14 +24,14 @@ using namespace std;
  The aim of these class is synthetyse all the commum properties to all 
  Equivalence Model.
 
-\warning {
+\warning
 Never instantiate EquivalenceModel in your CLASS input but it's derivated class
-@see ../Model/Equivalence/EQM_BakerRoss_FBR_MOX.cxx
-@see ../Model/Equivalence/EQM_LIN_PWR_MOX.cxx
-@see ../Model/Equivalence/EQM_MLP_PWR_MOX.cxx
-@see ../Model/Equivalence/EQM_POL_PWR_UO2.cxx
-@see ../Model/Equivalence/EQM_QUAD_PWR_MOX.cxx
-}
+@see EQM_BakerRoss_FBR_MOX
+@see EQM_LIN_PWR_MOX
+@see EQM_MLP_PWR_MOX
+@see EQM_POL_PWR_UO2
+@see EQM_QUAD_PWR_MOX
+
  @author BLG,BaM
  @version 3.0
  */
