@@ -34,7 +34,7 @@ class Storage;
  
  
  @author BaM
- @author Marc
+ @author BaL
  @version 2.0
  */
 //________________________________________________________________________
@@ -56,7 +56,7 @@ class Scenario : public CLASSObject
 	 \param log : used for the log.
 	 \param abstime: Starting time of the Parc in second
 	 */
-	Scenario(CLASSLogger* Log = new CLASSLogger("CLASS_OUTPUT.log"), cSecond abstime = 0);	///< Log Constructor.
+	Scenario(CLASSLogger* Log, cSecond abstime = 0);	///< Log Constructor.
 	//}
 	
 	//{
