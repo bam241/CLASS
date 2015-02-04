@@ -21,10 +21,11 @@ class CLASSLogger;
 
 //-----------------------------------------------------------------------------//
 /*!
- Define a IM_RK4.
- The aim of these class is perform the calculation of the evolution of a fuel trough irradiation solving numericaly the Bateman using RK4.
-
-
+ Define a IM_RK4
+ 
+ The aim of these class is to solve numericaly the Bateman equations using 
+ Runge Kutta 4th order method
+ 
  @author BaM
  @version 3.0
  */
@@ -36,13 +37,33 @@ class IM_RK4 : public IrradiationModel, DynamicalSystem
 {
 
 	public :
-
+	
+	/*!
+	 \name Constructor
+	 */
+	//@{
+	
+	//{
+	/// Default constructor
+	//
+	/*!
+	 Make a new IM_Matrix : */
 	IM_RK4();
+	//}
+	
+	//{
+	/// Logger constructor
+	//
+	/*!
+	 Make a new IM_Matrix :
+	\param log : Use for the log
+	*/
 	IM_RK4(CLASSLogger* Log);
+	//}
 
-
-
-	/// virtueal method called to perform the irradiation calculation using a set of cross section.
+	//@}
+	
+	/// virtual method called to perform the irradiation calculation using a set of cross section.
 	/*!
 	 Perform the Irradiation Calcultion using the XSSet data
 	 \param IsotopicVector IV isotopic vector to irradiate
@@ -63,22 +84,22 @@ class IM_RK4 : public IrradiationModel, DynamicalSystem
 	using	DynamicalSystem::RungeKutta;
 	//!	Pre-treatment Runge-Kutta method.
 	/*!
-	 // This method does initialisation and then call DynamicalSystem::RungeKutta
+	 // This method does initialization and then call DynamicalSystem::RungeKutta
 	 // \param t1: initial time
 	 // \param t2: final time
 	 */
 
 
    	void BuildEqns(double t, double *N, double *dNdt);
-	void SetTheMatrixToZero();			//!< Initialize the evolution Matrix
+	void SetTheMatrixToZero();				//!< Initialize the evolution Matrix
 	void ResetTheMatrix();
 	void SetTheMatrix(TMatrixT<double> BatemanMatrix);	//!< Set the Evolution Matrix (Bateman equations)
-	TMatrixT<double> GetTheMatrix();		//!< return the Evolution Matrix (Bateman equations)
+	TMatrixT<double> GetTheMatrix();			//!< return the Evolution Matrix (Bateman equations)
 
 	void SetTheNucleiVectorToZero();			//!< Initialize the evolution Matrix
 	void ResetTheNucleiVector();
 	void SetTheNucleiVector(TMatrixT<double> NEvolutionMatrix);	//!< Set the Evolution Matrix (Bateman equations)
-	TMatrixT<double> GetTheNucleiVector();		//!< return the Evolution Matrix (Bateman equations)
+	TMatrixT<double> GetTheNucleiVector();			//!< return the Evolution Matrix (Bateman equations)
 	//@}
 
 
