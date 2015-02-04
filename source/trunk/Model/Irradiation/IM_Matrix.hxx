@@ -21,8 +21,8 @@ class CLASSLogger;
 //-----------------------------------------------------------------------------//
 /*!
  Define a IM_Matrix.
- The aim of these class is perform the calculation of the evolution of a fuel trough irradiation solving numericaly the Bateman using Matrix.
-
+ The aim of these class is to solve numericaly the Bateman equations using the
+ development in a power series of the exponential of the Bateman matrix.
 
  @author BaM
  @version 3.0
@@ -35,13 +35,31 @@ class IM_Matrix : public IrradiationModel
 {
 
 	public :
-
+	/*!
+	 \name Constructor
+	 */
+	//@{
+	
+	//{
+	/// Default constructor
+	
+	/*!
+	 Make a new IM_Matrix : */
 	IM_Matrix();
+	//}
+	
+	/// Logger constructor
+	
+	/*!
+	 Make a new IM_Matrix : */
+	//param log : Use for the log
 	IM_Matrix(CLASSLogger* log);
+	//}
+	
+	//@}
 
 
-
-	/// virtueal method called to perform the irradiation calculation using a set of cross section.
+	/// virtual method called to perform the irradiation calculation using a set of cross section.
 	/*!
 	 Perform the Irradiation Calcultion using the XSSet data
 	 \param IsotopicVector IV isotopic vector to irradiate
