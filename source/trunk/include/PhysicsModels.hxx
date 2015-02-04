@@ -22,7 +22,7 @@ typedef long long int cSecond;
 
 //-----------------------------------------------------------------------------//
 /*!
- Define all the Physics models used for a specific database. 
+ Define a contener of all physics models used for a specific couple (reactor,fuel).
  
 These class aim is basicaly to store 3 differents physics model : 
 	
@@ -75,6 +75,8 @@ class PhysicsModels : public CLASSObject
 	//}
 
 	~PhysicsModels() {;}
+	//@}
+	
 	//{
 
 	//{
@@ -102,8 +104,8 @@ class PhysicsModels : public CLASSObject
 
  private :
 
- 	XSModel* 		fXSModel;		//!< The XSModel (Mean cross sections prediction)
-	EquivalenceModel*	fEquivalenceModel;	//!< The EquivalenceModel (Fresh fissile content prediction)
+ 	XSModel* 		fXSModel;		//!< The XSModel (mean cross sections prediction)
+	EquivalenceModel*	fEquivalenceModel;	//!< The EquivalenceModel (fresh fissile content prediction)
 	IrradiationModel*	fIrradiationModel;	//!< The IrradiationModel (The Bateman's solver)
 
 

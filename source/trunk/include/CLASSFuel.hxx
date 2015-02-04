@@ -24,8 +24,8 @@ using namespace std;
 //-----------------------------------------------------------------------------//
 /*!
  Define a CLASS Object.
- The aim of these class is synthetyse all the commum properties to all CLASS Fuel Element.
- 
+ The aim of these class is to handle PhysicsModels &
+ EvolutionData as a CLASSFuel .
  
  @author BaM
  @version 3.0

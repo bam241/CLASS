@@ -27,7 +27,7 @@ typedef long long int cSecond;
 //-----------------------------------------------------------------------------//
 /*!
  Define a CLASS Facility.
- The aim of these class is synthetyse all the commum properties of the nuclear
+ The aim of these class is to gather all the commom properties of the
  facilities which are involve in the BackEnd Fuel cycle.
  
  @author BaM
@@ -44,7 +44,7 @@ class CLASSBackEnd : public CLASSFacility
 	/*!Create an empty CLASSBackEnd
 	 \param type
 	 \li -2 :SeparationPlant
-	 \li -1 : Storage
+	 \li -1 :Storage
 	 \li 8 :Pool
 	 */
 	CLASSBackEnd(int type = 0);
@@ -57,7 +57,7 @@ class CLASSBackEnd : public CLASSFacility
 	 \param log : used for the log.
 	 \param type
 	 \li -2 :SeparationPlant
-	 \li -1 : Storage
+	 \li -1 :Storage
 	 \li 8 :Pool     */
 	CLASSBackEnd(CLASSLogger* log,int type = 0);
 	//}
@@ -107,7 +107,7 @@ class CLASSBackEnd : public CLASSFacility
 #ifndef __CINT__
 	void		SetDecayDataBank(DecayDataBank* decayDB)	{ fDecayDataBase = decayDB;}	//! Set the Decay DataBank
 	virtual void	SetOutBackEndFacility(CLASSBackEnd* befacility)	{ fOutBackEndFacility = befacility;
-		fIsStorageType = false; } //! Set an out Facility for the fuel
+		fIsStorageType = false; } //! Set an out Facility
 	
 #endif
 	
@@ -124,12 +124,12 @@ class CLASSBackEnd : public CLASSFacility
 	void		ClearIVArray();					//!< Empty the IVArray removing all fuel stored
 	
 	//@}
-	virtual void Evolution(cSecond t)	{}	//!< Performs the Evolution to the Time t
+	virtual void Evolution(cSecond t)	{}	//!< Performs the Evolution until time t
 	void UpdateInsideIV();
 	
 	
 	protected :
-	IsotopicVector		GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at time t
+	IsotopicVector		GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector decay at time t [s]
 	vector<IsotopicVector>	fIVArray;						///< Vector containning all the fuel stored.
 	vector<cSecond>		fIVArrayArrivalTime;					///< Vector containning the arrival time of each fuel in [s]
 	
@@ -139,10 +139,10 @@ class CLASSBackEnd : public CLASSFacility
 	
 	//********* Internal Parameter *********//
 	private :
-	bool		fIsStorageType;		//!< True if there is not OutBAckEndFacility (like a Storage...)
+	bool		fIsStorageType;		//!< True if there is no out CLASSBackEnd facility (like a Storage...)
 	
 #ifndef __CINT__
-	DecayDataBank*	fDecayDataBase;		//!< Pointer to the Decay DataBase
+	DecayDataBank*	fDecayDataBase;		//!< Pointer to the DecayDataBank
 #endif
 	
 	ClassDef(CLASSBackEnd,2);

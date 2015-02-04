@@ -30,7 +30,7 @@ class Storage;
 //-----------------------------------------------------------------------------//
 /*!
  Define a Scenario .
- The aim of these Scenario is to manage the park and its evolution and to lead all Storage, FabricationPlant, Reactor, Pool.
+ The aim of these Scenario is to manage the park and its evolution and to lead all Storage, FabricationPlant, Reactor, Pool,...
  
  
  @author BaM
@@ -86,14 +86,14 @@ class Scenario : public CLASSObject
 	 */
 	//@{
 	cSecond				GetAbsoluteTime()	{ return fAbsoluteTime; }	///< Return the Absolute Clock
-	map<cSecond, int>		GetTimeStep()		{ return fTimeStep; }		///< Return the Time Step Vector
-	vector<Reactor*>		GetReactor()		{ return fReactor; }		///< Return the Reactor Vector
-	vector<Storage*>		GetStorage()		{ return fStorage; }		///< Return the Storage Vector
+	map<cSecond, int>		GetTimeStep()		{ return fTimeStep; }		///< Return the Time Step vector
+	vector<Reactor*>		GetReactor()		{ return fReactor; }		///< Return the Reactor vector
+	vector<Storage*>		GetStorage()		{ return fStorage; }		///< Return the Storage vector
 	vector<Pool*>			GetPool()		{ return fPool; }		///< Return the Pool Vector
-	vector<FabricationPlant*>	GetFabricationPlant()	{ return fFabricationPlant; }	///< Return the FabricationPlant Vector
-	DecayDataBank*			GetDecayDataBase() 	{ return fDecayDataBase; }	//!< Return the Pointer to the Decay DataBase
+	vector<FabricationPlant*>	GetFabricationPlant()	{ return fFabricationPlant; }	///< Return the FabricationPlant vector
+	DecayDataBank*			GetDecayDataBase() 	{ return fDecayDataBase; }	//!< Return the Pointer to the DecayDataBank
 	
-	cSecond				GetPrintSet()		{ return fPrintStep; }		///< Return the Print Step Periodicity
+	cSecond				GetPrintSet()		{ return fPrintStep; }		///< Return the print step periodicity
 	bool				GetStockManagement()	{ return fStockManagement; }	///< Return the StockManagement method (True or False)
 	string				GetOutputFileName()	{ return fOutputFileName; }	///< Return the Output File name
 	string				GetOutputTreeName()	{ return fOutputTreeName; }	///< Return the Output ROOT TTree name
@@ -112,7 +112,7 @@ class Scenario : public CLASSObject
 	//@{
 	
 	//{
-	/// Set the Printing Step periodicity
+	/// Set the printing step periodicity
 	/*!
 	 Use to set the periodicity of the output
 	 \param timestep: periodicity of outpout in second
@@ -130,7 +130,7 @@ class Scenario : public CLASSObject
 	//}
 	
 	//{
-	/// Set the Decay DataBank
+	/// Set the DecayDataBank
 	/*!
 	 Use to define Decay DataBank to be used
 	 \param decaydatabase: a DecayDataBank which should contain the evolution of each nuclei of the chart

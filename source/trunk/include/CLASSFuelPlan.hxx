@@ -26,8 +26,8 @@ typedef long long int cSecond;
 //-----------------------------------------------------------------------------//
 /*!
  Define a CLASS Object.
- The aim of these class is synthetyse all the commum properties to all CLASS Fuel Element.
-
+ The aim of these class is to allow a Reactor to change its CLASSFuel and/or burnup
+ during its lifetime
 
  @author BaM
  @version 2.0
@@ -90,7 +90,7 @@ class CLASSFuelPlan : public CLASSObject
 
 	private :
 
-	map< cSecond, pair< CLASSFuel, double > >	fLoadingPlan;	///< Loading PLan to change the EvolutionData (and the associeted Burnup) according to the Plan
+	map< cSecond, pair< CLASSFuel, double > >	fLoadingPlan;	///< Loading plan to change the EvolutionData (and the associeted Burnup) according to the plan
 
 };
 

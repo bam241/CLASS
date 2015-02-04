@@ -14,10 +14,10 @@ using namespace std;
 //-----------------------------------------------------------------------------//
 /*!
  Define a nuclei as : Z A I.
- The aim of this class is to discribe each CLASSNucleiFiliation connecting nuclei to their daughter nuclei through a nuclear process using the correct branching ratio.
- Note That this class can be used to connect nulei to their daughter through any reaction (Fission, capture...) or natural decay process...
+ The aim of this class is to discribe each CLASSNucleiFiliation. It connects nuclei to their daughter nuclei through a nuclear process using the correct branching ratio.
+ Note that this class can be used to connect nulei to their daughter through any reaction (Fission, capture...) or natural decay process...
  
- In the case of Decay process,  it is possible to add the decay constant to the branching ratio (ie : log(2)/HalfLife, see IrradiationModel.cxx )....
+ In the case of decay process,  it is possible to put (by multiplying) the decay constant to the branching ratio (ie : BR*log(2)/HalfLife, see IrradiationModel)....
  
  
  @author BaM
@@ -69,12 +69,12 @@ public:
 	 */
 	//@{
 	map<ZAI, IsotopicVector> GetNucleiFIliation() const {return fNucleiFiliation;}	//!< Return the full filiation list
-	vector<ZAI> GetZAIList() const;			//!< Return the list of mother ZAI present in the Filiation list
-	int size() const{return (int)fNucleiFiliation.size();}	//!< Return the Number of Mother ZAI (then filiation path)
+	vector<ZAI> GetZAIList() const;			//!< Return the list of mother ZAI present in the filiation list
+	int size() const{return (int)fNucleiFiliation.size();}	//!< Return the number of mother ZAI (then filiation path)
 	
-	IsotopicVector GetFiliation(ZAI Mother);	//!< Return the filiation isotopic Vector of the ZAI Mother
+	IsotopicVector GetFiliation(ZAI Mother);	//!< Return the filiation isotopic vector of the ZAI mother
 	
-	ZAI GetArtificialDecay(ZAI Mother);			//!< Make an artificial and instateneus decay on the ZAI, (desexcitation, or Beta decay)
+	ZAI GetArtificialDecay(ZAI Mother);			//!< Make an artificial and instantaneus decay of the ZAI, (desexcitation, or Beta decay)
 	
 	//}
 	
@@ -84,7 +84,7 @@ public:
 	 \name Adding Method
 	 */
 	//@{
-	void Add(ZAI Mother, IsotopicVector Daughter );		//!< Add A ZAI and its IsotopicVector of Daughter to the Filiation
+	void Add(ZAI Mother, IsotopicVector Daughter );		//!< Add A ZAI and its IsotopicVector of daughter(s) to the filiation
 	//}
 	
 	
@@ -96,9 +96,9 @@ public:
 	//@{
 	
 	
-	void FiliationCleanUp(map<ZAI, int> GoodNuclei, CLASSNucleiFiliation CuttedNuclei);	//!< Cutting all pathway to end each path on a nuclei in the GoodList following the CuttedNuclei, if nuclei is neither in the GoodNuclei list or in CuttedNuclei, then Artificial Decay are performed
+	void FiliationCleanUp(map<ZAI, int> GoodNuclei, CLASSNucleiFiliation CuttedNuclei);	//!< Cutting all pathway until each path ends on a nuclei in the GoodList following the CuttedNuclei. If nuclei are neither in the GoodNuclei list or in CuttedNuclei, then artificial decay are performed
 	
-	void SelfFiliationCleanUp(map<ZAI, int> GoodNuclei);	//!< Cutting All the pathway ending on a nuclei not present as a Motehr Nuclei
+	void SelfFiliationCleanUp(map<ZAI, int> GoodNuclei);	//!< Cutting all the pathway ending on a nuclei not present as a motehr nuclei
 	
 	void NormalizeBranchingRatio(double Value = 1);		//!< Normalization of all the branching ratio to 1
 	

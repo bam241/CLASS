@@ -88,10 +88,10 @@ public :
 						   SetIsStorageType(false);
 						   fPutToWaste = false; }		//!< Set the pointer to facility at the back end of the pool
 
-	void SetPutToWaste(bool val)		{ fPutToWaste = val; }		//!< Set True if IV goes to waste after cooling false instead
+	void SetPutToWaste(bool val)		{ fPutToWaste = val; }		//!< Set true if IV goes to waste after cooling false instead
 
-	void SetIVArray(vector<IsotopicVector> ivarray);			//! not use there (Does nothing!!!)
-	void SetIVArray(vector<IsotopicVector> ivarray, vector<cSecond> timearray); //!< Set The isotopicVector Array at the corresponding time
+	void SetIVArray(vector<IsotopicVector> ivarray);			//! not use there (does nothing)
+	void SetIVArray(vector<IsotopicVector> ivarray, vector<cSecond> timearray); //!< Set the IsotopicVector Array at the corresponding time
 
 
 	using CLASSBackEnd::SetName;
@@ -108,7 +108,7 @@ public :
 	 */
 	//@{
 
-	bool		GetPutToWaste()	const	{ return fPutToWaste; }		//!< Return True if IV goes to waste after cooling false instead
+	bool		GetPutToWaste()	const	{ return fPutToWaste; }		//!< Return true if IV goes to waste after cooling, false instead
 
 	//@}
 
@@ -141,7 +141,7 @@ public :
 	//@{
 
 	void Evolution(cSecond t);		//!< Perform the evolution until time t
-	void Dump();				//!< Write Modification (exchange between Cooling, Separation and Storage)
+	void Dump();				//!< Write modification (exchange between Cooling, Separation and Storage)
 	
 	//@}
 
@@ -155,9 +155,9 @@ protected :
 
 //********* Isotopic Quantity *********//
 //--------- Cooling ---------//
-	vector<int>		fCoolingIndex;		///< Vector of the Cooling Index
-	int			fCoolingLastIndex;	//!< Number of Cooling IV handle
-	vector<int>		fCoolingEndOfCycle;	//!< Index of the Cooling IV reaching the end of a cooling cycle
+	vector<int>		fCoolingIndex;		///< Vector of the cooling index
+	int			fCoolingLastIndex;	//!< Number of cooling IV handle
+	vector<int>		fCoolingEndOfCycle;	//!< Index of the cooling IV reaching the end of a cooling cycle
 
 
 //********* Private Method *********//

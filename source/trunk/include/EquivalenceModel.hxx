@@ -20,8 +20,8 @@ using namespace std;
 
 //-----------------------------------------------------------------------------//
 /*!
- Define a EquivalenceModel.
- The aim of these class is synthetyse all the commum properties to all
+ Define an EquivalenceModel.
+ The aim of these class is to gather all the commum properties of all
  Equivalence Model.
  
  \warning
@@ -41,11 +41,16 @@ using namespace std;
 class EquivalenceModel : public CLASSObject
 {
 	public :
+	/*!
+	 \name Constructor/Desctructor
+	 */
+	//@{
+	EquivalenceModel();			//!< Default constructor
+	EquivalenceModel(CLASSLogger* log);	//!< Logger constructor
 	
-	EquivalenceModel();
-	EquivalenceModel(CLASSLogger* log);
+	virtual ~EquivalenceModel();		//!< Destructor
+	//@}
 	
-	virtual ~EquivalenceModel();
 	//{
 	/// BuildFuel function.
 	/*!
