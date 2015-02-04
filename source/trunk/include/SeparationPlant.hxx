@@ -51,17 +51,12 @@ public :
 	/*!
 	 Make a new SeparationPlant
 	 \param log : used for the log.
-	 \param separationtime duration of the SeparationPlant
 	 */
-	SeparationPlant(CLASSLogger* Log); //!<
+	SeparationPlant(CLASSLogger* Log);
 	//}
-
-
 
 	~SeparationPlant();	///< Normal Destructor.
 	//@}
-
-
 
 
 //********* Set Method *********//
@@ -72,7 +67,7 @@ public :
 	//@{
 
 
-	void SetBackEndDestination(CLASSBackEnd*  storagedestination, IsotopicVector isotopicvector, cSecond destinationstartingtime);
+	void SetBackEndDestination(CLASSBackEnd*  storagedestination, IsotopicVector isotopicvector, cSecond destinationstartingtime); //!< Tell Separation plant to begin separation  at time destinationstartingtime according efficiency (between [0-1]) defined in isotopicvector and to send the separated materials to storagedestination
 
 	void AddIV(IsotopicVector IV);
 
@@ -109,21 +104,7 @@ public :
 	//@{
 
 	vector<cSecond>	GetCoolingStartingTime() const
-						{ return GetIVArrayArrivalTime(); }	//!< Return the vector of Cooling Sstarting Time
-	//@}
-
-
-
-
-//********* Other Method *********//
-
-	//@}
-	/*!
-	 \name Other Method
-	 */
-	//@{
-
-	
+						{ return GetIVArrayArrivalTime(); }	//!< Return the vector of Cooling starting Time
 	//@}
 
 protected :
