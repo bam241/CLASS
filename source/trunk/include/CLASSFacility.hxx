@@ -25,7 +25,7 @@ class Scenario;
 //-----------------------------------------------------------------------------//
 /*!
  Define a CLASS Facility.
- The aim of these class is to regroup all the commum properties of the nuclear facilities.
+ The aim of these class is to gather all the commom properties of the facilities.
 
 
  @author BaM
@@ -48,7 +48,7 @@ public :
 	/// Normal Constructor.
 	/*!
 	Make a new Facility
-	\param type identification of type of the facility :
+	\param type identification type of the facility :
 	\li 4 Reactor,
 	\li 8 Pool,
 	\li 16 FabricationPlant.
@@ -62,7 +62,7 @@ public :
 	/*!
 	 Make a new Facility
 	 \param log : used for the log.
-	 \param type identification of type of the facility :
+	 \param type identification type of the facility :
 	 \li 4 Reactor,
 	 \li 8 Pool,
 	 \li 16 FabricationPlant.
@@ -76,8 +76,8 @@ public :
 	/*!
 	 Make a new Facility
 	 \param log : used for the log.
-	 \param cycletime duration of the cycle in [s],
-	 \param type identification of type of the facility :
+	 \param cycletime duration of the cycle [s],
+	 \param type identification type of the facility :
 	 \li 4 Reactor,
 	 \li 8 Pool,
 	 \li 16 FabricationPlant.
@@ -91,9 +91,9 @@ public :
 	/*!
 	 Make a new Facility
 	 \param log : used for the log.
-	 \param creationtime creation date (in second) of the Facility in [s],
-	 \param lifetime operating duration in [s],
-	 \param type identification of type of the facility :
+	 \param creationtime creation date of the Facility [s],
+	 \param lifetime operating duration [s],
+	 \param type identification type of the facility :
 	 \li 4 Reactor,
 	 \li 8 Pool,
 	 \li 16 FabricationPlant.
@@ -107,10 +107,10 @@ public :
 	/*!
 	 Make a new Facility
 	 \param log : used for the log.
-	 \param creationtime creation date (in second) of the Facility in [s],
-	 \param lifetime operating duration in [s],
-	 \param cycletime duration of the cycle in [s],
-	 \param type identification of type of the facility :
+	 \param creationtime creation date of the Facility [s],
+	 \param lifetime operating duration [s],
+	 \param cycletime duration of the cycle [s],
+	 \param type identification type of the facility :
 	 \li 4 Reactor,
 	 \li 8 Pool,
 	 \li 16 FabricationPlant.
@@ -126,7 +126,7 @@ public :
 	//@{
 
 	int 		GetId()			const	{ return fId; }			//!< Return the Facility Parc'Is
-	IsotopicVector 	GetInsideIV()		const	{ return fInsideIV; } 		//!< Return the IV contain in the Facility
+	IsotopicVector 	GetInsideIV()		const	{ return fInsideIV; } 		//!< Return the IV contained in the Facility
 
 	int		GetFacilityType()	const	{ return fFacilityType; }	//!< Return the Facility Type id
 
@@ -138,8 +138,8 @@ public :
 	Scenario*	GetParc()			{ return fParc; }		//!< return the pointer to the Park
 
 
-	IsotopicVector GetCumulativeIVIn() { return fCumulativeIVIn;}			//!< return the culative sum of all incoming IV
-	IsotopicVector GetCumulativeIVOut() { return fCumulativeIVOut;}			//!< return the culative sum of all outcoming IV
+	IsotopicVector GetCumulativeIVIn() { return fCumulativeIVIn;}			//!< return the cumulative sum of all incoming IV
+	IsotopicVector GetCumulativeIVOut() { return fCumulativeIVOut;}			//!< return the cumulative sum of all outcoming IV
 	//@}
 	
 		//********* Set Method *********//
@@ -158,7 +158,7 @@ public :
 	using CLASSObject::GetName;
 
 
-	void SetInsideIV(IsotopicVector isotopicvector)	{ fInsideIV = isotopicvector; }	//!< Set the IV inside the Facility Core
+	void SetInsideIV(IsotopicVector isotopicvector)	{ fInsideIV = isotopicvector; }	//!< Set the IV inside the Facility
 	void SetCreationTime(double creationtime)	{ fCreationTime = (cSecond)creationtime;} //!< Set the creation Time
 	void SetLifeTime(double lifetime)		{ fLifeTime = (cSecond)lifetime; }	//!< Set the life time of the facility
 	virtual void SetCycleTime(double cycletime)	{ fCycleTime = (cSecond)cycletime; }	//!< Set the cycle time (Cycle of the loading Plan)
@@ -173,21 +173,21 @@ public :
 	 */
 	//@{
 
-	void AddCumulativeIVIn(IsotopicVector IV) { fCumulativeIVIn += IV;}		//!< Add the Input IsotopicVector the The cumulative IV IN
-	void AddCumulativeIVOut(IsotopicVector IV) { fCumulativeIVOut += IV;}		//!< Add the Input IsotopicVector the The cumulative IV OUT
-	virtual void Evolution(cSecond t)	= 0;	//!< Performe the Evolution to the Time t
+	void AddCumulativeIVIn(IsotopicVector IV) { fCumulativeIVIn += IV;}		//!< Add the Input IsotopicVector in the cumulative IV IN
+	void AddCumulativeIVOut(IsotopicVector IV) { fCumulativeIVOut += IV;}		//!< Add the Input IsotopicVector in the cumulative IV OUT
+	virtual void Evolution(cSecond t)	= 0;	//!< Performs the Evolution to time t
 	virtual void Dump()			{ }	//!< Write Modification (IV In/Out, filling the TF...)
 		
 	//@}
 protected :
 	bool		fIsStarted;		///< True if Running, False Otherwise
 	bool		fIsShutDown;		///< True if the facility is stoped, False Otherwise
-	bool		fIsAtEndOfCycle;	///< True if Reaching the End of a Facility Cycle
+	bool		fIsAtEndOfCycle;	///< True if Reaching the end of a Facility cycle
 
 		
-	cSecond		fInternalTime;		///< Internal Clock in [s]
-	cSecond		fInCycleTime;		///< Time spend since the beginning of the last Cycle in [s]
-	cSecond		fCycleTime;		///< Cycle duration Time in [s]
+	cSecond		fInternalTime;		///< Internal Clock [s]
+	cSecond		fInCycleTime;		///< Time spent since the beginning of the last Cycle [s]
+	cSecond		fCycleTime;		///< Cycle duration Time [s]
 
 	IsotopicVector	fInsideIV;		///< All IV in the Facility (fuel for reactor, total for all others...)
 	IsotopicVector	fCumulativeIVIn;	///< All IV in the Facility (fuel for reactor, total for all others...)
@@ -195,17 +195,17 @@ protected :
 
 		//********* Internal Parameter *********//
 private :
-	int		fId;			//!< Identity of the Facility inside the Parc
+	int		fId;			//!< Identity of the Facility inside the Scenario
 	int		fFacilityType;		///< Type of facility :
 						/// \li 4 reactor,
 						/// \li 8 Pool,
 						/// \li 16 FabricationPlant.
 
 
-	Scenario*	fParc;			//!< Pointer to the main Parc
+	Scenario*	fParc;			//!< Pointer to the main Scenario
 
-	cSecond		fCreationTime;		///< CLASS Universal Time of Creation in [s]
-	cSecond		fLifeTime;		///< Time of life Of the Reactor (Operating's Duration) in [s]
+	cSecond		fCreationTime;		///< CLASS Universal Time of Creation [s]
+	cSecond		fLifeTime;		///< Time of life Of the Reactor (operating's duration) [s]
 
 	ClassDef(CLASSFacility,1);
 };

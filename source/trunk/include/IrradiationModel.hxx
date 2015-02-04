@@ -36,10 +36,10 @@ class CLASSLogger;
  An IrradiationModel is a Bateman equation solving method.
  This is the mother class.
  see derivated classes :
- \li @see ../Model/Irradiation/IM_Matrix.hxx
- \li @see ../Model/Irradiation/IM_RK4.hxx
+ \li @see IM_Matrix
+ \li @see IM_RK4
  
- The aim of these class is to include all the commum properties of all the
+ The aim of these class is to gather all the commom properties of all the
  derivated Irradiation Model.
  
  @author BaM
@@ -51,10 +51,15 @@ class IrradiationModel : public CLASSObject
 {
 	
 	public :
-	
-	IrradiationModel();
+	/*!
+	 \name Constructors
+	 */
+	//@{
+	IrradiationModel(); //!< Default constructor
 
-	IrradiationModel(CLASSLogger* log);
+	IrradiationModel(CLASSLogger* log); //!< Logger constructor
+	
+	//@}
 	
 	//{
 	/// virtual method called to perform the irradiation calculation using a set of cross section.
@@ -138,12 +143,11 @@ class IrradiationModel : public CLASSObject
 	
 	void SetSpectrumType(string type);					//!< Set the type of neutron spectrum (thermal or fast)
 	
+	//@}
 	
 	
 	
 	//********* Evolution Method *********//
-	
-	//@}
 	/*!
 	 \name Evolution Method
 	 */
@@ -164,10 +168,8 @@ class IrradiationModel : public CLASSObject
 	//@{
 	void Print() const;
 	
-	//@}
-	
 	int  GetZAIThreshold(){return fZAIThreshold;} //!< Gives the threshold (in charge number Z). The nuclei below this threshold are not managed
-
+	//@}
 	
 	
 	

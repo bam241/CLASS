@@ -36,9 +36,9 @@ double 	Distance(EvolutionData Evd1, IsotopicVector IV1 );
 
 //-----------------------------------------------------------------------------//
 /*!
- Define a EvolutionData.
- The aim of these class is describe the evolution of a single evoluting system in CLASS.
- The system can either be a fuel evolution trough irradiation or a nuclei which produce, trough his decay, a large nuclei tree.
+ Define an EvolutionData.
+ The aim of these class is to describe the evolution of a single evoluting system in CLASS.
+ The system can either be a fuel evolution trough irradiation or a nuclei which produce, trough its decay, a large nuclei tree.
  
  The nuclei tree resulting of the evolution are stored in a map of ZAI and TGraph, each TGraph correspond to the evolution of the quantity of the associeted ZAI.
 
@@ -79,7 +79,7 @@ public :
 	 Make a new EvolutionData
 	 \param log : used for the log.
 	 \param DB_file path to the DataBase file
-	 \param oldread true if the oldmethod should be use to read the DatBase File
+	 \param oldread true if the oldmethod should be use to read the DatBase File (deprecated)
 	 \param zai set the ZAI if you want to add a stable nuclei.
 	 */
 	EvolutionData(CLASSLogger* log, string DB_file, bool oldread = false, ZAI zai = ZAI(0,0,0) );
@@ -99,7 +99,7 @@ public :
 	/// Delete the EvolutionData.
 	/*!
 	 Use to fully delete the EvolutionData and all associeted TGraph.
-	 In some case needed to be called to avoid memory leak.
+	 In some case needed to be called to avoid memory leaks.
 	 */
 	void DeleteEvolutionData();
 	//}
@@ -115,13 +115,13 @@ public :
 	 \name Set Method
 	 */
 	//@{
-	void	SetHeavyMetalMass(double Mass)			{fHeavyMetalMass = Mass;}	//!< Set the HeavyMetal Mass 
+	void	SetHeavyMetalMass(double Mass)			{fHeavyMetalMass = Mass;}	//!< Set the heavy metal Mass [t]
 
-	void 	SetReactorType(string reactortype)	{ fReactorType = reactortype; }		///< Set the reactor Type (string)
-	void	SetFuelType(string fueltype)		{ fFuelType = fueltype; }		///< Set the fuel Type (string)
-	void 	SetPower(double power)			{ fPower = power; }			///< Set the power of the EvolutionData (double)
-	void	SetFlux(TGraph* flux )			{ fFlux = flux; }			///< Set the neutron flux of the EvolutionData (double)
-	void	SetCycleTime(cSecond cycletime)		{ fCycleTime = cycletime; }		///< Set cycletime of the EvolutionData (double)
+	void 	SetReactorType(string reactortype)	{ fReactorType = reactortype; }		///< Set the reactor type (e.g PWR, FBR-Na,...)
+	void	SetFuelType(string fueltype)		{ fFuelType = fueltype; }		///< Set the fuel type (e.g MOX,UOX,...)
+	void 	SetPower(double power)			{ fPower = power; }			///< Set the power of the EvolutionData [W]
+	void	SetFlux(TGraph* flux )			{ fFlux = flux; }			///< Set the neutron flux of the EvolutionData [cm^{-2}.s^{-1}]
+	void	SetCycleTime(cSecond cycletime)		{ fCycleTime = cycletime; }		///< Set cycletime of the EvolutionData [s]
 
 
 	void	SetInventoryEvolution(map<ZAI, TGraph*> maptoinsert)	{ fInventoryEvolution = maptoinsert;}///< Set EvolutionData map
@@ -157,9 +157,9 @@ public :
 	string	GetReactorType()	const { return fReactorType; }			//!< return the type of reactor (string)
 	TGraph*	GetEvolutionTGraph(const ZAI& zai);					//!< return the evolution of the ZAI quantity (TGraph*)
 
-	IsotopicVector	GetIsotopicVectorAt(double t);					///< Return the Product IsotopicVector at t time
+	IsotopicVector	GetIsotopicVectorAt(double t);					///< Return the Product IsotopicVector at time t
 
-	double	GetHeavyMetalMass()	const	{ return fHeavyMetalMass; }	//!< Return the HeavyMetal Mass in the Core at the begining of the cycle
+	double	GetHeavyMetalMass()	const	{ return fHeavyMetalMass; }	//!< Return the heavy metal mass in the core at the begining of the cycle [t]
 
 
 	//{
@@ -240,7 +240,7 @@ protected :
 	
 	double	Interpolate(double t, TGraph& EvolutionGraph);		///< Interpolating the value of EvolutionGraph at the t time
 
-	void	AddAsStable(ZAI zai);					///< USe when adding a EvolutionData of a stable nuclei (for "non" decay)
+	void	AddAsStable(ZAI zai);					///< Use when adding an EvolutionData of a stable nuclei (for "non" decay)
 
 	ClassDef(EvolutionData,0);
 };

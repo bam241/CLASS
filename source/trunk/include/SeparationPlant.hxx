@@ -23,7 +23,8 @@ class DecayDataBank;
 //-----------------------------------------------------------------------------//
 /*!
  Define a SeparationPlant.
- The aim of the Class is to separate an IV into several IV (MA, Pu, PF, etc...) and to send it to corresponding storage 
+ The aim of this class is to separate an IV into several IV (MA, Pu, PF, etc...) and 
+ to send it to one or several Storage
 
  @author NT
  @version 1.0

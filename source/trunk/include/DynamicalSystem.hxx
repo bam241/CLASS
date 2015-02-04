@@ -17,8 +17,8 @@ using namespace std;
       
 //!	DynamicalSystem class solves system of differential equations.  
 /*!
-//	A DynamicalSystem is a base class thatsolves system of 1st order of differential equations.
-//	\f[ \frac{d\vec{Y}}{dt}=A\vec{Y}\f]
+//	A DynamicalSystem is a base class that solves system differential equations of 1st order.
+//	@f[ \frac{d\vec{Y}}{dt}=A\vec{Y}@f]
 //	The differential equations are built in DynamicalSystem::BuildEqns ; the method MUST be
 //  defined in the derived classes.
 //	In this first version only Runge-Kutta method is implemented, but the aim of this class

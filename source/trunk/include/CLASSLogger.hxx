@@ -49,7 +49,7 @@ using namespace std;
 //-----------------------------------------------------------------------------//
 /*!
  Define a LogType.
- The aim of this class is to handel stream in CLASS.
+ The aim of this class is to handle output stream in CLASS.
  
  
  @author BaM

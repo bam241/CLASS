@@ -21,7 +21,7 @@ class IsotopicVector;
 //-----------------------------------------------------------------------------//
 /*!
  Define a XS Interpolator 
-This is the class for methods related to XS prediction
+This is the mother class for methods related to XS prediction
 
 \warning
  Never instantiate XSModel in your CLASS input but it's derivated class

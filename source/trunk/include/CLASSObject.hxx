@@ -24,7 +24,7 @@ using namespace std;
 //-----------------------------------------------------------------------------//
 /*!
  Define a CLASS Object.
- The aim of these class is synthetyse all the commum properties to all CLASS Element.
+ The aim of these class is to gather all the commom properties of all CLASS objects.
 
 
  @author BaM

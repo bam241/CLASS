@@ -63,7 +63,7 @@ public :
 	/*!
 	 Make a new Storage
 	 \param log : used for the log.
-	 \param evolutivedb : DataBank for decay management
+	 \param evolutivedb : DecayDataBank for decay management
 	 */
 	Storage(CLASSLogger* log, DecayDataBank* evolutivedb);
 	//}
