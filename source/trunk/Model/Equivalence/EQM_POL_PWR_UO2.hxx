@@ -10,7 +10,7 @@ using namespace std;
  Define a EQM_POL_PWR_UO2
  It returns the @f$^{235}U@f$ enrichment e according to this polynom :
  
- @f$e=\alpha_{0} + \alpha_{1}\cdotBU + \alpha_{2}\cdotBu\cdot\BU@f$
+ @f$e=\alpha_{0} + \alpha_{1}\cdot Burnup + \alpha_{2}\cdot Burnup \cdot Burnup @f$
  
  BU : Maximum achievable burnup
  
@@ -51,6 +51,7 @@ public:
 	EQM_POL_PWR_UO2(CLASSLogger* log, string PathToWeightFile);
 	//}
 	
+	//@}
 	/**This function IS the equivalence model**/
 	double GetFissileMolarFraction(IsotopicVector Fissil, IsotopicVector Fertil,double BurnUp) ; // !<Return the molar fraction of fissile element
 	

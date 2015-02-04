@@ -35,6 +35,7 @@ class EQM_MLP_MOX : public EquivalenceModel
 	 \name Constructor
 	 */
 	//@{
+	
 	//{
 	/// normal constructor
 	/*!
