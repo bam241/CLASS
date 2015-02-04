@@ -86,7 +86,7 @@ class IrradiationModel : public CLASSObject
 	
 	void BuildReactionFiliation();
 
-	string GetSpectrumType(){return fSpectrumType;}				//!< Set the type of neutron spectrum (thermal or fast)
+	string GetSpectrumType(){return fSpectrumType;}				//!< Get the type of neutron spectrum (thermal or fast)
 
 	//@}
 	
