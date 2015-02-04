@@ -20,9 +20,9 @@ using namespace std;
 /*!
  Define a EQM_LIN_PWR_MOX.
  The aim of these class is to constuct a fuel from an equivalence model
- based on a Linear Eq Model @f$BU = \alpha_{0} + \sum_{i\in fissile}alpha_{i}\cdot n_{i} @f$
+ based on a Linear Eq Model @f$BU = \alpha_{0} + \sum_{i\in fissile}\alpha_{i}\cdot n_{i} @f$
  For one set of  @f$\alpha @f$ values the fabrication time is fixed in order to decrease 
- the dimentionality by 1 (@f$^{241}Am@f$ is thus fixed by this decay fixed decay time) .
+ the dimentionality by 1 (@f$^{241}Am@f$ is thus fixed by this fixed decay time) .
  @author BaM
  @version 3.0
  */
@@ -43,7 +43,7 @@ class EQM_LIN_PWR_MOX : public EquivalenceModel
 	 Make a new EQM_LIN_PWR_MOX
 	 \param WeightPath : Path to the file containing the @f$\alpha_{i}@f$. The file is format as :
 	 
-	 @f$\alpha_{0}\,\alpha_{^{238}Pu}\,\alpha_{^{239}Pu}\,\alpha_{^{240}Pu}\,\alpha_{^{241}Pu}\alpha_{^{242}Pu}@f$
+	 @f$PARAM@f$   @f$\alpha_{0}@f$  @f$\alpha_{^{238}Pu}@f$   @f$\alpha_{^{239}Pu}@f$  @f$\alpha_{^{240}Pu}@f$   @f$\alpha_{^{241}Pu}@f$   @f$\alpha_{^{242}Pu}@f$
 	 
 	 */
 	EQM_LIN_PWR_MOX(string WeightPath);
@@ -57,7 +57,7 @@ class EQM_LIN_PWR_MOX : public EquivalenceModel
 	 \param log : use for the log
 	 \param WeightPath : Path to the file containing the @f$\alpha_{i}@f$. The file is format as :
 	 
-	 @f$\alpha_{0}\,\alpha_{^{238}Pu}\,\alpha_{^{239}Pu}\,\alpha_{^{240}Pu}\,\alpha_{^{241}Pu}\alpha_{^{242}Pu}@f$
+	  @f$PARAM@f$   @f$\alpha_{0}@f$  @f$\alpha_{^{238}Pu}@f$   @f$\alpha_{^{239}Pu}@f$  @f$\alpha_{^{240}Pu}@f$   @f$\alpha_{^{241}Pu}@f$   @f$\alpha_{^{242}Pu}@f$
 	 
 	 */
 	EQM_LIN_PWR_MOX(CLASSLogger* log, string WeightPath);
