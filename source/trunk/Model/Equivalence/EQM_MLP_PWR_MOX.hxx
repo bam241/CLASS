@@ -41,7 +41,7 @@ class EQM_MLP_MOX : public EquivalenceModel
 	 Create a EQM_MLP_MOX 
 	 \param  TMVAWeightPath :  PAth to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
 	 */
-	EQM_MLP_MOX(string TMVAWeightPath);	//!<
+	EQM_MLP_MOX(string TMVAWeightPath);
 	//}
 	
 	//{
