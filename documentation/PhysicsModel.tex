@@ -36,7 +36,7 @@ int main()
 \end{minipage}
 \end{center}
 
-In this latter example a PhysicsModels called "PHYMOD" is defined, it contains the bateman solver "Solver" which is the Runge Kutta ($4^{th}$ order) method. The mean cross sections predictor, "XS",  used is  based on a Multi Layer Perceptron. The Equivalence Model "Equivalence" is the one used for PWR MOX fuels. The arguments of the 3 objects constructor are explained in its corresponding sections.
+In this latter example a PhysicsModels called "PHYMOD" is defined, it contains the bateman solver "Solver" which is the Runge Kutta ($4^{th}$ order) method. The mean cross sections predictor, "XS",  used is  based on a Multi Layer Perceptron. The Equivalence Model "Equivalence" is the one used for PWR MOX fuels. The arguments of the 3 objects constructor are explained in their corresponding sections.
 
 All the existing models are defined in the following sections, furthermore, the way to build a new model is presented.
 
@@ -47,30 +47,30 @@ All the existing models are defined in the following sections, furthermore, the 
 %%		EQUIVALENCE MODEL
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Equivalence Model}\label{sec:EquivalenceModel}
-The aim of an equivalence model is to predict the content of fissile element needed in a fuel to reach a given burn-up or to satisfied criticality conditions.
+The aim of an equivalence model is to predict the content of fissile element needed in a fuel to reach a given burnup or to satisfied criticality conditions.
 \section{Available Equivalence Models}
-The CLASS package contains, at the moment, 4 different equivalence models where three are related to the building of fuels for a PWR-MOX and one to the building of  PWR-UOX fuels :
+The CLASS package contains, at the moment, 5 different equivalence models where three are related to the building of fuels for a PWR-MOX , one to the building of  PWR-UOX fuels and one for the FBR-Na MOX:
 \subsection{PWR-MOX models :}
-The following models returns the molar fraction $\%_{Pu}$ of plutonium needed to reach a given burn-up according to the plutonium isotopic composition available in stocks.
+The following models returns the molar fraction $\%_{Pu}$ of plutonium needed to reach a given burnup according to the plutonium isotopic composition available in stocks.
 
 
 
 \subsubsection{Linear BU model : EQM\_LIN\_MOX } 
 It was initially applied for MOX fuel, but because of the lack of precision, this model could be deprecated (at least in the PWR MOX case). It remain in the CLASS packages only because it was present historically.\\
- Nevertheless it could be use as an example for similar model for other fuel. This model suppose it is possible to describe the maximal burn-up accessible for a set fuel using its initial composition using a simple linear modelisation (equation~\ref{eq:EQM_LIN}):\\ 
+ Nevertheless it could be use as an example for similar model for other fuel. This model suppose it is possible to describe the maximal burnup accessible for a set fuel using its initial composition using a simple linear modelisation (equation~\ref{eq:EQM_LIN}):\\ 
 \begin{equation}\label{eq:EQM_LIN}
 BU_{max} = \alpha_{0} +   \sum_{i}^{N} \alpha_{i} \cdot n_{i},
 \end{equation}
-where $BU_{max}$ represent the maximal accessible burn-up for the fuel, $n_{i}$ the isotopic fraction of the isotope $i$, $N$ the number of isotope present in the fuel, and the $\alpha_{i}$ the parameter of the model. 
-The main difficulty concerning this model, is the determination of the $\alpha_{i}$: to be correct the $\alpha_{i}$ should be fitted on a set of evolution data which are not constrain to reach an unique burn-up, but a large burn-up region. One can see the problem guessing it is possible to build a set a fuel evolution reaching exactly a unique burn-up (45 GWd/t by example), the $\chi^{2}$ minimization of the $\alpha_i$ will end up with $\alpha_{0} = 45$ and all the other at zero. That why, when using a linear burn-up description model, one should test the validity of the model, on many random compositions by example... 
+where $BU_{max}$ represent the maximal accessible burnup for the fuel, $n_{i}$ the isotopic fraction of the isotope $i$, $N$ the number of isotope present in the fuel, and the $\alpha_{i}$ the parameter of the model. 
+The main difficulty concerning this model, is the determination of the $\alpha_{i}$: to be correct the $\alpha_{i}$ should be fitted on a set of evolution data which are not constrain to reach an unique burnup, but a large burnup region. One can see the problem guessing it is possible to build a set a fuel evolution reaching exactly a unique burnup (45 GWd/t by example), the $\chi^{2}$ minimization of the $\alpha_i$ will end up with $\alpha_{0} = 45$ and all the other at zero. That why, when using a linear burnup description model, one should test the validity of the model, on many random compositions by example... 
 
 \subsubsection{Quadratic Model : EQM\_QUAD\_MOX}
 The $\%_{Pu}$ is calculated according a quadratic model. See equation~\ref{eq:EQM_QUAD_MOX}.
 \begin{equation}\label{eq:EQM_QUAD_MOX}
 \%_{Pu} = \alpha_{0} +   \sum_{i\in Pu}^{N} \left(\alpha_{i} \cdot n_{i}\ + \sum_{j\leq i} \alpha_{ij} \cdot n_{i}\cdot n_{j}\right),
 \end{equation}
-where $n_{i}$ is the molar proportion (in $\%mol.$) of isotope $i$ \footnote{from $^{238}Pu$ to $^{242}Pu$} in the fresh plutonium vector.  $\alpha_{ij}$, $\alpha_{i}$ and $\alpha_{0}$  are the weights resulting from a minimization procedure and are related to one targeted burn-up and one fuel management. Furthermore, $^{241}Am$ from $^{241}Pu$ decay is not one of the considered component of the model ($n_{i}$), instead the model considers a fixed time since plutonium separation. For instance the $\alpha$ given in file \$CLASS\_PATH/DATA\_BASES/PWR/MOX/EQModel/@@BAM
-are representative of a PWR-MOX with a maximal burn-up of $45GWd/tHM$, a fuel management of 3 batches, and a time between separation and irradiation of 2 years.
+where $n_{i}$ is the molar proportion (in $\%mol.$) of isotope $i$ \footnote{from $^{238}Pu$ to $^{242}Pu$} in the fresh plutonium vector.  $\alpha_{ij}$, $\alpha_{i}$ and $\alpha_{0}$  are the weights resulting from a minimization procedure and are related to one targeted burnup and one fuel management. Furthermore, $^{241}Am$ from $^{241}Pu$ decay is not one of the considered component of the model ($n_{i}$), instead the model considers a fixed time since plutonium separation. For instance the $\alpha$ given in file \$CLASS\_PATH/DATA\_BASES/PWR/MOX/EQModel/@@BAM
+are representative of a PWR-MOX with a maximal burnup of $45GWd/tHM$, a fuel management of 3 batches, and a time between separation and irradiation of 2 years.
 
 The file containing the weights is formatted as follow :
 
@@ -82,7 +82,7 @@ PARAM "238Pu 238Pu*238Pu 238Pu*239Pu 238Pu*240Pu 238Pu*241Pu 238Pu*242Pu 239Pu 2
 \end{minipage}
 \end{center}
 
-Where 238Pu stands for $\alpha_{^{238}Pu}$ and it is the first order weight  related to the  molar proportion of $^{238}Pu$ and $1$ is $\alpha_{0}$. The weights are in units of $\%mol. \cdot \%mol.^{-1}$ for $\alpha_{i}$ in units of  $\%mol. \cdot \%mol.^{-2}$ for  $\alpha_{ij}$ and in units of $\%mol.$ for $\alpha_{0}$. The Keyword "PARAM" has to be present in the file before the $\alpha$ values. For more informations about this model and the generation of the coefficients please refer to reference [@@PAPIER BAM].
+Where 238Pu stands for $\alpha_{^{238}Pu}$ and it is the first order weight  related to the  molar proportion of $^{238}Pu$ and $1$ is $\alpha_{0}$. The weights are in units of $\%mol. \cdot \%mol.^{-1}$ for $\alpha_{i}$ in units of  $\%mol. \cdot \%mol.^{-2}$ for  $\alpha_{ij}$ and in units of $\%mol.$ for $\alpha_{0}$. The Keyword "PARAM" has to be present in the file before the $\alpha$ values. For more informations about this model and the generation of the coefficients please refer to reference\cite{PhysorBAM}.
 \\  
 \\
 
@@ -121,7 +121,7 @@ With LogObject a \hyperref[sec:CLASSLogger]{CLASSLogger} object (see section~\re
 \end{center}
 
 \subsubsection{Neural network model : EQM\_MLP\_MOX}\label{sec:EQMMOX}
-This equivalence model  is based on a Multi Layer Perceptron (MLP) and  predict the amount of plutonium needed to reach \textbf{any burn-up}. The MLP inputs are the isotopic compositions of the plutonium (\textbf{including $^{241}Am$}), the enrichment of depleted uranium, and the targeted burn-up. The output is the plutonium content needed to reach the burn-up. This method uses the neural networks of the root module TMVA (@@@  Ref TMVA). To executes this model, TMVA is run in CLASS and need a .xml file. This file contains the neural network architecture and the weights resulting from the training procedure.
+This equivalence model  is based on a Multi Layer Perceptron (MLP) and  predict the amount of plutonium needed to reach \textbf{any burnup}. The MLP inputs are the isotopic compositions of the plutonium (\textbf{including $^{241}Am$}), the enrichment of depleted uranium, and the targeted burnup. The output is the plutonium content needed to reach the burnup. This method uses the neural networks of the root module TMVA (@@@  Ref TMVA). To executes this model, TMVA is run in CLASS and need a .xml file. This file contains the neural network architecture and the weights resulting from the training procedure.
 \\
 \\
 \begin{center}
@@ -145,7 +145,7 @@ EQM_MLP_PWR_MOX* Equivalence = new	EQM_MLP_PWR_MOX( LogObject, TMVAWeightPath );
 With LogObject a \hyperref[sec:CLASSLogger]{CLASSLogger} object (see section~\ref{sec:CLASSLogger}) and TMVAWeightPath a string containing the path to the .xml file. 
 
 
-In order to make his own .xml file one need to have a training data containing the fresh fuel composition and the achievable burn-up of many examples. The fuel composition is characterized by the mean of :
+In order to make his own .xml file one need to have a training data containing the fresh fuel composition and the achievable burnup of many examples. The fuel composition is characterized by the mean of :
 \begin{itemize}
 \item The plutonium composition (\emph{i.e :} \%mol. of $^{238}Pu$, $^{239}Pu$, $^{240}Pu$, $^{241}Pu$, $^{242}Pu$, and $^{241}Am$)
 \item The plutonium content (\emph{i.e :}  $\frac{Pu}{Pu+U}$)
@@ -165,7 +165,7 @@ Train_MLP YourTrainingData.root
 \end{center}
 
 
-Where YourTrainingData.root is a root file containing a TTree filled with fuel compositions and corresponding burn-ups. The .xml file will be generated in a folder named weight. The results of the testing procedure of the MLP are in a file named TMVA\_MOX\_Equivalence.root but will be presented to you graphically as soon as the training and the testing procedure are finished.
+Where YourTrainingData.root is a root file containing a TTree filled with fuel compositions and corresponding burnups. The .xml file will be generated in a folder named weight. The results of the testing procedure of the MLP are in a file named TMVA\_MOX\_Equivalence.root but will be presented to you graphically as soon as the training and the testing procedure are finished.
 
 To make your YourTrainingData.root file you have to fill a TTree with your data. To do so, create a .cxx file and copy past this :
 
@@ -183,7 +183,7 @@ To make your YourTrainingData.root file you have to fill a TTree with your data.
 	double Pu11				 = 0;
 	double Pu12 	     = 0;
 	double Am1 	    	 = 0;
-	double BU 				 = 0;   //BU means Burn-Up
+	double BU 				 = 0;   //BU means burnup
 	double teneur 		  = 0;	//French for content (here Pu content)
 /**********************BRANCHING**************************/
 	fOutT->Branch(	"U5_enrichment"	,&U5_enrichment	,"U5_enrichment/D"	);
@@ -207,7 +207,7 @@ To make your YourTrainingData.root file you have to fill a TTree with your data.
 		Pu12 	  		=  fPu12[ex];
 		Am1 	  		=  fAm1[ex];
 		teneur 	  	=  fteneur[ex];
-		/*****Corresponding maximal Burn-up*******/
+		/*****Corresponding maximal burnup*******/
 		BU   	  		=  BurnUps[ex]; 
 		/****Fill the tree with this fuel composition and this burnup****/
 		fOutT->Fill();
@@ -222,17 +222,60 @@ To make your YourTrainingData.root file you have to fill a TTree with your data.
 \end{center}
 
 Then, build the arrays fU5\_enrichment, fPu8 ... with your data, compile and execute.
-For more informations about this model please refer to [@@Papier BaL].\\
+For more informations about this model please refer to \cite{MLP_MOX}\\
 \textbf{Available weight file (.xml) : }
 \begin{itemize}
-\item \textbf{\$CLASS\_PATH/DATA\_BASES/PWR/MOX/EQModel/EQM\_MLP\_PWR\_MOX\_3batch.xml} : Generated with 5000 MURE evolutions with different fuel composition, using a full mirrored assembly calculation with JEFF3.1.1 cross section and fission yield data bases. Valid for mono-recycling of plutonium and a fuel management of 3 batches. More details about the generation of this .xml file can be found in reference[@@@BaL paper].
+\item \textbf{\$CLASS\_PATH/DATA\_BASES/PWR/MOX/EQModel/EQM\_MLP\_PWR\_MOX\_3batch.xml} : Generated with 5000 MURE evolutions with different fuel composition, using a full mirrored assembly calculation with JEFF3.1.1 cross section and fission yield data bases. Valid for mono-recycling of plutonium and a fuel management of 3 batches. More details about the generation of this .xml file can be found in reference \cite{MLP_MOX}.
 \end{itemize}
 
 
 \subsection{PWR-UOX model :}
 
 \subsubsection{Linear Model: EQM\_LIN\_UOX}
-TBFNF : To Be filled in the Near Future...
+@@ BAM TBFNF : To Be filled in the Near Future...
+
+
+\subsection{FBR-Na-MOX model :}
+This model is used to compute the plutonium content needed for a fast reactor loaded with MOX fuel.
+\subsubsection{Baker \& Ross Model: EQM\_BakerRoss\_FBR\_MOX}
+It calculates the plutonium content (E) needed for the FBR Na loaded with a given Pu vector according to :
+ \begin{equation}
+ E = \frac{E_{ref} - \sum_{fertile}N_{i}W_{i} }{\sum_{fissile}N_{i}W_{i}-\sum_{fertile}N_{i}W_{i}}
+ \end{equation}
+ with :
+  \begin{equation}
+W_i = \frac{\alpha_{i} - \alpha_{^{238}U} }{\alpha_{^{239}Pu}-\alpha_{^{238}U}}
+ \end{equation}
+ and
+  \begin{equation}
+\alpha_{i} = \bar{\nu_{i}}\cdot\sigma_{i}^{fis} - \sigma_{i}^{cap}
+ \end{equation}
+
+With $E_{ref}$ the plutonium content needed for a FBR Na to satisfy criticality condition at begining of cycle ($k_{eff}(t=0) =1.00$) with a reference fresh fuel composition. 
+The reference plutonium composition is 100\% $^{239}$Pu and uranium is 100\%
+ $^{238}U$. $\bar{\nu_{i}}$ is the average number of total neutron emitted per fission, $\sigma_{i}^{fis}$ is the mean fission cross section of nucleus $i$ and $\sigma_{i}^{cap}$ is the mean capture cross section of nucleus $i$. The default values of the weight $W_{i}$ given in the constructor are from an average of many calculation with different fresh fuel composition. These calculations have been performed with MCNP/MURE  for a ESFR like core.
+To implement this model in your CLASS input proceed as follow :
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\textbf{Implementation in a .cxx }
+\begin{lstlisting}[label=lst:IMP_EQMBER,caption=Equivalence Model EQM\_BakerRoss\_FBR\_MOX ]
+...
+#include "Equivalence/EQM_BakerRoss_FBR_MOX.hxx"
+...
+int main()
+{
+...
+EQM_BakerRoss_FBR_MOX* Equivalence = new	EQM_BakerRoss_FBR_MOX( ); //the default weight and Eref are used
+// or
+ EQM_BakerRoss_FBR_MOX* Equivalence = new EQM_BakerRoss_FBR_MOX( Weight_U_235,  Weight_Pu_238,  Weight_Pu_240, Weight_Pu_241, Weight_Pu_242, Weight_Am_241, Eref); 
+;
+...
+}
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
 
 \section{How to build an Equivalence Model}
 The strength of CLASS is to allow the user to build his own Physics models, this section explains how to build a new equivalence model and to incorporate it into CLASS.
@@ -320,7 +363,7 @@ In the constructor (EQM\_NAME::EQM\_NAME) you have to fill two isotopic vectors 
 \begin{itemize}
 \item \hyperref[sec:IsotopicVector]{IsotopicVector} Fissile : it is the proportion of each nucleus you give in the fFissileList plus the proportion of the nuclei that appears during the fabrication time (time given in the FabricationPlant constructor, is default is 2 years)
 \item \hyperref[sec:IsotopicVector]{IsotopicVector} Fertile :  it is the proportion of each nucleus you give in the fFertileList plus the proportion of the nuclei that appears during the fabrication time. If you didn't provide any fertile stock to your FabricationPlant then it's the default vector given in the EQM\_NAME constructor.
-\item double BurnUp : The maximal average burn-up for your fuel to reach (in GWd/tHM).
+\item double BurnUp : The maximal average burnup for your fuel to reach (in GWd/tHM).
 \end{itemize}
 Fill free to have a look at the models present in \$CLASS\_PATH/source/Model/Equivalence to get inspiration.
 
@@ -365,7 +408,7 @@ When the closest evolution in the database is found, the corresponding mean cros
 \begin{center}
 \begin{minipage}{\textwidth}
 \textbf{Implementation in a .cxx : }
-\begin{lstlisting}[label=lst:IMP_EQMQUAD,caption=Cross section Model XSM\_CLOSEST ]
+\begin{lstlisting}[label=lst:IMP_XSMCLOSEST,caption=Cross section Model XSM\_CLOSEST ]
 ...
 #include "XS/XSM_CLOSEST.hxx"
 ...
@@ -392,7 +435,7 @@ TYPE "NameOfTheFuel(withoutspace)"
 \end{minipage}
 \end{center}
 
-Each EvolutionName.dat file contains a formatted fuel depletion calculation. the format of a EvolutionData ASCII file is detailed in section~\ref{sec:EDformat}.  The number of .dat files has an influence on the model accuracy. Furthermore, the initial composition of the different fuel depletion calculations has to be representative of the fresh fuel compositions encounter in a scenario. For more details on this method please refer to [ref @@@ BAM physor]. 
+Each EvolutionName.dat file contains a formatted fuel depletion calculation. the format of a EvolutionData ASCII file is detailed in section~\ref{sec:EDformat}.  The number of .dat files has an influence on the model accuracy. Furthermore, the initial composition of the different fuel depletion calculations has to be representative of the fresh fuel compositions encounter in a scenario. For more details on this method please refer to \cite{PhysorBAM}.
 
 
 \textbf{Available .idx file  : }
@@ -429,7 +472,7 @@ This method calculates the mean cross sections by the mean of a set of neural ne
 \begin{center}
 \begin{minipage}{\textwidth}
 \textbf{Implementation in a .cxx : }
-\begin{lstlisting}[label=lst:IMP_EQMQUAD,caption=Cross section Model XSM\_MLP ]
+\begin{lstlisting}[label=lst:IMP_XSMMLP,caption=Cross section Model XSM\_MLP ]
 ...
 #include "XS/XSM_MLP.hxx"
 ...
@@ -443,7 +486,7 @@ int main()
 \end{lstlisting}
 \end{minipage}
 \end{center}
-\textbf{PathToWeightFolder} (string) is the path to the folder containing the weight files (.xml files). \textbf{OneMLPPerTime} is a boolean setted to true if there is one MLP per reaction and per time step. \textbf{InfoFileName} (string) is the name of the file located in PathToWeightFolder which is informing on the reactor and on the inputs of the XS\_MLP model.
+\textbf{PathToWeightFolder} (string) is the path to the folder containing the weight files (.xml files). \textbf{OneMLPPerTime} is a boolean setted to true if there is one MLP per reaction and per time step. \textbf{InfoFileName} (string) is the name of the file located in PathToWeightFolder which is informing on the reactor and on the inputs of the XS\_MLP model. Its default name is Data\_Base\_Info.nfo .
 Format of InfoFileName is :
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -457,6 +500,9 @@ Z A I Name (input MLP) : //see explanations below
 "z a i InputName"
 "z2 a2 i2 InputName2"
 "..."
+Fuel range (Z A I min max) :
+"z a i min max" //minimal and maximal proportion of the zai in the fresh fuel (heavy nuclei only, ie without oxygen)"
+"z2 a2 i2 min2 max2"
 \end{lstlisting}
 \end{minipage}
 \end{center}
@@ -473,17 +519,23 @@ Z A I Name (input MLP) :
 \end{lstlisting}
 \end{minipage}
 \end{center}
+
+The tag "Fuel range (Z A I min max) :" corresponds to the validity domain of the XSM\_MLP model. This indication is not mandatory but its useful to know if the fuel we calculate the cross section is in the domain of validity of the model.
+
 \textbf{Available XSM\_MLP : }
 \begin{itemize}
 \item \$CLASS\_PATH/DATA\_BASES/PWR/MOX/XSModel/30Wg\_FullMOX :
 The weight files and .nfo file contained in this folder are representative of a PWR MOX. With the MOX coming from PWR UO2 spent fuels. The specific power is 30W/g oxide. To perform this data base, MURE depletion calculations have been performed using a full MOX assembly with mirror boundaries. 
+\item \$CLASS\_PATH/DATA\_BASES/FBR\_Na/MOX/XSModel/ESFR\_48Wg :
+The weight files and .nfo file contained in this folder are representative of a FBR-Na MOX. The specific power is 48W/g oxide. To perform this data base, MURE depletion calculations have been performed using a 1/12 of ESFR like core with mirror boundaries. 
+\item @@BAM UOX
 \end{itemize}
 
 \textcolor{blue}{\large{\textbf{Training MLPs for cross sections prediction :}}}\\
 
 \textbf{\underline{ Preparation of the training sample :} }\\
 \\
-Like for the equivalence model, first of all you have to create a training sample. This is one of the most important thing since the way of filling the hyperspace of the MLP inputs will influence the accuracy of your model. We suggest to used the Latin Hyper Cube method [@@@REFF] to generate many fresh fuel compositions, then, calculates with your favourite neutron transport code (MCNP, MORET, SERPENT ...) the mean cross sections of each fresh fuel for different irradiation time. Please refer to [REFFFBAL MLPXS] for more informations about the space filling and the validation of this cross sections predictor.
+Like for the equivalence model, first of all you have to create a training sample. This is one of the most important thing since the way of filling the hyperspace of the MLP inputs will influence the accuracy of your model. We suggest to used the Latin Hyper Cube method \cite{LHS} to generate many fresh fuel compositions, then, calculates with your favourite neutron transport code (MCNP, MORET, SERPENT ...) the mean cross sections of each fresh fuel for different irradiation time. Please refer to [REFFFBAL MLPXS] for more informations about the space filling and the validation of this cross sections predictor.
 Once all your calculations are complete you have to convert them into the .dat format (see code frame~\ref{lst:DatFormat}).
 Then type :
 
