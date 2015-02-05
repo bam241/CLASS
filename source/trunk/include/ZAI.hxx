@@ -13,7 +13,7 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------//
-//! Define a nucleus
+//! Defines a nucleus
 
 /*!
  Define a nuclei as 3 integer Z,A,I:

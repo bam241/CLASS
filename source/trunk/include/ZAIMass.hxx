@@ -22,7 +22,7 @@ using namespace std;
 class IsotopicVector;
 
 //-----------------------------------------------------------------------------//
-//! Define the molar mass of a ZAI
+//! Defines the molar mass of a ZAI
 
 /*!
  The aims of this class is to handle the molar mass of each ZAI

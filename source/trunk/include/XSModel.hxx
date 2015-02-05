@@ -19,7 +19,7 @@ using namespace std;
 class IsotopicVector;
 
 //-----------------------------------------------------------------------------//
-//!  Define a mean cross section predictor
+//!  Defines a mean cross section predictor
 
 /*!
 This is the mother class for methods related to XS prediction

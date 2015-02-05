@@ -35,7 +35,7 @@ double 	Distance(IsotopicVector IV1, EvolutionData Evd1 );
 double 	Distance(EvolutionData Evd1, IsotopicVector IV1 );
 
 //-----------------------------------------------------------------------------//
-//! Store fuel inventory evolution , mean cross sections evolution, flux evolution, power , ...
+//! Stores fuel inventory evolution , mean cross sections evolution, flux evolution, power , ...
 
 /*!
  Define an EvolutionData.
