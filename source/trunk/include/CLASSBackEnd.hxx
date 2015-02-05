@@ -25,6 +25,8 @@ using namespace std;
 typedef long long int cSecond;
 
 //-----------------------------------------------------------------------------//
+//! Class defining the common properties of all back end fuel cycle facilities
+
 /*!
  Define a CLASS Facility.
  The aim of these class is to gather all the commom properties of the

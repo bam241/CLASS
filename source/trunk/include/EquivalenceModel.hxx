@@ -19,6 +19,8 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------//
+
+//! Determines how to build a fresh fuel 
 /*!
  Define an EquivalenceModel.
  The aim of these class is to gather all the commum properties of all

@@ -24,6 +24,8 @@ typedef long long int cSecond;
 
 
 //-----------------------------------------------------------------------------//
+//! Allows a Reactor to change its CLASSFuel and/or burnup
+
 /*!
  Define a CLASS Object.
  The aim of these class is to allow a Reactor to change its CLASSFuel and/or burnup

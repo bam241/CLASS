@@ -26,8 +26,9 @@ class Storage;
 class CLASSLogger;
 
 //-----------------------------------------------------------------------------//
+//! Define the Reactor
+
 /*!
- Define a reactor.
  The aim of this class is to deal the evolution of the fuel inside a reactor.
  The fuel state in the reactor is describe in the IsotopicVector. Its evolution is contained in an EvolutionData
  

@@ -35,6 +35,8 @@ double 	Distance(IsotopicVector IV1, EvolutionData Evd1 );
 double 	Distance(EvolutionData Evd1, IsotopicVector IV1 );
 
 //-----------------------------------------------------------------------------//
+//! Store fuel inventory evolution , mean cross sections evolution, flux evolution, power , ...
+
 /*!
  Define an EvolutionData.
  The aim of these class is to describe the evolution of a single evoluting system in CLASS.

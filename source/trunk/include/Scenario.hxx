@@ -28,8 +28,9 @@ class Pool;
 class Storage;
 
 //-----------------------------------------------------------------------------//
+//!  Define a Scenario (the whole electro-nuclear system)
+
 /*!
- Define a Scenario .
  The aim of these Scenario is to manage the park and its evolution and to lead all Storage, FabricationPlant, Reactor, Pool,...
  
  

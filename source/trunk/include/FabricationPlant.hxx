@@ -26,6 +26,8 @@ using namespace std;
 typedef long long int cSecond;
 
 //-----------------------------------------------------------------------------//
+//! CLASS object to build the fresh fuel (do chemical separation) & store it until core loading
+
 /*!
  Define a FabricationPLant.
  The aim of these class is to manage the manufacturing of reprocessed fuel.

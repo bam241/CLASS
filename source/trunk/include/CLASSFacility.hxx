@@ -23,6 +23,8 @@ typedef long long int cSecond;
 
 class Scenario;
 //-----------------------------------------------------------------------------//
+//! Defines the common properties of all facilities
+
 /*!
  Define a CLASS Facility.
  The aim of these class is to gather all the commom properties of the facilities.

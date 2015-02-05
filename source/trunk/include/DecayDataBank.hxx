@@ -27,6 +27,8 @@ double ReactionRateWeightedDistance(IsotopicVector IV1, EvolutionData DB );
 double ReactionRateWeightedDistance(EvolutionData DB, IsotopicVector IV1  );
 
 //-----------------------------------------------------------------------------//
+//! Describe outcore radioactive decays 
+
 /*!
  Define a DecayDataBank.
  The aim of these class is to describe the evolution of "all" evoluting systems in CLASS.

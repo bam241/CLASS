@@ -19,8 +19,9 @@ using namespace std;
 class IsotopicVector;
 
 //-----------------------------------------------------------------------------//
+//!  Define a mean cross section predictor
+
 /*!
- Define a XS Interpolator 
 This is the mother class for methods related to XS prediction
 
 \warning
