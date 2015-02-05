@@ -21,7 +21,7 @@ typedef long long int cSecond;
 using namespace std;
 
 //-----------------------------------------------------------------------------//
-//! Define a XSModel getting mean cross sections from the closest EvolutionData 
+//! Defines a XSModel getting mean cross sections from the closest EvolutionData 
 
 /*!
  Define a XSM_CLOSEST.
