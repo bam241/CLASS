@@ -17,6 +17,8 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------//
+//! Define an EquivalenceModel based on a quadratic fit
+
 /*!
  Define a EQM_QUAD_PWR_MOX.
  The aim of these class is to constuct a fuel from an equivalence model

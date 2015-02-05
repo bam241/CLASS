@@ -6,6 +6,8 @@
 using namespace std;
 
 //−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−--------------−−−−−−−−−−−−−−−//
+//! Define an EquivalenceModel based on a polynomial fit
+
 /*!
  Define a EQM_POL_PWR_UO2
  It returns the @f$^{235}U@f$ enrichment e according to this polynom :

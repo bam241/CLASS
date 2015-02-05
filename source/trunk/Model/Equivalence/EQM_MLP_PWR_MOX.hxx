@@ -17,8 +17,9 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------//
+//! Define an EquivalenceModel based on neural network
+
 /*!
- Define a EQM_MLP_MOX.
  The aim of these class is to constuct a fuel from an equivalence model
  based on a  Multi layer perceptron
 

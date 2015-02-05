@@ -17,8 +17,9 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------//
+//! Define an EquivalenceModel based on a linear fit
+
 /*!
- Define a EQM_LIN_PWR_MOX.
  The aim of these class is to constuct a fuel from an equivalence model
  based on a Linear Eq Model @f$BU = \alpha_{0} + \sum_{i\in fissile}\alpha_{i}\cdot n_{i} @f$
  For one set of  @f$\alpha @f$ values the fabrication time is fixed in order to decrease 
