@@ -20,7 +20,7 @@ class CLASSLogger;
 class DecayDataBank;
 
 //-----------------------------------------------------------------------------//
-//! Define the spent fuel pool
+//! Defines the spent fuel pool
 
 /*!
  This class deal with the management of the spent fuel pool

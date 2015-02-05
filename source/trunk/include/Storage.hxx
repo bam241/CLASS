@@ -20,7 +20,7 @@ class CLASSLogger;
 class DecayDataBank;
 
 //-----------------------------------------------------------------------------//
-//! Define a Storage object
+//! Defines a Storage object
 
 /*!
  A Storage is a CLASSBackEnd facility. It is almost the same as a Pool with a

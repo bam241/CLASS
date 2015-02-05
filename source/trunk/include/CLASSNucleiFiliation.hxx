@@ -12,7 +12,7 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------//
-//! Handle connection between nuclei (decay/reaction)
+//! Handles connection between nuclei (decay/reaction)
 
 /*!
  Define a nuclei as : Z A I.

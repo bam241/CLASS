@@ -47,7 +47,7 @@ using namespace std;
 #define _LOGTYPE_CLASS
 
 //-----------------------------------------------------------------------------//
-//!handle output stream in CLASS
+//!handles output stream in CLASS
 
 /*!
  Define a LogType.

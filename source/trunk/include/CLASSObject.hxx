@@ -25,7 +25,7 @@ using namespace std;
 //! Define common proporties of all objects
 
 /*!
- Define a CLASS Object.
+ Defines a CLASS Object.
  The aim of these class is to gather all the commom properties of all CLASS objects.
 
 

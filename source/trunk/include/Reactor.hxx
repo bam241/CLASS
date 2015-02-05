@@ -26,7 +26,7 @@ class Storage;
 class CLASSLogger;
 
 //-----------------------------------------------------------------------------//
-//! Define the Reactor
+//! Defines the Reactor
 
 /*!
  The aim of this class is to deal the evolution of the fuel inside a reactor.

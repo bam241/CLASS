@@ -27,7 +27,7 @@ double ReactionRateWeightedDistance(IsotopicVector IV1, EvolutionData DB );
 double ReactionRateWeightedDistance(EvolutionData DB, IsotopicVector IV1  );
 
 //-----------------------------------------------------------------------------//
-//! Describe outcore radioactive decays 
+//! Describes outcore radioactive decays 
 
 /*!
  Define a DecayDataBank.
