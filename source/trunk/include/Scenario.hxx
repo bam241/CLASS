@@ -64,7 +64,7 @@ class Scenario : public CLASSObject
 	 Use to set the starting time of the Parc
 	 \param abstime: Starting time of the Parc in second
 	 */
-	Scenario(cSecond abstime)	{ Scenario(new CLASSLogger("CLASS_OUTPUT.log"), abstime); }
+	Scenario(cSecond abstime);
 	//}
 	
 	//{
@@ -73,7 +73,7 @@ class Scenario : public CLASSObject
 	 \param abstime: Starting time of the Parc in second
 	 \param log : used for the log.
 	 */
-	Scenario(cSecond abstime, CLASSLogger* log)	{ Scenario(log, abstime); }
+	Scenario(cSecond abstime, CLASSLogger* log);
 	//}
 	
 	~Scenario();	///< Normal Destructor.
