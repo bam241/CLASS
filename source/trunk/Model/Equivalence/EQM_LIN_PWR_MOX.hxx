@@ -17,7 +17,7 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------//
-//! Define an EquivalenceModel based on a linear fit
+//! Defines an EquivalenceModel based on a linear fit
 
 /*!
  The aim of these class is to constuct a fuel from an equivalence model
