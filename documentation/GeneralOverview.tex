@@ -3,11 +3,14 @@
 \part{CLASS : General overview}
 \chapter{Generalities}
 \section{Basic unit\label{sec:cSecond}}
-All time in CLASS should be written in second. It corresponds to the cSecond, a CLASS c++ type, which are a \textbf{long long int} going, in 32 bits \textbf{and} 64 bits, up to  $(2^{63} - 1)~\textrm{s}~ \sim 2.9\cdot 10^{11}$ years, enough for any electro-nuclear scenarios one can consider....\\
+Time in CLASS should be written in second. A special C++  type has been defined for this purpose :  cSecond. This is a  \textbf{long long int}.
+Power is always considered as thermal power in watt.
+Masses are in metric tons except for molar masses (in gram).
+Burnup is in units of GWd/tHM. With tHM stands for metric tons of heavy metal. 
  \section{CLASS working process principle}
 image : shéma de principe de class
 \chapter{Facilities descriptions}
-All the facilities in CLASS project are regrouped inside a large group called CLASSFacility (and inherit of all the properties of the CLASSFacility in a C++ way). Inside the CLASSFacility, 3 different types has been defined, the reactor, the FabricationPlant (or more generally, all the fuel cycle front-end facilities) and the backend facilities. 
+All the facilities in CLASS  are regrouped inside a mother class called CLASSFacility (and inherit of all the properties of the CLASSFacility in a C++ way). Inside the CLASSFacility, 3 different types has been defined, the Reactor, the FabricationPlant (or more generally, all the fuel cycle front-end facilities) and the facilities of the back end of the fuel cycle. 
 \section{CLASSFacility\label{sec:CLASSFacility}}
 The CLASSFacility should never be used directly in the main CLASS program (the one made to perform the simulation).  The aim of this object is to regroup all the common properties of the nuclear facilities, such as common variables, methods, and builder. 
 
@@ -22,7 +25,7 @@ There are 2 way to provide the \hyperref[sec:EvolutionData]{EvolutionData} to th
 There are 2 main ways to define a reactor, depending on the type of fuel loaded.
 
 \subsubsection{Fixed Fuel}
-Reactor using fixed fuel, which load always the same fresh fuel, and unload it with always the same burnup (same spent fuel...), to declare a reactor proceed as follow:
+Reactor using fixed fuel, which load always the same fresh fuel, and irradiates it to the same burnup (same spent fuel composition), can be declared as follow:
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -81,7 +84,7 @@ myRe\_CycleTime 	&	\hyperref[sec:cSecond]{cSecond}			& the cycle time 			& secon
 
 \subsubsection{Reprocessed Fuel}
 In this case, the fuel is provided by an external facility, so called, the \hyperref[sec:FabricationPlant]{FabricationPlant}. The way to build the reprocessed fresh fuel and to handle the fuel depletion calculation is done by the \hyperref[sec:PhysicsModels]{PhysicsModels}.
-The main ways to defined a Reactor (with reprocessed fuel) is shown in the next two examples :
+The main ways to defined a Reactor (with reprocessed fuel) are shown in the next two examples :
 
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -115,7 +118,7 @@ Reactor *MyReactor = new Reactor(aCLASSLogger,		// CLASSLogger
 \end{lstlisting}
 \end{minipage}
 \end{center}
-The meaning of each arguments of the two constructor previously defined are summed up in the following table
+The meaning of each argument of the two constructors previously defined are summed up in the following table
 
 \begin{table}[H]
 \begin{center}
@@ -142,7 +145,7 @@ myRe\_CycleTime 	& \hyperref[sec:cSecond]{cSecond}			& the cycle time 			& secon
 \end{table}
 
 \subsection{CLASSFuelPlan}
-A reactor may changes of fuel type during its lifetime. To handle this, the user can destroy the reactor and build a new one with an other kind of fuel. In order to make the process more flexible, the CLASSFuelPlan has been added to the CLASS package. The following example explains how to make a reactor to change its fuel type and burn-up, ... 
+A reactor may changes of fuel type during its lifetime. To handle this, the user can destroy the reactor and build a new one with an other kind of fuel. In order to make the process more flexible, the CLASSFuelPlan has been added to the CLASS package. The following example explains how to make a reactor to change its fuel type and burn-up.
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -164,11 +167,11 @@ MyReactor->GetFuelPlan()->AddFuel( ChangingFuelTime1, PhyMod, BU2);
 At \emph{ChangingFuelTime0} the reactor changes its fuel from \emph{EvolutionData0} to \emph{EvolutionData1} and its Burn-up from \emph{BU0} to \emph{BU1}. At \emph{ChangingFuelTime1}, the reactor uses reprocessed fuel using the \hyperref[sec:PhysicsModels]{PhysicsModels}  \emph{PhyMod}.
 
 \section{CLASSBackEnd\label{sec:CLASSBackEnd}}
-The CLASSBackEnd class is a master class which aims to regroup all common properties of the fuel back-end facilities. All other back-end facilities in CLASS inherit of the CLASSBackEnd.\\
-In CLASS, a CLASSBackEnd does not control its upstream. Its incoming material flux is pushed by its upstream facility (a Reactor, or an other CLASSBackEnd). It only controls its downstream flux.\\
+The CLASSBackEnd class is a mother class which aims to regroup all common properties of the facilities of the back end of the fuel cycle.\\
+A CLASSBackEnd does not control its upstream. Its incoming material flux is pushed by its upstream facility (a Reactor, or an other CLASSBackEnd). It only controls its downstream flux.\\
 \textbf{This object is not supposed to be used explicitly in a CLASS input.}
 \subsection{Storage}\label{sec:Storage}
-Storage is a CLASSBack end without associated downstream factory. All the incoming material are stored individually in different \hyperref[sec:IsotopicVector]{IsotopicVector} (see figure~\ref{fig:StorageIV}). During the storage, the depletion by decay is taken into account. The storage has to be defined as follow :
+Storage is a CLASSBackEnd without associated downstream factory. All the incoming material are stored individually in different \hyperref[sec:IsotopicVector]{IsotopicVector} (see figure~\ref{fig:StorageIV}). During the storage, the depletion by decay is taken into account. The storage has to be defined as follow :
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -184,7 +187,7 @@ Storage *Stock = new Storage(aCLASSLogger);
 \end{figure} 
  
 \subsection{Pool\label{sec:pool}}
-Pool is a CLASSBackEnd with an associated downstream factory. All incoming material will be pushed in the downstream factory after a set time, so called CoolingTime. All the incoming material are stored individually in different \hyperref[sec:IsotopicVector]{IsotopicVector} (the same way as the \hyperref[sec:Storage]{Storage}) . During the cooling process, the depletion by decay is taken into account. The Pool has to be defined as follow :
+Pool is a CLASSBackEnd with an associated downstream factory. All incoming material will be pushed in the downstream factory after a certain cooling time.  All the incoming material are stored individually in different \hyperref[sec:IsotopicVector]{IsotopicVector} (the same way as the \hyperref[sec:Storage]{Storage}) . During the cooling process, the depletion by decay is taken into account. The Pool has to be defined as follow :
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -252,11 +255,11 @@ Please refer to \$CLASS\_PATH/example/Separation.cxx for a simple CLASS input us
 
 
 \section{Fabrication Plant\label{sec:FabricationPlant}}
-The FabricationPlant is the facility which takes care of the fuel Fabrication. The "action" in FabricationPlant appends before the beginning of cycle of a reactor: One fabrication time (Fabrication duration) before the BOC, it start the building process of the fuel.\\
-First the FabricationPlant sorts the different \hyperref[sec:IsotopicVector]{IsotopicVector}s in the different inputs  \hyperref[sec:Storage]{Storage} according to the user priorities. Then it asks to the \hyperref[sec:EquivalenceModel]{EquivalenceModel} in \hyperref[sec:PhysicsModels]{PhysicsModels} of the reactor how to build a fuel with the correct properties using the available \hyperref[sec:IsotopicVector]{IsotopicVector}s contained in the \hyperref[sec:Storage]{Storage}. The \hyperref[sec:EquivalenceModel]{EquivalenceModel} provide a list of fraction to take in each \hyperref[sec:IsotopicVector]{IsotopicVector}s in the Storage . According to this fraction list, the FabricationPlant takes the fraction in each \hyperref[sec:IsotopicVector]{IsotopicVector} and build the reprocessed fuel.
-Once the reprocessed fuel is made, it asks to the PhyscisModel to calculate its depletion and store the result in an \hyperref[sec:EvolutionData]{EvolutionData}  The reactor takes this  \hyperref[sec:EvolutionData]{EvolutionData} at its begining of cycle.\\
+The FabricationPlant is the facility which takes care of the fuel fabrication. The "action" in FabricationPlant appends before the beginning of cycle of a reactor: One fabrication time (Fabrication duration) before the BOC,  the building process of the fuel start.\\
+First, the FabricationPlant sorts the different \hyperref[sec:IsotopicVector]{IsotopicVector}s in the different inputs  \hyperref[sec:Storage]{Storage} according to the user priorities. Then, it asks the \hyperref[sec:EquivalenceModel]{EquivalenceModel} of the \hyperref[sec:PhysicsModels]{PhysicsModels} associated to the reactor how to build a fuel with the correct properties using the available \hyperref[sec:IsotopicVector]{IsotopicVector}s contained in the \hyperref[sec:Storage]{Storage}. The \hyperref[sec:EquivalenceModel]{EquivalenceModel} provide a list of fraction to take in each \hyperref[sec:IsotopicVector]{IsotopicVector}s in the Storage . According to this fraction list, the FabricationPlant takes the fraction in each \hyperref[sec:IsotopicVector]{IsotopicVector} and build the reprocessed fuel.
+Once the reprocessed fuel is made, it asks the PhyscisModel to calculate its depletion and store the result in an \hyperref[sec:EvolutionData]{EvolutionData}.  The reactor takes this  \hyperref[sec:EvolutionData]{EvolutionData} from the FabricationPlant at its begining of cycle.\\
 Between the fuel fabrication and the loading of the fuel in the reactor, the depletion of the fresh fuel by decay is taken into account.\\
-Note that, the FabricationPlant provide to the \hyperref[sec:EquivalenceModel]{EquivalenceModel} a list of stock which has virtually decay during the fabrication time in order to build a proper fuel.
+Note that, the FabricationPlant provide to the \hyperref[sec:EquivalenceModel]{EquivalenceModel} a list of stock which has virtually decayed for  the fabrication time.
 
 To setup a FabricationPlant do as follow :
 \begin{center}
@@ -286,7 +289,7 @@ MyFabricationPlant->AddFertileStorage(Stock);
 \end{lstlisting}
 \end{minipage}
 \end{center}
-If no Fertile Storage are defined, the fertile part is taken from outside of the Scenario.
+If no fertile Storage are defined, the fertile part is taken from outside of the Scenario.
 By default the unused part of the stock is sent to WASTE. But it is possible to set a storage where the unused part of the stock will be stored, using :
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -299,9 +302,9 @@ MyFabricationPlant->SetReUsableStorage(Stock);
 Please refer to \$CLASS\_PATH/example/CloseCycle.cxx for a simple CLASS input using the FabricationPlant
 .
 \section{Pathway between Facilities}
-As explain previously, there are 3 different facility family, the FabricationPlant, the reactor, and the CLASSBackEnd. All the facilities of type CLASSBackEnd can't get material from other facilities by itself. It is always an other facility which sends material in the CLASSBackEnd. An another hand some CLASSBackEnd facilities can send material inside other facilities: the SeparationPlant and the Pool. The Storage can only store materials.\\
+As explain previously, there are 3 different facility family, the FabricationPlant, the Reactor, and the CLASSBackEnd. All the facilities of type CLASSBackEnd can't get material from other facilities by itself. It is always an other facility which sends material in the CLASSBackEnd. On another hand, some CLASSBackEnd facilities can send material inside other facilities: the SeparationPlant and the Pool. The Storage can only store materials.\\
 The reactor takes its fuel from a FabricationPlant and sends the irradiated fuel in a CLASSBackEnd.\\
-The FabricationPlant takes its materials from a storage and stored the reprocessed fuel until the begining of cycle of the Reactor.
+The FabricationPlant takes its materials from a storage and stored the reprocessed fuel until the beginning of cycle of the Reactor.
 In the following, 4 examples of pathways between facilities are listed. These examples are here to illustrate the possible pathways. These examples are not exhaustive. Furthermore, almost any composition between these examples could be made. 
 
 
@@ -439,14 +442,14 @@ ZAI U238 = ZAI(92, 238, 0);
 \end{lstlisting}
 \end{minipage}
 \end{center}
-This class includes the mains logical comparators (\emph{e.g} ==, >, !=). Fill free to read the doxygen for more details on the methods associated to this class. (\emph{e.g} A(), Z(), I(), N()...) \cite{doxygen}.
+This class includes the mains logical comparators (\emph{e.g} ==, >, !=). Fill free to read the \href{https://forge.in2p3.fr/projects/classforge/embedded/doxygen/inherits.html}{ doxygen} for more details on the methods associated to this class. (\emph{e.g} A(), Z(), I(), N()...) .
 %\vspace{4cm}
 
 \section{IsotopicVector\label{sec:IsotopicVector}}
 \subsection{Generality}
 The IsotopicVector object is a collection of ZAI. For each ZAI a quantity of nuclei is associated (IsotopicVector is a c++ map of ZAI and double, which corresponds to a sorted array of ZAI and its quantity).\\
 Two main operations have been defined in the IsotopicVector class. 
-The following illustrates the possible operation allowed for IsotopicVectors :
+The following illustrates the possible operations allowed for IsotopicVectors :
 \paragraph{Definiton \& Addition of nuclei}
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -478,7 +481,7 @@ IsotopicVector IV_sum = IV_1 + IV2; // IV_sum will be equal to 11 IV_1
 \end{minipage}
 \end{center}
 
-Some additional operations have been also implemented, such as subtraction. It works as the sum, but if the result of the subtraction is negative for some nuclei, those nuclei are set to zero and the difference is added to the, so called, \textit{fIsotopicQuantityNeeded}. If so, an WARNING will be written on the terminal (see section~\ref{sec:CLASSLogger}).\\
+Some additional operations have been also implemented, such as subtraction. It works as the sum, but if the result of the subtraction is negative for some nuclei, those nuclei are set to zero and the difference is added to the, so called, \textit{fIsotopicQuantityNeeded}. If so, a warning will be written in the standard output : the terminal (see section~\ref{sec:CLASSLogger}).\\
 
 \subsection{Print method}
 You can use the Print() method to write the composition of an IsotopicVector.
@@ -507,7 +510,7 @@ IV_3 = IV_1\times IV_2 = \sum_{i\in(IV_1+IV_2)} \left(n_{1i}\times n_{2i}\right)
 \section{EvolutionData}\label{sec:EvolutionData}
 An EvolutionData aims to describe the evolution of an \hyperref[sec:IsotopicVector]{IsotopicVector} through a physical process (decay or irradiation). The decay case is fully described in section~\ref{sec:DecayDB}.\\
 
-In case of irradiation, it may also contains the evolution of the one group cross section.  The evolution of the neutron flux and of the keff can be supplied but its not mandatory.  The EvolutionData MUST contain the power and the he heavy metal mass and it can contain the fuel type, reactor type and the cycle time.\\
+In case of irradiation, it may also contains the evolution of the one group cross section.  The evolution of the neutron flux and of the keff can be supplied but its not mandatory.  The EvolutionData MUST contain the power and the heavy metal mass and it can contain the fuel type, reactor type and the cycle time.\\
 These EvolutionData can be loaded into CLASS from a formatted ASCII file see section~\ref{sec:EDformat} as follow :
 
 \begin{center}
@@ -648,8 +651,8 @@ CLASSLogger *Logger = new CLASSLogger("CLASS_OUTPUT.log",1,2);
 \end{center}
 In the preceding example, verbose level 1 (WARNING) has been set for the terminal output and level 2 (INFO) for the second output which is the logfile named CLASS\_OUTPUT.log. 
 
-\chapter{Scenario/Park}
-The Scenario object aims to describe the full scenario, regrouping all facilities inside a full park or fleet.
+\chapter{Scenario}
+The Scenario object aims to regroup all facilities.
 
 \section{Fill the scenario}
 In order to evolve during a dynamic fuel cycle calculation, each facility need to be added in the scenario. To do so, five "adding methods" have been implemented :

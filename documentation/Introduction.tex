@@ -1,9 +1,41 @@
 % !TEX root = USEGUIDE.tex
 \part{Introduction}
-A nuclear scenario code simulates the whole reactor fleet and its associ- ated fuel cycle plants and storages. It models the transition from an initial state to a final one (e.g replacement of PWR by FBR-Na, U/Pu to Th/U cycle, phase out,...). The results are mainly isotopic inventories (or related values such as decay heat) and inventories flows (annual heavy metal to re- processed ...) in each element of the fuel cycle (reactor, fabrication plant, storage ...) over time. 
+CLASS is dynamical fuel cycle code. It is a C++ library containing objects and methods to describes all the facilities present in a fuel cycle such as reactor, spent fuel pool, fuel fabrication plant, ...
+A  dynamical fuel cycle code simulates the whole reactor fleet and its associated fuel cycle plants and storages. It models the transition from an initial state to a final one (e.g replacement of PWR by FBR-Na, U/Pu to Th/U cycle, phase out,...). The results are mainly isotopic inventories (or related values such as decay heat) and inventories flows (annual heavy metal to reprocessed ...) in each element of the fuel cycle (reactor, fabrication plant, storage ...) over time. 
+
+
 \part{First Steps}
-\chapter{Package Contents}
-Ya quoi dans ce que je viens de downloader
+\chapter{Package Content}
+The CLASS package contains the followings :
+\begin{itemize}
+\item data/ : folder containing nuclei properties
+\subitem chart.JEF3T : file containing decay constants and branching ratios
+\subitem Mass.dat : file containing molar masses
+
+ \item DATA\_BASES/ : this folder contains decay data base and reactor data bases
+ \subitem DECAY/ : decay data base
+ \subitem FBR-Na/ : Data base(s) related to Fast reactor
+ \subitem PWR/ : Data base(s) related to Pressurised Water Reactor
+ 
+ \item documentation/ : folder containing this user guide an its .tex sources
+
+\item example/ : folder containing simple examples of CLASS input
+
+\item gui/ : folder containing sources of the graphical user interface for CLASS outputs
+
+\item lib/ : folder containing the CLASS library (once compiled)
+\item source/ : folder containing CLASS sources
+\subitem include/
+\subitem Model/ : folder that contain the sources related to the physics models (EquivalenceModel , XSModel and IrradiationModel)
+\subitem src/
+\item Utils/ : folder containing utility software related to reactor data base generation
+\subitem EQM/ : Example of software to generate equivalence model
+\subitem MURE2CLASS/ : Software to convert MURE (a fuel depletion code)  output to \hyperref[sec:EvolutionData]{EvolutionData} format
+\subitem XSM/ : Software to generate cross section predictor
+ 
+ 
+\end{itemize}
+
 \chapter{Install procedure}
 
 \section{Requirement}
@@ -143,7 +175,7 @@ The compilation line for generating your executable from a .cxx file is the foll
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[style=terminal]
-g++ -o CLASS_exec YourScenario.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
+g++ -o CLASS_exec YourScenario.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result -lTMVA
 \end{lstlisting}
 \end{minipage}
 \end{center}
@@ -153,7 +185,7 @@ CLASS has a \href{https://forge.in2p3.fr/projects/classforge}{forge}\footnote{ht
 
 \begin{itemize}
 \item \href{https://forge.in2p3.fr/projects/classforge/boards}{A forum}\footnote{https://forge.in2p3.fr/projects/classforge/boards} where you are invited to post your trouble about CLASS installation and usage. You may find the answer to your trouble on a already posted thread.
-\item \href{https://forge.in2p3.fr/projects/classforge/embedded/annotated.html}{A doxygen}\footnote{https://forge.in2p3.fr/projects/classforge/embedded/annotated.html} where all the CLASS objects and methods are defined and explained.
+\item \href{https://forge.in2p3.fr/projects/classforge/embedded/doxygen/inherits.html}{A doxygen}\footnote{https://forge.in2p3.fr/projects/classforge/embedded/doxygen/inherits.html} where all the CLASS objects and methods are defined and explained.
 \item \href{https://forge.in2p3.fr/projects/classforge/news}{News}\footnote{https://forge.in2p3.fr/projects/classforge/news} : All the news related to CLASS
 \end{itemize}
 A \href{classuser-l@ccpntc02.in2p3.fr}{Mailing List}\footnote{classuser-l@ccpntc02.in2p3.fr} also exist in order to be warned of all the change inside CLASS and to allow user to exchange directly on the code. One can join the mailing list through the following  \href{http://listserv.in2p3.fr/cgi-bin/wa?SUBED1=classuser-l&A=1}{link}\footnote{http://listserv.in2p3.fr/cgi-bin/wa?SUBED1=classuser-l\&A=1}.
