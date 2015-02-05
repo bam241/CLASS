@@ -20,9 +20,8 @@ using namespace std;
 class CLASSLogger;
 
 //-----------------------------------------------------------------------------//
+//! Define en IrradiationModel based on Runge Kutta 4th order
 /*!
- Define a IM_RK4
- 
  The aim of these class is to solve numericaly the Bateman equations using 
  Runge Kutta 4th order method
  

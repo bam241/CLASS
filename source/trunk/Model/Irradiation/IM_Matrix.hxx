@@ -19,6 +19,8 @@ using namespace std;
 class CLASSLogger;
 
 //-----------------------------------------------------------------------------//
+//! Define en IrradiationModel based on power series of the exponential of the Bateman matrix
+
 /*!
  Define a IM_Matrix.
  The aim of these class is to solve numericaly the Bateman equations using the
