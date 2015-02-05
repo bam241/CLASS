@@ -17,7 +17,7 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------//
-//! Define an EquivalenceModel based on neural network
+//! Defines an EquivalenceModel based on neural network
 
 /*!
  The aim of these class is to constuct a fuel from an equivalence model

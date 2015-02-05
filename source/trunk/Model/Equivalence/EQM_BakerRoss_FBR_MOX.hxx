@@ -17,7 +17,7 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------//
-//! Define an EquivalenceModel based on Baker and Ross formula
+//! Defines an EquivalenceModel based on Baker and Ross formula
 
 /*!
  The aim of these class is to constuct a fuel from an equivalence model
