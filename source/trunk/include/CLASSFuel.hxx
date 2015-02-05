@@ -22,6 +22,8 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------//
+//!  Allows to define PhysicsModels & EvolutionData as a CLASSFuel
+
 /*!
  Define a CLASS Object.
  The aim of these class is to handle PhysicsModels &

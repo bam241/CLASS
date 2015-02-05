@@ -21,9 +21,10 @@ class CLASSLogger;
 class DecayDataBank;
 
 //-----------------------------------------------------------------------------//
+//!  Define a SeparationPlant.
+
 /*!
- Define a SeparationPlant.
- The aim of this class is to separate an IV into several IV (MA, Pu, PF, etc...) and 
+ The aim of this class is to separate an IV into several IV (MA, Pu, PF, etc...) and
  to send it to one or several Storage
 
  @author NT

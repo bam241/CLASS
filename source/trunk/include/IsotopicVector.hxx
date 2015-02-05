@@ -18,6 +18,8 @@ using namespace std;
 typedef long long int cSecond;
 
 //-----------------------------------------------------------------------------//
+//! Allows to store & operate on radioactive sample
+
 /*!
  Define an Isotopicvector.
  An isotopicVector is a map of ZAI and double (e.g number of atoms).

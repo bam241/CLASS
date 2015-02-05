@@ -13,6 +13,8 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------//
+//! Define a nucleus
+
 /*!
  Define a nuclei as 3 integer Z,A,I:
  \li its charge number : Z

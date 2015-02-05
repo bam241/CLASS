@@ -12,6 +12,8 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------//
+//! Handle connection between nuclei (decay/reaction)
+
 /*!
  Define a nuclei as : Z A I.
  The aim of this class is to discribe each CLASSNucleiFiliation. It connects nuclei to their daughter nuclei through a nuclear process using the correct branching ratio.

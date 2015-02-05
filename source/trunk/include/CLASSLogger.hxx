@@ -47,6 +47,8 @@ using namespace std;
 #define _LOGTYPE_CLASS
 
 //-----------------------------------------------------------------------------//
+//!handle output stream in CLASS
+
 /*!
  Define a LogType.
  The aim of this class is to handle output stream in CLASS.
@@ -126,6 +128,8 @@ public:
 #define _CLASSLogger_CLASS_
 
 //-----------------------------------------------------------------------------//
+//! Object to handle output messages
+
 /*!
  Define a CLASSLogger.
  The aim of this class is to centralize the all CLASS software message inside a file.

@@ -20,8 +20,9 @@ class CLASSLogger;
 class DecayDataBank;
 
 //-----------------------------------------------------------------------------//
+//! Define a Storage object
+
 /*!
- Define a Storage object
  A Storage is a CLASSBackEnd facility. It is almost the same as a Pool with a
  infinite cooling time.
  A CLASSFacility can take IsotopicVector(s) contained in a Storage but a Storage 

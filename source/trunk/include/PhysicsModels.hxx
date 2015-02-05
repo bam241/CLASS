@@ -21,6 +21,8 @@ using namespace std;
 typedef long long int cSecond;
 
 //-----------------------------------------------------------------------------//
+//! Container object of XSModel, EquivalenceModel and IrradiationModel
+
 /*!
  Define a contener of all physics models used for a specific couple (reactor,fuel).
  

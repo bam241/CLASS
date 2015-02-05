@@ -31,6 +31,8 @@ typedef long long int cSecond;
 class ZAI;
 class CLASSLogger;
 //-----------------------------------------------------------------------------//
+//! The Bateman equation solver
+
 /*!
  Define an IrradiationModel.
  An IrradiationModel is a Bateman equation solving method.
