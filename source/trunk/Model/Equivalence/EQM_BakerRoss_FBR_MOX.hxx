@@ -17,8 +17,9 @@
 using namespace std;
 
 //-----------------------------------------------------------------------------//
+//! Define an EquivalenceModel based on Baker and Ross formula
+
 /*!
- Define a EQM_MLP_MOX.
  The aim of these class is to constuct a fuel from an equivalence model
  based on a @f$^{239}Pu@f$ equivalent from Baker and Ross formula :
  
