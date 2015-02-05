@@ -22,6 +22,8 @@ typedef long long int cSecond;
 using namespace std;
 
 //-----------------------------------------------------------------------------//
+//! Define a XSModel getting mean cross sections from neural network execution
+
 /*!
  Define a XSM_MLP.
  This is the class to predict cross sections with a 
