@@ -22,7 +22,7 @@ typedef long long int cSecond;
 using namespace std;
 
 //-----------------------------------------------------------------------------//
-//! Define a XSModel getting mean cross sections from neural network execution
+//! Defines a XSModel getting mean cross sections from neural network execution
 
 /*!
  Define a XSM_MLP.
