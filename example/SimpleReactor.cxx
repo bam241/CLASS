@@ -35,6 +35,7 @@ int main(int argc, char** argv)
 	Scenario *gCLASS=new Scenario(1977*year,Logger);
 	gCLASS->SetStockManagement(true);//If false all the IsotopicVector in stocks are mixed together.
 	gCLASS->SetTimeStep(year/4.);//the scenario calculation is updated every 3 months
+	gCLASS−>SetOutputFileName("SimpleReactor.root");	//Set the name of the output file
 
 	/******DATA BASES**********************************/
 	/*===Decay data base===*/
