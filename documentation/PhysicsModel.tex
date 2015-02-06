@@ -69,8 +69,7 @@ The $\%_{Pu}$ is calculated according a quadratic model. See equation~\ref{eq:EQ
 \begin{equation}\label{eq:EQM_QUAD_MOX}
 \%_{Pu} = \alpha_{0} +   \sum_{i\in Pu}^{N} \left(\alpha_{i} \cdot n_{i}\ + \sum_{j\leq i} \alpha_{ij} \cdot n_{i}\cdot n_{j}\right),
 \end{equation}
-where $n_{i}$ is the molar proportion (in $\%mol.$) of isotope $i$ \footnote{from $^{238}Pu$ to $^{242}Pu$} in the fresh plutonium vector.  $\alpha_{ij}$, $\alpha_{i}$ and $\alpha_{0}$  are the weights resulting from a minimization procedure and are related to one targeted burnup and one fuel management. Furthermore, $^{241}Am$ from $^{241}Pu$ decay is not one of the considered component of the model ($n_{i}$), instead the model considers a fixed time since plutonium separation. For instance the $\alpha$ given in file \$CLASS\_PATH/DATA\_BASES/PWR/MOX/EQModel/@@BAM
-are representative of a PWR-MOX with a maximal burnup of $45GWd/tHM$, a fuel management of 3 batches, and a time between separation and irradiation of 2 years.
+where $n_{i}$ is the molar proportion (in $\%mol.$) of isotope $i$ \footnote{from $^{238}Pu$ to $^{242}Pu$} in the fresh plutonium vector.  $\alpha_{ij}$, $\alpha_{i}$ and $\alpha_{0}$  are the weights resulting from a minimization procedure and are related to one targeted burnup and one fuel management. Furthermore, $^{241}Am$ from $^{241}Pu$ decay is not one of the considered component of the model ($n_{i}$), instead the model considers a fixed time since plutonium separation. %For instance the $\alpha$ given in file \$CLASS\_PATH/DATA\_BASES/PWR/MOX/EQModel/@@BAMare representative of a PWR-MOX with a maximal burnup of $45GWd/tHM$, a fuel management of 3 batches, and a time between separation and irradiation of 2 years.
 
 The file containing the weights is formatted as follow :
 
@@ -109,16 +108,16 @@ With LogObject a \hyperref[sec:CLASSLogger]{CLASSLogger} object (see section~\re
 \\
 \\
 
-\begin{center}
-\begin{minipage}{\textwidth}
-\textbf{Available weight file (.dat) : }
-\begin{itemize}
-\item \textbf{@@@ BAM}
-\item \textbf{@@@ BAM}
-\item ...
-\end{itemize}
-\end{minipage}
-\end{center}
+%\begin{center}
+%\begin{minipage}{\textwidth}
+%\textbf{Available weight file (.dat) : }
+%\begin{itemize}
+%\item \textbf{@@@ BAM}
+%\item \textbf{@@@ BAM}
+%\item ...
+%\end{itemize}
+%\end{minipage}
+%\end{center}
 
 \subsubsection{Neural network model : EQM\_MLP\_MOX}\label{sec:EQMMOX}
 This equivalence model  is based on a Multi Layer Perceptron (MLP) and  predict the amount of plutonium needed to reach \textbf{any burnup}. The MLP inputs are the isotopic compositions of the plutonium (\textbf{including $^{241}Am$}), the enrichment of depleted uranium, and the targeted burnup. The output is the plutonium content needed to reach the burnup. This method uses the neural networks of the root module TMVA (@@@  Ref TMVA). To executes this model, TMVA is run in CLASS and need a .xml file. This file contains the neural network architecture and the weights resulting from the training procedure.
@@ -232,8 +231,11 @@ For more informations about this model please refer to \cite{MLP_MOX}\\
 \subsection{PWR-UOX model :}
 
 \subsubsection{Linear Model: EQM\_LIN\_UOX}
-@@ BAM TBFNF : To Be filled in the Near Future...
-
+Predict the quantity of $^{235}$U needed to reach the wanted burn-up :
+ \begin{equation}
+N_{^{235}U} = A*BurnUp^{2} + B*BurnUp + C
+ \end{equation}
+See in \textbf{\$CLASS\_PATH/DATA\_BASES/PWR/UOX} for available model.
 
 \subsection{FBR-Na-MOX model :}
 This model is used to compute the plutonium content needed for a fast reactor loaded with MOX fuel.
@@ -435,15 +437,15 @@ TYPE "NameOfTheFuel(withoutspace)"
 \end{minipage}
 \end{center}
 
-Each EvolutionName.dat file contains a formatted fuel depletion calculation. the format of a EvolutionData ASCII file is detailed in section~\ref{sec:EDformat}.  The number of .dat files has an influence on the model accuracy. Furthermore, the initial composition of the different fuel depletion calculations has to be representative of the fresh fuel compositions encounter in a scenario. For more details on this method please refer to \cite{PhysorBAM}.
+Each EvolutionName.dat file contains a formatted fuel depletion calculation. the format of a EvolutionData ASCII file is detailed in section~\ref{sec:EDformat}.  The number of .dat files has an influence on the model accuracy. Furthermore, the initial composition of the different fuel depletion calculations has to be representative of the fresh fuel compositions encounter in a scenario. %For more details on this method please refer to \cite{PhysorBAM}.
 
 
-\textbf{Available .idx file  : }
-\begin{itemize}
-\item \textbf{@@@ BAM}
-\item \textbf{@@@ BAM}
-\item ...
-\end{itemize}
+%\textbf{Available .idx file  : }
+%\begin{itemize}
+%\item \textbf{@@@ BAM}
+%\item \textbf{@@@ BAM}
+%\item ...
+%\end{itemize}
 
 \textbf{For MURE user only : } The program \$CLASS\_PATH/Utils/MURE2CLASS converts a list of MURE evolutions to a list of .dat and .info files and creates the .idx file, type in terminal the following command for more details.
 
@@ -451,7 +453,6 @@ Each EvolutionName.dat file contains a formatted fuel depletion calculation. the
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[style=terminal]
 \$CLASS\_PATH/Utils/MURE2CLASS -h 
-@@BAM
 \end{lstlisting}
 \end{minipage}
 \end{center}
@@ -528,7 +529,8 @@ The tag "Fuel range (Z A I min max) :" corresponds to the validity domain of the
 The weight files and .nfo file contained in this folder are representative of a PWR MOX. With the MOX coming from PWR UO2 spent fuels. The specific power is 30W/g oxide. To perform this data base, MURE depletion calculations have been performed using a full MOX assembly with mirror boundaries. 
 \item \$CLASS\_PATH/DATA\_BASES/FBR\_Na/MOX/XSModel/ESFR\_48Wg :
 The weight files and .nfo file contained in this folder are representative of a FBR-Na MOX. The specific power is 48W/g oxide. To perform this data base, MURE depletion calculations have been performed using a 1/12 of ESFR like core with mirror boundaries. 
-\item @@BAM UOX
+\item \$CLASS\_PATH/DATA\_BASES/PWR/UOX/XSModel/30Wg\_FullUOX :
+The weight files and .nfo file contained in this folder are representative of a PWR UOX. The specific power is 30W/g oxide. To perform this data base, MURE depletion calculations have been performed using a full UOX assembly with mirror boundaries. 
 \end{itemize}
 
 \textcolor{blue}{\large{\textbf{Training MLPs for cross sections prediction :}}}\\
