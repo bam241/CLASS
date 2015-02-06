@@ -114,7 +114,7 @@ Scenario::Scenario( cSecond abstime, CLASSLogger* log):CLASSObject(log)
 }
 
 //________________________________________________________________________
-Scenario::Scenario( cSecond abstime):CLASSObject(new CLASSLogger("CLASS_OUTPUT.log"))
+Scenario::Scenario( cSecond abstime ):CLASSObject(new CLASSLogger("CLASS_OUTPUT.log"))
 {
 	
 	
