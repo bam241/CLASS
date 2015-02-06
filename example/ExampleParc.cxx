@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 	gCLASS->SetStockManagement(true);//If false all the IsotopicVector in stocks are mixed together.
 	gCLASS->SetTimeStep(year/4.);	 //the scenario calculation is updated every 3 months
 	cSecond EndOfScenarioTime=2040*year;//Scenario ends in year 2040
-	gCLASS−>SetOutputFileName("ExampleParc.root");	//Set the name of the output file
+	gCLASS->SetOutputFileName("ExampleParc.root");	//Set the name of the output file
 
 	/******DATA BASES**********************************/
 	/*===Decay data base===*/
