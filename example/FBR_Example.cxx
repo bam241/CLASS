@@ -54,7 +54,7 @@ int main(int argc, char** argv)
 	XSM_MLP* XS_FBRMOX = new XSM_MLP(gCLASS->GetLog(), "../DATA_BASES/FBR_Na/MOX/XSModel/ESFR_48Wg");//Defining the XS Predictor
 	IM_RK4 *IMRK4 = new IM_RK4(gCLASS->GetLog());							 //Bateman's equation solver method (RungeKutta4)
 	IMRK4->SetSpectrumType("fast");									 //Set the spectrum to fast for reactions isomeric branching ratios (can be fast or thermal)
-	IMRK4->ReadFPYield("../data/FPyield_Fast_JEFF3.1.dat");						 //Add the handling of fission procuct and gets fission yields from this file
+	IMRK4->LoadFPYield("","../data/FPyield_Fast_JEFF3.1.dat");						 //Add the handling of fission procuct and gets fission yields from this file (the first argument is for spontaneousfission yield : here is not handle)
 	
 	EQM_BakerRoss_FBR_MOX* EQM_FBRMOX = new EQM_BakerRoss_FBR_MOX(gCLASS->GetLog());//Defining the EquivalenceModel
 	EQM_FBRMOX->SetBuildFuelFirstGuess(0.12);					//Set the first guess of fissile content to 12 per cent of plutonium (default : 5%)
@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 	gCLASS->AddFabricationPlant(FP_MOX);
 
 
-	/*===A Reactor : PWR_UOX===*/
+	/*===A Reactor : FBR_MOX===*/
 	double  HMMass    = 7.48336500000000058e+01;	//heavy metal mass (in tons)
 	double	Power_CP0 = 3.6e9;			//Thermal power (in W)
 	double  BurnUp    = 100;			//100 GWd/tHM
@@ -113,7 +113,7 @@ int main(int argc, char** argv)
 							   0.8);			// Reactor efficiency (% of time it is working @ full power)
 					
 
-	PWR_MOX->SetName("a_FBR_MOX");	// name of the reactor (as it will show up in the CLASSGui)
+	FBR_MOX->SetName("a_FBR_MOX");	// name of the reactor (as it will show up in the CLASSGui)
 	gCLASS->AddReactor(FBR_MOX);	//Add this reactor to the scenario
 					
 	gCLASS->Evolution((double)year*2018);//Perform the calculation from year 1977(defined in Scenario declaration) to year 2018
