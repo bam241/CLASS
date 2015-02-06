@@ -1,5 +1,5 @@
 /**********************************************************/
-//			Make the input file for the MLPs training
+//	Make the input file for the MLPs training
 //
 //	This programs reads a set of .dat files which are the
 //	results of a depletion calculation (see manual and 
@@ -8,6 +8,8 @@
 //	TrainingInput.root . 
 //	The file TrainingInput.cxx is the list of MLP outputs 
 // (cross sections)
+//
+//@author BaM, BaL
 /**********************************************************/
 #include "Gene.hxx"
 #include <TH1F.h>

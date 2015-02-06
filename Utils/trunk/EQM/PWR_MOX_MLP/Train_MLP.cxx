@@ -1,6 +1,7 @@
 //
 // This program train and test a MLP using TMVA from a training data in a form of a TTRee
 //
+//@author Root_tmva_team modified by BaL 
 #include <cstdlib>
 #include <iostream> 
 #include <map>
