@@ -1,3 +1,7 @@
+//	DESCRIPTION
+// This program convert MURE output tp EvolutionData forma
+//
+//@author BaM
 #include "BinaryFormat2.hxx"
 #include "StringLine.hxx"
 #include "ZAI.hxx"

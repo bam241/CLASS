@@ -2,6 +2,7 @@
 // Train one MLP "INDICE" from the
 //file ../BuildInput/TrainingInput.root
 //
+//@author Root_tmva_Team modified by BaL
 /***********************************/
 
 #include <cstdlib>
