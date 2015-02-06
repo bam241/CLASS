@@ -1,19 +1,18 @@
 /************************************************************/
 //              DESCRIPTION
 // Close Fuel cycle scenario :
-// This park is constituted by a  PWR MOX which 
+// This park is constituted by a FBR-Na MOX which
 // multi-recycle its own fuel.
 // The Storage is initially filled with Pu in order
 // to this scenario to be doable
 //         _______________	_______     ____    _______
-//        |                |   |       |   |    |  |       |
+//        |		   |   | FBR   |   |    |  |       |
 //  ||===>|FabricationPlant| =>|Reactor| =>|Pool|=>|Storage|===||
 //  ||    |________________|   |_______|   |____|  |_______|   ||
 //  ||=========================================================||
 //
 // The spent fuel goes to the pool for 5 y
 // then it goes to the Storage
-//The scenario is run for 40 years
 //
 //@author BaL
 /***********************************************************/
@@ -22,9 +21,9 @@
 #include <iomanip>
 #include <math.h>
 #include <string>
-#include "XS/XSM_MLP.hxx"					//Load the include for Neural network cross section predictor 
+#include "XS/XSM_MLP.hxx"				//Load the include for Neural network cross section predictor
 #include "Irradiation/IM_RK4.hxx"			//Load the include for Runge Kutta 4 resolution
-#include "Equivalence/EQM_MLP_PWR_MOX.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
+#include "Equivalence/EQM_BakerRoss_FBR_MOX.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
 using namespace std;
 
 int main(int argc, char** argv)
@@ -34,7 +33,7 @@ int main(int argc, char** argv)
 	/******LOG MANAGEMENT**********************************/
 	//Definition of the Log file : CLASS messages output 
 	int Std_output_level=0;  // Only error are shown in terminal
-	int File_output_level=2; // Error + Warning + Info are shown in the file CLASS_OUTPUT.log
+	int File_output_level=3; // Error + Warning + Info are shown in the file CLASS_OUTPUT.log
 	CLASSLogger *Logger	 = new CLASSLogger("CLASS_OUTPUT.log",Std_output_level,File_output_level);
 
 	/******SCENARIO**********************************/
@@ -51,19 +50,22 @@ int main(int argc, char** argv)
 
 	/*===Reactor data base===*/
 
-	XSM_MLP* XSMOX = new XSM_MLP(gCLASS->GetLog(), "../DATA_BASES/PWR/MOX/XSModel/30Wg_FullMOX");//Defining the XS Predictor
-	IM_RK4 *IMRK4 = new IM_RK4(gCLASS->GetLog());													  //Bateman's equation solver method (RungeKutta4)
-	EQM_MLP_MOX* EQMLINPWRMOX = new EQM_MLP_MOX(gCLASS->GetLog(),"../DATA_BASES/PWR/MOX/EQModel/EQM_MLP_PWR_MOX_3batch.xml");//Defining the EquivalenceModel
-
-	PhysicsModels* PHYMOD = new PhysicsModels(XSMOX, EQMLINPWRMOX, IMRK4); 							 //The PhysicsModels containing the 3 object previously defined
+	XSM_MLP* XS_FBRMOX = new XSM_MLP(gCLASS->GetLog(), "../DATA_BASES/FBR_Na/MOX/XSModel/ESFR_48Wg");//Defining the XS Predictor
+	IM_RK4 *IMRK4 = new IM_RK4(gCLASS->GetLog());							 //Bateman's equation solver method (RungeKutta4)
+	IMRK4->SetSpectrumType("fast");									 //Set the spectrum to fast for reactions isomeric branching ratios (can be fast or thermal)
+	IMRK4->ReadFPYield("../data/FPyield_Fast_JEFF3.1.dat");						 //Add the handling of fission procuct and gets fission yields from this file
+	
+	EQM_BakerRoss_FBR_MOX* EQM_FBRMOX = new EQM_BakerRoss_FBR_MOX(gCLASS->GetLog());//Defining the EquivalenceModel
+	EQM_FBRMOX->SetBuildFuelFirstGuess(0.12);					//Set the first guess of fissile content to 12 per cent of plutonium (default : 5%)
+	PhysicsModels* PHYMOD = new PhysicsModels(XS_FBRMOX, EQM_FBRMOX, IMRK4);	//The PhysicsModels containing the 3 object previously defined
 
 
 	/******FACILITIES*********************************/
 	/*===A Stock===*/
 	Storage *Stock = new Storage(gCLASS->GetLog()); // Definition of the stock
-	Stock->SetName("Stock"); 					// Its name
+	Stock->SetName("Stock"); 			// Its name
 	//Fill the stock with an initial amount of Plutonium
-	// In order to allow the PWR_MOX to work
+	// In order to allow the FBR_MOX to work
 	IsotopicVector InitialIV;
 	InitialIV.Add(94,238,0,4e27  );
 	InitialIV.Add(94,239,0,6.4e28);
@@ -91,27 +93,27 @@ int main(int argc, char** argv)
 
 
 	/*===A Reactor : PWR_UOX===*/
-	double  HMMass    = 72.5;		//heavy metal mass (in tons)
-	double	Power_CP0 = 2660e6;	    //Thermal power (in W)
-	double  BurnUp    = 35; 		//35 GWd/tHM
+	double  HMMass    = 7.48336500000000058e+01;	//heavy metal mass (in tons)
+	double	Power_CP0 = 3.6e9;			//Thermal power (in W)
+	double  BurnUp    = 100;			//100 GWd/tHM
 
 	cSecond StartingTime =  1985*year;
 	cSecond LifeTime     =  40*year;
 					
-	Reactor* PWR_MOX = new Reactor(gCLASS->GetLog(),// Log
-							   PHYMOD,				// The models used to build the fuel & to calculate its evolution
-							   FP_MOX,				// The FabricationPlant
+	Reactor* FBR_MOX = new Reactor(gCLASS->GetLog(),				// Log
+							   PHYMOD,			// The models used to build the fuel & to calculate its evolution
+							   FP_MOX,			// The FabricationPlant
 							   Cooling_MOX,			// Connected Backend facility : The reactor discharge its fuel into the Pool "Cooling_UOX"
 							   StartingTime,		// Starting time
 							   LifeTime,			// time of reactor life time
 							   Power_CP0,			// Power
-							   HMMass,				// HM mass
-							   BurnUp,				// BurnUp
-							   0.8);				// Load Factor
+							   HMMass,			// HM mass
+							   BurnUp,			// BurnUp
+							   0.8);			// Reactor efficiency (% of time it is working @ full power)
 					
 
-	PWR_MOX->SetName("a_PWR_MOX");// name of the reactor (as it will show up in the CLASSGui)
-	gCLASS->AddReactor(PWR_MOX);//Add this reactor to the scenario
+	PWR_MOX->SetName("a_FBR_MOX");	// name of the reactor (as it will show up in the CLASSGui)
+	gCLASS->AddReactor(FBR_MOX);	//Add this reactor to the scenario
 					
 	gCLASS->Evolution((double)year*2018);//Perform the calculation from year 1977(defined in Scenario declaration) to year 2018
 
@@ -125,7 +127,7 @@ int main(int argc, char** argv)
 //==========================================================================================
 /*
  
- \rm CLASS* ; g++ -o CLASS_Exec CloseCycle.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
+ \rm CLASS* ; g++ -o CLASS_Exec FBR_Example.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
  
  
  */

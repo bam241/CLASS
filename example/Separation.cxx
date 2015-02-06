@@ -8,9 +8,10 @@
 //  |       |   |    	     	 | =>       Pool      => Storage1
 //  |Reactor| =>|SeparationPlant1| => Storage2  
 //  |_______|   |_______________ | =>|SeparationPlant2|=>Storage3
-//									 |(dummy)		  |=>Storage4
+//                                   |                |=>Storage4
 //
-//The scenario is run for 40 years
+//
+//@author BaL
 /****************************************************************/
 #include "CLASSHeaders.hxx"
 #include <sstream>
@@ -44,7 +45,7 @@ int main(int argc, char** argv)
 
 	/*===Reactor data base===*/
 	//The file STD900.dat correspond to a fuel evolution of a UOX PWR (see manual for details)
-	EvolutionData *STD900 = new EvolutionData(gCLASS->GetLog(), "../DATA_BASES/PWR/UOX/STD900.dat");
+	EvolutionData *STD900 = new EvolutionData(gCLASS->GetLog(), "../DATA_BASES/PWR/UOX/FixedFuel/STD900.dat");
 	/******FACILITIES*********************************/
 	/*===The 4 Stocks ===*/
 	Storage* MyStorage1 = new Storage(Logger);

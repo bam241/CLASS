@@ -9,7 +9,8 @@
 //  |_______|   |_______|
 //
 // The spent fuel goes to a Storage
-//The scenario is run for 40 years
+//
+//@author BaL
 /*************************************************/
 #include "CLASSHeaders.hxx"
 #include <sstream>
@@ -38,12 +39,12 @@ int main(int argc, char** argv)
 	/******DATA BASES**********************************/
 	/*===Decay data base===*/
 	//The decay data base is taken from the file Decay.idx
-	DecayDataBank* DecayDB = new DecayDataBank(gCLASS->GetLog(), "../DATA_BASES/DECAY/Decay.idx");
+	DecayDataBank* DecayDB = new DecayDataBank(gCLASS->GetLog(), "../DATA_BASES/DECAY/ALL/Decay.idx");
 	gCLASS->SetDecayDataBase(DecayDB);//This decay data base will be used for all the decay calculations in this Scenario
 
 	/*===Reactor data base===*/
 	//The file STD900.dat correspond to a fuel evolution of a UOX PWR (see manual for details)
-	EvolutionData *STD900 = new EvolutionData(gCLASS->GetLog(), "../DATA_BASES/PWR/UOX/STD900/STD900.dat");
+	EvolutionData *STD900 = new EvolutionData(gCLASS->GetLog(), "../DATA_BASES/PWR/UOX/FixedFuel/STD900.dat");
 
 	/******FACILITIES*********************************/
 	/*===A Stock===*/
