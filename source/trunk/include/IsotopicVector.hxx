@@ -150,9 +150,9 @@ public :
 	
 	protected :
 
-	map<ZAI ,double>	fIsotopicQuantity;		//!< Isotopic vector composition in atomes Number
+	map<ZAI ,double>	fIsotopicQuantity;		///< Isotopic vector composition in atomes Number
 	
-	map<ZAI ,double>	fIsotopicQuantityNeeded;	//!< map where negative value are saved
+	map<ZAI ,double>	fIsotopicQuantityNeeded;	///< map where negative value are saved
 
 	ClassDef(IsotopicVector,1);
 };

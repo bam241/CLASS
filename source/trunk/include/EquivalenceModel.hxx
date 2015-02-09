@@ -53,6 +53,11 @@ class EquivalenceModel : public CLASSObject
 	virtual ~EquivalenceModel();		//!< Destructor
 	//@}
 	
+	/*!
+	 \name Fuel Construction Method
+	 */
+	//@{
+	
 	//{
 	/// BuildFuel function.
 	/*!
@@ -70,17 +75,35 @@ class EquivalenceModel : public CLASSObject
 				 int FirstStockID, int LastStockID, double DeltaM,
 				 vector<IsotopicVector> Stocks, double  HMMass); //!< Guess a portion of IsotopicVectors to take (dichotomy)
 	
-	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp) = 0; //!< Return the molar fraction of fissile element in the fuel according to the burnup, and a given fuel composition (this is the heart of the equivalence model)
+	//@}
 	
-	void SetBuildFuelFirstGuess(double FirstGuess){fFirstGuessFissilContent = FirstGuess;} //!<set the initialization value for BuildFuel algorithm
-	double GetBuildFuelFirstGuess(){return fFirstGuessFissilContent;} //!<Get the initialization value for BuildFuel algorithm
-	
+	/*!
+	 \name Get/Set Method
+	 */
+	//@{
 	
 	IsotopicVector GetFertileList() {return fFertileList;}	//!<return the fertile list
 	IsotopicVector GetFissileList() {return fFissileList;}	//!<return the fissile list
 	
+	double GetBuildFuelFirstGuess(){return fFirstGuessFissilContent;} //!<Get the initialization value for BuildFuel algorithm
+	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp) {return 0;} //!< Return the molar fraction of fissile element in the fuel according to the burnup, and a given fuel composition (this is the heart of the equivalence model)
+
+	double GetRelativMassPrecision() const	{ return fRelativMassPrecision; }	//!< Mass precision
+	int GetMaxInterration()		 const	{ return fMaxInterration; }		//!< Max iterration in build fueld algorythm
+
+	
+	
 	void SetFertileList(IsotopicVector IV) {fFertileList = IV;}//!<set the fertile list
 	void SetFissileList(IsotopicVector IV) {fFissileList = IV;}//!<set the fissile list
+	void SetBuildFuelFirstGuess(double FirstGuess){fFirstGuessFissilContent = FirstGuess;} //!<set the initialization value for BuildFuel algorithm
+	void SetRelativMassPrecision( double val)	{ fRelativMassPrecision = val; }	//!< Mass precision
+	void SetMaxInterration(int val)			{ fMaxInterration = val; }		//!< Max iterration in build fueld algorythm
+
+	
+	//@}
+	
+	
+	
 	
 	
 	protected :
@@ -93,14 +116,32 @@ class EquivalenceModel : public CLASSObject
 	
 	double fFirstGuessFissilContent;//!< fissile content for BuildFuel initialization (in weight proportion)
 	
+	
+	
+	
 	private :
 	
-	void SetLambda(vector<double>& lambda ,int FirstStockID, int LastStockID, double LAMBDA_TOT);	//!< Set individual lambda according to the LAMBDA_TOT (lambda of all stocks)
-	double FindLambdaMax( vector<IsotopicVector> Stocks, double  HMMass);							//!< Find the maximum LAMBDA_TOT of Stocks (ie lambda to reach HMass)
-	double fOld_Lambda_Tot;//!<The old (old iteration) guessed lambda_tot (guessed from GuessLambda)
-	double fLambda_max;//!<Value calculated by FindLambdaMax
+	double fOld_Lambda_Tot;		//!< The old (old iteration) guessed lambda_tot (guessed from GuessLambda)
+	double fLambda_max;		//!< Value calculated by FindLambdaMax
 	
+	double fRelativMassPrecision;	//!< Mass precision
+	int fMaxInterration;		//!< Max iterration in build fueld algorythm
+
+	
+
+	double FindLambdaMax( vector<IsotopicVector> Stocks, double  HMMass);	//!< Find the maximum LAMBDA_TOT of Stocks (ie lambda to reach HMass)
+	void SetLambda(vector<double>& lambda ,int FirstStockID, int LastStockID, double LAMBDA_TOT);	//!< Set individual lambda according to the LAMBDA_TOT (lambda of all stocks)
+
+
 };
 
 #endif
+
+
+
+
+
+
+
+
 

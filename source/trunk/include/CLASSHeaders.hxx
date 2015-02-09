@@ -20,6 +20,4 @@
 #include "PhysicsModels.hxx"
 #include "DecayDataBank.hxx"
 
-#include "ZAIMass.hxx"
-
 #endif

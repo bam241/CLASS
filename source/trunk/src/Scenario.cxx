@@ -734,8 +734,6 @@ void Scenario::UpdateParc()
 
 	fIVTotal = fWaste + fTotalStorage + fTotalCooling + fFuelFabrication + fTotalInReactor;
 	fIVInCycleTotal = fTotalStorage + fTotalCooling + fFuelFabrication + fTotalInReactor;
-
-
 }
 
 
