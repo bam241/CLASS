@@ -2,16 +2,19 @@
 
 
 
-
-
-
 EquivalenceModel::EquivalenceModel():CLASSObject()
 {
+	fRelativMassPrecision = 1/1000.; //Mass precision
+	fMaxInterration = 100; // Max iterration in build fueld algorythum
+	fFirstGuessFissilContent = 0.04;
 
 }
 
 EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 {
+	fRelativMassPrecision = 1/1000.; //Mass precision
+	fMaxInterration = 100; // Max iterration in build fueld algorythm
+	fFirstGuessFissilContent = 0.04;
 
 }
 
@@ -21,7 +24,7 @@ EquivalenceModel::~EquivalenceModel()
 }
 //________________________________________________________________________
 vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray)
-{	
+{
 DBGL
 	HMMass*=1e6;//tons to gram
 
@@ -44,22 +47,36 @@ DBGL
 
 	IsotopicVector Fertile;
 	IsotopicVector Fissile;
-	double AvailablePuMass=0;
-	double PuMassNeeded=1000; //At present time I have no clue what is the requiered Pu mass, I assume at least 1kg is needed
-	double WeightPuContent=0;
-	double MassPrecision=100; //Mass precision is 100 grams
+	double AvailablePuMass = 0;
+	double PuMassNeeded = HMMass * 0.01; //At present time I have no clue what is the requiered Pu mass, I assume at least 1kg is needed
+	double WeightPuContent = 0;
 
-	while(  fabs(PuMassNeeded - AvailablePuMass) > MassPrecision )
-	{	//Increase the portion of the stock stokID taken, according to the followings variables
+	int loopCount = 0;
+	
+	while(  fabs(PuMassNeeded - AvailablePuMass)/HMMass > fRelativMassPrecision )
+	{
+		//Increase the portion of the stock stokID taken, according to the followings variables
 		double DeltaM=PuMassNeeded-AvailablePuMass;
-		GuessLambda( lambda,0,FissilArray.size()-1, DeltaM, FissilArray ,HMMass);
-		if(lambda[0]==-1)
+		GuessLambda( lambda, 0, (int)FissilArray.size()-1, DeltaM, FissilArray ,HMMass);
+		
+		if(lambda[0]==-1)	// Check if previous lambda was well calculated
 		{	
 			for(int i=0 ; i < (int)FissilArray.size() + (int)FertilArray.size();i++ )
-				lambda[i ]= -1;
+				lambda[i]= -1;
+			
 			WARNING<<"Not enought fissile material to build fuel"<<endl;
 			return lambda;
 		}
+		else if (loopCount > fMaxInterration)
+		{
+			for(int i=0 ; i < (int)FissilArray.size() + (int)FertilArray.size();i++ )
+				lambda[i]= -1;
+
+			WARNING << "Too much iterration in BuildFuel Method !  Fuel fabrication fail !!" << endl;
+			return lambda;
+		}
+		
+		
 		//Build the Plutonium vector from stocks
 		Fissile.Clear();
 		
@@ -70,7 +87,9 @@ DBGL
 		//Building complementary Fertile from stocks
 		double FertilMassNeeded = HMMass - AvailablePuMass;			
 		double LAMBDA_FERTILE = FindLambdaMax(FertilArray, FertilMassNeeded);
-		SetLambda(lambda,FissilArray.size(), lambda.size()-1,LAMBDA_FERTILE);
+		
+		SetLambda(lambda, (int)FissilArray.size(), (int)lambda.size()-1,LAMBDA_FERTILE);
+		
 		int j=-1;
 		Fertile.Clear();
 		for(int i = (int)FissilArray.size() ; i < (int)FissilArray.size()+(int)FertilArray.size() ; i++)
@@ -85,14 +104,19 @@ DBGL
 			WARNING<<"Not enought fertile material to build fuel"<<endl;
 			return lambda;
 		}
+		
 		/*Calcul the quantity of this composition needed to reach the burnup*/
 		double MolarPuContent = GetFissileMolarFraction(Fissile, Fertile, BurnUp);
 		double MeanMolarPu = Fissile.MeanMolar();
 		double MeanMolarDepletedU = Fertile.MeanMolar();
 		double MeanMolar   = MeanMolarPu * MolarPuContent + (1-MolarPuContent)*MeanMolarDepletedU;
+		
 		DBGV("MolarPuContent "<<MolarPuContent);
+		DBGV("DeltaM "<<DeltaM << " g");
+		
 		WeightPuContent = MolarPuContent * MeanMolarPu / MeanMolar ;
 		PuMassNeeded = WeightPuContent  *  HMMass ;
+		loopCount++;
 	}
 
 
@@ -155,8 +179,7 @@ void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int 
 					break;
 				}	
 			}	
-
-			SetLambda(lambda,FirstStockID,LastStockID,LAMBDA_TOT );	
+			SetLambda(lambda,FirstStockID,LastStockID,LAMBDA_TOT );
 
 			IsotopicVector test;
 			int j=0;
@@ -176,15 +199,8 @@ void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int 
 		fOld_Lambda_Tot = LAMBDA_TOT;
 		LAMBDA_TOT += (fLambda_max - LAMBDA_TOT)/2.;
 
-		if(LAMBDA_TOT > 0.99*fLambda_max) //if we get close to the total of the stocks
-		{	
-			double MasseTot=0;
-			for(int i=0;i<(int)Stocks.size();i++) 
-				MasseTot+=Stocks[i].GetTotalMass()*1e6;
-
-			if( (fLambda_max -LAMBDA_TOT )*MasseTot < 5 ) //If it remains less than 5gram in stocks => the stocks are not enought
+		if(fLambda_max -LAMBDA_TOT )/fLambda_max < 0.01) //if we get close to the total of the stocks
 				lambda[0]=-1;//error code;
-		}
 		//cout<<"DM>0 LAMBDA_TOT "<<LAMBDA_TOT<<endl;
 		else
 			SetLambda(lambda,FirstStockID,LastStockID,LAMBDA_TOT );

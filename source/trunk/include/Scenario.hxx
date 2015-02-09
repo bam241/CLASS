@@ -285,7 +285,7 @@ class Scenario : public CLASSObject
 	
 	IsotopicVector	fWaste;			///< Waste IV
 	IsotopicVector	fTotalStorage;		///< Sum of all IV in Storage IV
-	IsotopicVector	fOutIncome;			///< OutIncomeIncome IV
+	IsotopicVector	fOutIncome;		///< OutIncomeIncome IV
 	IsotopicVector	fTotalCooling;		///< Sum of all IV in Cooling IV
 	IsotopicVector	fFuelFabrication;	///< Sum of all IV in Fabrication IV
 	IsotopicVector	fTotalInReactor;	///< Sum of all IV in Reactor IV

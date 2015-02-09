@@ -191,7 +191,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 	pair<CLASSFuel, double > FuelBU = GetParc()->GetReactor()[ReactorId]->GetFuelPlan()->GetFuelAt(t+GetCycleTime()) ;
 	PhysicsModels FuelType = *FuelBU.first.GetPhysicsModels();
 	double R_BU	      = FuelBU.second;
-
+	
 	fFissileList = FuelType.GetEquivalenceModel()->GetFissileList();
 	BuildFissileArray();
 
@@ -206,6 +206,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 		fFertileArray.push_back( fFertileList / fFertileList.GetTotalMass() * R_HM_Mass );
 	}
 
+	
 	vector<double> LambdaArray =  FuelType.GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fFissileArray, fFertileArray);
 
 	double  LambdaSum = 0;
@@ -290,9 +291,11 @@ DBGL
 
 void FabricationPlant::BuildFissileArray()
 {
-
+DBGL
+	
 	for(int i = 0; i < (int)fFissileStorage.size(); i++)
 	{
+		
 		vector<IsotopicVector> IVArray = fFissileStorage[i]->GetIVArray();
 
 		for(int j = 0; j < (int)IVArray.size(); j++)
@@ -314,12 +317,13 @@ void FabricationPlant::BuildFissileArray()
 	}
 
 	SortArray(0);
+DBGL
 }
 
 
 void FabricationPlant::BuildFertileArray()
 {
-
+DBGL
 
 	for(int i = 0; i < (int)fFertileStorage.size(); i++)
 	{
@@ -341,7 +345,7 @@ void FabricationPlant::BuildFertileArray()
 	}
 
 	SortArray(1);
-
+DBGL
 }
 
 void FabricationPlant::SortArray(int i)
