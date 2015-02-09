@@ -522,7 +522,7 @@ void MainWin::FillNucTab()		// fill the Inventory Tab foil
 {
 	static bool first=true;
 	
-	int NCheck=fDATA->GetZAIvector().size();
+	int NCheck = fDATA->GetZAIvector().size();
 	//number of lines and columns per foil
 	int Nline = 14-WIDE;
 	int Ncol = 8+WIDE;
@@ -586,7 +586,7 @@ void MainWin::FillNucFoil(int n_item, int Ncol,int Nline)
 {
 	int current_foil = 0;
 	int current_item = 0;
-	for( int l = n_item; l >= 0; l-- )
+	for( int l = n_item-1; l >= 0; l-- )
 	{
 		
 		stringstream name;
