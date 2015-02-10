@@ -8,7 +8,8 @@
  \brief Header file for XS_INTERPOLATOR class.
  
  
- @authors BLG,BaM
+ @author BaM
+ @author BLG
  @version 1.0
  */
 #include "EquivalenceModel.hxx"
@@ -37,7 +38,8 @@ User can either define his own (see manual) or uses the provided ones  :
 \li IrradiationModel : can be Runge Kutta 4 or Matrix
 
 
- @authors BLG,BaM
+ @author BaM
+ @author BLG
  @version 1.0
  */
 //________________________________________________________________________

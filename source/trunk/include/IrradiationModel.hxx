@@ -8,6 +8,7 @@
  
  
  @author BaM
+ @author BLG
  @version 2.0
  */
 
@@ -45,6 +46,7 @@ class CLASSLogger;
  derivated Irradiation Model.
  
  @author BaM
+ @author BLG
  @version 3.0
  */
 //________________________________________________________________________

@@ -6,7 +6,8 @@
  \brief Header file for ZAIMass classes.
  
  
- @author BaM & BaL
+ @author BaM 
+ @author BLG
  @version 2.0
  */
 
@@ -27,7 +28,8 @@ class IsotopicVector;
 /*!
  The aims of this class is to handle the molar mass of each ZAI
  
- @author BaM, BaL
+ @author BaM
+ @author BLG 
  @version 1.0
  */
 //________________________________________________________________________

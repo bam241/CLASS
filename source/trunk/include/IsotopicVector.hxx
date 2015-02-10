@@ -25,7 +25,9 @@ typedef long long int cSecond;
  An isotopicVector is a map of ZAI and double (e.g number of atoms).
  Its aim is to define a radioactive sample.
  
- @author BaM, MArc
+ @author BaM
+ @author BLG
+ @author Marc
  @version 2.0
  */
 //________________________________________________________________________

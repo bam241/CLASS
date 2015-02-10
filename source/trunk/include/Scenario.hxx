@@ -35,7 +35,7 @@ class Storage;
  
  
  @author BaM
- @author BaL
+ @author BLG
  @version 2.0
  */
 //________________________________________________________________________
