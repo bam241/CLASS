@@ -69,26 +69,9 @@ void SeparationPlant::SetBackEndDestination(CLASSBackEnd* storagedestination, Is
 	fDestinationStorage.push_back(storagedestination);
 	fDestinationStorageIV.push_back(isotopicvector);
 
-	if(fDestinationStorage.size()>=2)
-	{
-		//checker que pas 2 fois le même ZAI
-		//Dans VectorIsotopic, BaM a fait des trucs cools
-		//-> IV->GetThisComposition(IV2)
-	}
 	if (fDestinationStorage.size() != fDestinationStorageIV.size())
 	ERROR	<< " fDestinationStorage.size() != fDestinationStorageIV.size() !! " << endl;
 
-
-/*
-
-
-
-les pertes non gérées -> WASTE par défaut
-
-
-	
-
-*/
 	DBGL
 
 }

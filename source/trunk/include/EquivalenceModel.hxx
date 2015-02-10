@@ -7,7 +7,8 @@
  \brief Header file for EquivalenceModel class.
  
  
- @author BLG,BaM
+ @author BaM
+ @author BLG
  @version 3.0
  */
 
@@ -34,7 +35,8 @@ using namespace std;
  @see EQM_POL_PWR_UO2
  @see EQM_QUAD_PWR_MOX
  
- @author BLG,BaM
+ @author BaM
+ @author BLG
  @version 3.0
  */
 //________________________________________________________________________

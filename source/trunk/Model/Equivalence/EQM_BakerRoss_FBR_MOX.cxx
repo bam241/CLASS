@@ -13,7 +13,7 @@
 //________________________________________________________________________
 
 
-EQM_BakerRoss_FBR_MOX::EQM_BakerRoss_FBR_MOX(double Weight_U_235, double Weight_Pu_238, double Weight_Pu_240, double Weight_Pu_241, double Weight_Pu_242, double Weight_Am_241, double EquivalentFissile):EquivalenceModel(new CLASSLogger("EQM_MLP_MOX.log"))
+EQM_BakerRoss_FBR_MOX::EQM_BakerRoss_FBR_MOX(double Weight_U_235, double Weight_Pu_238, double Weight_Pu_240, double Weight_Pu_241, double Weight_Pu_242, double Weight_Am_241, double EquivalentFissile):EquivalenceModel(new CLASSLogger("EQM_BakerRoss_FBR_MOX.log"))
 {
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);

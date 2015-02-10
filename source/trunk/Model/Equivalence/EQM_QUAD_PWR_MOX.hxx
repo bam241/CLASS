@@ -7,7 +7,7 @@
 
 /*!
  \file
- \brief Header file for EQM_MLP_MOX class.
+ \brief Header file for EQM_QUAD_PWR_MOX class.
 
 
  @author BaM

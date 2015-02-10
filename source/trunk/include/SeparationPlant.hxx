@@ -28,6 +28,7 @@ class DecayDataBank;
  to send it to one or several Storage
 
  @author NT
+ @author BaM
  @version 1.0
  */
 //________________________________________________________________________

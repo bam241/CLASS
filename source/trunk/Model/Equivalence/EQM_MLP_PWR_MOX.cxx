@@ -18,14 +18,14 @@
 
 //________________________________________________________________________
 //
-//		EQM_MLP_MOX
+//		EQM_MLP_PWR_MOX
 //
 //	Equivalenve Model based on multi layer perceptron from TMVA (root cern)
 //	For REP MOX use
 //
 //________________________________________________________________________
 
-EQM_MLP_MOX::EQM_MLP_MOX(string TMVAWeightPath):EquivalenceModel(new CLASSLogger("EQM_MLP_MOX.log"))
+EQM_MLP_PWR_MOX::EQM_MLP_PWR_MOX(string TMVAWeightPath):EquivalenceModel(new CLASSLogger("EQM_MLP_PWR_MOX.log"))
 {
 	fTMVAWeightPath =  TMVAWeightPath;
 
@@ -52,7 +52,7 @@ EQM_MLP_MOX::EQM_MLP_MOX(string TMVAWeightPath):EquivalenceModel(new CLASSLogger
 }
 
 //________________________________________________________________________
-EQM_MLP_MOX::EQM_MLP_MOX(CLASSLogger* log, string TMVAWeightPath):EquivalenceModel(log)
+EQM_MLP_PWR_MOX::EQM_MLP_PWR_MOX(CLASSLogger* log, string TMVAWeightPath):EquivalenceModel(log)
 {
 	fTMVAWeightPath =  TMVAWeightPath;
 
@@ -79,7 +79,7 @@ EQM_MLP_MOX::EQM_MLP_MOX(CLASSLogger* log, string TMVAWeightPath):EquivalenceMod
 }
 
 //________________________________________________________________________
-TTree* EQM_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
+TTree* EQM_MLP_PWR_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
 {
 	TTree*   InputTree = new TTree("EQTMP", "EQTMP");
 	float Pu8   			 = 0;
@@ -137,7 +137,7 @@ TTree* EQM_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fer
 	return InputTree;
 }
 //________________________________________________________________________
-double EQM_MLP_MOX::ExecuteTMVA(TTree* theTree)
+double EQM_MLP_PWR_MOX::ExecuteTMVA(TTree* theTree)
 {
 	// --- Create the Reader object
 	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
@@ -178,7 +178,7 @@ double EQM_MLP_MOX::ExecuteTMVA(TTree* theTree)
 	return (double)val; //retourne teneur
 }
 //________________________________________________________________________
-double EQM_MLP_MOX::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
+double EQM_MLP_PWR_MOX::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
 {DBGL
 	return	ExecuteTMVA(CreateTMVAInputTree(Fissil,Fertil,BurnUp));
 }

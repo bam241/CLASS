@@ -7,6 +7,7 @@
  \brief Header file for XSMODEL class.
  
  
+ @author BaM
  @author BLG
  @version 1.0
  */
@@ -30,6 +31,7 @@ This is the mother class for methods related to XS prediction
  @see XSM_CLOSEST
  @see XSM_MLP
 
+ @author BaM
  @author BLG
  @version 1.0
  */
