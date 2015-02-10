@@ -350,6 +350,8 @@ EQM_NAME::EQM_NAME(/*parameters*/)
 	ZAI Pu9(94,239,0);
 	//...
 	fFissileList = Pu8*1+Pu9*1+ /*...*/;
+	
+	SetBuildFuelFirstGuess(0.04);
 }
 //_______________________________________________________________________
 double EQM_NAME::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
@@ -360,7 +362,8 @@ double EQM_NAME::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fe
 \end{minipage}
 \end{center}
 
-In the constructor (EQM\_NAME::EQM\_NAME) you have to fill two isotopic vectors named \textbf{fFissileList} and \textbf{fFertileList}. Don't declare these isotopic vector in the .hxx, there are already declared in the file src/EquivalenceModel.hxx. fFissileList is used by the FabricationPlant to do the chemical separation of the fissile element from the other present in stock. For instance, for the plutonium, add the ZAI $^{238}Pu$, $^{239}Pu$, $^{240}Pu$, $^{241}Pu$ and $^{242}Pu$. fFertile List is used by the FabricationPlant the same way fFissileList is used but you have to define a default \hyperref[sec:IsotopicVector]{IsotopicVector} to be used if you didn't provide a fertile stock to your FabricationPlant.  In the example given above the fertile is depleted uranium and  the proportion of each isotope is given ($^{234}U$ is unheeded). Now you have to build the function \textbf{GetFissileMolarFraction(IsotopicVector Fissil, IsotopicVector Fertil, double BurnUp)}. Its parameters are provided by the FabricationPlant and are :
+In the constructor (EQM\_NAME::EQM\_NAME) you have to fill two isotopic vectors named \textbf{fFissileList} and \textbf{fFertileList}. Don't declare these isotopic vector in the .hxx, there are already declared in the file src/EquivalenceModel.hxx. fFissileList is used by the FabricationPlant to do the chemical separation of the fissile element from the other present in stock. For instance, for the plutonium, add the ZAI $^{238}Pu$, $^{239}Pu$, $^{240}Pu$, $^{241}Pu$ and $^{242}Pu$. fFertile List is used by the FabricationPlant the same way fFissileList is used but you have to define a default \hyperref[sec:IsotopicVector]{IsotopicVector} to be used if you didn't provide a fertile stock to your FabricationPlant.  In the example given above the fertile is depleted uranium and  the proportion of each isotope is given ($^{234}U$ is unheeded). The function \textbf{SetBuildFuelFirstGuess} is not mandatory and the default set value is 0.04. This value correspond to a a fissile proportion in the fresh fuel and it is used for initialisation of EquivalenceModel::BuildFuel method, which is based on dichotomy.
+ Now you have to build the function \textbf{GetFissileMolarFraction(IsotopicVector Fissil, IsotopicVector Fertil, double BurnUp)}. Its parameters are provided by the FabricationPlant and are :
 
 \begin{itemize}
 \item \hyperref[sec:IsotopicVector]{IsotopicVector} Fissile : it is the proportion of each nucleus you give in the fFissileList plus the proportion of the nuclei that appears during the fabrication time (time given in the FabricationPlant constructor, is default is 2 years)
