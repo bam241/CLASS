@@ -113,7 +113,6 @@ DBGL
 		
 		WeightPuContent = MolarPuContent * MeanMolarPu / MeanMolar ;
 		PuMassNeeded = WeightPuContent  *  HMMass ;
-		cout << loopCount << endl;
 		loopCount++;
 	}
 
