@@ -177,13 +177,6 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 		// ----------------   Evolution
 
 		BatemanReactionMatrix = FissionXSMatrix[i];
-	/*	for(int u=0;u<fReverseMatrixIndex.size();u++)
-				for(int v=0;v<fReverseMatrixIndex.size();v++)
-					if(CaptureXSMatrix[i][u][v]!=0)
-						cout<<CaptureXSMatrix[i][u][v]<<endl;
-
-exit(0);
-*/
 		BatemanReactionMatrix += CaptureXSMatrix[i];
 		BatemanReactionMatrix += n2nXSMatrix[i];
 
@@ -201,11 +194,6 @@ exit(0);
 			BatemanMatrix = BatemanReactionMatrix;
 			BatemanMatrix *= Flux_k;
 			BatemanMatrix += fDecayMatrix ;
-/*for(int u=0;u<fReverseMatrixIndex.size();u++)
-				for(int v=0;v<fReverseMatrixIndex.size();v++)
-					if(BatemanMatrix[u][v]!=0)
-						cout<<BatemanMatrix[u][v]<<endl;
-exit(1);*/
 			SetTheMatrixToZero();
 			SetTheNucleiVectorToZero();
 
