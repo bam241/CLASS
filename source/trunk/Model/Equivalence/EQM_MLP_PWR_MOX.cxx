@@ -159,7 +159,6 @@ double EQM_MLP_PWR_MOX::ExecuteTMVA(TTree* theTree)
 	// Book method MLP
 	TString methodName = "MLP method";
 	reader->BookMVA( methodName, fTMVAWeightPath );
-	//theTree->SetBranchAddress("teneur",&teneur);
 	theTree->SetBranchAddress( "BU"   			,&BU 	);
 	theTree->SetBranchAddress( "U5_enrichment"  ,&U5_enrichment   )	;
 	theTree->SetBranchAddress( "Pu8"  			,&Pu8   );

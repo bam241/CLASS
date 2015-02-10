@@ -156,7 +156,7 @@ void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int 
 
 
 	if( LAMBDA_TOT == 0 ) //Initialization Looking for lambda such as the fissile content is GetBuildFuelFirstGuess() of HM
-	{	//cout<<"INITIALIZATION"<<endl;
+	{
 		double	MASS = 0 ; 
 		int ID_max = 0;
 		while( MASS < GetBuildFuelFirstGuess()*HMMass )
@@ -188,7 +188,6 @@ void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int 
 				j++;
 			}	
 			MASS = test.GetTotalMass() * 1e6; //in grams
-			//cout<<"LAMBDA_TOT "<<LAMBDA_TOT<<" MASS "<<MASS<<endl;
 		}
 	}
 
@@ -206,9 +205,7 @@ void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int 
 
 	else  if( DeltaM < 0) 
 	{
-		//cout <<"fOld_Lambda_Tot[f] "<<fOld_Lambda_Tot[f]<<" LAMBDA_TOT "<<LAMBDA_TOT<< endl;
 		LAMBDA_TOT = LAMBDA_TOT - fabs(fOld_Lambda_Tot - LAMBDA_TOT) / 2. ;
-		//cout<<"DM<0 LAMBDA_TOT "<<LAMBDA_TOT<<endl;
 		SetLambda(lambda,FirstStockID,LastStockID,LAMBDA_TOT );
 	}
 }

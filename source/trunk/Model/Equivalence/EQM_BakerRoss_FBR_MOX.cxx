@@ -131,7 +131,6 @@ double EQM_BakerRoss_FBR_MOX::GetFissileMolarFraction(IsotopicVector Fissile,Iso
 
 	FissileContent = (fReferenceFissilContent - SumWeightNFertile )/(SumWeightNFissile-SumWeightNFertile); //Baker & Ross formula
 
-    // FissileContent=(fReferenceFissilContent-(doubleveU5*U5_enrich+doubleveU8*(1-U5_enrich)))/(doublevePu8*Pu8+doublevePu9*pu9+doublevePu0*Pu0+doublevePu1*Pu1+doublevePu2*Pu2-(doubleveU5*U5_enrich+doubleveU8*(1-U5_enrich));
 
     return FissileContent;
 
