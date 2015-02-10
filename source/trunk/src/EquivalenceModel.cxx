@@ -4,16 +4,16 @@
 
 EquivalenceModel::EquivalenceModel():CLASSObject()
 {
-	fRelativMassPrecision = 1/1000.; //Mass precision
-	fMaxInterration = 100; // Max iterration in build fueld algorythum
+	fRelativMassPrecision = 1/10000.; //Mass precision
+	fMaxInterration = 10000; // Max iterration in build fueld algorythum
 	fFirstGuessFissilContent = 0.04;
 
 }
 
 EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 {
-	fRelativMassPrecision = 1/1000.; //Mass precision
-	fMaxInterration = 100; // Max iterration in build fueld algorythm
+	fRelativMassPrecision = 1/10000.; //Mass precision
+	fMaxInterration = 10000; // Max iterration in build fueld algorythm
 	fFirstGuessFissilContent = 0.04;
 
 }
@@ -69,11 +69,8 @@ DBGL
 		}
 		else if (loopCount > fMaxInterration)
 		{
-			for(int i=0 ; i < (int)FissilArray.size() + (int)FertilArray.size();i++ )
-				lambda[i]= -1;
-
-			WARNING << "Too much iterration in BuildFuel Method !  Fuel fabrication fail !!" << endl;
-			return lambda;
+			ERROR << "Too much iterration in BuildFuel Method ! Need improvement in fuel fabrication ! Ask for it or D.I.Y. !!" << endl;
+			exit(1);
 		}
 		
 		
@@ -116,6 +113,7 @@ DBGL
 		
 		WeightPuContent = MolarPuContent * MeanMolarPu / MeanMolar ;
 		PuMassNeeded = WeightPuContent  *  HMMass ;
+		cout << loopCount << endl;
 		loopCount++;
 	}
 
@@ -153,6 +151,7 @@ void EquivalenceModel::SetLambda(vector<double>& lambda ,int FirstStockID, int L
 void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int LastStockID, double DeltaM, vector<IsotopicVector> Stocks, double  HMMass)
 {
 	double	LAMBDA_TOT=0;
+	
 	for (int i = FirstStockID; i <=LastStockID ; i++)
 		LAMBDA_TOT+=lambda[i]	;
 
@@ -199,9 +198,9 @@ void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int 
 		fOld_Lambda_Tot = LAMBDA_TOT;
 		LAMBDA_TOT += (fLambda_max - LAMBDA_TOT)/2.;
 
-		if(fLambda_max -LAMBDA_TOT )/fLambda_max < 0.01) //if we get close to the total of the stocks
+		if( ( (fLambda_max - LAMBDA_TOT ) < 1)
+			&& ( fLambda_max - LAMBDA_TOT ) * Stocks.back().GetTotalMass() * 1e6 < HMMass *fRelativMassPrecision/2.) //if we get close to the total of the stocks
 				lambda[0]=-1;//error code;
-		//cout<<"DM>0 LAMBDA_TOT "<<LAMBDA_TOT<<endl;
 		else
 			SetLambda(lambda,FirstStockID,LastStockID,LAMBDA_TOT );
 	}
