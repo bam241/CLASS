@@ -70,9 +70,9 @@ class Reactor : public CLASSFacility
 	 \param backend: CLASSBackend which get the fuel after the cooling,
 	 \param creationtime: creation time in [s],
 	 \param lifetime: working time duration in [s],
-	 \param cycletime: duration of a cycle in [s],
+	 \param Power: Thermal power of the reactor in [W],
 	 \param HMMass: Mass of Heavy Metal in the Reactor in [t] of heavy metal,
-	 \param BurnUp: Burnup reach by the fuel at the end of the cycle in [GWd/t].
+	 \param CapacityFactor effective charge of the reactor, fraction between 0 & 1.
 	 */
 	Reactor(CLASSLogger* log, CLASSBackEnd* backend,
 		cSecond creationtime , cSecond lifetime, double Power,
@@ -88,8 +88,9 @@ class Reactor : public CLASSFacility
 	 \param creationtime: creation time in [s],
 	 \param lifetime: working time duration in [s],
 	 \param cycletime: duration of a cycle in [s],
+	 \param Power: Thermal power of the reactor in [W],
 	 \param HMMass: Mass of Heavy Metal in the Reactor in [t] of heavy metal,
-	 \param BurnUp: Burnup reach by the fuel at the end of the cycle in [GWd/t].
+	 \param CapacityFactor effective charge of the reactor, fraction between 0 & 1.
 	 */
 	Reactor(CLASSLogger* log,
 		FabricationPlant* fabricationplant, CLASSBackEnd* backend,
@@ -167,7 +168,6 @@ class Reactor : public CLASSFacility
 	 \param Power: Thermal power of the reactor in [W],
 	 \param HMMass: Mass of Heavy Metal in the Reactor in [t] of heavy metal,
 	 \param BurnUp: Burnup reach by the fuel at the end of the cycle in [GWd/t],
-	 \param CapacityFactor effective charge of the reactor, fraction between 0 & 1.
 	 */
 	Reactor(CLASSLogger* log, EvolutionData* evolutivedb, CLASSBackEnd* backend,
 		cSecond creationtime, cSecond lifetime,
