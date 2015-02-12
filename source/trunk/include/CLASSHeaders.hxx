@@ -1,5 +1,5 @@
-#ifndef _CLASSHEADERS_HXX_
-#define _CLASSHEADERS_HXX_
+#ifndef _CLASSHEADERS_
+#define _CLASSHEADERS_
 
 
 

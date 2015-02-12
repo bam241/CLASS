@@ -1,5 +1,5 @@
-#ifndef _XSMODEL_HXX
-#define _XSMODEL_HXX
+#ifndef _XSMODEL_
+#define _XSMODEL_
 
 
 /*!

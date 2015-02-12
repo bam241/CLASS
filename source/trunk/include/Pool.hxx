@@ -1,5 +1,5 @@
-#ifndef __Pool_HXX__
-#define __Pool_HXX__
+#ifndef _Pool_
+#define _Pool_
 /*!
  \file
  \brief Header file for Pool class.

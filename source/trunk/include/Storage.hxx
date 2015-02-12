@@ -1,5 +1,5 @@
-#ifndef __Storage_HXX__
-#define __Storage_HXX__
+#ifndef _Storage_
+#define _Storage_
 
 /*!
  \file 

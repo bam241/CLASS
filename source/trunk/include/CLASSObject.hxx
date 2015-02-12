@@ -1,6 +1,6 @@
 
-#ifndef _CLASSOBJECT_HXX
-#define _CLASSOBJECT_HXX
+#ifndef _CLASSOBJECT_
+#define _CLASSOBJECT_
 
 
 /*!

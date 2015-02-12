@@ -1,5 +1,5 @@
-#ifndef __Reactor_HXX__
-#define __Reactor_HXX__
+#ifndef _Reactor_
+#define _Reactor_
 
 /*!
  \file
