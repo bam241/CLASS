@@ -1,6 +1,6 @@
 
-#ifndef _CLASSBACKEND_HXX
-#define _CLASSBACKEND_HXX
+#ifndef _CLASSBACKEND_
+#define _CLASSBACKEND_
 
 
 /*!

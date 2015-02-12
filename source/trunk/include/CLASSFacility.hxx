@@ -1,6 +1,6 @@
 
-#ifndef _CLASSFACILITY_HXX
-#define _CLASSFACILITY_HXX
+#ifndef _CLASSFACILITY_
+#define _CLASSFACILITY_
 
 
 /*!

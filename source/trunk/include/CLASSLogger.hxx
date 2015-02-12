@@ -1,5 +1,5 @@
-#ifndef _LOG_CLASS_
-#define _LOG_CLASS_
+#ifndef _LOG_
+#define _LOG_
 
 
 /*!
@@ -43,8 +43,8 @@ using namespace std;
 
 
 
-#ifndef _LOGTYPE_CLASS
-#define _LOGTYPE_CLASS
+#ifndef _LOGTYPE_
+#define _LOGTYPE_
 
 //-----------------------------------------------------------------------------//
 //!handles output stream in CLASS
@@ -124,8 +124,8 @@ public:
 #endif
 
 
-#ifndef _CLASSLogger_CLASS_
-#define _CLASSLogger_CLASS_
+#ifndef _CLASSLogger_
+#define _CLASSLogger_
 
 //-----------------------------------------------------------------------------//
 //! Object to handle output messages

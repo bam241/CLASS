@@ -1,5 +1,5 @@
-#ifndef __DecayDataBank_HXX__
-#define __DecayDataBank_HXX__
+#ifndef _DecayDataBank_
+#define _DecayDataBank_
 
 /*!
  \file

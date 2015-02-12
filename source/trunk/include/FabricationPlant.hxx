@@ -1,5 +1,5 @@
-#ifndef __FabricationPlant_HXX__
-#define __FabricationPlant_HXX__
+#ifndef _FabricationPlant_
+#define _FabricationPlant_
 
 /*!
  \file

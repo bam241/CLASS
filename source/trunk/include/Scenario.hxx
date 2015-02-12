@@ -1,5 +1,5 @@
-#ifndef _SCENARIO_HXX_
-#define _SCENARIO_HXX_
+#ifndef _SCENARIO_
+#define _SCENARIO_
 /*!
  \file
  \brief Header file for CLASS classes.

@@ -1,5 +1,5 @@
-#ifndef __ISOTOPICVECTOR_HXX__
-#define __ISOTOPICVECTOR_HXX__
+#ifndef _ISOTOPICVECTOR_
+#define _ISOTOPICVECTOR_
 
 
 /*!

@@ -1,5 +1,5 @@
-#ifndef _CLASSConstante_HXX_
-#define _CLASSConstante_HXX_
+#ifndef _CLASSConstante_
+#define _CLASSConstante_
 
 //CLASS library
 #include "ZAIMass.hxx"

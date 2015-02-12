@@ -1,5 +1,5 @@
-#ifndef __EvolutionData_HXX__
-#define __EvolutionData_HXX__
+#ifndef _EvolutionData_
+#define _EvolutionData_
 
 /*!
  \file

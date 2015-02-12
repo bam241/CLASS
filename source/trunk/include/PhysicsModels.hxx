@@ -1,6 +1,6 @@
 
-#ifndef _PhysicsModels_HXX
-#define _PhysicsModels_HXX
+#ifndef _PhysicsModels_
+#define _PhysicsModels_
 
 
 /*!

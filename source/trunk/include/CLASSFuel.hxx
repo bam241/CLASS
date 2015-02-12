@@ -1,6 +1,6 @@
 
-#ifndef _CLASSFUEL_HXX
-#define _CLASSFUEL_HXX
+#ifndef _CLASSFUEL_
+#define _CLASSFUEL_
 
 
 /*!

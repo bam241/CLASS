@@ -1,5 +1,5 @@
-#ifndef __SeparationPlant_HXX__
-#define __SeparationPlant_HXX__
+#ifndef _SeparationPlant_
+#define _SeparationPlant_
 /*!
  \file
  \brief Header file for SeparationPlant class.
