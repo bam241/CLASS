@@ -1,5 +1,5 @@
-#ifndef _IMRK4_HXX
-#define _IMRK4_HXX
+#ifndef _IMRK4_
+#define _IMRK4_
 
 
 /*!
