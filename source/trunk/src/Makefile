@@ -16,10 +16,10 @@ ROOTGLIBS	= `root-config --glibs`
 ######### nothing to change from here #########
 INCLUDES	= $(LOCALINC)/*.hxx 
 LIBNAME 	= CLASSpkg
-OBJS		= 	CLASSLogger.o \
+OBJS		= CLASSLogger.o \
 			ZAI.o ZAIDict.o \
 			IsotopicVector.o IsotopicVectorDict.o \
-			ZAIMass.o \
+			ZAIMass.o ZAIHeat.o ZAITox.o \
 			CLASSNucleiFiliation.o \
 			CLASSObject.o CLASSObjectDict.o\
 			CLASSFacility.o CLASSFacilityDict.o\
@@ -49,7 +49,8 @@ OBJMODEL	=	$(EQM)/EQM_MLP_PWR_MOX.o $(EQM)/EQM_QUAD_PWR_MOX.o $(EQM)/EQM_POL_PWR
 ROOTOBJS	= 	CLASSLogger.o \
 			ZAI.o ZAIDict.o \
 			IsotopicVector.o IsotopicVectorDict.o \
-			ZAIMass.o \
+			ZAIMass.o ZAIHeat.o ZAITox.o \
+			CLASSNucleiFiliation.o \
 			CLASSObject.o CLASSObjectDict.o\
 			CLASSFacility.o CLASSFacilityDict.o\
 			Reactor.o ReactorDict.o \
@@ -59,7 +60,7 @@ ROOTOBJS	= 	CLASSLogger.o \
 			Pool.o PoolDict.o\
 			SeparationPlant.o SeparationPlantDict.o\
 			DecayDataBank.o \
-			DynamicalSystem.o\
+			IrradiationModel.o \
 			CLASSFuel.o\
 			EvolutionData.o EvolutionDataDict.o \
 			CLASSFuelPlan.o\

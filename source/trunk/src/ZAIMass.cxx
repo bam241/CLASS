@@ -1,6 +1,6 @@
 #include "ZAIMass.hxx"
 
-#include "CLASSConstante.hxx"
+//#include "CLASSConstante.hxx"
 
 #include "stdlib.h"
 #include <fstream>
@@ -67,7 +67,7 @@ double ZAIMass::GetMass(ZAI zai ) const
 
 double ZAIMass::GetMass(const IsotopicVector IV) const
 {
-
+	double AVOGADRO = 6.02214129e23;
 	double TotalMass = 0;
 
 	map<ZAI ,double >::iterator it;
