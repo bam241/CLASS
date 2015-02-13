@@ -31,16 +31,11 @@ CLASSNucleiFiliation::CLASSNucleiFiliation(const CLASSNucleiFiliation& CNF):CLAS
 {
 	fNucleiFiliation = CNF.GetNucleiFIliation();
 }
-
-
-
 //________________________________________________________________________
 CLASSNucleiFiliation::~CLASSNucleiFiliation()
 {
-	
+	fNucleiFiliation.clear() ;
 }
-
-
 //________________________________________________________________________
 void CLASSNucleiFiliation::Add( ZAI Mother, IsotopicVector Daughter )
 {
@@ -125,6 +120,7 @@ void CLASSNucleiFiliation::FiliationCleanUp(map<ZAI, int> GoodNuclei, CLASSNucle
 	}
 	DBGL
 }
+//________________________________________________________________________
 
 ZAI CLASSNucleiFiliation::GetArtificialDecay(ZAI Mother)
 {
@@ -257,8 +253,6 @@ void CLASSNucleiFiliation::NormalizeBranchingRatio(ZAI Mother, double Value)
 	
 	DBGL
 }
-
-
 
 
 //________________________________________________________________________

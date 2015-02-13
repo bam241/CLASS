@@ -676,3 +676,21 @@ void IrradiationModel::SetSpectrumType(string type)
 		fSpectrumType=type;
 
 }
+//________________________________________________________________________
+double IrradiationModel::GetDecayConstant(const ZAI& zai) const
+{
+	map<ZAI ,double> DecayConstante = fDecayConstante.GetIsotopicQuantity();
+
+	map<ZAI ,double>::iterator it;
+	it = DecayConstante.find(zai);
+
+
+	if ( it != DecayConstante.end() )
+	{
+		return it->second;
+	}
+	else
+	{
+		return 0;
+	}
+}
