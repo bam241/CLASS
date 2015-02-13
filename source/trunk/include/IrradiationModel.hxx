@@ -74,7 +74,7 @@ class IrradiationModel : public CLASSObject
 	 \param Power : constant power to use for irradation [W]
 	 \param irradiationtime : irradiation time [s]
 	 */
-	virtual	 EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime) = 0 ;
+	virtual	 EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime) {return EvolutionData();} 
 	//}
 
 	
@@ -96,6 +96,10 @@ class IrradiationModel : public CLASSObject
 	void BuildReactionFiliation();
 
 	string GetSpectrumType(){return fSpectrumType;}				//!< Get the type of neutron spectrum (thermal or fast)
+
+	IsotopicVector GetDecayConstant() const {return fDecayConstante;}//!< Get the decay constants
+	double GetDecayConstant(const ZAI& zai) const;//!< Get the decay constants of ZAI
+
 
 	//@}
 	
