@@ -324,7 +324,7 @@ void MainWin::Start(vector<string> VFileName)
 		stringstream tmp;
 		tmp.str("");
 		tmp<<"Dir#"<< step <<" @ "<<fDATA->GetTimeVector()[0][step]/cYear;
-		fScenarTimeCBox->AddEntry(tmp.str().c_str(),l);
+		fScenarTimeCBox->AddEntry(tmp.str().c_str(),step);
 	}
 	
 	fScenarTimeCBox->Associate(this);
@@ -613,7 +613,8 @@ void MainWin::Plot()
 
 	if(toplotPower.size() != 0)
 		fDATA->PlotPower(toplotPower);
-
+	
+	
 	for(int i=0; i < fNumberOfParc; i++)
 	{
 
@@ -677,9 +678,38 @@ void MainWin::Plot()
 						}
 		}
 	}
+	
 
+	int StartingStep = fTimeStep;
+	cSecond FinalTime =(cSecond) fToxTimeLast;
+	int NStep = fToxNstep;
+	bool IsLinear = fIsLinear;
+	if(!fIsByMother)
+	{
+		StartingStep  = 0;
+		FinalTime = 0;
+		NStep = 0;
+		IsLinear = true;
+	}
+	
+	
 	if(toplot.size() != 0)
-		fDATA->PlotInv(toplot);
+	{
+		for(int i = 0 ; i<3 ; i++ )
+		{
+			if(fCheckIVPlot[i]->GetState()==kButtonDown)
+			{	fDATA->PlotInv(toplot,fIsByMother,StartingStep,FinalTime,NStep,IsLinear);
+				break;
+			}
+		}
+		
+		if(fButtonRadiotox->GetState()==kButtonDown)
+			fDATA->PlotTox(toplot,fIsByMother,StartingStep,FinalTime,NStep,IsLinear);
+		
+		if(fButtonHeat->GetState()==kButtonDown)
+			fDATA->PlotHeat(toplot,fIsByMother,StartingStep,FinalTime,NStep,IsLinear);
+
+	}
 	
 }
 void MainWin::Conversionxml()
