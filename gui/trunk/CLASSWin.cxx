@@ -438,7 +438,7 @@ void MainWin::Plot()
 	}
 
 	if(toplot.size() != 0)
-		fDATA->Plot(toplot);
+		fDATA->PlotInv(toplot);
 	
 }
 void MainWin::Conversionxml()

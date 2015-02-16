@@ -13,6 +13,8 @@
 
 #include "ZAI.hxx"
 #include "CLASSPlotElement.hxx"
+#include "CLASSHeaders.hxx"
+
 
 using namespace std;
 
@@ -50,17 +52,17 @@ public :
 	string GetTittleOutName(CLASSPlotElement toplot);
 	
 	
-	vector<vector<cSecond>> GetTimeVector() {return fTimeVector;}
+	vector< vector<cSecond> > GetTimeVector() {return fTimeVector;}
 
 	
 	void ReadName();
 	void ReadZAI();
-	void PlotTTree(vector<CLASSPlotElement> toplot, string opt = "L");
+	void BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId = 0, string opt = "L");
 	
-	void PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain = false, int StartingStep = 0, cSesond FinalTime = 0, int StepNUmber = 0, bool LinBin = true , string opt = "L");
+	void PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain = false, int StartingStep = 0, cSecond FinalTime = 0, int StepNUmber = 0, bool LinBin = true , string opt = "L");
 	
-	void PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain = false, int StartingStep = 0, cSesond FinalTime = 0, int StepNUmber = 0, bool LinBin = true , string opt = "L");
-	void PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain = false, int StartingStep = 0, cSesond FinalTime = 0, int StepNUmber = 0, bool LinBin = true , string opt = "L");
+	void PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain = false, int StartingStep = 0, cSecond FinalTime = 0, int StepNUmber = 0, bool LinBin = true , string opt = "L");
+	void PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain = false, int StartingStep = 0, cSecond FinalTime = 0, int StepNUmber = 0, bool LinBin = true , string opt = "L");
 	
 	void PlotPower(vector<CLASSPlotElement> toplot, string opt = "L");
 	void PlotTTreePower(vector<CLASSPlotElement> toplot, string opt = "L");
@@ -75,7 +77,9 @@ public :
 
 
 	void AddFile(TString filemname);
-	TCanvas* fCNuclei;
+	TCanvas* fCNucleiInv;
+	TCanvas* fCNucleiTox;
+	TCanvas* fCNucleiHeat;
 	TCanvas* fCPower;
 	
 	
@@ -92,27 +96,29 @@ private :
 	vector< TTree* > fData;
 	vector<TFile* >	 fFileIn;
 
-	TGraph** fGraph;
-	TGraph* fGraphSumOfSelected;
-
-	
-	
-	TLatex** fLegend;
-	TLatex* fLegendSumOfSelected;
-	int fNumberGraphIterator;
+	TGraph** fGraphInv;
+	TGraph* fGraphInvSumOfSelected;
+	TLatex** fLegendInv;
+	TLatex* fLegendInvSumOfSelected;
+	int fNumberGraphInvIterator;
 
 	TGraph**  fGraphPower;
 	TLatex** fLegendPower;
 	int fNumberGraphPowerIterator;
 
-	TGraph** fGraph;
-	TGraph* fGraphSumOfSelected;
-	TLatex** fLegend;
-	TLatex* fLegendSumOfSelected;
-	int fNumberGraphIterator;
+	TGraph** fGraphTox;
+	TGraph* fGraphToxSumOfSelected;
+	TLatex** fLegendTox;
+	TLatex* fLegendToxSumOfSelected;
+	int fNumberGraphToxIterator;
 	
-	
-	vector<vector<cSecond>> fTimeVector;
+	TGraph** fGraphHeat;
+	TGraph* fGraphHeatSumOfSelected;
+	TLatex** fLegendHeat;
+	TLatex* fLegendHeatSumOfSelected;
+	int fNumberGraphHeatIterator;
+
+	vector< vector<cSecond> > fTimeVector;
 
 	
 	
