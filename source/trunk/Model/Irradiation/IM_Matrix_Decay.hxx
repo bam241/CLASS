@@ -11,6 +11,7 @@
  @version 2.0
  */
 #include "IrradiationModel.hxx"
+#include "TMatrix.h"
 
 
 using namespace std;
@@ -61,21 +62,15 @@ class IM_Matrix_Decay : public IrradiationModel
 	//@}
 	
 	
-	/// virtual method called to perform the irradiation calculation using a set of cross section.
-	/*!
-	 Perform the Irradiation Calcultion using the XSSet data
-	 \param IsotopicVector IV isotopic vector to irradiate
-	 \param EvolutionData XSSet set of corss section to use to perform the evolution calculation
-	 */
-	virtual EvolutionData GenerateEvolutionData(IsotopicVector IV, EvolutionData XSSet, double Power, double cycletime);
-	//}
+	IsotopicVector GetDecay(IsotopicVector Mother_IV, time);
 	
-	
+	TMatrixT<double>	ExponentialCalculation(TMatrixT<double> myMatrix);
 	
 	
 	private :
 	
-	
+	TMatrixT<double>	fExponentialDecayMatrix;	//!< Matrix with half life for each nuclei
+
 	
 };
 
