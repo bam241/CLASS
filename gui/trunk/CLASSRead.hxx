@@ -57,6 +57,8 @@ public :
 	
 	void ReadName();
 	void ReadZAI();
+	void ReadTime();
+
 	void BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId = 0, string opt = "L");
 	
 	void PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain = false, int StartingStep = 0, cSecond FinalTime = 0, int StepNUmber = 0, bool LinBin = true , string opt = "L");
