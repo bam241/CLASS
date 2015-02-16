@@ -226,6 +226,34 @@ void CLASSRead::ReadZAI()
 
 
 //________________________________________________________________________
+void CLASSRead::ReadTime()
+{
+	
+	vector< vector<cSecond> > FullTimeVector;
+
+	for (int i = 0; i < (int)fData.size() ; i++)
+	{
+		vector<cSecond> TimeVector;
+		cSecond timeStep;
+		fData[i]->SetBranchStatus("AbsTime",1);
+		fData[i]->SetBranchAddress("AbsTime", &timeStep);
+		
+		Long64_t nentries = fData[i]->GetEntries();
+		
+		for(int j = 0; j < nentries; j++)
+		{
+			fData[i]->GetEntry(j);
+			TimeVector.push_back(timeStep);
+		}
+		FullTimeVector.push_back(TimeVector);
+		fData[i]->ResetBranchAddresses();
+	}
+	fTimeVector = FullTimeVector;
+	
+}
+
+
+//________________________________________________________________________
 //________________________________________________________________________
 //________________________________________________________________________
 //________________________________________________________________________
