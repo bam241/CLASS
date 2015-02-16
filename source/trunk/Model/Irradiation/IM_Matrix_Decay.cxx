@@ -15,7 +15,7 @@
 
 #include <TGraph.h>
 #include <TString.h>
-
+#include <TMatrixT.h>
 
 #include <sstream>
 #include <string>
@@ -93,13 +93,21 @@ TMatrixT<double> IM_Matrix_Decay::ExponentialCalculation(TMatrixT<double> myMatr
 }
 
 
-IsotopicVector IM_Matrix_Decay::GetDecay(IsotopicVector Mother_IV, time)
+IsotopicVector IM_Matrix_Decay::GetDecay(IsotopicVector Mother_IV, double time)
 {
 	
+	IsotopicVector DecayIV;
 	
-	TMatrixT<double>  NMatrix =  TMatrixT<double>(decayindex.size(),1))
+	TMatrixT<double>  NMatrix_0 =  TMatrixT<double>(fReverseMatrixIndex.size(),1);
+	TMatrixT<double>  NMatrix_t =  TMatrixT<double>(fReverseMatrixIndex.size(),1);
 	for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
-		NMatrix[i] = 0;
+	{
+		NMatrix_0[i] = 0;
+		NMatrix_t[i] = 0;
+	}
+	
+	
+	
 	{	// Filling the t=0 State;
 		map<ZAI, double > isotopicquantity = Mother_IV.GetIsotopicQuantity();
 		
@@ -119,7 +127,7 @@ IsotopicVector IM_Matrix_Decay::GetDecay(IsotopicVector Mother_IV, time)
 				it2 = fMatrixIndex.find( ZAI(-3,-3,-3) );
 			
 			
-			NMatrix[ (*it2).second ][0] = (*it).second ;
+			NMatrix_0[ (*it2).second ][0] = (*it).second ;
 			
 			
 		}
@@ -127,6 +135,23 @@ IsotopicVector IM_Matrix_Decay::GetDecay(IsotopicVector Mother_IV, time)
 		isotopicquantity.clear();
 	}
 	
+	
+	TMatrixT<double> exp_T_Matrix = TMatrixT<double>(fReverseMatrixIndex.size(),fReverseMatrixIndex.size());
+	for(int j = 0; j < (int)fReverseMatrixIndex.size(); j++)
+		for(int k = 0; k < (int)fReverseMatrixIndex.size(); k++)
+		{
+			if(k == j)	exp_T_Matrix[j][k] = exp(time);
+			else 		exp_T_Matrix[j][k] = 0;
+		}
+
+	NMatrix_t = fExponentialDecayMatrix * exp_T_Matrix * NMatrix_0;
+	
+	for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
+	{
+		DecayIV += fReverseMatrixIndex[i]* NMatrix_t[i][0];
+		
+	}
+	return DecayIV;
 	
 }
 
