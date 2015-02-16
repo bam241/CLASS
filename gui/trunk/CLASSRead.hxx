@@ -48,12 +48,20 @@ public :
 	string GetBranchInName(CLASSPlotElement toplot);
 	string GetLegendOutName(CLASSPlotElement toplot);
 	string GetTittleOutName(CLASSPlotElement toplot);
+	
+	
+	vector<vector<cSecond>> GetTimeVector() {return fTimeVector;}
 
 	
 	void ReadName();
 	void ReadZAI();
 	void PlotTTree(vector<CLASSPlotElement> toplot, string opt = "L");
-	void Plot(vector<CLASSPlotElement> toplot, string opt = "L");
+	
+	void PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain = false, int StartingStep = 0, cSesond FinalTime = 0, int StepNUmber = 0, bool LinBin = true , string opt = "L");
+	
+	void PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain = false, int StartingStep = 0, cSesond FinalTime = 0, int StepNUmber = 0, bool LinBin = true , string opt = "L");
+	void PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain = false, int StartingStep = 0, cSesond FinalTime = 0, int StepNUmber = 0, bool LinBin = true , string opt = "L");
+	
 	void PlotPower(vector<CLASSPlotElement> toplot, string opt = "L");
 	void PlotTTreePower(vector<CLASSPlotElement> toplot, string opt = "L");
 
@@ -87,6 +95,8 @@ private :
 	TGraph** fGraph;
 	TGraph* fGraphSumOfSelected;
 
+	
+	
 	TLatex** fLegend;
 	TLatex* fLegendSumOfSelected;
 	int fNumberGraphIterator;
@@ -95,7 +105,17 @@ private :
 	TLatex** fLegendPower;
 	int fNumberGraphPowerIterator;
 
+	TGraph** fGraph;
+	TGraph* fGraphSumOfSelected;
+	TLatex** fLegend;
+	TLatex* fLegendSumOfSelected;
+	int fNumberGraphIterator;
+	
+	
+	vector<vector<cSecond>> fTimeVector;
 
+	
+	
 	double Xmin;
 	double Xmax;
 	double Ymin;

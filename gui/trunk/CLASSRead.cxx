@@ -216,7 +216,7 @@ void CLASSRead::ReadZAI()
 //________________________________________________________________________
 //________________________________________________________________________
 //________________________________________________________________________
-void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
+void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, string opt)
 {
 
 	if(fGraph)
@@ -224,12 +224,7 @@ void CLASSRead::Plot(vector<CLASSPlotElement> toplot, string opt)
 		for(int i=0; i < fNumberGraphIterator;i++) delete fGraph[i];
 		delete [] fGraph;
 	}
-/*	if(fhr)
-	{
-		delete fhr;
-		fhr = 0;
-	}
-*/	if(fLegendSumOfSelected)
+	if(fLegendSumOfSelected)
 		delete fLegendSumOfSelected;
 	if(fGraphSumOfSelected)
 		delete fGraphSumOfSelected;
