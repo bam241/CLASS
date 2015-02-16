@@ -62,7 +62,7 @@ class IM_Matrix_Decay : public IrradiationModel
 	//@}
 	
 	
-	IsotopicVector GetDecay(IsotopicVector Mother_IV, time);
+	IsotopicVector GetDecay(IsotopicVector Mother_IV, double time);
 	
 	TMatrixT<double>	ExponentialCalculation(TMatrixT<double> myMatrix);
 	
