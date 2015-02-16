@@ -19,7 +19,6 @@
 #include "TGraph.h"
 #include "TString.h"
 
-#include "CLASSHeaders.hxx"
 
 using namespace std;
 // for gcc3.2.3 only
@@ -94,14 +93,28 @@ CLASSRead::CLASSRead(TString filename)
 		fData.push_back( (TTree*)gDirectory->Get(fFileIn.back()->GetListOfKeys()->At(fFileIn.back()->GetNkeys()-1)->GetName() ) );
 	}
 
-	fCNuclei = 0;
-	fGraph = 0;
-	fLegend = 0;
-	fNumberGraphIterator = 0;
-	fGraphSumOfSelected = 0;
-	fLegendSumOfSelected = 0;
+	fCNucleiInv = 0;
+	fGraphInv = 0;
+	fLegendInv = 0;
+	fNumberGraphInvIterator = 0;
+	fGraphInvSumOfSelected = 0;
+	fLegendInvSumOfSelected = 0;
 
+	fCNucleiTox = 0;
+	fGraphTox = 0;
+	fLegendTox = 0;
+	fNumberGraphToxIterator = 0;
+	fGraphToxSumOfSelected = 0;
+	fLegendToxSumOfSelected = 0;
 
+	fCNucleiHeat = 0;
+	fGraphHeat = 0;
+	fLegendHeat = 0;
+	fNumberGraphHeatIterator = 0;
+	fGraphHeatSumOfSelected = 0;
+	fLegendHeatSumOfSelected = 0;
+
+	
 	fCPower = 0;
 	fGraphPower = 0;
 	fLegendPower = 0;
@@ -216,37 +229,37 @@ void CLASSRead::ReadZAI()
 //________________________________________________________________________
 //________________________________________________________________________
 //________________________________________________________________________
-void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, string opt)
+void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int StartingStep, cSecond FinalTime, int StepNUmber, bool LinBin, string opt)
 {
 
-	if(fGraph)
+	if(fGraphInv)
 	{
-		for(int i=0; i < fNumberGraphIterator;i++) delete fGraph[i];
-		delete [] fGraph;
+		for(int i=0; i < fNumberGraphInvIterator;i++) delete fGraphInv[i];
+		delete [] fGraphInv;
 	}
-	if(fLegendSumOfSelected)
-		delete fLegendSumOfSelected;
-	if(fGraphSumOfSelected)
-		delete fGraphSumOfSelected;
+	if(fLegendInvSumOfSelected)
+		delete fLegendInvSumOfSelected;
+	if(fGraphInvSumOfSelected)
+		delete fGraphInvSumOfSelected;
 
-	if(fLegend)
+	if(fLegendInv)
 	{
-		for(int i=0; i < fNumberGraphIterator;i++) delete fLegend[i];
-		delete [] fLegend;
+		for(int i=0; i < fNumberGraphInvIterator;i++) delete fLegendInv[i];
+		delete [] fLegendInv;
 	}
-	if(fCNuclei && gROOT->FindObject("c_Nuclei"))
-	{	delete fCNuclei;
-		fCNuclei=0;
+	if(fCNucleiInv && gROOT->FindObject("c_NucleiInv"))
+	{	delete fCNucleiInv;
+		fCNucleiInv=0;
 	}
-	fCNuclei = new TCanvas("c_Nuclei","Nuclei",50,110,400,300);
+	fCNucleiInv = new TCanvas("c_NucleiInv","NucleiInv",50,110,400,300);
 
 
-	fGraph = new TGraph*[toplot.size()];
-	fLegend = new TLatex*[toplot.size()];
+	fGraphInv = new TGraph*[toplot.size()];
+	fLegendInv = new TLatex*[toplot.size()];
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
-		fGraph[i] = 0;
-		fLegend[i] = 0;
+		fGraphInv[i] = 0;
+		fLegendInv[i] = 0;
 	}
 
 	vector<CLASSPlotElement> toplotTTree[fData.size()];
@@ -258,7 +271,7 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, string opt)
 	Ymin = 1.e36;
 	Ymax = -1.e36;
 
-	fNumberGraphIterator = 0;
+	fNumberGraphInvIterator = 0;
 	bool SumOfSelected = false;
 
 	if(toplot[0].fTreeId == -1 )
@@ -277,24 +290,25 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, string opt)
 	{
 		if(i == 1) out += " same";
 		if(toplotTTree[i].size() !=0)
-			PlotTTree(toplotTTree[i], out);
+			if(!DecayChain)
+				BuildTGraph(toplotTTree[i], 0, out);
 
 	}
-	fCNuclei->cd();
+	fCNucleiInv->cd();
 
-	double X_Sum[fGraph[0]->GetN()];
-	double Y_Sum[fGraph[0]->GetN()];
+	double X_Sum[fGraphInv[0]->GetN()];
+	double Y_Sum[fGraphInv[0]->GetN()];
 
 	if(SumOfSelected)
 	{
-		for (int i = 0; i < (int)fNumberGraphIterator; i++)
+		for (int i = 0; i < (int)fNumberGraphInvIterator; i++)
 		{
 
-			for(int j = 0; j < fGraph[i]->GetN(); j++)
+			for(int j = 0; j < fGraphInv[i]->GetN(); j++)
 			{
 				double x;
 				double y;
-				fGraph[i]->GetPoint(j, x, y);
+				fGraphInv[i]->GetPoint(j, x, y);
 				if(i == 0)
 					X_Sum[j] = x;
 				if(i == 0)
@@ -305,7 +319,7 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, string opt)
 		}
 
 
-		for (int i =0; i < fGraph[0]->GetN(); i++)
+		for (int i =0; i < fGraphInv[0]->GetN(); i++)
 		{
 			if(X_Sum[i] > Xmax) Xmax = X_Sum[i];
 			if(X_Sum[i] < Xmin) Xmin = X_Sum[i];
@@ -316,7 +330,7 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, string opt)
 
 
 
-	TH1F*	  fhr = fCNuclei->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
+	TH1F*	  fhr = fCNucleiInv->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
 	string Xtitle="Time [year]";
 	string Ytitle="Mass [kg]";
 	fhr->SetXTitle(Xtitle.c_str());
@@ -328,62 +342,62 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, string opt)
 
 	if(SumOfSelected)
 	{
-		fGraphSumOfSelected = new TGraph(fGraph[0]->GetN(), X_Sum, Y_Sum );
-		fGraphSumOfSelected->SetName("Sum_Of_Selected");
-		fGraphSumOfSelected->SetTitle("Sum Of Selected");
-		fGraphSumOfSelected->SetLineColor(CurveColor(fNumberGraphIterator));
-		fGraphSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphIterator));
-		fGraphSumOfSelected->SetMarkerStyle(10);
-		fGraphSumOfSelected->Draw(out.c_str());
-		fGraphSumOfSelected->SetLineColor(CurveColor(fNumberGraphIterator));
-		fGraphSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphIterator));
+		fGraphInvSumOfSelected = new TGraph(fGraphInv[0]->GetN(), X_Sum, Y_Sum );
+		fGraphInvSumOfSelected->SetName("Sum_Of_Selected");
+		fGraphInvSumOfSelected->SetTitle("Sum Of Selected");
+		fGraphInvSumOfSelected->SetLineColor(CurveColor(fNumberGraphInvIterator));
+		fGraphInvSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphInvIterator));
+		fGraphInvSumOfSelected->SetMarkerStyle(10);
+		fGraphInvSumOfSelected->Draw(out.c_str());
+		fGraphInvSumOfSelected->SetLineColor(CurveColor(fNumberGraphInvIterator));
+		fGraphInvSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphInvIterator));
 
 		double x;
 		double y;
 		double x_0;
 		double y_0;
-		fGraphSumOfSelected->GetPoint(1, x_0, y_0);
-		fGraphSumOfSelected->GetPoint(fGraphSumOfSelected->GetN()-1, x, y);
+		fGraphInvSumOfSelected->GetPoint(1, x_0, y_0);
+		fGraphInvSumOfSelected->GetPoint(fGraphInvSumOfSelected->GetN()-1, x, y);
 
-		fLegendSumOfSelected = new TLatex(x_0+0.6*(x-x_0),y_0+1.05*(y-y_0),"Sum_Of_Selected");
-		fLegendSumOfSelected->SetTextSize(0.05);
-		fLegendSumOfSelected->SetTextFont(132);
-		fLegendSumOfSelected->SetTextColor(CurveColor(fNumberGraphIterator));
-		fLegendSumOfSelected->Draw();
+		fLegendInvSumOfSelected = new TLatex(x_0+0.6*(x-x_0),y_0+1.05*(y-y_0),"Sum_Of_Selected");
+		fLegendInvSumOfSelected->SetTextSize(0.05);
+		fLegendInvSumOfSelected->SetTextFont(132);
+		fLegendInvSumOfSelected->SetTextColor(CurveColor(fNumberGraphInvIterator));
+		fLegendInvSumOfSelected->Draw();
 
 
 	}
 
 
-	for (int i = 0; i < (int)fNumberGraphIterator; i++)
+	for (int i = 0; i < (int)fNumberGraphInvIterator; i++)
 	{
 		if( i !=0 || SumOfSelected) out += " same";
 
-		fGraph[i]->SetName(GetTittleOutName(toplot[i]).c_str());
-		fGraph[i]->SetTitle(GetTittleOutName(toplot[i]).c_str());
-		fGraph[i]->SetLineColor(CurveColor(i));
-		fGraph[i]->SetMarkerColor(CurveColor(i));
-		fGraph[i]->SetMarkerStyle(10);
-		fGraph[i]->Draw(out.c_str());
-		fGraph[i]->SetLineColor(CurveColor(i));
-		fGraph[i]->SetMarkerColor(CurveColor(i));
+		fGraphInv[i]->SetName(GetTittleOutName(toplot[i]).c_str());
+		fGraphInv[i]->SetTitle(GetTittleOutName(toplot[i]).c_str());
+		fGraphInv[i]->SetLineColor(CurveColor(i));
+		fGraphInv[i]->SetMarkerColor(CurveColor(i));
+		fGraphInv[i]->SetMarkerStyle(10);
+		fGraphInv[i]->Draw(out.c_str());
+		fGraphInv[i]->SetLineColor(CurveColor(i));
+		fGraphInv[i]->SetMarkerColor(CurveColor(i));
 
 		double x;
 		double y;
 		double x_0;
 		double y_0;
-		fGraph[i]->GetPoint(1, x_0, y_0);
+		fGraphInv[i]->GetPoint(1, x_0, y_0);
 		
-		fGraph[i]->GetPoint(fGraph[i]->GetN()-1, x, y);
+		fGraphInv[i]->GetPoint(fGraphInv[i]->GetN()-1, x, y);
 
-		fLegend[i] = new TLatex(x_0+0.6*(x-x_0),y_0+1.05*(y-y_0),GetLegendOutName(toplot[i]).c_str());
-		fLegend[i]->SetTextSize(0.05);
-		fLegend[i]->SetTextFont(132);
-		fLegend[i]->SetTextColor(CurveColor(i));
-		fLegend[i]->Draw();
+		fLegendInv[i] = new TLatex(x_0+0.6*(x-x_0),y_0+1.05*(y-y_0),GetLegendOutName(toplot[i]).c_str());
+		fLegendInv[i]->SetTextSize(0.05);
+		fLegendInv[i]->SetTextFont(132);
+		fLegendInv[i]->SetTextColor(CurveColor(i));
+		fLegendInv[i]->Draw();
 	}
 
-	fCNuclei->Update();
+	fCNucleiInv->Update();
 
 
 
@@ -391,9 +405,377 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, string opt)
 }
 
 //________________________________________________________________________
-void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
+void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int StartingStep, cSecond FinalTime, int StepNUmber, bool LinBin, string opt)
+{
+	
+	if(fGraphTox)
+	{
+		for(int i=0; i < fNumberGraphToxIterator;i++) delete fGraphTox[i];
+		delete [] fGraphTox;
+	}
+	if(fLegendToxSumOfSelected)
+		delete fLegendToxSumOfSelected;
+	if(fGraphToxSumOfSelected)
+		delete fGraphToxSumOfSelected;
+	
+	if(fLegendTox)
+	{
+		for(int i=0; i < fNumberGraphToxIterator;i++) delete fLegendTox[i];
+		delete [] fLegendTox;
+	}
+	if(fCNucleiTox && gROOT->FindObject("c_NucleiTox"))
+	{	delete fCNucleiTox;
+		fCNucleiTox=0;
+	}
+	fCNucleiTox = new TCanvas("c_NucleiTox","NucleiTox",50,110,400,300);
+	
+	
+	fGraphTox = new TGraph*[toplot.size()];
+	fLegendTox = new TLatex*[toplot.size()];
+	for (int i = 0; i < (int)toplot.size(); i++)
+	{
+		fGraphTox[i] = 0;
+		fLegendTox[i] = 0;
+	}
+	
+	vector<CLASSPlotElement> toplotTTree[fData.size()];
+	
+	
+	
+	Xmin = +1.e36;
+	Xmax =  -1.e36;
+	Ymin = 1.e36;
+	Ymax = -1.e36;
+	
+	fNumberGraphToxIterator = 0;
+	bool SumOfSelected = false;
+	
+	if(toplot[0].fTreeId == -1 )
+	{
+		SumOfSelected = true;
+		toplot.erase(toplot.begin());
+	}
+	
+	for (int i = 0; i < (int)toplot.size(); i++)
+	{
+		toplotTTree[toplot[i].fTreeId].push_back(toplot[i]);
+	}
+	
+	string out = opt;
+	for (int i = 0; i < (int)fData.size(); i++)
+	{
+		if(i == 1) out += " same";
+		if(toplotTTree[i].size() !=0)
+			if(!DecayChain)
+				BuildTGraph(toplotTTree[i], 0, out);
+		
+	}
+	fCNucleiTox->cd();
+	
+	double X_Sum[fGraphTox[0]->GetN()];
+	double Y_Sum[fGraphTox[0]->GetN()];
+	
+	if(SumOfSelected)
+	{
+		for (int i = 0; i < (int)fNumberGraphToxIterator; i++)
+		{
+			
+			for(int j = 0; j < fGraphTox[i]->GetN(); j++)
+			{
+				double x;
+				double y;
+				fGraphTox[i]->GetPoint(j, x, y);
+				if(i == 0)
+					X_Sum[j] = x;
+				if(i == 0)
+					Y_Sum[j] = y;
+				else
+					Y_Sum[j] += y;
+			}
+		}
+		
+		
+		for (int i =0; i < fGraphTox[0]->GetN(); i++)
+		{
+			if(X_Sum[i] > Xmax) Xmax = X_Sum[i];
+			if(X_Sum[i] < Xmin) Xmin = X_Sum[i];
+			if(Y_Sum[i] > Ymax) Ymax = Y_Sum[i];
+			if(Y_Sum[i] < Ymin) Ymin = Y_Sum[i];
+		}
+	}
+	
+	
+	
+	TH1F*	  fhr = fCNucleiTox->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
+	string Xtitle="Time [year]";
+	string Ytitle="Mass [kg]";
+	fhr->SetXTitle(Xtitle.c_str());
+	fhr->SetYTitle(Ytitle.c_str());
+	fhr->GetXaxis()->CenterTitle();
+	fhr->GetYaxis()->CenterTitle();
+	fhr->GetYaxis()->SetTitleOffset(1.25);
+	
+	
+	if(SumOfSelected)
+	{
+		fGraphToxSumOfSelected = new TGraph(fGraphTox[0]->GetN(), X_Sum, Y_Sum );
+		fGraphToxSumOfSelected->SetName("Sum_Of_Selected");
+		fGraphToxSumOfSelected->SetTitle("Sum Of Selected");
+		fGraphToxSumOfSelected->SetLineColor(CurveColor(fNumberGraphToxIterator));
+		fGraphToxSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphToxIterator));
+		fGraphToxSumOfSelected->SetMarkerStyle(10);
+		fGraphToxSumOfSelected->Draw(out.c_str());
+		fGraphToxSumOfSelected->SetLineColor(CurveColor(fNumberGraphToxIterator));
+		fGraphToxSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphToxIterator));
+		
+		double x;
+		double y;
+		double x_0;
+		double y_0;
+		fGraphToxSumOfSelected->GetPoint(1, x_0, y_0);
+		fGraphToxSumOfSelected->GetPoint(fGraphToxSumOfSelected->GetN()-1, x, y);
+		
+		fLegendToxSumOfSelected = new TLatex(x_0+0.6*(x-x_0),y_0+1.05*(y-y_0),"Sum_Of_Selected");
+		fLegendToxSumOfSelected->SetTextSize(0.05);
+		fLegendToxSumOfSelected->SetTextFont(132);
+		fLegendToxSumOfSelected->SetTextColor(CurveColor(fNumberGraphToxIterator));
+		fLegendToxSumOfSelected->Draw();
+		
+		
+	}
+	
+	
+	for (int i = 0; i < (int)fNumberGraphToxIterator; i++)
+	{
+		if( i !=0 || SumOfSelected) out += " same";
+		
+		fGraphTox[i]->SetName(GetTittleOutName(toplot[i]).c_str());
+		fGraphTox[i]->SetTitle(GetTittleOutName(toplot[i]).c_str());
+		fGraphTox[i]->SetLineColor(CurveColor(i));
+		fGraphTox[i]->SetMarkerColor(CurveColor(i));
+		fGraphTox[i]->SetMarkerStyle(10);
+		fGraphTox[i]->Draw(out.c_str());
+		fGraphTox[i]->SetLineColor(CurveColor(i));
+		fGraphTox[i]->SetMarkerColor(CurveColor(i));
+		
+		double x;
+		double y;
+		double x_0;
+		double y_0;
+		fGraphTox[i]->GetPoint(1, x_0, y_0);
+		
+		fGraphTox[i]->GetPoint(fGraphTox[i]->GetN()-1, x, y);
+		
+		fLegendTox[i] = new TLatex(x_0+0.6*(x-x_0),y_0+1.05*(y-y_0),GetLegendOutName(toplot[i]).c_str());
+		fLegendTox[i]->SetTextSize(0.05);
+		fLegendTox[i]->SetTextFont(132);
+		fLegendTox[i]->SetTextColor(CurveColor(i));
+		fLegendTox[i]->Draw();
+	}
+	
+	fCNucleiTox->Update();
+	
+	
+	
+	
+}
+
+//________________________________________________________________________
+void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int StartingStep, cSecond FinalTime, int StepNUmber, bool LinBin, string opt)
+{
+	
+	if(fGraphHeat)
+	{
+		for(int i=0; i < fNumberGraphHeatIterator;i++) delete fGraphHeat[i];
+		delete [] fGraphHeat;
+	}
+	if(fLegendHeatSumOfSelected)
+		delete fLegendHeatSumOfSelected;
+	if(fGraphHeatSumOfSelected)
+		delete fGraphHeatSumOfSelected;
+	
+	if(fLegendHeat)
+	{
+		for(int i=0; i < fNumberGraphHeatIterator;i++) delete fLegendHeat[i];
+		delete [] fLegendHeat;
+	}
+	if(fCNucleiHeat && gROOT->FindObject("c_NucleiHeat"))
+	{	delete fCNucleiHeat;
+		fCNucleiHeat=0;
+	}
+	fCNucleiHeat = new TCanvas("c_NucleiHeat","NucleiHeat",50,110,400,300);
+	
+	
+	fGraphHeat = new TGraph*[toplot.size()];
+	fLegendHeat = new TLatex*[toplot.size()];
+	for (int i = 0; i < (int)toplot.size(); i++)
+	{
+		fGraphHeat[i] = 0;
+		fLegendHeat[i] = 0;
+	}
+	
+	vector<CLASSPlotElement> toplotTTree[fData.size()];
+	
+	
+	
+	Xmin = +1.e36;
+	Xmax =  -1.e36;
+	Ymin = 1.e36;
+	Ymax = -1.e36;
+	
+	fNumberGraphHeatIterator = 0;
+	bool SumOfSelected = false;
+	
+	if(toplot[0].fTreeId == -1 )
+	{
+		SumOfSelected = true;
+		toplot.erase(toplot.begin());
+	}
+	
+	for (int i = 0; i < (int)toplot.size(); i++)
+	{
+		toplotTTree[toplot[i].fTreeId].push_back(toplot[i]);
+	}
+	
+	string out = opt;
+	for (int i = 0; i < (int)fData.size(); i++)
+	{
+		if(i == 1) out += " same";
+		if(toplotTTree[i].size() !=0)
+			if(!DecayChain)
+				BuildTGraph(toplotTTree[i], 0, out);
+		
+	}
+	fCNucleiHeat->cd();
+	
+	double X_Sum[fGraphHeat[0]->GetN()];
+	double Y_Sum[fGraphHeat[0]->GetN()];
+	
+	if(SumOfSelected)
+	{
+		for (int i = 0; i < (int)fNumberGraphHeatIterator; i++)
+		{
+			
+			for(int j = 0; j < fGraphHeat[i]->GetN(); j++)
+			{
+				double x;
+				double y;
+				fGraphHeat[i]->GetPoint(j, x, y);
+				if(i == 0)
+					X_Sum[j] = x;
+				if(i == 0)
+					Y_Sum[j] = y;
+				else
+					Y_Sum[j] += y;
+			}
+		}
+		
+		
+		for (int i =0; i < fGraphHeat[0]->GetN(); i++)
+		{
+			if(X_Sum[i] > Xmax) Xmax = X_Sum[i];
+			if(X_Sum[i] < Xmin) Xmin = X_Sum[i];
+			if(Y_Sum[i] > Ymax) Ymax = Y_Sum[i];
+			if(Y_Sum[i] < Ymin) Ymin = Y_Sum[i];
+		}
+	}
+	
+	
+	
+	TH1F*	  fhr = fCNucleiHeat->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
+	string Xtitle="Time [year]";
+	string Ytitle="Mass [kg]";
+	fhr->SetXTitle(Xtitle.c_str());
+	fhr->SetYTitle(Ytitle.c_str());
+	fhr->GetXaxis()->CenterTitle();
+	fhr->GetYaxis()->CenterTitle();
+	fhr->GetYaxis()->SetTitleOffset(1.25);
+	
+	
+	if(SumOfSelected)
+	{
+		fGraphHeatSumOfSelected = new TGraph(fGraphHeat[0]->GetN(), X_Sum, Y_Sum );
+		fGraphHeatSumOfSelected->SetName("Sum_Of_Selected");
+		fGraphHeatSumOfSelected->SetTitle("Sum Of Selected");
+		fGraphHeatSumOfSelected->SetLineColor(CurveColor(fNumberGraphHeatIterator));
+		fGraphHeatSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphHeatIterator));
+		fGraphHeatSumOfSelected->SetMarkerStyle(10);
+		fGraphHeatSumOfSelected->Draw(out.c_str());
+		fGraphHeatSumOfSelected->SetLineColor(CurveColor(fNumberGraphHeatIterator));
+		fGraphHeatSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphHeatIterator));
+		
+		double x;
+		double y;
+		double x_0;
+		double y_0;
+		fGraphHeatSumOfSelected->GetPoint(1, x_0, y_0);
+		fGraphHeatSumOfSelected->GetPoint(fGraphHeatSumOfSelected->GetN()-1, x, y);
+		
+		fLegendHeatSumOfSelected = new TLatex(x_0+0.6*(x-x_0),y_0+1.05*(y-y_0),"Sum_Of_Selected");
+		fLegendHeatSumOfSelected->SetTextSize(0.05);
+		fLegendHeatSumOfSelected->SetTextFont(132);
+		fLegendHeatSumOfSelected->SetTextColor(CurveColor(fNumberGraphHeatIterator));
+		fLegendHeatSumOfSelected->Draw();
+		
+		
+	}
+	
+	
+	for (int i = 0; i < (int)fNumberGraphHeatIterator; i++)
+	{
+		if( i !=0 || SumOfSelected) out += " same";
+		
+		fGraphHeat[i]->SetName(GetTittleOutName(toplot[i]).c_str());
+		fGraphHeat[i]->SetTitle(GetTittleOutName(toplot[i]).c_str());
+		fGraphHeat[i]->SetLineColor(CurveColor(i));
+		fGraphHeat[i]->SetMarkerColor(CurveColor(i));
+		fGraphHeat[i]->SetMarkerStyle(10);
+		fGraphHeat[i]->Draw(out.c_str());
+		fGraphHeat[i]->SetLineColor(CurveColor(i));
+		fGraphHeat[i]->SetMarkerColor(CurveColor(i));
+		
+		double x;
+		double y;
+		double x_0;
+		double y_0;
+		fGraphHeat[i]->GetPoint(1, x_0, y_0);
+		
+		fGraphHeat[i]->GetPoint(fGraphHeat[i]->GetN()-1, x, y);
+		
+		fLegendHeat[i] = new TLatex(x_0+0.6*(x-x_0),y_0+1.05*(y-y_0),GetLegendOutName(toplot[i]).c_str());
+		fLegendHeat[i]->SetTextSize(0.05);
+		fLegendHeat[i]->SetTextFont(132);
+		fLegendHeat[i]->SetTextColor(CurveColor(i));
+		fLegendHeat[i]->Draw();
+	}
+	
+	fCNucleiHeat->Update();
+	
+	
+	
+	
+}
+
+
+//________________________________________________________________________
+void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string opt)
 {
 
+	TGraph** Graph;
+	int NumberGraphIterator = 0;
+
+	if(PlotId == 0)
+		Graph = fGraphInv;
+	else if(PlotId == 1)
+		Graph = fGraphTox;
+	else if(PlotId == 2)
+		Graph = fGraphHeat;
+	else
+	{
+		cout << "Bad PlotId" << endl;
+		return;
+	}
+	
 	fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
 	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
 
@@ -466,8 +848,21 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
 				int I = toplot[i].fZAI.I();
-				double ZAIQuantity = IV[toplot[i].fFacylityNumber]->GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+				double ZAIQuantity = IV[toplot[i].fFacylityNumber]->GetZAIIsotopicQuantity(Z,A,I);
+				
+				if(PlotId == 0)
+					ZAIQuantity *= cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
+				else if(PlotId == 1)
+					ZAIQuantity *= cZAITox.GetRadioTox(Z,A,I);
+				else if(PlotId == 2)
+					ZAIQuantity *= cZAIHeat.GetHeat(Z,A,I);
+				else
+				{
+					cout << "Bad PlotId" << endl;
+					return;
+				}
 
+				
 				vQuantity[i].push_back(ZAIQuantity);
 
 
@@ -485,15 +880,27 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				double ZAIQuantity = 0;
 
 				if( toplot[i].fIVNumber == 0 )
-					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I);
 				else if( toplot[i].fIVNumber == 1 )
-					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I);
 				else if( toplot[i].fIVNumber == 2 )
-					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I);
 				else
 				{
 					cout << "Bad IVNumber" << endl;
-					break;
+					return;
+				}
+				
+				if(PlotId == 0)
+					ZAIQuantity *= cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
+				else if(PlotId == 1)
+					ZAIQuantity *= cZAITox.GetRadioTox(Z,A,I);
+				else if(PlotId == 2)
+					ZAIQuantity *= cZAIHeat.GetHeat(Z,A,I);
+				else
+				{
+					cout << "Bad PlotId" << endl;
+					return;
 				}
 
 				vQuantity[i].push_back(ZAIQuantity);
@@ -511,15 +918,27 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				double ZAIQuantity = 0;
 
 				if( toplot[i].fIVNumber == 0 )
-					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I);
 				else if( toplot[i].fIVNumber == 1 )
-					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I);
 				else if( toplot[i].fIVNumber == 2 )
-					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I);
 				else
 				{
 					cout << "Bad IVNumber" << endl;
-					break;
+					return;
+				}
+				
+				if(PlotId == 0)
+					ZAIQuantity *= cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
+				else if(PlotId == 1)
+					ZAIQuantity *= cZAITox.GetRadioTox(Z,A,I);
+				else if(PlotId == 2)
+					ZAIQuantity *= cZAIHeat.GetHeat(Z,A,I);
+				else
+				{
+					cout << "Bad PlotId" << endl;
+					return;
 				}
 
 				vQuantity[i].push_back(ZAIQuantity);
@@ -538,15 +957,27 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				double ZAIQuantity = 0;
 
 				if( toplot[i].fIVNumber == 0 )
-					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I);
 				else if( toplot[i].fIVNumber == 1 )
-					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I);
 				else if( toplot[i].fIVNumber == 2 )
-					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I);
 				else
 				{
 					cout << "Bad IVNumber" << endl;
-					break;
+					return;
+				}
+				
+				if(PlotId == 0)
+					ZAIQuantity *= cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
+				else if(PlotId == 1)
+					ZAIQuantity *= cZAITox.GetRadioTox(Z,A,I);
+				else if(PlotId == 2)
+					ZAIQuantity *= cZAIHeat.GetHeat(Z,A,I);
+				else
+				{
+					cout << "Bad PlotId" << endl;
+					return;
 				}
 
 				vQuantity[i].push_back(ZAIQuantity);
@@ -565,15 +996,27 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 				double ZAIQuantity = 0;
 
 				if( toplot[i].fIVNumber == 0 )
-					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I);
 				else if( toplot[i].fIVNumber == 1 )
-					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I);
 				else if( toplot[i].fIVNumber == 2 )
-					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
+					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I);
 				else
 				{
 					cout << "Bad IVNumber" << endl;
-					break;
+					return;
+				}
+				
+				if(PlotId == 0)
+					ZAIQuantity *= cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
+				else if(PlotId == 1)
+					ZAIQuantity *= cZAITox.GetRadioTox(Z,A,I);
+				else if(PlotId == 2)
+					ZAIQuantity *= cZAIHeat.GetHeat(Z,A,I);
+				else
+				{
+					cout << "Bad PlotId" << endl;
+					return;
 				}
 
 				vQuantity[i].push_back(ZAIQuantity);
@@ -591,8 +1034,8 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
-		fGraph[fNumberGraphIterator] = new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]);
-		fNumberGraphIterator++;
+		Graph[NumberGraphIterator] = new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]);
+		NumberGraphIterator++;
 	}
 
 	fData[toplot[0].fTreeId]->ResetBranchAddresses();
@@ -605,6 +1048,19 @@ void CLASSRead::PlotTTree(vector<CLASSPlotElement> toplot, string opt)
 
 		for(int i=0; i< (int)fStockName[toplot[0].fTreeId].size(); i++) delete stock[i];
 		for(int i=0; i< 8; i++) delete IV[i];
+	}
+	
+	
+	if(PlotId == 0)
+		fNumberGraphInvIterator += NumberGraphIterator;
+	else if(PlotId == 1)
+		fNumberGraphToxIterator += NumberGraphIterator;
+	else if(PlotId == 2)
+		fNumberGraphHeatIterator += NumberGraphIterator;
+	else
+	{
+		cout << "Bad PlotId" << endl;
+		return;
 	}
 }
 
@@ -788,33 +1244,33 @@ void CLASSRead::ASCIIWrite(string filename)
 
 	cout << "WARNING!! not working if using many CLASS.root file with diffenret timestep!!!"<<endl;
 
-	if (fGraph)
+	if (fGraphInv)
 	{
-		double* X = fGraph[0]->GetX();
+		double* X = fGraphInv[0]->GetX();
 
 		outfile << "time";
-		for(int i= 0; i < fGraph[0]->GetN(); i++)
+		for(int i= 0; i < fGraphInv[0]->GetN(); i++)
 			outfile << "\t" << X[i];
 
 		outfile << endl;
 	}
 
 
-	if (fGraphSumOfSelected) {
+	if (fGraphInvSumOfSelected) {
 
-		outfile << fGraphSumOfSelected->GetTitle();
-		double* Y = fGraphSumOfSelected->GetY();
-		for(int j= 0; j < fGraphSumOfSelected->GetN(); j++)
+		outfile << fGraphInvSumOfSelected->GetTitle();
+		double* Y = fGraphInvSumOfSelected->GetY();
+		for(int j= 0; j < fGraphInvSumOfSelected->GetN(); j++)
 			outfile << "\t" << Y[j];
 		outfile << endl;
 	}
 
 
-	for(int i = 0; i < fNumberGraphIterator; i++)
+	for(int i = 0; i < fNumberGraphInvIterator; i++)
 	{
-		outfile << fGraph[i]->GetTitle();
-		double* Y = fGraph[i]->GetY();
-		for(int j= 0; j < fGraph[i]->GetN(); j++)
+		outfile << fGraphInv[i]->GetTitle();
+		double* Y = fGraphInv[i]->GetY();
+		for(int j= 0; j < fGraphInv[i]->GetN(); j++)
 			outfile << "\t" << Y[j];
 		outfile << endl;
 	}
@@ -1221,7 +1677,7 @@ void CLASSRead::ConvertXmlMass(vector<CLASSPlotElement> toplot, string filename)
 	
 	
 	
-	fNumberGraphIterator = 0;
+	fNumberGraphInvIterator = 0;
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
 		toplotTTree[toplot[i].fTreeId].push_back(toplot[i]);
