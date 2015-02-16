@@ -15,6 +15,7 @@
 #include <TGTableLayout.h>
 #include <TGResourcePool.h>
 #include <TLine.h>
+#include "StringLine.hxx"
 
 // For all class not defined in file.hxx see http://root.cern.ch/root/html/
 // For example : for TGraphErrors see http://root.cern.ch/root/html/TGraphErrors.html
@@ -80,6 +81,13 @@ MainWin::~MainWin()
 //_____________________________________________________________________________________________
 void MainWin::Start(vector<string> VFileName)
 {
+	
+	fToxNstep=50;		// default number of time step for spent fuel radiotoxicity calculations
+	fToxTimeFirst=1.0;	// default first time for spent fuel radiotoxicity calculations
+	fToxTimeLast=1.0E08;	// default last time for spent fuel radiotoxicity calculations
+	fMotherIsVisible=false;
+	fIsByMother=false;
+	fIsLinear=false;
 	//
 	// Set the line width for all graph: for PPT presentation a value of 2 is probably better
 	//
@@ -230,39 +238,162 @@ void MainWin::Start(vector<string> VFileName)
 
 	for(int j = 0; j < 5; j++)
 		FillItemTab(j);
+	
+	/***************** What you wana plot ***********************/
+	
+	//Configuration Table
+	fPlotConfigTab = new TGTab(fGeneF0,100,150);
+	fGeneF0->AddFrame(fPlotConfigTab,fL2222);
+	fPlotConfigTab->Associate(this);
+	
+	fPlotConfigFoil = new TGCompositeFrame*[2];
 
-	fMiscenalanus = new TGHorizontalFrame(fGeneF0, 50, 50 );
-	fGeneF0->AddFrame(fMiscenalanus,fL5555);
-
-	fMiscenalanus0 = new TGVerticalFrame(fMiscenalanus, 50, 50 );
-	fMiscenalanus->AddFrame(fMiscenalanus0,fL5555);
-
+	fPlotConfigFoil[0] = new TGCompositeFrame;
+	fPlotConfigFoil[0] = fPlotConfigTab->AddTab("Inventory");
+	
+	fPlotConfigFoil[1] = new TGCompositeFrame;
+	fPlotConfigFoil[1] = fPlotConfigTab->AddTab("DecayHeat / Radiotox.");
+	
+	
+	//In inventory
+	fInventoryFrame = new TGGroupFrame(fPlotConfigFoil[0],"", kHorizontalFrame );
+	fPlotConfigFoil[0]->AddFrame(fInventoryFrame,fL5555);
+	
 	fCheckIVPlot = new TGCheckButton*[3];
-	fCheckIVPlot[0] = new TGCheckButton(fMiscenalanus0,"Inside");
+	fCheckIVPlot[0] = new TGCheckButton(fInventoryFrame,"Inside",M_CHECK_INSIDE);
 	fCheckIVPlot[0]->SetFont(fLabelFontS);
-	fMiscenalanus0->AddFrame(fCheckIVPlot[0],fL2222);
+	fInventoryFrame->AddFrame(fCheckIVPlot[0],fL2222);
 	fCheckIVPlot[0]->Associate(this);
 	fCheckIVPlot[0]->SetState(kButtonDown);
 
-
-
-	fCheckIVPlot[1] = new TGCheckButton(fMiscenalanus0,"Cumul In");
+	fCheckIVPlot[1] = new TGCheckButton(fInventoryFrame,"Cumul In",M_CHECK_CUMIN);
 	fCheckIVPlot[1]->SetFont(fLabelFontS);
-	fMiscenalanus0->AddFrame(fCheckIVPlot[1],fL2222);
+	fInventoryFrame->AddFrame(fCheckIVPlot[1],fL2222);
 	fCheckIVPlot[1]->Associate(this);
 
-	fCheckIVPlot[2] = new TGCheckButton(fMiscenalanus0,"Cumul out");
+	fCheckIVPlot[2] = new TGCheckButton(fInventoryFrame,"Cumul out",M_CHECK_CUMOUT);
 	fCheckIVPlot[2]->SetFont(fLabelFontS);
-	fMiscenalanus0->AddFrame(fCheckIVPlot[2],fL2222);
+	fInventoryFrame->AddFrame(fCheckIVPlot[2],fL2222);
 	fCheckIVPlot[2]->Associate(this);
 
-	fMiscenalanus1 = new TGVerticalFrame(fMiscenalanus, 50, 50 );
-	fMiscenalanus->AddFrame(fMiscenalanus1,fL5555);
+	//Radio/Heat frame
+		//Radio Or Decay subframe
+	fDecayOrRadioFrame = new  TGGroupFrame(fPlotConfigFoil[1],"Radio-toxicity / decay heat" );
+	fPlotConfigFoil[1]->AddFrame(fDecayOrRadioFrame,fL5555);
+	
+	fButtonHeat=new TGRadioButton(fDecayOrRadioFrame,"Decay Heat",M_RADIO_DECAY_HEAT);
+	fButtonRadiotox=new TGRadioButton(fDecayOrRadioFrame,"Radio-toxicity",M_RADIO_RADIOTOX);
+	
+	fButtonHeat->SetState(kButtonDown);
+	fButtonRadiotox->SetState(kButtonUp);
+	
+	fButtonHeat->Associate(this);
+	fButtonRadiotox->Associate(this);
+	
+	fDecayOrRadioFrame->AddFrame(fButtonHeat);
+	fDecayOrRadioFrame->AddFrame(fButtonRadiotox);
+	
+	
+		//By mother sub frame
+	fByMotherFrame = new  TGGroupFrame(fGeneF0,"Decay chain (by mother)" );
+	fGeneF0->AddFrame(fByMotherFrame,fL2222);
+	
+	fByMotherMore = new TGPictureButton(fGeneF0 ,gClient->GetPicture("arrow_down.xpm"),M_BUTTON_MOTHER_MORE);
+	fByMotherMore->Resize(350,25);
+	fByMotherMore->Associate(this);
+	fGeneF0->AddFrame(fByMotherMore,fL2222);
 
-	fCheckSumOfSelected = new TGCheckButton(fMiscenalanus1,"Sum Of Selected");
+	//the button
+	fByMotherButton=new TGCheckButton(fByMotherFrame,"By Mother",M_CHECK_BY_MOTHER);
+	fButtonHeat->SetState(kButtonUp);
+	fByMotherButton->Associate(this);
+	fByMotherFrame->AddFrame(fByMotherButton);
+	
+	
+		//the time choosed for the end of the scenario
+	fScenarTimeFrame = new TGGroupFrame(fByMotherFrame,"Final scenario time (year)" );
+	((TGGroupFrame*)fScenarTimeFrame)->SetTextFont(fLabelFontS);
+	fByMotherFrame->AddFrame(fScenarTimeFrame,fL2222);
+	fScenarTimeCBox = new TGComboBox(fScenarTimeFrame,M_CB_SCENAR_Time);
+	fScenarTimeFrame->AddFrame(fScenarTimeCBox,fL2222);
+	fScenarTimeCBox->Resize(80,17);
+	
+	int NumOfTimeStep = fDATA->GetTimeVector()[0].size();
+	for(int step=0; step<NumOfTimeStep; step++)
+	{
+		stringstream tmp;
+		tmp.str("");
+		tmp<<"Dir#"<< step <<" @ "<<fDATA->GetTimeVector()[0][step]/cYear;
+		fScenarTimeCBox->AddEntry(tmp.str().c_str(),l);
+	}
+	
+	fScenarTimeCBox->Associate(this);
+	fTimeStep = NumOfTimeStep-1;
+	fScenarTimeCBox->Select(fTimeStep);
+	
+		// Parameters for the geological time
+	fTimeParametersFrame = new TGGroupFrame(fByMotherFrame,"Evol. Period [year]: first, last, n_step)", kHorizontalFrame );
+	((TGGroupFrame*)fTimeParametersFrame)->SetTextFont(fLabelFontS);
+	fByMotherFrame->AddFrame(fTimeParametersFrame,fL2222);
+	
+	TGTextBuffer *TBtoxfirst = new TGTextBuffer(100);
+	TGTextBuffer *TBtoxlast = new TGTextBuffer(100);
+	TGTextBuffer *TBtoxnstep = new TGTextBuffer(100);
+	
+	TBtoxfirst->AddText(0, StringLine::convert<string>(fToxTimeFirst).c_str());
+	TBtoxlast->AddText(0, StringLine::convert<string>(fToxTimeLast).c_str());
+	TBtoxnstep->AddText(0, StringLine::convert<string>(fToxNstep).c_str());
+	
+	TEtoxfirst = new TGTextEntry(fTimeParametersFrame,TBtoxfirst , M_TE_toxfirst);// box to enter the first time
+	TEtoxlast = new TGTextEntry(fTimeParametersFrame,TBtoxlast , M_TE_toxlast);// box to enter the last time
+	TEtoxnstep = new TGTextEntry(fTimeParametersFrame,TBtoxnstep , M_TE_toxnstep);// box to enter the number of step time
+	
+	fCheckLinear = new TGCheckButton(fTimeParametersFrame,"Linear Binning",M_CHECK_LINEAR_Tox);
+	
+	TEtoxfirst->Resize(TEtoxfirst->GetDefaultWidth(),17);
+	TEtoxlast->Resize(TEtoxlast->GetDefaultWidth(),17);
+	TEtoxnstep->Resize(TEtoxnstep->GetDefaultWidth(),17);
+	
+	fTimeParametersFrame->AddFrame(TEtoxfirst, fL2222);
+	fTimeParametersFrame->AddFrame(TEtoxlast, fL2222);
+	fTimeParametersFrame->AddFrame(TEtoxnstep, fL2222);
+	fTimeParametersFrame->AddFrame(fCheckLinear,fL2222);
+	
+	fCheckLinear->SetFont(fLabelFontS);
+	fCheckLinear->SetState(kButtonUp);
+	
+	TEtoxfirst->Associate(this);
+	TEtoxlast->Associate(this);
+	TEtoxnstep->Associate(this);
+	fCheckLinear->Associate(this);
+	
+	//
+	//	The Miscellaneous part (AM check box, ...)
+	//
+	fMiscFrame = new TGGroupFrame(fGeneF0,"Miscellaneous", kVerticalFrame );
+	((TGGroupFrame*)fMiscFrame)->SetTextFont(fLabelFontB);
+	fGeneF0->AddFrame(fMiscFrame,fL2222);
+	
+	fMiscHzFrame=new TGHorizontalFrame(fMiscFrame,400, 50 );
+	fMiscFrame->AddFrame(fMiscHzFrame,fL2222);
+	
+	//misc check buttons
+	fCheckAMNuc=new TGCheckButton(fMiscHzFrame,"MA",M_CHECK_AM_NUC);
+	fCheckFPNuc=new TGCheckButton(fMiscHzFrame,"FP",M_CHECK_FP_NUC);
+	fCheckSumOfSelected=new TGCheckButton(fMiscHzFrame,"Sum of Selected");
+	
+	fCheckFPNuc->SetFont(fLabelFontS);
+	fCheckAMNuc->SetFont(fLabelFontS);
 	fCheckSumOfSelected->SetFont(fLabelFontS);
-	fMiscenalanus1->AddFrame(fCheckSumOfSelected,fL2222);
+	
+	fMiscHzFrame->AddFrame(fCheckAMNuc,fL2222);
+	fMiscHzFrame->AddFrame(fCheckFPNuc,fL2222);
+	fMiscHzFrame->AddFrame(fCheckSumOfSelected,fL2222);
+	
+	fCheckFPNuc->Associate(this);
+	fCheckAMNuc->Associate(this);
 	fCheckSumOfSelected->Associate(this);
+	
 	//1 jeu de NucleusTab pour tous
 	
 	//
@@ -293,9 +424,10 @@ void MainWin::Start(vector<string> VFileName)
 	Resize(GetDefaultSize()); 					// fit to the exact size
 	Move(410,30);
 	fMainWidth=fGeneF0->GetWidth();
-
-	Resize(550,670); 					// fit to the exact size
-
+	fGeneF0->HideFrame(fByMotherFrame);
+	//Resize(550,670); 					// fit to the exact size
+	Resize(GetDefaultSize());
+	fMainWidth=fGeneF0->GetWidth();
 
 }
 //_____________________________________________________________________________________________
@@ -335,9 +467,118 @@ bool MainWin::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 								fDATA->Write(fSaveFileName, fSaveFileFormat);
 						}
 					break;
+					
+				case M_BUTTON_MOTHER_MORE:
+					if(!fMotherIsVisible)
+					{
+						fByMotherMore->SetPicture(gClient->GetPicture("arrow_up.xpm"));
+						fByMotherMore->Resize(350,10);
+						MapSubwindows();
+						MapWindow();
+						Resize(fMainWidth,0);
+						fGeneF0->ShowFrame(fByMotherFrame);
+						fMotherIsVisible=true;
+					}
+					else
+					{
+						fByMotherMore->SetPicture(gClient->GetPicture("arrow_down.xpm"));
+						fByMotherMore->Resize(350,25);
+						MapSubwindows();
+						MapWindow();
+						fGeneF0->HideFrame(fByMotherFrame);
+						Resize(fMainWidth,0);
+						fMotherIsVisible=false;
+					}
+						
+					
 			}
 				
-				break;
+			case kCM_CHECKBUTTON:
+				switch (parm1)
+				{
+					case M_CHECK_INSIDE:
+						fButtonHeat->SetState(kButtonUp);
+						fButtonRadiotox->SetState(kButtonUp);
+						break;
+						
+					case M_CHECK_CUMIN:
+						fButtonHeat->SetState(kButtonUp);
+						fButtonRadiotox->SetState(kButtonUp);
+						break;
+
+					case M_CHECK_CUMOUT:
+						fButtonHeat->SetState(kButtonUp);
+						fButtonRadiotox->SetState(kButtonUp);
+						break;
+						
+					case M_CHECK_BY_MOTHER:
+						
+						if(fByMotherButton->GetState()==kButtonDown )
+							fIsByMother=true;
+						else
+							fIsByMother=false;
+						break;
+						
+					case M_CHECK_LINEAR_Tox:
+						if(fCheckLinear->GetState()==kButtonDown)
+							fIsLinear=true;
+						else
+							fIsLinear=false;
+
+						break;
+				}
+			case kCM_RADIOBUTTON:
+				switch (parm1)
+				{
+					case M_RADIO_DECAY_HEAT:
+						fButtonHeat->SetState(kButtonDown);
+						fButtonRadiotox->SetState(kButtonUp);
+						for(int i = 0 ; i<3 ; i++ )
+							fCheckIVPlot[i]->SetState(kButtonUp);
+						break;
+						
+					case M_RADIO_RADIOTOX:
+						fButtonHeat->SetState(kButtonUp);
+						fButtonRadiotox->SetState(kButtonDown);
+						for(int i = 0 ; i<3 ; i++ )
+							fCheckIVPlot[i]->SetState(kButtonUp);
+						break;
+						
+				}
+			case kTE_TEXTCHANGED:
+				switch (parm1)
+				{
+					case M_TE_toxfirst:   	// get first time
+						EnterTextP=TEtoxfirst->GetBuffer()->GetString();
+						fToxTimeFirst=StringLine::convert<double>(EnterTextP);		// change string in double
+						if(fToxTimeFirst<=0)
+						{
+							fToxTimeFirst=Xlogmin;
+							TEtoxfirst->SetText(StringLine::convert<string>(fToxTimeFirst).c_str());
+						}
+						break;
+						
+					case M_TE_toxlast:   	// get last time
+						
+						EnterTextP=TEtoxlast->GetBuffer()->GetString();
+						fToxTimeLast=StringLine::convert<double>(EnterTextP);
+						break;
+						
+					case M_TE_toxnstep:   	// get number of time steps
+						
+						EnterTextP=TEtoxnstep->GetBuffer()->GetString();
+						fToxNstep=StringLine::convert<int>(EnterTextP);
+						break;
+						
+				}
+			case kCM_COMBOBOX:
+				switch (parm1)
+				{
+					case M_CB_SCENAR_Time:
+						fTimeStep = fScenarTimeCBox->GetSelected();
+						break;
+				}
+			break;
 		}
 			break;
 	}
