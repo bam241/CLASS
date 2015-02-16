@@ -62,7 +62,21 @@ enum CommandId{
 	M_BUT_CANCEL,
 	M_CHECK_PLOTALL,
 	M_RADIO_XML_SAVE,
-	M_RADIO_ASCII_SAVE};
+	M_RADIO_ASCII_SAVE,
+	M_RADIO_DECAY_HEAT,
+	M_RADIO_RADIOTOX,
+	M_CB_SCENAR_Time,
+	M_CHECK_LINEAR_Tox,
+	M_TE_toxfirst,
+	M_TE_toxlast,
+	M_TE_toxnstep,
+	M_CHECK_AM_NUC,
+	M_CHECK_FP_NUC,
+	M_CHECK_BY_MOTHER,
+	M_CHECK_INSIDE,
+	M_CHECK_CUMIN,
+	M_CHECK_CUMOUT,
+	M_BUTTON_MOTHER_MORE};
 			  
 			  
 class MainWin :  public  TGMainFrame   
@@ -122,7 +136,6 @@ private:
 	//main tab
 	TGCompositeFrame *	fGeneF0;		//@- Common widget frame
 	TGCompositeFrame *	fPlotSaveQuitFrame;
-	TGCompositeFrame*  fMiscenalanus, *fMiscenalanus0,*fMiscenalanus1;
 	
 	TGCompositeFrame **	fParcTabFoil;
 	TGTab *			fParcTab; //Parc table
@@ -132,12 +145,43 @@ private:
 	TGTab **		fFacilitiesTab;// tab
 	TGTab ***		fItemTab;
 	
+	//Configuration Tab
+
+	TGTab *			fPlotConfigTab; //Plot configuratio tab
+	TGCompositeFrame **	fPlotConfigFoil;
+	TGCompositeFrame	*fInventoryFrame;
+	
+	
+		//Radio Or Decay
+	TGCompositeFrame *	fDecayOrRadioFrame;
+	TGRadioButton		*fButtonRadiotox,*fButtonHeat;
+	
+		//By mother
+	bool			fMotherIsVisible,fIsByMother,fIsLinear;
+	TGPictureButton 	*fByMotherMore;  //@- hide or show by mother
+	int			fTimeStep;
+	TGCheckButton		*fByMotherButton ;
+	TGComboBox		*fScenarTimeCBox;
+	TGCompositeFrame	*fTimeParametersFrame,*fByMotherFrame,*fScenarTimeFrame;
+	TGTextEntry		*TEtoxfirst,*TEtoxlast,*TEtoxnstep;// the write text widget in time evolution parameters
+	TGCheckButton		*fCheckLinear;
+
+	double			fToxTimeFirst;	// first time steps for radiotoxicity calculations
+	double			fToxTimeLast;	// last time steps for radiotoxicity calculations
+	int			fToxNstep;	// number of time steps for radiotoxicity calculations
+
+	
+	//misc frame
+	TGCompositeFrame	*fMiscFrame,*fMiscHzFrame;
+	TGCheckButton		*fCheckAMNuc,*fCheckFPNuc,*fCheckSumOfSelected;
+	
+	//Factories Arrays
 	TGCheckButton ***	fCheckArrayTotal;
 	TGCheckButton ***	fCheckArrayReactor;
 	TGCheckButton ***	fCheckArrayStock;
 	TGCheckButton ***	fCheckArrayPool;
 	TGCheckButton ***	fCheckArrayFab;
-	
+	//Factories Foils
 	TGCompositeFrame ***	fTabFoilReactor;
 	TGCompositeFrame ***	fTabFoilStock;
 	TGCompositeFrame ***	fTabFoilPool;
@@ -145,7 +189,7 @@ private:
 	
 
 	TGCheckButton ** fCheckIVPlot ;
-	TGCheckButton *fCheckSumOfSelected;
+
 	
 	TGTextButton *	fButtonPlot;		//@- Press buttons to Plot,Save,...
 	TGTextButton *	fButtonSave;
@@ -162,9 +206,6 @@ private:
 	TGCompositeFrame *	fMiscGrpFNuc;
 	TGCompositeFrame *	fXGprFNuc;
 	TGCompositeFrame *	fYGprFNuc;
-	TGCompositeFrame *	fMiscHzFrame1;
-	TGCompositeFrame *	fMiscHzFrame2;
-	TGCompositeFrame *	fAxisHzFrame;
 	
 	TGCheckButton **	fCheckArrayNuc;	//@- array of check box for inventory nuclei tab
 	int			fNselectedNucleus;	//@- number of check box selected in the previous array
