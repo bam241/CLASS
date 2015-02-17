@@ -163,9 +163,9 @@ class IrradiationModel : public CLASSObject
 	
 
 	void	BuildDecayMatrix();			//!< Build the Decay Matrix for the futur time step
-	void    LoadDecay();				//!< Load the decay properties (HL,BR)
+	virtual void    LoadDecay();				//!< Load the decay properties (HL,BR)
 
-	void	NuclearDataInitialization();		//!< Build Decay matrices & read FpYields if any
+	virtual void	NuclearDataInitialization();		//!< Build Decay matrices & read FpYields if any
 	//@}
 	
 
@@ -179,6 +179,16 @@ class IrradiationModel : public CLASSObject
 	int  GetZAIThreshold(){return fZAIThreshold;} //!< Gives the threshold (in charge number Z). The nuclei below this threshold are not managed
 	//@}
 	
+	//{
+	//! Returns a particular decay mode.
+	/*!
+	 \param DecayModes : a list of decay modes with their branching ratios and isomeric state of the Daughters.
+	 \param BR : branching ratio of the current decay mode
+	 \param Iso : isomeric state of the Daughter of the current decay mode.
+	 \param StartPos : the current decay mode to extract.
+	 */
+	string GetDecay(string DecayModes, double &BR,int &Iso, int &StartPos);
+	//}
 	
 	
 	protected :
@@ -197,7 +207,7 @@ class IrradiationModel : public CLASSObject
 	
 	CLASSNucleiFiliation	fFastDecay;	//!< Store the nuclei being cut (HL threshold)
 	CLASSNucleiFiliation	fNormalDecay;	//!< Store the uncut nuclei
-	IsotopicVector			fDecayConstante; //!< List of decay constants
+	IsotopicVector		fDecayConstante; //!< List of decay constants
 	
 	CLASSNucleiFiliation	fSpontaneusYield;	//!< Store the spontaneus fission yield
 	CLASSNucleiFiliation	fReactionYield;		//!< Store the reaction fission yield
@@ -240,17 +250,7 @@ class IrradiationModel : public CLASSObject
 	TMatrixT<double> Getn2nXsMatrix(EvolutionData EvolutionDataStep,double TStep);
 	//}
 	
-	
-	//{
-	//! Returns a particular decay mode.
-	/*!
-	 \param DecayModes : a list of decay modes with their branching ratios and isomeric state of the Daughters.
-	 \param BR : branching ratio of the current decay mode
-	 \param Iso : isomeric state of the Daughter of the current decay mode.
-	 \param StartPos : the current decay mode to extract.
-	 */
-	string GetDecay(string DecayModes, double &BR,int &Iso, int &StartPos);
-	//}
+
 	
 	CLASSNucleiFiliation ReadFPYield(string Yield);	///< Read a CLASSYield file and return the correpsponding map
 	

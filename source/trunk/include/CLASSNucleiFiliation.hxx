@@ -67,7 +67,7 @@ public:
 	//********* Get Method *********//
 	
 	/*!
-	 \name Get Method
+	 \name Set/Get Method
 	 */
 	//@{
 	map<ZAI, IsotopicVector> GetNucleiFIliation() const {return fNucleiFiliation;}	//!< Return the full filiation list
@@ -78,6 +78,9 @@ public:
 	
 	ZAI GetArtificialDecay(ZAI Mother);			//!< Make an artificial and instantaneus decay of the ZAI, (desexcitation, or Beta decay)
 	
+	
+	void SetNucleiFIliation(map<ZAI, IsotopicVector> Fiiliation) { fNucleiFiliation = Fiiliation;}	//!< Return the full filiation list
+
 	//}
 	
 	//********* Add Method *********//

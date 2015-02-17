@@ -548,6 +548,16 @@ vector<ZAI> IsotopicVector::GetZAIList() const
 
 }
 
+void IsotopicVector::Initiatlize(double val)
+{
+	map<ZAI ,double >::iterator it;
+	vector<ZAI> zailist;
+	for( it = fIsotopicQuantity.begin(); it != fIsotopicQuantity.end(); it++)
+		(*it).second = 1;
+
+}
+
+
 IsotopicVector	IsotopicVector::GetActinidesComposition() const
 {
 
