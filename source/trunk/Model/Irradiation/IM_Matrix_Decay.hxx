@@ -48,7 +48,7 @@ class IM_Matrix_Decay : public IrradiationModel
 	
 	/*!
 	 Make a new IM_Matrix_Decay : */
-	IM_Matrix_Decay();
+	IM_Matrix_Decay(IsotopicVector IVList);
 	//}
 	
 	/// Logger constructor
@@ -56,21 +56,24 @@ class IM_Matrix_Decay : public IrradiationModel
 	/*!
 	 Make a new IM_Matrix_Decay : */
 	//param log : Use for the log
-	IM_Matrix_Decay(CLASSLogger* log);
+	IM_Matrix_Decay(CLASSLogger* log, IsotopicVector IVList);
 	//}
 	
 	//@}
-	
+	void 	CleanDecay();
+
 	
 	IsotopicVector GetDecay(IsotopicVector Mother_IV, double time);
 	
 	TMatrixT<double>	ExponentialCalculation(TMatrixT<double> myMatrix);
-	
-	
+	void    LoadDecay();				//!< Load the decay properties (HL,BR)
+
+	void	NuclearDataInitialization();		//!< Build Decay matrices & read FpYields if any
+
 	private :
 	
 	TMatrixT<double>	fExponentialDecayMatrix;	//!< Matrix with half life for each nuclei
-
+	IsotopicVector fIVList;
 	
 };
 

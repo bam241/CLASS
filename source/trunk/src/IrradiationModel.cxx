@@ -266,7 +266,6 @@ void IrradiationModel::LoadDecay()
 void IrradiationModel::BuildDecayMatrix()
 {
 	DBGL
-	
 	fDecayMatrix.Clear();
 	
 	fDecayMatrix.ResizeTo( fMatrixIndex.size(), fMatrixIndex.size() );
@@ -281,7 +280,6 @@ void IrradiationModel::BuildDecayMatrix()
 		(*this).GetNuclearProcessMatrix(fDecayMatrix, fReverseMatrixIndex[i], DaughterIV, fDecayConstante.GetQuantity(fReverseMatrixIndex[i]) );
 		
 	}
-	
 	DBGL
 }
 

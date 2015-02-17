@@ -74,7 +74,7 @@ public :
 	double	GetQuantity(const int z, const int a, const int i)	const {return GetZAIIsotopicQuantity(z,a,i);}
 	double	GetQuantity(const ZAI& zai)				const {return GetZAIIsotopicQuantity(zai);}
 	
-
+	void Initiatlize(double val);
 	
 	
 	double	GetTotalMass() const;							//!< Return the mass (in tons) of the isotopic vector
