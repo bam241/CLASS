@@ -120,6 +120,8 @@ CLASSRead::CLASSRead(TString filename)
 	fLegendPower = 0;
 
 	fNumberGraphPowerIterator = 0;
+	
+	cout << "ici" << endl;
 }
 
 //________________________________________________________________________
@@ -221,6 +223,7 @@ void CLASSRead::ReadZAI()
 		fData[i]->ResetBranchAddresses();
 	}
 	fZAIvector = IVTot.GetZAIList();
+	fDecay = new IM_Matrix_Decay(IVTot);
 
 }
 
@@ -435,7 +438,6 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 //________________________________________________________________________
 void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int StartingStep, cSecond FinalTime, int StepNUmber, bool LinBin, string opt)
 {
-	
 	if(fGraphTox)
 	{
 		for(int i=0; i < fNumberGraphToxIterator;i++) delete fGraphTox[i];
@@ -467,8 +469,7 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	}
 	
 	vector<CLASSPlotElement> toplotTTree[fData.size()];
-	
-	
+
 	
 	Xmin = +1.e36;
 	Xmax =  -1.e36;
@@ -495,7 +496,7 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 		if(i == 1) out += " same";
 		if(toplotTTree[i].size() !=0)
 			if(!DecayChain)
-				BuildTGraph(toplotTTree[i], 0, out);
+				BuildTGraph(toplotTTree[i], 1, out);
 		
 	}
 	fCNucleiTox->cd();
@@ -536,7 +537,7 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	
 	TH1F*	  fhr = fCNucleiTox->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
 	string Xtitle="Time [year]";
-	string Ytitle="Mass [kg]";
+	string Ytitle="Radio-Toxicity [Sv]";
 	fhr->SetXTitle(Xtitle.c_str());
 	fhr->SetYTitle(Ytitle.c_str());
 	fhr->GetXaxis()->CenterTitle();
@@ -671,7 +672,7 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 		if(i == 1) out += " same";
 		if(toplotTTree[i].size() !=0)
 			if(!DecayChain)
-				BuildTGraph(toplotTTree[i], 0, out);
+				BuildTGraph(toplotTTree[i], 2, out);
 		
 	}
 	fCNucleiHeat->cd();
@@ -712,7 +713,7 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 	
 	TH1F*	  fhr = fCNucleiHeat->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
 	string Xtitle="Time [year]";
-	string Ytitle="Mass [kg]";
+	string Ytitle="Decay Heat [W]";
 	fhr->SetXTitle(Xtitle.c_str());
 	fhr->SetYTitle(Ytitle.c_str());
 	fhr->GetXaxis()->CenterTitle();
@@ -877,7 +878,7 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 				int A = toplot[i].fZAI.A();
 				int I = toplot[i].fZAI.I();
 				double ZAIQuantity = IV[toplot[i].fFacylityNumber]->GetZAIIsotopicQuantity(Z,A,I);
-				
+			
 				if(PlotId == 0)
 					ZAIQuantity *= cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
 				else if(PlotId == 1)
@@ -918,7 +919,7 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 					cout << "Bad IVNumber" << endl;
 					return;
 				}
-				
+
 				if(PlotId == 0)
 					ZAIQuantity *= cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
 				else if(PlotId == 1)
@@ -1077,7 +1078,7 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 		for(int i=0; i< (int)fStockName[toplot[0].fTreeId].size(); i++) delete stock[i];
 		for(int i=0; i< 8; i++) delete IV[i];
 	}
-	
+
 	
 	if(PlotId == 0)
 		fNumberGraphInvIterator += NumberGraphIterator;
@@ -1090,6 +1091,8 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 		cout << "Bad PlotId" << endl;
 		return;
 	}
+	
+
 }
 
 
