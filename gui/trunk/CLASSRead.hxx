@@ -14,7 +14,7 @@
 #include "ZAI.hxx"
 #include "CLASSPlotElement.hxx"
 #include "CLASSHeaders.hxx"
-
+#include "Irradiation/IM_Matrix_Decay.hxx"
 
 using namespace std;
 
@@ -123,7 +123,7 @@ private :
 	vector< vector<cSecond> > fTimeVector;
 
 	
-	
+	IM_Matrix_Decay* fDecay;
 	double Xmin;
 	double Xmax;
 	double Ymin;
