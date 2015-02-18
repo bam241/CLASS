@@ -120,8 +120,6 @@ CLASSRead::CLASSRead(TString filename)
 	fLegendPower = 0;
 
 	fNumberGraphPowerIterator = 0;
-	
-	cout << "ici" << endl;
 }
 
 //________________________________________________________________________
