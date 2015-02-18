@@ -38,9 +38,13 @@ IM_Matrix_Decay::IM_Matrix_Decay(IsotopicVector IVList):IrradiationModel(new CLA
 
 	fIVList = IVList;
 
-	
+	cout << "Loading Decay !! Could take few minutes... Please wait !!" << endl;
 	NuclearDataInitialization();
 	
+	fExponentialDecayMatrix.Clear();
+	
+	fExponentialDecayMatrix.ResizeTo( fMatrixIndex.size(), fMatrixIndex.size() );
+
 	fExponentialDecayMatrix = ExponentialCalculation(fDecayMatrix);
 
 }
@@ -54,9 +58,15 @@ IM_Matrix_Decay::IM_Matrix_Decay(CLASSLogger* log, IsotopicVector IVList):Irradi
 
 	
 	
+	cout << "laoding Decay !! Could take fiew minutes...." << endl;
 	NuclearDataInitialization();
-	fExponentialDecayMatrix = TMatrixT<double>(fReverseMatrixIndex.size(),fReverseMatrixIndex.size());
+	
+	fExponentialDecayMatrix.Clear();
+	
+	fExponentialDecayMatrix.ResizeTo( fMatrixIndex.size(), fMatrixIndex.size() );
+	
 	fExponentialDecayMatrix = ExponentialCalculation(fDecayMatrix);
+
 
 }
 
@@ -96,6 +106,7 @@ TMatrixT<double> IM_Matrix_Decay::ExponentialCalculation(TMatrixT<double> myMatr
 				for(int n = 0; n < (int)fReverseMatrixIndex.size(); n++)
 					NormN += MatrixDLTermN[m][n]*MatrixDLTermN[m][n];
 			j++;
+			cout << j << " " << NormN << endl;
 			
 		} while ( NormN != 0 );
 	}
@@ -151,7 +162,7 @@ IsotopicVector IM_Matrix_Decay::GetDecay(IsotopicVector Mother_IV, double time)
 	for(int j = 0; j < (int)fReverseMatrixIndex.size(); j++)
 		for(int k = 0; k < (int)fReverseMatrixIndex.size(); k++)
 		{
-			if(k == j)	exp_T_Matrix[j][k] = exp(time);
+			if(k == j)	exp_T_Matrix[j][k] = exp(time/8E-23);
 			else 		exp_T_Matrix[j][k] = 0;
 		}
 
@@ -316,7 +327,8 @@ void IM_Matrix_Decay::LoadDecay()
 			else
 			{
 				fNormalDecay.Add( ParentZAI,  DaughtersIV ); // FIll the NormalDecay with the daughter IV scaled by the decay constante.
-				fDecayConstante += ParentZAI*log(2)/HalfLife;
+				fDecayConstante += ParentZAI*log(2)/HalfLife*8E-23;
+				cout << log(2)/HalfLife*8E-23 << endl;
 			}
 		}
 		
@@ -354,6 +366,7 @@ void IM_Matrix_Decay::CleanDecay()
 	DBGL
 	map<ZAI, IsotopicVector> InitialNucleiFiliation = fNormalDecay.GetNucleiFIliation();		//! Map of all the pathway
 	map<ZAI, IsotopicVector> CleanNucleiFiliation;
+	map<ZAI, IsotopicVector> CleanNucleiFiliation_bis;
 	
 	vector<ZAI> ZAIList = fIVList.GetZAIList();
 	
@@ -365,12 +378,12 @@ void IM_Matrix_Decay::CleanDecay()
 		CleanNucleiFiliation.insert(*it);
 	}
 	
-	cout << "cleaned size "<< CleanNucleiFiliation.size() << endl;
-	bool insertEnded = true;
+	bool insertEnded = false;
 	
 	while(!insertEnded)
 	{
-		for(it = CleanNucleiFiliation.begin(); it!=CleanNucleiFiliation.end(); it++)
+		CleanNucleiFiliation_bis = CleanNucleiFiliation;
+		for(it = CleanNucleiFiliation_bis.begin(); it!=CleanNucleiFiliation_bis.end(); it++)
 		{
 			ZAIList = (*it).second.GetZAIList();
 			map<ZAI, IsotopicVector>::iterator it2;
@@ -386,7 +399,7 @@ void IM_Matrix_Decay::CleanDecay()
 	}
 	
 	fNormalDecay.SetNucleiFIliation(CleanNucleiFiliation);
-	
+	cout << "out" << endl;
 	DBGL
 }
 
