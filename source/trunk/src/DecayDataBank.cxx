@@ -146,7 +146,7 @@ bool DecayDataBank::IsDefine(const ZAI& zai) const
 //________________________________________________________________________
 //	Get Decay
 //________________________________________________________________________
-IsotopicVector DecayDataBank::GetDecay(IsotopicVector isotopicvector, cSecond t)
+/*IsotopicVector DecayDataBank::GetDecay(IsotopicVector isotopicvector, cSecond t)
 {
 DBGL
 	IsotopicVector IV;
@@ -163,6 +163,48 @@ DBGL
 	}
 
 DBGL
+	return IV;
+}
+*/
+
+IsotopicVector DecayDataBank::GetDecay(IsotopicVector isotopicvector, cSecond t)
+{
+	DBGL
+	IsotopicVector IV;
+	
+	// Time slicing
+	
+	if( t > 1e16)
+	{
+		ERROR << " To long decay ... cut it !!! (max = 1e16 s ~ 300 000 000 years )" << endl;
+		exit(1);
+	}
+	
+	int evolutionDecade[17];
+	cSecond remainingTime = t;
+	for(int i = 16; i >= 0; i--)
+	{
+		evolutionDecade[i] = (int)remainingTime/pow(10,i);
+		remainingTime -= evolutionDecade[i]*pow(10,i);
+	}
+	
+	
+	IV = isotopicvector;
+	
+	for (int i = 16; i >= 0; i--)
+	{
+		if(evolutionDecade[i]!=0)
+		{
+			map<ZAI ,double> isotopicquantity = IV.GetIsotopicQuantity();
+			map<ZAI ,double >::iterator it;
+			
+			IV  = IsotopicVector();
+			for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+				IV += Evolution(it->first, evolutionDecade[i]*pow(10,i) ) * (*it).second ;
+		}
+	}
+	
+	DBGL
 	return IV;
 }
 //________________________________________________________________________
