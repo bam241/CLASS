@@ -221,7 +221,6 @@ void CLASSRead::ReadZAI()
 		fData[i]->ResetBranchAddresses();
 	}
 	fZAIvector = IVTot.GetZAIList();
-	fDecay = new IM_Matrix_Decay(IVTot);
 
 }
 
