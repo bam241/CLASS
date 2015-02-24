@@ -132,6 +132,7 @@ class DecayDataBank : public CLASSObject
 	
 	void SetOldReadMethod(bool val)		{ fOldReadMethod = val; ReadDataBase();}			///< use the old reading method
 	
+	void SetFastCalculation(bool val)	{ fFastCalculation = val; }
 	//}
 	
 	
@@ -168,6 +169,8 @@ class DecayDataBank : public CLASSObject
 	
 	
 	protected :
+	
+	bool fFastCalculation;
 	
 	map<ZAI, EvolutionData>	fDecayDataBank;		///< DataBank map
  	string			fDataBaseIndex;		///< Name of the index

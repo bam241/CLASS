@@ -5,6 +5,7 @@
 #include "ZAIMass.hxx"
 #include "ZAIHeat.hxx"
 #include "ZAITox.hxx"
+#include "DecayDataBank.hxx"
 
 typedef long long int cSecond;
 
@@ -15,6 +16,7 @@ const ZAIHeat cZAIHeat;					// Thermal power list of all nuclei  [W/nucleus]
 const ZAITox  cZAITox;
 
 const cSecond cYear = 3600*24*365.25;	// Seconds in a year
+DecayDataBank cDecayData;	// Seconds in a year
 
 
 #endif

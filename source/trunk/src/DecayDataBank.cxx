@@ -27,6 +27,17 @@
 
 DecayDataBank::DecayDataBank():CLASSObject(new CLASSLogger("DecayDataBank.log"))
 {
+	
+	string  CLASSPATH = getenv("CLASS_PATH");
+	string	DB_index_file = CLASSPATH + "/data/DECAY/Decay.idx";
+	fDataBaseIndex = DB_index_file;
+	fOldReadMethod = olfreadmethod;
+	fFastCalculation = true;
+	
+	// Warning
+	INFO 	<< " A EvolutionData has been define :" << endl;
+	INFO	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
+
 }
 
 //________________________________________________________________________
@@ -41,6 +52,7 @@ DecayDataBank::DecayDataBank(string DB_index_file, bool olfreadmethod):CLASSObje
 
 	fDataBaseIndex = DB_index_file;
 	fOldReadMethod = olfreadmethod;
+	fFastCalculation = true;
 
 	// Warning
 	INFO 	<< " A EvolutionData has been define :" << endl;
@@ -54,11 +66,12 @@ DecayDataBank::DecayDataBank(CLASSLogger* log, string DB_index_file, bool olfrea
 	
 	fDataBaseIndex = DB_index_file;
 	fOldReadMethod = olfreadmethod;
+	fFastCalculation = true;
 	
 	// Warning
-		INFO 	<< " A EvolutionData has been define :" << endl;
-		INFO	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
-
+	INFO 	<< " A EvolutionData has been define :" << endl;
+	INFO	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
+	
 }
 
 //________________________________________________________________________
@@ -180,30 +193,46 @@ IsotopicVector DecayDataBank::GetDecay(IsotopicVector isotopicvector, cSecond t)
 		exit(1);
 	}
 	
-	int evolutionDecade[17];
-	cSecond remainingTime = t;
-	for(int i = 16; i >= 0; i--)
+	if(fFastCalculation)
 	{
-		evolutionDecade[i] = (int)remainingTime/pow(10,i);
-		remainingTime -= evolutionDecade[i]*pow(10,i);
-	}
-	
-	
-	IV = isotopicvector;
-	
-	for (int i = 16; i >= 0; i--)
-	{
-		if(evolutionDecade[i]!=0)
+		map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
+		map<ZAI ,double >::iterator it;
+		for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		{
-			map<ZAI ,double> isotopicquantity = IV.GetIsotopicQuantity();
-			map<ZAI ,double >::iterator it;
-			
-			IV  = IsotopicVector();
-			for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
-				IV += Evolution(it->first, evolutionDecade[i]*pow(10,i) ) * (*it).second ;
+			if((*it).second > 0)
+			{
+ 			IsotopicVector ivtmp = Evolution(it->first, t) * (*it).second ;
+				IV += ivtmp;
+			}
+		}
+		
+	}
+	else
+	{
+		int evolutionDecade[17];
+		cSecond remainingTime = t;
+		for(int i = 16; i >= 0; i--)
+		{
+			evolutionDecade[i] = (int)remainingTime/pow(10,i);
+			remainingTime -= evolutionDecade[i]*pow(10,i);
+		}
+		
+		
+		IV = isotopicvector;
+		
+		for (int i = 16; i >= 0; i--)
+		{
+			if(evolutionDecade[i]!=0)
+			{
+				map<ZAI ,double> isotopicquantity = IV.GetIsotopicQuantity();
+				map<ZAI ,double >::iterator it;
+				
+				IV  = IsotopicVector();
+				for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+					IV += Evolution(it->first, evolutionDecade[i]*pow(10,i) ) * (*it).second ;
+			}
 		}
 	}
-	
 	DBGL
 	return IV;
 }
