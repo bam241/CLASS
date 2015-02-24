@@ -493,9 +493,13 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	{
 		if(i == 1) out += " same";
 		if(toplotTTree[i].size() !=0)
+		{
 			if(!DecayChain)
 				BuildTGraph(toplotTTree[i], 1, out);
-		
+			
+			else
+				BuildTGraphUsingDecayCHain(toplotTTree[i], 1, StartingStep, FinalTime, StepNUmber, LinBin, out);
+		}
 	}
 	fCNucleiTox->cd();
 	
@@ -1090,6 +1094,272 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 		return;
 	}
 	
+
+}
+
+void CLASSRead::BuildTGraphUsingDecayCHain(vector<CLASSPlotElement> toplot, int PlotId, int StartingStep, cSecond FinalTime, int StepNUmber, bool LinBin, string opt)
+{
+	TGraph** Graph;
+	int NumberGraphIterator = 0;
+	
+	if(PlotId == 0)
+		Graph = fGraphInv;
+	else if(PlotId == 1)
+		Graph = fGraphTox;
+	else if(PlotId == 2)
+		Graph = fGraphHeat;
+	else
+	{
+		cout << "Bad PlotId" << endl;
+		return;
+	}
+	
+	fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
+	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
+	
+	
+	
+	string out = opt;
+	Long64_t nentries = fData[toplot[0].fTreeId]->GetEntries();
+	
+	Long64_t Time = 0;
+	fData[toplot[0].fTreeId]->SetBranchAddress("AbsTime", &Time);
+	
+	Reactor* reactor[fReactorName[toplot[0].fTreeId].size()];
+	for(int i = 0; i < (int)fReactorName[toplot[0].fTreeId].size(); i++ )
+		reactor[i] = 0;
+	
+	Pool* pool[fPoolName[toplot[0].fTreeId].size()];
+	for(int i = 0; i < (int)fPoolName[toplot[0].fTreeId].size(); i++ )
+		pool[i] = 0;
+	
+	FabricationPlant* fabricationplant[fFabricationName[toplot[0].fTreeId].size()];
+	for(int i = 0; i < (int)fFabricationName[toplot[0].fTreeId].size(); i++ )
+		fabricationplant[i] = 0;
+	
+	Storage* stock[fStockName[toplot[0].fTreeId].size()];
+	for(int i = 0; i < (int)fStockName[toplot[0].fTreeId].size(); i++ )
+		stock[i] = 0;
+	
+	IsotopicVector* IV[8];
+	for(int i = 0; i < 8; i++ )
+		IV[i] = 0;
+	
+	vector< double > vTime;
+	vector< IsotopicVector > vIV[toplot.size()];
+	vector< double > vQuantity[toplot.size()];
+
+	for (int i=0; i < (int)toplot.size(); i++)
+	{
+		
+		string InBranchName = GetBranchInName(toplot[i]);
+		
+		string ActiveInBranchName = InBranchName + "*";
+		fData[toplot[0].fTreeId]->SetBranchStatus(ActiveInBranchName.c_str(),1);
+		
+		if(toplot[i].fFacilityId == 0)
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &IV[toplot[i].fFacylityNumber]);
+		else if(toplot[i].fFacilityId == 1)
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &reactor[toplot[i].fFacylityNumber]);
+		else if(toplot[i].fFacilityId == 2)
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &stock[toplot[i].fFacylityNumber]);
+		else if(toplot[i].fFacilityId == 3)
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &pool[toplot[i].fFacylityNumber]);
+		else if(toplot[i].fFacilityId == 4)
+			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &fabricationplant[toplot[i].fFacylityNumber]);
+	}
+	
+	
+	fData[toplot[0].fTreeId]->GetEntry(StartingStep);
+	vTime.push_back(Time/3600./24./365.25);
+	
+	Xmin = vTime[0];
+	Xmax = FinalTime;
+
+	
+	for (int i=0; i < (int)toplot.size(); i++)
+	{
+		
+		if(toplot[i].fFacilityId == 0)
+		{
+			int Z = toplot[i].fZAI.Z();
+			int A = toplot[i].fZAI.A();
+			int I = toplot[i].fZAI.I();
+			IsotopicVector ZAIQuantity = IV[toplot[i].fFacylityNumber]->GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
+			
+			vIV[i].push_back(ZAIQuantity);
+			
+		}
+		else if(toplot[i].fFacilityId == 1)
+		{
+			int Z = toplot[i].fZAI.Z();
+			int A = toplot[i].fZAI.A();
+			int I = toplot[i].fZAI.I();
+			
+			IsotopicVector ZAIQuantity;
+			
+			if( toplot[i].fIVNumber == 0 )
+				ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
+			else if( toplot[i].fIVNumber == 1 )
+				ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
+			else if( toplot[i].fIVNumber == 2 )
+				ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
+			else
+			{
+				cout << "Bad IVNumber" << endl;
+				return;
+			}
+			
+			vIV[i].push_back(ZAIQuantity);
+			
+		}
+		else if(toplot[i].fFacilityId == 2)
+		{
+			int Z = toplot[i].fZAI.Z();
+			int A = toplot[i].fZAI.A();
+			int I = toplot[i].fZAI.I();
+			
+			IsotopicVector ZAIQuantity;
+			
+			if( toplot[i].fIVNumber == 0 )
+				ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
+			else if( toplot[i].fIVNumber == 1 )
+				ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
+			else if( toplot[i].fIVNumber == 2 )
+				ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
+			else
+			{
+				cout << "Bad IVNumber" << endl;
+				return;
+			}
+			
+			vIV[i].push_back(ZAIQuantity);
+			
+		}
+		else if(toplot[i].fFacilityId == 3)
+		{
+			int Z = toplot[i].fZAI.Z();
+			int A = toplot[i].fZAI.A();
+			int I = toplot[i].fZAI.I();
+			
+			IsotopicVector ZAIQuantity;
+			
+			if( toplot[i].fIVNumber == 0 )
+				ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
+			else if( toplot[i].fIVNumber == 1 )
+				ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
+			else if( toplot[i].fIVNumber == 2 )
+				ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
+			else
+			{
+				cout << "Bad IVNumber" << endl;
+				return;
+			}
+		
+			vIV[i].push_back(ZAIQuantity);
+			
+		}
+		else if(toplot[i].fFacilityId == 4)
+		{
+			int Z = toplot[i].fZAI.Z();
+			int A = toplot[i].fZAI.A();
+			int I = toplot[i].fZAI.I();
+			
+			IsotopicVector ZAIQuantity;
+			
+			if( toplot[i].fIVNumber == 0 )
+				ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
+			else if( toplot[i].fIVNumber == 1 )
+				ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
+			else if( toplot[i].fIVNumber == 2 )
+				ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
+			else
+			{
+				cout << "Bad IVNumber" << endl;
+				return;
+			}
+			
+			
+			vIV[i].push_back(ZAIQuantity);
+			
+		}
+	}
+	
+	
+	for(int i = 0; i < StepNUmber; i++)
+	{
+		vTime.push_back( (FinalTime-vTime[0])/StepNUmber + vTime.back() );
+		
+		for(int j = 0; j < (int)toplot.size(); j++)
+			vIV[j].push_back( cDecayData.GetDecay( vIV[j].back(), (FinalTime-vTime[0])/StepNUmber  ) );
+	}
+
+	
+	
+	for(int i = 0; i < (int)vTime.size(); i++)
+	{
+		for(int j = 0; j < (int)toplot.size(); j++)
+		{
+			
+			int Z = toplot[i].fZAI.Z();
+			int A = toplot[i].fZAI.A();
+			int I = toplot[i].fZAI.I();
+
+			double ZAIQuantity = 0;
+			
+			if(PlotId == 0)
+				ZAIQuantity = vIV[j][i].GetZAIIsotopicQuantity(Z,A,I) * cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
+			else if(PlotId == 1)
+				ZAIQuantity = vIV[j][i].GetZAIIsotopicQuantity(Z,A,I) * cZAITox.GetRadioTox(Z,A,I);
+			else if(PlotId == 2)
+				ZAIQuantity = vIV[j][i].GetZAIIsotopicQuantity(Z,A,I) * cZAIHeat.GetHeat(Z,A,I);
+			else
+			{
+				cout << "Bad PlotId" << endl;
+				return;
+			}
+			
+			
+			if(Ymin>ZAIQuantity) Ymin = ZAIQuantity;
+			if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
+
+			
+			vQuantity[i].push_back(ZAIQuantity);
+		}
+	}
+	
+	
+	for (int i = 0; i < (int)toplot.size(); i++)
+	{
+		Graph[NumberGraphIterator] = new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]);
+		NumberGraphIterator++;
+	}
+	
+	fData[toplot[0].fTreeId]->ResetBranchAddresses();
+	{
+		for(int i=0; i< (int)fReactorName[toplot[0].fTreeId].size(); i++) delete reactor[i];
+		
+		for(int i=0; i< (int)fPoolName[toplot[0].fTreeId].size(); i++) delete pool[i];
+		
+		for(int i=0; i< (int)fFabricationName[toplot[0].fTreeId].size(); i++) delete fabricationplant[i];
+		
+		for(int i=0; i< (int)fStockName[toplot[0].fTreeId].size(); i++) delete stock[i];
+		for(int i=0; i< 8; i++) delete IV[i];
+	}
+	
+	
+	if(PlotId == 0)
+		fNumberGraphInvIterator += NumberGraphIterator;
+	else if(PlotId == 1)
+		fNumberGraphToxIterator += NumberGraphIterator;
+	else if(PlotId == 2)
+		fNumberGraphHeatIterator += NumberGraphIterator;
+	else
+	{
+		cout << "Bad PlotId" << endl;
+		return;
+	}
+
 
 }
 
