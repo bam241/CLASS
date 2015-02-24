@@ -8,10 +8,8 @@
  */
 
 #include "CLASSObject.hxx"
-#include "TMatrix.h"
 #include "EvolutionData.hxx"
 #include "IsotopicVector.hxx"
-#include "DynamicalSystem.hxx"
 
 #include <map>
 #include <vector>

@@ -22,8 +22,6 @@
 
 using namespace std;
 
-typedef long long int cSecond;
-
 //-----------------------------------------------------------------------------//
 //! Class defining the common properties of all back end fuel cycle facilities
 

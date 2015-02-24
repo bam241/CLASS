@@ -14,12 +14,10 @@
 
 #include "CLASSObject.hxx"
 #include "IsotopicVector.hxx"
-#include "DecayDataBank.hxx"
 
 #include "TNamed.h"
 
 using namespace std;
-typedef long long int cSecond;
 
 class Scenario;
 //-----------------------------------------------------------------------------//

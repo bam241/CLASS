@@ -1,6 +1,5 @@
 #include "DecayDataBank.hxx"
 
-#include "IsotopicVector.hxx"
 #include "CLASSLogger.hxx"
 #include "StringLine.hxx"
 
@@ -31,7 +30,7 @@ DecayDataBank::DecayDataBank():CLASSObject(new CLASSLogger("DecayDataBank.log"))
 	string  CLASSPATH = getenv("CLASS_PATH");
 	string	DB_index_file = CLASSPATH + "/data/DECAY/Decay.idx";
 	fDataBaseIndex = DB_index_file;
-	fOldReadMethod = olfreadmethod;
+	fOldReadMethod = false;
 	fFastCalculation = true;
 	
 	// Warning
@@ -213,7 +212,7 @@ IsotopicVector DecayDataBank::GetDecay(IsotopicVector isotopicvector, cSecond t)
 		cSecond remainingTime = t;
 		for(int i = 16; i >= 0; i--)
 		{
-			evolutionDecade[i] = (int)remainingTime/pow(10,i);
+			evolutionDecade[i] = (cSecond)remainingTime/pow(10,i);
 			remainingTime -= evolutionDecade[i]*pow(10,i);
 		}
 		

@@ -42,7 +42,6 @@ ZAIMass::ZAIMass()
 	}
 
 	infile.close();
-
 }
 
 

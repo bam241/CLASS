@@ -18,6 +18,5 @@
 
 #include "EvolutionData.hxx"
 #include "PhysicsModels.hxx"
-#include "DecayDataBank.hxx"
 
 #endif

@@ -16,7 +16,6 @@
 #include "CLASSFuelPlan.hxx"
 
 using namespace std;
-typedef long long int cSecond;
 
 
 class CLASSBackEnd;

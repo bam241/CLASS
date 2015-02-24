@@ -3,7 +3,6 @@
 #include "Storage.hxx"
 #include "Reactor.hxx"
 #include "EvolutionData.hxx"
-#include "DecayDataBank.hxx"
 #include "PhysicsModels.hxx"
 #include "IsotopicVector.hxx"
 #include "Scenario.hxx"

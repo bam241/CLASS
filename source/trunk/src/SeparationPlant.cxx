@@ -1,7 +1,5 @@
 #include "SeparationPlant.hxx"
 
-#include "IsotopicVector.hxx"
-#include "Storage.hxx"
 #include "Scenario.hxx"
 #include "CLASSLogger.hxx"
 
