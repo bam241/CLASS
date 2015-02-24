@@ -125,7 +125,6 @@ private :
 	vector< vector<cSecond> > fTimeVector;
 
 	
-	IM_Matrix_Decay* fDecay;
 	double Xmin;
 	double Xmax;
 	double Ymin;
