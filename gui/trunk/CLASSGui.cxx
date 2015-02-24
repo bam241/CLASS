@@ -24,6 +24,11 @@ int main(int argc, char** argv)
 	//cout << "toto"<< endl;
 	
 	CLASSRead* DataRead = new CLASSRead(VFileName[0]);
+	if(VFileName.size() == 0)
+	{
+		cerr<<endl<<"Usage: CLASGui FileName1 FileName2 ... "<<endl;
+		exit(0);
+	}
 	for (int i = 1; i < (int)VFileName.size(); i++)
 	{
 		cout << "File "<<  i << endl;

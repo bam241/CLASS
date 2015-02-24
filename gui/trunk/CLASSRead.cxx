@@ -120,6 +120,8 @@ CLASSRead::CLASSRead(TString filename)
 	fLegendPower = 0;
 
 	fNumberGraphPowerIterator = 0;
+
+	cDecayData.SetFastCalculation(false);
 }
 
 //________________________________________________________________________
@@ -318,8 +320,12 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	{
 		if(i == 1) out += " same";
 		if(toplotTTree[i].size() !=0)
+		{
 			if(!DecayChain)
 				BuildTGraph(toplotTTree[i], 0, out);
+			else
+				BuildTGraphUsingDecayCHain(toplotTTree[i], 0, StartingStep, FinalTime, StepNUmber, LinBin, out);
+		}
 
 	}
 	fCNucleiInv->cd();
@@ -672,9 +678,12 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 	{
 		if(i == 1) out += " same";
 		if(toplotTTree[i].size() !=0)
+		{
 			if(!DecayChain)
 				BuildTGraph(toplotTTree[i], 2, out);
-		
+			else
+				BuildTGraphUsingDecayCHain(toplotTTree[i], 2, StartingStep, FinalTime, StepNUmber, LinBin, out);
+		}
 	}
 	fCNucleiHeat->cd();
 	
@@ -1116,7 +1125,7 @@ void CLASSRead::BuildTGraphUsingDecayCHain(vector<CLASSPlotElement> toplot, int 
 	fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
 	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
 	
-	
+
 	
 	string out = opt;
 	Long64_t nentries = fData[toplot[0].fTreeId]->GetEntries();
@@ -1170,10 +1179,10 @@ void CLASSRead::BuildTGraphUsingDecayCHain(vector<CLASSPlotElement> toplot, int 
 	
 	
 	fData[toplot[0].fTreeId]->GetEntry(StartingStep);
-	vTime.push_back(Time/3600./24./365.25);
+	vTime.push_back(Time/cYear);
 	
 	Xmin = vTime[0];
-	Xmax = FinalTime;
+	Xmax = vTime[0] + FinalTime/cYear;
 
 	
 	for (int i=0; i < (int)toplot.size(); i++)
@@ -1284,34 +1293,30 @@ void CLASSRead::BuildTGraphUsingDecayCHain(vector<CLASSPlotElement> toplot, int 
 		}
 	}
 	
-	
 	for(int i = 0; i < StepNUmber; i++)
 	{
-		vTime.push_back( (FinalTime-vTime[0])/StepNUmber + vTime.back() );
-		
+		vTime.push_back( (FinalTime/StepNUmber + vTime.back()*cYear)/cYear );
 		for(int j = 0; j < (int)toplot.size(); j++)
-			vIV[j].push_back( cDecayData.GetDecay( vIV[j].back(), (FinalTime-vTime[0])/StepNUmber  ) );
+			vIV[j].push_back( cDecayData.GetDecay( vIV[j].back(), FinalTime/StepNUmber  ) );
 	}
-
-	
 	
 	for(int i = 0; i < (int)vTime.size(); i++)
 	{
 		for(int j = 0; j < (int)toplot.size(); j++)
 		{
-			
-			int Z = toplot[i].fZAI.Z();
-			int A = toplot[i].fZAI.A();
-			int I = toplot[i].fZAI.I();
+
+			int Z = toplot[j].fZAI.Z();
+			int A = toplot[j].fZAI.A();
+			int I = toplot[j].fZAI.I();
 
 			double ZAIQuantity = 0;
 			
 			if(PlotId == 0)
 				ZAIQuantity = vIV[j][i].GetZAIIsotopicQuantity(Z,A,I) * cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
 			else if(PlotId == 1)
-				ZAIQuantity = vIV[j][i].GetZAIIsotopicQuantity(Z,A,I) * cZAITox.GetRadioTox(Z,A,I);
+				ZAIQuantity = cZAITox.GetRadioTox( vIV[j][i] );
 			else if(PlotId == 2)
-				ZAIQuantity = vIV[j][i].GetZAIIsotopicQuantity(Z,A,I) * cZAIHeat.GetHeat(Z,A,I);
+				ZAIQuantity = cZAIHeat.GetHeat( vIV[j][i] );
 			else
 			{
 				cout << "Bad PlotId" << endl;
@@ -1323,7 +1328,7 @@ void CLASSRead::BuildTGraphUsingDecayCHain(vector<CLASSPlotElement> toplot, int 
 			if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
 
 			
-			vQuantity[i].push_back(ZAIQuantity);
+			vQuantity[j].push_back(ZAIQuantity);
 		}
 	}
 	
