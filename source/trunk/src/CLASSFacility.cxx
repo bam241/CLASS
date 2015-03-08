@@ -79,3 +79,13 @@ CLASSFacility::CLASSFacility(CLASSLogger* log, cSecond creationtime, cSecond lif
 	fCreationTime = creationtime;
 	fLifeTime = lifetime;
 }
+
+
+
+void CLASSFacility::ApplyZAIThreshold(int z)
+{
+	fInsideIV.ApplyZAIThreshold(z);
+	fCumulativeIVIn.ApplyZAIThreshold(z);
+	fCumulativeIVOut.ApplyZAIThreshold(z);
+
+}

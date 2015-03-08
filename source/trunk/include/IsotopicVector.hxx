@@ -119,6 +119,7 @@ public :
 
 	void 	Multiply(double factor);			//!< Multiply the IV by a Factor
 
+	void	ApplyZAIThreshold(int z = 90);			//!< Put all nuclei below the threshold in -2 -2 -2 ZAI...
 
 	IsotopicVector& operator+=(IsotopicVector const& IVb);	//!< Operator += definition
 	IsotopicVector& operator-=(IsotopicVector const& IVb);	//!< Operator -= definition

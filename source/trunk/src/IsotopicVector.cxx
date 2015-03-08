@@ -433,6 +433,31 @@ void IsotopicVector::Remove(const IsotopicVector& isotopicvector)
 }
 
 //________________________________________________________________________
+
+void IsotopicVector::ApplyZAIThreshold(int z)
+{
+	map<ZAI ,double> cleanedIsotopicQuantity;
+	cleanedIsotopicQuantity.insert( pair<ZAI ,double>(ZAI(-2,-2,-2), 0));
+	
+	map<ZAI ,double> isotopicquantity = (*this).GetIsotopicQuantity();
+	map<ZAI ,double >::iterator it;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+	{
+		if( (*it).first.Z() < z)
+			cleanedIsotopicQuantity[ZAI(-2,-2,-2)] += (*it).second;
+		else
+			cleanedIsotopicQuantity.insert(*it);
+			
+	}
+
+	fIsotopicQuantity = cleanedIsotopicQuantity;
+	
+}
+
+
+
+
+//________________________________________________________________________
 void IsotopicVector::Need(const ZAI& zai, double quantity)
 {
 	if(quantity < 0.5) quantity = 0;

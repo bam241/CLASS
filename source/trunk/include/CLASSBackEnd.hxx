@@ -120,6 +120,8 @@ class CLASSBackEnd : public CLASSFacility
 	 \name BackEndFacility specific Method
 	 */
 	//@{
+	virtual void ApplyZAIThreshold(int z = 90);						//!< Put all nuclei below the threshold in -2 -2 -2 ZAI...
+
 	virtual void	AddIV(IsotopicVector isotopicvector);	//!< Add an Isotopicvector to the IVArray
 	void		ClearIVArray();					//!< Empty the IVArray removing all fuel stored
 	
