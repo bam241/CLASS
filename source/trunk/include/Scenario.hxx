@@ -159,7 +159,11 @@ class Scenario : public CLASSObject
 	//}
 	//@}
 	
-	void SetLogTimeStep(bool val = true)	{fLogTimeStep = true;}
+	void SetLogTimeStep(bool val = true)	{ fLogTimeStep = true; }
+	
+	
+	void SetZAIThreshold(int z = 90)		{ fZAIThreshold = z;}
+
 	
 	//********* Add Method *********//
 	/*!
@@ -225,6 +229,8 @@ class Scenario : public CLASSObject
 	void AddWaste(IsotopicVector isotopicvector)	{ fWaste.Add(isotopicvector); }		//!< Add a isotopicVector to Waste
 	void AddToPower(double power)			{ fParcPower += power;}			//!< Add power to the installed power in the Parc
 	
+	
+	void ApplyZAIThreshold();
 	//@}
 	
 	
@@ -268,6 +274,8 @@ class Scenario : public CLASSObject
 	/// \li 8 end of Cooling,
 	/// \li 16 fuel Fabrication
 	
+	
+	int			fZAIThreshold;		///<
 	
 	vector<Storage*>		fStorage;		///< Vector of Storages
 	vector<Pool*>			fPool;			///< Vector of Pool

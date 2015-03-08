@@ -94,6 +94,18 @@ IsotopicVector CLASSBackEnd::GetDecay(IsotopicVector isotopicvector, cSecond t)
 }
 
 
+void CLASSBackEnd::ApplyZAIThreshold(int z)
+{
+	fInsideIV.ApplyZAIThreshold(z);
+	fCumulativeIVIn.ApplyZAIThreshold(z);
+	fCumulativeIVOut.ApplyZAIThreshold(z);
+	
+	for(int i = 0; i < (int)fIVArray.size(); i++)
+		fIVArray[i].ApplyZAIThreshold(z);
+
+}
+
+
 map<cSecond,int> CLASSBackEnd::GetTheBackEndTimePath()
 {
 	DBGL

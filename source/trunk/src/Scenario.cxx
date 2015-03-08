@@ -64,6 +64,7 @@ Scenario::Scenario(CLASSLogger* log, cSecond abstime):CLASSObject(log)
 
 	fParcPower = 0;
 
+	fZAIThreshold = -1;
 
 	// Warning
 
@@ -99,6 +100,7 @@ Scenario::Scenario( cSecond abstime, CLASSLogger* log):CLASSObject(log)
 	
 	fParcPower = 0;
 	
+	fZAIThreshold = -1;
 	
 	// Warning
 	
@@ -133,6 +135,7 @@ Scenario::Scenario( cSecond abstime ):CLASSObject(new CLASSLogger("CLASS_OUTPUT.
 	
 	fParcPower = 0;
 	
+	fZAIThreshold = -1;
 	
 	// Warning
 	
@@ -670,6 +673,9 @@ void Scenario::Evolution(cSecond t)
 		{
 #pragma omp single
 			{
+				if(fZAIThreshold != -1)
+					ApplyZAIThreshold();
+				
 				UpdateParc();
 				fOutT->Fill();
 				ProgressPrintout( (cSecond)t);
@@ -715,6 +721,30 @@ void Scenario::ProgressPrintout(cSecond t)
 //________________________________________________________________________
 //______________________________ Out Method ______________________________
 //________________________________________________________________________
+
+void Scenario::ApplyZAIThreshold()
+{
+	for(int i =0; i < (int)fFabricationPlant.size(); i++)
+		fFabricationPlant[i]->ApplyZAIThreshold(fZAIThreshold);
+	
+	for(int i = 0; i < (int) fPool.size();i++)
+		fPool[i]->ApplyZAIThreshold(fZAIThreshold);
+	
+	for(int i = 0; i < (int)fStorage.size(); i++)
+		fStorage[i]->ApplyZAIThreshold(fZAIThreshold);
+	
+	for(int i = 0; i < (int)fReactor.size(); i++)
+		fReactor[i]->ApplyZAIThreshold(fZAIThreshold);
+	
+	
+	fWaste.ApplyZAIThreshold(fZAIThreshold);
+	
+	
+}
+
+
+
+
 void Scenario::UpdateParc()
 {
 
