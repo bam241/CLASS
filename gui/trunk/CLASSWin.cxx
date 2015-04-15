@@ -526,6 +526,42 @@ bool MainWin::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 						fIsLinear=false;
 					
 					break;
+
+				case M_CHECK_AM_NUC:
+					if(fCheckAMNuc->GetState()==kButtonDown)
+					{	for( int l = 0; l < (int)fDATA->GetZAIvector().size(); l++ )
+						{
+							if(fDATA->GetZAIvector()[l].Z() > 90 && fDATA->GetZAIvector()[l].Z()!=92 && fDATA->GetZAIvector()[l].Z()!=94)
+								fCheckArrayNuc[l]->SetState(kButtonDown);
+						}
+					}
+					else
+					{
+						for( int l = 0; l < (int)fDATA->GetZAIvector().size(); l++ )
+						{
+							if(fDATA->GetZAIvector()[l].Z() > 90 && fDATA->GetZAIvector()[l].Z()!=92 && fDATA->GetZAIvector()[l].Z()!=94)
+								fCheckArrayNuc[l]->SetState(kButtonUp);
+						}
+					}	
+					break;
+
+				case M_CHECK_FP_NUC:
+					if(fCheckFPNuc->GetState()==kButtonDown)
+					{	for( int l = 0; l < (int)fDATA->GetZAIvector().size(); l++ )
+						{
+							if( fDATA->GetZAIvector()[l].A() > 50 && fDATA->GetZAIvector()[l].A()< 180 )
+								fCheckArrayNuc[l]->SetState(kButtonDown);
+						}
+					}
+					else
+					{
+						for( int l = 0; l < (int)fDATA->GetZAIvector().size(); l++ )
+						{
+							if( fDATA->GetZAIvector()[l].A() > 50 && fDATA->GetZAIvector()[l].A()< 180 )
+								fCheckArrayNuc[l]->SetState(kButtonUp);
+						}
+					}	
+					break;
 			}
 			case kCM_RADIOBUTTON:
 				switch (parm1)
@@ -1149,9 +1185,7 @@ void MainWin::FillPoolTab()
 			
 		}
 	}
-	
-	
-	
+		
 }
 //_____________________________________________________________________________________________
 void MainWin::FillFabricationTab()
@@ -1348,5 +1382,3 @@ Bool_t SubWin::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 	}
 	return kTRUE;
 }
-
-
