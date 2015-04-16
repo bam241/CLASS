@@ -1178,6 +1178,9 @@ void CLASSRead::BuildTGraphUsingDecayCHain(vector<CLASSPlotElement> toplot, int 
 	}
 	
 	
+	
+	
+	
 	fData[toplot[0].fTreeId]->GetEntry(StartingStep);
 	vTime.push_back(Time/cYear);
 	
@@ -1293,12 +1296,36 @@ void CLASSRead::BuildTGraphUsingDecayCHain(vector<CLASSPlotElement> toplot, int 
 		}
 	}
 	
-	for(int i = 0; i < StepNUmber; i++)
+	
+	vector<double> vTimeStep;
+	
+	if(LinBin)
 	{
-		vTime.push_back( (FinalTime/StepNUmber + vTime.back()*cYear)/cYear );
-		for(int j = 0; j < (int)toplot.size(); j++)
-			vIV[j].push_back( cDecayData.GetDecay( vIV[j].back(), FinalTime/StepNUmber  ) );
+	   for(int i = 0; i < StepNUmber; i++)
+	   {
+		   vTime.push_back( (FinalTime/StepNUmber + vTime.back()*cYear)/cYear );
+		   vTimeStep.push_back( FinalTime/StepNUmber );
+	   }
 	}
+	else
+	{
+		cout << "in" << endl;
+		
+		double dt = 1./StepNUmber * log( FinalTime/cYear /vTime[0]);
+		
+		for(int k=0 ; k <= StepNUmber; k++)
+		{
+			vTime.push_back( exp( dt*k ) * vTime[0] );
+			
+			vTimeStep.push_back( (vTime[vTime.size()-1] - vTime[vTime.size()-2])*cYear );
+		}
+	}
+	
+	
+		
+	for(int i = 0; i < StepNUmber; i++)
+		for(int j = 0; j < (int)toplot.size(); j++)
+			vIV[j].push_back( cDecayData.GetDecay( vIV[j].back(), vTimeStep[i]  ) );
 	
 	for(int i = 0; i < (int)vTime.size(); i++)
 	{
