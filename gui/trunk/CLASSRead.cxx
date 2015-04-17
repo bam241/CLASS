@@ -1605,35 +1605,100 @@ void CLASSRead::ASCIIWrite(string filename)
 	if (fGraphInv)
 	{
 		double* X = fGraphInv[0]->GetX();
-
+		
 		outfile << "time";
 		for(int i= 0; i < fGraphInv[0]->GetN(); i++)
 			outfile << "\t" << X[i];
-
+		
 		outfile << endl;
+		
+		
+		if (fGraphInvSumOfSelected) {
+			
+			outfile << fGraphInvSumOfSelected->GetTitle();
+			double* Y = fGraphInvSumOfSelected->GetY();
+			for(int j= 0; j < fGraphInvSumOfSelected->GetN(); j++)
+				outfile << "\t" << Y[j];
+			outfile << endl;
+		}
+		
+		
+		for(int i = 0; i < fNumberGraphInvIterator; i++)
+		{
+			outfile << fGraphInv[i]->GetTitle();
+			double* Y = fGraphInv[i]->GetY();
+			for(int j= 0; j < fGraphInv[i]->GetN(); j++)
+				outfile << "\t" << Y[j];
+			outfile << endl;
+		}
+		
 	}
-
-
-	if (fGraphInvSumOfSelected) {
-
-		outfile << fGraphInvSumOfSelected->GetTitle();
-		double* Y = fGraphInvSumOfSelected->GetY();
-		for(int j= 0; j < fGraphInvSumOfSelected->GetN(); j++)
-			outfile << "\t" << Y[j];
-		outfile << endl;
-	}
-
-
-	for(int i = 0; i < fNumberGraphInvIterator; i++)
+	
+	
+	if (fGraphTox)
 	{
-		outfile << fGraphInv[i]->GetTitle();
-		double* Y = fGraphInv[i]->GetY();
-		for(int j= 0; j < fGraphInv[i]->GetN(); j++)
-			outfile << "\t" << Y[j];
+		double* X = fGraphTox[0]->GetX();
+		
+		outfile << "time";
+		for(int i= 0; i < fGraphTox[0]->GetN(); i++)
+			outfile << "\t" << X[i];
+		
 		outfile << endl;
+		
+		
+		if (fGraphToxSumOfSelected) {
+			
+			outfile << fGraphToxSumOfSelected->GetTitle();
+			double* Y = fGraphToxSumOfSelected->GetY();
+			for(int j= 0; j < fGraphToxSumOfSelected->GetN(); j++)
+				outfile << "\t" << Y[j];
+			outfile << endl;
+		}
+		
+		
+		for(int i = 0; i < fNumberGraphToxIterator; i++)
+		{
+			outfile << fGraphTox[i]->GetTitle();
+			double* Y = fGraphTox[i]->GetY();
+			for(int j= 0; j < fGraphTox[i]->GetN(); j++)
+				outfile << "\t" << Y[j];
+			outfile << endl;
+		}
+		
 	}
-
-
+	
+	if (fGraphHeat)
+	{
+		double* X = fGraphHeat[0]->GetX();
+		
+		outfile << "time";
+		for(int i= 0; i < fGraphHeat[0]->GetN(); i++)
+			outfile << "\t" << X[i];
+		
+		outfile << endl;
+		
+		
+		if (fGraphHeatSumOfSelected) {
+			
+			outfile << fGraphHeatSumOfSelected->GetTitle();
+			double* Y = fGraphHeatSumOfSelected->GetY();
+			for(int j= 0; j < fGraphHeatSumOfSelected->GetN(); j++)
+				outfile << "\t" << Y[j];
+			outfile << endl;
+		}
+		
+		
+		for(int i = 0; i < fNumberGraphHeatIterator; i++)
+		{
+			outfile << fGraphHeat[i]->GetTitle();
+			double* Y = fGraphHeat[i]->GetY();
+			for(int j= 0; j < fGraphHeat[i]->GetN(); j++)
+				outfile << "\t" << Y[j];
+			outfile << endl;
+		}
+		
+	}
+	
 }
 
 
