@@ -1313,7 +1313,7 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 		
 		double dt = 1./StepNUmber * log( FinalTime/cYear /vTime[0]);
 		
-		for(int k=0 ; k <= StepNUmber; k++)
+		for(int k=0 ; k < StepNUmber; k++)
 		{
 			vTime.push_back( exp( dt*k ) * vTime[0] );
 			
