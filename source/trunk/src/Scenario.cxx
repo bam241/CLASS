@@ -384,7 +384,7 @@ void Scenario::BuildTimeVector(cSecond t)
 		pair<CLASSFuel, double> R_Fuel = fReactor[i]->GetFuelPlan()->GetFuelAt(R_StartingTime);
 
 		double  R_BU = R_Fuel.second;
-		cSecond	R_CycleTime = (cSecond) (R_BU / R_Power * R_HMMass * 1e9 *3600*24);
+		cSecond	R_CycleTime = (cSecond) (R_BU*1e9  / R_Power * R_HMMass *3600*24);
 		if(R_CycleTime == 0)
 		{
 			ERROR << " Be carefull a reactor cycletime is set to 0 second....\"\n" << endl;
@@ -479,7 +479,7 @@ void Scenario::BuildTimeVector(cSecond t)
 		R_Fuel = fReactor[i]->GetFuelPlan()->GetFuelAt(step);
 
 		R_BU = fReactor[i]->GetFuelPlan()->GetFuelAt(step).second;
-		R_CycleTime = (cSecond) (R_BU / R_Power * R_HMMass * 1e9 *3600*24);
+		R_CycleTime = (cSecond) (R_BU*1e9 / R_Power * R_HMMass *3600*24);
 
 		if(R_CycleTime == 0)
 		{
@@ -541,7 +541,7 @@ void Scenario::BuildTimeVector(cSecond t)
 			R_Fuel = fReactor[i]->GetFuelPlan()->GetFuelAt(step);
 
 			R_BU = fReactor[i]->GetFuelPlan()->GetFuelAt(step).second;
-			R_CycleTime = (cSecond) (R_BU / R_Power * R_HMMass * 1e9 *3600*24);
+			R_CycleTime = (cSecond) (R_BU*1e9 / R_Power * R_HMMass *3600*24);
 			if(R_CycleTime == 0)
 			{
 				ERROR << " Be carefull a reactor cycletime is set to 0 second....\"\n" << endl;
