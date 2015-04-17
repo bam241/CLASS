@@ -147,6 +147,8 @@ class IrradiationModel : public CLASSObject
 	//}
 	
 	void SetShortestHalfLife(double halflife)	{ fShorstestHalflife = halflife;}	//!< Set the Half Life cut
+	void SetZAIThreshold(double zaithreshold)	{ fZAIThreshold = zaithreshold;}	//!< Set the zai threshold
+	
 	void LoadFPYield(string SponfaneusYield, string ReactionYield);				//!< Build Fision Yields maps
 	
 	void SetSpectrumType(string type);					//!< Set the type of neutron spectrum (thermal or fast)
