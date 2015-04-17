@@ -76,8 +76,8 @@ public :
 	void ConvertxmlTTreePower(vector<CLASSPlotElement> toplotPower, string opt);
 	void ConvertXmlPower(vector<CLASSPlotElement> toplotPower, string opt );
 
-	void Write(string filename, string fileformat="ASCII");
-	void ASCIIWrite(string filename = "ASCII");
+	void Write(string filename, string fileformat, string PadName);
+	void ASCIIWrite(string filename , string PadName);
 
 
 	void AddFile(TString filemname);

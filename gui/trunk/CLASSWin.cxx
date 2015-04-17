@@ -463,8 +463,8 @@ bool MainWin::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 						if(fSaveFileName != "" /*&& fSaveFileFormat !=""*/)
 						{	//si plusieur canvas ouvert sauver l'actif exemple :
 							string PadName=gPad->GetName();
-							if(PadName=="c_Nuclei")
-								fDATA->Write(fSaveFileName, fSaveFileFormat);
+							//if(PadName=="c_Nuclei")
+								fDATA->Write(fSaveFileName, fSaveFileFormat, PadName);
 						}
 					break;
 					
