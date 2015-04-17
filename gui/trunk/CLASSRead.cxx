@@ -1309,7 +1309,6 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 	}
 	else
 	{
-		cout << "in" << endl;
 		
 		double dt = 1./StepNUmber * log( FinalTime/cYear /vTime[0]);
 		
