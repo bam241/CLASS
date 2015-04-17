@@ -28,7 +28,7 @@ DecayDataBank::DecayDataBank():CLASSObject(new CLASSLogger("DecayDataBank.log"))
 {
 	
 	string  CLASSPATH = getenv("CLASS_PATH");
-	string	DB_index_file = CLASSPATH + "/data/DECAY/Decay.idx";
+	string	DB_index_file = CLASSPATH + "/DATA_BASES/DECAY/ALL/Decay.idx";
 	fDataBaseIndex = DB_index_file;
 	fOldReadMethod = false;
 	fFastCalculation = true;
