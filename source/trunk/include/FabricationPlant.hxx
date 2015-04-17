@@ -94,8 +94,10 @@ public :
 
 	void SetFiFo(bool bval = true)	{ fFiFo = bval;}				//!< Set the chronological priority (true for chronological, false instead)
 	
-	void SetSubstitutionFuel(EvolutionData fuel);					//!< To use a substitution fuel if the fabrication fail (not enough material in stock)
-	
+	void SetSubstitutionFuel(EvolutionData fuel, bool ReplaceTheStock = false);					//!< To use a substitution fuel if the fabrication fail (not enough material in stock) 
+	void SetSubstitutionFissile(IsotopicVector IV);					//!< To use a substitution fissile if the fabrication fail (not enough material in stock) the composition of the fissile is given normalize to 1 by IV.
+
+
 	void AddReactor(int reactorid, double creationtime)
 			{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }	//!< Add a new reactor to be filled with the fresh fuel build by the FabricationPlant
 
@@ -187,6 +189,8 @@ protected :
 	bool	fFiFo;					//!< First In First Out flag
 
 	bool	fSubstitutionFuel;			//!< true if a substitution fuel as been set
+	bool 	fSubstitutionFissile;		//!< true if a substitution fissile as been set
+	bool 	fIsReplaceFissileStock;		//!< If there is not enough fissile: true all the fissile comes from an infinite stock; false: just the missing Pu quantity comes from this infinite stock 
 
 	void	FabricationPlantEvolution(cSecond t);	//!< Deal the FabricationPlant evolution
 	void 	ResetArrays();				//!< empty the fFertileArray and fFissileArray
@@ -211,6 +215,7 @@ protected :
 	bool		fIsReusable;
 
 	EvolutionData	fSubstitutionEvolutionData;	//!< EvolutionData of the subtitution fuel
+	IsotopicVector 	fSubstitutionFissileIV;		//!< IsotopicVector of the subtitution fissile
 
 	DecayDataBank*	fDecayDataBase;			//!< Pointer to the DecayDataBank
 
