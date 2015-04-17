@@ -1095,12 +1095,6 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 
 	}
 	
-	if(!LinBin)
-	{
-		Xmin = 1;
-		Ymin = 1;
-	}
-
 
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
@@ -1341,11 +1335,11 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 	else
 	{
 		
-		double dt = 1./StepNUmber * log( FinalTime/cYear /vTime[0]);
+		double dt = 1./double(StepNUmber) * log( FinalTime/cYear /vTime[0]);
 		
-		for(int k=0 ; k < StepNUmber; k++)
+		for(int k=1 ; k <= StepNUmber; k++)
 		{
-			vTime.push_back( exp( dt*k ) * vTime[0] );
+			vTime.push_back( exp( dt*double(k) ) * vTime[0] );
 			
 			vTimeStep.push_back( (vTime[vTime.size()-1] - vTime[vTime.size()-2])*cYear );
 		}
