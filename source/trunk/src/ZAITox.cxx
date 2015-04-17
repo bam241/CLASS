@@ -37,7 +37,7 @@ ZAITox::ZAITox()
 	}
 
 	IrradiationModel* IM = new IrradiationModel();
-	IM->SetZAIThreshold(0);
+	IM->SetZAIThreshold(1);
 	IM->LoadDecay();
 
 	int Z,A,I;
