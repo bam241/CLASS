@@ -672,50 +672,100 @@ void MainWin::Plot()
 		{
 			if(fCheckArrayReactor[i][j]->GetState()==kButtonDown)
 			{
-				for(int l=0;l<3;l++)
-					if (fCheckIVPlot[l]->GetState()==kButtonDown)
-						for(int k=0; k < Nnucleus; k++)
-						{
-							if(fCheckArrayNuc[k]->GetState()==kButtonDown)
-								toplot.push_back( CLASSPlotElement(i,1,j,l, fDATA->GetZAIvector()[k]));
-						}
+				if(fButtonRadiotox->GetState()==kButtonDown || fButtonHeat->GetState()==kButtonDown)
+				{
+					for(int k=0; k < Nnucleus; k++)
+					{
+						if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+							toplot.push_back( CLASSPlotElement(i,1,j,0, fDATA->GetZAIvector()[k]));
+					}
+				}
+				else
+				{
+					for(int l=0;l<3;l++)
+						if (fCheckIVPlot[l]->GetState()==kButtonDown)
+							for(int k=0; k < Nnucleus; k++)
+							{
+								if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+									toplot.push_back( CLASSPlotElement(i,1,j,l, fDATA->GetZAIvector()[k]));
+							}
+				}
 			}
 		}
 		
 		for(int j=0; j < fNumberOfStock[i]; j++)
-		{
+		{	
 			if(fCheckArrayStock[i][j]->GetState()==kButtonDown)
-				for(int l =0;l<3;l++)
-					if (fCheckIVPlot[l]->GetState()==kButtonDown)
-						for(int k=0; k < Nnucleus; k++)
-						{
-							if(fCheckArrayNuc[k]->GetState()==kButtonDown)
-								toplot.push_back( CLASSPlotElement(i, 2, j,l, fDATA->GetZAIvector()[k]));
-						}
+			{
+				if(fButtonRadiotox->GetState()==kButtonDown || fButtonHeat->GetState()==kButtonDown)
+				{
+					for(int k=0; k < Nnucleus; k++)
+					{
+						if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+							toplot.push_back( CLASSPlotElement(i,2,j,0, fDATA->GetZAIvector()[k]));
+					}
+				}
+				else
+				{
+					for(int l=0;l<3;l++)
+						if (fCheckIVPlot[l]->GetState()==kButtonDown)
+							for(int k=0; k < Nnucleus; k++)
+							{
+								if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+									toplot.push_back( CLASSPlotElement(i,2,j,l, fDATA->GetZAIvector()[k]));
+							}
+				}
+			}
 		}
 		
 		for(int j=0; j < fNumberOfPool[i]; j++)
 		{
 			if(fCheckArrayPool[i][j]->GetState()==kButtonDown)
-				for(int l =0;l<3;l++)
-					if (fCheckIVPlot[l]->GetState()==kButtonDown)
-						for(int k=0; k < Nnucleus; k++)
-						{
-							if(fCheckArrayNuc[k]->GetState()==kButtonDown)
-								toplot.push_back( CLASSPlotElement(i, 3, j,l, fDATA->GetZAIvector()[k]));
-						}
+			{
+				if(fButtonRadiotox->GetState()==kButtonDown || fButtonHeat->GetState()==kButtonDown)
+				{
+					for(int k=0; k < Nnucleus; k++)
+					{
+						if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+							toplot.push_back( CLASSPlotElement(i,3,j,0, fDATA->GetZAIvector()[k]));
+					}
+				}
+				else
+				{
+					for(int l=0;l<3;l++)
+						if (fCheckIVPlot[l]->GetState()==kButtonDown)
+							for(int k=0; k < Nnucleus; k++)
+							{
+								if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+									toplot.push_back( CLASSPlotElement(i,3,j,l, fDATA->GetZAIvector()[k]));
+							}
+				}
+			}
 		}
 		
 		for(int j=0; j < fNumberOfFab[i]; j++)
 		{
 			if(fCheckArrayFab[i][j]->GetState()==kButtonDown)
-				for(int l =0;l<3;l++)
-					if (fCheckIVPlot[l]->GetState()==kButtonDown)
-						for(int k=0; k < Nnucleus; k++)
-						{
-							if(fCheckArrayNuc[k]->GetState()==kButtonDown)
-								toplot.push_back( CLASSPlotElement(i, 4, j,l, fDATA->GetZAIvector()[k]));
-						}
+			{
+				if(fButtonRadiotox->GetState()==kButtonDown || fButtonHeat->GetState()==kButtonDown)
+				{
+					for(int k=0; k < Nnucleus; k++)
+					{
+						if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+							toplot.push_back( CLASSPlotElement(i,4,j,0, fDATA->GetZAIvector()[k]));
+					}
+				}
+				else
+				{
+					for(int l=0;l<3;l++)
+						if (fCheckIVPlot[l]->GetState()==kButtonDown)
+							for(int k=0; k < Nnucleus; k++)
+							{
+								if(fCheckArrayNuc[k]->GetState()==kButtonDown)
+									toplot.push_back( CLASSPlotElement(i,4,j,l, fDATA->GetZAIvector()[k]));
+							}
+				}
+			}
 		}
 	}
 	
@@ -750,6 +800,7 @@ void MainWin::Plot()
 			fDATA->PlotHeat(toplot,fIsByMother,StartingStep,FinalTime,NStep,IsLinear);
 		
 	}
+
 	
 }
 void MainWin::Conversionxml()
