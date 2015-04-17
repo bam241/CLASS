@@ -93,7 +93,7 @@ class EquivalenceModel : public CLASSObject
 	double GetRelativMassPrecision() const	{ return fRelativMassPrecision; }	//!< Mass precision
 	int GetMaxInterration()		 const	{ return fMaxInterration; }		//!< Max iterration in build fueld algorythm
 
-	
+	double GetActualFissileContent() const { return fActualFissileContent; }	//!< Get the fissile content at the actual dichotomy step (usefull for EQM_MLP_Kinf)
 	
 	void SetFertileList(IsotopicVector IV) {fFertileList = IV;}//!<set the fertile list
 	void SetFissileList(IsotopicVector IV) {fFissileList = IV;}//!<set the fissile list
@@ -117,13 +117,14 @@ class EquivalenceModel : public CLASSObject
 	//!< if no stock are provided the fuel will not be made
 	
 	double fFirstGuessFissilContent;//!< fissile content for BuildFuel initialization (in weight proportion)
-	
+	double fActualFissileContent;	//!< fissile content at the actual dichotomy step (usefull for EQM_MLP_Kinf)
 	
 	
 	
 	private :
 	
-	double fOld_Lambda_Tot;		//!< The old (old iteration) guessed lambda_tot (guessed from GuessLambda)
+	double fOld_Lambda_Tot_Minus;//!< The old (old iteration) guessed lambda_tot (guessed from GuessLambda)
+	double fOld_Lambda_Tot_Plus ;//!< The old (old iteration) guessed lambda_tot (guessed from GuessLambda)
 	double fLambda_max;		//!< Value calculated by FindLambdaMax
 	
 	double fRelativMassPrecision;	//!< Mass precision
