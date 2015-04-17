@@ -282,7 +282,11 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 		fCNucleiInv=0;
 	}
 	fCNucleiInv = new TCanvas("c_NucleiInv","NucleiInv",50,110,400,300);
-
+	if(!LinBin)
+	{
+		fCNucleiInv->SetLogx();
+		fCNucleiInv->SetLogy();
+	}
 
 	fGraphInv = new TGraph*[toplot.size()];
 	fLegendInv = new TLatex*[toplot.size()];
@@ -463,8 +467,8 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	fCNucleiTox = new TCanvas("c_NucleiTox","NucleiTox",50,110,400,300);
 	if(!LinBin)
 	{
-		fCNucleiTox->SetLogX();
-		fCNucleiTox->SetLogY();
+		fCNucleiTox->SetLogx();
+		fCNucleiTox->SetLogy();
 	}
 	
 	fGraphTox = new TGraph*[toplot.size()];
@@ -644,7 +648,11 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 		fCNucleiHeat=0;
 	}
 	fCNucleiHeat = new TCanvas("c_NucleiHeat","NucleiHeat",50,110,400,300);
-	
+	if(!LinBin)
+	{
+		fCNucleiHeat->SetLogx();
+		fCNucleiHeat->SetLogy();
+	}
 	
 	fGraphHeat = new TGraph*[toplot.size()];
 	fLegendHeat = new TLatex*[toplot.size()];
