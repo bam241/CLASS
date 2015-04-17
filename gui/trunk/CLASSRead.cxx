@@ -461,7 +461,11 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 		fCNucleiTox=0;
 	}
 	fCNucleiTox = new TCanvas("c_NucleiTox","NucleiTox",50,110,400,300);
-	
+	if(!LinBin)
+	{
+		fCNucleiTox->SetLogX();
+		fCNucleiTox->SetLogY();
+	}
 	
 	fGraphTox = new TGraph*[toplot.size()];
 	fLegendTox = new TLatex*[toplot.size()];
