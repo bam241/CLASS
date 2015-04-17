@@ -324,7 +324,7 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 			if(!DecayChain)
 				BuildTGraph(toplotTTree[i], 0, out);
 			else
-				BuildTGraphUsingDecayCHain(toplotTTree[i], 0, StartingStep, FinalTime, StepNUmber, LinBin, out);
+				BuildTGraphUsingDecayChain(toplotTTree[i], 0, StartingStep, FinalTime, StepNUmber, LinBin, out);
 		}
 
 	}
@@ -503,7 +503,7 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 				BuildTGraph(toplotTTree[i], 1, out);
 			
 			else
-				BuildTGraphUsingDecayCHain(toplotTTree[i], 1, StartingStep, FinalTime, StepNUmber, LinBin, out);
+				BuildTGraphUsingDecayChain(toplotTTree[i], 1, StartingStep, FinalTime, StepNUmber, LinBin, out);
 		}
 	}
 	fCNucleiTox->cd();
@@ -682,7 +682,7 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 			if(!DecayChain)
 				BuildTGraph(toplotTTree[i], 2, out);
 			else
-				BuildTGraphUsingDecayCHain(toplotTTree[i], 2, StartingStep, FinalTime, StepNUmber, LinBin, out);
+				BuildTGraphUsingDecayChain(toplotTTree[i], 2, StartingStep, FinalTime, StepNUmber, LinBin, out);
 		}
 	}
 	fCNucleiHeat->cd();
@@ -1105,7 +1105,7 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 
 }
 
-void CLASSRead::BuildTGraphUsingDecayCHain(vector<CLASSPlotElement> toplot, int PlotId, int StartingStep, cSecond FinalTime, int StepNUmber, bool LinBin, string opt)
+void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int PlotId, int StartingStep, cSecond FinalTime, int StepNUmber, bool LinBin, string opt)
 {
 	TGraph** Graph;
 	int NumberGraphIterator = 0;
