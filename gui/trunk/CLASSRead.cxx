@@ -366,6 +366,11 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 		}
 	}
 
+	if(!LinBin)
+	{
+		Xmin = 1;
+		Ymin = 1;
+	}
 
 
 	TH1F*	  fhr = fCNucleiInv->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
@@ -548,6 +553,11 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 		}
 	}
 	
+	if(!LinBin)
+	{
+		Xmin = 1;
+		Ymin = 1;
+	}
 	
 	
 	TH1F*	  fhr = fCNucleiTox->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
@@ -731,7 +741,11 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 		}
 	}
 	
-	
+	if(!LinBin)
+	{
+		Xmin = 1;
+		Ymin = 1;
+	}
 	
 	TH1F*	  fhr = fCNucleiHeat->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
 	string Xtitle="Time [year]";
@@ -1080,7 +1094,12 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 
 
 	}
-
+	
+	if(!LinBin)
+	{
+		Xmin = 1;
+		Ymin = 1;
+	}
 
 
 	for (int i = 0; i < (int)toplot.size(); i++)
@@ -1370,7 +1389,11 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 		}
 	}
 	
-	
+	if(!LinBin)
+	{
+		Xmin = 1;
+		Ymin = 1;
+	}
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
 		Graph[NumberGraphIterator] = new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]);
