@@ -1207,7 +1207,7 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 	
 	
 	fData[toplot[0].fTreeId]->GetEntry(StartingStep);
-	vTime.push_back(0);
+	vTime.push_back(1);
 	
 	Xmin = vTime[0];
 	Xmax = vTime[0] + FinalTime/cYear;
