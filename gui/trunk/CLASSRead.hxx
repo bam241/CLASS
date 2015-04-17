@@ -60,7 +60,7 @@ public :
 	void ReadTime();
 
 	void BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId = 0, string opt = "L");
-	void BuildTGraphUsingDecayCHain(vector<CLASSPlotElement> toplot, int PlotId, int StartingStep, cSecond FinalTime, int StepNUmber, bool LinBin, string opt);
+	void BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int PlotId, int StartingStep, cSecond FinalTime, int StepNUmber, bool LinBin, string opt);
 
 	
 	void PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain = false, int StartingStep = 0, cSecond FinalTime = 0, int StepNUmber = 0, bool LinBin = true , string opt = "L");
