@@ -61,7 +61,7 @@ class EQM_BakerRoss_FBR_MOX : public EquivalenceModel
 	 \param Weight_Am_241 : reactivity weight @f$W_{^{241}Pu} = \frac{\alpha_{{^{241}Am}} - \alpha_{^{238}U} }{\alpha_{^{239}Pu}-\alpha_{^{238}U}}@f$
 	 \param EquivalentFissile : reference fresh fuel @f$^{239}Pu@f$ content neeed in a @f$^{238}U@f$ + @f$^{239}Pu@f$ fuel to satisfy criticality at t=0
 	 */
-	EQM_BakerRoss_FBR_MOX(CLASSLogger* log, double Weight_U_235 =7.91642e-01  , double Weight_Pu_238=6.84741e-01  , double Weight_Pu_240=1.37467e-01  , double Weight_Pu_241=1.54546e+00  , double Weight_Pu_242=8.11544e-02  , double Weight_Am_241=-3.36839e-01  , double EquivalentFissile = 0.106);
+	EQM_BakerRoss_FBR_MOX(CLASSLogger* log, double Weight_U_235 =0.793671, double Weight_Pu_238=0.6836, double Weight_Pu_240=0.13558, double Weight_Pu_241=1.5503, double Weight_Pu_242=0.0803952, double Weight_Am_241=-0.342553, double EquivalentFissile = 0.106);
 	//}
 	
 	//{
@@ -77,7 +77,7 @@ class EQM_BakerRoss_FBR_MOX : public EquivalenceModel
 	 \param Weight_Am_241 : reactivity weight @f$W_{^{241}Pu} = \frac{\alpha_{{^{241}Am}} - \alpha_{^{238}U} }{\alpha_{^{239}Pu}-\alpha_{^{238}U}}@f$
 	 \param EquivalentFissile : reference fresh fuel @f$^{239}Pu@f$ content neeed in a @f$^{238}U@f$ + @f$^{239}Pu@f$ fuel to satisfy criticality at t=0
 	 */
-	EQM_BakerRoss_FBR_MOX( double Weight_U_235 =7.91642e-01  , double Weight_Pu_238=6.84741e-01  , double Weight_Pu_240=1.37467e-01  , double Weight_Pu_241=1.54546e+00  , double Weight_Pu_242=8.11544e-02  , double Weight_Am_241=-3.36839e-01  , double EquivalentFissile = 0.106);
+	EQM_BakerRoss_FBR_MOX(double Weight_U_235 =0.793671, double Weight_Pu_238=0.6836, double Weight_Pu_240=0.13558, double Weight_Pu_241=1.5503, double Weight_Pu_242=0.0803952, double Weight_Am_241=-0.342553, double EquivalentFissile = 0.106);
 	//}
 	//@}
 	
