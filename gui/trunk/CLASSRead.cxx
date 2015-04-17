@@ -1583,13 +1583,13 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 //________________________________________________________________________
 //________________________________________________________________________
 //________________________________________________________________________
-void CLASSRead::Write(string filename, string fileformat)
+void CLASSRead::Write(string filename, string fileformat, string PadName)
 {
 	if(fileformat == "ASCII")
-		ASCIIWrite(filename);
+		ASCIIWrite(filename,PadName);
 
 }
-void CLASSRead::ASCIIWrite(string filename)
+void CLASSRead::ASCIIWrite(string filename, string PadName)
 {
 
 	ofstream outfile;
@@ -1602,7 +1602,7 @@ void CLASSRead::ASCIIWrite(string filename)
 
 	cout << "WARNING!! not working if using many CLASS.root file with diffenret timestep!!!"<<endl;
 
-	if (fGraphInv)
+	if (fGraphInv && PadName=="c_NucleiInv")
 	{
 		double* X = fGraphInv[0]->GetX();
 		
@@ -1635,7 +1635,7 @@ void CLASSRead::ASCIIWrite(string filename)
 	}
 	
 	
-	if (fGraphTox)
+	if (fGraphTox && PadName=="c_NucleiTox")
 	{
 		double* X = fGraphTox[0]->GetX();
 		
@@ -1667,7 +1667,7 @@ void CLASSRead::ASCIIWrite(string filename)
 		
 	}
 	
-	if (fGraphHeat)
+	if (fGraphHeat && PadName=="c_NucleiHeat")
 	{
 		double* X = fGraphHeat[0]->GetX();
 		
