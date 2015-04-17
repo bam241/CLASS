@@ -51,6 +51,8 @@ DBGL
 
 	fFiFo = false;
 	fSubstitutionFuel = false;
+	fSubstitutionFissile = false;
+	fIsReplaceFissileStock = false;
 
 	fReUsable = 0;
 	fIsReusable = false;
@@ -194,6 +196,13 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 	fFissileList = FuelType.GetEquivalenceModel()->GetFissileList();
 	BuildFissileArray();
 
+	// If there is not enough Fissile its possible to take from an infinite fissile stock
+	if( !fIsReplaceFissileStock && fSubstitutionFissile )//if it is defined and wanted
+	{	IsotopicVector CooledSeparatedIV = GetDecay( fSubstitutionFissileIV , GetCycleTime());
+		fFissileArray.push_back( CooledSeparatedIV/ CooledSeparatedIV.GetTotalMass() * R_HM_Mass );
+		cout<<"here"<<endl;
+	}
+
 
 	fFertileList = FuelType.GetEquivalenceModel()->GetFertileList();
 
@@ -252,34 +261,65 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 				IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId,EmptyIV) );
 				if(!IResult.second)
 					IResult.first->second = EmptyIV;
-			}
-			ResetArrays();
+			}	
 		}
 		else
 		{
+			if(fSubstitutionFissile)//if the build fail possibility to take a fissile material from an infinite fissile stock (if infinite stock defined)
+			{ 
+				//make the user specified fissil composition to decay the fabrication time
+				IsotopicVector CooledSeparatedIV = GetDecay(fSubstitutionFissileIV, GetCycleTime());
+				//Building the fuel :
+				double MolarFissileContent = FuelType.GetEquivalenceModel()->GetFissileMolarFraction(CooledSeparatedIV,fFertileList, R_BU);
+				IsotopicVector BuiltFuel = MolarFissileContent*fSubstitutionFissileIV/fSubstitutionFissileIV.GetSumOfAll() + (1-MolarFissileContent)*fFertileList/fFertileList.GetSumOfAll();
+				IsotopicVector IV = BuiltFuel/ BuiltFuel.GetTotalMass() * R_HM_Mass;
 
-			IsotopicVector IV = fSubstitutionEvolutionData.GetIsotopicVectorAt(0);
-			EvolutionData evolutiondb = fSubstitutionEvolutionData * R_HM_Mass / IV.GetTotalMass();
+				//Generating the EvolutionData
+				EvolutionData EvolDB = FuelType.GenerateEvolutionData( GetDecay(IV,fCycleTime), R_CycleTime, R_Power);
+		
+				{
+					pair<map<int, IsotopicVector>::iterator, bool> IResult;
+					IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId, IV) );
+					if(!IResult.second)
+					IResult.first->second = IV;
+				}
+				{
+					pair<map<int, EvolutionData>::iterator, bool> IResult;
+					IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,EvolDB) );
+					if(!IResult.second)
+					IResult.first->second = EvolDB;
+				}
 
-			IV = IV* R_HM_Mass / IV.GetTotalMass();
-			{
-				pair<map<int, IsotopicVector>::iterator, bool> IResult;
-				IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId, IV) );
-				if(!IResult.second)
-				IResult.first->second = IV;
+				GetParc()->AddOutIncome(IV);
+				fInsideIV += IV;
+				AddCumulativeIVIn(IV);
+
+				DBGL
 			}
+			else
 			{
-				pair<map<int, EvolutionData>::iterator, bool> IResult;
-				IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,evolutiondb) );
-				if(!IResult.second)
-				IResult.first->second = evolutiondb;
+				IsotopicVector IV = fSubstitutionEvolutionData.GetIsotopicVectorAt(0);
+				EvolutionData evolutiondb = fSubstitutionEvolutionData * R_HM_Mass / IV.GetTotalMass();
+	
+				IV = IV* R_HM_Mass / IV.GetTotalMass();
+				{
+					pair<map<int, IsotopicVector>::iterator, bool> IResult;
+					IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId, IV) );
+					if(!IResult.second)
+					IResult.first->second = IV;
+				}
+				{
+					pair<map<int, EvolutionData>::iterator, bool> IResult;
+					IResult = fReactorFuturDB.insert( pair<int, EvolutionData>(ReactorId,evolutiondb) );
+					if(!IResult.second)
+					IResult.first->second = evolutiondb;
+				}
+				GetParc()->AddOutIncome( IV );
+				fInsideIV += IV;
+				AddCumulativeIVIn(IV);
 			}
-			GetParc()->AddOutIncome( IV );
-			fInsideIV += IV;
-			AddCumulativeIVIn(IV);
 
-
-
+		ResetArrays();
 		}DBGL
 		return;
 	}
@@ -442,16 +482,26 @@ void FabricationPlant::SortArray(int i)
 
 
 //________________________________________________________________________
-void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel)
+void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel, bool ReplaceTheStock)
 {
 	
 	fSubstitutionFuel = true;
+	fIsReplaceFissileStock = ReplaceTheStock;
 
 	double M0 = cZAIMass.GetMass( fuel.GetIsotopicVectorAt(0.).GetActinidesComposition() );
 	fSubstitutionEvolutionData = fuel / M0;
 
 }
+//________________________________________________________________________
+void	FabricationPlant::SetSubstitutionFissile(IsotopicVector IV)
+{
+	
+	fSubstitutionFuel = true;
+	fSubstitutionFissile = true;
 
+	fSubstitutionFissileIV = IV / IV.GetSumOfAll();
+
+}
 
 	//________________________________________________________________________
 	//_____________________________ Reactor & DB _____________________________
@@ -491,7 +541,14 @@ DBGL
 	IsotopicVector BuildedFuel;
 	IsotopicVector Lost;
 
-	for(int i = 0; i < (int)fFissileArray.size(); i++)
+	int StockCorrection = 0;
+	if( !fIsReplaceFissileStock && fSubstitutionFissile)
+	{	
+		StockCorrection=1;
+		BuildedFuel += fFissileArray.back()*LambdaArray[fFissileArray.size()-1];
+	}
+
+	for(int i = 0; i < (int)fFissileArray.size() - StockCorrection ; i++)
 	{
 		if(LambdaArray[i] != 0)
 		{
@@ -541,8 +598,12 @@ DBGL
 void FabricationPlant::DumpStock(vector<double> LambdaArray)
 {
 DBGL
-
-	for(int i = 0; i < (int)fFissileArray.size(); i++)
+	int StockCorrection = 0;
+	if( !fIsReplaceFissileStock && fSubstitutionFissile)
+	{	StockCorrection=1;
+		GetParc()->AddOutIncome( fFissileArray.back()*LambdaArray[fFissileArray.size()-1] );
+	}
+	for(int i = 0; i < (int)fFissileArray.size() - StockCorrection; i++)
 	{
 		if(LambdaArray[i] != 0)
 		{
