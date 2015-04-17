@@ -5,7 +5,7 @@
 EquivalenceModel::EquivalenceModel():CLASSObject()
 {
 	fRelativMassPrecision = 1/10000.; //Mass precision
-	fMaxInterration = 10000; // Max iterration in build fueld algorythum
+	fMaxInterration = 1000; // Max iterration in build fueld algorythum
 	fFirstGuessFissilContent = 0.04;
 
 }
@@ -13,7 +13,7 @@ EquivalenceModel::EquivalenceModel():CLASSObject()
 EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 {
 	fRelativMassPrecision = 1/10000.; //Mass precision
-	fMaxInterration = 10000; // Max iterration in build fueld algorythm
+	fMaxInterration = 1000; // Max iterration in build fueld algorythm
 	fFirstGuessFissilContent = 0.04;
 
 }
@@ -29,6 +29,8 @@ DBGL
 	HMMass*=1e6;//tons to gram
 
 	/****Some initializations**/
+	fActualFissileContent = GetBuildFuelFirstGuess(); //usefull for EQM_MLP_Kinf
+
 	vector<double> lambda ; //vector of portion of stocks taken (fissile & fertil)
 	for(int i = 0 ; i < (int)FissilArray.size() + (int)FertilArray.size() ; i++ )
 		lambda.push_back(0);
@@ -41,8 +43,9 @@ DBGL
 	}
 
 
-	fOld_Lambda_Tot = 0;
 	fLambda_max = FindLambdaMax( FissilArray, HMMass );
+	fOld_Lambda_Tot_Minus = 0;
+	fOld_Lambda_Tot_Plus  = fLambda_max;
 	DBGV("fLambda_max "<<fLambda_max);
 
 	IsotopicVector Fertile;
@@ -53,7 +56,7 @@ DBGL
 
 	int loopCount = 0;
 	
-	while(  fabs(PuMassNeeded - AvailablePuMass)/HMMass > fRelativMassPrecision )
+	do
 	{
 		//Increase the portion of the stock stokID taken, according to the followings variables
 		double DeltaM=PuMassNeeded-AvailablePuMass;
@@ -104,17 +107,17 @@ DBGL
 		
 		/*Calcul the quantity of this composition needed to reach the burnup*/
 		double MolarPuContent = GetFissileMolarFraction(Fissile, Fertile, BurnUp);
+		fActualFissileContent = MolarPuContent; //usefull for EQM_MLP_Kinf
 		double MeanMolarPu = Fissile.MeanMolar();
 		double MeanMolarDepletedU = Fertile.MeanMolar();
 		double MeanMolar   = MeanMolarPu * MolarPuContent + (1-MolarPuContent)*MeanMolarDepletedU;
 		
-		DBGV("MolarPuContent "<<MolarPuContent);
-		DBGV("DeltaM "<<DeltaM << " g");
+		DBGV("MolarPuContent "<<MolarPuContent<<" DeltaM "<<PuMassNeeded-AvailablePuMass << " g");
 		
 		WeightPuContent = MolarPuContent * MeanMolarPu / MeanMolar ;
 		PuMassNeeded = WeightPuContent  *  HMMass ;
 		loopCount++;
-	}
+	}while(  fabs(PuMassNeeded - AvailablePuMass)/HMMass > fRelativMassPrecision );
 
 
 	DBGV("Weight percent fissil : "<<PuMassNeeded/HMMass );
@@ -193,8 +196,8 @@ void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int 
 
 	else  if( DeltaM > 0) 
 	{
-		fOld_Lambda_Tot = LAMBDA_TOT;
-		LAMBDA_TOT += (fLambda_max - LAMBDA_TOT)/2.;
+		fOld_Lambda_Tot_Minus = LAMBDA_TOT;
+		LAMBDA_TOT += (fOld_Lambda_Tot_Plus - LAMBDA_TOT)/2.;
 
 		if( ( (fLambda_max - LAMBDA_TOT ) < 1)
 			&& ( fLambda_max - LAMBDA_TOT ) * Stocks.back().GetTotalMass() * 1e6 < HMMass *fRelativMassPrecision/2.) //if we get close to the total of the stocks
@@ -204,10 +207,11 @@ void EquivalenceModel::GuessLambda(vector<double>& lambda,int FirstStockID, int 
 	}
 
 	else  if( DeltaM < 0) 
-	{
-		LAMBDA_TOT = LAMBDA_TOT - fabs(fOld_Lambda_Tot - LAMBDA_TOT) / 2. ;
+	{	fOld_Lambda_Tot_Plus =  LAMBDA_TOT;
+		LAMBDA_TOT = LAMBDA_TOT - fabs(fOld_Lambda_Tot_Minus - LAMBDA_TOT) / 2. ;
 		SetLambda(lambda,FirstStockID,LastStockID,LAMBDA_TOT );
 	}
+	DBGV("LAMBDA_TOT :"<<LAMBDA_TOT);
 }
 //________________________________________________________________________
 double EquivalenceModel::FindLambdaMax(vector<IsotopicVector> Stocks, double  HMMass)
