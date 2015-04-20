@@ -200,7 +200,6 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 	if( !fIsReplaceFissileStock && fSubstitutionFissile )//if it is defined and wanted
 	{	IsotopicVector CooledSeparatedIV = GetDecay( fSubstitutionFissileIV , GetCycleTime());
 		fFissileArray.push_back( CooledSeparatedIV/ CooledSeparatedIV.GetTotalMass() * R_HM_Mass );
-		cout<<"here"<<endl;
 	}
 
 
@@ -212,6 +211,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 	else						// if their is not stock and the fertile come from outside of the park
 	{
 		fFertileArray.push_back( fFertileList / fFertileList.GetTotalMass() * R_HM_Mass );
+		DBGV("Fertile Array size : "<<fFertileArray.size())
 	}
 
 	
@@ -222,7 +222,9 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 		LambdaSum += LambdaArray[i];
 
 	if(LambdaArray[0] != -1 && LambdaSum > 0 )
-	{
+	{		
+		DBGV("Building process suceed: ")
+
 		IsotopicVector IV = BuildFuelFromEqModel(LambdaArray);
 		EvolutionData EvolDB = FuelType.GenerateEvolutionData( GetDecay(IV,fCycleTime), R_CycleTime, R_Power);
 
@@ -245,9 +247,9 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 	}
 	else
 	{
-
+		DBGV("Building process failed: ")
 		if (!fSubstitutionFuel)
-		{
+		{		DBGV("Reactor not loaded ")
 			{
 				EvolutionData EmptyDB;
 				pair<map<int, EvolutionData>::iterator, bool> IResult;
@@ -264,9 +266,9 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 			}	
 		}
 		else
-		{
+		{	DBGV("Using substitute : ")
 			if(fSubstitutionFissile)//if the build fail possibility to take a fissile material from an infinite fissile stock (if infinite stock defined)
-			{ 
+			{ DBGV("->From an infinite stock")
 				//make the user specified fissil composition to decay the fabrication time
 				IsotopicVector CooledSeparatedIV = GetDecay(fSubstitutionFissileIV, GetCycleTime());
 				//Building the fuel :
@@ -297,7 +299,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 				DBGL
 			}
 			else
-			{
+			{	DBGV("->From a fixed data base")
 				IsotopicVector IV = fSubstitutionEvolutionData.GetIsotopicVectorAt(0);
 				EvolutionData evolutiondb = fSubstitutionEvolutionData * R_HM_Mass / IV.GetTotalMass();
 	
@@ -319,8 +321,9 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 				AddCumulativeIVIn(IV);
 			}
 
-		ResetArrays();
 		}DBGL
+		ResetArrays();
+
 		return;
 	}
 DBGL
