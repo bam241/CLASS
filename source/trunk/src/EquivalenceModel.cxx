@@ -106,6 +106,7 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass,vector<I
 {
 
 DBGL	
+	vector<double> lambda ; //vector of portion of stocks taken (fissile & fertil)
 	/***Test if there is a stock**/
 	if( (int)FissilArray.size()==0 )
 	{	WARNING<<" No fissile stocks available ! Fuel not build"<<endl;
@@ -120,7 +121,6 @@ DBGL
 	fTotalFertileMassInStocks = 0;
 	fActualFissileContent = GetBuildFuelFirstGuess(); 
 
-	vector<double> lambda ; //vector of portion of stocks taken (fissile & fertil)
 	for(int i = 0 ; i < (int)FissilArray.size() + (int)FertilArray.size() ; i++ )
 		lambda.push_back(0);
 
