@@ -72,11 +72,7 @@ class EquivalenceModel : public CLASSObject
 	 */
 	virtual	 vector<double> BuildFuel(double BurnUp, double HMMass, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray );
 	//}
-	
-	virtual void GuessLambda(vector<double>& lambda,
-				 int FirstStockID, int LastStockID, double DeltaM,
-				 vector<IsotopicVector> Stocks, double  HMMass); //!< Guess a portion of IsotopicVectors to take (dichotomy)
-	
+		
 	//@}
 	
 	/*!
@@ -101,12 +97,7 @@ class EquivalenceModel : public CLASSObject
 	void SetRelativMassPrecision( double val)	{ fRelativMassPrecision = val; }	//!< Mass precision
 	void SetMaxInterration(int val)			{ fMaxInterration = val; }		//!< Max iterration in build fueld algorythm
 
-	
 	//@}
-	
-	
-	
-	
 	
 	protected :
 	
@@ -120,22 +111,31 @@ class EquivalenceModel : public CLASSObject
 	double fActualFissileContent;	//!< fissile content at the actual dichotomy step (usefull for EQM_MLP_Kinf)
 	
 	
-	
 	private :
-	
-	double fOld_Lambda_Tot_Minus;//!< The old (old iteration) guessed lambda_tot (guessed from GuessLambda)
-	double fOld_Lambda_Tot_Plus ;//!< The old (old iteration) guessed lambda_tot (guessed from GuessLambda)
-	double fLambda_max;		//!< Value calculated by FindLambdaMax
-	
-	double fRelativMassPrecision;	//!< Mass precision
-	int fMaxInterration;		//!< Max iterration in build fueld algorythm
+	/*!
+	 \name Algorithm parameters
+	 */
+	//@{	
+	double 	fRelativMassPrecision;		//!< Mass precision
+	int 	fMaxInterration;			//!< Max iterration in build fueld algorythm
+	//@}
 
-	
+	/*!
+	 \name Algorithm related functions for default BuildFuel function
+	 */
+	//@{
+	void 	SetLambda(vector<double>& lambda ,int FirstStockID, int LastStockID, double LAMBDA_TOT);	//!< Set individual lambda according to the LAMBDA_TOT (lambda of all stocks)
+	double 	LAMBDA_TOT_FOR(double MassNeeded, vector<IsotopicVector> StockArray, string FisOrFer);//!< Calculate the proportion of each stocks in StockArray to take in oder to get a mass of MassNeeded (can be Fer(fertile) or Fis(Fissile))
+	bool 	Build_Fuel_According_Lambda(vector<double> &lambda,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray, double HMMass,IsotopicVector &Fissile, IsotopicVector &Fertile);
+	//@}
 
-	double FindLambdaMax( vector<IsotopicVector> Stocks, double  HMMass);	//!< Find the maximum LAMBDA_TOT of Stocks (ie lambda to reach HMass)
-	void SetLambda(vector<double>& lambda ,int FirstStockID, int LastStockID, double LAMBDA_TOT);	//!< Set individual lambda according to the LAMBDA_TOT (lambda of all stocks)
-
-
+	/*!
+	 \name Others 
+	 */
+	//@{
+	double fTotalFissileMassInStocks;//!< Total mass in fissile stocks
+	double fTotalFertileMassInStocks;//!< Total mass in fertile stocks
+	//@}
 };
 
 #endif
