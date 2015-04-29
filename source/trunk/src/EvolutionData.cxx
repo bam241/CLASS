@@ -591,7 +591,7 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 	ifstream DecayDB(DBfile.c_str());	// Open the File
 	if(!DecayDB)				//check if file is correctly open
 	{
-		INFO << " \n Can't open \"" << DBfile << "\"\n" << endl;
+		ERROR << " \n Can't open \"" << DBfile << "\"\n" << endl;
 	}
 	vector<double> vTime;
 	
@@ -916,7 +916,7 @@ void EvolutionData::OldReadDB(string DBfile)
 	ifstream DecayDB(DBfile.c_str());							// Open the File
 	if(!DecayDB)
 	{
-		WARNING << " Can't open \"" << DBfile << "\"\n" << endl;
+		ERROR << " Can't open \"" << DBfile << "\"\n" << endl;
 	}
 	vector<double> vTime;
 	vector<double> vTimeErr;
