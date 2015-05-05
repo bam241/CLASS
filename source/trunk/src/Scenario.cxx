@@ -408,7 +408,7 @@ void Scenario::BuildTimeVector(cSecond t)
 		//********* Reactor Evolution Step *********//
 		// ShutDown of a reactor
 
-		// Test if the sutdown of the reactor is after the actual time (AbsolutreTime) and before the end of the evolution (t)
+		// Test if the shutdown of the reactor is after the actual time (AbsolutreTime) and before the end of the evolution (t)
 		if( R_ShutDownTime < t )
 		{
 			// Shutdown
@@ -469,7 +469,7 @@ void Scenario::BuildTimeVector(cSecond t)
 			}
 			else if( step - F_CycleTime < fStartingTime )
 			{
-				ERROR   << " Can't Build Fuel before Scenario's start\"\n" << endl;
+				ERROR  << " Can't Build Fuel before Scenario's start\"\n" << endl;
 				exit(1);
 			}
 		}

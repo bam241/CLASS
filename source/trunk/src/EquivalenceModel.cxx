@@ -105,7 +105,7 @@ bool EquivalenceModel::Build_Fuel_According_Lambda(vector<double> &lambda,vector
 	return true;
 }
 //________________________________________________________________________
-vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray)
+vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray)
 {
 	
 	DBGL
@@ -114,7 +114,8 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass,vector<I
 	
 	/*** Test if there is a stock **/
 	if( (int)FissilArray.size()==0 )
-	{	WARNING << " No fissile stocks available ! Fuel not build" << endl;
+	{
+		WARNING << " No fissile stocks available ! Fuel not build" << endl;
 		lambda[0] = -1;
 		return lambda;
 	}
@@ -193,7 +194,7 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass,vector<I
 	
 	
 	DBGV( "Weight percent fissil : " << PuMassNeeded/HMMass );
-	DBGV( "Lambda vector: " );
+	DBGV( "Lambda vector : " );
 	for(int i = 0; i < (int)FissilArray.size() + (int)FertilArray.size(); i++ )
 		DBGV(lambda[i]);
 	
