@@ -161,7 +161,7 @@ void Storage::StorageEvolution(cSecond t)
 {
 DBGL
 
-	if(t == fInternalTime && t !=0 ) return;
+	if(t == fInternalTime && t != 0 ) return;
 
 	RemoveEmptyStocks();
 
