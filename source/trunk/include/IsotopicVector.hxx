@@ -78,7 +78,7 @@ public :
 	
 	
 	double	GetTotalMass() const;							//!< Return the mass (in tons) of the isotopic vector
-	double	MeanMolar() const;							//<! Return the mean molar mass of the isotopic vector
+	double	GetMeanMolarMass() const;							//<! Return the mean molar mass of the isotopic vector
 	
 	vector<int>		GetChemicalSpecies()		const;			//!< Return the list of chemichal species contained
 	int			GetZAIQuantity()		const

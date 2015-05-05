@@ -554,7 +554,7 @@ double IsotopicVector::GetTotalMass() const
 }
 //________________________________________________________________________
 
-double IsotopicVector::MeanMolar() const
+double IsotopicVector::GetMeanMolarMass() const
 {
 	return GetTotalMass() * 1e6 * AVOGADRO / GetActinidesComposition().GetSumOfAll();
 }
