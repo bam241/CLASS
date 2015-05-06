@@ -1600,7 +1600,7 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 		exit(-1);
 	}
 
-	cout << "WARNING!! not working if using many CLASS.root file with diffenret timestep!!!"<<endl;
+	cout << "WARNING!! not working if using many CLASS.root file with different timestep!!!"<<endl;
 
 	if (fGraphInv && PadName=="c_NucleiInv")
 	{
