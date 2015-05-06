@@ -813,7 +813,7 @@ void Scenario::CloseOutputTree()
 
 	fOutFile->ls();
 	INFO << "Writing outTree " << fOutputFileName << endl;
-	fOutFile->Write();
+	fOutFile->Write("",TObject::kOverwrite);
 
 	if(fOutFile->IsOpen()) {
 		INFO << "Deleting outTree : " << endl;
