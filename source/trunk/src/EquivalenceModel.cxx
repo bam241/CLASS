@@ -110,13 +110,14 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<
 	
 	DBGL
 	vector<double> lambda ; // vector of portion of stocks taken (fissile & fertil)
-	
+	for(int i = 0 ; i < (int)FissilArray.size() + (int)FertilArray.size() ; i++ )
+		lambda.push_back(0);
 	
 	/*** Test if there is a stock **/
 	if( (int)FissilArray.size()==0 )
 	{
 		WARNING << " No fissile stocks available ! Fuel not build" << endl;
-		lambda[0] = -1;
+		SetLambdaToErrorCode(lambda);
 		return lambda;
 	}
 	
@@ -127,9 +128,6 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<
 	fTotalFertileMassInStocks = 0;
 	
 	fActualFissileContent = GetBuildFuelFirstGuess();
-	
-	for(int i = 0 ; i < (int)FissilArray.size() + (int)FertilArray.size() ; i++ )
-		lambda.push_back(0);
 	
 	IsotopicVector Fertile;
 	IsotopicVector Fissile;
@@ -144,11 +142,8 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<
 		double LAMBDA_NEEDED = LAMBDA_TOT_FOR(PuMassNeeded,FissilArray,"Fis");
 		if( LAMBDA_NEEDED == -1 )	// Check if previous lambda was well calculated
 		{
-			for(int i=0 ; i < (int)FissilArray.size() + (int)FertilArray.size();i++ )
-				lambda[i]= -1;
-			
-			WARNING << "Not enought fissile material to build fuel" << endl;
-			
+			SetLambdaToErrorCode(lambda);
+			WARNING << "Not enought fissile material to build fuel" << endl;		
 			return lambda;
 		}
 		
@@ -158,9 +153,7 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<
 		
 		if(!succeed)
 		{
-			for( int i = 0; i < (int)FissilArray.size() + (int)FertilArray.size(); i++ )
-				lambda[i] = -1; // Error code (readed by FabricationPlant)
-			
+			SetLambdaToErrorCode(lambda);
 			return lambda;
 		}
 		
@@ -176,6 +169,12 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<
 		/* Calcul the quantity of this composition needed to reach the burnup */
 		double MolarPuContent = GetFissileMolarFraction(Fissile, Fertile, BurnUp);
 		
+		if( MolarPuContent < 0 || MolarPuContent > 1 )
+		{	SetLambdaToErrorCode(lambda);
+			WARNING<<"GetFissileMolarFraction return negative or greater than one value";
+			return lambda;
+		}
+
 		double MeanMolarPu = Fissile.GetMeanMolarMass();
 		double MeanMolarDepletedU = Fertile.GetMeanMolarMass();
 		
@@ -221,3 +220,8 @@ void EquivalenceModel::SetLambda(vector<double>& lambda ,int FirstStockID, int L
 	lambda[FirstStockID + IntegerPart] = DecimalPart;
 }
 //________________________________________________________________________
+void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
+{
+		for(int i=0 ; i < (int)lambda.size() ;i++ )
+			lambda[i]= -1;
+}
