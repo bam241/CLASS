@@ -592,6 +592,8 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 	if(!DecayDB)				//check if file is correctly open
 	{
 		ERROR << " \n Can't open \"" << DBfile << "\"\n" << endl;
+		ERROR <<"\t-> Hint : If loading .dat files using a .idx file (like for a decay data base)\nmake sure the paths in it are correct";
+		exit(1);
 	}
 	vector<double> vTime;
 	
@@ -917,6 +919,9 @@ void EvolutionData::OldReadDB(string DBfile)
 	if(!DecayDB)
 	{
 		ERROR << " Can't open \"" << DBfile << "\"\n" << endl;
+		ERROR <<"\t-> Hint : If loading .dat files using a .idx file (like for a decay data base)\nmake sure the paths in it are correct";
+
+		exit(1);
 	}
 	vector<double> vTime;
 	vector<double> vTimeErr;
