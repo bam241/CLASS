@@ -125,8 +125,10 @@ class EquivalenceModel : public CLASSObject
 	 */
 	//@{
 	void 	SetLambda(vector<double>& lambda ,int FirstStockID, int LastStockID, double LAMBDA_TOT);	//!< Set individual lambda according to the LAMBDA_TOT (lambda of all stocks)
+	void	SetLambdaToErrorCode(vector<double>& lambda);
 	double 	LAMBDA_TOT_FOR(double MassNeeded, vector<IsotopicVector> StockArray, string FisOrFer);//!< Calculate the proportion of each stocks in StockArray to take in oder to get a mass of MassNeeded (can be Fer(fertile) or Fis(Fissile))
 	bool 	Build_Fuel_According_Lambda(vector<double> &lambda,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray, double HMMass,IsotopicVector &Fissile, IsotopicVector &Fertile);
+	
 	//@}
 
 	/*!
