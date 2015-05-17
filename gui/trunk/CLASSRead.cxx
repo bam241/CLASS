@@ -94,23 +94,17 @@ CLASSRead::CLASSRead(TString filename)
 	}
 
 	fCNucleiInv = 0;
-	fGraphInv = 0;
 	fLegendInv = 0;
-	fNumberGraphInvIterator = 0;
 	fGraphInvSumOfSelected = 0;
 	fLegendInvSumOfSelected = 0;
 
 	fCNucleiTox = 0;
-	fGraphTox = 0;
 	fLegendTox = 0;
-	fNumberGraphToxIterator = 0;
 	fGraphToxSumOfSelected = 0;
 	fLegendToxSumOfSelected = 0;
 
 	fCNucleiHeat = 0;
-	fGraphHeat = 0;
 	fLegendHeat = 0;
-	fNumberGraphHeatIterator = 0;
 	fGraphHeatSumOfSelected = 0;
 	fLegendHeatSumOfSelected = 0;
 
@@ -262,25 +256,28 @@ void CLASSRead::ReadTime()
 void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int StartingStep, cSecond FinalTime, int StepNUmber, bool LinBin, string opt)
 {
 
-	if(fGraphInv)
+	if(fLegendInv)
 	{
-		for(int i=0; i < fNumberGraphInvIterator;i++) delete fGraphInv[i];
-		delete [] fGraphInv;
+		for(int i=0; i < (int)fGraphInv.size(); i++) delete fLegendInv[i];
+		delete [] fLegendInv;
 	}
+	
+	for(int i=0; i < (int)fGraphInv.size();i++) delete fGraphInv[i];
+	fGraphInv.clear();
+	
 	if(fLegendInvSumOfSelected)
 		delete fLegendInvSumOfSelected;
 	if(fGraphInvSumOfSelected)
 		delete fGraphInvSumOfSelected;
 
-	if(fLegendInv)
-	{
-		for(int i=0; i < fNumberGraphInvIterator;i++) delete fLegendInv[i];
-		delete [] fLegendInv;
-	}
+
+	
 	if(fCNucleiInv && gROOT->FindObject("c_NucleiInv"))
-	{	delete fCNucleiInv;
+	{
+		delete fCNucleiInv;
 		fCNucleiInv=0;
 	}
+	
 	fCNucleiInv = new TCanvas("c_NucleiInv","NucleiInv",50,110,400,300);
 	if(!LinBin)
 	{
@@ -288,13 +285,9 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 		fCNucleiInv->SetLogy();
 	}
 
-	fGraphInv = new TGraph*[toplot.size()];
 	fLegendInv = new TLatex*[toplot.size()];
 	for (int i = 0; i < (int)toplot.size(); i++)
-	{
-		fGraphInv[i] = 0;
 		fLegendInv[i] = 0;
-	}
 
 	vector<CLASSPlotElement> toplotTTree[fData.size()];
 
@@ -305,7 +298,6 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	Ymin = 1.e36;
 	Ymax = -1.e36;
 
-	fNumberGraphInvIterator = 0;
 	bool SumOfSelected = false;
 
 	if(toplot[0].fTreeId == -1 )
@@ -322,6 +314,7 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	string out = opt;
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
+		
 		if(i == 1) out += " same";
 		if(toplotTTree[i].size() !=0)
 		{
@@ -339,7 +332,7 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 
 	if(SumOfSelected)
 	{
-		for (int i = 0; i < (int)fNumberGraphInvIterator; i++)
+		for (int i = 0; i < (int)fGraphInv.size(); i++)
 		{
 
 			for(int j = 0; j < fGraphInv[i]->GetN(); j++)
@@ -388,12 +381,12 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 		fGraphInvSumOfSelected = new TGraph(fGraphInv[0]->GetN(), X_Sum, Y_Sum );
 		fGraphInvSumOfSelected->SetName("Sum_Of_Selected");
 		fGraphInvSumOfSelected->SetTitle("Sum Of Selected");
-		fGraphInvSumOfSelected->SetLineColor(CurveColor(fNumberGraphInvIterator));
-		fGraphInvSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphInvIterator));
+		fGraphInvSumOfSelected->SetLineColor(CurveColor(fGraphInv.size()));
+		fGraphInvSumOfSelected->SetMarkerColor(CurveColor(fGraphInv.size()));
 		fGraphInvSumOfSelected->SetMarkerStyle(10);
 		fGraphInvSumOfSelected->Draw(out.c_str());
-		fGraphInvSumOfSelected->SetLineColor(CurveColor(fNumberGraphInvIterator));
-		fGraphInvSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphInvIterator));
+		fGraphInvSumOfSelected->SetLineColor(CurveColor(fGraphInv.size()));
+		fGraphInvSumOfSelected->SetMarkerColor(CurveColor(fGraphInv.size()));
 
 		double x;
 		double y;
@@ -405,14 +398,15 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 		fLegendInvSumOfSelected = new TLatex(x_0+0.6*(x-x_0),y_0+1.05*(y-y_0),"Sum_Of_Selected");
 		fLegendInvSumOfSelected->SetTextSize(0.05);
 		fLegendInvSumOfSelected->SetTextFont(132);
-		fLegendInvSumOfSelected->SetTextColor(CurveColor(fNumberGraphInvIterator));
+		fLegendInvSumOfSelected->SetTextColor(CurveColor(fGraphInv.size()));
 		fLegendInvSumOfSelected->Draw();
 
 
 	}
 
 
-	for (int i = 0; i < (int)fNumberGraphInvIterator; i++)
+
+	for (int i = 0; i < (int)fGraphInv.size(); i++)
 	{
 		if( i !=0 || SumOfSelected) out += " same";
 
@@ -443,28 +437,27 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	fCNucleiInv->Update();
 
 
-
-
 }
 
 //________________________________________________________________________
 void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int StartingStep, cSecond FinalTime, int StepNUmber, bool LinBin, string opt)
 {
-	if(fGraphTox)
+
+	if(fLegendTox)
 	{
-		for(int i=0; i < fNumberGraphToxIterator;i++) delete fGraphTox[i];
-		delete [] fGraphTox;
+		for(int i=0; i < (int)fGraphTox.size();i++) delete fLegendTox[i];
+		delete [] fLegendTox;
 	}
+	
+	for(int i=0; i < (int)fGraphTox.size();i++) delete fGraphTox[i];
+	fGraphTox.clear();
+	
 	if(fLegendToxSumOfSelected)
 		delete fLegendToxSumOfSelected;
 	if(fGraphToxSumOfSelected)
 		delete fGraphToxSumOfSelected;
 	
-	if(fLegendTox)
-	{
-		for(int i=0; i < fNumberGraphToxIterator;i++) delete fLegendTox[i];
-		delete [] fLegendTox;
-	}
+
 	if(fCNucleiTox && gROOT->FindObject("c_NucleiTox"))
 	{	delete fCNucleiTox;
 		fCNucleiTox=0;
@@ -476,13 +469,9 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 		fCNucleiTox->SetLogy();
 	}
 	
-	fGraphTox = new TGraph*[toplot.size()];
 	fLegendTox = new TLatex*[toplot.size()];
 	for (int i = 0; i < (int)toplot.size(); i++)
-	{
-		fGraphTox[i] = 0;
 		fLegendTox[i] = 0;
-	}
 	
 	vector<CLASSPlotElement> toplotTTree[fData.size()];
 
@@ -492,7 +481,6 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	Ymin = 1.e36;
 	Ymax = -1.e36;
 	
-	fNumberGraphToxIterator = 0;
 	bool SumOfSelected = false;
 	
 	if(toplot[0].fTreeId == -1 )
@@ -526,7 +514,7 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	
 	if(SumOfSelected)
 	{
-		for (int i = 0; i < (int)fNumberGraphToxIterator; i++)
+		for (int i = 0; i < (int)fGraphTox.size(); i++)
 		{
 			
 			for(int j = 0; j < fGraphTox[i]->GetN(); j++)
@@ -575,12 +563,12 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 		fGraphToxSumOfSelected = new TGraph(fGraphTox[0]->GetN(), X_Sum, Y_Sum );
 		fGraphToxSumOfSelected->SetName("Sum_Of_Selected");
 		fGraphToxSumOfSelected->SetTitle("Sum Of Selected");
-		fGraphToxSumOfSelected->SetLineColor(CurveColor(fNumberGraphToxIterator));
-		fGraphToxSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphToxIterator));
+		fGraphToxSumOfSelected->SetLineColor(CurveColor(fGraphTox.size()));
+		fGraphToxSumOfSelected->SetMarkerColor(CurveColor(fGraphTox.size()));
 		fGraphToxSumOfSelected->SetMarkerStyle(10);
 		fGraphToxSumOfSelected->Draw(out.c_str());
-		fGraphToxSumOfSelected->SetLineColor(CurveColor(fNumberGraphToxIterator));
-		fGraphToxSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphToxIterator));
+		fGraphToxSumOfSelected->SetLineColor(CurveColor(fGraphTox.size()));
+		fGraphToxSumOfSelected->SetMarkerColor(CurveColor(fGraphTox.size()));
 		
 		double x;
 		double y;
@@ -592,14 +580,14 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 		fLegendToxSumOfSelected = new TLatex(x_0+0.6*(x-x_0),y_0+1.05*(y-y_0),"Sum_Of_Selected");
 		fLegendToxSumOfSelected->SetTextSize(0.05);
 		fLegendToxSumOfSelected->SetTextFont(132);
-		fLegendToxSumOfSelected->SetTextColor(CurveColor(fNumberGraphToxIterator));
+		fLegendToxSumOfSelected->SetTextColor(CurveColor(fGraphTox.size()));
 		fLegendToxSumOfSelected->Draw();
 		
 		
 	}
 	
 	
-	for (int i = 0; i < (int)fNumberGraphToxIterator; i++)
+	for (int i = 0; i < (int)fGraphTox.size(); i++)
 	{
 		if( i !=0 || SumOfSelected) out += " same";
 		
@@ -637,22 +625,21 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 //________________________________________________________________________
 void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int StartingStep, cSecond FinalTime, int StepNUmber, bool LinBin, string opt)
 {
+
 	
-	if(fGraphHeat)
+	if(fLegendHeat)
 	{
-		for(int i=0; i < fNumberGraphHeatIterator;i++) delete fGraphHeat[i];
-		delete [] fGraphHeat;
+		for(int i=0; i < (int)fGraphHeat.size();i++) delete fLegendHeat[i];
+		delete [] fLegendHeat;
 	}
+	for(int i=0; i < (int)fGraphHeat.size();i++) delete fGraphHeat[i];
+	fGraphHeat.clear();
 	if(fLegendHeatSumOfSelected)
 		delete fLegendHeatSumOfSelected;
 	if(fGraphHeatSumOfSelected)
 		delete fGraphHeatSumOfSelected;
 	
-	if(fLegendHeat)
-	{
-		for(int i=0; i < fNumberGraphHeatIterator;i++) delete fLegendHeat[i];
-		delete [] fLegendHeat;
-	}
+
 	if(fCNucleiHeat && gROOT->FindObject("c_NucleiHeat"))
 	{	delete fCNucleiHeat;
 		fCNucleiHeat=0;
@@ -664,13 +651,9 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 		fCNucleiHeat->SetLogy();
 	}
 	
-	fGraphHeat = new TGraph*[toplot.size()];
 	fLegendHeat = new TLatex*[toplot.size()];
 	for (int i = 0; i < (int)toplot.size(); i++)
-	{
-		fGraphHeat[i] = 0;
 		fLegendHeat[i] = 0;
-	}
 	
 	vector<CLASSPlotElement> toplotTTree[fData.size()];
 	
@@ -681,7 +664,6 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 	Ymin = 1.e36;
 	Ymax = -1.e36;
 	
-	fNumberGraphHeatIterator = 0;
 	bool SumOfSelected = false;
 	
 	if(toplot[0].fTreeId == -1 )
@@ -714,7 +696,7 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 	
 	if(SumOfSelected)
 	{
-		for (int i = 0; i < (int)fNumberGraphHeatIterator; i++)
+		for (int i = 0; i < (int)fGraphHeat.size(); i++)
 		{
 			
 			for(int j = 0; j < fGraphHeat[i]->GetN(); j++)
@@ -762,12 +744,12 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 		fGraphHeatSumOfSelected = new TGraph(fGraphHeat[0]->GetN(), X_Sum, Y_Sum );
 		fGraphHeatSumOfSelected->SetName("Sum_Of_Selected");
 		fGraphHeatSumOfSelected->SetTitle("Sum Of Selected");
-		fGraphHeatSumOfSelected->SetLineColor(CurveColor(fNumberGraphHeatIterator));
-		fGraphHeatSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphHeatIterator));
+		fGraphHeatSumOfSelected->SetLineColor(CurveColor(fGraphHeat.size()));
+		fGraphHeatSumOfSelected->SetMarkerColor(CurveColor(fGraphHeat.size()));
 		fGraphHeatSumOfSelected->SetMarkerStyle(10);
 		fGraphHeatSumOfSelected->Draw(out.c_str());
-		fGraphHeatSumOfSelected->SetLineColor(CurveColor(fNumberGraphHeatIterator));
-		fGraphHeatSumOfSelected->SetMarkerColor(CurveColor(fNumberGraphHeatIterator));
+		fGraphHeatSumOfSelected->SetLineColor(CurveColor(fGraphHeat.size()));
+		fGraphHeatSumOfSelected->SetMarkerColor(CurveColor(fGraphHeat.size()));
 		
 		double x;
 		double y;
@@ -779,14 +761,14 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 		fLegendHeatSumOfSelected = new TLatex(x_0+0.6*(x-x_0),y_0+1.05*(y-y_0),"Sum_Of_Selected");
 		fLegendHeatSumOfSelected->SetTextSize(0.05);
 		fLegendHeatSumOfSelected->SetTextFont(132);
-		fLegendHeatSumOfSelected->SetTextColor(CurveColor(fNumberGraphHeatIterator));
+		fLegendHeatSumOfSelected->SetTextColor(CurveColor(fGraphHeat.size()));
 		fLegendHeatSumOfSelected->Draw();
 		
 		
 	}
 	
 	
-	for (int i = 0; i < (int)fNumberGraphHeatIterator; i++)
+	for (int i = 0; i < (int)fGraphHeat.size(); i++)
 	{
 		if( i !=0 || SumOfSelected) out += " same";
 		
@@ -829,17 +811,6 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 	TGraph** Graph;
 	int NumberGraphIterator = 0;
 
-	if(PlotId == 0)
-		Graph = fGraphInv;
-	else if(PlotId == 1)
-		Graph = fGraphTox;
-	else if(PlotId == 2)
-		Graph = fGraphHeat;
-	else
-	{
-		cout << "Bad PlotId" << endl;
-		return;
-	}
 	
 	fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
 	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
@@ -1098,54 +1069,43 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
-		Graph[NumberGraphIterator] = new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]);
-		NumberGraphIterator++;
+		
+		if(PlotId == 0)
+			fGraphInv.push_back(new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]));
+		
+		else if(PlotId == 1)
+			fGraphTox.push_back(new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]));
+		
+		else if(PlotId == 2)
+			fGraphHeat.push_back(new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]));
+		
+		else
+		{
+			cout << "Bad PlotId" << endl;
+			return;
+		}
+		
 	}
-
+	
 	fData[toplot[0].fTreeId]->ResetBranchAddresses();
 	{
 		for(int i=0; i< (int)fReactorName[toplot[0].fTreeId].size(); i++) delete reactor[i];
-
+		
 		for(int i=0; i< (int)fPoolName[toplot[0].fTreeId].size(); i++) delete pool[i];
-
+		
 		for(int i=0; i< (int)fFabricationName[toplot[0].fTreeId].size(); i++) delete fabricationplant[i];
-
+		
 		for(int i=0; i< (int)fStockName[toplot[0].fTreeId].size(); i++) delete stock[i];
 		for(int i=0; i< 8; i++) delete IV[i];
 	}
 
-	
-	if(PlotId == 0)
-		fNumberGraphInvIterator += NumberGraphIterator;
-	else if(PlotId == 1)
-		fNumberGraphToxIterator += NumberGraphIterator;
-	else if(PlotId == 2)
-		fNumberGraphHeatIterator += NumberGraphIterator;
-	else
-	{
-		cout << "Bad PlotId" << endl;
-		return;
-	}
+
 	
 
 }
 
 void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int PlotId, int StartingStep, cSecond FinalTime, int StepNUmber, bool LinBin, string opt)
 {
-	TGraph** Graph;
-	int NumberGraphIterator = 0;
-	
-	if(PlotId == 0)
-		Graph = fGraphInv;
-	else if(PlotId == 1)
-		Graph = fGraphTox;
-	else if(PlotId == 2)
-		Graph = fGraphHeat;
-	else
-	{
-		cout << "Bad PlotId" << endl;
-		return;
-	}
 	
 	fData[toplot[0].fTreeId]->SetBranchStatus("*", 0);
 	fData[toplot[0].fTreeId]->SetBranchStatus("AbsTime", 1);
@@ -1388,10 +1348,26 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 		Xmin = 1;
 		Ymin = 1;
 	}
+	
+	
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
-		Graph[NumberGraphIterator] = new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]);
-		NumberGraphIterator++;
+		
+		if(PlotId == 0)
+			fGraphInv.push_back(new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]));
+		
+		else if(PlotId == 1)
+			fGraphTox.push_back(new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]));
+		
+		else if(PlotId == 2)
+			fGraphHeat.push_back(new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]));
+		
+		else
+		{
+			cout << "Bad PlotId" << endl;
+			return;
+		}
+		
 	}
 	
 	fData[toplot[0].fTreeId]->ResetBranchAddresses();
@@ -1406,19 +1382,6 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 		for(int i=0; i< 8; i++) delete IV[i];
 	}
 	
-	
-	if(PlotId == 0)
-		fNumberGraphInvIterator += NumberGraphIterator;
-	else if(PlotId == 1)
-		fNumberGraphToxIterator += NumberGraphIterator;
-	else if(PlotId == 2)
-		fNumberGraphHeatIterator += NumberGraphIterator;
-	else
-	{
-		cout << "Bad PlotId" << endl;
-		return;
-	}
-
 
 }
 
@@ -1602,7 +1565,7 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 
 	cout << "WARNING!! not working if using many CLASS.root file with different timestep!!!"<<endl;
 
-	if (fGraphInv && PadName=="c_NucleiInv")
+	if ( (int)fGraphInv.size() != 0 && PadName=="c_NucleiInv")
 	{
 		double* X = fGraphInv[0]->GetX();
 		
@@ -1623,7 +1586,7 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 		}
 		
 		
-		for(int i = 0; i < fNumberGraphInvIterator; i++)
+		for(int i = 0; i < (int)fGraphInv.size(); i++)
 		{
 			outfile << fGraphInv[i]->GetTitle();
 			double* Y = fGraphInv[i]->GetY();
@@ -1635,7 +1598,7 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 	}
 	
 	
-	if (fGraphTox && PadName=="c_NucleiTox")
+	if ( (int)fGraphTox.size() != 0 && PadName=="c_NucleiTox")
 	{
 		double* X = fGraphTox[0]->GetX();
 		
@@ -1656,7 +1619,7 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 		}
 		
 		
-		for(int i = 0; i < fNumberGraphToxIterator; i++)
+		for(int i = 0; i < (int)fGraphTox.size(); i++)
 		{
 			outfile << fGraphTox[i]->GetTitle();
 			double* Y = fGraphTox[i]->GetY();
@@ -1667,7 +1630,7 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 		
 	}
 	
-	if (fGraphHeat && PadName=="c_NucleiHeat")
+	if ( (int)fGraphHeat.size() != 0 && PadName=="c_NucleiHeat")
 	{
 		double* X = fGraphHeat[0]->GetX();
 		
@@ -1688,7 +1651,7 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 		}
 		
 		
-		for(int i = 0; i < fNumberGraphHeatIterator; i++)
+		for(int i = 0; i < (int)fGraphHeat.size(); i++)
 		{
 			outfile << fGraphHeat[i]->GetTitle();
 			double* Y = fGraphHeat[i]->GetY();
@@ -2100,7 +2063,6 @@ void CLASSRead::ConvertXmlMass(vector<CLASSPlotElement> toplot, string filename)
 	
 	
 	
-	fNumberGraphInvIterator = 0;
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
 		toplotTTree[toplot[i].fTreeId].push_back(toplot[i]);
