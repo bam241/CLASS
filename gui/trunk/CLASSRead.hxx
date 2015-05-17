@@ -14,7 +14,6 @@
 #include "ZAI.hxx"
 #include "CLASSPlotElement.hxx"
 #include "CLASSHeaders.hxx"
-#include "Irradiation/IM_Matrix_Decay.hxx"
 
 using namespace std;
 
