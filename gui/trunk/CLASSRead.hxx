@@ -100,27 +100,25 @@ private :
 	vector< TTree* > fData;
 	vector<TFile* >	 fFileIn;
 
-	TGraph** fGraphInv;
+	vector<TGraph*> fGraphInv;
 	TGraph* fGraphInvSumOfSelected;
 	TLatex** fLegendInv;
 	TLatex* fLegendInvSumOfSelected;
-	int fNumberGraphInvIterator;
 
-	TGraph**  fGraphPower;
-	TLatex** fLegendPower;
-	int fNumberGraphPowerIterator;
-
-	TGraph** fGraphTox;
+	vector<TGraph*> fGraphTox;
 	TGraph* fGraphToxSumOfSelected;
 	TLatex** fLegendTox;
 	TLatex* fLegendToxSumOfSelected;
-	int fNumberGraphToxIterator;
 	
-	TGraph** fGraphHeat;
+	vector<TGraph*> fGraphHeat;
 	TGraph* fGraphHeatSumOfSelected;
 	TLatex** fLegendHeat;
 	TLatex* fLegendHeatSumOfSelected;
-	int fNumberGraphHeatIterator;
+	
+	
+	TGraph**  fGraphPower;
+	TLatex** fLegendPower;
+	int fNumberGraphPowerIterator;
 
 	vector< vector<cSecond> > fTimeVector;
 
