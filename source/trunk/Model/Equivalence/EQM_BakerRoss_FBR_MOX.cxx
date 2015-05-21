@@ -98,6 +98,11 @@ EQM_BakerRoss_FBR_MOX::EQM_BakerRoss_FBR_MOX(CLASSLogger* log, double Weight_U_2
 //________________________________________________________________________
 double EQM_BakerRoss_FBR_MOX::GetFissileMolarFraction(IsotopicVector Fissile,IsotopicVector Fertile,double BurnUp)
 {
+
+	if(BurnUp != 0 )
+		WARNING<<"Burn up (third argument) has no effect "<<endl;
+	
+
 	double FissileContent	 = 0.;               
 
 	IsotopicVector FissileListPlusDecay;
