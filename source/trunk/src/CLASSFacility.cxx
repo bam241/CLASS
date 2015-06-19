@@ -58,7 +58,7 @@ CLASSFacility::CLASSFacility(CLASSLogger* log, cSecond creationtime, cSecond lif
 
 	fFacilityType = type;
 	
-	fInternalTime = 0;
+	fInternalTime = fCreationTime;
 	fInCycleTime = 0;
 	fCycleTime = -1;
 	

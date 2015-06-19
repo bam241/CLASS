@@ -194,7 +194,7 @@ class Reactor : public CLASSFacility
 	IsotopicVector	GetIVInCycle()		const	{ return fIVInCycle; }		//!< Return the In Cycle IV
 	//!< (Note : IVIn != IVBegin, only if using charging plan)
 	
-	
+	cSecond GetNextCycleTime(cSecond time);
 	
 	bool	IsFuelFixed()	const	{ return fFixedFuel; }		//!< True if using fixed fuel, False otherwise
 	double	GetHeavyMetalMass() const { return fHeavyMetalMass; }	//!< Return the HeavyMetal Mass in the Core at the begining of the cycle
@@ -264,6 +264,15 @@ class Reactor : public CLASSFacility
 	void Dump();								//!< Write modification (IV In/Out, filling the TF...)
 	void SetNewFuel(EvolutionData ivdb);					//!< Change the Evolutive DB of the Reactor
 	
+#ifndef __CINT__
+
+	void AddFuel(cSecond time,  CLASSFuel fuel, double BurnUp);	//!< Add A new CLASSFuel at the corresponding time and Burnup
+	void AddFuel(cSecond time,  EvolutionData* fuel, double BurnUp)
+	{ AddFuel( time, CLASSFuel(fuel), BurnUp); }			//!< Add A new EvolutionData at the corresponding time and Burnup
+	void AddFuel(cSecond time,  PhysicsModels* fuel, double BurnUp)
+	{ AddFuel( time, CLASSFuel(fuel), BurnUp); }			//!< Add A new Physicis Model at the corresponding time and Burnup
+#endif
+
 	//@}
 	
 	
