@@ -159,11 +159,14 @@ public :
 
 
 	void SetInsideIV(IsotopicVector isotopicvector)	{ fInsideIV = isotopicvector; }	//!< Set the IV inside the Facility
-	void SetCreationTime(double creationtime)	{ fCreationTime = (cSecond)creationtime;} //!< Set the creation Time
-	void SetLifeTime(double lifetime)		{ fLifeTime = (cSecond)lifetime; }	//!< Set the life time of the facility
-	virtual void SetCycleTime(double cycletime)	{ fCycleTime = (cSecond)cycletime; }	//!< Set the cycle time (Cycle of the loading Plan)
-	void SetInCycleTime(double incycletime)		{ fInCycleTime = (cSecond)incycletime; fIsStarted = true; }	//!< Set the cycle time (Cycle of the loading Plan)
-	void SetInternalTime(double internaltime)	{ fInternalTime = (cSecond)internaltime; }	//!< Set the cycle time (Cycle of the loading Plan)
+
+	void SetCreationTime(cSecond CTtime)	{ fCreationTime = CTtime;}		//!< Set the creation Time
+	void SetLifeTime(cSecond Ltime)		{ fLifeTime = Ltime; }			//!< Set the life time of the facility
+	void SetShutDownTime(cSecond SDTime)	{ fLifeTime = SDTime-fCreationTime; }	//!< Set the shutdown time of the facility
+
+	void SetInCycleTime(cSecond ICtime)	{ fInCycleTime = ICtime; fIsStarted = true; }	//!< Set the In cycle time
+	void SetInternalTime(cSecond INtime)	{ fInternalTime = INtime; }		//!< Set the Internal Time
+	virtual void SetCycleTime(cSecond Ctime){ fCycleTime = Ctime; }			//!< Set the cycle time (Cycle of the loading Plan)
 
 	//@}
 

@@ -488,7 +488,7 @@ void Scenario::BuildTimeVector(cSecond t)
 		}
 
 
-		while(step <= t && step <= R_ShutDownTime )
+		while( step <= t && step <= R_ShutDownTime )
 		{
 			DBGL
 

@@ -134,7 +134,7 @@ ZAI CLASSNucleiFiliation::GetArtificialDecay(ZAI Mother)
 		return ZAI(Z,A,I-1);
 	else
 	{
-		//Coef Ac & As of Bette & Weisacker are approximativ but enough precise for this application....
+		//Coef Ac & As of Bette & Weisacker are approximativ but precise enough for this application....
 		double Ac = 0.695;
 		double As = 23.2;
 		
@@ -208,7 +208,8 @@ void CLASSNucleiFiliation::SelfFiliationCleanUp(map<ZAI, int> GoodNuclei)
 			
 		}
 		fNucleiFiliation = CopyfNucleiFiliation;
-			Cleaned = true;
+		Cleaned = true;
+		
 		for(it_Filiation = fNucleiFiliation.begin(); it_Filiation != fNucleiFiliation.end(); it_Filiation++) // Loop on the mother ZAI
 		{
 			vector<ZAI> DautherList = it_Filiation->second.GetZAIList(); // Get the list of daughter ZAI

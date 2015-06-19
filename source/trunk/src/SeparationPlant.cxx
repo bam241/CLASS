@@ -75,6 +75,7 @@ void SeparationPlant::SetBackEndDestination(CLASSBackEnd* storagedestination, Is
 }
 
 
+//________________________________________________________________________
 void SeparationPlant::AddIV(IsotopicVector IV)
 { 
 DBGL
@@ -103,6 +104,7 @@ DBGL
 
 
 
+//________________________________________________________________________
 map<cSecond,int> SeparationPlant::GetTheBackEndTimePath()
 {
 	DBGL
@@ -131,11 +133,5 @@ map<cSecond,int> SeparationPlant::GetTheBackEndTimePath()
 
 
 //________________________________________________________________________
-//	Time Action with the reste of the Universe : 
-//		Out Storage
-//		Evolution : 
-//			Cooling
-//________________________________________________________________________
-
 
 

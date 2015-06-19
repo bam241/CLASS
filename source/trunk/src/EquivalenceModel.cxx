@@ -88,7 +88,7 @@ bool EquivalenceModel::Build_Fuel_According_Lambda(vector<double> &lambda,vector
 	
 	SetLambda(lambda, (int)FissilArray.size(), (int)lambda.size()-1, LAMBDA_FERTILE);
 	
-	int j=-1;
+	int j = -1;
 	Fertile.Clear();
 	for(int i = (int)FissilArray.size() ; i < (int)FissilArray.size()+(int)FertilArray.size() ; i++)
 	{

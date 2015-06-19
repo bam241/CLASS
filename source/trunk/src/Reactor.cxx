@@ -603,5 +603,28 @@ DBGL
 }
 
 
+//________________________________________________________________________
+void Reactor::AddFuel(cSecond time,  CLASSFuel fuel, double BurnUp)
+{
+	DBGL
+	fFuelPlan->AddFuel(time, fuel, BurnUp);
+	DBGL
+}
 
+
+//________________________________________________________________________
+cSecond Reactor::GetNextCycleTime(cSecond time)
+{
+	DBGL
+	cSecond LastCycle = fInternalTime - fInCycleTime;
+
+	while ( LastCycle < time)
+	{
+		cSecond cycletime = (cSecond)(fFuelPlan->GetFuelAt(LastCycle).second*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);
+		LastCycle += cycletime;
+	}
+	
+	DBGL
+	return LastCycle;
+}
 
