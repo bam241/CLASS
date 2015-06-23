@@ -227,7 +227,8 @@ class Scenario : public CLASSObject
 	void AddOutIncome(IsotopicVector isotopicvector){ fOutIncome.Add(isotopicvector); }	//!< Add a isotopicVector to OutIncomeIncome
 	void AddWaste(ZAI zai, double quantity)		{ AddWaste(zai*quantity); }		//!< Add a ZAI*quantity to Waste
 	void AddWaste(IsotopicVector isotopicvector)	{ fWaste.Add(isotopicvector); }		//!< Add a isotopicVector to Waste
-	void AddToPower(double power)			{ fParcPower += power;}			//!< Add power to the installed power in the Parc
+	void AddToPower(double power, double elpower)	{ fParcPower += power; fParcElectricPower += elpower; }
+											//!< Add power to the installed power in the Parc
 	
 	
 	void ApplyZAIThreshold();
@@ -302,6 +303,7 @@ class Scenario : public CLASSObject
 	IsotopicVector	fIVInCycleTotal;	///< Sum of all IV in the cycle (without Waste) IV
 	IsotopicVector	fIVTotal;		///< Sum of all IV in the parc (including Waste) IV
 	double		fParcPower;		///< Sum of the Power of all reactor in the parc
+	double		fParcElectricPower;		///< Sum of the Power of all reactor in the parc
 	
 };
 

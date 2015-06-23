@@ -96,22 +96,22 @@ void XSM_MLP::GetDataBaseInformation()
 			int pos=0;
 			if(foundRType != std::string::npos)
 			{	StringLine::NextWord(line,pos,':');
-				fDataBaseRType = atof( (StringLine::NextWord(line,pos,':')).c_str() );
+				fDBRType = atof( (StringLine::NextWord(line,pos,':')).c_str() );
 			}
 			 pos=0;
 			if(foundFType != std::string::npos)
 			{	StringLine::NextWord(line,pos,':');
-				fDataBaseFType = atof( (StringLine::NextWord(line,pos,':')).c_str() );
+				fDBFType = atof( (StringLine::NextWord(line,pos,':')).c_str() );
 			}
 			pos=0;
 			if(foundHM != std::string::npos)
 			{	StringLine::NextWord(line,pos,':');
-				fDataBaseHMMass = atof( (StringLine::NextWord(line,pos,':')).c_str() );
+				fDBHMMass = atof( (StringLine::NextWord(line,pos,':')).c_str() );
 			}
 			pos=0;
 			if(foundPower !=std::string::npos)
 			{	StringLine::NextWord(line,pos,':');
-				fDataBasePower = atof( (StringLine::NextWord(line,pos,':') ).c_str() );
+				fDBPower = atof( (StringLine::NextWord(line,pos,':') ).c_str() );
 			}
  			pos=0;
 			if(foundTime!=std::string::npos)
@@ -158,7 +158,7 @@ void XSM_MLP::GetDataBaseInformation()
 					ssline>>Z>>A>>I>>min>>max;
 					if(StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I) && StringLine::IsDouble(min) && StringLine::IsDouble(max) )
 					{	
-						fFreshFuelDomain.insert( pair<ZAI,pair<double,double> >(ZAI(atoi(Z.c_str()),atoi(A.c_str()),atoi(I.c_str())),make_pair(atof(min.c_str()),atof(max.c_str()))) );
+						fZAILimits.insert( pair<ZAI,pair<double,double> >(ZAI(atoi(Z.c_str()),atoi(A.c_str()),atoi(I.c_str())),make_pair(atof(min.c_str()),atof(max.c_str()))) );
 					}
 
 				}
@@ -177,8 +177,8 @@ void XSM_MLP::GetDataBaseInformation()
 
 	/********DEBUG*************************************/
 	INFO<<"\tMLP XS Data Base Information : "<<endl;
-	INFO<<"\t\tHeavy Metal (t) :"<<fDataBaseHMMass<<endl;
-	INFO<<"\t\tThermal Power (W) :"<<fDataBasePower<<endl;
+	INFO<<"\t\tHeavy Metal (t) :"<<fDBHMMass<<endl;
+	INFO<<"\t\tThermal Power (W) :"<<fDBPower<<endl;
 	INFO<<"\t\tTime (s) :"<<endl;
 	for (int i = 0; i < (int)fMLP_Time.size(); ++i)
 		INFO<<"\t\t\t"<<fMLP_Time[i]<<endl;
@@ -190,7 +190,7 @@ void XSM_MLP::GetDataBaseInformation()
 		INFO<<"\t\t\t"<< it->first.Z()<<" "<<it->first.A()<<" "<<it->second<<endl;
 
 	INFO<<"\t\tFuel range"<<endl;
-	for (map<ZAI,pair<double,double> >::iterator it_dom = fFreshFuelDomain.begin();it_dom!=fFreshFuelDomain.end();it_dom++)
+	for (map<ZAI,pair<double,double> >::iterator it_dom = fZAILimits.begin();it_dom!=fZAILimits.end();it_dom++)
 		INFO<<"\t\t\t"<< it_dom->second.first<<" <= "<<it_dom->first.Z()<<" "<<it_dom->first.A()<<" "<<it_dom->first.I()<<" <= "<<it_dom->second.second<<endl;;
 
 
@@ -377,10 +377,10 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 
 	map<ZAI,TGraph*> ExtrapolatedXS[3];
 	/*************DATA BASE INFO****************/
-	EvolutionDataFromMLP.SetReactorType(fDataBaseRType);
-	EvolutionDataFromMLP.SetFuelType(fDataBaseFType);
-	EvolutionDataFromMLP.SetPower(fDataBasePower);
-	EvolutionDataFromMLP.SetHeavyMetalMass(fDataBaseHMMass);
+	EvolutionDataFromMLP.SetReactorType(fDBRType);
+	EvolutionDataFromMLP.SetFuelType(fDBFType);
+	EvolutionDataFromMLP.SetPower(fDBPower);
+	EvolutionDataFromMLP.SetHeavyMetalMass(fDBHMMass);
 	/************* The Cross sections***********/
 	for(int i=0;i<int(fWeightFiles.size());i++)
 	{
@@ -484,8 +484,8 @@ EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 	/*************DATA BASE INFO****************/
 	EvolutionDataFromMLP.SetReactorType("PWR");
 	EvolutionDataFromMLP.SetFuelType("MOX");
-	EvolutionDataFromMLP.SetPower(fDataBasePower);
-	EvolutionDataFromMLP.SetHeavyMetalMass(fDataBaseHMMass);
+	EvolutionDataFromMLP.SetPower(fDBPower);
+	EvolutionDataFromMLP.SetHeavyMetalMass(fDBHMMass);
 
 	/************* The Cross sections***********/
 

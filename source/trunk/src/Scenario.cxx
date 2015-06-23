@@ -1,4 +1,5 @@
 #include "Scenario.hxx"
+#include "CLASSMethod.hxx"
 
 #include <ctime>
 #include "time.h"
@@ -30,19 +31,6 @@
 
 
 
-float random(float a, float b) //peak random numebr between a and b
-{
-	float range = pow(2., 31);
-	srand(time(NULL)); //initialize the srand
-	return (float)a + (float)(b-a)*rand()/range;
-}
-
-string dtoa(double num)
-{
-	ostringstream os(ostringstream::out);
-	os<<setprecision(3)<<num;
-	return os.str();
-}
 
 //________________________________________________________________________
 Scenario::Scenario(CLASSLogger* log, cSecond abstime):CLASSObject(log)
@@ -627,6 +615,7 @@ void Scenario::ReactorEvolution()
 {
 	DBGL
 	fParcPower = 0;
+	fParcElectricPower = 0;
 #pragma omp parallel for
 	for(int i = 0; i < (int)fReactor.size(); i++)
 		fReactor[i]->Evolution(fAbsoluteTime);

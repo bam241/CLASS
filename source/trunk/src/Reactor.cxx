@@ -34,6 +34,7 @@ Reactor::Reactor():CLASSFacility(4)
 	fOutBackEndFacility = 0;
 	fStorage = 0;
 	fFabricationPlant = 0;
+	fFuelPlan = 0;
 
 }
 
@@ -44,6 +45,7 @@ Reactor::Reactor(CLASSLogger* log):CLASSFacility(log, 4)
 	fOutBackEndFacility = 0;
 	fStorage = 0;
 	fFabricationPlant = 0;
+	fFuelPlan = 0;
 	SetName("R_Reactor.");
 
 	DBGL
@@ -72,6 +74,9 @@ Reactor::Reactor(CLASSLogger* log,
 	fOutBackEndFacility = Pool;
 
 	fPower = power * CapacityFactor;
+	fEfficiencyFactor = 0.33;
+	fElectricPower = fEfficiencyFactor*fPower;
+	
 
 	fHeavyMetalMass = HMMass;
 
@@ -118,6 +123,9 @@ Reactor::Reactor(CLASSLogger* log,
 	fBurnUp = -1;
 	fHeavyMetalMass = HMMass;
 	fPower = Power*CapacityFactor;
+	fEfficiencyFactor = 0.33;
+	fElectricPower = fEfficiencyFactor*fPower;
+	
 	fCycleTime = -1;	 //BU in GWd/t
 
 	fFuelPlan = 0;
@@ -159,6 +167,8 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels* fueltypeDB, FabricationPlant* 
 	fBurnUp = BurnUp;
 	fHeavyMetalMass = HMMass;
 	fPower = Power*CapacityFactor;
+	fEfficiencyFactor = 0.33;
+	fElectricPower = fEfficiencyFactor*fPower;
 	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);	 //BU in GWd/t
 
 	fFuelPlan = new CLASSFuelPlan(log);
@@ -203,7 +213,9 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels* 	fueltypeDB,
 
 	fOutBackEndFacility = Pool;
 	fPower = BurnUp*3600.*24. / (fCycleTime) * HMMass *1e9; //BU in GWd/t
-
+	fEfficiencyFactor = 0.33;
+	fElectricPower = fEfficiencyFactor*fPower;
+	
 	fFuelPlan = new CLASSFuelPlan(log);
 	fFuelPlan->AddFuel(creationtime, CLASSFuel(fueltypeDB), fBurnUp);
 
@@ -246,7 +258,9 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	fOutBackEndFacility = Pool;
 
 	fPower = power * CapacityFactor;
-
+	fEfficiencyFactor = 0.33;
+	fElectricPower = fEfficiencyFactor*fPower;
+	
 	fHeavyMetalMass = HMMass;
 
 	double M0 = cZAIMass.GetMass( evolutivedb->GetIsotopicVectorAt(0.).GetActinidesComposition() );
@@ -297,7 +311,9 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	fOutBackEndFacility = Pool;
 
 	fPower = BurnUp*3600.*24. / (fCycleTime) * HMMass *1e9; //BU in GWd/t
-
+	fEfficiencyFactor = 0.33;
+	fElectricPower = fEfficiencyFactor*fPower;
+	
 	fHeavyMetalMass = HMMass;
 
 	double M0 = cZAIMass.GetMass( evolutivedb->GetIsotopicVectorAt(0.).GetActinidesComposition() );
@@ -311,6 +327,7 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 
 
+	fFuelPlan = new CLASSFuelPlan(log);
 	fFuelPlan->AddFuel(creationtime, CLASSFuel(evolutivedb), fBurnUp);
 
 	INFO << " A Reactor has been define :" << endl;
@@ -407,12 +424,12 @@ DBGL
 
 	if( fIsShutDown  || t < GetCreationTime() ) return; // Reactor stop or not started...
 
-	if(Norme(fInsideIV)!=0)
+	if(Norme(fInsideIV)!=0 && fIsStarted)
 	{
 #pragma omp critical(ParcPowerUpdate)
-		{GetParc()->AddToPower(fPower);}
+		{GetParc()->AddToPower(fPower, fElectricPower);}
 	}
-	else if(fIsStarted==true)
+	else if(fIsStarted)
 	{
 		WARNING << " Reactor should be working but have no Heavy Nucleus Inside. It's not working so have a zero power..."
 		<< " Time : "<< t/cYear << " years" << endl;
@@ -602,14 +619,6 @@ DBGL
 DBGL
 }
 
-
-//________________________________________________________________________
-void Reactor::AddFuel(cSecond time,  CLASSFuel fuel, double BurnUp)
-{
-	DBGL
-	fFuelPlan->AddFuel(time, fuel, BurnUp);
-	DBGL
-}
 
 
 //________________________________________________________________________

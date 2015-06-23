@@ -266,11 +266,12 @@ class Reactor : public CLASSFacility
 	
 #ifndef __CINT__
 
-	void AddFuel(cSecond time,  CLASSFuel fuel, double BurnUp);	//!< Add A new CLASSFuel at the corresponding time and Burnup
+	void AddFuel(cSecond time,  CLASSFuel fuel, double BurnUp)	//!< Add A new CLASSFuel at the corresponding time and Burnup
+	{ fFuelPlan->AddFuel( time, fuel, BurnUp); }			//!< Add A new EvolutionData at the corresponding time and Burnup
 	void AddFuel(cSecond time,  EvolutionData* fuel, double BurnUp)
-	{ AddFuel( time, CLASSFuel(fuel), BurnUp); }			//!< Add A new EvolutionData at the corresponding time and Burnup
+	{ fFuelPlan->AddFuel( time, CLASSFuel(fuel), BurnUp); }			//!< Add A new EvolutionData at the corresponding time and Burnup
 	void AddFuel(cSecond time,  PhysicsModels* fuel, double BurnUp)
-	{ AddFuel( time, CLASSFuel(fuel), BurnUp); }			//!< Add A new Physicis Model at the corresponding time and Burnup
+	{ fFuelPlan->AddFuel( time, CLASSFuel(fuel), BurnUp); }			//!< Add A new EvolutionData at the corresponding time and Burnup
 #endif
 
 	//@}
@@ -285,6 +286,8 @@ class Reactor : public CLASSFacility
 	//********* Internal Parameter *********//
 	
 	double 		fPower;			///< Power (in Watt)
+	double 		fElectricPower;		///< ElectrocPower (in Watt)
+	double 		fEfficiencyFactor;	///< ElectrocPower (in Watt)
 	
 	IsotopicVector	fIVBeginCycle;		///< Fuel IV at the beginning of a cycle
 	IsotopicVector	fIVInCycle;		///< IVBegin add at the beginning of the cycle
