@@ -90,6 +90,7 @@ public :
 	 */
 	//@{
 
+#ifndef __CINT__
 	void SetDecayDataBank(DecayDataBank* decayDB) {fDecayDataBase = decayDB;}	//! Set the Decay DataBank
 
 	void SetFiFo(bool bval = true)	{ fFiFo = bval;}				//!< Set the chronological priority (true for chronological, false instead)
@@ -101,7 +102,6 @@ public :
 	void AddReactor(int reactorid, double creationtime)
 			{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }	//!< Add a new reactor to be filled with the fresh fuel build by the FabricationPlant
 
-#ifndef __CINT__
 	void SetReUsableStorage(Storage* store) { fReUsable = store; fIsReusable = true;} //!< Set the Storage where all the separated matetial not used in the fabrication process will be sent. (if not present it goes to WASTE)
 #endif
 
@@ -124,8 +124,8 @@ public :
 	vector<Storage*>	GetFertileStorage()		{ return fFertileStorage; }		//!< Return the Pointer to the fertile Storage
 
 	EvolutionData GetReactorEvolutionDB(int ReactorId);			//!< Return the EvolutionData of Reactor ReactorId
-#endif
 	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at time t
+#endif
 
 	map<int, IsotopicVector >	GetReactorFuturIncome() const
 						{ return fReactorFuturIV;}	//!< Return the list of the futur fuel IV

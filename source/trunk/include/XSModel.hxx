@@ -14,10 +14,17 @@
 #include "EvolutionData.hxx"
 #include "CLASSObject.hxx"
 
+#include <iostream>
+#include <map>
 
 using namespace std;
 
 class IsotopicVector;
+
+class XSModel;
+#ifndef __CINT__
+typedef void (XSModel::*MthPtr)( const string & ) ;
+#endif
 
 //-----------------------------------------------------------------------------//
 //!  Defines a mean cross section predictor
@@ -83,13 +90,29 @@ class XSModel : public CLASSObject
 	virtual  bool isIVInDomain(IsotopicVector IV) ;
 	//@}
 	
+	void ReadZAIlimits(const string &line);
+	void ReadType(const string &line);
+	void ReadRParam(const string &line);
+	
+	void LoadKeyword();
 	
 	
 	void SetZAIThreshold(int Z_Threshold){fZAIThreshold = Z_Threshold;}//!< Set the Z threshold : ZAI with Z < fZAIThreshold are not manage by CLASS
 	int  GetZAIThreshold(){return fZAIThreshold;}//!< Get the Z threshold
 
 	protected :
-	map< ZAI, pair<double,double> > fFreshFuelDomain; //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
+	
+	double fDBPower;		//!<  Power of the data base (read from fMLPInformationFile )
+	double fDBHMMass;		//!<  Heavy metal mass of the data base (read from fMLPInformationFile )
+	string fDBFType;		//!<  Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
+	string fDBRType;		//!<  Reactor Type (e.g PWR, FBR-Na, ADS..)
+
+	map< ZAI, pair<double,double> > fZAILimits; //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
+	
+#ifndef __CINT__
+	map<string, MthPtr> fKeyword;
+#endif
+	
 	int fZAIThreshold;	//!< Z threshold for handling nuclei mean cross section (take only ZAI reaction of Z>=fZAIThresold)
 };
 

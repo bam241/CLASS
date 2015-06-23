@@ -69,9 +69,9 @@ ROOTOBJS	= 	CLASSLogger.o \
 
 
 CXX           = g++
-CXXFLAGS      = -O2 -g -Wall -fopenmp -fPIC -I$(LOCALINC) $(ROOTCFLAGS)
+CXXFLAGS      = -O2 -g -fopenmp -fPIC -I$(LOCALINC) $(ROOTCFLAGS)
 LD            = g++
-LDFLAGS       =  -g -Wall -fPIC $(ROOTLIBS) -lTMVA -shared -lgomp
+LDFLAGS       =  -g -fPIC $(ROOTLIBS) -lTMVA -shared -lgomp
 
 all:		$(OBJS) $(OBJMODEL)
 		$(LD) $(LDFLAGS) $(OBJS) $(OBJMODEL) -o $(LIBDIR)/lib$(LIBNAME).so

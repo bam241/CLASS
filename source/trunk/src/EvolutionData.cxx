@@ -1,4 +1,5 @@
 #include "EvolutionData.hxx"
+#include "CLASSMethod.hxx"
 
 #include "CLASSLogger.hxx"
 #include "CLASSConstante.hxx"
@@ -20,24 +21,6 @@
 	//
 	//
 	//________________________________________________________________________
-
-
-
-struct my_tolower
-{
-	char operator()(char c) const
-	{
-		return std::tolower(static_cast<unsigned char>(c));
-	}
-};
-
-	//To Lower Case, convert any string in lower case
-string tlc(string data)
-{
-	transform(data.begin(), data.end(), data.begin(), my_tolower());
-	return data;
-}
-
 
 
 double 	Distance(IsotopicVector IV1, EvolutionData Evd1 )

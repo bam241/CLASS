@@ -97,10 +97,6 @@ class XSM_MLP : public XSModel
 	string fTMVAWeightFolder;	//!<  folder containing all the weight file
  	string fMLPInformationFile;	//!<  file containing Reactor Type, Fuel type, HM mass, Power, time vector, and TMVA input variables names (looks the manual for format details)
 	
-	double fDataBasePower;		//!<  Power of the data base (read from fMLPInformationFile )
- 	double fDataBaseHMMass;		//!<  Heavy metal mass of the data base (read from fMLPInformationFile )
- 	string fDataBaseFType;		//!<  Reactor Type (e.g PWR, FBR-Na, ADS..)
- 	string fDataBaseRType;		//!<  Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
 	
  	bool fIsStepTime;		//!<  true if one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
 
