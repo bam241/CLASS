@@ -8,6 +8,7 @@
  \brief Header file for XSM_MLP class.
  
  
+ @authors BaM
  @authors BLG
  @version 1.0
  */
@@ -18,6 +19,8 @@
 #include <iostream>
 #include <map>
 #include <vector>
+
+
 typedef long long int cSecond;
 using namespace std;
 
@@ -75,15 +78,17 @@ class XSM_MLP : public XSModel
 	~XSM_MLP();
 	//@}
 	
-	void LoadKeyword() {}
+	void LoadKeyword();
+	
+	void ReadTimeSteps(const string &line);
+	void ReadZAIName(const string &line);
+	
 	
 	EvolutionData GetCrossSections(IsotopicVector IV,double t=0);	//!< Return calculated cross section by the MLP regression
 	
 	void ReadLine(string line);
 	
 	private :
-	
-	void GetDataBaseInformation();				//!< Read information file and fill Reactor Type, Fuel type, HM mass, Power, time vector, and TMVA input variables names
 	
 	void GetMLPWeightFiles();				//!< Find all .xml file in TMVA_Weight_Directory
 	EvolutionData GetCrossSectionsStep(IsotopicVector IV);	//!< Return calculated cross section by the MLP regression when fIsTimeStep==true

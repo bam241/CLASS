@@ -58,12 +58,15 @@ void XSModel::ReadLine(string line)
 	
 	if (!freaded)
 	{
-		int start = 0;
-		string keyword = tlc(StringLine::NextWord(line, start, ' '));
+		int pos = 0;
+		string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+
+		map<string, MthPtr>::iterator it = fKeyword.find(keyword);
 		
-		(this->*fKeyword[ keyword ])(line);
+		if(it != fKeyword.end())
+			(this->*(it->second))( line );
+		
 		freaded = true;
-		
 		ReadLine(line);
 		
 	}
@@ -88,17 +91,17 @@ void XSModel::LoadKeyword()
 void XSModel::ReadRParam(const string &line)
 {
 	DBGL
-	int start = 0;
-	string keyword = tlc(StringLine::NextWord(line, start, ' '));
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
 	if( keyword != "k_power" || keyword != "k_mass" )	// Check the keyword
 	{
 		ERROR << " Bad keyword : " << keyword << " Not found !" << endl;
 		exit(1);
 	}
 	if( keyword == "k_mass" )
-		fDBHMMass = atof(StringLine::NextWord(line, start, ' ').c_str());
+		fDBHMMass = atof(StringLine::NextWord(line, pos, ' ').c_str());
 	else if( keyword == "k_mass" )
-		fDBPower = atof(StringLine::NextWord(line, start, ' ').c_str());
+		fDBPower = atof(StringLine::NextWord(line, pos, ' ').c_str());
 	
 	DBGL
 }
@@ -107,17 +110,17 @@ void XSModel::ReadRParam(const string &line)
 void XSModel::ReadType(const string &line)
 {
 	DBGL
-	int start = 0;
-	string keyword = tlc(StringLine::NextWord(line, start, ' '));
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
 	if( keyword != "k_fuel" || keyword != "k_reactor" )	// Check the keyword
 	{
 		ERROR << " Bad keyword : " << keyword << " Not found !" << endl;
 		exit(1);
 	}
 	if( keyword == "k_fuel" )
-		fDBFType = StringLine::NextWord(line, start, ' ');
+		fDBFType = StringLine::NextWord(line, pos, ' ');
 	else if( keyword == "k_reactor" )
-		fDBRType = StringLine::NextWord(line, start, ' ');
+		fDBRType = StringLine::NextWord(line, pos, ' ');
 	
 	DBGL
 }
@@ -126,20 +129,20 @@ void XSModel::ReadType(const string &line)
 void XSModel::ReadZAIlimits(const string &line)
 {
 	DBGL
-	int start = 0;
-	string keyword = tlc(StringLine::NextWord(line, start, ' '));
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
 	if( keyword != "k_zail" )	// Check the keyword
 	{
 		ERROR << " Bad keyword : \"k_zail\" not found !" << endl;
 		exit(1);
 	}
 	
-	int Z = atoi(StringLine::NextWord(line, start, ' ').c_str());
-	int A = atoi(StringLine::NextWord(line, start, ' ').c_str());
-	int I = atoi(StringLine::NextWord(line, start, ' ').c_str());
+	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	
-	double upLimit = atof(StringLine::NextWord(line, start, ' ').c_str());
-	double downLimit = atof(StringLine::NextWord(line, start, ' ').c_str());
+	double upLimit = atof(StringLine::NextWord(line, pos, ' ').c_str());
+	double downLimit = atof(StringLine::NextWord(line, pos, ' ').c_str());
 	
 	DBGL
 }
