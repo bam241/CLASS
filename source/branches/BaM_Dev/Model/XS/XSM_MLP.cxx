@@ -36,10 +36,11 @@
 XSM_MLP::XSM_MLP(string TMVA_Weight_Directory,string InformationFile, bool IsTimeStep):XSModel(new CLASSLogger("XSM_MLP.log"))
 {
 	
-	fIsStepTime=IsTimeStep;
+	fIsStepTime = IsTimeStep;
 	fTMVAWeightFolder = TMVA_Weight_Directory;
+	
 	if(InformationFile=="")
-		fInformationFile = TMVA_Weight_Directory+"/Data_Base_Info.nfo";
+		fInformationFile = TMVA_Weight_Directory + "/Data_Base_Info.nfo";
 	else
 		fInformationFile = fTMVAWeightFolder+InformationFile;
 	
@@ -79,9 +80,60 @@ XSM_MLP::XSM_MLP(CLASSLogger* Log,string TMVA_Weight_Directory,string Informatio
 //________________________________________________________________________
 XSM_MLP::~XSM_MLP()
 {
+	DBGL
 	fMapOfTMVAVariableNames.clear();
+	fDKeyword.clear();
+	DBGL
 }
 
+
+void XSM_MLP::LoadKeyword()
+{
+	DBGL
+	fDKeyword.insert( pair<string, DMthPtr>( "k_timestep",	& XSM_MLP::ReadTimeSteps));
+	fDKeyword.insert( pair<string, DMthPtr>( "k_zainame",	& XSM_MLP::ReadZAIName)	 );
+	DBGL
+}
+
+
+void XSM_MLP::ReadZAIName(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_zainame" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_zainame\" not found !" << endl;
+		exit(1);
+	}
+	
+	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	
+	string name = StringLine::NextWord(line, pos, ' ');
+	
+	fMapOfTMVAVariableNames.insert( pair<ZAI,string>( ZAI(Z, A, I), name ) );
+	
+	DBGL
+}
+
+void XSM_MLP::ReadTimeSteps(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_timestep" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_timestep\" not found !" << endl;
+		exit(1);
+	}
+	
+	while( pos < (int)line.size() )
+		fMLP_Time.push_back( atof( (StringLine::NextWord(line,pos,' ')).c_str() ));
+	
+	DBGL
+}
 
 
 //________________________________________________________________________
@@ -89,117 +141,24 @@ void XSM_MLP::ReadLine(string line)
 {
 	DBGL
 	
-	int start = 0;
-	string keyword = tlc(StringLine::NextWord(line, start, ' '));
-	(this->*fKeyword[ keyword ])(line);
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	
+	map<string, DMthPtr>::iterator it = fDKeyword.find(keyword);
+	
+	if(it != fDKeyword.end())
+		(this->*(it->second))( line );
 	
 	DBGL
 }
 
 
 
+
+
 //________________________________________________________________________
-void XSM_MLP::GetDataBaseInformation()
+/*void XSM_MLP::GetDataBaseInformation()
 {
-	ifstream FILE(fInformationFile.c_str());
-	
-	if(FILE.good())
-	{
-		while(!FILE.eof())
-		{
-			string line;
-			getline(FILE, line);
-			size_t foundRType = line.find("ReactorType :");
-			size_t foundFType = line.find("FuelType :");
-			size_t foundHM    = line.find("Heavy Metal (t) :");
-			size_t foundPower = line.find("Thermal Power (W) :");
-			size_t foundTime  = line.find("Time (s) :");
-			size_t foundZAI	  = line.find("Z A I Name (input MLP) :");
-			size_t foundDomain = line.find("Fuel range (Z A I min max) :");
-			
-			int pos=0;
-			if(foundRType != std::string::npos)
-			{	StringLine::NextWord(line,pos,':');
-				fDBRType = atof( (StringLine::NextWord(line,pos,':')).c_str() );
-			}
-			pos=0;
-			if(foundFType != std::string::npos)
-			{	StringLine::NextWord(line,pos,':');
-				fDBFType = atof( (StringLine::NextWord(line,pos,':')).c_str() );
-			}
-			pos=0;
-			if(foundHM != std::string::npos)
-			{	StringLine::NextWord(line,pos,':');
-				fDBHMMass = atof( (StringLine::NextWord(line,pos,':')).c_str() );
-			}
-			pos=0;
-			if(foundPower !=std::string::npos)
-			{	StringLine::NextWord(line,pos,':');
-				fDBPower = atof( (StringLine::NextWord(line,pos,':') ).c_str() );
-			}
-			pos=0;
-			if(foundTime!=std::string::npos)
-			{
-				StringLine::NextWord(line,pos,':');
-				while( pos< (int)line.size() )
-					fMLP_Time.push_back( atof( (StringLine::NextWord(line,pos,' ')).c_str() ));
-			}
-			pos=0;
-			if(foundZAI != std::string::npos)
-			{	string Z;
-				string A;
-				string I;
-				string Name;
-				int posoflinebeforbadline=0;
-				do
-				{	posoflinebeforbadline = FILE.tellg();
-					getline(FILE, line);
-					stringstream ssline;
-					ssline<<line;
-					ssline>>Z>>A>>I>>Name;
-					if(StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I) )
-					{
-						fMapOfTMVAVariableNames.insert( pair<ZAI,string>(ZAI(atoi(Z.c_str()),atoi(A.c_str()),atoi(I.c_str())),Name) );
-					}
-					
-				}while((StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I)) && !FILE.eof());
-				
-				FILE.seekg(posoflinebeforbadline); //return one line before
-				
-			}
-			if(foundDomain != std::string::npos)
-			{	string Z;
-				string A;
-				string I;
-				string min;
-				string max;
-				int posoflinebeforbadline=0;
-				do
-				{	posoflinebeforbadline = FILE.tellg();
-					getline(FILE, line);
-					stringstream ssline;
-					ssline<<line;
-					ssline>>Z>>A>>I>>min>>max;
-					if(StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I) && StringLine::IsDouble(min) && StringLine::IsDouble(max) )
-					{
-						fZAILimits.insert( pair<ZAI,pair<double,double> >(ZAI(atoi(Z.c_str()),atoi(A.c_str()),atoi(I.c_str())),make_pair(atof(min.c_str()),atof(max.c_str()))) );
-					}
-					
-				}
-				while((StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I) )&& !FILE.eof());
-				FILE.seekg(posoflinebeforbadline); //return one line before
-				
-			}
-			
-		}
-	}
-	else
-	{
-		ERROR << "Can't find/open file " << fInformationFile << endl;
-		exit(0);
-	}
-	
-	/********DEBUG*************************************/
 	INFO<<"\tMLP XS Data Base Information : "<<endl;
 	INFO<<"\t\tHeavy Metal (t) :"<<fDBHMMass<<endl;
 	INFO<<"\t\tThermal Power (W) :"<<fDBPower<<endl;
@@ -219,6 +178,8 @@ void XSM_MLP::GetDataBaseInformation()
 	
 	
 }
+ */
+ 
 //________________________________________________________________________
 void XSM_MLP::GetMLPWeightFiles()
 {

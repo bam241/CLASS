@@ -9,7 +9,7 @@
  
  @author BaM
  @author BLG
- @version 1.0
+ @version 2
  */
 #include "EvolutionData.hxx"
 #include "CLASSObject.hxx"
@@ -40,7 +40,7 @@ typedef void (XSModel::*MthPtr)( const string & ) ;
  
  @author BaM
  @author BLG
- @version 1.0
+ @version 2
  */
 //________________________________________________________________________
 
