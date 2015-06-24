@@ -30,14 +30,14 @@ typedef void (XSModel::*MthPtr)( const string & ) ;
 //!  Defines a mean cross section predictor
 
 /*!
-This is the mother class for methods related to XS prediction
-
-\warning
+ This is the mother class for methods related to XS prediction
+ 
+ \warning
  Never instantiate XSModel in your CLASS input but it's derivated class
-
+ 
  @see XSM_CLOSEST
  @see XSM_MLP
-
+ 
  @author BaM
  @author BLG
  @version 1.0
@@ -47,19 +47,19 @@ This is the mother class for methods related to XS prediction
 
 class XSModel : public CLASSObject
 {
-
-	public : 
-
+	
+	public :
+	
 	/*!
 	 \name Constructor/Desctructor
 	 */
 	//@{
-
+	
 	XSModel(); //!<Default constructor
 	
 	
 	XSModel(CLASSLogger* log); //!<Logger constructor
-
+	
 	//@}
 	
 	
@@ -90,23 +90,29 @@ class XSModel : public CLASSObject
 	virtual  bool isIVInDomain(IsotopicVector IV) ;
 	//@}
 	
+	void ReadNFO();
+	virtual void ReadLine(string line);
+	
+	
 	void ReadZAIlimits(const string &line);
 	void ReadType(const string &line);
 	void ReadRParam(const string &line);
 	
-	void LoadKeyword();
+	virtual void LoadKeyword();
 	
 	
 	void SetZAIThreshold(int Z_Threshold){fZAIThreshold = Z_Threshold;}//!< Set the Z threshold : ZAI with Z < fZAIThreshold are not manage by CLASS
 	int  GetZAIThreshold(){return fZAIThreshold;}//!< Get the Z threshold
-
+	
 	protected :
+	bool freaded;
+	string fInformationFile;	//!<  file containing Reactor Type, Fuel type, HM mass, Power, time vector, and TMVA input variables names (looks the manual for format details)
 	
 	double fDBPower;		//!<  Power of the data base (read from fMLPInformationFile )
 	double fDBHMMass;		//!<  Heavy metal mass of the data base (read from fMLPInformationFile )
 	string fDBFType;		//!<  Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
 	string fDBRType;		//!<  Reactor Type (e.g PWR, FBR-Na, ADS..)
-
+	
 	map< ZAI, pair<double,double> > fZAILimits; //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
 	
 #ifndef __CINT__
