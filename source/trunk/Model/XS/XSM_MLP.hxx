@@ -21,11 +21,6 @@
 typedef long long int cSecond;
 using namespace std;
 
-
-class XSM_MLP;
-#ifndef __CINT__
-typedef void (XSM_MLP::*DMthPtr)( const string & ) ;
-#endif
 //-----------------------------------------------------------------------------//
 //! Defines a XSModel getting mean cross sections from neural network execution
 
@@ -75,11 +70,9 @@ class XSM_MLP : public XSModel
 	~XSM_MLP();
 	//@}
 
-	void LoadKeyword() {}
 
- 	EvolutionData GetCrossSections(IsotopicVector IV,double t=0);	//!< Return calculated cross section by the MLP regression
+ 	virtual EvolutionData GetCrossSections(IsotopicVector IV,double t=0);	//!< Return calculated cross section by the MLP regression
 
-	void ReadLine(string line);
 
 	private :
 	
@@ -102,15 +95,14 @@ class XSM_MLP : public XSModel
  	vector<string> 	fWeightFiles;	//!<  All the weight file contains in fTMVAWeightFolder
 	
 	string fTMVAWeightFolder;	//!<  folder containing all the weight file
- 	
+ 	string fMLPInformationFile;	//!<  file containing Reactor Type, Fuel type, HM mass, Power, time vector, and TMVA input variables names (looks the manual for format details)
+	
 	
  	bool fIsStepTime;		//!<  true if one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
 
  	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 	
-#ifndef __CINT__
-	map<string, DMthPtr> fDKeyword;
-#endif
+	
 };
 
 #endif

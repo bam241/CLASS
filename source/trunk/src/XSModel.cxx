@@ -17,71 +17,23 @@ using namespace std;
 
 XSModel::XSModel():CLASSObject()
 {
-	XSModel::LoadKeyword();
+	LoadKeyword();
 }
 
 
 XSModel::XSModel(CLASSLogger* log):CLASSObject(log)
 {
-	
-	XSModel::LoadKeyword();
-}
-
-
-void XSModel::ReadNFO()
-{
-	DBGL
-	ifstream NFO(fInformationFile.c_str());
-	
-	if(!NFO)
-	{
-		ERROR << "Can't find/open file " << fInformationFile << endl;
-		exit(0);
-	}
-	
-	do
-	{
-		string line;
-		getline(NFO,line);
-		
-		XSModel::ReadLine(line);
-		
-	} while(NFO.eof());
-	
-	DBGL
-}
-
-//________________________________________________________________________
-void XSModel::ReadLine(string line)
-{
-	DBGL
-	
-	if (!freaded)
-	{
-		int start = 0;
-		string keyword = tlc(StringLine::NextWord(line, start, ' '));
-		
-		(this->*fKeyword[ keyword ])(line);
-		freaded = true;
-		
-		ReadLine(line);
-
-	}
-
-	freaded = false;
-
-	DBGL
-}
-
+	LoadKeyword();
+}	
 
 void XSModel::LoadKeyword()
 {
 	DBGL
 	fKeyword.insert( pair<string, MthPtr>( "k_zail",	& XSModel::ReadZAIlimits));
-	fKeyword.insert( pair<string, MthPtr>( "k_reactor",	& XSModel::ReadType)	 );
-	fKeyword.insert( pair<string, MthPtr>( "k_fuel",	& XSModel::ReadType)	 );
-	fKeyword.insert( pair<string, MthPtr>( "k_mass",	& XSModel::ReadRParam)	 );
-	fKeyword.insert( pair<string, MthPtr>( "k_power",	& XSModel::ReadRParam)	 );
+	fKeyword.insert( pair<string, MthPtr>( "k_reactor",	& XSModel::ReadType)	);
+	fKeyword.insert( pair<string, MthPtr>( "k_fuel",	& XSModel::ReadType)	);
+	fKeyword.insert( pair<string, MthPtr>( "k_mass",	& XSModel::ReadRParam)	);
+	fKeyword.insert( pair<string, MthPtr>( "k_power",	& XSModel::ReadRParam)	);
 	DBGL
 }
 
@@ -89,15 +41,15 @@ void XSModel::ReadRParam(const string &line)
 {
 	DBGL
 	int start = 0;
-	string keyword = tlc(StringLine::NextWord(line, start, ' '));
-	if( keyword != "k_power" || keyword != "k_mass" )	// Check the keyword
+	string type = tlc(StringLine::NextWord(line, start, ' '));
+	if( type != "k_power" || type != "k_mass" )	// Check the keyword
 	{
-		ERROR << " Bad keyword : " << keyword << " Not found !" << endl;
+		ERROR << " Bad keyword : " << type << " Not found !" << endl;
 		exit(1);
 	}
-	if( keyword == "k_mass" )
+	if( type == "k_mass" )
 		fDBHMMass = atof(StringLine::NextWord(line, start, ' ').c_str());
-	else if( keyword == "k_mass" )
+	else if( type == "k_mass" )
 		fDBPower = atof(StringLine::NextWord(line, start, ' ').c_str());
 	
 	DBGL
@@ -108,15 +60,15 @@ void XSModel::ReadType(const string &line)
 {
 	DBGL
 	int start = 0;
-	string keyword = tlc(StringLine::NextWord(line, start, ' '));
-	if( keyword != "k_fuel" || keyword != "k_reactor" )	// Check the keyword
+	string type = tlc(StringLine::NextWord(line, start, ' '));
+	if( type != "k_fuel" || type != "k_reactor" )	// Check the keyword
 	{
-		ERROR << " Bad keyword : " << keyword << " Not found !" << endl;
+		ERROR << " Bad keyword : " << type << " Not found !" << endl;
 		exit(1);
 	}
-	if( keyword == "k_fuel" )
+	if( type == "k_fuel" )
 		fDBFType = StringLine::NextWord(line, start, ' ');
-	else if( keyword == "k_reactor" )
+	else if( type == "k_reactor" )
 		fDBRType = StringLine::NextWord(line, start, ' ');
 
 	DBGL
@@ -127,8 +79,7 @@ void XSModel::ReadZAIlimits(const string &line)
 {
 	DBGL
 	int start = 0;
-	string keyword = tlc(StringLine::NextWord(line, start, ' '));
-	if( keyword != "k_zail" )	// Check the keyword
+	if( tlc(StringLine::NextWord(line, start, ' ')) != "k_zail" )	// Check the keyword
 	{
 		ERROR << " Bad keyword : \"k_zail\" not found !" << endl;
 		exit(1);

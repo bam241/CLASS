@@ -2,7 +2,6 @@
 #include "XSModel.hxx"
 #include "XSM_MLP.hxx"
 #include "CLASSLogger.hxx"
-#include "CLASSMethod.hxx"
 #include "StringLine.hxx"
 
 #include "TMVA/Reader.h"
@@ -39,69 +38,46 @@ XSM_MLP::XSM_MLP(string TMVA_Weight_Directory,string InformationFile, bool IsTim
 	fIsStepTime=IsTimeStep;
 	fTMVAWeightFolder = TMVA_Weight_Directory;
 	if(InformationFile=="")
-		fInformationFile = TMVA_Weight_Directory+"/Data_Base_Info.nfo";
+		fMLPInformationFile = TMVA_Weight_Directory+"/Data_Base_Info.nfo";
 	else
-		fInformationFile = fTMVAWeightFolder+InformationFile;
+		fMLPInformationFile=fTMVAWeightFolder+InformationFile;
 
 	GetMLPWeightFiles();
+	GetDataBaseInformation();
 
-	INFO << "__A cross section interpolator using" << endl;
-	INFO << "Multi Layer Perceptron has been define__" << endl;
+	INFO<<"__A cross section interpolator using" <<endl;
+	INFO<<"Multi Layer Perceptron has been define__"<<endl;
 	INFO << " \t His TMVA folder is : \" " << fTMVAWeightFolder << "\"" << endl;
-	
-	LoadKeyword();
-	ReadNFO();
 
 }
-
 //________________________________________________________________________
 XSM_MLP::XSM_MLP(CLASSLogger* Log,string TMVA_Weight_Directory,string InformationFile, bool IsTimeStep):XSModel(Log)
 {
 
-	fIsStepTime = IsTimeStep;
+	fIsStepTime=IsTimeStep;
 	fTMVAWeightFolder = TMVA_Weight_Directory;
-	if( InformationFile == "" )
-		fInformationFile = TMVA_Weight_Directory + "/Data_Base_Info.nfo";
+	if(InformationFile=="")
+		fMLPInformationFile = TMVA_Weight_Directory+"/Data_Base_Info.nfo";
 	else
-		fInformationFile = fTMVAWeightFolder+InformationFile;
+		fMLPInformationFile=fTMVAWeightFolder+InformationFile;
 
 	GetMLPWeightFiles();
+	GetDataBaseInformation();
 
-	INFO << "__A cross section interpolator using" << endl;
-	INFO << "Multi Layer Perceptron has been define__" << endl;
+	INFO<<"__A cross section interpolator using" <<endl;
+	INFO<<"Multi Layer Perceptron has been define__"<<endl;
 	INFO << " \t His TMVA folder is : \" " << fTMVAWeightFolder << "\"" << endl;
-	
-	LoadKeyword();
-	ReadNFO();	
 
 }
-
 //________________________________________________________________________
 XSM_MLP::~XSM_MLP()
 {
 	fMapOfTMVAVariableNames.clear();
 }
-
-
-
-//________________________________________________________________________
-void XSM_MLP::ReadLine(string line)
-{
-	DBGL
-	
-	int start = 0;
-	string keyword = tlc(StringLine::NextWord(line, start, ' '));
-	(this->*fKeyword[ keyword ])(line);
-	
-	DBGL
-}
-
-
-
 //________________________________________________________________________
 void XSM_MLP::GetDataBaseInformation()
 {
-	ifstream FILE(fInformationFile.c_str());
+	ifstream FILE(fMLPInformationFile.c_str());
 
 	if(FILE.good())
 	{
@@ -195,7 +171,7 @@ void XSM_MLP::GetDataBaseInformation()
 	}
 	else
 	{
-		ERROR << "Can't find/open file " << fInformationFile << endl;
+		ERROR << "Can't find/open file " << fMLPInformationFile << endl;
 		exit(0);
 	}
 
@@ -221,8 +197,7 @@ void XSM_MLP::GetDataBaseInformation()
 }
 //________________________________________________________________________
 void XSM_MLP::GetMLPWeightFiles()
-{
-	DBGL
+{DBGL
 	/**********Get All TMVA weight files*******************/
 	//check if the folder containing weights exists
 	DIR* rep = NULL;
@@ -311,7 +286,7 @@ TTree* XSM_MLP::CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep)
 
 	for( it = fMapOfTMVAVariableNames.begin()  ; it!=fMapOfTMVAVariableNames.end() ; it++)
 	{
-		InputTree->Branch( ((*it).second).c_str() ,&InputTMVA[j], ((*it).second + "/F").c_str());
+		InputTree->Branch( ((*it).second).c_str()	,&InputTMVA[j], ((*it).second + "/F").c_str());
 		IVInputTMVA+= ((*it).first)*1;
 		j++;
 	}
@@ -396,8 +371,7 @@ double XSM_MLP::ExecuteTMVA(string WeightFile,TTree* InputTree)
 }
 //________________________________________________________________________
 EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
-{
-	DBGL
+{DBGL
 
 	EvolutionData EvolutionDataFromMLP = EvolutionData();
 
@@ -501,8 +475,7 @@ void XSM_MLP::ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &R
 
 //________________________________________________________________________
 EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
-{
-	DBGL
+{DBGL
 	TTree* InputTree=CreateTMVAInputTree(IV);
 
 	EvolutionData EvolutionDataFromMLP = EvolutionData();
@@ -560,8 +533,7 @@ EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 }
 //________________________________________________________________________
 EvolutionData XSM_MLP::GetCrossSections(IsotopicVector IV ,double t)
-{
-	DBGL
+{DBGL
 	if(t!=0)
 		WARNING << " Argument t has non effect here " << endl;
 
