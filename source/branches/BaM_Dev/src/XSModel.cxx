@@ -43,10 +43,10 @@ void XSModel::ReadNFO()
 	{
 		string line;
 		getline(NFO,line);
-		
+
 		XSModel::ReadLine(line);
 		
-	} while(NFO.eof());
+	} while(!NFO.eof());
 	
 	DBGL
 }
@@ -93,7 +93,7 @@ void XSModel::ReadRParam(const string &line)
 	DBGL
 	int pos = 0;
 	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_power" || keyword != "k_mass" )	// Check the keyword
+	if( keyword != "k_power" && keyword != "k_mass" )	// Check the keyword
 	{
 		ERROR << " Bad keyword : " << keyword << " Not found !" << endl;
 		exit(1);
@@ -112,7 +112,7 @@ void XSModel::ReadType(const string &line)
 	DBGL
 	int pos = 0;
 	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_fuel" || keyword != "k_reactor" )	// Check the keyword
+	if( keyword != "k_fuel" && keyword != "k_reactor" )	// Check the keyword
 	{
 		ERROR << " Bad keyword : " << keyword << " Not found !" << endl;
 		exit(1);
