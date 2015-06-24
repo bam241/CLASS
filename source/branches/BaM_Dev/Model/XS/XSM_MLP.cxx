@@ -131,7 +131,6 @@ void XSM_MLP::ReadTimeSteps(const string &line)
 	
 	while( pos < (int)line.size() )
 		fMLP_Time.push_back( atof( (StringLine::NextWord(line,pos,' ')).c_str() ));
-	
 	DBGL
 }
 
