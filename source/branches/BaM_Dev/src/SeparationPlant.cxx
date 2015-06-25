@@ -83,9 +83,9 @@ DBGL
 	{
 		cSecond CurrentTime = GetParc()->GetAbsoluteTime();
 
-		INFO << "Separation..." <<endl;
-		INFO << "Current Time : " << CurrentTime <<endl;
-		INFO << "IV Separation Time : " << fDestinationStorageStartingTime[fds] <<endl;
+		DBGV( "Separation..." <<endl);
+		DBGV( "Current Time : " << CurrentTime <<endl);
+		DBGV( "IV Separation Time : " << fDestinationStorageStartingTime[fds] <<endl);
 
 		if(CurrentTime >= fDestinationStorageStartingTime[fds])
 		{

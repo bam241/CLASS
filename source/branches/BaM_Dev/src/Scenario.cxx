@@ -157,7 +157,6 @@ void Scenario::AddPool(Pool* Pool)
 	fPool.push_back(Pool);
 	fPool.back()->SetParc(this);
 	fPool.back()->SetDecayDataBank( (*this).GetDecayDataBase() );
-	fPool.back()->SetLog(GetLog());
 	fPool.back()->SetId((int)fPool.size()-1);
 	fPool.back()->SetInternalTime(fAbsoluteTime);
 
@@ -191,7 +190,6 @@ void Scenario::AddReactor(Reactor* reactor)
 
 	fReactor.push_back(reactor);
 	fReactor.back()->SetParc(this);
-	fReactor.back()->SetLog(GetLog());
 	fReactor.back()->SetId((int)fReactor.size()-1);
 	fReactor.back()->SetInternalTime(fAbsoluteTime);
 
@@ -226,7 +224,6 @@ void Scenario::AddStorage(Storage* storage)
 	fStorage.push_back(storage);
 	fStorage.back()->SetParc(this);
 	fStorage.back()->SetDecayDataBank( (*this).GetDecayDataBase() );
-	fStorage.back()->SetLog(GetLog());
 	fStorage.back()->SetId((int)fStorage.size()-1);
 	fStorage.back()->SetInternalTime(fAbsoluteTime);
 
@@ -260,7 +257,6 @@ void Scenario::AddFabricationPlant(FabricationPlant* fabricationplant)
 	fFabricationPlant.push_back(fabricationplant);
 	fFabricationPlant.back()->SetParc(this);
 	fFabricationPlant.back()->SetDecayDataBank( (*this).GetDecayDataBase() );
-	fFabricationPlant.back()->SetLog(GetLog());
 	fFabricationPlant.back()->SetId((int)fStorage.size()-1);
 	fFabricationPlant.back()->SetInternalTime(fAbsoluteTime);
 
@@ -293,7 +289,6 @@ void Scenario::AddSeparationPlant(SeparationPlant* SeparationPlant)
 	fSeparationPlant.push_back(SeparationPlant);
 	fSeparationPlant.back()->SetParc(this);
 	fSeparationPlant.back()->SetDecayDataBank( (*this).GetDecayDataBase() );
-	fSeparationPlant.back()->SetLog(GetLog());
 	fSeparationPlant.back()->SetId((int)fSeparationPlant.size()-1);
 	fSeparationPlant.back()->SetInternalTime(fAbsoluteTime);
 

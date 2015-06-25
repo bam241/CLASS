@@ -30,7 +30,6 @@ DecayDataBank::DecayDataBank():CLASSObject(new CLASSLogger("DecayDataBank.log"))
 	string  CLASSPATH = getenv("CLASS_PATH");
 	string	DB_index_file = CLASSPATH + "/DATA_BASES/DECAY/ALL/Decay.idx";
 	fDataBaseIndex = DB_index_file;
-	fOldReadMethod = false;
 	fFastCalculation = true;
 	
 	// Warning
@@ -46,11 +45,10 @@ DecayDataBank::DecayDataBank():CLASSObject(new CLASSLogger("DecayDataBank.log"))
 
 //________________________________________________________________________
 
-DecayDataBank::DecayDataBank(string DB_index_file, bool olfreadmethod):CLASSObject(new CLASSLogger("DecayDataBank.log"))
+DecayDataBank::DecayDataBank(string DB_index_file):CLASSObject(new CLASSLogger("DecayDataBank.log"))
 {
 
 	fDataBaseIndex = DB_index_file;
-	fOldReadMethod = olfreadmethod;
 	fFastCalculation = true;
 
 	// Warning
@@ -60,11 +58,10 @@ DecayDataBank::DecayDataBank(string DB_index_file, bool olfreadmethod):CLASSObje
 }
 //________________________________________________________________________
 
-DecayDataBank::DecayDataBank(CLASSLogger* log, string DB_index_file, bool olfreadmethod):CLASSObject(log)
+DecayDataBank::DecayDataBank(CLASSLogger* log, string DB_index_file):CLASSObject(log)
 {
 	
 	fDataBaseIndex = DB_index_file;
-	fOldReadMethod = olfreadmethod;
 	fFastCalculation = true;
 	
 	// Warning
@@ -114,7 +111,7 @@ DBGL
 			if(rZ == zai.Z() && rA == zai.A() && rI == zai.I() )
 			{
 				string file_name = StringLine::NextWord(line,start);
-				EvolutionData evolutionproduct = EvolutionData(GetLog(), file_name, fOldReadMethod);
+				EvolutionData evolutionproduct = EvolutionData(GetLog(), file_name, true);
 #pragma omp critical(DBupdate)
 				{fDecayDataBank.insert( pair<ZAI ,EvolutionData >(zai, evolutionproduct) );}
 				returnIV = evolutionproduct.GetIsotopicVectorAt(dt);
@@ -127,7 +124,7 @@ DBGL
 			WARNING << " Oups... Can't Find the ZAI : "
 			<< zai.Z() << " " << zai.A() << " "	<< zai.I() << "!!! It will be considered as stable !!" << endl;
 			
-			EvolutionData evolutionproduct = EvolutionData(GetLog()," " , false, zai);
+			EvolutionData evolutionproduct = EvolutionData(GetLog()," " , true, zai);
 			{fDecayDataBank.insert( pair<ZAI, EvolutionData >(zai, evolutionproduct) );}
 			returnIV = evolutionproduct.GetIsotopicVectorAt(dt);
 			

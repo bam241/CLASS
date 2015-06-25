@@ -249,7 +249,8 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 	{
 		DBGV("Building process failed: ")
 		if (!fSubstitutionFuel)
-		{		DBGV("Reactor not loaded ")
+		{
+			DBGV("Reactor not loaded ")
 			{
 				EvolutionData EmptyDB;
 				pair<map<int, EvolutionData>::iterator, bool> IResult;
@@ -266,9 +267,11 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 			}	
 		}
 		else
-		{	DBGV("Using substitute : ")
+		{
+			DBGV("Using substitute : ")
 			if(fSubstitutionFissile)//if the build fail possibility to take a fissile material from an infinite fissile stock (if infinite stock defined)
-			{ DBGV("->From an infinite stock")
+			{
+				DBGV("->From an infinite stock")
 				//make the user specified fissil composition to decay the fabrication time
 				IsotopicVector CooledSeparatedIV = GetDecay(fSubstitutionFissileIV, GetCycleTime());
 				//Building the fuel :
@@ -299,7 +302,8 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 				DBGL
 			}
 			else
-			{	DBGV("->From a fixed data base")
+			{
+				DBGV("->From a fixed data base")
 				IsotopicVector IV = fSubstitutionEvolutionData.GetIsotopicVectorAt(0);
 				EvolutionData evolutiondb = fSubstitutionEvolutionData * R_HM_Mass / IV.GetTotalMass();
 	
@@ -321,7 +325,8 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 				AddCumulativeIVIn(IV);
 			}
 
-		}DBGL
+		}
+		DBGL
 		ResetArrays();
 
 		return;
