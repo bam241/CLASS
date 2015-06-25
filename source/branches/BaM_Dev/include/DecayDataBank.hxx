@@ -65,7 +65,7 @@ class DecayDataBank : public CLASSObject
 	 \param DB_index_file : path to the index file
 	 \param olfreadmethod : true if the old format of EvolutionData are used (deprecated) (ie without the key word such as Inv, XSFiss...)
 	 */
-	DecayDataBank(string DB_index_file, bool olfreadmethod = false );
+	DecayDataBank(string DB_index_file );
 	//}
 	//{
 	/// Special Constructor.
@@ -75,7 +75,7 @@ class DecayDataBank : public CLASSObject
 	 \param DB_index_file : path to the index file
 	 \param olfreadmethod : true if the old format of EvolutionData are used (ie without the key word such as Inv, XSFiss...)
 	 */
-	DecayDataBank(CLASSLogger* Log, string DB_index_file, bool olfreadmethod = false );
+	DecayDataBank(CLASSLogger* Log, string DB_index_file );
 	//}
 	
 	//{
@@ -127,9 +127,7 @@ class DecayDataBank : public CLASSObject
 						{ fDecayDataBank = mymap; }	//!< Set the DecayDataBank map
 	
 	void SetDataBaseIndex(string database)	{ fDataBaseIndex = database;; ReadDataBase(); }	//!< Set the name of the database index
-	
-	void SetOldReadMethod(bool val)		{ fOldReadMethod = val; ReadDataBase();}			///< use the old reading method
-	
+		
 	void SetFastCalculation(bool val)	{ fFastCalculation = val; }
 	//}
 	
@@ -172,7 +170,6 @@ class DecayDataBank : public CLASSObject
 	
 	map<ZAI, EvolutionData>	fDecayDataBank;		///< DataBank map
  	string			fDataBaseIndex;		///< Name of the index
-	bool			fOldReadMethod;		///< use old DB format
 	
 };
 

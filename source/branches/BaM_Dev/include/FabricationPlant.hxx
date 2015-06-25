@@ -100,7 +100,7 @@ public :
 
 
 	void AddReactor(int reactorid, double creationtime)
-			{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }	//!< Add a new reactor to be filled with the fresh fuel build by the FabricationPlant
+	{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }	//!< Add a new reactor to be filled with the fresh fuel build by the FabricationPlant
 
 	void SetReUsableStorage(Storage* store) { fReUsable = store; fIsReusable = true;} //!< Set the Storage where all the separated matetial not used in the fabrication process will be sent. (if not present it goes to WASTE)
 #endif
@@ -130,7 +130,7 @@ public :
 	map<int, IsotopicVector >	GetReactorFuturIncome() const
 						{ return fReactorFuturIV;}	//!< Return the list of the futur fuel IV
 
-
+	cSecond GetFabricationTime() const	{return GetCycleTime();}
 	//@}
 
 

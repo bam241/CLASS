@@ -9,6 +9,7 @@
 #include "XSModel.hxx"
 #include "StringLine.hxx"
 #include "CLASSMethod.hxx"
+#include "ZAI.hxx"
 
 
 using namespace std;
@@ -100,7 +101,7 @@ void XSModel::ReadRParam(const string &line)
 	}
 	if( keyword == "k_mass" )
 		fDBHMMass = atof(StringLine::NextWord(line, pos, ' ').c_str());
-	else if( keyword == "k_mass" )
+	else if( keyword == "k_power" )
 		fDBPower = atof(StringLine::NextWord(line, pos, ' ').c_str());
 	
 	DBGL
@@ -141,9 +142,16 @@ void XSModel::ReadZAIlimits(const string &line)
 	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	
-	double upLimit = atof(StringLine::NextWord(line, pos, ' ').c_str());
 	double downLimit = atof(StringLine::NextWord(line, pos, ' ').c_str());
-	
+	double upLimit = atof(StringLine::NextWord(line, pos, ' ').c_str());
+
+	if (upLimit < downLimit)
+	{
+		double tmp = upLimit;
+		upLimit = downLimit;
+		downLimit = tmp;
+	}
+	fZAILimits.insert(pair<ZAI, pair<double, double> >(ZAI(Z,A,I), pair<double,double>(downLimit, upLimit)));
 	DBGL
 }
 

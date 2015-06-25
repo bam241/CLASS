@@ -84,7 +84,19 @@ public :
 	 \param oldread true if the oldmethod should be use to read the DatBase File (deprecated)
 	 \param zai set the ZAI if you want to add a stable nuclei.
 	 */
-	EvolutionData(CLASSLogger* log, string DB_file, bool oldread = false, ZAI zai = ZAI(0,0,0) );
+	EvolutionData(CLASSLogger* log, string DB_file, bool isDecay = false, ZAI zai = ZAI(0,0,0) );
+	//}
+	
+	//{
+	/// Special Constructor.
+	/*!
+	 Make a new EvolutionData
+	 \param log : used for the log.
+	 \param DB_file path to the DataBase file
+	 \param oldread true if the oldmethod should be use to read the DatBase File (deprecated)
+	 \param zai set the ZAI if you want to add a stable nuclei.
+	 */
+	EvolutionData(bool oldread, CLASSLogger* log, string DB_file, bool isDecay = false, ZAI zai = ZAI(0,0,0) );
 	//}
 
 
@@ -219,7 +231,7 @@ protected :
 	
 	cSecond	fFinalTime;			///< time of the last point
 	bool	fIsCrossSection;		///< true if some cross section are present in the database
-	
+	bool fisDecay;
 	
 	
 	string	fReactorType;			///< Type of reactor

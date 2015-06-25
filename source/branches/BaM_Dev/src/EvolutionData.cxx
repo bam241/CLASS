@@ -363,7 +363,7 @@ EvolutionData::EvolutionData(CLASSLogger* log):CLASSObject(log)
 }
 
 //________________________________________________________________________
-EvolutionData::EvolutionData(CLASSLogger* log, string DB_file, bool oldread, ZAI zai):CLASSObject(log)
+EvolutionData::EvolutionData(CLASSLogger* log, string DB_file, bool isDecay, ZAI zai):CLASSObject(log)
 {
 	
 	fIsCrossSection = false;
@@ -372,6 +372,30 @@ EvolutionData::EvolutionData(CLASSLogger* log, string DB_file, bool oldread, ZAI
 	fCycleTime = 0;
 	fKeff = 0;
 	fFlux = 0;
+	fisDecay = isDecay;
+	
+	if(zai != ZAI(0,0,0))
+		AddAsStable(zai);
+	else
+		ReadDB( fDB_file, false);		// Read Evolution Produc DB file name
+	
+	
+	
+	
+}
+
+
+//________________________________________________________________________
+EvolutionData::EvolutionData(bool oldread, CLASSLogger* log, string DB_file, bool isDecay, ZAI zai):CLASSObject(log)
+{
+	
+	fIsCrossSection = false;
+	fDB_file = DB_file;
+	fPower = 0;
+	fCycleTime = 0;
+	fKeff = 0;
+	fFlux = 0;
+	fisDecay = isDecay;
 	
 	if(zai != ZAI(0,0,0))
 		AddAsStable(zai);
@@ -569,7 +593,8 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 		return;
 	}
 	
-	ReadInfo();							// Read the .info associeted
+	if(!fisDecay)
+		ReadInfo();							// Read the .info associeted
 	
 	ifstream DecayDB(DBfile.c_str());	// Open the File
 	if(!DecayDB)				//check if file is correctly open
