@@ -116,6 +116,9 @@ public :
 	 In some case needed to be called to avoid memory leaks.
 	 */
 	void DeleteEvolutionData();
+	
+	void DeleteEvolutionDataCopy();
+
 	//}
 	
 	//@}

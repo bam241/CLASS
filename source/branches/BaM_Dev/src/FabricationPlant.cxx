@@ -527,7 +527,7 @@ DBGL
 		(*it2).second = IV;
 
 	map< int,EvolutionData >::iterator it = fReactorFuturDB.find(Id);
-	(*it).second = EvolutionData();
+	(*it).second.DeleteEvolutionDataCopy();
 
 	UpdateInsideIV();
 DBGL
