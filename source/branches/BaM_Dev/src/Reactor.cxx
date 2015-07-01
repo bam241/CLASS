@@ -243,7 +243,7 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 {
 	DBGL
 	(*this).SetName("R_Reactor.");
-	
+
 	
 	fIsStarted = false;
 	fIsShutDown = false;
@@ -284,8 +284,7 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	INFO << "\t The Cycle Time set at\t " << ((double)fCycleTime)/((double)cYear) << " year" << endl;
 	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << CapacityFactor << " capacity factor)"<< endl;
 	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
-	
-	
+		
 	DBGL
 }
 
@@ -399,6 +398,9 @@ void Reactor::SetBurnUp(double BU)
 void Reactor::SetEvolutionDB(EvolutionData evolutionDB)
 {
 	DBGL
+	
+	//fEvolutionDB.DeleteEvolutionDataCopy();
+	
 	double M0 = cZAIMass.GetMass( evolutionDB.GetIsotopicVectorAt(0.).GetActinidesComposition() );
 	fEvolutionDB = evolutionDB * (fHeavyMetalMass/M0);
 	

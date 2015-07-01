@@ -350,6 +350,7 @@ EvolutionData::EvolutionData():CLASSObject()
 	fCycleTime = 0;
 	fKeff = 0;
 	fFlux = 0;
+	fDB_file = "";
 }
 
 //________________________________________________________________________
@@ -360,6 +361,7 @@ EvolutionData::EvolutionData(CLASSLogger* log):CLASSObject(log)
 	fCycleTime = 0;
 	fKeff = 0;
 	fFlux = 0;
+	fDB_file = "";
 }
 
 //________________________________________________________________________
@@ -410,7 +412,7 @@ EvolutionData::EvolutionData(bool oldread, CLASSLogger* log, string DB_file, boo
 //________________________________________________________________________
 EvolutionData::~EvolutionData()
 {
-	
+
 }
 //________________________________________________________________________
 void EvolutionData::DeleteEvolutionData()
@@ -450,9 +452,55 @@ void EvolutionData::DeleteEvolutionData()
 	
 	fFlux = 0;
 	fKeff = 0;
+
 	
 }
 
+
+//________________________________________________________________________
+void EvolutionData::DeleteEvolutionDataCopy()
+{
+	
+	if(fDB_file=="")
+	{
+		map<ZAI ,TGraph* >::iterator it_del;
+		
+		for( it_del = fInventoryEvolution.begin(); it_del != fInventoryEvolution.end(); it_del++)
+		{
+			delete (*it_del).second;
+			(*it_del).second = 0;
+		}
+		for( it_del = fFissionXS.begin(); it_del != fFissionXS.end(); it_del++)
+		{
+			delete (*it_del).second;
+			(*it_del).second = 0;
+		}
+		for( it_del = fCaptureXS.begin(); it_del != fCaptureXS.end(); it_del++)
+		{
+			delete (*it_del).second;
+			(*it_del).second = 0;
+		}
+		for( it_del = fn2nXS.begin(); it_del != fn2nXS.end(); it_del++)
+		{
+			delete (*it_del).second;
+			(*it_del).second = 0;
+		}
+		
+		
+		delete	fKeff;
+		delete	fFlux;
+		
+		fInventoryEvolution.clear();
+		fFissionXS.clear();
+		fCaptureXS.clear();
+		fn2nXS.clear();
+		
+		fFlux = 0;
+		fKeff = 0;
+	}
+	
+	
+}
 
 bool EvolutionData::NucleiInsert(pair<ZAI, TGraph*> zaitoinsert)
 {

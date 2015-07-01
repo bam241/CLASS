@@ -248,10 +248,10 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 		}
 
 		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NMatrix.size(), timevector, ZAIQuantity)));
-		GeneratedDB.FissionXSInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NStep, timevector, FissionXS)));
+/*		GeneratedDB.FissionXSInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NStep, timevector, FissionXS)));
 		GeneratedDB.CaptureXSInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NStep, timevector, CaptureXS)));
 		GeneratedDB.n2nXSInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NStep, timevector, n2nXS)));
-	}
+*/	}
 	DBGL
 	GeneratedDB.SetPower(Power );
 	GeneratedDB.SetHeavyMetalMass(M);

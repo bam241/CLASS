@@ -19,6 +19,8 @@ using namespace std;
 XSModel::XSModel():CLASSObject()
 {
 	XSModel::LoadKeyword();
+//	freaded = false;
+
 }
 
 
@@ -26,6 +28,7 @@ XSModel::XSModel(CLASSLogger* log):CLASSObject(log)
 {
 	
 	XSModel::LoadKeyword();
+//	freaded = false;
 }
 
 
