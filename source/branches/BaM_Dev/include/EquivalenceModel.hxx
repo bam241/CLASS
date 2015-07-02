@@ -110,6 +110,10 @@ class EquivalenceModel : public CLASSObject
 	void ReadType(const string &line);
 	//@}
 	
+	
+	bool isIVInDomain(IsotopicVector IV);
+
+	
 	protected :
 	
 	IsotopicVector fFertileList;	//!< contain the list of zai, needed as fertile, taken in a stock before fabrication
