@@ -1,12 +1,14 @@
 #include "EquivalenceModel.hxx"
-
+#include "StringLine.hxx"
+#include "CLASSMethod.hxx"
 
 EquivalenceModel::EquivalenceModel():CLASSObject()
 {
 	fRelativMassPrecision = 1/10000.; // Mass precision
 	fMaxInterration = 100; // Max iterration in build fueld algorythum
 	fFirstGuessFissilContent = 0.02;
-	
+	freaded = false;
+
 }
 
 EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
@@ -14,6 +16,7 @@ EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 	fRelativMassPrecision = 1/10000.; // Mass precision
 	fMaxInterration = 100; // Max iterration in build fueld algorythm
 	fFirstGuessFissilContent = 0.02;
+	freaded = false;
 	
 }
 
@@ -21,6 +24,119 @@ EquivalenceModel::~EquivalenceModel()
 {
 	
 }
+
+
+
+void EquivalenceModel::ReadNFO()
+{
+	DBGL
+	ifstream NFO(fInformationFile.c_str());
+	
+	if(!NFO)
+	{
+		ERROR << "Can't find/open file " << fInformationFile << endl;
+		exit(0);
+	}
+	
+	do
+	{
+		string line;
+		getline(NFO,line);
+		
+		EquivalenceModel::ReadLine(line);
+		
+	} while(!NFO.eof());
+	
+	DBGL
+}
+
+//________________________________________________________________________
+void EquivalenceModel::ReadLine(string line)
+{
+	DBGL
+	
+	if (!freaded)
+	{
+		int pos = 0;
+		string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+		
+		map<string, EQMthPtr>::iterator it = fKeyword.find(keyword);
+		
+		if(it != fKeyword.end())
+			(this->*(it->second))( line );
+		
+		freaded = true;
+		ReadLine(line);
+		
+	}
+	
+	freaded = false;
+	
+	DBGL
+}
+
+
+void EquivalenceModel::LoadKeyword()
+{
+	DBGL
+	fKeyword.insert( pair<string, EQMthPtr>( "k_zail",	& EquivalenceModel::ReadZAIlimits));
+	fKeyword.insert( pair<string, EQMthPtr>( "k_reactor",	& EquivalenceModel::ReadType)	 );
+	fKeyword.insert( pair<string, EQMthPtr>( "k_fuel",	& EquivalenceModel::ReadType)	 );
+	DBGL
+}
+
+
+void EquivalenceModel::ReadType(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_fuel" && keyword != "k_reactor" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : " << keyword << " Not found !" << endl;
+		exit(1);
+	}
+	if( keyword == "k_fuel" )
+		fDBFType = StringLine::NextWord(line, pos, ' ');
+	else if( keyword == "k_reactor" )
+		fDBRType = StringLine::NextWord(line, pos, ' ');
+	
+	DBGL
+}
+
+
+void EquivalenceModel::ReadZAIlimits(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_zail" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_zail\" not found !" << endl;
+		exit(1);
+	}
+	
+	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	
+	double downLimit = atof(StringLine::NextWord(line, pos, ' ').c_str());
+	double upLimit = atof(StringLine::NextWord(line, pos, ' ').c_str());
+	
+	if (upLimit < downLimit)
+	{
+		double tmp = upLimit;
+		upLimit = downLimit;
+		downLimit = tmp;
+	}
+	fZAILimits.insert(pair<ZAI, pair<double, double> >(ZAI(Z,A,I), pair<double,double>(downLimit, upLimit)));
+	DBGL
+}
+
+
+
+
+
 //________________________________________________________________________
 double EquivalenceModel::LAMBDA_TOT_FOR(double MassNeeded, vector<IsotopicVector> Stocks, string FisOrFer)
 {
