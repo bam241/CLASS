@@ -8,7 +8,7 @@ EquivalenceModel::EquivalenceModel():CLASSObject()
 	fMaxInterration = 100; // Max iterration in build fueld algorythum
 	fFirstGuessFissilContent = 0.02;
 	freaded = false;
-
+	
 }
 
 EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
@@ -259,7 +259,7 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<
 		if( LAMBDA_NEEDED == -1 )	// Check if previous lambda was well calculated
 		{
 			SetLambdaToErrorCode(lambda);
-			WARNING << "Not enought fissile material to build fuel" << endl;		
+			WARNING << "Not enought fissile material to build fuel" << endl;
 			return lambda;
 		}
 		
@@ -290,11 +290,11 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<
 			WARNING<<"GetFissileMolarFraction return negative or greater than one value";
 			return lambda;
 		}
-
+		
 		double MeanMolarPu = Fissile.GetMeanMolarMass();
 		double MeanMolarDepletedU = Fertile.GetMeanMolarMass();
 		
-		double MeanMolar = MeanMolarPu * MolarPuContent + (1-MolarPuContent)  *MeanMolarDepletedU;
+		double MeanMolar = MeanMolarPu * MolarPuContent + (1-MolarPuContent)  * MeanMolarDepletedU;
 		
 		
 		WeightPuContent = MolarPuContent * MeanMolarPu / MeanMolar;
@@ -307,9 +307,11 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<
 		
 	}while(  fabs( PuMassNeeded - AvailablePuMass )/HMMass > fRelativMassPrecision );
 	
+	(*this).isIVInDomain(fissil);
 	
 	DBGV( "Weight percent fissil : " << PuMassNeeded/HMMass );
 	DBGV( "Lambda vector : " );
+	
 	for(int i = 0; i < (int)FissilArray.size() + (int)FertilArray.size(); i++ )
 		DBGV(lambda[i]);
 	
@@ -335,9 +337,54 @@ void EquivalenceModel::SetLambda(vector<double>& lambda ,int FirstStockID, int L
 	
 	lambda[FirstStockID + IntegerPart] = DecimalPart;
 }
+
 //________________________________________________________________________
 void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
 {
-		for(int i=0 ; i < (int)lambda.size() ;i++ )
-			lambda[i]= -1;
+	for(int i=0 ; i < (int)lambda.size() ;i++ )
+		lambda[i]= -1;
 }
+
+
+
+//________________________________________________________________________
+bool EquivalenceModel::isIVInDomain(IsotopicVector IV)
+{
+	DBGL
+	bool IsInDomain=true;
+	
+	if(fZAILimits.empty())
+	{
+	 WARNING << "Fresh Fuel variation domain is not set" << endl;
+	 WARNING << "CLASS has no clue if the computed evolution for this fresh fuel is correct" << endl;
+	 WARNING << "Proceed finger crossed !!" << endl;
+	 return true;
+	}
+	
+	else
+	{
+		IsotopicVector IVNorm = IV /IV.GetSumOfAll();
+		for (map< ZAI,pair<double,double> >::iterator Domain_it=fZAILimits.begin(); Domain_it!=fZAILimits.end(); Domain_it++)
+		{
+			double ThatZAIProp = IVNorm.GetIsotopicQuantity()[Domain_it->first]	;
+			double ThatZAIMin  = Domain_it->second.first;
+			double ThatZAIMax  = Domain_it->second.second;
+			if( (ThatZAIProp > ThatZAIMax) || (ThatZAIProp <  ThatZAIMin) )
+			{
+				IsInDomain = false;
+				
+				WARNING << "Fresh fuel out of model range" << endl;
+				WARNING << "\t AT LEAST this ZAI is accused to be outrange :" << endl;
+				WARNING << "\t\t" << Domain_it->first.Z() << " "<<Domain_it->first.A() << " " << Domain_it->first.I() << endl;
+				WARNING << "\t\t min=" << ThatZAIMin <<" value=" << ThatZAIProp << " max=" << ThatZAIMax << endl;
+				WARNING << "\t IV accused :" << endl << endl;
+				WARNING << IVNorm.sPrint() << endl;
+				break;
+			}
+		}
+	}
+	DBGL
+	return IsInDomain;
+	
+}
+

@@ -39,10 +39,7 @@ XSM_MLP::XSM_MLP(string TMVA_Weight_Directory,string InformationFile, bool IsTim
 	fIsStepTime = IsTimeStep;
 	fTMVAWeightFolder = TMVA_Weight_Directory;
 	
-	if(InformationFile=="")
-		fInformationFile = TMVA_Weight_Directory + "/Data_Base_Info.nfo";
-	else
-		fInformationFile = fTMVAWeightFolder+InformationFile;
+	fInformationFile = fTMVAWeightFolder+InformationFile;
 	
 	GetMLPWeightFiles();
 	
@@ -61,10 +58,8 @@ XSM_MLP::XSM_MLP(CLASSLogger* Log,string TMVA_Weight_Directory,string Informatio
 	
 	fIsStepTime = IsTimeStep;
 	fTMVAWeightFolder = TMVA_Weight_Directory;
-	if( InformationFile == "" )
-		fInformationFile = TMVA_Weight_Directory + "/Data_Base_Info.nfo";
-	else
-		fInformationFile = fTMVAWeightFolder+InformationFile;
+
+	fInformationFile = fTMVAWeightFolder+InformationFile;
 	
 	GetMLPWeightFiles();
 	
