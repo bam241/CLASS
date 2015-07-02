@@ -14,10 +14,16 @@
 
 #include "IsotopicVector.hxx"
 #include <math.h>
+#include <map>
 #include "CLASSObject.hxx"
 
 
 using namespace std;
+
+class EquivalenceModel;
+#ifndef __CINT__
+typedef void (EquivalenceModel::*EQMthPtr)( const string & );
+#endif
 
 //-----------------------------------------------------------------------------//
 
@@ -97,6 +103,11 @@ class EquivalenceModel : public CLASSObject
 	void SetRelativMassPrecision( double val)	{ fRelativMassPrecision = val; }	//!< Mass precision
 	void SetMaxInterration(int val)			{ fMaxInterration = val; }		//!< Max iterration in build fueld algorythm
 
+	virtual void LoadKeyword();
+	void ReadNFO();
+	virtual void ReadLine(string line);
+	void ReadZAIlimits(const string &line);
+	void ReadType(const string &line);
 	//@}
 	
 	protected :
@@ -131,6 +142,17 @@ class EquivalenceModel : public CLASSObject
 	
 	//@}
 
+#ifndef __CINT__
+	map<string, EQMthPtr> fKeyword;
+#endif
+	
+	bool freaded;
+	map< ZAI, pair<double,double> > fZAILimits; //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
+
+	string fInformationFile;	//!<  file containing Reactor Type, Fuel type, HM mass, Power, time vector, and TMVA input variables names (looks the manual for format details)
+	string fDBFType;		//!<  Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
+	string fDBRType;		//!<  Reactor Type (e.g PWR, FBR-Na, ADS..)
+	
 	/*!
 	 \name Others 
 	 */
