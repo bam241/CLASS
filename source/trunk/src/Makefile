@@ -41,10 +41,10 @@ OBJS		= CLASSLogger.o \
 			Scenario.o
 
 OBJMODEL	=	$(EQM)/EQM_MLP_PWR_MOX.o $(EQM)/EQM_QUAD_PWR_MOX.o $(EQM)/EQM_POL_PWR_UO2.o\
-			$(EQM)/EQM_LIN_PWR_MOX.o $(EQM)/EQM_BakerRoss_FBR_MOX.o\
+			$(EQM)/EQM_LIN_PWR_MOX.o $(EQM)/EQM_BakerRoss_FBR_MOX.o $(EQM)/EQM_MLP_Kinf.o\
+			$(EQM)/EQM_MLP_Keff_FBR.o\
 			$(XSM)/XSM_MLP.o $(XSM)/XSM_CLOSEST.o \
-			$(IM)/IM_RK4.o $(IM)/IM_Matrix.o \
-			$(IM)/IM_Matrix_Decay.o
+			$(IM)/IM_RK4.o $(IM)/IM_Matrix.o
 
 
 ROOTOBJS	= 	CLASSLogger.o \
