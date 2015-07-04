@@ -1,4 +1,4 @@
-#include "EQM_LIN_PWR_MOX.hxx"
+#include "EQM_PWR_LIN_MOX.hxx"
 
 #include "CLASSConstante.hxx"
 
@@ -10,7 +10,7 @@
 
 
 
-EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(string WeightPath):EquivalenceModel(new CLASSLogger("EQM_LIN_PWR_MOX.log"))
+EQM_PWR_LIN_MOX::EQM_PWR_LIN_MOX(string WeightPath):EquivalenceModel(new CLASSLogger("EQM_PWR_LIN_MOX.log"))
 {
 	fWeightPath =  WeightPath;
 
@@ -62,7 +62,7 @@ EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(string WeightPath):EquivalenceModel(new CLASSLo
 }
 
 
-EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(CLASSLogger* log, string WeightPath):EquivalenceModel(log)
+EQM_PWR_LIN_MOX::EQM_PWR_LIN_MOX(CLASSLogger* log, string WeightPath):EquivalenceModel(log)
 {
 	fWeightPath =  WeightPath;
 
@@ -113,13 +113,13 @@ EQM_LIN_PWR_MOX::EQM_LIN_PWR_MOX(CLASSLogger* log, string WeightPath):Equivalenc
 
 }
 
-EQM_LIN_PWR_MOX::~EQM_LIN_PWR_MOX()
+EQM_PWR_LIN_MOX::~EQM_PWR_LIN_MOX()
 {
 
 }
 
 //________________________________________________________________________
-vector<double> EQM_LIN_PWR_MOX::BuildFuel(double BurnUp, double HMMass,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray)
+vector<double> EQM_PWR_LIN_MOX::BuildFuel(double BurnUp, double HMMass,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray)
 {
 
 	//-----------------------------------------------------------------------------//

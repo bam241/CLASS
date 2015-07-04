@@ -139,6 +139,7 @@ DBGL
 	return returnIV;
 }
 
+//________________________________________________________________________
 bool DecayDataBank::IsDefine(const ZAI& zai) const
 {
 	
@@ -155,26 +156,6 @@ bool DecayDataBank::IsDefine(const ZAI& zai) const
 //________________________________________________________________________
 //	Get Decay
 //________________________________________________________________________
-/*IsotopicVector DecayDataBank::GetDecay(IsotopicVector isotopicvector, cSecond t)
-{
-DBGL
-	IsotopicVector IV;
-
-	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
-	map<ZAI ,double >::iterator it;
-	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
-	{
-		if((*it).second > 0)
-		{
- 			IsotopicVector ivtmp = Evolution(it->first, t) * (*it).second ;
-			IV += ivtmp;
-		}
-	}
-
-DBGL
-	return IV;
-}
-*/
 
 IsotopicVector DecayDataBank::GetDecay(IsotopicVector isotopicvector, cSecond t)
 {
@@ -189,7 +170,7 @@ IsotopicVector DecayDataBank::GetDecay(IsotopicVector isotopicvector, cSecond t)
 		exit(1);
 	}
 	
-	if(fFastCalculation)
+	if(fFastCalculation)		// If using fast calculation simply interpolate between 2 timesteps
 	{
 		map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
 		map<ZAI ,double >::iterator it;
@@ -203,7 +184,7 @@ IsotopicVector DecayDataBank::GetDecay(IsotopicVector isotopicvector, cSecond t)
 		}
 		
 	}
-	else
+	else			// If using precise calculation calculate the evolution at each digit
 	{
 		int evolutionDecade[17];
 		cSecond remainingTime = t;

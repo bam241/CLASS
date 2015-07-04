@@ -65,7 +65,7 @@ void XSModel::ReadLine(string line)
 		int pos = 0;
 		string keyword = tlc(StringLine::NextWord(line, pos, ' '));
 
-		map<string, MthPtr>::iterator it = fKeyword.find(keyword);
+		map<string, XSM_MthPtr>::iterator it = fKeyword.find(keyword);
 		
 		if(it != fKeyword.end())
 			(this->*(it->second))( line );
@@ -84,11 +84,11 @@ void XSModel::ReadLine(string line)
 void XSModel::LoadKeyword()
 {
 	DBGL
-	fKeyword.insert( pair<string, MthPtr>( "k_zail",	& XSModel::ReadZAIlimits));
-	fKeyword.insert( pair<string, MthPtr>( "k_reactor",	& XSModel::ReadType)	 );
-	fKeyword.insert( pair<string, MthPtr>( "k_fuel",	& XSModel::ReadType)	 );
-	fKeyword.insert( pair<string, MthPtr>( "k_mass",	& XSModel::ReadRParam)	 );
-	fKeyword.insert( pair<string, MthPtr>( "k_power",	& XSModel::ReadRParam)	 );
+	fKeyword.insert( pair<string, XSM_MthPtr>( "k_zail",	& XSModel::ReadZAIlimits));
+	fKeyword.insert( pair<string, XSM_MthPtr>( "k_reactor",	& XSModel::ReadType)	 );
+	fKeyword.insert( pair<string, XSM_MthPtr>( "k_fuel",	& XSModel::ReadType)	 );
+	fKeyword.insert( pair<string, XSM_MthPtr>( "k_mass",	& XSModel::ReadRParam)	 );
+	fKeyword.insert( pair<string, XSM_MthPtr>( "k_power",	& XSModel::ReadRParam)	 );
 	DBGL
 }
 

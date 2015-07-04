@@ -1,4 +1,4 @@
-#include "EQM_QUAD_PWR_MOX.hxx"
+#include "EQM_PWR_QUAD_MOX.hxx"
 
 #include <vector>
 
@@ -8,7 +8,7 @@
 
 
 
-EQM_QUAD_PWR_MOX::EQM_QUAD_PWR_MOX(string WeightPath):EquivalenceModel(new CLASSLogger("EQM_QUAD_PWR_MOX.log"))
+EQM_PWR_QUAD_MOX::EQM_PWR_QUAD_MOX(string WeightPath):EquivalenceModel(new CLASSLogger("EQM_PWR_QUAD_MOX.log"))
 {
 	fWeightPath =  WeightPath;
 
@@ -49,7 +49,7 @@ EQM_QUAD_PWR_MOX::EQM_QUAD_PWR_MOX(string WeightPath):EquivalenceModel(new CLASS
 
 }
 
-EQM_QUAD_PWR_MOX::EQM_QUAD_PWR_MOX(CLASSLogger* log, string WeightPath):EquivalenceModel(log)
+EQM_PWR_QUAD_MOX::EQM_PWR_QUAD_MOX(CLASSLogger* log, string WeightPath):EquivalenceModel(log)
 {
 	fWeightPath =  WeightPath;
 
@@ -91,7 +91,7 @@ EQM_QUAD_PWR_MOX::EQM_QUAD_PWR_MOX(CLASSLogger* log, string WeightPath):Equivale
 
 
 
-EQM_QUAD_PWR_MOX::~EQM_QUAD_PWR_MOX()
+EQM_PWR_QUAD_MOX::~EQM_PWR_QUAD_MOX()
 {
 
 }
@@ -99,7 +99,7 @@ EQM_QUAD_PWR_MOX::~EQM_QUAD_PWR_MOX()
 
 
 
-double EQM_QUAD_PWR_MOX::GetFissileMolarFraction(IsotopicVector Fissile,IsotopicVector Fertile,double BurnUp)
+double EQM_PWR_QUAD_MOX::GetFissileMolarFraction(IsotopicVector Fissile,IsotopicVector Fertile,double BurnUp)
 {
 
 
