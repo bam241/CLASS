@@ -379,7 +379,7 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 				
 				pair< map<ZAI, TGraph*>::iterator, bool> IResult;
 				
-				IResult = ExtrapolatedXS[Reaction].insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph() ) );
+				IResult = ExtrapolatedXS[Reaction].insert( pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph()) );
 				
 				double XSValue = ExecuteTMVA(fWeightFiles[i],InputTree );
 				if(IResult.second )
