@@ -44,10 +44,10 @@ EQM_PWR_MLP_MOX::EQM_PWR_MLP_MOX(string TMVAWeightPath):EquivalenceModel(new CLA
 
 	SetBuildFuelFirstGuess(0.04);
 
-	INFO<<"__An equivalence model of PWR MOX has been define__"<<endl;
-	INFO<<"\tThis model is based on a multi layer perceptron"<<endl;
-	INFO<<"\t\tThe TMVA weight file is :"<<endl;
-	INFO<<"\t\t\t"<<fTMVAWeightPath<<endl;
+	INFO << "__An equivalence model of PWR MOX has been define__" << endl;
+	INFO << "\tThis model is based on a multi layer perceptron" << endl;
+	INFO << "\t\tThe TMVA weight file is :" << endl;
+	INFO << "\t\t\t" << fTMVAWeightPath << endl;
 
 }
 
@@ -71,10 +71,10 @@ EQM_PWR_MLP_MOX::EQM_PWR_MLP_MOX(CLASSLogger* log, string TMVAWeightPath):Equiva
 
 	SetBuildFuelFirstGuess(0.04);
 
-	INFO<<"__An equivalence model of PWR MOX has been define__"<<endl;
-	INFO<<"\tThis model is based on a multi layer perceptron"<<endl;
-	INFO<<"\t\tThe TMVA weight file is :"<<endl;
-	INFO<<"\t\t\t"<<fTMVAWeightPath<<endl;
+	INFO << "__An equivalence model of PWR MOX has been define__" << endl;
+	INFO << "\tThis model is based on a multi layer perceptron" << endl;
+	INFO << "\t\tThe TMVA weight file is :" << endl;
+	INFO << "\t\t\t" << fTMVAWeightPath << endl;
 
 }
 

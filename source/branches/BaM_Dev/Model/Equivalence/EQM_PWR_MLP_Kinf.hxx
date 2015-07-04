@@ -3,6 +3,7 @@
 
 #include "EquivalenceModel.hxx"
 #include "TTree.h"
+#include <map>
 
 /*!
  \file
@@ -36,6 +37,11 @@ in non simulated devices such as control rods and mixing grid.
  @version 1.0
  */
 //________________________________________________________________________
+
+class EQM_PWR_MLP_Kinf;
+#ifndef __CINT__
+typedef void (EQM_PWR_MLP_Kinf::*PWR_MLP_KINF_DMthPtr)( const string & ) ;
+#endif
 
 
 class EQM_PWR_MLP_Kinf : public EquivalenceModel
@@ -128,7 +134,46 @@ class EQM_PWR_MLP_Kinf : public EquivalenceModel
 	double ExecuteTMVA(TTree* theTree, string WeightPath, bool IsTimeDependant);//!<Execute the MLP according to the input tree created by CreateTMVAInputTree
 	double SecondToBurnup(double Second){return Second*fSpecificPower/(24*3.6e6);}
 
+	
+	/*!
+	 \name Reading NFO related Method
+	 */
+	//@{
+	
+	//{
+	/// LoadKeyword() : make the correspondance between keyword and reading method
+	void LoadKeyword();
+	//}
+	
+	//{
+	/// ReadZAIName : read the zai name in the TMWA MLP model
+	/*!
+	 \param line : line suppossed to contain the ZAI name  starts with "k_zainame" keyword
+	 */
+	void ReadZAIName(const string &line);
+	//}
+	
+	//{
+	/// ReadLine : read a line
+	/*!
+	 \param line : line to read
+	 */
+	void ReadLine(string line);
+	//}
+	
+	//@}
+	
 	private :
+	vector <string> fTMVAWeightPath;		//!<The weight needed by TMVA to construct and execute the multilayer perceptron
+
+#ifndef __CINT__
+	map<string, PWR_MLP_KINF_DMthPtr> fDKeyword;
+#endif
+	
+	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
+
+	
+	
 	double GetMaximumBurnUp_Pol2(IsotopicVector TheFuel, double TargetBU);
 	double GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU);//!<Get the maximum reachable burnup according the freshfuel composition
 	void   GetModelInformation();//!<Read the fMLPInformationFile and fill containers and variables
@@ -143,10 +188,7 @@ class EQM_PWR_MLP_Kinf : public EquivalenceModel
 	double 	fBurnUpPrecision;	//!< precision on Burnup 
 	double 	fPCMprecision;		//!< precision on <k> prediction [pcm]
 			
-	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 
-	vector <string> fTMVAWeightPath;		//!<The weight needed by TMVA to construct and execute the multilayer perceptron
-	string fMLPInformationFile;				//!<The path to the informations necessary to execute the MLP
 };
 
 #endif

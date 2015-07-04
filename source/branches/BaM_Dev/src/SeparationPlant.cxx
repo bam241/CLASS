@@ -41,9 +41,9 @@ SeparationPlant::SeparationPlant(CLASSLogger* log):CLASSBackEnd(log, -2)
 
 	SetIsStorageType();
 	
-	INFO	<< " A new SeparationPlant has been define :" << endl;
-	INFO	<< "\t The Separation Time set at\t " << (double)(fCycleTime/cYear) << " year" << endl;
-	WARNING	<< " All Separated Fuel go directly to WASTE after cooling !! " << endl;
+	INFO	 <<  " A new SeparationPlant has been define :" << endl;
+	INFO	 <<  "\t The Separation Time set at\t " << (double)(fCycleTime/cYear) << " year" << endl;
+	WARNING	 <<  " All Separated Fuel go directly to WASTE after cooling !! " << endl;
 
 
 }
@@ -68,7 +68,7 @@ void SeparationPlant::SetBackEndDestination(CLASSBackEnd* storagedestination, Is
 	fDestinationStorageIV.push_back(isotopicvector);
 
 	if (fDestinationStorage.size() != fDestinationStorageIV.size())
-	ERROR	<< " fDestinationStorage.size() != fDestinationStorageIV.size() !! " << endl;
+	ERROR	 <<  " fDestinationStorage.size() != fDestinationStorageIV.size() !! " << endl;
 
 	DBGL
 
@@ -83,9 +83,9 @@ DBGL
 	{
 		cSecond CurrentTime = GetParc()->GetAbsoluteTime();
 
-		DBGV( "Separation..." <<endl);
-		DBGV( "Current Time : " << CurrentTime <<endl);
-		DBGV( "IV Separation Time : " << fDestinationStorageStartingTime[fds] <<endl);
+		DBGV( "Separation..."  << endl);
+		DBGV( "Current Time : " << CurrentTime  << endl);
+		DBGV( "IV Separation Time : " << fDestinationStorageStartingTime[fds]  << endl);
 
 		if(CurrentTime >= fDestinationStorageStartingTime[fds])
 		{

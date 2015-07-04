@@ -103,7 +103,14 @@ class EquivalenceModel : public CLASSObject
 	void SetRelativMassPrecision( double val)	{ fRelativMassPrecision = val; }	//!< Mass precision
 	void SetMaxInterration(int val)			{ fMaxInterration = val; }		//!< Max iterration in build fueld algorythm
 
-
+	//@}
+	
+	
+	
+	/*!
+	 \name Reading NFO related Method
+	 */
+	//@{
 	void ReadNFO();
 	virtual void ReadLine(string line);
 
@@ -111,6 +118,41 @@ class EquivalenceModel : public CLASSObject
 	virtual void LoadKeyword();
 	void ReadZAIlimits(const string &line);
 	void ReadType(const string &line);
+	
+	
+	//{
+	/// ReadSpecificPower : read the Specific Power of the DataBase
+	/*!
+	 \param line : line suppossed to contain the Specific Power information starts with "k_specpower" keyword
+	 */
+	void ReadSpecificPower(const string &line);
+	//}
+	
+	//{
+	/// ReadMaximalContent : read the approx. maximum fissile content reachable by the MLP model
+	/*!
+	 \param line : line suppossed to contain the maximal content information starts with "k_contentmax" keyword
+	 */
+	void ReadMaximalContent(const string &line);
+	//}
+	
+	
+	//{
+	/// ReadFissil : read the zai name in the TMWA MLP model starts with "k_fissil" keyword
+	/*!
+	 \param line : line suppossed to contain the fissil list
+	 */
+	void ReadFissil(const string &line);
+	//}
+	
+	//{
+	/// ReadFertil : read the zai name in the TMWA MLP model starts with "k_fertil" keyword
+	/*!
+	 \param line : line suppossed to contain the fertil list & their default isotopic fraction
+	 */
+	void ReadFertil(const string &line);
+	//}
+	
 	//@}
 	
 	
@@ -159,6 +201,8 @@ class EquivalenceModel : public CLASSObject
 	string fInformationFile;	//!<  file containing Reactor Type, Fuel type, HM mass, Power, time vector, and TMVA input variables names (looks the manual for format details)
 	string fDBFType;		//!<  Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
 	string fDBRType;		//!<  Reactor Type (e.g PWR, FBR-Na, ADS..)
+	double 	fSpecificPower; 	//!< The specific power in W/gHM (HM: heavy Metal)
+	double  fMaximalContent;	//!< The approx. maximum fissile content reachable by the model
 	
 	/*!
 	 \name Others 

@@ -89,7 +89,7 @@ void  DynamicalSystem::RungeKutta(double *YStart,double t1, double t2, int Equat
 			delete [] dydt;
 			delete [] y;
 			delete [] yscal;
-			//cout << "The maximum step used in RK was "<<fMaxHdid<<" Step NUM in RK was "<<nstp << endl;
+			//cout << "The maximum step used in RK was " << fMaxHdid << " Step NUM in RK was " << nstp << endl;
 			return;
 		}
 		if (fabs(hnext) <= fHmin)
@@ -103,7 +103,7 @@ void  DynamicalSystem::RungeKutta(double *YStart,double t1, double t2, int Equat
 //________________________________________________________________________
 void  DynamicalSystem::RK4(double *y, double *dydx, double x, double h, double *yout)
 {
-	//cout<<"Calling Function RK4"<<endl;
+	//cout << "Calling Function RK4" << endl;
 	double xh,hh,h6;
 	
 	double *dym=new double[fNVar];
@@ -137,9 +137,9 @@ void  DynamicalSystem::RK4(double *y, double *dydx, double x, double h, double *
 		if(!fIsNegativeValueAllowed && yout[i]<0)
 		{
 			//cout << "Material composition is negative "
-			//<<"i="<<i<<" ("/*<<fEvolvingMaterial->GetComposition()[i]->GetZAI()->PrintName()
-			//		*/<<") old proportion="<<y[i]<<" new="<<yout[i]
-			//<<". Setting to 0." << endl;
+			// << "i=" << i << " ("/* << fEvolvingMaterial->GetComposition()[i]->GetZAI()->PrintName()
+			//		*/ << ") old proportion=" << y[i] << " new=" << yout[i]
+			// << ". Setting to 0." << endl;
 			yout[i]=0.;
 		}
 	}
@@ -152,7 +152,7 @@ void  DynamicalSystem::RK4(double *y, double *dydx, double x, double h, double *
 void DynamicalSystem::AdaptStepSize(double *y, double *dydx, double *x, double htry,
 				    double eps, double *yscal, double *hdid, double *hnext)
 {
-	//cout<<"Calling Function AdaptStepSize()"<<endl;
+	//cout << "Calling Function AdaptStepSize()" << endl;
 	double xsav,hh,h,temp,errmax;
 	double *dysav=new double[fNVar];
 	double *ysav=new double[fNVar];
@@ -184,7 +184,7 @@ void DynamicalSystem::AdaptStepSize(double *y, double *dydx, double *x, double h
 		*x=xsav+h;
 		if (*x == xsav )
 		{
-			//cout << "Step size ("<<h<<") too small in routine AdaptStepSize" << endl;
+			//cout << "Step size (" << h << ") too small in routine AdaptStepSize" << endl;
 		}
 		RK4(ysav,dysav,xsav,h,ytemp);
 		errmax=0.0;

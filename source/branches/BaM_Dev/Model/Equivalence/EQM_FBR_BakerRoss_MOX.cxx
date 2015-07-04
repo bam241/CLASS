@@ -38,19 +38,19 @@ EQM_FBR_BakerRoss_MOX::EQM_FBR_BakerRoss_MOX(double Weight_U_235, double Weight_
 	fWeight_Am_241 = Weight_Am_241;
 
 
-	INFO<<"__An equivalence model of FBR MOX has been defined__"<<endl;
-	INFO<<"\tThis model is based on Plutonium 239 equivalent"<<endl;
-	INFO<<"\t\t Weigt values : "<<endl;
-	INFO<<"\t\t Fertile :  "<<endl;
-	INFO<<"\t\t\tU_235 "<<  Weight_U_235<<endl;
-	INFO<<"\t\t\tU_238 0 (by definition)"<<endl;
-	INFO<<"\t\t Fissile :  "<<endl;
-	INFO<<"\t\t\tPu_238 "<<Weight_Pu_238<<endl;
-	INFO<<"\t\t\tPu_239 1 (by definition)"<<endl;
-	INFO<<"\t\t\tPu_240 "<<Weight_Pu_240<<endl;
-	INFO<<"\t\t\tPu_241 "<<Weight_Pu_241<<endl;
-	INFO<<"\t\t\tPu_242 "<<Weight_Pu_242<<endl;
-	INFO<<"\t\t\tAm_241 "<<Weight_Am_241<<endl;
+	INFO << "__An equivalence model of FBR MOX has been defined__" << endl;
+	INFO << "\tThis model is based on Plutonium 239 equivalent" << endl;
+	INFO << "\t\t Weigt values : " << endl;
+	INFO << "\t\t Fertile :  " << endl;
+	INFO << "\t\t\tU_235 " <<   Weight_U_235 << endl;
+	INFO << "\t\t\tU_238 0 (by definition)" << endl;
+	INFO << "\t\t Fissile :  " << endl;
+	INFO << "\t\t\tPu_238 " << Weight_Pu_238 << endl;
+	INFO << "\t\t\tPu_239 1 (by definition)" << endl;
+	INFO << "\t\t\tPu_240 " << Weight_Pu_240 << endl;
+	INFO << "\t\t\tPu_241 " << Weight_Pu_241 << endl;
+	INFO << "\t\t\tPu_242 " << Weight_Pu_242 << endl;
+	INFO << "\t\t\tAm_241 " << Weight_Am_241 << endl;
 
 }
 //________________________________________________________________________
@@ -79,19 +79,19 @@ EQM_FBR_BakerRoss_MOX::EQM_FBR_BakerRoss_MOX(CLASSLogger* log, double Weight_U_2
 	fWeight_Am_241 = Weight_Am_241;
 
 
-	INFO<<"__An equivalence model of FBR MOX has been defined__"<<endl;
-	INFO<<"\tThis model is based on Plutonium 239 equivalent"<<endl;
-	INFO<<"\t\t Weigt values : "<<endl;
-	INFO<<"\t\t Fertile :  "<<endl;
-	INFO<<"\t\t\tU_235 "<<  Weight_U_235<<endl;
-	INFO<<"\t\t\tU_238 0 (by definition)"<<endl;
-	INFO<<"\t\t Fissile :  "<<endl;
-	INFO<<"\t\t\tPu_238 "<<Weight_Pu_238<<endl;
-	INFO<<"\t\t\tPu_239 1 (by definition)"<<endl;
-	INFO<<"\t\t\tPu_240 "<<Weight_Pu_240<<endl;
-	INFO<<"\t\t\tPu_241 "<<Weight_Pu_241<<endl;
-	INFO<<"\t\t\tPu_242 "<<Weight_Pu_242<<endl;
-	INFO<<"\t\t\tAm_241 "<<Weight_Am_241<<endl;
+	INFO << "__An equivalence model of FBR MOX has been defined__" << endl;
+	INFO << "\tThis model is based on Plutonium 239 equivalent" << endl;
+	INFO << "\t\t Weigt values : " << endl;
+	INFO << "\t\t Fertile :  " << endl;
+	INFO << "\t\t\tU_235 " <<   Weight_U_235 << endl;
+	INFO << "\t\t\tU_238 0 (by definition)" << endl;
+	INFO << "\t\t Fissile :  " << endl;
+	INFO << "\t\t\tPu_238 " << Weight_Pu_238 << endl;
+	INFO << "\t\t\tPu_239 1 (by definition)" << endl;
+	INFO << "\t\t\tPu_240 " << Weight_Pu_240 << endl;
+	INFO << "\t\t\tPu_241 " << Weight_Pu_241 << endl;
+	INFO << "\t\t\tPu_242 " << Weight_Pu_242 << endl;
+	INFO << "\t\t\tAm_241 " << Weight_Am_241 << endl;
 
 
 }
@@ -100,7 +100,7 @@ double EQM_FBR_BakerRoss_MOX::GetFissileMolarFraction(IsotopicVector Fissile,Iso
 {
 
 	if(BurnUp != 0 )
-		WARNING<<"Burn up (third argument) has no effect "<<endl;
+		WARNING << "Burn up (third argument) has no effect " << endl;
 	
 
 	double FissileContent	 = 0.;               

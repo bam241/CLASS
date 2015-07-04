@@ -48,7 +48,7 @@ ZAIHeat::ZAIHeat()
 		string line;
 		stringstream ossline;
 		getline(infile, line);
-		ossline<<line;
+		ossline << line;
 		
 		if(StringLine::IsDouble(line.substr(0,1))) //else is a comment
 		{	ossline>>Z>>A>>I>>WperBq>>SvperBq;

@@ -70,10 +70,10 @@ EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(string TMVAWeightPath,  int NumOf
 	
 	/* INFO */
 
-	INFO << "__An equivalence model has been define__"<<endl;
-	INFO << "\tThis model is based on the prediction of keff averaged over the number of batch"<<endl;
-	INFO << "\tThe TMVA (weight | information) files are :"<<endl;
-	INFO << "\t"<<"( "<<fTMVAWeightPath[0]<<" | "<<fMLPInformationFile<<" )"<<endl;
+	INFO << "__An equivalence model has been define__" << endl;
+	INFO << "\tThis model is based on the prediction of keff averaged over the number of batch" << endl;
+	INFO << "\tThe TMVA (weight | information) files are :" << endl;
+	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | " << fMLPInformationFile << " )" << endl;
 
 	
 	DBGL
@@ -293,12 +293,8 @@ void EQM_FBR_MLP_Keff_BOUND::LoadKeyword()
 {
 	DBGL
 
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_BOUND_DMthPtr>( "k_timestep",	& EQM_FBR_MLP_Keff_BOUND::ReadTimeSteps));
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_BOUND_DMthPtr>( "k_specpower",	& EQM_FBR_MLP_Keff_BOUND::ReadSpecificPower));
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_BOUND_DMthPtr>( "k_contentmax",	& EQM_FBR_MLP_Keff_BOUND::ReadMaximalContent));
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_BOUND_DMthPtr>( "k_zainame",	& EQM_FBR_MLP_Keff_BOUND::ReadZAIName)	 );
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_BOUND_DMthPtr>( "k_fissil",	& EQM_FBR_MLP_Keff_BOUND::ReadFissil)	 );
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_BOUND_DMthPtr>( "k_fertil",	& EQM_FBR_MLP_Keff_BOUND::ReadFertil)	 );
+	fDKeyword.insert( pair<string, FBR_MLP_Keff_BOUND_DMthPtr>( "k_timestep",	& EQM_FBR_MLP_Keff_BOUND::ReadTimeSteps));
+	fDKeyword.insert( pair<string, FBR_MLP_Keff_BOUND_DMthPtr>( "k_zainame",	& EQM_FBR_MLP_Keff_BOUND::ReadZAIName)	 );
 	
 	DBGL
 }
@@ -320,90 +316,12 @@ void EQM_FBR_MLP_Keff_BOUND::ReadZAIName(const string &line)
 	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	
-	fFissileList.Add(Z, A, I, 1.0);
-	
-	DBGL
-}
-
-
-//________________________________________________________________________
-void EQM_FBR_MLP_Keff_BOUND::ReadSpecificPower(const string &line)
-{
-	DBGL
-	int pos = 0;
-	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_specpower")	// Check the keyword
-	{
-		ERROR << " Bad keyword : \"k_specpower\" Not found !" << endl;
-		exit(1);
-	}
-	
-	fSpecificPower = atof(StringLine::NextWord(line, pos, ' ').c_str());
-	
-	DBGL
-}
-
-//________________________________________________________________________
-void EQM_FBR_MLP_Keff_BOUND::ReadMaximalContent(const string &line)
-{
-	DBGL
-	int pos = 0;
-	string keyword = tlc(StringLine::NextWord(line, pos, ' ').c_str());
-	if( keyword != "k_contentmax")	// Check the keyword
-	{
-		ERROR << " Bad keyword : \"k_contentmax\" Not found !" << endl;
-		exit(1);
-	}
-	
-	fMaximalContent = atof(StringLine::NextWord(line, pos, ' ').c_str());
-	
-	DBGL
-}
-
-//________________________________________________________________________
-void EQM_FBR_MLP_Keff_BOUND::ReadFissil(const string &line)
-{
-	DBGL
-	int pos = 0;
-	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_fissil" )	// Check the keyword
-	{
-		ERROR << " Bad keyword : \"k_fissil\" not found !" << endl;
-		exit(1);
-	}
-	
-	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	double Q = atof(StringLine::NextWord(line, pos, ' ').c_str());
-	
-	fFertileList.Add(Z, A, I, Q);
-	
-	DBGL
-}
-
-//________________________________________________________________________
-void EQM_FBR_MLP_Keff_BOUND::ReadFertil(const string &line)
-{
-	DBGL
-	int pos = 0;
-	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_fertil" )	// Check the keyword
-	{
-		ERROR << " Bad keyword : \"k_fertil\" not found !" << endl;
-		exit(1);
-	}
-	
-	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	
 	string name = StringLine::NextWord(line, pos, ' ');
 	
 	fMapOfTMVAVariableNames.insert( pair<ZAI,string>( ZAI(Z, A, I), name ) );
-	
 	DBGL
 }
+
 
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff_BOUND::ReadTimeSteps(const string &line)
@@ -431,7 +349,7 @@ void EQM_FBR_MLP_Keff_BOUND::ReadLine(string line)
 	int pos = 0;
 	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
 	
-	map<string, MLP_FBR_Keff_BOUND_DMthPtr>::iterator it = fDKeyword.find(keyword);
+	map<string, FBR_MLP_Keff_BOUND_DMthPtr>::iterator it = fDKeyword.find(keyword);
 	
 	if(it != fDKeyword.end())
 		(this->*(it->second))( line );

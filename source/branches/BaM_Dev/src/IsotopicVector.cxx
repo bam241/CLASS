@@ -464,7 +464,7 @@ void IsotopicVector::Need(const ZAI& zai, double quantity)
 
 	pair<map<ZAI, double>::iterator, bool> IResult;
 	if(quantity > 0)
-	{	cout << "Negative quantity : "<<quantity <<" for ZAI " << zai.Z() << " " << zai.A() << " " << zai.I() << " in this IsotopicVector" << endl;
+	{	cout << "Negative quantity : " << quantity  << " for ZAI " << zai.Z() << " " << zai.A() << " " << zai.I() << " in this IsotopicVector" << endl;
 		exit(0);
 		IResult = fIsotopicQuantityNeeded.insert( pair<ZAI ,double>(zai, quantity));
 		if(!IResult.second)
@@ -617,7 +617,7 @@ void IsotopicVector::Write(string filename, cSecond time) const
 	cout << "!!Warning!! !!!IsotopicVector!!! \n Can't open \"" << filename << "\"\n" << endl;
 
 	if(time != -1)
-	IVfile << "Time "<< time/cYear << endl;
+	IVfile << "Time " <<  time/cYear << endl;
 
 	map<ZAI ,double> IsotopicQuantity = GetIsotopicQuantity();
 	map<ZAI ,double >::iterator it;
@@ -634,7 +634,7 @@ void IsotopicVector::Write(string filename, cSecond time) const
 void IsotopicVector::Print(string option) const
 {
 
-	cout<<sPrint();
+	cout << sPrint();
 
 }
 //________________________________________________________________________

@@ -975,7 +975,7 @@ void EvolutionData::OldReadDB(string DBfile)
 	if(!DecayDB)
 	{
 		ERROR << " Can't open \"" << DBfile << "\"\n" << endl;
-		ERROR <<"\t-> Hint : If loading .dat files using a .idx file (like for a decay data base)\nmake sure the paths in it are correct";
+		ERROR  << "\t-> Hint : If loading .dat files using a .idx file (like for a decay data base)\nmake sure the paths in it are correct";
 		
 		exit(1);
 	}

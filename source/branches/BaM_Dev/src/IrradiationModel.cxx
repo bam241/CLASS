@@ -106,7 +106,7 @@ void IrradiationModel::LoadDecay()
 	ifstream infile(DataFullPathName.c_str());
 	
 	if(!infile)
-		WARNING << " Can't open \"" << DataFullPathName<< "\"" << endl;
+		WARNING << " Can't open \"" << DataFullPathName <<  "\"" << endl;
 	
 	
 	do
@@ -353,7 +353,7 @@ CLASSNucleiFiliation IrradiationModel::ReadFPYield(string Yield)
 	
 	ifstream infile(Yield.c_str());
 	if(!infile)
-		WARNING << " Can't open \"" << Yield<< "\" File !!!" << endl;
+		WARNING << " Can't open \"" << Yield <<  "\" File !!!" << endl;
 	
 	
 	string line;
@@ -666,8 +666,8 @@ void IrradiationModel::SetSpectrumType(string type)
 {
 	if(type !="fast" && type != "thermal")
 	{	
-		ERROR<<type<<" is not a valid spectrum type"<<endl;
-		ERROR<<"\tSpectrum type must be either fast or thermal"<<endl;
+		ERROR << type << " is not a valid spectrum type" << endl;
+		ERROR << "\tSpectrum type must be either fast or thermal" << endl;
 		exit(0);
 	}
 	else

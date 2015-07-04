@@ -33,8 +33,8 @@ DecayDataBank::DecayDataBank():CLASSObject(new CLASSLogger("DecayDataBank.log"))
 	fFastCalculation = true;
 	
 	// Warning
-	INFO 	<< " A EvolutionData has been define :" << endl;
-	INFO	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
+	INFO 	 <<  " A EvolutionData has been define :" << endl;
+	INFO	 <<  "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
 
 }
 
@@ -52,8 +52,8 @@ DecayDataBank::DecayDataBank(string DB_index_file):CLASSObject(new CLASSLogger("
 	fFastCalculation = true;
 
 	// Warning
-	INFO 	<< " A EvolutionData has been define :" << endl;
-	INFO	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
+	INFO 	 <<  " A EvolutionData has been define :" << endl;
+	INFO	 <<  "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
 
 }
 //________________________________________________________________________
@@ -65,8 +65,8 @@ DecayDataBank::DecayDataBank(CLASSLogger* log, string DB_index_file):CLASSObject
 	fFastCalculation = true;
 	
 	// Warning
-	INFO 	<< " A EvolutionData has been define :" << endl;
-	INFO	<< "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
+	INFO 	 <<  " A EvolutionData has been define :" << endl;
+	INFO	 <<  "\t His index is : \"" << DB_index_file << "\"" << endl << endl;
 	
 }
 
@@ -122,7 +122,7 @@ DBGL
 		if(!zaifind)
 		{
 			WARNING << " Oups... Can't Find the ZAI : "
-			<< zai.Z() << " " << zai.A() << " "	<< zai.I() << "!!! It will be considered as stable !!" << endl;
+			 <<  zai.Z() << " " << zai.A() << " "	 <<  zai.I() << "!!! It will be considered as stable !!" << endl;
 			
 			EvolutionData evolutionproduct = EvolutionData(GetLog()," " , true, zai);
 			{fDecayDataBank.insert( pair<ZAI, EvolutionData >(zai, evolutionproduct) );}

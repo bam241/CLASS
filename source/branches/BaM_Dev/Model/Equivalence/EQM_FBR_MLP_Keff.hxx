@@ -44,7 +44,7 @@ The Pu content is set such as it has to verify
 //________________________________________________________________________
 class EQM_FBR_MLP_Keff;
 #ifndef __CINT__
-typedef void (EQM_FBR_MLP_Keff::*MLP_FBR_Keff_DMthPtr)( const string & ) ;
+typedef void (EQM_FBR_MLP_Keff::*FBR_MLP_Keff_DMthPtr)( const string & ) ;
 #endif
 
 
@@ -137,21 +137,6 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	void ReadTimeSteps(const string &line);
 	//}
 	
-	//{
-	/// ReadSpecificPower : read the Specific Power of the DataBase
-	/*!
-	 \param line : line suppossed to contain the Specific Power information starts with "k_specpower" keyword
-	 */
-	void ReadSpecificPower(const string &line);
-	//}
-
-	//{
-	/// ReadMaximalContent : read the approx. maximum fissile content reachable by the MLP model
-	/*!
-	 \param line : line suppossed to contain the maximal content information starts with "k_contentmax" keyword
-	 */
-	void ReadMaximalContent(const string &line);
-	//}
 	
 	//{
 	/// ReadZAIName : read the zai name in the TMWA MLP model
@@ -159,22 +144,6 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	 \param line : line suppossed to contain the ZAI name  starts with "k_zainame" keyword
 	 */
 	void ReadZAIName(const string &line);
-	//}
-	
-	//{
-	/// ReadFissil : read the zai name in the TMWA MLP model starts with "k_fissil" keyword
-	/*!
-	 \param line : line suppossed to contain the fissil list
-	 */
-	void ReadFissil(const string &line);
-	//}
-
-	//{
-	/// ReadFertil : read the zai name in the TMWA MLP model starts with "k_fertil" keyword
-	/*!
-	 \param line : line suppossed to contain the fertil list & their default isotopic fraction
-	 */
-	void ReadFertil(const string &line);
 	//}
 	
 	//{
@@ -192,10 +161,9 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	private :
 
 	string fTMVAWeightPath;					//!<The weight needed by TMVA to construct and execute the multilayer perceptron
-	string fMLPInformationFile;				//!<The path to the informations necessary to execute the MLP
 
 #ifndef __CINT__
-	map<string, MLP_FBR_Keff_DMthPtr> fDKeyword;
+	map<string, FBR_MLP_Keff_DMthPtr> fDKeyword;
 #endif
 
 

@@ -76,13 +76,13 @@ EQM_PWR_LIN_MOX::EQM_PWR_LIN_MOX(CLASSLogger* log, string WeightPath):Equivalenc
 
 	if( StringLine::NextWord(line, start, ' ') != "PARAM")
 	{
-		ERROR << " Bad Database file : " <<  fWeightPath << " Can't find the Parameter of the DataBase"<< endl;
+		ERROR << " Bad Database file : " <<  fWeightPath << " Can't find the Parameter of the DataBase" <<  endl;
 		exit (1);
 	}
 	while(start < (int)line.size())
 		fFuelParameter.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
 
-	INFO << fFuelParameter.size() << " have been read"<< endl;
+	INFO << fFuelParameter.size() << " have been read" <<  endl;
 
 
 
@@ -222,7 +222,7 @@ vector<double> EQM_PWR_LIN_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 
 		if(StockFactionToUse < 0)
 		{
-			WARNING << "!!!FabricationPlant!!! Oups Bug in calculating stock fraction to use "<< endl;
+			WARNING << "!!!FabricationPlant!!! Oups Bug in calculating stock fraction to use " <<  endl;
 			lambda[N_FissilStock_OnCheck] = 0.;
 			N_FissilStock_OnCheck++;
 			FuelBuild = false;

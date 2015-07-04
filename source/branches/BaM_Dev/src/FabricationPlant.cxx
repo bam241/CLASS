@@ -57,9 +57,9 @@ DBGL
 	fReUsable = 0;
 	fIsReusable = false;
 
-	INFO	<< " A FabricationPlant has been define :" << endl;
-	INFO	<< "\t Chronological Stock Priority has been set! "<< endl;
-	INFO	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/cYear) << " year" << endl << endl;
+	INFO	 <<  " A FabricationPlant has been define :" << endl;
+	INFO	 <<  "\t Chronological Stock Priority has been set! " <<  endl;
+	INFO	 <<  "\t Fabrication time set to \t " << (double)(GetCycleTime()/cYear) << " year" << endl << endl;
 DBGL
 }
 
@@ -126,7 +126,7 @@ DBGL
 		cSecond R_CycleTime = cSecond (R_BU / R_Power * R_HMMass * 1e9 *3600*24);
 		if( R_CycleTime < GetCycleTime())
 		{
-			ERROR << "Reactor Cycle Time is shorter than Fabrication Time of the fuel, we cannot deal it upto now!!!"<< endl;
+			ERROR << "Reactor Cycle Time is shorter than Fabrication Time of the fuel, we cannot deal it upto now!!!" <<  endl;
 			exit(1);
 		}
 
@@ -211,7 +211,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 	else						// if their is not stock and the fertile come from outside of the park
 	{
 		fFertileArray.push_back( fFertileList / fFertileList.GetTotalMass() * R_HM_Mass );
-		DBGV("Fertile Array size : "<<fFertileArray.size())
+		DBGV("Fertile Array size : " << fFertileArray.size())
 	}
 
 	

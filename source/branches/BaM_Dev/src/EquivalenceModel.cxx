@@ -82,6 +82,10 @@ void EquivalenceModel::LoadKeyword()
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",	& EquivalenceModel::ReadZAIlimits));
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",	& EquivalenceModel::ReadType)	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel",	& EquivalenceModel::ReadType)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fissil",	& EquivalenceModel::ReadFissil)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",	& EquivalenceModel::ReadFertil)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",	& EquivalenceModel::ReadSpecificPower));
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",	& EquivalenceModel::ReadMaximalContent));
 	DBGL
 }
 
@@ -134,6 +138,86 @@ void EquivalenceModel::ReadZAIlimits(const string &line)
 }
 
 
+//________________________________________________________________________
+void EquivalenceModel::ReadFissil(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_fissil" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_fissil\" not found !" << endl;
+		exit(1);
+	}
+	
+	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	double Q = atof(StringLine::NextWord(line, pos, ' ').c_str());
+	
+	fFertileList.Add(Z, A, I, Q);
+	
+	DBGL
+}
+
+
+//________________________________________________________________________
+void EquivalenceModel::ReadSpecificPower(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_specpower")	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_specpower\" Not found !" << endl;
+		exit(1);
+	}
+	
+	fSpecificPower = atof(StringLine::NextWord(line, pos, ' ').c_str());
+	
+	DBGL
+}
+
+//________________________________________________________________________
+void EquivalenceModel::ReadMaximalContent(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' ').c_str());
+	if( keyword != "k_contentmax")	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_contentmax\" Not found !" << endl;
+		exit(1);
+	}
+	
+	fMaximalContent = atof(StringLine::NextWord(line, pos, ' ').c_str());
+	
+	DBGL
+}
+
+
+//________________________________________________________________________
+void EquivalenceModel::ReadFertil(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_fertil" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_fertil\" not found !" << endl;
+		exit(1);
+	}
+	
+	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	
+	fFissileList.Add(Z, A, I, 1.0);
+
+	
+	DBGL
+}
+
 
 
 
@@ -165,8 +249,8 @@ double EquivalenceModel::LAMBDA_TOT_FOR(double MassNeeded, vector<IsotopicVector
 	// If there is not enought matter in stocks construction fails
 	if( MassNeeded > TotalMassInStocks )
 	{
-		WARNING<<"Not enought "<< FisOrFer <<" material to build fuel"<<endl;
-		WARNING<<TotalMassInStocks<<endl;
+		WARNING << "Not enought " <<  FisOrFer  << " material to build fuel" << endl;
+		WARNING << TotalMassInStocks << endl;
 		return -1;
 	}
 	
@@ -287,7 +371,7 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<
 		
 		if( MolarPuContent < 0 || MolarPuContent > 1 )
 		{	SetLambdaToErrorCode(lambda);
-			WARNING<<"GetFissileMolarFraction return negative or greater than one value";
+			WARNING << "GetFissileMolarFraction return negative or greater than one value";
 			return lambda;
 		}
 		
@@ -375,8 +459,8 @@ bool EquivalenceModel::isIVInDomain(IsotopicVector IV)
 				
 				WARNING << "Fresh fuel out of model range" << endl;
 				WARNING << "\t AT LEAST this ZAI is accused to be outrange :" << endl;
-				WARNING << "\t\t" << Domain_it->first.Z() << " "<<Domain_it->first.A() << " " << Domain_it->first.I() << endl;
-				WARNING << "\t\t min=" << ThatZAIMin <<" value=" << ThatZAIProp << " max=" << ThatZAIMax << endl;
+				WARNING << "\t\t" << Domain_it->first.Z() << " " << Domain_it->first.A() << " " << Domain_it->first.I() << endl;
+				WARNING << "\t\t min=" << ThatZAIMin  << " value=" << ThatZAIProp << " max=" << ThatZAIMax << endl;
 				WARNING << "\t IV accused :" << endl << endl;
 				WARNING << IVNorm.sPrint() << endl;
 				break;
