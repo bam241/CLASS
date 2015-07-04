@@ -1,12 +1,12 @@
-#ifndef _EQM_MLP_PWR_MOX_HXX
-#define _EQM_MLP_PWR_MOX_HXX
+#ifndef _EQM_PWR_MLP_MOX_HXX
+#define _EQM_PWR_MLP_MOX_HXX
 
 #include "EquivalenceModel.hxx"
 #include "TTree.h"
 
 /*!
  \file
- \brief Header file for EQM_MLP_PWR_MOX class.
+ \brief Header file for EQM_PWR_MLP_MOX class.
 
 
  @author BLG
@@ -29,7 +29,7 @@ using namespace std;
 //________________________________________________________________________
 
 
-class EQM_MLP_PWR_MOX : public EquivalenceModel
+class EQM_PWR_MLP_MOX : public EquivalenceModel
 {
 	public :
 	/*!
@@ -40,20 +40,20 @@ class EQM_MLP_PWR_MOX : public EquivalenceModel
 	//{
 	/// normal constructor
 	/*!
-	 Create a EQM_MLP_PWR_MOX 
+	 Create a EQM_PWR_MLP_MOX 
 	 \param  TMVAWeightPath :  PAth to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
 	 */
-	EQM_MLP_PWR_MOX(string TMVAWeightPath);
+	EQM_PWR_MLP_MOX(string TMVAWeightPath);
 	//}
 	
 	//{
 	/// Logger constructor
 	/*!
-	 Create a EQM_MLP_PWR_MOX
+	 Create a EQM_PWR_MLP_MOX
 	 \param log : use for log
 	 \param  TMVAWeightPath :  PAth to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
 	 */
-	EQM_MLP_PWR_MOX(CLASSLogger* log, string TMVAWeightPath);
+	EQM_PWR_MLP_MOX(CLASSLogger* log, string TMVAWeightPath);
 	//}
 	//@}
 	

@@ -1,5 +1,5 @@
-#ifndef _EQM_LIN_PWR_MOX_HXX
-#define _EQM_LIN_PWR_MOX_HXX
+#ifndef _EQM_PWR_LIN_MOX_HXX
+#define _EQM_PWR_LIN_MOX_HXX
 
 #include "EquivalenceModel.hxx"
 
@@ -7,7 +7,7 @@
 
 /*!
  \file
- \brief Header file for EQM_LIN_PWR_MOX class.
+ \brief Header file for EQM_PWR_LIN_MOX class.
 
 
  @author BaM
@@ -29,7 +29,7 @@ using namespace std;
  */
 //________________________________________________________________________
 
-class EQM_LIN_PWR_MOX : public EquivalenceModel
+class EQM_PWR_LIN_MOX : public EquivalenceModel
 {
 	public :
 	/*!
@@ -41,30 +41,30 @@ class EQM_LIN_PWR_MOX : public EquivalenceModel
 	/// Simple constructor
 	
 	/*!
-	 Make a new EQM_LIN_PWR_MOX
+	 Make a new EQM_PWR_LIN_MOX
 	 \param WeightPath : Path to the file containing the @f$\alpha_{i}@f$. The file is format as :
 	 
 	 @f$PARAM@f$   @f$\alpha_{0}@f$  @f$\alpha_{^{238}Pu}@f$   @f$\alpha_{^{239}Pu}@f$  @f$\alpha_{^{240}Pu}@f$   @f$\alpha_{^{241}Pu}@f$   @f$\alpha_{^{242}Pu}@f$
 	 
 	 */
-	EQM_LIN_PWR_MOX(string WeightPath);
+	EQM_PWR_LIN_MOX(string WeightPath);
 	//}
 	
 	//{
 	/// Logger constructor
 	
 	/*!
-	 Make a new EQM_LIN_PWR_MOX
+	 Make a new EQM_PWR_LIN_MOX
 	 \param log : use for the log
 	 \param WeightPath : Path to the file containing the @f$\alpha_{i}@f$. The file is format as :
 	 
 	  @f$PARAM@f$   @f$\alpha_{0}@f$  @f$\alpha_{^{238}Pu}@f$   @f$\alpha_{^{239}Pu}@f$  @f$\alpha_{^{240}Pu}@f$   @f$\alpha_{^{241}Pu}@f$   @f$\alpha_{^{242}Pu}@f$
 	 
 	 */
-	EQM_LIN_PWR_MOX(CLASSLogger* log, string WeightPath);
+	EQM_PWR_LIN_MOX(CLASSLogger* log, string WeightPath);
 	//}
 	
-	~EQM_LIN_PWR_MOX();
+	~EQM_PWR_LIN_MOX();
 	//@}
 
 	virtual vector<double> BuildFuel(double BurnUp, double HMMass, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray );

@@ -1,11 +1,11 @@
-#include "EQM_BakerRoss_FBR_MOX.hxx"
+#include "EQM_FBR_BakerRoss_MOX.hxx"
 #include "CLASSLogger.hxx"
 
 #include <vector>
 
 //________________________________________________________________________
 //
-//		EQM_BakerRoss_FBR_MOX
+//		EQM_FBR_BakerRoss_MOX
 //
 //	Equivalenve Model based on Plutonium 239 equivalent  
 //	using the formula of Baker&Ross
@@ -13,7 +13,7 @@
 //________________________________________________________________________
 
 
-EQM_BakerRoss_FBR_MOX::EQM_BakerRoss_FBR_MOX(double Weight_U_235, double Weight_Pu_238, double Weight_Pu_240, double Weight_Pu_241, double Weight_Pu_242, double Weight_Am_241, double EquivalentFissile):EquivalenceModel(new CLASSLogger("EQM_BakerRoss_FBR_MOX.log"))
+EQM_FBR_BakerRoss_MOX::EQM_FBR_BakerRoss_MOX(double Weight_U_235, double Weight_Pu_238, double Weight_Pu_240, double Weight_Pu_241, double Weight_Pu_242, double Weight_Am_241, double EquivalentFissile):EquivalenceModel(new CLASSLogger("EQM_FBR_BakerRoss_MOX.log"))
 {
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
@@ -54,7 +54,7 @@ EQM_BakerRoss_FBR_MOX::EQM_BakerRoss_FBR_MOX(double Weight_U_235, double Weight_
 
 }
 //________________________________________________________________________
-EQM_BakerRoss_FBR_MOX::EQM_BakerRoss_FBR_MOX(CLASSLogger* log, double Weight_U_235, double Weight_Pu_238, double Weight_Pu_240, double Weight_Pu_241, double Weight_Pu_242, double Weight_Am_241, double EquivalentFissile ):EquivalenceModel(log)
+EQM_FBR_BakerRoss_MOX::EQM_FBR_BakerRoss_MOX(CLASSLogger* log, double Weight_U_235, double Weight_Pu_238, double Weight_Pu_240, double Weight_Pu_241, double Weight_Pu_242, double Weight_Am_241, double EquivalentFissile ):EquivalenceModel(log)
 {
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
@@ -96,7 +96,7 @@ EQM_BakerRoss_FBR_MOX::EQM_BakerRoss_FBR_MOX(CLASSLogger* log, double Weight_U_2
 
 }
 //________________________________________________________________________
-double EQM_BakerRoss_FBR_MOX::GetFissileMolarFraction(IsotopicVector Fissile,IsotopicVector Fertile,double BurnUp)
+double EQM_FBR_BakerRoss_MOX::GetFissileMolarFraction(IsotopicVector Fissile,IsotopicVector Fertile,double BurnUp)
 {
 
 	if(BurnUp != 0 )

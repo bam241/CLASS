@@ -1,5 +1,5 @@
-#ifndef _EQM_POL_PWR_UO2_HXX
-#define _EQM_POL_PWR_UO2_HXX
+#ifndef _EQM_PWR_POL_UO2_HXX
+#define _EQM_PWR_POL_UO2_HXX
 
 #include "EquivalenceModel.hxx"
 
@@ -9,7 +9,7 @@ using namespace std;
 //! Define an EquivalenceModel based on a polynomial fit
 
 /*!
- Defines a EQM_POL_PWR_UO2
+ Defines a EQM_PWR_POL_UO2
  It returns the @f$^{235}U@f$ enrichment e according to this polynom :
  
  @f$e=\alpha_{0} + \alpha_{1}\cdot Burnup + \alpha_{2}\cdot Burnup \cdot Burnup @f$
@@ -23,7 +23,7 @@ using namespace std;
 
 
 
-class EQM_POL_PWR_UO2 : public EquivalenceModel
+class EQM_PWR_POL_UO2 : public EquivalenceModel
 {
 	
 public:
@@ -35,22 +35,22 @@ public:
 	//{
 	/// normal constructor
 	/*!
-	 Create a EQM_POL_PWR_UO2
+	 Create a EQM_PWR_POL_UO2
 	 \param  PathToWeightFile :  Path to the file containing the  @f$\alpha_{i}@f$
 	 Format :  @f$PARAM@f$  @f$\alpha_{0}@f$  @f$\alpha_{1}@f$  @f$\alpha_{2}@f$
 	 */
-	EQM_POL_PWR_UO2(string PathToWeightFile);
+	EQM_PWR_POL_UO2(string PathToWeightFile);
 	//}
 	
 	//{
 	/// logger constructor
 	/*!
-	 Create a EQM_POL_PWR_UO2
+	 Create a EQM_PWR_POL_UO2
 	 \param log : Use for the log
 	 \param  PathToWeightFile :  Path to the file containing the  @f$\alpha_{i}@f$
 	 Format :  @f$PARAM@f$  @f$\alpha_{0}@f$  @f$\alpha_{1}@f$  @f$\alpha_{2}@f$
 	 */
-	EQM_POL_PWR_UO2(CLASSLogger* log, string PathToWeightFile);
+	EQM_PWR_POL_UO2(CLASSLogger* log, string PathToWeightFile);
 	//}
 	
 	//@}

@@ -82,15 +82,17 @@ XSM_MLP::~XSM_MLP()
 }
 
 
+//________________________________________________________________________
 void XSM_MLP::LoadKeyword()
 {
 	DBGL
-	fDKeyword.insert( pair<string, DMthPtr>( "k_timestep",	& XSM_MLP::ReadTimeSteps));
-	fDKeyword.insert( pair<string, DMthPtr>( "k_zainame",	& XSM_MLP::ReadZAIName)	 );
+	fDKeyword.insert( pair<string, XS_MLP_DMthPtr>( "k_timestep",	& XSM_MLP::ReadTimeSteps));
+	fDKeyword.insert( pair<string, XS_MLP_DMthPtr>( "k_zainame",	& XSM_MLP::ReadZAIName)	 );
 	DBGL
 }
 
 
+//________________________________________________________________________
 void XSM_MLP::ReadZAIName(const string &line)
 {
 	DBGL
@@ -113,6 +115,7 @@ void XSM_MLP::ReadZAIName(const string &line)
 	DBGL
 }
 
+//________________________________________________________________________
 void XSM_MLP::ReadTimeSteps(const string &line)
 {
 	DBGL
@@ -138,7 +141,7 @@ void XSM_MLP::ReadLine(string line)
 	int pos = 0;
 	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
 	
-	map<string, DMthPtr>::iterator it = fDKeyword.find(keyword);
+	map<string, XS_MLP_DMthPtr>::iterator it = fDKeyword.find(keyword);
 	
 	if(it != fDKeyword.end())
 		(this->*(it->second))( line );
@@ -147,32 +150,6 @@ void XSM_MLP::ReadLine(string line)
 }
 
 
-
-
-
-//________________________________________________________________________
-/*void XSM_MLP::GetDataBaseInformation()
-{
-	INFO<<"\tMLP XS Data Base Information : "<<endl;
-	INFO<<"\t\tHeavy Metal (t) :"<<fDBHMMass<<endl;
-	INFO<<"\t\tThermal Power (W) :"<<fDBPower<<endl;
-	INFO<<"\t\tTime (s) :"<<endl;
-	for (int i = 0; i < (int)fMLP_Time.size(); ++i)
-		INFO<<"\t\t\t"<<fMLP_Time[i]<<endl;
-	INFO<<"\t\tZ A I Name (input MLP) :"<<endl;
-	
-	map<ZAI ,string >::iterator it;
-	
-	for (it= fMapOfTMVAVariableNames.begin();it!=fMapOfTMVAVariableNames.end();it++)
-		INFO<<"\t\t\t"<< it->first.Z()<<" "<<it->first.A()<<" "<<it->second<<endl;
-	
-	INFO<<"\t\tFuel range"<<endl;
-	for (map<ZAI,pair<double,double> >::iterator it_dom = fZAILimits.begin();it_dom!=fZAILimits.end();it_dom++)
-		INFO<<"\t\t\t"<< it_dom->second.first<<" <= "<<it_dom->first.Z()<<" "<<it_dom->first.A()<<" "<<it_dom->first.I()<<" <= "<<it_dom->second.second<<endl;;
-	
-	
-}
- */
  
 //________________________________________________________________________
 void XSM_MLP::GetMLPWeightFiles()

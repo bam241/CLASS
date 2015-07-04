@@ -1,5 +1,5 @@
-#ifndef _EQM_QUAD_PWR_MOX_HXX
-#define _EQM_QUAD_PWR_MOX_HXX
+#ifndef _EQM_PWR_QUAD_MOX_HXX
+#define _EQM_PWR_QUAD_MOX_HXX
 
 #include "EquivalenceModel.hxx"
 
@@ -7,7 +7,7 @@
 
 /*!
  \file
- \brief Header file for EQM_QUAD_PWR_MOX class.
+ \brief Header file for EQM_PWR_QUAD_MOX class.
 
 
  @author BaM
@@ -31,7 +31,7 @@ using namespace std;
  */
 //________________________________________________________________________
 
-class EQM_QUAD_PWR_MOX : public EquivalenceModel
+class EQM_PWR_QUAD_MOX : public EquivalenceModel
 {
 	public :
 
@@ -43,27 +43,27 @@ class EQM_QUAD_PWR_MOX : public EquivalenceModel
 	//{
 	/// normal constructor
 	/*!
-	 Create a EQM_POL_PWR_UO2
+	 Create a EQM_PWR_POL_UO2
 	 \param  WeightPath :  Path to the file containing the  @f$\alpha_{i}@f$
 	 Format :  @f$PARAM@f$   @f$\alpha_{^{238}Pu}@f$  @f$\alpha_{^{238}Pu ^{238}Pu}@f$  @f$\alpha_{^{238}Pu ^{239}Pu}@f$ .... @f$\alpha_{^{238}Pu ^{242}Pu}@f$ @f$\alpha_{^{239}Pu}@f$ ...
 	 @f$\alpha_{^{242}Pu}@f$  @f$\alpha_{^{242}Pu ^{242}Pu}@f$ @f$\alpha_{0}@f$
 	 */
-	EQM_QUAD_PWR_MOX(string WeightPath);
+	EQM_PWR_QUAD_MOX(string WeightPath);
 	//}
 	
 	//{
 	/// Logger constructor
 	/*!
-	 Create a EQM_POL_PWR_UO2
+	 Create a EQM_PWR_POL_UO2
 	 \param log : Use for the log
 	 \param  WeightPath :  Path to the file containing the  @f$\alpha_{i}@f$
 	 Format :  @f$PARAM@f$   @f$\alpha_{^{238}Pu}@f$  @f$\alpha_{^{238}Pu ^{238}Pu}@f$  @f$\alpha_{^{238}Pu ^{239}Pu}@f$ .... @f$\alpha_{^{238}Pu ^{242}Pu}@f$ @f$\alpha_{^{239}Pu}@f$ ...
 	 @f$\alpha_{^{242}Pu}@f$  @f$\alpha_{^{242}Pu ^{242}Pu}@f$ @f$\alpha_{0}@f$
 	 */
-	EQM_QUAD_PWR_MOX(CLASSLogger* log, string WeightPath);
+	EQM_PWR_QUAD_MOX(CLASSLogger* log, string WeightPath);
 	//}
 	
-	~EQM_QUAD_PWR_MOX();
+	~EQM_PWR_QUAD_MOX();
 	//@}
 	
 	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);

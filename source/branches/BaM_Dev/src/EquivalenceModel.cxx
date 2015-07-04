@@ -60,7 +60,7 @@ void EquivalenceModel::ReadLine(string line)
 		int pos = 0;
 		string keyword = tlc(StringLine::NextWord(line, pos, ' '));
 		
-		map<string, EQMthPtr>::iterator it = fKeyword.find(keyword);
+		map<string, EQM_MthPtr>::iterator it = fKeyword.find(keyword);
 		
 		if(it != fKeyword.end())
 			(this->*(it->second))( line );
@@ -79,9 +79,9 @@ void EquivalenceModel::ReadLine(string line)
 void EquivalenceModel::LoadKeyword()
 {
 	DBGL
-	fKeyword.insert( pair<string, EQMthPtr>( "k_zail",	& EquivalenceModel::ReadZAIlimits));
-	fKeyword.insert( pair<string, EQMthPtr>( "k_reactor",	& EquivalenceModel::ReadType)	 );
-	fKeyword.insert( pair<string, EQMthPtr>( "k_fuel",	& EquivalenceModel::ReadType)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",	& EquivalenceModel::ReadZAIlimits));
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",	& EquivalenceModel::ReadType)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel",	& EquivalenceModel::ReadType)	 );
 	DBGL
 }
 
@@ -298,7 +298,7 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<
 		
 		
 		WeightPuContent = MolarPuContent * MeanMolarPu / MeanMolar;
-		fActualFissileContent = MolarPuContent; //fActualFissileContent can be accessed by a derivated EquivalenModel to accelerate GetFissileMolarFraction function (exemple in EQM_MLP_Kinf)
+		fActualFissileContent = MolarPuContent; //fActualFissileContent can be accessed by a derivated EquivalenModel to accelerate GetFissileMolarFraction function (exemple in EQM_PWR_MLP_Kinf)
 		PuMassNeeded = WeightPuContent  *  HMMass ;
 		
 		DBGV( "MolarPuContent " << MolarPuContent << " DeltaM " << PuMassNeeded - AvailablePuMass << " g" );
@@ -307,9 +307,9 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<
 		
 	}while(  fabs( PuMassNeeded - AvailablePuMass )/HMMass > fRelativMassPrecision );
 	
-	(*this).isIVInDomain(fissil);
+	(*this).isIVInDomain(Fissile);
 	
-	DBGV( "Weight percent fissil : " << PuMassNeeded/HMMass );
+	DBGV( "Weight percent fissile : " << PuMassNeeded/HMMass );
 	DBGV( "Lambda vector : " );
 	
 	for(int i = 0; i < (int)FissilArray.size() + (int)FertilArray.size(); i++ )

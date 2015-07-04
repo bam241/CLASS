@@ -27,7 +27,7 @@ using namespace std;
 
 class XSM_MLP;
 #ifndef __CINT__
-typedef void (XSM_MLP::*DMthPtr)( const string & ) ;
+typedef void (XSM_MLP::*XS_MLP_DMthPtr)( const string & ) ;
 #endif
 //-----------------------------------------------------------------------------//
 //! Defines a XSModel getting mean cross sections from neural network execution
@@ -78,15 +78,44 @@ class XSM_MLP : public XSModel
 	~XSM_MLP();
 	//@}
 	
-	void LoadKeyword();
+	/*!
+	 \name Reading NFO related Method
+	 */
+	//@{
 	
+	//{
+	/// LoadKeyword() : make the correspondance between keyword and reading method
+	void LoadKeyword();
+	//}
+	
+	//{
+	/// ReadTimeSteps : read the time step of the model
+	/*!
+	 \param line : line suppossed to contain the time step information starts with "k_timestep" keyword
+	 */
 	void ReadTimeSteps(const string &line);
+	//}
+	
+	//{
+	/// ReadZAIName : read the zai name in the TMWA MLP model
+	/*!
+	 \param line : line suppossed to contain the ZAI name  starts with "k_zainame" keyword
+	 */
 	void ReadZAIName(const string &line);
+	//}
+	//{
+	/// ReadLine : read a line
+	/*!
+	 \param line : line to read
+	 */
+	void ReadLine(string line);
+	//}
+	
+	//@}
 	
 	
 	EvolutionData GetCrossSections(IsotopicVector IV,double t=0);	//!< Return calculated cross section by the MLP regression
 	
-	void ReadLine(string line);
 	
 	private :
 	
@@ -114,7 +143,7 @@ class XSM_MLP : public XSModel
 	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 	
 #ifndef __CINT__
-	map<string, DMthPtr> fDKeyword;
+	map<string, XS_MLP_DMthPtr> fDKeyword;
 #endif
 };
 

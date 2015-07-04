@@ -23,7 +23,7 @@ class IsotopicVector;
 
 class XSModel;
 #ifndef __CINT__
-typedef void (XSModel::*MthPtr)( const string & ) ;
+typedef void (XSModel::*XSM_MthPtr)( const string & ) ;
 #endif
 
 //-----------------------------------------------------------------------------//
@@ -116,7 +116,7 @@ class XSModel : public CLASSObject
 	map< ZAI, pair<double,double> > fZAILimits; //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
 	
 #ifndef __CINT__
-	map<string, MthPtr> fKeyword;
+	map<string, XSM_MthPtr> fKeyword;
 #endif
 	
 	int fZAIThreshold;	//!< Z threshold for handling nuclei mean cross section (take only ZAI reaction of Z>=fZAIThresold)

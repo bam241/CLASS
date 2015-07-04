@@ -1,11 +1,11 @@
 #include "EquivalenceModel.hxx"
-#include "EQM_POL_PWR_UO2.hxx"
+#include "EQM_PWR_POL_UO2.hxx"
 #include "CLASSLogger.hxx"
 #include "StringLine.hxx"
 
 
 // ________________________________________________________________________
-// EQM_POL_PWR_UO2
+// EQM_PWR_POL_UO2
 //
 // ________________________________________________________________________
 
@@ -13,7 +13,7 @@
 
 
 //Constructor(s)
-EQM_POL_PWR_UO2::EQM_POL_PWR_UO2(string PathToWeightFile):EquivalenceModel(new CLASSLogger("EQM_POL_PWR_UO2.log"))
+EQM_PWR_POL_UO2::EQM_PWR_POL_UO2(string PathToWeightFile):EquivalenceModel(new CLASSLogger("EQM_PWR_POL_UO2.log"))
 {
 	
 	// Fertile
@@ -28,7 +28,7 @@ EQM_POL_PWR_UO2::EQM_POL_PWR_UO2(string PathToWeightFile):EquivalenceModel(new C
 
 }
 // _______________________________________________________________________
-EQM_POL_PWR_UO2::EQM_POL_PWR_UO2(CLASSLogger* log,string PathToWeightFile):EquivalenceModel(log)
+EQM_PWR_POL_UO2::EQM_PWR_POL_UO2(CLASSLogger* log,string PathToWeightFile):EquivalenceModel(log)
 {
 	
 	// Fertile
@@ -43,7 +43,7 @@ EQM_POL_PWR_UO2::EQM_POL_PWR_UO2(CLASSLogger* log,string PathToWeightFile):Equiv
 
 }
 // _______________________________________________________________________
-void EQM_POL_PWR_UO2::ReadWeightFile(string PathToWeightFile)
+void EQM_PWR_POL_UO2::ReadWeightFile(string PathToWeightFile)
 {
 	ifstream DataDB(PathToWeightFile.c_str());							// Open the File
 	if(!DataDB)
@@ -66,7 +66,7 @@ void EQM_POL_PWR_UO2::ReadWeightFile(string PathToWeightFile)
 	INFO <<"\t U enrichment = "<<fParam_Bu_0<<" + "<<fParam_Bu<<"*Burnup + "<< fParam_BuSquare<<"*Burnup*Burnup"<<endl;
 }
 // _______________________________________________________________________
-double EQM_POL_PWR_UO2::GetFissileMolarFraction ( IsotopicVector Fissil , IsotopicVector Fertil , double BurnUp )
+double EQM_PWR_POL_UO2::GetFissileMolarFraction ( IsotopicVector Fissil , IsotopicVector Fertil , double BurnUp )
 {
 	return fParam_Bu_0 + fParam_Bu*BurnUp + fParam_BuSquare*BurnUp*BurnUp ;
 	

@@ -22,7 +22,7 @@ using namespace std;
 
 class EquivalenceModel;
 #ifndef __CINT__
-typedef void (EquivalenceModel::*EQMthPtr)( const string & );
+typedef void (EquivalenceModel::*EQM_MthPtr)( const string & );
 #endif
 
 //-----------------------------------------------------------------------------//
@@ -35,11 +35,11 @@ typedef void (EquivalenceModel::*EQMthPtr)( const string & );
  
  \warning
  Never instantiate EquivalenceModel in your CLASS input but it's derivated class
- @see EQM_BakerRoss_FBR_MOX
- @see EQM_LIN_PWR_MOX
- @see EQM_MLP_PWR_MOX
- @see EQM_POL_PWR_UO2
- @see EQM_QUAD_PWR_MOX
+ @see EQM_FBR_BakerRoss_MOX
+ @see EQM_PWR_LIN_MOX
+ @see EQM_PWR_MLP_MOX
+ @see EQM_PWR_POL_UO2
+ @see EQM_PWR_QUAD_MOX
  
  @author BaM
  @author BLG
@@ -95,7 +95,7 @@ class EquivalenceModel : public CLASSObject
 	double GetRelativMassPrecision() const	{ return fRelativMassPrecision; }	//!< Mass precision
 	int GetMaxInterration()		 const	{ return fMaxInterration; }		//!< Max iterration in build fueld algorythm
 
-	double GetActualFissileContent() const { return fActualFissileContent; }	//!< Get the fissile content at the actual dichotomy step (usefull for EQM_MLP_Kinf)
+	double GetActualFissileContent() const { return fActualFissileContent; }	//!< Get the fissile content at the actual dichotomy step (usefull for EQM_PWR_MLP_Kinf)
 	
 	void SetFertileList(IsotopicVector IV) {fFertileList = IV;}//!<set the fertile list
 	void SetFissileList(IsotopicVector IV) {fFissileList = IV;}//!<set the fissile list
@@ -103,9 +103,12 @@ class EquivalenceModel : public CLASSObject
 	void SetRelativMassPrecision( double val)	{ fRelativMassPrecision = val; }	//!< Mass precision
 	void SetMaxInterration(int val)			{ fMaxInterration = val; }		//!< Max iterration in build fueld algorythm
 
-	virtual void LoadKeyword();
+
 	void ReadNFO();
 	virtual void ReadLine(string line);
+
+	
+	virtual void LoadKeyword();
 	void ReadZAIlimits(const string &line);
 	void ReadType(const string &line);
 	//@}
@@ -123,10 +126,10 @@ class EquivalenceModel : public CLASSObject
 	//!< if no stock are provided the fuel will not be made
 	
 	double fFirstGuessFissilContent;//!< fissile content for BuildFuel initialization (in weight proportion)
-	double fActualFissileContent;	//!< fissile content at the actual dichotomy step (usefull for EQM_MLP_Kinf)
+	double fActualFissileContent;	//!< fissile content at the actual dichotomy step (usefull for EQM_PWR_MLP_Kinf)
 	
 	
-	private :
+	protected :
 	/*!
 	 \name Algorithm parameters
 	 */
@@ -147,7 +150,7 @@ class EquivalenceModel : public CLASSObject
 	//@}
 
 #ifndef __CINT__
-	map<string, EQMthPtr> fKeyword;
+	map<string, EQM_MthPtr> fKeyword;
 #endif
 	
 	bool freaded;
