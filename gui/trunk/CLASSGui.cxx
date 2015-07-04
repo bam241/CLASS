@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 {
 	if(argc<2)
 	{
-		cerr<<endl<<"Usage: CLASGui FileName1 FileName2 ... "<<endl;
+		cerr << endl << "Usage: CLASGui FileName1 FileName2 ... " << endl;
 		exit(0);
 	}
 
@@ -21,23 +21,22 @@ int main(int argc, char** argv)
 	;
 	for(int i=0;i<NumberOfFile;i++)
 		VFileName.push_back(string(argv[i+1]));
-	//cout << "toto"<< endl;
 	
 	CLASSRead* DataRead = new CLASSRead(VFileName[0]);
 	if(VFileName.size() == 0)
 	{
-		cerr<<endl<<"Usage: CLASGui FileName1 FileName2 ... "<<endl;
+		cerr << endl << "Usage: CLASGui FileName1 FileName2 ... " << endl;
 		exit(0);
 	}
 	for (int i = 1; i < (int)VFileName.size(); i++)
 	{
-		cout << "File "<<  i << endl;
+		cout << "File " <<   i << endl;
 		DataRead->AddFile(VFileName[i]);
 	}
 	DataRead->ReadName();
 	DataRead->ReadZAI();
 	DataRead->ReadTime();
-	cout << "Bienvenue dans le GUI"<< endl;
+	cout << "Bienvenue dans le GUI" <<  endl;
 
 	
 	argc=1; //avoid to change directory by root TApplication...
