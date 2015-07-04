@@ -36,60 +36,75 @@
 //________________________________________________________________________
 EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(string TMVAWeightPath, double keff_target, string InformationFile):EquivalenceModel(new CLASSLogger("EQM_FBR_MLP_Keff.log"))
 {
-	fIsAverageKeff = false;
+	DBGL
 
 	/**The tmva weight*/
 	fTMVAWeightPath = TMVAWeightPath;
 
-	fTargetKeff = keff_target;
 
+	/* INFORMATION FILE HANDLING */
+	
 	if(InformationFile=="")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 
 	fInformationFile = InformationFile;
-	GetModelInformation();		//Getting information from fMLPInformationFile
+	LoadKeyword();
+	ReadNFO();//Getting information from fMLPInformationFile
 
+	
+	fTargetKeff = keff_target;
+	
 	SetPCMprecision(10);
 	SetBuildFuelFirstGuess(0.15);	//First fissile content guess for the EquivalenceModel::BuildFuel algorithm
 	fActualFissileContent = fFirstGuessFissilContent ;
 
-	INFO << "__An equivalence model has been define__"<<endl;
-	INFO << "\tThis model is based on the prediction of keff at a specific time"<<endl;
-	INFO << "\tThe TMVA (weight | information) files are :"<<endl;
-	INFO << "\t"<<"( "<<fTMVAWeightPath[0]<<" | "<<fMLPInformationFile<<" )"<<endl;
+	INFO << "__An equivalence model has been define__" << endl;
+	INFO << "\tThis model is based on the prediction of keff at a specific time" << endl;
+	INFO << "\tThe TMVA (weight | information) files are :" << endl;
+	INFO << "\t"<<"( "<<fTMVAWeightPath[0]<<" | "<<fMLPInformationFile<<" )" << endl;
 
+	DBGL
 }
 //________________________________________________________________________
 EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(CLASSLogger* log, string TMVAWeightPath, double keff_target, string InformationFile):EquivalenceModel(log)
 {
-	fIsAverageKeff = false;
+	DBGL
 
 	/**The tmva weight*/
 	fTMVAWeightPath = TMVAWeightPath;
 
-	fTargetKeff = keff_target;
 
+	/* INFORMATION FILE HANDLING */
+	
 	if(InformationFile=="")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 
 	fInformationFile = InformationFile;
-	GetModelInformation();		//Getting information from fMLPInformationFile
+	LoadKeyword();
+	ReadNFO();//Getting information from fMLPInformationFile
+	
 
+	fTargetKeff = keff_target;
+
+	
 	SetPCMprecision(10);
 	SetBuildFuelFirstGuess(0.15);	//First fissile content guess for the EquivalenceModel::BuildFuel algorithm
 	fActualFissileContent = fFirstGuessFissilContent ;
 
-	INFO << "__An equivalence model has been define__"<<endl;
-	INFO << "\tThis model is based on the prediction of keff at a specific time"<<endl;
-	INFO << "\tThe TMVA (weight | information) files are :"<<endl;
-	INFO << "\t"<<"( "<<fTMVAWeightPath[0]<<" | "<<fMLPInformationFile<<" )"<<endl;
+	INFO << "__An equivalence model has been define__" << endl;
+	INFO << "\tThis model is based on the prediction of keff at a specific time" << endl;
+	INFO << "\tThe TMVA (weight | information) files are :" << endl;
+	INFO << "\t"<<"( "<<fTMVAWeightPath[0]<<" | "<<fMLPInformationFile<<" )" << endl;
 
+	DBGL
 }
 
 
 //________________________________________________________________________
 TTree* EQM_FBR_MLP_Keff::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double ThisTime)
 {
+	DBGL
+
 	/******Create Input data tree to be interpreted by TMVA::Reader***/
 	TTree*   InputTree = new TTree("InTMPKef", "InTMPKef");
 
@@ -97,7 +112,7 @@ TTree* EQM_FBR_MLP_Keff::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
 		InputTMVA.push_back(0);
 
-	float Time=0;
+	float Time = 0;
 
 	IsotopicVector IVInputTMVA;
 	map<ZAI ,string >::iterator it;
@@ -132,12 +147,14 @@ TTree* EQM_FBR_MLP_Keff::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 
 	InputTree->Fill();
 
+	DBGL
 	return InputTree;
 
 }
 //________________________________________________________________________
 double EQM_FBR_MLP_Keff::ExecuteTMVA(TTree* InputTree, bool IsTimeDependent)
 {
+	DBGL
 
 	// --- Create the Reader object
 	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
@@ -147,10 +164,14 @@ double EQM_FBR_MLP_Keff::ExecuteTMVA(TTree* InputTree, bool IsTimeDependent)
 	vector<float> 	InputTMVA;
 	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
 		InputTMVA.push_back(0);
-	Float_t Time;
+	
+	Float_t Time = 0;
 
+	
 	map<ZAI ,string >::iterator it;
-	int j=0;
+	int j = 0;
+	
+	
 	for( it = fMapOfTMVAVariableNames.begin()  ; it!=fMapOfTMVAVariableNames.end() ; it++)
 	{	reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
 		j++;
@@ -159,6 +180,8 @@ double EQM_FBR_MLP_Keff::ExecuteTMVA(TTree* InputTree, bool IsTimeDependent)
 	if(IsTimeDependent)
 		reader->AddVariable( "Time" ,&Time);
 
+	
+	
 	// --- Book the MVA methods
 
 	// Book method MLP
@@ -177,16 +200,13 @@ double EQM_FBR_MLP_Keff::ExecuteTMVA(TTree* InputTree, bool IsTimeDependent)
 		InputTree->SetBranchAddress( "Time" ,&Time  );
 
 	InputTree->GetEntry(0);
+	
 	Float_t val = (reader->EvaluateRegression( methodName ))[0];
 
 	delete reader;
 
+	DBGL
 	return (double)val;	//return k_{eff}(t=Time)
-}
-//________________________________________________________________________
-void EQM_FBR_MLP_Keff::GetModelInformation()
-{
-DBGL
 }
 
 
@@ -194,12 +214,14 @@ DBGL
 void EQM_FBR_MLP_Keff::LoadKeyword()
 {
 	DBGL
+
 	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_timestep",	& EQM_FBR_MLP_Keff::ReadTimeSteps));
 	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_specpower",	& EQM_FBR_MLP_Keff::ReadSpecificPower));
 	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_contentmax",	& EQM_FBR_MLP_Keff::ReadMaximalContent));
 	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_zainame",	& EQM_FBR_MLP_Keff::ReadZAIName)	 );
 	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_fissil",	& EQM_FBR_MLP_Keff::ReadFissil)	 );
 	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_fertil",	& EQM_FBR_MLP_Keff::ReadFertil)	 );
+
 	DBGL
 }
 
@@ -345,6 +367,8 @@ void EQM_FBR_MLP_Keff::ReadLine(string line)
 //________________________________________________________________________
 double EQM_FBR_MLP_Keff::GetFissileMolarFraction(IsotopicVector Fissile,IsotopicVector Fertile,double TargetBU)
 {
+	DBGL
+	
 	if(TargetBU != 0)
 		WARNING<<"The third arguement : Burnup has no effect here.";
 
@@ -365,7 +389,7 @@ double EQM_FBR_MLP_Keff::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 	{
 		if(count > MaximumLoopCount )
 		{
-			ERROR << "CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on keff using :\nYourEQM_FBR_MLP_Keff->SetPCMPrecision(prop); with prop the precision  (default 0.5percent :  0.005) INCREASE IT \n If this message still appear mail to leniau@subatech.in2p3.fr\nor nicolas.thiolliere@subatech.in2p3.fr "<<endl;
+			ERROR << "CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on keff using :\nYourEQM_FBR_MLP_Keff->SetPCMPrecision(prop); with prop the precision  (default 0.5percent :  0.005) INCREASE IT \n If this message still appear mail to leniau@subatech.in2p3.fr\nor nicolas.thiolliere@subatech.in2p3.fr " << endl;
 			exit(1);
 		}
 		
@@ -389,7 +413,7 @@ double EQM_FBR_MLP_Keff::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 		
 	}while(fabs(fTargetKeff-PredictedKeff)>Precision);
 	
-	DBGV( "Predicted keff "<<PredictedKeff<<" FissileContent "<<FissileContent<<endl);
+	DBGV( "Predicted keff "<<PredictedKeff<<" FissileContent "<<FissileContent << endl);
 	return FissileContent;
 
 }

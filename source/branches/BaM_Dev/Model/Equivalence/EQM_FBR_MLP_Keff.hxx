@@ -16,6 +16,7 @@
 
 
  @author BLG
+ @author BaM
  @version 1.0
  */
 
@@ -35,10 +36,6 @@ The Pu content is set such as it has to verify
  the begining of cycle or end of cycle. WantedTime can't be set by user since it is
  contain in the .xml file. Indeed this method suppose you have trained your MLP to predict 
  the keffective either at BOC or EOC (or any other time)
-
- \warning 
- With method 1, it is not guaranted that there is a solution for Pu content verifying : 
- @f$<k_{\infty}>^{batch}(t) = \frac{1}{N}\sum_{i}^{N}k_{\infty}(t+\frac{iT}{N} )@f$
 
  @author BLG
  @author BaM
@@ -201,8 +198,7 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	map<string, MLP_FBR_Keff_DMthPtr> fDKeyword;
 #endif
 
-	void   	GetModelInformation();//!<Read the fMLPInformationFile and fill containers and variables
-	
+
 	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 
 	vector<double> fMLP_Time;	//!< Time (in seconds) when the MLP(t)=keff(t) has been trained.
@@ -211,20 +207,12 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	
 
 	
-	
-	
 	int 	fNumberOfBatch;		//!< The number of batches for the loading plan
 	
 	double 	fKThreshold;		//!< The @f$k_{Threshold}@f$
 	double 	fPCMprecision;		//!< precision on <k> prediction [pcm]
 	
-	bool	fIsAverageKeff;		//!< True if using the first contructor (fissile content prediction with average keff (over batches))
-	double  fKmin;				//!< Lower edge of kedd Used by second constructor (fissile content prediction using keff at BOC (or other time)
-	double  fKmax;				//!< Upper edge of kedd Used by second constructor (fissile content prediction using keff at BOC (or other time)
 	double 	fTargetKeff;		//!< Use for Varying Fissile content to reach fTargetKeff at time used in the MLP Training
-	
-
-	
 	
 
 	

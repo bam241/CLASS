@@ -1,5 +1,5 @@
-#ifndef _EQM_FBR_MLP_Keff_BOUND_HXX
-#define _EQM_FBR_MLP_Keff_BOUND_HXX
+#ifndef _EQM_FBR_MLP_Keff_BOUND_HXX_
+#define _EQM_FBR_MLP_Keff_BOUND_HXX_
 
 #include "EquivalenceModel.hxx"
 #include "TTree.h"
@@ -46,7 +46,7 @@ using namespace std;
 
 class EQM_FBR_MLP_Keff_BOUND;
 #ifndef __CINT__
-typedef void (EQM_FBR_MLP_Keff_BOUND::*MLP_FBR_Keff_DMthPtr)( const string & ) ;
+typedef void (EQM_FBR_MLP_Keff_BOUND::*MLP_FBR_Keff_BOUND_DMthPtr)( const string & ) ;
 #endif
 
 
@@ -200,10 +200,8 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	string fMLPInformationFile;				//!<The path to the informations necessary to execute the MLP
 	
 #ifndef __CINT__
-	map<string, MLP_FBR_Keff_DMthPtr> fDKeyword;
+	map<string, MLP_FBR_Keff_BOUND_DMthPtr> fDKeyword;
 #endif
-	
-	void   	GetModelInformation();//!<Read the fMLPInformationFile and fill containers and variables
 	
 	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 	
@@ -243,19 +241,6 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-#endif /* defined(__CLASSSource__EQM_FBR_MLP_Keff_BOUND_BOUND__) */
 
 
 

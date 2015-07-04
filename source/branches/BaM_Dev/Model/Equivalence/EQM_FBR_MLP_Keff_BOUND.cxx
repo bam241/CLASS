@@ -1,4 +1,5 @@
 #include "EQM_FBR_MLP_Keff_BOUND.hxx"
+#include "CLASSMethod.hxx"
 #include "CLASSLogger.hxx"
 #include "StringLine.hxx"
 
@@ -35,54 +36,78 @@
 //________________________________________________________________________
 EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(string TMVAWeightPath,  int NumOfBatch, double LowerKeffective, double UpperKeffective, string InformationFile):EquivalenceModel(new CLASSLogger("EQM_FBR_MLP_Keff_BOUND.log"))
 {
-	fIsAverageKeff = true;
+	DBGL
+
+	/** The tmva weight **/
 	
-	/**The tmva weight*/
 	fTMVAWeightPath = TMVAWeightPath;
 	
-	/*INFORMATION FILE HANDLING*/
+	
+	/* INFORMATION FILE HANDLING */
+	
 	if(InformationFile=="")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 	
 	fInformationFile = InformationFile;
 	
-	GetModelInformation();//Getting information from fMLPInformationFile
+	LoadKeyword();
+	ReadNFO();//Getting information from fMLPInformationFile
 	
-	/*OTHER MODEL PARAMETERS*/
+	
+	/* OTHER MODEL PARAMETERS */
+	
 	fNumberOfBatch = NumOfBatch;
 	fKmin = LowerKeffective ;
 	fKmax = UpperKeffective ;
 	
-	/*MODEL PARAMETERS INITIALIZATION */
+
+	/* MODEL PARAMETERS INITIALIZATION */
+	
 	SetPCMprecision(10);
 	SetBuildFuelFirstGuess(0.15);//First fissile content guess for the EquivalenceModel::BuildFuel algorithm
 	fActualFissileContent = fFirstGuessFissilContent ;
 	
+	
+	/* INFO */
+
 	INFO << "__An equivalence model has been define__"<<endl;
 	INFO << "\tThis model is based on the prediction of keff averaged over the number of batch"<<endl;
 	INFO << "\tThe TMVA (weight | information) files are :"<<endl;
 	INFO << "\t"<<"( "<<fTMVAWeightPath[0]<<" | "<<fMLPInformationFile<<" )"<<endl;
+
+	
+	DBGL
 }
 //________________________________________________________________________
 EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(CLASSLogger* log, string TMVAWeightPath,  int NumOfBatch, double LowerKeffective, double UpperKeffective, string InformationFile):EquivalenceModel(log)
 {
-	fIsAverageKeff = true;
-	/**The tmva weight*/
+	DBGL
+	
+	/** The tmva weight **/
+	
 	fTMVAWeightPath = TMVAWeightPath;
 	
-	/*INFORMATION FILE HANDLING*/
+	
+	/* INFORMATION FILE HANDLING */
+	
 	if(InformationFile=="")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 	
 	fInformationFile = InformationFile;
-	GetModelInformation();//Getting information from fMLPInformationFile
+	LoadKeyword();
+	ReadNFO();//Getting information from fMLPInformationFile
 	
-	/*OTHER MODEL PARAMETERS*/
+	
+	
+	/* OTHER MODEL PARAMETERS */
+	
 	fNumberOfBatch = NumOfBatch;
 	fKmin = LowerKeffective ;
 	fKmax = UpperKeffective ;
 	
-	/*MODEL PARAMETERS INITIALIZATION */
+	
+	/* INFO */
+	
 	SetPCMprecision(10);
 	SetBuildFuelFirstGuess(0.15);//First fissile content guess for the EquivalenceModel::BuildFuel algorithm
 	fActualFissileContent = fFirstGuessFissilContent ;
@@ -91,15 +116,16 @@ EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(CLASSLogger* log, string TMVAWeig
 	INFO << "\tThis model is based on the prediction of keff averaged over the number of batch" << endl;
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
 	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | " << fMLPInformationFile << " )" << endl;
+	
+	
+	DBGL
 }
+
+
 //________________________________________________________________________
 TGraph* EQM_FBR_MLP_Keff_BOUND::BuildKeffGraph(IsotopicVector FreshFuel)
 {
-	if(!fIsAverageKeff)
-	{
-		ERROR << " Can't be used with EQM_FBR_MLP_Keff_BOUND(string TMVAWeightPath, double keff_target, string InformationFile) constructor";
-		exit(1);
-	}
+	DBGL
 	
 	TGraph * keffGraph = new TGraph();
 	for(int i = 0 ; i < (int) fMLP_Time.size() ; i++)
@@ -108,16 +134,13 @@ TGraph* EQM_FBR_MLP_Keff_BOUND::BuildKeffGraph(IsotopicVector FreshFuel)
 		keffGraph->SetPoint(i, (double)fMLP_Time[i], keff_t );
 	}
 	
+	DBGL
 	return keffGraph;
 }
 //________________________________________________________________________
 TGraph* EQM_FBR_MLP_Keff_BOUND::BuildAverageKeffGraph(TGraph* GRAPH_KEFF)
 {
-	if(!fIsAverageKeff)
-	{
-		ERROR << " Can't be used with EQM_FBR_MLP_Keff_BOUND(string TMVAWeightPath, double keff_target, string InformationFile) constructor";
-		exit(1);
-	}
+	DBGL
 	
 	TGraph * AveragekeffGraph = new TGraph();
 	int NumberOfPoint = 50;
@@ -146,20 +169,19 @@ TGraph* EQM_FBR_MLP_Keff_BOUND::BuildAverageKeffGraph(TGraph* GRAPH_KEFF)
 		AveragekeffGraph->SetPoint(n, step*n, k_av);
 	}
 	
+	DBGL
 	return AveragekeffGraph;
 }
 //________________________________________________________________________
 double EQM_FBR_MLP_Keff_BOUND::GetKeffAt(TGraph* GRAPH_KEFF, int Step)
 {
-	if(!fIsAverageKeff)
-	{
-		ERROR << " Can't be used with EQM_FBR_MLP_Keff_BOUND(string TMVAWeightPath, double keff_target, string InformationFile) constructor"; exit(1);
-	}
+	DBGL
 	
 	double Time = 0;
 	double Keff=0;
 	GRAPH_KEFF->GetPoint(Step, Time,  Keff);
 	
+	DBGL
 	return Keff;
 }
 
@@ -167,6 +189,8 @@ double EQM_FBR_MLP_Keff_BOUND::GetKeffAt(TGraph* GRAPH_KEFF, int Step)
 //________________________________________________________________________
 TTree* EQM_FBR_MLP_Keff_BOUND::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double ThisTime)
 {
+	DBGL
+
 	/******Create Input data tree to be interpreted by TMVA::Reader***/
 	TTree*   InputTree = new TTree("InTMPKef", "InTMPKef");
 	
@@ -209,13 +233,15 @@ TTree* EQM_FBR_MLP_Keff_BOUND::CreateTMVAInputTree(IsotopicVector TheFreshfuel, 
 	
 	InputTree->Fill();
 	
+	DBGL
 	return InputTree;
 	
 }
 //________________________________________________________________________
 double EQM_FBR_MLP_Keff_BOUND::ExecuteTMVA(TTree* InputTree, bool IsTimeDependent)
 {
-	
+	DBGL
+
 	// --- Create the Reader object
 	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
 	
@@ -243,7 +269,7 @@ double EQM_FBR_MLP_Keff_BOUND::ExecuteTMVA(TTree* InputTree, bool IsTimeDependen
 	reader->BookMVA( methodName, fTMVAWeightPath );
 	
 	map<ZAI ,string >::iterator it2;
-	j=0;
+	j = 0;
 	for( it2 = fMapOfTMVAVariableNames.begin()  ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
 	{
 		InputTree->SetBranchAddress(( (*it2).second ).c_str(),&InputTMVA[j]);
@@ -258,19 +284,22 @@ double EQM_FBR_MLP_Keff_BOUND::ExecuteTMVA(TTree* InputTree, bool IsTimeDependen
 	
 	delete reader;
 	
+	DBGL
 	return (double)val;	//return k_{eff}(t=Time)
 }
 
 //________________________________________________________________________
-void XSM_MLP::LoadKeyword()
+void EQM_FBR_MLP_Keff_BOUND::LoadKeyword()
 {
 	DBGL
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_timestep",	& EQM_FBR_MLP_Keff_BOUND::ReadTimeSteps));
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_specpower",	& EQM_FBR_MLP_Keff_BOUND::ReadSpecificPower));
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_contentmax",	& EQM_FBR_MLP_Keff_BOUND::ReadMaximalContent));
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_zainame",	& EQM_FBR_MLP_Keff_BOUND::ReadZAIName)	 );
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_fissil",	& EQM_FBR_MLP_Keff_BOUND::ReadFissil)	 );
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_fertil",	& EQM_FBR_MLP_Keff_BOUND::ReadFertil)	 );
+
+	fDKeyword.insert( pair<string, MLP_FBR_Keff_BOUND_DMthPtr>( "k_timestep",	& EQM_FBR_MLP_Keff_BOUND::ReadTimeSteps));
+	fDKeyword.insert( pair<string, MLP_FBR_Keff_BOUND_DMthPtr>( "k_specpower",	& EQM_FBR_MLP_Keff_BOUND::ReadSpecificPower));
+	fDKeyword.insert( pair<string, MLP_FBR_Keff_BOUND_DMthPtr>( "k_contentmax",	& EQM_FBR_MLP_Keff_BOUND::ReadMaximalContent));
+	fDKeyword.insert( pair<string, MLP_FBR_Keff_BOUND_DMthPtr>( "k_zainame",	& EQM_FBR_MLP_Keff_BOUND::ReadZAIName)	 );
+	fDKeyword.insert( pair<string, MLP_FBR_Keff_BOUND_DMthPtr>( "k_fissil",	& EQM_FBR_MLP_Keff_BOUND::ReadFissil)	 );
+	fDKeyword.insert( pair<string, MLP_FBR_Keff_BOUND_DMthPtr>( "k_fertil",	& EQM_FBR_MLP_Keff_BOUND::ReadFertil)	 );
+	
 	DBGL
 }
 
@@ -305,11 +334,11 @@ void EQM_FBR_MLP_Keff_BOUND::ReadSpecificPower(const string &line)
 	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
 	if( keyword != "k_specpower")	// Check the keyword
 	{
-		ERROR << " Bad keyword : \”k_specpower\" Not found !" << endl;
+		ERROR << " Bad keyword : \"k_specpower\" Not found !" << endl;
 		exit(1);
 	}
 	
-	fSpecificPower = atof(StringLine::NextWord(line, pos, ' '));
+	fSpecificPower = atof(StringLine::NextWord(line, pos, ' ').c_str());
 	
 	DBGL
 }
@@ -319,14 +348,14 @@ void EQM_FBR_MLP_Keff_BOUND::ReadMaximalContent(const string &line)
 {
 	DBGL
 	int pos = 0;
-	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	string keyword = tlc(StringLine::NextWord(line, pos, ' ').c_str());
 	if( keyword != "k_contentmax")	// Check the keyword
 	{
-		ERROR << " Bad keyword : \”k_contentmax\" Not found !" << endl;
+		ERROR << " Bad keyword : \"k_contentmax\" Not found !" << endl;
 		exit(1);
 	}
 	
-	fMaximalContent = atof(StringLine::NextWord(line, pos, ' '));
+	fMaximalContent = atof(StringLine::NextWord(line, pos, ' ').c_str());
 	
 	DBGL
 }
@@ -402,7 +431,7 @@ void EQM_FBR_MLP_Keff_BOUND::ReadLine(string line)
 	int pos = 0;
 	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
 	
-	map<string, XS_MLP_DMthPtr>::iterator it = fDKeyword.find(keyword);
+	map<string, MLP_FBR_Keff_BOUND_DMthPtr>::iterator it = fDKeyword.find(keyword);
 	
 	if(it != fDKeyword.end())
 		(this->*(it->second))( line );
@@ -414,8 +443,9 @@ void EQM_FBR_MLP_Keff_BOUND::ReadLine(string line)
 //________________________________________________________________________
 double EQM_FBR_MLP_Keff_BOUND::GetFissileMolarFraction(IsotopicVector Fissile, IsotopicVector Fertile, double TargetBU)
 {
+	DBGL
 	if(TargetBU != 0)
-		WARNING<<"The third arguement : Burnup has no effect here.";
+		WARNING << "The third arguement : Burnup has no effect here.";
 	
 	/**Algorithm  not so clever ...**/
 	/**need improvements to make it faster*/
@@ -453,14 +483,14 @@ double EQM_FBR_MLP_Keff_BOUND::GetFissileMolarFraction(IsotopicVector Fissile, I
 		
 		if( test_Keff_beg > 1.30 )
 		{
-			cout << "This plutonium can not satisfy the criticality condition imposed" << endl;
+			ERROR << "This plutonium can not satisfy the criticality condition imposed" << endl;
 			FissileContent = -1;
 			break;
 		}
 		
 	}
 	
+	DBGL
 	return FissileContent;
-
 }
 //________________________________________________________________________
