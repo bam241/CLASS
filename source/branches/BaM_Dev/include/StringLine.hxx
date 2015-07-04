@@ -31,7 +31,7 @@ using namespace std;
  string temperature_is=SL.NextWord(line,start,':');
  string colon=SL.NextWord(line,start);
  double T=atof(SL.NextWord(line,start).c_str());
- cout<<the<<endl<<temperature_is<<endl<<T<<endl;
+ cout << the << endl << temperature_is << endl << T << endl;
  
  2nd method: "using" the static methods
  
@@ -40,7 +40,7 @@ using namespace std;
  temperature_is=StringLine::NextWord(line,start,':');
  colon=StringLine::NextWord(line,start);
  T=atof(StringLine::NextWord(line,start).c_str());
- cout<<the<<endl<<temperature_is<<endl<<T<<endl;
+ cout << the << endl << temperature_is << endl << T << endl;
  \endcode
  @author PTO
  @version 0.1
@@ -108,11 +108,11 @@ class StringLine
 	 string s="32.12";
 	 double d;
 	 if(StringLine::ToNumber(d,s,std::dec))
-	 	cout<<"double="<<d<<endl;
+	 	cout << "double=" << d << endl;
 	 string hexanum="ff";
 	 int i;
 	 if(StringLine::ToNumber(i,hexanum,std::hex))
-	 	cout<<"int="<<i<<endl;
+	 	cout << "int=" << i << endl;
 	 \endcode
 	 \param s : the input string
 	 \param t : the output value

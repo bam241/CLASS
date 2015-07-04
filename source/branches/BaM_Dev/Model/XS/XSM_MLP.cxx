@@ -163,7 +163,7 @@ void XSM_MLP::GetMLPWeightFiles()
 	
 	if (rep == NULL)
 	{
-		ERROR<<" Reading error for TMVA weight folder  "<<fTMVAWeightFolder.c_str()<<" : "<<strerror(errno)<<endl;
+		ERROR << " Reading error for TMVA weight folder  " << fTMVAWeightFolder.c_str() << " : " << strerror(errno) << endl;
 		exit(1);
 	}
 	
@@ -264,7 +264,7 @@ TTree* XSM_MLP::CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep)
 	for( it2 = fMapOfTMVAVariableNames.begin() ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
 	{
 		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first ) ;
-		DBGV((*it2).first.Z()<<" "<<(*it2).first.A()<<" "<<InputTMVA[j]);
+		DBGV((*it2).first.Z() << " " << (*it2).first.A() << " " << InputTMVA[j]);
 		j++;
 	}
 	

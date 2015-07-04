@@ -91,10 +91,10 @@ Reactor::Reactor(CLASSLogger* log,
 	fFuelPlan = 0;
 	
 	INFO << " A Reactor has been define :" << endl;
-	INFO << "\t Fuel Composition is fixed (for now)! "<< endl;
+	INFO << "\t Fuel Composition is fixed (for now)! " <<  endl;
 	INFO << "\t Creation time set at \t " << ((double)GetCreationTime())/((double)cYear) << " year" << endl;
 	INFO << "\t Life time (Operating's Duration) set at \t " << ((double)GetLifeTime())/((double)cYear) << " year" << endl;
-	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << CapacityFactor << " capacity factor)"<< endl;
+	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << CapacityFactor << " capacity factor)" <<  endl;
 	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 	
 	DBGL
@@ -133,10 +133,10 @@ Reactor::Reactor(CLASSLogger* log,
 	
 	
 	INFO << " A Reactor has been define :" << endl;
-	INFO << "\t Fuel Composition is not fixed (for now)! "<< endl;
+	INFO << "\t Fuel Composition is not fixed (for now)! " <<  endl;
 	INFO << "\t Creation time set at \t " << ((double)GetCreationTime())/((double)cYear) << " year" << endl;
 	INFO << "\t Life time (Operating's Duration) set at \t " << ((double)GetLifeTime())/((double)cYear) << " year" << endl;
-	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << Power << " and " << CapacityFactor << " capacity factor)"<< endl;
+	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << Power << " and " << CapacityFactor << " capacity factor)" <<  endl;
 	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 	
 	
@@ -177,10 +177,10 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels* fueltypeDB, FabricationPlant* 
 	
 	
 	INFO << " A Reactor has been define :" << endl;
-	INFO << "\t Fuel Composition is not fixed ! "<< endl;
+	INFO << "\t Fuel Composition is not fixed ! " <<  endl;
 	INFO << "\t Creation time set at \t " << (double)(GetCreationTime()/cYear) << " year" << endl;
 	INFO << "\t Life time (Operating's Duration) set at \t " << ((double)GetLifeTime())/((double)cYear) << " year" << endl;
-	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << Power << " and " << CapacityFactor << " capacity factor)"<< endl;
+	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << Power << " and " << CapacityFactor << " capacity factor)" <<  endl;
 	INFO << "\t Burn-Up at end of Cycle set at \t " << (double)(fBurnUp) << " GWj/t" << endl;
 	INFO << "\t The corresponding Cycle Time is\t " << ((double)fCycleTime)/((double)cYear) << " year" << endl;
 	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
@@ -221,7 +221,7 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels* 	fueltypeDB,
 	
 	
 	INFO << " A Reactor has been define :" << endl;
-	INFO << "\t Fuel Composition is not fixed ! "<< endl;
+	INFO << "\t Fuel Composition is not fixed ! " <<  endl;
 	INFO << "\t Creation time set at \t " << ((double)GetCreationTime())/((double)cYear) << " year" << endl;
 	INFO << "\t Life time (Operating's Duration) set at \t " << ((double)GetCreationTime())/((double)cYear) << " year" << endl;
 	INFO << "\t The Cycle Time set at\t " << ((double)fCycleTime)/((double)cYear) << " year" << endl;
@@ -278,11 +278,11 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	fFuelPlan->AddFuel(creationtime, CLASSFuel(evolutivedb), fBurnUp);
 	
 	INFO << " A Reactor has been define :" << endl;
-	INFO << "\t Fuel Composition is fixed ! "<< endl;
+	INFO << "\t Fuel Composition is fixed ! " <<  endl;
 	INFO << "\t Creation time set at \t " << (double)(GetCreationTime()/cYear) << " year" << endl;
 	INFO << "\t Life time (Operating's Duration) set at \t " << ((double)GetLifeTime())/((double)cYear) << " year" << endl;
 	INFO << "\t The Cycle Time set at\t " << ((double)fCycleTime)/((double)cYear) << " year" << endl;
-	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << CapacityFactor << " capacity factor)"<< endl;
+	INFO << "\t The Effective Thermal Power is \t " << (double)(fPower *1e-6) << " MW (with Full Power " << power << " and " << CapacityFactor << " capacity factor)" <<  endl;
 	INFO << "\t The Heavy Metal Mass in the Core set at " << (double)(fHeavyMetalMass) << " tons" << endl << endl;
 		
 	DBGL
@@ -330,7 +330,7 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	fFuelPlan->AddFuel(creationtime, CLASSFuel(evolutivedb), fBurnUp);
 	
 	INFO << " A Reactor has been define :" << endl;
-	INFO << "\t Fuel Composition is fixed ! "<< endl;
+	INFO << "\t Fuel Composition is fixed ! " <<  endl;
 	INFO << "\t Creation time set at \t " << ((double)GetCreationTime())/((double)cYear) << " year" << endl;
 	INFO << "\t Life time (Operating's Duration) set at \t " << ((double)GetLifeTime())/((double)cYear) << " year" << endl;
 	INFO << "\t The Cycle Time set at\t " << ((double)fCycleTime)/((double)cYear) << " year" << endl;
@@ -435,7 +435,7 @@ void Reactor::Evolution(cSecond t)
 	else if(fIsStarted)
 	{
 		WARNING << " Reactor should be working but have no Heavy Nucleus Inside. It's not working so have a zero power..."
-		<< " Time : "<< t/cYear << " years" << endl;
+		 <<  " Time : " <<  t/cYear << " years" << endl;
 	}
 	
 	

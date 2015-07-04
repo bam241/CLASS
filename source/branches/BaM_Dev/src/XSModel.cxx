@@ -184,12 +184,12 @@ bool XSModel::isIVInDomain(IsotopicVector IV)
 			{
 				IsInDomain = false;
 				
-				WARNING<<"Fresh fuel out of model range"<<endl;
-				WARNING<<"\t AT LEAST this ZAI is accused to be outrange :"<<endl;
-				WARNING<<"\t\t"<<Domain_it->first.Z()<<" "<<Domain_it->first.A()<<" "<<Domain_it->first.I()<<endl;
-				WARNING<<"\t\t min="<<ThatZAIMin<<" value="<<ThatZAIProp<<" max="<<ThatZAIMax<<endl;
-				WARNING<<"\t IV accused :"<<endl<<endl;
-				WARNING<<IVNorm.sPrint()<<endl;
+				WARNING << "Fresh fuel out of model range" << endl;
+				WARNING << "\t AT LEAST this ZAI is accused to be outrange :" << endl;
+				WARNING << "\t\t" << Domain_it->first.Z() << " " << Domain_it->first.A() << " " << Domain_it->first.I() << endl;
+				WARNING << "\t\t min=" << ThatZAIMin << " value=" << ThatZAIProp << " max=" << ThatZAIMax << endl;
+				WARNING << "\t IV accused :" << endl << endl;
+				WARNING << IVNorm.sPrint() << endl;
 				break;
 			}
 		}

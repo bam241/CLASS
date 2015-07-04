@@ -91,7 +91,7 @@ public:
 	//@{
 	string GetCLASSLoggerName() const { return fCLASSLoggerName; }	//!< return the CLASSLogger name
 
-	LogType &operator<<(std::ostream& (*manip)(std::ostream &))
+	LogType &operator << (std::ostream& (*manip)(std::ostream &))
 	{
 		manip( *(this->fLog) );
 		if(fLog2)
@@ -101,7 +101,7 @@ public:
 
 
 	template<typename T>
-	inline LogType& operator<<(T something)
+	inline LogType& operator << (T something)
 	{
                 *(this->fLog) << something;
 		if(fLog2)

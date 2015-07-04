@@ -57,7 +57,7 @@ void CLASSNucleiFiliation::Add( ZAI Mother, IsotopicVector Daughter )
 //________________________________________________________________________
 IsotopicVector CLASSNucleiFiliation::GetFiliation(ZAI Mother)
 {
-	DBGV(Mother.Z()<<" "<<Mother.A()<<" "<<Mother.I());
+	DBGV(Mother.Z() << " " << Mother.A() << " " << Mother.I());
 	map<ZAI, IsotopicVector>::iterator it_Filiation;
 	
 	it_Filiation = fNucleiFiliation.find(Mother);	// search for the ZAI in the map

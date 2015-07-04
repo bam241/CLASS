@@ -61,7 +61,7 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(string TMVAWeightPath, double keff_target, st
 	INFO << "__An equivalence model has been define__" << endl;
 	INFO << "\tThis model is based on the prediction of keff at a specific time" << endl;
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
-	INFO << "\t"<<"( "<<fTMVAWeightPath[0]<<" | "<<fMLPInformationFile<<" )" << endl;
+	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | " << fInformationFile << " )" << endl;
 
 	DBGL
 }
@@ -94,7 +94,7 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(CLASSLogger* log, string TMVAWeightPath, doub
 	INFO << "__An equivalence model has been define__" << endl;
 	INFO << "\tThis model is based on the prediction of keff at a specific time" << endl;
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
-	INFO << "\t"<<"( "<<fTMVAWeightPath[0]<<" | "<<fMLPInformationFile<<" )" << endl;
+	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | "  << fInformationFile << " )" << endl;
 
 	DBGL
 }
@@ -215,12 +215,8 @@ void EQM_FBR_MLP_Keff::LoadKeyword()
 {
 	DBGL
 
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_timestep",	& EQM_FBR_MLP_Keff::ReadTimeSteps));
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_specpower",	& EQM_FBR_MLP_Keff::ReadSpecificPower));
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_contentmax",	& EQM_FBR_MLP_Keff::ReadMaximalContent));
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_zainame",	& EQM_FBR_MLP_Keff::ReadZAIName)	 );
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_fissil",	& EQM_FBR_MLP_Keff::ReadFissil)	 );
-	fDKeyword.insert( pair<string, MLP_FBR_Keff_DMthPtr>( "k_fertil",	& EQM_FBR_MLP_Keff::ReadFertil)	 );
+	fDKeyword.insert( pair<string, FBR_MLP_Keff_DMthPtr>( "k_timestep",	& EQM_FBR_MLP_Keff::ReadTimeSteps));
+	fDKeyword.insert( pair<string, FBR_MLP_Keff_DMthPtr>( "k_zainame",	& EQM_FBR_MLP_Keff::ReadZAIName)	 );
 
 	DBGL
 }
@@ -249,85 +245,6 @@ void EQM_FBR_MLP_Keff::ReadZAIName(const string &line)
 
 
 //________________________________________________________________________
-void EQM_FBR_MLP_Keff::ReadSpecificPower(const string &line)
-{
-	DBGL
-	int pos = 0;
-	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_specpower")	// Check the keyword
-	{
-		ERROR << " Bad keyword : \"k_specpower\" Not found !" << endl;
-		exit(1);
-	}
-
-	fSpecificPower = atof(StringLine::NextWord(line, pos, ' ').c_str());
-	
-	DBGL
-}
-
-//________________________________________________________________________
-void EQM_FBR_MLP_Keff::ReadMaximalContent(const string &line)
-{
-	DBGL
-	int pos = 0;
-	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_contentmax")	// Check the keyword
-	{
-		ERROR << " Bad keyword : \"k_contentmax\" Not found !" << endl;
-		exit(1);
-	}
-	
-	fMaximalContent = atof(StringLine::NextWord(line, pos, ' ').c_str());
-	
-	DBGL
-}
-
-//________________________________________________________________________
-void EQM_FBR_MLP_Keff::ReadFissil(const string &line)
-{
-	DBGL
-	int pos = 0;
-	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_fissil" )	// Check the keyword
-	{
-		ERROR << " Bad keyword : \"k_fissil\" not found !" << endl;
-		exit(1);
-	}
-	
-	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	double Q = atof(StringLine::NextWord(line, pos, ' ').c_str());
-	
-	fFertileList.Add(Z, A, I, Q);
-	
-	DBGL
-}
-
-//________________________________________________________________________
-void EQM_FBR_MLP_Keff::ReadFertil(const string &line)
-{
-	DBGL
-	int pos = 0;
-	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_fertil" )	// Check the keyword
-	{
-		ERROR << " Bad keyword : \"k_fertil\" not found !" << endl;
-		exit(1);
-	}
-	
-	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	
-	string name = StringLine::NextWord(line, pos, ' ');
-	
-	fMapOfTMVAVariableNames.insert( pair<ZAI,string>( ZAI(Z, A, I), name ) );
-	
-	DBGL
-}
-
-//________________________________________________________________________
 void EQM_FBR_MLP_Keff::ReadTimeSteps(const string &line)
 {
 	DBGL
@@ -353,7 +270,7 @@ void EQM_FBR_MLP_Keff::ReadLine(string line)
 	int pos = 0;
 	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
 	
-	map<string, MLP_FBR_Keff_DMthPtr>::iterator it = fDKeyword.find(keyword);
+	map<string, FBR_MLP_Keff_DMthPtr>::iterator it = fDKeyword.find(keyword);
 	
 	if(it != fDKeyword.end())
 		(this->*(it->second))( line );
@@ -370,7 +287,7 @@ double EQM_FBR_MLP_Keff::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 	DBGL
 	
 	if(TargetBU != 0)
-		WARNING<<"The third arguement : Burnup has no effect here.";
+		WARNING << "The third arguement : Burnup has no effect here.";
 
 
 	//initialization
@@ -413,7 +330,7 @@ double EQM_FBR_MLP_Keff::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 		
 	}while(fabs(fTargetKeff-PredictedKeff)>Precision);
 	
-	DBGV( "Predicted keff "<<PredictedKeff<<" FissileContent "<<FissileContent << endl);
+	DBGV( "Predicted keff " << PredictedKeff << " FissileContent " << FissileContent << endl);
 	return FissileContent;
 
 }

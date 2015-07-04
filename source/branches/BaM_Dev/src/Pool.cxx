@@ -42,9 +42,9 @@ Pool::Pool(CLASSLogger* log, cSecond coolingtime):CLASSBackEnd(log, coolingtime,
 	SetName("P_Pool.");
 
 	
-	INFO	<< " A new Pool has been define :" << endl;
-	INFO	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/cYear) << " year" << endl;
-	WARNING	<< " All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
+	INFO	 <<  " A new Pool has been define :" << endl;
+	INFO	 <<  "\t The Cooling Time set at\t " << (double)(fCycleTime/cYear) << " year" << endl;
+	WARNING	 <<  " All Cooled Fuel goes directly to WASTE after cooling !! " << endl;
 
 	DBGL
 
@@ -64,8 +64,8 @@ Pool::Pool(CLASSLogger* log, CLASSBackEnd* storage, cSecond coolingtime):CLASSBa
 
 	
 
-	INFO	<< " A new Pool has been define :" << endl;
-	INFO	<< "\t The Cooling Time set at\t " << (double)(fCycleTime/cYear) << " year" << endl;
+	INFO	 <<  " A new Pool has been define :" << endl;
+	INFO	 <<  "\t The Cooling Time set at\t " << (double)(fCycleTime/cYear) << " year" << endl;
 
 	DBGL
 
@@ -83,7 +83,7 @@ Pool::~Pool()
 void Pool::SetIVArray(vector<IsotopicVector> ivarray)
 {
 	INFO << "This method as no effect !!!" << endl;
-	INFO << "Use SetIVArray(vector<IsotopicVector> ivarray, vector<cSecond>n timearray) unstead!!!!"<<endl;
+	INFO << "Use SetIVArray(vector<IsotopicVector> ivarray, vector<cSecond>n timearray) unstead!!!!" << endl;
 }
 
 
@@ -153,7 +153,7 @@ DBGL
 		{
 			if (t -  fIVArrayArrivalTime[i] > fCycleTime) // Warning & Quit
 			{
-				ERROR << " Cooling Step : " << t/cYear<< " :" << " an evolution Step is probably missing ! " << " " << endl;
+				ERROR << " Cooling Step : " << t/cYear <<  " :" << " an evolution Step is probably missing ! " << " " << endl;
 				exit (1);
 			}
    
@@ -217,7 +217,7 @@ DBGL
 	
 	if((int)fCoolingEndOfCycle.size() != 0 )// Control
 	{
-		ERROR << "Problem while Dumping Cooling"<< endl;
+		ERROR << "Problem while Dumping Cooling" <<  endl;
 		exit (1);
 	}
 DBGL

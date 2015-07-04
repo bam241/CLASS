@@ -38,9 +38,9 @@ XSM_CLOSEST::XSM_CLOSEST(string DB_index_file, bool oldreadmethod ): XSModel(new
 	ReadDataBase();
 
 	// Warning
-	INFO 	<< " A EvolutionData has been define :" << endl;
-	INFO	<< "\t His index is : \"" << DB_index_file << "\" " << endl;
-	INFO	<< "\t " << fFuelDataBank.size() << " EvolutionData have been read."<< endl << endl;
+	INFO 	 <<  " A EvolutionData has been define :" << endl;
+	INFO	 <<  "\t His index is : \"" << DB_index_file << "\" " << endl;
+	INFO	 <<  "\t " << fFuelDataBank.size() << " EvolutionData have been read." <<  endl << endl;
 
 }
 
@@ -55,9 +55,9 @@ XSM_CLOSEST::XSM_CLOSEST(CLASSLogger* Log,string DB_index_file, bool oldreadmeth
 	ReadDataBase();
 
 	// Warning
-	INFO 	<< " A EvolutionData has been define :" << endl;
-	INFO	<< "\t His index is : \"" << DB_index_file << "\" " << endl;
-	INFO	<< "\t " << fFuelDataBank.size() << " EvolutionData have been read."<< endl << endl;
+	INFO 	 <<  " A EvolutionData has been define :" << endl;
+	INFO	 <<  "\t His index is : \"" << DB_index_file << "\" " << endl;
+	INFO	 <<  "\t " << fFuelDataBank.size() << " EvolutionData have been read." <<  endl << endl;
 
 }
 
@@ -96,7 +96,7 @@ void XSM_CLOSEST::ReadDataBase()
 	getline(DataDB, line);
 	if( StringLine::NextWord(line, start, ' ') != "TYPE")
 	{
-		ERROR << " Bad Database file : " <<  fDataBaseIndex << " Can't find the type of the DataBase"<< endl;
+		ERROR << " Bad Database file : " <<  fDataBaseIndex << " Can't find the type of the DataBase" <<  endl;
 		exit (1);
 	}
 	fFuelType = StringLine::NextWord(line, start, ' ');
@@ -316,7 +316,7 @@ void XSM_CLOSEST::CalculateDistanceParameter()
 
 	if(GetLog())
 	{
-		INFO <<"!!INFO!! Distance Parameters "<<endl;
+		INFO  << "!!INFO!! Distance Parameters " << endl;
 		map<ZAI ,double >::iterator it2;
 		for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
 		{
@@ -337,7 +337,7 @@ void XSM_CLOSEST::SetDistanceParameter(IsotopicVector DistanceParameter)
 
 	fDistanceParameter = DistanceParameter;
 
-	INFO <<"!!INFO!! Distance Parameters "<<endl;
+	INFO  << "!!INFO!! Distance Parameters " << endl;
 	map<ZAI ,double >::iterator it2;
 	for(it2 = fDistanceParameter.GetIsotopicQuantity().begin();it2 != fDistanceParameter.GetIsotopicQuantity().end(); it2++)
 	{
@@ -361,11 +361,11 @@ void XSM_CLOSEST::SetDistanceType(int DistanceType)
 	}
 	else if(fDistanceType == 2 && Norme(fDistanceParameter)==0){
 		// This is so bad!! You will probably unsynchronize all the reactor....
-		WARNING << " Distance use weight defined by user for each isotope, but no weight have been given" << endl<<"Use SetDistanceParameter()"<<endl;
+		WARNING << " Distance use weight defined by user for each isotope, but no weight have been given" << endl << "Use SetDistanceParameter()" << endl;
 		exit(1);
 	}
 	else if (fDistanceType != 0 && fDistanceType != 1 && fDistanceType != 2 ){
-		ERROR << " Distancetype defined by the user isn't recognized by the code"<<endl;
+		ERROR << " Distancetype defined by the user isn't recognized by the code" << endl;
 		exit(1);
 	}
 	

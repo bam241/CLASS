@@ -57,11 +57,11 @@ Scenario::Scenario(CLASSLogger* log, cSecond abstime):CLASSObject(log)
 	// Warning
 
 
-	INFO 	<< " Parc has been define :" << endl;
-	INFO	<< " Print  set at : " << (double)(fPrintStep/cYear) << " year" << endl;
-	INFO	<< " StockManagement set at : true" << endl;
-	INFO	<< " OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	INFO	<< " Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
+	INFO 	 <<  " Parc has been define :" << endl;
+	INFO	 <<  " Print  set at : " << (double)(fPrintStep/cYear) << " year" << endl;
+	INFO	 <<  " StockManagement set at : true" << endl;
+	INFO	 <<  " OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
+	INFO	 <<  " Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
 
 
 
@@ -93,11 +93,11 @@ Scenario::Scenario( cSecond abstime, CLASSLogger* log):CLASSObject(log)
 	// Warning
 	
 	
-	INFO 	<< " Parc has been define :" << endl;
-	INFO	<< " Print  set at : " << (double)(fPrintStep/cYear) << " year" << endl;
-	INFO	<< " StockManagement set at : true" << endl;
-	INFO	<< " OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	INFO	<< " Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
+	INFO 	 <<  " Parc has been define :" << endl;
+	INFO	 <<  " Print  set at : " << (double)(fPrintStep/cYear) << " year" << endl;
+	INFO	 <<  " StockManagement set at : true" << endl;
+	INFO	 <<  " OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
+	INFO	 <<  " Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
 	
 	
 	
@@ -128,11 +128,11 @@ Scenario::Scenario( cSecond abstime ):CLASSObject(new CLASSLogger("CLASS_OUTPUT.
 	// Warning
 	
 	
-	INFO 	<< " Parc has been define :" << endl;
-	INFO	<< " Print  set at : " << (double)(fPrintStep/cYear) << " year" << endl;
-	INFO	<< " StockManagement set at : true" << endl;
-	INFO	<< " OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
-	INFO	<< " Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
+	INFO 	 <<  " Parc has been define :" << endl;
+	INFO	 <<  " Print  set at : " << (double)(fPrintStep/cYear) << " year" << endl;
+	INFO	 <<  " StockManagement set at : true" << endl;
+	INFO	 <<  " OutPut will be in \"" << fOutputFileName << "\" File and \"" << fOutputTreeName << "\" TTree" << endl;
+	INFO	 <<  " Log will be in " << GetLog()->GetCLASSLoggerName() << endl;
 	
 	
 	
@@ -542,7 +542,7 @@ void Scenario::BuildTimeVector(cSecond t)
 	ofstream TimeStepfile("CLASS_TimeStep", ios_base::app);		// Open the File
 
 	if(!TimeStepfile)
-		WARNING	<< " Can't open \" CLASS_TimeStep \"\n" << endl;
+		WARNING	 <<  " Can't open \" CLASS_TimeStep \"\n" << endl;
 
 	map<cSecond ,int >::iterator it;
 	for( it = fTimeStep.begin(); it != fTimeStep.end(); it++)
@@ -774,7 +774,7 @@ void Scenario::OpenOutputTree()
 
 	if(!fOutFile)
 	{
-		ERROR << "\nCould not open " << fOutputFileName <<endl;
+		ERROR << "\nCould not open " << fOutputFileName  << endl;
 		exit(-1);
 	}
 	INFO << "\t ...OK!" << endl;
@@ -802,7 +802,7 @@ void Scenario::CloseOutputTree()
 	if(fOutFile->IsOpen()) {
 		INFO << "Deleting outTree : " << endl;
 		delete fOutT;
-		INFO << "Closing file : " << fOutputFileName <<endl;
+		INFO << "Closing file : " << fOutputFileName  << endl;
 		fOutFile-> Close();
 		delete fOutFile;
 	} else {
@@ -872,7 +872,7 @@ void Scenario::Print()
 		INFO << "!!!!!!!!!STEP : " << fAbsoluteTime/(int)(cYear) << endl;
 		INFO << "Pool : " << endl;
 		INFO << "Cooling ";
-		INFO << fPool[i]->GetIVArray().size()<< endl;
+		INFO << fPool[i]->GetIVArray().size() <<  endl;
 	}
 	
 	for(int i = 0; i < (int)fReactor.size(); i++)

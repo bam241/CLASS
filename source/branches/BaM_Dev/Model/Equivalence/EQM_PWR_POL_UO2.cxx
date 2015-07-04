@@ -62,8 +62,8 @@ void EQM_PWR_POL_UO2::ReadWeightFile(string PathToWeightFile)
 	fParam_Bu = atof(StringLine::NextWord(line, start, ' ').c_str());
 	fParam_BuSquare = atof(StringLine::NextWord(line, start, ' ').c_str());
 	
-	INFO << "Weight parameters has been read "<<endl;
-	INFO <<"\t U enrichment = "<<fParam_Bu_0<<" + "<<fParam_Bu<<"*Burnup + "<< fParam_BuSquare<<"*Burnup*Burnup"<<endl;
+	INFO << "Weight parameters has been read " << endl;
+	INFO  << "\t U enrichment = " << fParam_Bu_0 << " + " << fParam_Bu << "*Burnup + " <<  fParam_BuSquare << "*Burnup*Burnup" << endl;
 }
 // _______________________________________________________________________
 double EQM_PWR_POL_UO2::GetFissileMolarFraction ( IsotopicVector Fissil , IsotopicVector Fertil , double BurnUp )

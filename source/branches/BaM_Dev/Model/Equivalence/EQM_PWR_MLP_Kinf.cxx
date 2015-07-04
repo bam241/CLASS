@@ -1,5 +1,6 @@
 #include "EQM_PWR_MLP_Kinf.hxx"
 #include "CLASSLogger.hxx"
+#include "CLASSMethod.hxx"
 #include "StringLine.hxx"
 
 #include <string>
@@ -30,8 +31,9 @@ EQM_PWR_MLP_Kinf::EQM_PWR_MLP_Kinf(string WeightPathAlpha0, string WeightPathAlp
 	fTMVAWeightPath.push_back(WeightPathAlpha1);
 	fTMVAWeightPath.push_back(WeightPathAlpha2);
 
-	fMLPInformationFile = InformationFile;
-	GetModelInformation();//Getting information from fMLPInformationFile
+	fInformationFile = InformationFile;
+	LoadKeyword();
+	ReadNFO();//Getting information from fMLPInformationFile
 
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
@@ -41,11 +43,11 @@ EQM_PWR_MLP_Kinf::EQM_PWR_MLP_Kinf(string WeightPathAlpha0, string WeightPathAlp
 	INFO << "__An equivalence model has been define__" << endl;
 	INFO << "\tThis model is based on the prediction of kinf" << endl;
 	INFO << "\tThe TMVA weight  files are :" << endl;
-	INFO << "\t"<<fTMVAWeightPath[0] << endl;
-	INFO << "\t"<<fTMVAWeightPath[1] << endl;
-	INFO << "\t"<<fTMVAWeightPath[2] << endl;
+	INFO << "\t" << fTMVAWeightPath[0] << endl;
+	INFO << "\t" << fTMVAWeightPath[1] << endl;
+	INFO << "\t" << fTMVAWeightPath[2] << endl;
 	INFO << "\tThe Information file is :" << endl;
-	INFO << "\t"<<fMLPInformationFile << endl;
+	INFO << "\t" << fInformationFile << endl;
 
 }
 //________________________________________________________________________
@@ -56,8 +58,9 @@ EQM_PWR_MLP_Kinf::EQM_PWR_MLP_Kinf(CLASSLogger* log, string WeightPathAlpha0, st
 	fTMVAWeightPath.push_back(WeightPathAlpha1);
 	fTMVAWeightPath.push_back(WeightPathAlpha2);
 
-	fMLPInformationFile = InformationFile;
-	GetModelInformation();//Getting information from fMLPInformationFile
+	fInformationFile = InformationFile;
+	LoadKeyword();
+	ReadNFO();//Getting information from fMLPInformationFile
 
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
@@ -67,11 +70,11 @@ EQM_PWR_MLP_Kinf::EQM_PWR_MLP_Kinf(CLASSLogger* log, string WeightPathAlpha0, st
 	INFO << "__An equivalence model has been define__" << endl;
 	INFO << "\tThis model is based on the prediction of kinf" << endl;
 	INFO << "\tThe TMVA weight  files are :" << endl;
-	INFO << "\t"<<fTMVAWeightPath[0] << endl;
-	INFO << "\t"<<fTMVAWeightPath[1] << endl;
-	INFO << "\t"<<fTMVAWeightPath[2] << endl;
+	INFO << "\t" << fTMVAWeightPath[0] << endl;
+	INFO << "\t" << fTMVAWeightPath[1] << endl;
+	INFO << "\t" << fTMVAWeightPath[2] << endl;
 	INFO << "\tThe Information file is :" << endl;
-	INFO << "\t"<<fMLPInformationFile << endl;
+	INFO << "\t" << fInformationFile << endl;
 
 }
 //________________________________________________________________________
@@ -80,11 +83,14 @@ EQM_PWR_MLP_Kinf::EQM_PWR_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, strin
 	/**The information file and tmva weight*/
 	fTMVAWeightPath.push_back(TMVAWeightPath);
 
+	/* INFORMATION FILE HANDLING */
+	
 	if(InformationFile=="")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
-
-	fMLPInformationFile = InformationFile;
-	GetModelInformation();//Getting information from fMLPInformationFile
+	
+	fInformationFile = InformationFile;
+	LoadKeyword();
+	ReadNFO();//Getting information from fMLPInformationFile
 
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
@@ -95,7 +101,7 @@ EQM_PWR_MLP_Kinf::EQM_PWR_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, strin
 	INFO << "__An equivalence model has been define__" << endl;
 	INFO << "\tThis model is based on the prediction of kinf" << endl;
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
-	INFO << "\t"<<"( "<<fTMVAWeightPath[0]<<" | "<<fMLPInformationFile<<" )" << endl;
+	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | " << fInformationFile << " )" << endl;
 
 }
 //________________________________________________________________________
@@ -107,9 +113,10 @@ EQM_PWR_MLP_Kinf::EQM_PWR_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,  int
 
 	if(InformationFile=="")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
-
-	fMLPInformationFile = InformationFile;
-	GetModelInformation();//Getting information from fMLPInformationFile
+	
+	fInformationFile = InformationFile;
+	LoadKeyword();
+	ReadNFO();//Getting information from fMLPInformationFile
 
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
@@ -120,10 +127,61 @@ EQM_PWR_MLP_Kinf::EQM_PWR_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,  int
 	INFO << "__An equivalence model has been define__" << endl;
 	INFO << "\tThis model is based on the prediction of kinf" << endl;
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
-	INFO << "\t"<<"( "<<fTMVAWeightPath[0]<<" | "<<fMLPInformationFile<<" )" << endl;
+	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | " << fInformationFile << " )" << endl;
 
 
 }
+
+//________________________________________________________________________
+void EQM_PWR_MLP_Kinf::LoadKeyword()
+{
+	DBGL
+	
+	fDKeyword.insert( pair<string, PWR_MLP_KINF_DMthPtr>( "k_zainame", &EQM_PWR_MLP_Kinf::ReadZAIName) );
+	
+	DBGL
+}
+
+
+//________________________________________________________________________
+void EQM_PWR_MLP_Kinf::ReadZAIName(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_zainame" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_zainame\" not found !" << endl;
+		exit(1);
+	}
+	
+	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	
+	fFissileList.Add(Z, A, I, 1.0);
+	
+	DBGL
+}
+
+
+//________________________________________________________________________
+void EQM_PWR_MLP_Kinf::ReadLine(string line)
+{
+	DBGL
+	
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	
+	map<string, PWR_MLP_KINF_DMthPtr>::iterator it = fDKeyword.find(keyword);
+	
+	if(it != fDKeyword.end())
+		(this->*(it->second))( line );
+	
+	DBGL
+}
+
+
 
 //________________________________________________________________________
 TTree* EQM_PWR_MLP_Kinf::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double ThisTime)
@@ -163,7 +221,7 @@ TTree* EQM_PWR_MLP_Kinf::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 	for( it2 = fMapOfTMVAVariableNames.begin() ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
 	{
 		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first ) ;
-		//DBGV((*it2).first.Z()<<" "<<(*it2).first.A()<<" "<<InputTMVA[j]);
+		//DBGV((*it2).first.Z() << " " << (*it2).first.A() << " " << InputTMVA[j]);
 		j++;
 	}
 
@@ -222,136 +280,8 @@ double EQM_PWR_MLP_Kinf::ExecuteTMVA(TTree* InputTree,string WeightPath, bool Is
 
 	return (double)val;//retourn k_{inf}(t=Time)
 }
-//________________________________________________________________________
-void EQM_PWR_MLP_Kinf::GetModelInformation()
-{
-DBGL
-	ifstream FILE(fMLPInformationFile.c_str());
-	if(FILE.good())
-	{
-		while(!FILE.eof())
-		{
-			string line;
-			getline(FILE, line);  
-			if(line=="") //ie if eof
-				break;
 
-			size_t foundSpecPow	= line.find("Specific Power (W/gHM) :");
-			size_t foundBU 		= line.find("Maximal burnup (GWd/tHM) :");
-			size_t foundContent	= line.find("Maximal fissile content (molar proportion) :");
-			size_t foundZAI	  	= line.find("Z A I Name (input MLP) :");
-			size_t foundFissile = line.find("Fissile Liste (Z A I) :");
-			size_t foundFertile = line.find("Fertile Liste (Z A I Default Proportion) :");
 
-			int pos=0;
-			if(foundSpecPow !=std::string::npos)
-			{	StringLine::NextWord(line,pos,':');
-				fSpecificPower = atof( (StringLine::NextWord(line,pos,':') ).c_str() );
-			}
- 			pos=0;
-			if(foundBU!=std::string::npos)
-			{
-				StringLine::NextWord(line,pos,':');
-				fMaximalBU = atof( (StringLine::NextWord(line,pos,':') ).c_str() );
-			}
-			pos=0;
-			if(foundContent!=std::string::npos)
-			{
-				StringLine::NextWord(line,pos,':');
-				fMaximalContent = atof( (StringLine::NextWord(line,pos,':') ).c_str() );
-			}
- 			pos=0;
-			if(foundZAI != std::string::npos)
-			{	string Z;
-				string A;
-				string I;
-				string Name;
-				int posoflinebeforbadline=0;
-				do
-				{	posoflinebeforbadline = FILE.tellg();
-					getline(FILE, line);
-
-					stringstream ssline;
-					ssline<<line;
-					ssline>>Z>>A>>I>>Name;
-					if(StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I) )
-					{	
-						fMapOfTMVAVariableNames.insert( pair<ZAI,string>(ZAI(atoi(Z.c_str()),atoi(A.c_str()),atoi(I.c_str())),Name) );
-					}
-
-				}while((StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I)) && !FILE.eof());
-
-				FILE.seekg(posoflinebeforbadline); //return one line before
-
-			}
- 			pos=0;			
-			if(foundFissile != std::string::npos)
-			{	string Z;
-				string A;
-				string I;
-
-				int posoflinebeforbadline=0;
-				do
-				{	posoflinebeforbadline = FILE.tellg();
-					getline(FILE, line);
-
-					stringstream ssline;
-					ssline<<line;
-					ssline>>Z>>A>>I;
-					if(StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I) )
-						fFissileList.Add(atoi(Z.c_str()),atoi(A.c_str()),atoi(I.c_str()),1.0);
-					
-
-				}while((StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I)) && !FILE.eof());
-
-				FILE.seekg(posoflinebeforbadline); //return one line before
-
-			}
-			pos=0;
-			if(foundFertile != std::string::npos)
-			{	string Z;
-				string A;
-				string I;
-				string prop;
-				int posoflinebeforbadline=0;
-				do
-				{	posoflinebeforbadline = FILE.tellg();
-					getline(FILE, line);
-
-					stringstream ssline;
-					ssline<<line;
-					ssline>>Z>>A>>I>>prop;
-					if(StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I) )
-						fFertileList.Add(atoi(Z.c_str()),atoi(A.c_str()),atoi(I.c_str()),atof(prop.c_str()) );
-					
-				}while((StringLine::IsDouble(Z) && StringLine::IsDouble(A) && StringLine::IsDouble(I)) && !FILE.eof());
-
-				FILE.seekg(posoflinebeforbadline); //return one line before
-			}
-
-		}
-	}
-	else
-	{
-		ERROR << "Can't find/open file " << fMLPInformationFile << endl;
-		exit(1);
-	}
-
-	/********DEBUG*************************************/
-	INFO << "\tMLP kinf Information : " << endl;
-	INFO << "\t\tSpecific Power (W/gHM) :"<<fSpecificPower << endl;
-	INFO << "\t\tMaximal burnup (GWd/tHM) :"<<fMaximalBU << endl;
-	INFO << "\t\tMaximal fissile content (molar proportion) :"<<fMaximalContent << endl;	
-	INFO << "\t\tZ A I Name (input MLP) :" << endl;	
-	map<ZAI ,string >::iterator it;
-	for (it= fMapOfTMVAVariableNames.begin();it!=fMapOfTMVAVariableNames.end();it++)
-		INFO << "\t\t\t"<< it->first.Z()<<" "<<it->first.A()<<" "<<it->second << endl;
-	INFO << "Fissile Liste (Z A I) :" << endl;
-	INFO << fFissileList.sPrint() << endl;
-	INFO << "Fertile Liste (Z A I Default Proportion) :" << endl;
-	INFO << fFertileList.sPrint() << endl;
-DBGL
-}
 //________________________________________________________________________
 double EQM_PWR_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetBU)
 {
@@ -383,7 +313,7 @@ double EQM_PWR_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double Tar
 	{	
 		if(count > MaximumLoopCount )
 		{
-			ERROR<<"CRITICAL ! Can't manage to predict burnup\nHint : Try to increase the precision on k effective using :\n YourEQM_PWR_MLP_Kinf->SetPCMprecision(pcm); with pcm the precision in pcm (default 10) REDUCE IT\n If this message still appear mail to leniau@subatech.in2p3.fr\nor nicolas.thiolliere@subatech.in2p3.fr " << endl;
+			ERROR << "CRITICAL ! Can't manage to predict burnup\nHint : Try to increase the precision on k effective using :\n YourEQM_PWR_MLP_Kinf->SetPCMprecision(pcm); with pcm the precision in pcm (default 10) REDUCE IT\n If this message still appear mail to leniau@subatech.in2p3.fr\nor nicolas.thiolliere@subatech.in2p3.fr " << endl;
 			exit(1);
 		}
 
@@ -415,7 +345,7 @@ double EQM_PWR_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double Tar
  		k_av/=fNumberOfBatch;	
 
 		OldPredictedk_av = k_av;
-	//	DBGV("OldPredictedk_av "<<OldPredictedk_av<<" Bumax "<<SecondToBurnup(TheFinalTime) )
+	//	DBGV("OldPredictedk_av " << OldPredictedk_av << " Bumax " << SecondToBurnup(TheFinalTime) )
  		count++;
  	}	while( fabs(OldPredictedk_av-fKThreshold) > GetPCMprecision() )  ;
 
@@ -469,29 +399,29 @@ double EQM_PWR_MLP_Kinf::GetMaximumBurnUp_Pol2(IsotopicVector TheFuel,double Tar
 		}	
 		else
 		{
-			ERROR<<"No positive solution" << endl;
+			ERROR << "No positive solution" << endl;
 			exit(1);
 		}
 	}	
 	else if(Delta==0)
 	{	T = -B/(2*A);
 		if(T<0)
-		{	ERROR<<"No positive solution" << endl;
+		{	ERROR << "No positive solution" << endl;
 			exit(1);
 		}
 	}
 	else
 	{	
-		WARNING<<"No real solution" << endl;
+		WARNING << "No real solution" << endl;
 		double K_LongTime = Alpha_0+BurnupToSecond(10*TargetBU)*Alpha_1+Alpha_2*BurnupToSecond(10*TargetBU)*BurnupToSecond(10*TargetBU); 
-		DBGV("K_LongTime "<<K_LongTime)
+		DBGV("K_LongTime " << K_LongTime)
 
 		if(K_LongTime > fKThreshold)
 			return 10000;
 		else
 		{
-			ERROR<<" CRITICAL ! Can't find a physical solution ! \n Should not happening please contact BLG :" << endl;
-			ERROR<<"mail to baptiste.leniau@subatech.in2p2.fr\nor nicolas.thiolliere@subatech.in2p3.fr " << endl;
+			ERROR << " CRITICAL ! Can't find a physical solution ! \n Should not happening please contact BLG :" << endl;
+			ERROR << "mail to baptiste.leniau@subatech.in2p2.fr\nor nicolas.thiolliere@subatech.in2p3.fr " << endl;
 			exit(1);
 		}
 		
@@ -510,7 +440,7 @@ double EQM_PWR_MLP_Kinf::GetMaximumBurnUp(IsotopicVector TheFuel, double TargetB
 
 	else
 	{
-		ERROR<<"This method is not yet set up" << endl;
+		ERROR << "This method is not yet set up" << endl;
 		exit(0);
 	}
 
@@ -535,7 +465,7 @@ double EQM_PWR_MLP_Kinf::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicV
 	{
 		if(count > MaximumLoopCount )
 		{
-			ERROR<<"CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on burnup using :\nYourEQM_PWR_MLP_Kinf->SetBurnUpPrecision(prop); with prop the precision  (default 0.5percent :  0.005) INCREASE IT\nIf this message still appear mail to leniau@subatech.in2p3.fr\nor nicolas.thiolliere@subatech.in2p3.fr " << endl;
+			ERROR << "CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on burnup using :\nYourEQM_PWR_MLP_Kinf->SetBurnUpPrecision(prop); with prop the precision  (default 0.5percent :  0.005) INCREASE IT\nIf this message still appear mail to leniau@subatech.in2p3.fr\nor nicolas.thiolliere@subatech.in2p3.fr " << endl;
 			exit(1);
 		}
 
@@ -552,7 +482,7 @@ double EQM_PWR_MLP_Kinf::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicV
 
 		IsotopicVector FreshFuel = (1-FissileContent)*(Fertil/Fertil.GetSumOfAll()) + FissileContent*(Fissil/Fissil.GetSumOfAll());
 		PredictedBU = GetMaximumBurnUp(FreshFuel,TargetBU);
-	//	DBGV(PredictedBU<<"  "<<FissileContent);
+	//	DBGV(PredictedBU << "  " << FissileContent);
 
 		OldPredictedBU = PredictedBU;
 		count ++;
@@ -561,7 +491,7 @@ double EQM_PWR_MLP_Kinf::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicV
 
 
 
-DBGV("Predicted BU "<<PredictedBU<<" FissileContent "<<FissileContent);
+DBGV("Predicted BU " << PredictedBU << " FissileContent " << FissileContent);
 return FissileContent;
 }
 //________________________________________________________________________

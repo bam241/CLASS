@@ -46,7 +46,7 @@ using namespace std;
 
 class EQM_FBR_MLP_Keff_BOUND;
 #ifndef __CINT__
-typedef void (EQM_FBR_MLP_Keff_BOUND::*MLP_FBR_Keff_BOUND_DMthPtr)( const string & ) ;
+typedef void (EQM_FBR_MLP_Keff_BOUND::*FBR_MLP_Keff_BOUND_DMthPtr)( const string & ) ;
 #endif
 
 
@@ -142,22 +142,7 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	void ReadTimeSteps(const string &line);
 	//}
 	
-	//{
-	/// ReadSpecificPower : read the Specific Power of the DataBase
-	/*!
-	 \param line : line suppossed to contain the Specific Power information starts with "k_specpower" keyword
-	 */
-	void ReadSpecificPower(const string &line);
-	//}
-	
-	//{
-	/// ReadMaximalContent : read the approx. maximum fissile content reachable by the MLP model
-	/*!
-	 \param line : line suppossed to contain the maximal content information starts with "k_contentmax" keyword
-	 */
-	void ReadMaximalContent(const string &line);
-	//}
-	
+
 	//{
 	/// ReadZAIName : read the zai name in the TMWA MLP model
 	/*!
@@ -166,21 +151,7 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	void ReadZAIName(const string &line);
 	//}
 	
-	//{
-	/// ReadFissil : read the zai name in the TMWA MLP model starts with "k_fissil" keyword
-	/*!
-	 \param line : line suppossed to contain the fissil list
-	 */
-	void ReadFissil(const string &line);
-	//}
-	
-	//{
-	/// ReadFertil : read the zai name in the TMWA MLP model starts with "k_fertil" keyword
-	/*!
-	 \param line : line suppossed to contain the fertil list & their default isotopic fraction
-	 */
-	void ReadFertil(const string &line);
-	//}
+
 	
 	//{
 	/// ReadLine : read a line
@@ -200,14 +171,12 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	string fMLPInformationFile;				//!<The path to the informations necessary to execute the MLP
 	
 #ifndef __CINT__
-	map<string, MLP_FBR_Keff_BOUND_DMthPtr> fDKeyword;
+	map<string, FBR_MLP_Keff_BOUND_DMthPtr> fDKeyword;
 #endif
 	
 	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 	
 	vector<double> fMLP_Time;	//!< Time (in seconds) when the MLP(t)=keff(t) has been trained.
-	double 	fSpecificPower; 	//!< The specific power in W/gHM (HM: heavy Metal)
-	double  fMaximalContent;	//!< The approx. maximum fissile content reachable by the MLP model
 	
 	
 	
