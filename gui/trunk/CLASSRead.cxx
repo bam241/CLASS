@@ -72,7 +72,7 @@ int CurveColor(int graph_num)
 string itoa(int num)
 {
 	ostringstream os(ostringstream::out);
-	os<<setprecision(3)<<num;
+	os << setprecision(3) << num;
 	return os.str();
 }
 
@@ -89,7 +89,7 @@ CLASSRead::CLASSRead(TString filename)
 
 	for( int i =0; i < fFileIn.back()->GetNkeys(); i++)
 	{
-		//cout<<"KeyNum "<<i<<endl;
+		//cout << "KeyNum " << i << endl;
 		fData.push_back( (TTree*)gDirectory->Get(fFileIn.back()->GetListOfKeys()->At(fFileIn.back()->GetNkeys()-1)->GetName() ) );
 	}
 
@@ -1563,7 +1563,7 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 		exit(-1);
 	}
 
-	cout << "WARNING!! not working if using many CLASS.root file with different timestep!!!"<<endl;
+	cout << "WARNING!! not working if using many CLASS.root file with different timestep!!!" << endl;
 
 	if ( (int)fGraphInv.size() != 0 && PadName=="c_NucleiInv")
 	{
@@ -1881,9 +1881,9 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 	else
 	{
 		f << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << endl;
-		f << "<file filename = \""<< filename << "\" created=\" \""<<endl;
-		f << "<unit time=\"years\"  Masse=\"kg\" power=\"MW\" />"<<endl;
-                f << "<material matid=\" \">"<<endl;
+		f << "<file filename = \"" <<  filename << "\" created=\" \"" << endl;
+		f << "<unit time=\"years\"  Masse=\"kg\" power=\"MW\" />" << endl;
+                f << "<material matid=\" \">" << endl;
 		f << "\t<time>" << endl;
 
 
@@ -1892,12 +1892,12 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 
 		for (int i =0; i < (int)vTime.size(); i++) {
 
-			f << "\t\t<timestamp tid=\"" << i <<"\"  time=\""<< vTime[i] << "\" />" << endl;
+			f << "\t\t<timestamp tid=\"" << i  << "\"  time=\"" <<  vTime[i] << "\" />" << endl;
 		}
 		f << "\t</time>" << endl;
 
 
-		f<<"\t\t<Massehistory>"<<endl;
+		f << "\t\t<Massehistory>" << endl;
 
 
 
@@ -1909,8 +1909,8 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 		for (int i =0; i < (int)vTime.size(); i++)
 		{
 
-			f << "\t\t\t<compositiondata tid=\""<< i <<"\">"<<endl;
-			f << "\t\t\t\t<composition>"<<endl;
+			f << "\t\t\t<compositiondata tid=\"" <<  i  << "\">" << endl;
+			f << "\t\t\t\t<composition>" << endl;
 
 
 
@@ -2016,21 +2016,21 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 				}
 
 
-				f<<"\t\t\t\t\t<isotope zamid=\""<< itoa(toplot[j].fZAI.Z())<<itoa(toplot[j].fZAI.A())<<"\">"<<endl;
-				f<<"\t\t\t\t\t\t<facility "<< name <<">"<<"<masse>"<<vQuantity[j][i]<<"</masse>"<<"</facility>"<<endl;
+				f << "\t\t\t\t\t<isotope zamid=\"" <<  itoa(toplot[j].fZAI.Z()) << itoa(toplot[j].fZAI.A()) << "\">" << endl;
+				f << "\t\t\t\t\t\t<facility " <<  name  << ">" << "<masse>" << vQuantity[j][i] << "</masse>" << "</facility>" << endl;
 
 
-				f<<"\t\t\t\t\t</isotope>"<<endl;
+				f << "\t\t\t\t\t</isotope>" << endl;
 
 			}
 
-			f << "\t\t\t\t</composition>"<<endl;
-			f << "\t\t\t</compositiondata>"<<endl;
+			f << "\t\t\t\t</composition>" << endl;
+			f << "\t\t\t</compositiondata>" << endl;
 
 		}
 
-		f <<"\t\t</Massehistory>" << endl;
-		f <<"</material>"<<endl;
+		f  << "\t\t</Massehistory>" << endl;
+		f  << "</material>" << endl;
 		//------------------------------------------------------------------End of document XML
 
 		f.close();

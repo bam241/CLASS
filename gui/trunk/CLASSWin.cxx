@@ -167,7 +167,7 @@ void MainWin::Start(vector<string> VFileName)
 	tmp.str("");
 	tmp << "CLASSGui " ;
 	for(int i=0;i<int(VFileName.size());i++)
-		tmp <<VFileName[i]<<" " ;
+		tmp  << VFileName[i] << " " ;
 	
 	this->SetWindowName(tmp.str().c_str());
 	
@@ -183,7 +183,7 @@ void MainWin::Start(vector<string> VFileName)
 	{
 		fParcTabFoil[i] = new TGCompositeFrame;
 		stringstream ParcName;
-		ParcName<<"Park "<<i;
+		ParcName << "Park " << i;
 		fParcTabFoil[i] = fParcTab->AddTab(ParcName.str().c_str());
 	}
 	
@@ -323,7 +323,7 @@ void MainWin::Start(vector<string> VFileName)
 	{
 		stringstream tmp;
 		tmp.str("");
-		tmp<<"Dir#"<< step <<" @ "<<fDATA->GetTimeVector()[0][step]/cYear;
+		tmp << "Dir#" <<  step  << " @ " << fDATA->GetTimeVector()[0][step]/cYear;
 		fScenarTimeCBox->AddEntry(tmp.str().c_str(),step);
 	}
 	
@@ -1012,7 +1012,7 @@ void MainWin::FillItemTab(int current)
 		FillFabricationTab();
 	
 	if(current>5 || current<0)
-	{cout<<"BUG"<<endl; exit(0);}
+	{cout << "BUG" << endl; exit(0);}
 	
 	
 }
@@ -1077,9 +1077,9 @@ void MainWin::FillReactorTab()
 		for(int l=0; l<NTab[p] ; l++)
 		{
 			stringstream tmp;
-			tmp<<"Reactor "<<l;
+			tmp << "Reactor " << l;
 			TabName[l]=tmp.str();
-			//cout<<l<<" "<<TabName[l]<<endl;
+			//cout << l << " " << TabName[l] << endl;
 			
 			fTabFoilReactor[p][l] = fItemTab[p][1]->AddTab(TabName[l].c_str());
 			fTabFoilReactor[p][l]->SetLayoutManager(new TGMatrixLayout(fTabFoilReactor[p][l], Nline, 0, 5));
@@ -1140,7 +1140,7 @@ void MainWin::FillStockTab()
 		{
 			stringstream tmp;
 			tmp.str("");
-			tmp<<"Stock "<<l;
+			tmp << "Stock " << l;
 			TabName[l]=tmp.str();
 			fTabFoilStock[p][l]=fItemTab[p][2]->AddTab(TabName[l].c_str());
 			fTabFoilStock[p][l]->SetLayoutManager(new TGMatrixLayout(fTabFoilStock[p][l], Nline, 0, 5));
@@ -1202,7 +1202,7 @@ void MainWin::FillPoolTab()
 		{
 			stringstream tmp;
 			tmp.str("");
-			tmp<<"Pool "<<l;
+			tmp << "Pool " << l;
 			TabName[l]=tmp.str();
 			fTabFoilPool[p][l]=fItemTab[p][3]->AddTab(TabName[l].c_str());
 			fTabFoilPool[p][l]->SetLayoutManager(new TGMatrixLayout(fTabFoilPool[p][l], Nline, 0, 5));
@@ -1264,7 +1264,7 @@ void MainWin::FillFabricationTab()
 		{
 			stringstream tmp;
 			tmp.str("");
-			tmp<<"Fab "<<l;
+			tmp << "Fab " << l;
 			TabName[l]=tmp.str();
 			fTabFoilFab[p][l]=fItemTab[p][4]->AddTab(TabName[l].c_str());
 			fTabFoilFab[p][l]->SetLayoutManager(new TGMatrixLayout(fTabFoilFab[p][l], Nline, 0, 5));
