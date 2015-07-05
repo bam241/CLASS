@@ -169,7 +169,7 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels* fueltypeDB, FabricationPlant* 
 	fPower = Power*CapacityFactor;
 	fEfficiencyFactor = 0.33;
 	fElectricPower = fEfficiencyFactor*fPower;
-	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);	 //BU in GWd/t
+	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower) * fHeavyMetalMass  *3600*24);	 //BU in GWd/t
 	
 	fFuelPlan = new CLASSFuelPlan(log);
 	fFuelPlan->AddFuel(creationtime, CLASSFuel(fueltypeDB), fBurnUp);
@@ -268,7 +268,7 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	fEvolutionDB = (*evolutivedb) * (fHeavyMetalMass/M0);
 	
 	fBurnUp = BurnUp;
-	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);
+	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower) * fHeavyMetalMass  *3600*24);
 	
 	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
 	fIVInCycle = fEvolutionDB.GetIsotopicVectorAt(0);
@@ -353,7 +353,7 @@ void Reactor::SetCycleTime(double cycletime)
 {
 	fCycleTime = (cSecond)cycletime;
 	
-	if(fFixedFuel==true)
+	if(fFixedFuel == true)
 	{
 		fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt(fCycleTime/fEvolutionDB.GetPower()*fPower);
 		fBurnUp = fPower*fCycleTime/3600./24./fHeavyMetalMass;
@@ -368,13 +368,13 @@ void Reactor::SetPower(double Power)
 {
 	fPower = Power;
 	
-	if(fFixedFuel==true)
+	if(fFixedFuel == true)
 	{
-		fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);
+		fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower) * fHeavyMetalMass  *3600*24);
 		fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 	}
 	else
-		fCycleTime = (cSecond)(fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);	 //BU in GWd/t
+		fCycleTime = (cSecond)(fBurnUp*1e9 / (fPower) * fHeavyMetalMass  *3600*24);	 //BU in GWd/t
 	
 	
 }
@@ -384,13 +384,13 @@ void Reactor::SetBurnUp(double BU)
 	
 	fBurnUp = BU;
 	
-	if(fFixedFuel==true)
+	if(fFixedFuel == true)
 	{
-		fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);
+		fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower) * fHeavyMetalMass  *3600*24);
 		fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 	}
 	else
-		fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);
+		fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower) * fHeavyMetalMass  *3600*24);
 	
 }
 
@@ -427,7 +427,7 @@ void Reactor::Evolution(cSecond t)
 	
 	if( fIsShutDown  || t < GetCreationTime() ) return; // Reactor stop or not started...
 	
-	if(Norme(fInsideIV)!=0 && fIsStarted)
+	if(Norme(fInsideIV) != 0 && fIsStarted)
 	{
 #pragma omp critical(ParcPowerUpdate)
 		{GetParc()->AddToPower(fPower, fElectricPower);}
@@ -440,11 +440,11 @@ void Reactor::Evolution(cSecond t)
 	
 	
 	if( t < fInternalTime ) return;
-	if( t == fInternalTime && t!=GetCreationTime() ) return;
+	if( t ==  fInternalTime && t != GetCreationTime() ) return;
 	
 	
 	
-	if( t == GetCreationTime() && !fIsStarted) // Start of the Reactor
+	if( t ==  GetCreationTime() && !fIsStarted) // Start of the Reactor
 	{
 		fIsAtEndOfCycle = true;
 		fInsideIV  = fIVBeginCycle;
@@ -460,7 +460,7 @@ void Reactor::Evolution(cSecond t)
 	cSecond EvolutionTime = t - fInternalTime; // Calculation of the evolution time (relativ)
 	
 	
-	if( EvolutionTime + fInCycleTime == fCycleTime )		//End of Cycle
+	if( EvolutionTime + fInCycleTime ==  fCycleTime )		//End of Cycle
 	{
 		fIsAtEndOfCycle = true;
 		fInternalTime += EvolutionTime; 				// Update Internal Time
@@ -478,7 +478,7 @@ void Reactor::Evolution(cSecond t)
 		fInCycleTime += EvolutionTime;					// Update InCycleTime
 		
 		fInsideIV = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fInCycleTime/fEvolutionDB.GetPower()*fPower) );	// update the fuel composition
-		if(t>=GetCreationTime() + GetLifeTime())	fIsShutDown = true;
+		if(t>= GetCreationTime() + GetLifeTime())	fIsShutDown = true;
 	}
 	else
 	{
@@ -570,7 +570,7 @@ void Reactor::Dump()
 				//Get The Storage Compostion
 				BuildIVtmp.Add(fStorage->GetInsideIV().GetIsotopicQuantity());
 				//Get the rest after IVIn creation
-				BuildIVtmp -= fIVInCycle;
+				BuildIVtmp -=  fIVInCycle;
 				//Get the OutIncome part form this rest
 				OutIncomePart.Add(BuildIVtmp.GetIsotopicQuantityNeeded()) ;
 				//Take what you can from Storage...
@@ -630,7 +630,7 @@ cSecond Reactor::GetNextCycleTime(cSecond time)
 	
 	while ( LastCycle < time)
 	{
-		cSecond cycletime = (cSecond)(fFuelPlan->GetFuelAt(LastCycle).second*1e9 / (fPower)  * fHeavyMetalMass  *3600*24);
+		cSecond cycletime = (cSecond)(fFuelPlan->GetFuelAt(LastCycle).second*1e9 / (fPower) * fHeavyMetalMass  *3600*24);
 		LastCycle += cycletime;
 	}
 	

@@ -14,9 +14,9 @@
 PhysicsModels::PhysicsModels():CLASSObject()
 {
 
-	fXSModel		= 0;
-	fEquivalenceModel	= 0;
-	fIrradiationModel	= 0;
+	fXSModel	 =  0;
+	fEquivalenceModel =  0;
+	fIrradiationModel =  0;
 
 
 }
@@ -24,9 +24,9 @@ PhysicsModels::PhysicsModels():CLASSObject()
 PhysicsModels::PhysicsModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM ):CLASSObject()
 {
 
-	fXSModel		= XS;
-	fEquivalenceModel	= EM;
-	fIrradiationModel	= IM;
+	fXSModel	 =  XS;
+	fEquivalenceModel =  EM;
+	fIrradiationModel =  IM;
 	
 	int Z_ZAIThreshold = fIrradiationModel->GetZAIThreshold();
 	fXSModel->SetZAIThreshold(Z_ZAIThreshold);
@@ -37,9 +37,9 @@ PhysicsModels::PhysicsModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel
 PhysicsModels::PhysicsModels(CLASSLogger* log, XSModel* XS, EquivalenceModel* EM, IrradiationModel* IM ):CLASSObject(log)
 {
 
-	fXSModel		= XS;
-	fEquivalenceModel	= EM;
-	fIrradiationModel	= IM;
+	fXSModel	 =  XS;
+	fEquivalenceModel =  EM;
+	fIrradiationModel =  IM;
 	
 	int Z_ZAIThreshold = fIrradiationModel->GetZAIThreshold();
 	fXSModel->SetZAIThreshold(Z_ZAIThreshold);

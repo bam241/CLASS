@@ -81,21 +81,21 @@ void CLASSNucleiFiliation::FiliationCleanUp(map<ZAI, int> GoodNuclei, CLASSNucle
 		
 		for (int i = 0; i < (int)DautherList.size(); i++)			// Loop on the Daughter ZAI
 		{
-			if(GoodNuclei.find(DautherList[i]) == GoodNuclei.end() ) // if the ZAI is not in a dealed nuclei (cutted or unknown)
+			if(GoodNuclei.find(DautherList[i]) ==  GoodNuclei.end() ) // if the ZAI is not in a dealed nuclei (cutted or unknown)
 			{
 				double Daughter_BR = it_Filiation->second.GetQuantity(DautherList[i]);	// Get the quantity of the ZAI
-				it_Filiation->second -= Daughter_BR * DautherList[i];			// Remove it from the daughter list
+				it_Filiation->second -=  Daughter_BR * DautherList[i];			// Remove it from the daughter list
 				
 				
 				IsotopicVector FastDecayChain = CuttedNuclei.GetFiliation(DautherList[i]); // Get the fast decay chain of it
 				
-				if(FastDecayChain.GetQuantity(-1, -1, -1) == 0) // Check if the FastDecayChain is known
+				if(FastDecayChain.GetQuantity(-1, -1, -1) ==  0) // Check if the FastDecayChain is known
 					it_Filiation->second += Daughter_BR * FastDecayChain; // Add the FastDecayCHain & apply the BR for the cutted Daughter
 				else
 				{
 					
 					ZAI Mother = DautherList[i];
-					while (FastDecayChain.GetQuantity(-1, -1, -1) != 0 && GoodNuclei.find(Mother) == GoodNuclei.end())
+					while (FastDecayChain.GetQuantity(-1, -1, -1) != 0 && GoodNuclei.find(Mother) ==  GoodNuclei.end())
 					{
 						Mother = GetArtificialDecay(Mother);			// Do an Artifial decay on the nuclei
 						FastDecayChain = CuttedNuclei.GetFiliation(Mother); // Get the fast decay chain of it
@@ -104,7 +104,7 @@ void CLASSNucleiFiliation::FiliationCleanUp(map<ZAI, int> GoodNuclei, CLASSNucle
 					if(GoodNuclei.find(Mother) != GoodNuclei.end())
 						it_Filiation->second += Mother * Daughter_BR;
 					
-					else if ( FastDecayChain.GetQuantity(-1, -1, -1) == 0)
+					else if ( FastDecayChain.GetQuantity(-1, -1, -1) ==  0)
 						it_Filiation->second += FastDecayChain * Daughter_BR;
 					
 					else
@@ -130,7 +130,7 @@ ZAI CLASSNucleiFiliation::GetArtificialDecay(ZAI Mother)
 	int Z = Mother.Z();
 	int I = Mother.I();
 	
-	if(I!=0)
+	if(I != 0)
 		return ZAI(Z,A,I-1);
 	else
 	{
@@ -171,20 +171,20 @@ void CLASSNucleiFiliation::SelfFiliationCleanUp(map<ZAI, int> GoodNuclei)
 			
 			for (int i = 0; i < (int)DautherList.size(); i++)		//Loop on daughter
 			{
-				if(GoodNuclei.find(DautherList[i]) == GoodNuclei.end() ) // if the ZAI is not in a dealed nuclei (cutted or unknown)
+				if(GoodNuclei.find(DautherList[i]) ==  GoodNuclei.end() ) // if the ZAI is not in a dealed nuclei (cutted or unknown)
 				{	count++;
 					map<ZAI, IsotopicVector>::iterator it_FiliationCopy = CopyfNucleiFiliation.find(it_Filiation->first)  ;
 
 					double Daughter_BR = it_FiliationCopy->second.GetQuantity(DautherList[i]);	// Get the quantity of the ZAI
-					it_FiliationCopy->second -= Daughter_BR * DautherList[i];			// Remove it from the daughter list					
+					it_FiliationCopy->second -=  Daughter_BR * DautherList[i];			// Remove it from the daughter list					
 					IsotopicVector FastDecayChain = (*this).GetFiliation(DautherList[i]); // Get the fast decay chain of it
 
-					if(FastDecayChain.GetQuantity(-1, -1, -1) == 0) // Check if the FastDecayChain is known
+					if(FastDecayChain.GetQuantity(-1, -1, -1) ==  0) // Check if the FastDecayChain is known
 						it_FiliationCopy->second += Daughter_BR * FastDecayChain; // Add the FastDecayCHain & apply the BR for the cutted Daughter
 					else
 					{					
 						ZAI Mother = DautherList[i];
-						while (FastDecayChain.GetQuantity(-1, -1, -1) != 0 && GoodNuclei.find(Mother) == GoodNuclei.end())
+						while (FastDecayChain.GetQuantity(-1, -1, -1) != 0 && GoodNuclei.find(Mother) ==  GoodNuclei.end())
 						{
 							Mother = GetArtificialDecay(Mother);			// Do an Artifial decay on the nuclei
 							FastDecayChain = (*this).GetFiliation(Mother); // Get the fast decay chain of it
@@ -193,7 +193,7 @@ void CLASSNucleiFiliation::SelfFiliationCleanUp(map<ZAI, int> GoodNuclei)
 						if(GoodNuclei.find(Mother) != GoodNuclei.end())
 							it_FiliationCopy->second += Mother * Daughter_BR;
 						
-						else if ( FastDecayChain.GetQuantity(-1, -1, -1) == 0)
+						else if ( FastDecayChain.GetQuantity(-1, -1, -1) ==  0)
 							it_FiliationCopy->second += FastDecayChain * Daughter_BR;
 						
 						else
@@ -215,7 +215,7 @@ void CLASSNucleiFiliation::SelfFiliationCleanUp(map<ZAI, int> GoodNuclei)
 			vector<ZAI> DautherList = it_Filiation->second.GetZAIList(); // Get the list of daughter ZAI
 			
 			for (int i = 0; i < (int)DautherList.size(); i++)		//Loop on daughter
-				if(GoodNuclei.find(DautherList[i]) == GoodNuclei.end() ) // if the ZAI is not in a dealed nuclei (cutted or unknown)
+				if(GoodNuclei.find(DautherList[i]) ==  GoodNuclei.end() ) // if the ZAI is not in a dealed nuclei (cutted or unknown)
 					Cleaned = false;
 		}
 
@@ -234,7 +234,7 @@ void CLASSNucleiFiliation::NormalizeBranchingRatio(double Value)
 	map<ZAI, IsotopicVector>::iterator it_Filiation;
 	for(it_Filiation = fNucleiFiliation.begin(); it_Filiation != fNucleiFiliation.end(); it_Filiation++)
 	{
-		it_Filiation->second *= Value/it_Filiation->second.GetSumOfAll();
+		it_Filiation->second *=  Value/it_Filiation->second.GetSumOfAll();
 	}
 	
 	DBGL
@@ -248,7 +248,7 @@ void CLASSNucleiFiliation::NormalizeBranchingRatio(ZAI Mother, double Value)
 	map<ZAI, IsotopicVector>::iterator it_Filiation = fNucleiFiliation.find(Mother);
 	
 	if( it_Filiation != fNucleiFiliation.end())
-		it_Filiation->second *= Value/it_Filiation->second.GetSumOfAll();
+		it_Filiation->second *=  Value/it_Filiation->second.GetSumOfAll();
 	else
 		WARNING << "Trying to normaliza a Branching Ratio for a Mother wich are not present in the Filiatiuon List...." << endl;
 	

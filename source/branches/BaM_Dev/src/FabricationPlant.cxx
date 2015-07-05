@@ -98,7 +98,7 @@ void FabricationPlant::Evolution(cSecond t)
 {
 	
 		// Check if the FabricationPlant has been created ...
-	if(t == fInternalTime && t != 0) return;
+	if(t ==  fInternalTime && t != 0) return;
 		// Make the evolution for the FabricationPlant ...
 	FabricationPlantEvolution(t);
 		//Update Inside IsotopicVector
@@ -113,7 +113,7 @@ void FabricationPlant::FabricationPlantEvolution(cSecond t)
 {
 DBGL
 	map<int ,cSecond >::iterator it;
-	for( it = fReactorNextStep.begin(); it!= fReactorNextStep.end(); it++ )
+	for( it = fReactorNextStep.begin(); it !=  fReactorNextStep.end(); it++ )
 	{
 		double R_CreactionTime = GetParc()->GetReactor()[ (*it).first ]->GetCreationTime();
 		double R_LifeTime = GetParc()->GetReactor()[ (*it).first ]->GetLifeTime();
@@ -133,7 +133,7 @@ DBGL
 		if( t + GetCycleTime() >= R_CreactionTime
 		   && t + GetCycleTime() < R_CreactionTime + R_LifeTime)
 		{
-			if( (*it).second == t )
+			if( (*it).second ==  t )
 			{
 #pragma omp critical(FuelBuild)
 				{
@@ -175,7 +175,7 @@ void FabricationPlant::UpdateInsideIV()
 void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 {
 	DBGL
-	if(fFissileStorage.size() == 0)
+	if(fFissileStorage.size() ==  0)
 	{
 		ERROR << " One need at least one Fissile storage to build fuel " << endl;
 		ERROR << " Use AddFissileStorage to add a stock to provide fissil material... " << endl;
@@ -185,9 +185,9 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 
 
 
-	double R_HM_Mass	= GetParc()->GetReactor()[ ReactorId ]->GetHeavyMetalMass();
-	double R_CycleTime	= GetParc()->GetReactor()[ ReactorId ]->GetCycleTime();
-	double R_Power		= GetParc()->GetReactor()[ ReactorId ]->GetPower();
+	double R_HM_Mass =  GetParc()->GetReactor()[ ReactorId ]->GetHeavyMetalMass();
+	double R_CycleTime =  GetParc()->GetReactor()[ ReactorId ]->GetCycleTime();
+	double R_Power	 =  GetParc()->GetReactor()[ ReactorId ]->GetPower();
 
 	pair<CLASSFuel, double > FuelBU = GetParc()->GetReactor()[ReactorId]->GetFuelPlan()->GetFuelAt(t+GetCycleTime()) ;
 	PhysicsModels FuelType = *FuelBU.first.GetPhysicsModels();
@@ -403,17 +403,17 @@ void FabricationPlant::SortArray(int i)
 	vector<cSecond>		TimeArray;
 	vector< pair<int,int> >	AdressArray;
 
-	if(i==0) //Fissile
+	if(i == 0) //Fissile
 	{
-		IVArray		= fFissileArray;
-		TimeArray	= fFissileArrayTime;
-		AdressArray	= fFissileArrayAdress;
+		IVArray	 =  fFissileArray;
+		TimeArray =  fFissileArrayTime;
+		AdressArray =  fFissileArrayAdress;
 	}
-	else if (i==1) //Fertile
+	else if (i == 1) //Fertile
 	{
-		IVArray		= fFertileArray;
-		TimeArray	= fFertileArrayTime;
-		AdressArray	= fFertileArrayAdress;
+		IVArray	 =  fFertileArray;
+		TimeArray =  fFertileArrayTime;
+		AdressArray =  fFertileArrayAdress;
 
 	}
 
@@ -469,13 +469,13 @@ void FabricationPlant::SortArray(int i)
 	}
 
 
-	if(i==0) //Fissile
+	if(i == 0) //Fissile
 	{
-		fFissileArray		= IVArray;
-		fFissileArrayTime	= TimeArray;
-		fFissileArrayAdress	= AdressArray;
+		fFissileArray	 =  IVArray;
+		fFissileArrayTime =  TimeArray;
+		fFissileArrayAdress =  AdressArray;
 	}
-	else if (i==1) //Fertile
+	else if (i == 1) //Fertile
 	{
 		fFertileArray = IVArray;
 		fFertileArrayTime = TimeArray;
@@ -552,7 +552,7 @@ DBGL
 	int StockCorrection = 0;
 	if( !fIsReplaceFissileStock && fSubstitutionFissile)
 	{	
-		StockCorrection=1;
+		StockCorrection = 1;
 		BuildedFuel += fFissileArray.back()*LambdaArray[fFissileArray.size()-1];
 	}
 
@@ -608,7 +608,7 @@ void FabricationPlant::DumpStock(vector<double> LambdaArray)
 DBGL
 	int StockCorrection = 0;
 	if( !fIsReplaceFissileStock && fSubstitutionFissile)
-	{	StockCorrection=1;
+	{	StockCorrection = 1;
 		GetParc()->AddOutIncome( fFissileArray.back()*LambdaArray[fFissileArray.size()-1] );
 	}
 	for(int i = 0; i < (int)fFissileArray.size() - StockCorrection; i++)

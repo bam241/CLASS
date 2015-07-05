@@ -50,7 +50,7 @@ IM_Matrix::IM_Matrix(CLASSLogger* log):IrradiationModel(log)
 EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, EvolutionData XSSet, double Power, double cycletime)
 {
 	DBGL
-	if(fFastDecay.size() == 0)
+	if(fFastDecay.size() ==  0)
 		NuclearDataInitialization();
 
 
@@ -58,7 +58,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 
 
 	vector< TMatrixT<double> > NMatrix ;//  TMatrixT<double>(decayindex.size(),1))
-	{	// Filling the t=0 State;
+	{	// Filling the t = 0 State;
 		map<ZAI, double > isotopicquantity = isotopicvector.GetIsotopicQuantity();
 		TMatrixT<double>  N_0Matrix =  TMatrixT<double>( fReverseMatrixIndex.size(),1) ;
 		for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
@@ -77,7 +77,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 				it2 = fMatrixIndex.find( ZAI(-2,-2,-2) );
 			else it2 = fMatrixIndex.find( (*it).first );
 
-			if(it2 == fMatrixIndex.end() )		//If not in index should be TMP, can't be fast decay for new Fuel !!!
+			if(it2 ==  fMatrixIndex.end() )		//If not in index should be TMP, can't be fast decay for new Fuel !!!
 				it2 = fMatrixIndex.find( ZAI(-3,-3,-3) );
 			N_0Matrix[ (*it2).second ][0] = (*it).second ;
 
@@ -120,7 +120,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 		for(it = fMatrixIndex.begin(); it != fMatrixIndex.end(); it++)
 		{
 			map< ZAI, double >::iterator it2 = fFissionEnergy.find(it->first);
-			if(it2 == fFissionEnergy.end())
+			if(it2 ==  fFissionEnergy.end())
 			{
 				if(it->first.Z() > fZAIThreshold)
 					FissionEnergy[it->second][0] = 1.9679e6*it->first.A()-2.601e8; // //simple linear fit to known values ;extrapolation to unknown isotopes
@@ -159,28 +159,28 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 		BatemanReactionMatrix += CaptureXSMatrix[i];
 		BatemanReactionMatrix += n2nXSMatrix[i];
 
-		for(int k=0; k < InsideStep; k++)
+		for(int k = 0; k < InsideStep; k++)
 		{
 			double ESigmaN = 0;
 			for (int j = 0; j < (int)fReverseMatrixIndex.size() ; j++)
-				ESigmaN -= FissionXSMatrix[i][j][j]*NEvolutionMatrix[j][0]*1.6e-19*FissionEnergy[j][0];
+				ESigmaN -=  FissionXSMatrix[i][j][j]*NEvolutionMatrix[j][0]*1.6e-19*FissionEnergy[j][0];
 			// Update Flux
 			double Flux_k = Power/ESigmaN;
 
-			if(k==0)
-				Flux[i]=Flux_k;
+			if(k == 0)
+				Flux[i] = Flux_k;
 
 			BatemanMatrix = BatemanReactionMatrix;
-			BatemanMatrix *= Flux_k;
+			BatemanMatrix *=  Flux_k;
 			BatemanMatrix += fDecayMatrix ;
-			BatemanMatrix *= TStepMax/InsideStep ;
+			BatemanMatrix *=  TStepMax/InsideStep ;
 
 
 			TMatrixT<double> IdMatrix = TMatrixT<double>(fReverseMatrixIndex.size(),fReverseMatrixIndex.size());
 			for(int j = 0; j < (int)fReverseMatrixIndex.size(); j++)
 				for(int k = 0; k < (int)fReverseMatrixIndex.size(); k++)
 				{
-					if(k == j)	IdMatrix[j][k] = 1;
+					if(k ==  j)	IdMatrix[j][k] = 1;
 					else 		IdMatrix[j][k] = 0;
 				}
 
@@ -189,7 +189,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 			TMatrixT<double> BatemanMatrixDLTermN = TMatrixT<double>(fReverseMatrixIndex.size(),fReverseMatrixIndex.size());  // Addind it;
 
 			{
-				BatemanMatrix *= TStepMax ;
+				BatemanMatrix *=  TStepMax ;
 				BatemanMatrixDLTermN = IdMatrix;
 				BatemanMatrixDL = BatemanMatrixDLTermN;
 				int j = 1;
@@ -202,7 +202,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 
 					BatemanMatrixDLTermN.Mult(BatemanMatrixDLTermtmp, BatemanMatrix );
 
-					BatemanMatrixDLTermN *= 1./j;
+					BatemanMatrixDLTermN *=  1./j;
 					BatemanMatrixDL += BatemanMatrixDLTermN;
 
 					NormN = 0;
@@ -236,7 +236,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 
 	double ESigmaN = 0;
 	for (int j = 0; j < (int)fReverseMatrixIndex.size() ; j++)
-		ESigmaN -= FissionXSMatrix.back()[j][j]*NMatrix.back()[j][0]*1.6e-19*FissionEnergy[j][0];
+		ESigmaN -=  FissionXSMatrix.back()[j][j]*NMatrix.back()[j][0]*1.6e-19*FissionEnergy[j][0];
 
 	Flux[NStep-1] = Power/ESigmaN;
 
@@ -253,9 +253,9 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 
 		for(int j = 0; j < NStep; j++)
 		{
-			FissionXS[j]	= FissionXSMatrix[j][i][i];
-			CaptureXS[j]	= CaptureXSMatrix[j][i][i];
-			n2nXS[j]	= n2nXSMatrix[j][i][i];
+			FissionXS[j] =  FissionXSMatrix[j][i][i];
+			CaptureXS[j] =  CaptureXSMatrix[j][i][i];
+			n2nXS[j] =  n2nXSMatrix[j][i][i];
 		}
 
 		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NMatrix.size(), timevector, ZAIQuantity)));

@@ -102,9 +102,9 @@ void XSModel::ReadRParam(const string &line)
 		ERROR << " Bad keyword : " << keyword << " Not found !" << endl;
 		exit(1);
 	}
-	if( keyword == "k_mass" )
+	if( keyword ==  "k_mass" )
 		fDBHMMass = atof(StringLine::NextWord(line, pos, ' ').c_str());
-	else if( keyword == "k_power" )
+	else if( keyword ==  "k_power" )
 		fDBPower = atof(StringLine::NextWord(line, pos, ' ').c_str());
 	
 	DBGL
@@ -121,9 +121,9 @@ void XSModel::ReadType(const string &line)
 		ERROR << " Bad keyword : " << keyword << " Not found !" << endl;
 		exit(1);
 	}
-	if( keyword == "k_fuel" )
+	if( keyword ==  "k_fuel" )
 		fDBFType = StringLine::NextWord(line, pos, ' ');
-	else if( keyword == "k_reactor" )
+	else if( keyword ==  "k_reactor" )
 		fDBRType = StringLine::NextWord(line, pos, ' ');
 	
 	DBGL
@@ -162,7 +162,7 @@ void XSModel::ReadZAIlimits(const string &line)
 bool XSModel::isIVInDomain(IsotopicVector IV)
 {
 	DBGL
-	bool IsInDomain=true;
+	bool IsInDomain = true;
 	
 	if(fZAILimits.empty())
 	{
@@ -175,7 +175,7 @@ bool XSModel::isIVInDomain(IsotopicVector IV)
 	else
 	{
 		IsotopicVector IVNorm = IV /IV.GetSumOfAll();
-		for (map< ZAI,pair<double,double> >::iterator Domain_it=fZAILimits.begin(); Domain_it!=fZAILimits.end(); Domain_it++)
+		for (map< ZAI,pair<double,double> >::iterator Domain_it = fZAILimits.begin(); Domain_it != fZAILimits.end(); Domain_it++)
 		{
 			double ThatZAIProp = IVNorm.GetIsotopicQuantity()[Domain_it->first]	;
 			double ThatZAIMin  = Domain_it->second.first;
@@ -187,7 +187,7 @@ bool XSModel::isIVInDomain(IsotopicVector IV)
 				WARNING << "Fresh fuel out of model range" << endl;
 				WARNING << "\t AT LEAST this ZAI is accused to be outrange :" << endl;
 				WARNING << "\t\t" << Domain_it->first.Z() << " " << Domain_it->first.A() << " " << Domain_it->first.I() << endl;
-				WARNING << "\t\t min=" << ThatZAIMin << " value=" << ThatZAIProp << " max=" << ThatZAIMax << endl;
+				WARNING << "\t\t min = " << ThatZAIMin << " value = " << ThatZAIProp << " max = " << ThatZAIMax << endl;
 				WARNING << "\t IV accused :" << endl << endl;
 				WARNING << IVNorm.sPrint() << endl;
 				break;

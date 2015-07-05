@@ -102,7 +102,7 @@ DBGL
 			else
 			{
 				AddCumulativeIVOut(fIVArray[IVId]*fraction);
-				fIVArray[IVId]  -= fIVArray[IVId] * fraction;
+				fIVArray[IVId]  -=  fIVArray[IVId] * fraction;
 			}
 
 		}
@@ -122,7 +122,7 @@ DBGL
 		else
 		{
 			AddCumulativeIVOut(fIVArray[IVId]*fraction);
-			fIVArray[IVId]  -= fIVArray[IVId] * fraction;
+			fIVArray[IVId]  -=  fIVArray[IVId] * fraction;
 		}
 
 	}
@@ -139,7 +139,7 @@ void Storage::TakeFromStock(IsotopicVector isotopicvector)
 		{
 
 			AddCumulativeIVOut(isotopicvector);
-			fInsideIV -= isotopicvector;
+			fInsideIV -=  isotopicvector;
 		}
 		else
 		{
@@ -150,7 +150,7 @@ void Storage::TakeFromStock(IsotopicVector isotopicvector)
 	else
 	{
 		AddCumulativeIVOut(isotopicvector);
-		fInsideIV -= isotopicvector;
+		fInsideIV -=  isotopicvector;
 
 	}
 
@@ -161,14 +161,14 @@ void Storage::StorageEvolution(cSecond t)
 {
 DBGL
 
-	if(t == fInternalTime && t != 0 ) return;
+	if(t ==  fInternalTime && t != 0 ) return;
 
 	RemoveEmptyStocks();
 
 	cSecond EvolutionTime = t - fInternalTime;
 
 #pragma omp parallel for
-	for (int i=0; i <(int) fIVArray.size() ; i++)
+	for (int i = 0; i <(int) fIVArray.size() ; i++)
 	{
 		fIVArray[i] = GetDecay(fIVArray[i] , EvolutionTime);
 	}
@@ -180,7 +180,7 @@ void Storage::Evolution(cSecond t)
 {
 
 	// Check if the Storage has been created ...
-	if(t == fInternalTime && t!=0) return;
+	if(t ==  fInternalTime && t != 0) return;
 	// Make the evolution for the Storage ...
 
 	StorageEvolution(t);
@@ -195,7 +195,7 @@ void Storage::Evolution(cSecond t)
 void Storage::Write(string filename, cSecond date)
 {
 
-	for(int i=0;i < (int)fIVArray.size(); i++)
+	for(int i = 0;i < (int)fIVArray.size(); i++)
 	{
 		
 		fIVArray[i].Write(filename, date);
@@ -205,8 +205,8 @@ void Storage::Write(string filename, cSecond date)
 //________________________________________________________________________
 void Storage::RemoveEmptyStocks()
 {
-	for(int i = (int)fIVArray.size()-1 ; i >=0; i--) //Removing empty Stock
-		if(fIVArray[i].GetSumOfAll() == 0)
+	for(int i = (int)fIVArray.size()-1 ; i >= 0; i--) //Removing empty Stock
+		if(fIVArray[i].GetSumOfAll() ==  0)
 		{
 			fIVArray.erase(fIVArray.begin()+i);
 			fIVArrayArrivalTime.erase(fIVArrayArrivalTime.begin()+i);

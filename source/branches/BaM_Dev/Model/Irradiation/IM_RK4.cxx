@@ -64,7 +64,7 @@ IM_RK4::IM_RK4(CLASSLogger* log):IrradiationModel(log), DynamicalSystem()
 EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, EvolutionData XSSet, double Power, double cycletime)
 {
 	DBGL
-	if(fFastDecay.size() == 0)
+	if(fFastDecay.size() ==  0)
 	{
 		NuclearDataInitialization();
 		fNVar = fReverseMatrixIndex.size();
@@ -77,7 +77,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 
 
 	vector< TMatrixT<double> > NMatrix ;//  TMatrixT<double>(decayindex.size(),1))
-	{	// Filling the t=0 State;
+	{	// Filling the t = 0 State;
 		map<ZAI, double > isotopicquantity = isotopicvector.GetIsotopicQuantity();
 		TMatrixT<double>  N_0Matrix =  TMatrixT<double>( fReverseMatrixIndex.size(),1) ;
 		for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
@@ -96,7 +96,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 				it2 = fMatrixIndex.find( ZAI(-2,-2,-2) );
 			else it2 = fMatrixIndex.find( (*it).first );
 
-			if(it2 == fMatrixIndex.end() )		//If not in index should be TMP, can't be fast decay for new Fuel !!!
+			if(it2 ==  fMatrixIndex.end() )		//If not in index should be TMP, can't be fast decay for new Fuel !!!
 				it2 = fMatrixIndex.find( ZAI(-3,-3,-3) );
 			
 			N_0Matrix[ (*it2).second ][0] = (*it).second ;
@@ -141,7 +141,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 		for(it = fMatrixIndex.begin(); it != fMatrixIndex.end(); it++)
 		{
 			map< ZAI, double >::iterator it2 = fFissionEnergy.find(it->first);
-			if(it2 == fFissionEnergy.end())
+			if(it2 ==  fFissionEnergy.end())
 			{
 				if(it->first.Z() > fZAIThreshold)
 					FissionEnergy[it->second][0] = 1.9679e6*it->first.A()-2.601e8; // //simple linear fit to known values ;extrapolation to unknown isotopes
@@ -180,19 +180,19 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 		BatemanReactionMatrix += CaptureXSMatrix[i];
 		BatemanReactionMatrix += n2nXSMatrix[i];
 
-		for(int k=0; k < InsideStep; k++)
+		for(int k = 0; k < InsideStep; k++)
 		{
 			double ESigmaN = 0;
 			for (int j = 0; j < (int)fReverseMatrixIndex.size() ; j++)
-				ESigmaN -= FissionXSMatrix[i][j][j]*NEvolutionMatrix[j][0]*1.6e-19*FissionEnergy[j][0];
+				ESigmaN -=  FissionXSMatrix[i][j][j]*NEvolutionMatrix[j][0]*1.6e-19*FissionEnergy[j][0];
 			// Update Flux
 			double Flux_k = Power/ESigmaN;
 
-			if(k==0)
-				Flux[i]=Flux_k;
+			if(k == 0)
+				Flux[i] = Flux_k;
 
 			BatemanMatrix = BatemanReactionMatrix;
-			BatemanMatrix *= Flux_k;
+			BatemanMatrix *=  Flux_k;
 			BatemanMatrix += fDecayMatrix ;
 			SetTheMatrixToZero();
 			SetTheNucleiVectorToZero();
@@ -225,7 +225,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 
 	double ESigmaN = 0;
 	for (int j = 0; j < (int)fReverseMatrixIndex.size() ; j++)
-		ESigmaN -= FissionXSMatrix.back()[j][j]*NMatrix.back()[j][0]*1.6e-19*FissionEnergy[j][0];
+		ESigmaN -=  FissionXSMatrix.back()[j][j]*NMatrix.back()[j][0]*1.6e-19*FissionEnergy[j][0];
 
 	Flux[NStep-1] = Power/ESigmaN;
 
@@ -242,9 +242,9 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 
 		for(int j = 0; j < NStep; j++)
 		{
-			FissionXS[j]	= FissionXSMatrix[j][i][i];
-			CaptureXS[j]	= CaptureXSMatrix[j][i][i];
-			n2nXS[j]	= n2nXSMatrix[j][i][i];
+			FissionXS[j] =  FissionXSMatrix[j][i][i];
+			CaptureXS[j] =  CaptureXSMatrix[j][i][i];
+			n2nXS[j] =  n2nXSMatrix[j][i][i];
 		}
 
 		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NMatrix.size(), timevector, ZAIQuantity)));
@@ -281,7 +281,7 @@ void IM_RK4::ResetTheMatrix()
 
 	if(fTheMatrix)
 	{
-		for(int i= 0; i<fNVar; i++)
+		for(int i =  0; i<fNVar; i++)
 			delete [] fTheMatrix[i];
 		delete [] fTheMatrix;
 	}
@@ -296,13 +296,13 @@ void IM_RK4::SetTheMatrixToZero()
 	fTheMatrix = new double*[fNVar];
 
 #pragma omp parallel for
-	for(int i= 0; i < fNVar; i++)
+	for(int i =  0; i < fNVar; i++)
 		fTheMatrix[i] = new double[fNVar];
 
 	for(int i = 0; i < fNVar; i++)
 		for(int k = 0; k < fNVar; k++)
 		{
-			fTheMatrix[i][k]=0.0;
+			fTheMatrix[i][k] = 0.0;
 		}
 
 }
@@ -323,18 +323,18 @@ void IM_RK4::SetTheNucleiVectorToZero()
 
 #pragma omp parallel for
 	for(int i = 0; i < fNVar; i++)
-		fTheNucleiVector[i]=0.0;
+		fTheNucleiVector[i] = 0.0;
 
 }
 
 //________________________________________________________________________
 void IM_RK4::BuildEqns(double t, double *N, double *dNdt)
 {
-	double sum=0;
+	double sum = 0;
 	// pragma omp parallel for reduction(+:sum)
 	for(int i = 0; i < fNVar; i++)
 	{
-		sum=0;
+		sum = 0;
 		for(int k = 0; k < fNVar; k++)
 		{
 			sum += fTheMatrix[i][k]*N[k];

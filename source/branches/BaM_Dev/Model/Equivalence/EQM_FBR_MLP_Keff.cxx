@@ -44,7 +44,7 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(string TMVAWeightPath, double keff_target, st
 
 	/* INFORMATION FILE HANDLING */
 	
-	if(InformationFile=="")
+	if(InformationFile == "")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 
 	fInformationFile = InformationFile;
@@ -76,7 +76,7 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(CLASSLogger* log, string TMVAWeightPath, doub
 
 	/* INFORMATION FILE HANDLING */
 	
-	if(InformationFile=="")
+	if(InformationFile == "")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 
 	fInformationFile = InformationFile;
@@ -116,16 +116,16 @@ TTree* EQM_FBR_MLP_Keff::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 
 	IsotopicVector IVInputTMVA;
 	map<ZAI ,string >::iterator it;
-	int j=0;
+	int j = 0;
 
-	for( it = fMapOfTMVAVariableNames.begin()  ; it!=fMapOfTMVAVariableNames.end() ; it++)
+	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
 	{
 		InputTree->Branch( ((*it).second).c_str()	,&InputTMVA[j], ((*it).second + "/F").c_str());
-		IVInputTMVA+= ((*it).first)*1;
+		IVInputTMVA+=  ((*it).first)*1;
 		j++;
 	}
 
-	if(ThisTime!=-1)
+	if(ThisTime != -1)
 		InputTree->Branch(	"Time"	,&Time	,"Time/F"	);
 
 	IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(IVInputTMVA);
@@ -134,16 +134,16 @@ TTree* EQM_FBR_MLP_Keff::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 
 	IVAccordingToUserInfoFile = IVAccordingToUserInfoFile/Ntot;
 
-	j=0;
+	j = 0;
 	map<ZAI ,string >::iterator it2;
 
-	for( it2 = fMapOfTMVAVariableNames.begin() ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
+	for( it2 = fMapOfTMVAVariableNames.begin() ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
 	{
 		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first ) ;
 		j++;
 	}
 
-	Time=ThisTime;
+	Time = ThisTime;
 
 	InputTree->Fill();
 
@@ -172,7 +172,7 @@ double EQM_FBR_MLP_Keff::ExecuteTMVA(TTree* InputTree, bool IsTimeDependent)
 	int j = 0;
 	
 	
-	for( it = fMapOfTMVAVariableNames.begin()  ; it!=fMapOfTMVAVariableNames.end() ; it++)
+	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
 	{	reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
 		j++;
 	}
@@ -189,8 +189,8 @@ double EQM_FBR_MLP_Keff::ExecuteTMVA(TTree* InputTree, bool IsTimeDependent)
 	reader->BookMVA( methodName, fTMVAWeightPath );
 
 	map<ZAI ,string >::iterator it2;
-	j=0;
-	for( it2 = fMapOfTMVAVariableNames.begin()  ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
+	j = 0;
+	for( it2 = fMapOfTMVAVariableNames.begin()  ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
 	{
 		InputTree->SetBranchAddress(( (*it2).second ).c_str(),&InputTMVA[j]);
 		j++;
@@ -206,7 +206,7 @@ double EQM_FBR_MLP_Keff::ExecuteTMVA(TTree* InputTree, bool IsTimeDependent)
 	delete reader;
 
 	DBGL
-	return (double)val;	//return k_{eff}(t=Time)
+	return (double)val;	//return k_{eff}(t = Time)
 }
 
 
@@ -292,8 +292,8 @@ double EQM_FBR_MLP_Keff::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 
 	//initialization
 	double FissileContent = GetActualFissileContent();
-	double OldFissileContentMinus	= 0;
-	double OldFissileContentPlus	= fMaximalContent;
+	double OldFissileContentMinus =  0;
+	double OldFissileContentPlus =  fMaximalContent;
 	double PredictedKeff = 0 ;
 	IsotopicVector FreshFuel = (1-FissileContent)*(Fertile/Fertile.GetSumOfAll()) + FissileContent*(Fissile/Fissile.GetSumOfAll());
 	double OldPredictedKeff =  GetKeffAtFixedTime(FreshFuel);

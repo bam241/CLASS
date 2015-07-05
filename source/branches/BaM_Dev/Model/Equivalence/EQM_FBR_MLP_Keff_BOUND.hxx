@@ -69,7 +69,7 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	 \param  KeffMax : Upper average @f$<k_{\infty}>@f$ value
 	 \param  InformationFile : Total path to the file containing time steps, fissile and ferile list (ante and post fabrication time cooling). Default is the same total path as TMVAWeightPath but extension is replaced by .nfo (see manual for format)
 	 */
-	EQM_FBR_MLP_Keff_BOUND(string TMVAWeightPath,  int NumOfBatch , double LowerKeffective, double UpperKeffective, string InformationFile="");
+	EQM_FBR_MLP_Keff_BOUND(string TMVAWeightPath,  int NumOfBatch , double LowerKeffective, double UpperKeffective, string InformationFile = "");
 	//}
 	
 	//{
@@ -84,7 +84,7 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	 \param  KeffMax : Upper average @f$<k_{\infty}>@f$ value
 	 \param  InformationFile : Total path to the file containing time steps, fissile and ferile list (ante and post fabrication time cooling). Default is the same total path as TMVAWeightPath but extension is replaced by .nfo (see manual for format)
 	 */
-	EQM_FBR_MLP_Keff_BOUND(CLASSLogger* log, string TMVAWeightPath,  int NumOfBatch , double LowerKeffective, double UpperKeffective, string InformationFile="");
+	EQM_FBR_MLP_Keff_BOUND(CLASSLogger* log, string TMVAWeightPath,  int NumOfBatch , double LowerKeffective, double UpperKeffective, string InformationFile = "");
 	//}
 	
 	
@@ -97,7 +97,7 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	 \param Fertil : The composition of the Fertil matter
 	 \param BurnUp : Maximum achievable burn up envisaged
 	 */
-	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp=0);
+	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp = 0);
 	//}
 	
 	/*!
@@ -176,7 +176,7 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	
 	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 	
-	vector<double> fMLP_Time;	//!< Time (in seconds) when the MLP(t)=keff(t) has been trained.
+	vector<double> fMLP_Time;	//!< Time (in seconds) when the MLP(t) = keff(t) has been trained.
 	
 	
 	

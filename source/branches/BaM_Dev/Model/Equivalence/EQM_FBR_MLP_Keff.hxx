@@ -63,11 +63,11 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
  	/// (see class desctiption)
 	 /*!
 	 Create a EQM_FBR_MLP_Keff 
-	 \param  TMVAWeightPath :  Path to the .xml file containing neural network informations for prediction of keff(t=tfixed)
+	 \param  TMVAWeightPath :  Path to the .xml file containing neural network informations for prediction of keff(t = tfixed)
 	 \param  keff_target : Wanted  @f$k_{eff}@f$ (see detailed description)
 	 \param  InformationFile : Total path to the file containing time steps, fissile and ferile list (ante and post fabrication time cooling). Default is the same total path as TMVAWeightPath but extension is replaced by .nfo (see manual for format)
 	 */
-	EQM_FBR_MLP_Keff(string TMVAWeightPath, double keff_target = 1.00, string InformationFile="");
+	EQM_FBR_MLP_Keff(string TMVAWeightPath, double keff_target = 1.00, string InformationFile = "");
 	//}
 
 	//{
@@ -76,11 +76,11 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	 /*!
 	 Create a EQM_FBR_MLP_Keff 
 	 \param  log:  CLASSLogger object to handle log messages
-	 \param  TMVAWeightPath :  Path to the .xml file containing neural network informations for prediction of keff(t=tfixed)
+	 \param  TMVAWeightPath :  Path to the .xml file containing neural network informations for prediction of keff(t = tfixed)
 	 \param  keff_target : Wanted  @f$k_{eff}@f$ (see detailed description)
 	 \param  InformationFile : Total path to the file containing time steps, fissile and ferile list (ante and post fabrication time cooling). Default is the same total path as TMVAWeightPath but extension is replaced by .nfo (see manual for format)
 	 */
-	EQM_FBR_MLP_Keff(CLASSLogger* log, string TMVAWeightPath, double keff_target = 1.00, string InformationFile="");
+	EQM_FBR_MLP_Keff(CLASSLogger* log, string TMVAWeightPath, double keff_target = 1.00, string InformationFile = "");
 	//}
 
 	//@}
@@ -92,7 +92,7 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	 \param Fertil : The composition of the Fertil matter
 	 \param BurnUp : Maximum achievable burn up envisaged
 	 */
-	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp=0);
+	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp = 0);
 	//}
 	
 	/*!
@@ -169,7 +169,7 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 
 	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 
-	vector<double> fMLP_Time;	//!< Time (in seconds) when the MLP(t)=keff(t) has been trained.
+	vector<double> fMLP_Time;	//!< Time (in seconds) when the MLP(t) = keff(t) has been trained.
 	double 	fSpecificPower; 	//!< The specific power in W/gHM (HM: heavy Metal)
 	double  fMaximalContent;	//!< The approx. maximum fissile content reachable by the MLP model
 	

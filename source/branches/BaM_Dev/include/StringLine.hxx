@@ -20,26 +20,26 @@ using namespace std;
  
  example:
  \code
- string line="The temperature is : 300.6 K";
+ string line = "The temperature is : 300.6 K";
  int start;
 
  1st method: creation of StringLine
 
- start=0;
+ start = 0;
  StringLine SL;
- string the=SL.NextWord(line,start);
- string temperature_is=SL.NextWord(line,start,':');
- string colon=SL.NextWord(line,start);
- double T=atof(SL.NextWord(line,start).c_str());
+ string the = SL.NextWord(line,start);
+ string temperature_is = SL.NextWord(line,start,':');
+ string colon = SL.NextWord(line,start);
+ double T = atof(SL.NextWord(line,start).c_str());
  cout << the << endl << temperature_is << endl << T << endl;
  
  2nd method: "using" the static methods
  
- start=0;
- the=StringLine::NextWord(line,start);
- temperature_is=StringLine::NextWord(line,start,':');
- colon=StringLine::NextWord(line,start);
- T=atof(StringLine::NextWord(line,start).c_str());
+ start = 0;
+ the = StringLine::NextWord(line,start);
+ temperature_is = StringLine::NextWord(line,start,':');
+ colon = StringLine::NextWord(line,start);
+ T = atof(StringLine::NextWord(line,start).c_str());
  cout << the << endl << temperature_is << endl << T << endl;
  \endcode
  @author PTO
@@ -56,10 +56,10 @@ class StringLine
 	 The first value of start is in general 0 (i.e. the beginning of the Line)
 	 \param Line : a line containing words
 	 \param start : from where to start to find the begining of a word
-	 \param sep : the separator between 2 words (default=space)
-	 \param alt_sep : the alternative separator between 2 words (default='')
+	 \param sep : the separator between 2 words (default = space)
+	 \param alt_sep : the alternative separator between 2 words (default = '')
 	*/
-	static string NextWord(string Line,int &start,char sep=' ', char alt_sep='\0');
+	static string NextWord(string Line,int &start,char sep = ' ', char alt_sep = '\0');
 	//! Find the previous word in a line.
 	/*!
 	 Find Previous word in a line starting from position "start" in the line. If an alternative
@@ -67,10 +67,10 @@ class StringLine
 	 The first value of start is in general the end of the Line.
 	 \param Line : a line containing words
 	 \param start : from where to start to find the begining of a word
-	 \param sep : the separator between 2 words (default=space)
-	 \param alt_sep : the alternative separator between 2 words (default='')
+	 \param sep : the separator between 2 words (default = space)
+	 \param alt_sep : the alternative separator between 2 words (default = '')
 	*/
-	static string PreviousWord(string Line,int &start,char sep=' ', char alt_sep='\0');
+	static string PreviousWord(string Line,int &start,char sep = ' ', char alt_sep = '\0');
  	static void ToLower(string &Line); //!< convert a string to Lower case
  	static void ToUpper(string &Line); //!< convert a string to Upper case
 
@@ -94,9 +94,9 @@ class StringLine
 	/*!
 	 Example: 	
 	 \code
-	 string s="32.12";
-	 double t=StringLine::convert<double>(s);
-	 string temperature=StringLine::convert<string>(300.);
+	 string s = "32.12";
+	 double t = StringLine::convert<double>(s);
+	 string temperature = StringLine::convert<string>(300.);
 	 \endcode
 	 \param t : the input value
 	*/
@@ -105,14 +105,14 @@ class StringLine
 	/*!
 	 Example: 	
 	 \code
-	 string s="32.12";
+	 string s = "32.12";
 	 double d;
 	 if(StringLine::ToNumber(d,s,std::dec))
-	 	cout << "double=" << d << endl;
-	 string hexanum="ff";
+	 	cout << "double = " << d << endl;
+	 string hexanum = "ff";
 	 int i;
 	 if(StringLine::ToNumber(i,hexanum,std::hex))
-	 	cout << "int=" << i << endl;
+	 	cout << "int = " << i << endl;
 	 \endcode
 	 \param s : the input string
 	 \param t : the output value
@@ -120,7 +120,7 @@ class StringLine
 	*/
 	template <class T> static bool ToNumber(T& t, const std::string& s, std::ios_base& (*f)(std::ios_base&))
 	{
- 	 if(s.size()==0) return true;
+ 	 if(s.size() == 0) return true;
 	 std::istringstream iss(s);
  	 return !(iss >> f >> t).fail();
 	}
@@ -128,18 +128,18 @@ class StringLine
 	/*!
 	 \param Line : a line containing words
 	 \param CurrentPosition : from where to start to find the begining of a word
-	 \param sep : the separator between 2 words (default=space)
-	 \param alt_sep : the alternative separator between 2 words (default='')
+	 \param sep : the separator between 2 words (default = space)
+	 \param alt_sep : the alternative separator between 2 words (default = '')
 	*/
- 	static int GetStartWord(string Line,int CurrentPosition,char sep=' ', char alt_sep='\0');
+ 	static int GetStartWord(string Line,int CurrentPosition,char sep = ' ', char alt_sep = '\0');
 	//! Find the end of a word in a line.
 	/*!
 	 \param Line : a line containing words
 	 \param CurrentPosition : from where to start to find the end of a word
-	 \param sep : the separator between 2 words (default=space)
-	 \param alt_sep : the alternative separator between 2 words (default='')
+	 \param sep : the separator between 2 words (default = space)
+	 \param alt_sep : the alternative separator between 2 words (default = '')
 	*/
-	static int GetEndWord(string Line,int CurrentPosition,char sep=' ', char alt_sep='\0');
+	static int GetEndWord(string Line,int CurrentPosition,char sep = ' ', char alt_sep = '\0');
 	//! Replace a sub-string by an other in a string.
 	/*!
 	 \param InLine : the string  which contains the sub-string to replace
@@ -154,48 +154,48 @@ class StringLine
 //_________________________________________________________________________________
 inline string StringLine::NextWord(string Line,int &start,char sep, char alt_sep)
 {
-	string Word="";
-	if(start>=int(Line.size())) 
+	string Word = "";
+	if(start>= int(Line.size())) 
 	{
 		return Word;
 	}
-	start=GetStartWord(Line,start,sep,alt_sep);
-	int wordlength=GetEndWord(Line,start,sep,alt_sep)-start;
+	start = GetStartWord(Line,start,sep,alt_sep);
+	int wordlength = GetEndWord(Line,start,sep,alt_sep)-start;
 	
-	Word=Line.substr(start,wordlength);
+	Word = Line.substr(start,wordlength);
 	
-	start+=wordlength;
+	start+= wordlength;
 	return Word;
 }
 //_________________________________________________________________________________
 inline string StringLine::PreviousWord(string Line,int &start,char sep, char alt_sep)
 {
-	string Word="";
-	if(start<=0) 
+	string Word = "";
+	if(start<= 0) 
 	{
 		return Word;
 	}
-	int pos=Line.rfind(sep,start);
-	int alt_pos=-1;
-	int real_pos=pos;
-	char real_sep=sep;
-	if(alt_sep!='\0')
+	int pos = Line.rfind(sep,start);
+	int alt_pos = -1;
+	int real_pos = pos;
+	char real_sep = sep;
+	if(alt_sep != '\0')
 	{
-		alt_pos=Line.rfind(alt_sep,start);
-		real_pos=max(pos,alt_pos);
-		if(real_pos!=pos)
-			real_sep=alt_sep;
+		alt_pos = Line.rfind(alt_sep,start);
+		real_pos = max(pos,alt_pos);
+		if(real_pos != pos)
+			real_sep = alt_sep;
 	}
-	int wordlength=start-Line.rfind(real_sep,real_pos);
-	if(real_pos<=0)
+	int wordlength = start-Line.rfind(real_sep,real_pos);
+	if(real_pos<= 0)
 	{
-		Word=Line.substr(0,start+1);
-		start=0;
+		Word = Line.substr(0,start+1);
+		start = 0;
 		return Word;
 	}
-	Word=Line.substr(real_pos+1,wordlength);
+	Word = Line.substr(real_pos+1,wordlength);
 	
-	start-=wordlength+1;
+	start-= wordlength+1;
 	return Word;
 }
 	
@@ -218,21 +218,21 @@ inline void StringLine::ToUpper(string &Line)
 //_________________________________________________________________________________
 inline int StringLine::GetStartWord(string Line,int CurrentPosition,char sep, char alt_sep)
 {
-	int pos=Line.find(sep,CurrentPosition);
-	int alt_pos=-1;
-	if(alt_sep!='\0')
-		alt_pos=Line.find(alt_sep,CurrentPosition);
-	int real_pos=pos;
-	char real_sep=sep;
-	if(alt_pos>=0)
+	int pos = Line.find(sep,CurrentPosition);
+	int alt_pos = -1;
+	if(alt_sep != '\0')
+		alt_pos = Line.find(alt_sep,CurrentPosition);
+	int real_pos = pos;
+	char real_sep = sep;
+	if(alt_pos>= 0)
 	{
-		real_pos=min(pos,alt_pos);
-		if(pos==int(string::npos))real_pos=alt_pos;
-		if(real_pos!=pos)
-			real_sep=alt_sep;
+		real_pos = min(pos,alt_pos);
+		if(pos == int(string::npos))real_pos = alt_pos;
+		if(real_pos != pos)
+			real_sep = alt_sep;
 	}
-	if(real_pos==int(string::npos)) return CurrentPosition;
-	while(CurrentPosition<int(Line.size()) && Line[CurrentPosition]==real_sep)
+	if(real_pos == int(string::npos)) return CurrentPosition;
+	while(CurrentPosition<int(Line.size()) && Line[CurrentPosition] == real_sep)
 		CurrentPosition++;
 	return CurrentPosition;
 }
@@ -240,17 +240,17 @@ inline int StringLine::GetStartWord(string Line,int CurrentPosition,char sep, ch
 //_________________________________________________________________________________
 inline int StringLine::GetEndWord(string Line,int CurrentPosition,char sep, char alt_sep)
 {
-	int pos=Line.find(sep,CurrentPosition);
-	int alt_pos=-1;
-	if(alt_sep!='\0')
-		alt_pos=Line.find(alt_sep,CurrentPosition);
-	int real_pos=pos;
-	if(alt_pos>=0)
+	int pos = Line.find(sep,CurrentPosition);
+	int alt_pos = -1;
+	if(alt_sep != '\0')
+		alt_pos = Line.find(alt_sep,CurrentPosition);
+	int real_pos = pos;
+	if(alt_pos>= 0)
 	{
-		real_pos=min(pos,alt_pos);
-		if(pos==int(string::npos))real_pos=alt_pos;
+		real_pos = min(pos,alt_pos);
+		if(pos == int(string::npos))real_pos = alt_pos;
 	}
-	if(real_pos==int(string::npos))
+	if(real_pos == int(string::npos))
 		return Line.size();
 	return real_pos;
 }
@@ -258,7 +258,7 @@ inline int StringLine::GetEndWord(string Line,int CurrentPosition,char sep, char
 //_________________________________________________________________________________
 inline int StringLine::Find(const char *search,string Line)
 {
-	size_t Pos=Line.find(search);
+	size_t Pos = Line.find(search);
 	if(Pos != string::npos ) return Pos;
 	return -1;
 }
@@ -266,7 +266,7 @@ inline int StringLine::Find(const char *search,string Line)
 //_________________________________________________________________________________
 inline int StringLine::rFind(const char *search,string Line)
 {
-	size_t Pos=Line.rfind(search);
+	size_t Pos = Line.rfind(search);
 	if(Pos != string::npos) return Pos;
 	return -1;
 }
@@ -285,13 +285,13 @@ inline out_T StringLine::convert(const in_T & t)
 //_________________________________________________________________________________
 inline string StringLine::ReplaceAll(string InLine, string ToReplace, string By)
 {
-	int start=0;
-	int pos=InLine.find(ToReplace,start);
-	while(pos!=int(string::npos))
+	int start = 0;
+	int pos = InLine.find(ToReplace,start);
+	while(pos != int(string::npos))
 	{
 		InLine.replace(pos,ToReplace.size(),By);
-		start=0;
-		pos=InLine.find(ToReplace,start);
+		start = 0;
+		pos = InLine.find(ToReplace,start);
 	}
 	return InLine;
 }

@@ -49,9 +49,9 @@ public:
  	/*!
  	 Default: No parent
  	 \param Z : number of protons
- 	 \param A : number of nucleons (A=0 means natural isotopes) 
+ 	 \param A : number of nucleons (A = 0 means natural isotopes) 
  	*/
-	ZAI(int Z, int A, int I=0);
+	ZAI(int Z, int A, int I = 0);
 	//}
 
 
@@ -73,20 +73,20 @@ public:
 
 
 
-	ZAI operator=(ZAI IVa);		//!<
+	ZAI operator = (ZAI IVa);		//!<
 	bool operator <(const ZAI& zai)		const	{ return (fZ != zai.Z())?
 							(fZ < zai.Z()) : ( (fA != zai.A())?
 								 (fA < zai.A()) : (fI < zai.I()) ); }//!< Compartor operator
 
-	bool operator !=(const ZAI& zai)	const	{ return ( fZ != zai.Z() ) || ( fA != zai.A() ) || ( fI != zai.I() ); }//!< Compartor operator
-	bool operator ==(const ZAI& zai)	const	{ return ( fZ == zai.Z()  && fA == zai.A() &&  fI == zai.I()); }//!< Compartor operator
+	bool operator != (const ZAI& zai)	const	{ return ( fZ != zai.Z() ) || ( fA != zai.A() ) || ( fI != zai.I() ); }//!< Compartor operator
+	bool operator == (const ZAI& zai)	const	{ return ( fZ ==  zai.Z()  && fA ==  zai.A() &&  fI ==  zai.I()); }//!< Compartor operator
 	void Print()				const	{ cout << fZ << " " << fA << " " << fI << endl;}//!< Print in standard output : Z A I
 
 
 protected :
  	
 	short	fZ;		///< number of protons
-	short	fA;		///< number of nucleons (A=0 means natural isotopes) 
+	short	fA;		///< number of nucleons (A = 0 means natural isotopes) 
 	short	fI;		///< Isomeric state
 
 	ClassDef(ZAI,1);

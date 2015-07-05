@@ -47,7 +47,7 @@ EQM_PWR_LIN_MOX::EQM_PWR_LIN_MOX(string WeightPath):EquivalenceModel(new CLASSLo
 
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
-	double U5_enrich= 0.0025;
+	double U5_enrich =  0.0025;
 	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
 
 
@@ -99,7 +99,7 @@ EQM_PWR_LIN_MOX::EQM_PWR_LIN_MOX(CLASSLogger* log, string WeightPath):Equivalenc
 
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
-	double U5_enrich= 0.0025;
+	double U5_enrich =  0.0025;
 	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
 
 
@@ -145,7 +145,7 @@ vector<double> EQM_PWR_LIN_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 	IsotopicVector stock;
 
 	bool FuelBuild = false;
-	if(FissilArray.size() == 0)
+	if(FissilArray.size() ==  0)
 	{
 		for(int i = 0; i < (int)lambda.size(); i++)
 			lambda[i] = -1;
@@ -247,7 +247,7 @@ vector<double> EQM_PWR_LIN_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 		}
 
 
-		if( N_FissilStock_OnCheck == (int) FissilArray.size() )	// Check if the last Fissil stock has been tested... quit if so...
+		if( N_FissilStock_OnCheck ==  (int) FissilArray.size() )	// Check if the last Fissil stock has been tested... quit if so...
 		{
 			for(int i = 0; i < (int)lambda.size(); i++)
 				lambda[i] = -1;

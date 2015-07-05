@@ -45,7 +45,7 @@ EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(string TMVAWeightPath,  int NumOf
 	
 	/* INFORMATION FILE HANDLING */
 	
-	if(InformationFile=="")
+	if(InformationFile == "")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 	
 	fInformationFile = InformationFile;
@@ -90,7 +90,7 @@ EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(CLASSLogger* log, string TMVAWeig
 	
 	/* INFORMATION FILE HANDLING */
 	
-	if(InformationFile=="")
+	if(InformationFile == "")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 	
 	fInformationFile = InformationFile;
@@ -152,19 +152,19 @@ TGraph* EQM_FBR_MLP_Keff_BOUND::BuildAverageKeffGraph(TGraph* GRAPH_KEFF)
 	GRAPH_KEFF->GetPoint(NumOfInputGraphPoint, TimeFinal, KFinal);
 	
 	double step = TimeFinal/NumberOfPoint;
-	int p=0;
+	int p = 0;
 	for(int n = 0 ;n<NumberOfPoint;n++)
 	{
 		double k_av = 0;
-		for(int b=0;b<fNumberOfBatch;b++)
+		for(int b = 0;b<fNumberOfBatch;b++)
 		{
 			if((step*p)> TimeFinal/(double)fNumberOfBatch)
-				p=0;
-			k_av +=	GRAPH_KEFF->Eval( (step*p + b*TimeFinal/(double)fNumberOfBatch) , 0 , "S" );
+				p = 0;
+			k_av += 	GRAPH_KEFF->Eval( (step*p + b*TimeFinal/(double)fNumberOfBatch) , 0 , "S" );
 			
 		}
 		p++;
-		k_av/=(double)fNumberOfBatch;
+		k_av/= (double)fNumberOfBatch;
 		
 		AveragekeffGraph->SetPoint(n, step*n, k_av);
 	}
@@ -178,7 +178,7 @@ double EQM_FBR_MLP_Keff_BOUND::GetKeffAt(TGraph* GRAPH_KEFF, int Step)
 	DBGL
 	
 	double Time = 0;
-	double Keff=0;
+	double Keff = 0;
 	GRAPH_KEFF->GetPoint(Step, Time,  Keff);
 	
 	DBGL
@@ -198,20 +198,20 @@ TTree* EQM_FBR_MLP_Keff_BOUND::CreateTMVAInputTree(IsotopicVector TheFreshfuel, 
 	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
 		InputTMVA.push_back(0);
 	
-	float Time=0;
+	float Time = 0;
 	
 	IsotopicVector IVInputTMVA;
 	map<ZAI ,string >::iterator it;
-	int j=0;
+	int j = 0;
 	
-	for( it = fMapOfTMVAVariableNames.begin()  ; it!=fMapOfTMVAVariableNames.end() ; it++)
+	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
 	{
 		InputTree->Branch( ((*it).second).c_str()	,&InputTMVA[j], ((*it).second + "/F").c_str());
-		IVInputTMVA+= ((*it).first)*1;
+		IVInputTMVA+=  ((*it).first)*1;
 		j++;
 	}
 	
-	if(ThisTime!=-1)
+	if(ThisTime != -1)
 		InputTree->Branch(	"Time"	,&Time	,"Time/F"	);
 	
 	IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(IVInputTMVA);
@@ -220,16 +220,16 @@ TTree* EQM_FBR_MLP_Keff_BOUND::CreateTMVAInputTree(IsotopicVector TheFreshfuel, 
 	
 	IVAccordingToUserInfoFile = IVAccordingToUserInfoFile/Ntot;
 	
-	j=0;
+	j = 0;
 	map<ZAI ,string >::iterator it2;
 	
-	for( it2 = fMapOfTMVAVariableNames.begin() ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
+	for( it2 = fMapOfTMVAVariableNames.begin() ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
 	{
 		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first ) ;
 		j++;
 	}
 	
-	Time=ThisTime;
+	Time = ThisTime;
 	
 	InputTree->Fill();
 	
@@ -253,8 +253,8 @@ double EQM_FBR_MLP_Keff_BOUND::ExecuteTMVA(TTree* InputTree, bool IsTimeDependen
 	Float_t Time;
 	
 	map<ZAI ,string >::iterator it;
-	int j=0;
-	for( it = fMapOfTMVAVariableNames.begin()  ; it!=fMapOfTMVAVariableNames.end() ; it++)
+	int j = 0;
+	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
 	{	reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
 		j++;
 	}
@@ -270,7 +270,7 @@ double EQM_FBR_MLP_Keff_BOUND::ExecuteTMVA(TTree* InputTree, bool IsTimeDependen
 	
 	map<ZAI ,string >::iterator it2;
 	j = 0;
-	for( it2 = fMapOfTMVAVariableNames.begin()  ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
+	for( it2 = fMapOfTMVAVariableNames.begin()  ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
 	{
 		InputTree->SetBranchAddress(( (*it2).second ).c_str(),&InputTMVA[j]);
 		j++;
@@ -285,7 +285,7 @@ double EQM_FBR_MLP_Keff_BOUND::ExecuteTMVA(TTree* InputTree, bool IsTimeDependen
 	delete reader;
 	
 	DBGL
-	return (double)val;	//return k_{eff}(t=Time)
+	return (double)val;	//return k_{eff}(t = Time)
 }
 
 //________________________________________________________________________
@@ -384,7 +384,7 @@ double EQM_FBR_MLP_Keff_BOUND::GetFissileMolarFraction(IsotopicVector Fissile, I
 	{
 		IsotopicVector FreshFuel = (1-FissileContent)*(Fertile/Fertile.GetSumOfAll()) + FissileContent*(Fissile/Fissile.GetSumOfAll());
 		
-		TGraph* KEFF 	 = BuildKeffGraph(FreshFuel);
+		TGraph* KEFF  = BuildKeffGraph(FreshFuel);
 		TGraph* KEFF_avg = BuildAverageKeffGraph(KEFF);
 		
 		test_Keff_beg = GetKeffAt(KEFF_avg , 0);
@@ -397,7 +397,7 @@ double EQM_FBR_MLP_Keff_BOUND::GetFissileMolarFraction(IsotopicVector Fissile, I
 		else
 			speedstep = 1;
 		
-		FissileContent+=0.001*speedstep;
+		FissileContent+= 0.001*speedstep;
 		
 		if( test_Keff_beg > 1.30 )
 		{

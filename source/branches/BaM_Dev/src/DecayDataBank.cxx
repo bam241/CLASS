@@ -84,7 +84,7 @@ DBGL
 	
 	map<ZAI ,EvolutionData >::iterator it = fDecayDataBank.find(zai);
 	
-	if (it == fDecayDataBank.end() )
+	if (it ==  fDecayDataBank.end() )
 	{
 		ifstream DB_index(fDataBaseIndex.c_str());
 		if( !DB_index)
@@ -98,17 +98,17 @@ DBGL
 		while (!DB_index.eof())
 		{
 			string line;
-			int start=0;
+			int start = 0;
 			getline(DB_index,line);							// Read first line
-			string first=StringLine::NextWord(line,start);				// Read first word
+			string first = StringLine::NextWord(line,start);				// Read first word
 			
-			if(first.size()==0) break;						// If First word is null.... quit
+			if(first.size() == 0) break;						// If First word is null.... quit
 			
-			int rZ=atoi(first.c_str());						// Get Z
-			int rA=atoi(StringLine::NextWord(line,start).c_str());			// Get A
-			int rI=atoi(StringLine::NextWord(line,start).c_str());			// Get Isomeric State
+			int rZ = atoi(first.c_str());						// Get Z
+			int rA = atoi(StringLine::NextWord(line,start).c_str());			// Get A
+			int rI = atoi(StringLine::NextWord(line,start).c_str());			// Get Isomeric State
 			
-			if(rZ == zai.Z() && rA == zai.A() && rI == zai.I() )
+			if(rZ ==  zai.Z() && rA ==  zai.A() && rI ==  zai.I() )
 			{
 				string file_name = StringLine::NextWord(line,start);
 				EvolutionData evolutionproduct = EvolutionData(GetLog(), file_name, true);
@@ -191,7 +191,7 @@ IsotopicVector DecayDataBank::GetDecay(IsotopicVector isotopicvector, cSecond t)
 		for(int i = 16; i >= 0; i--)
 		{
 			evolutionDecade[i] = (cSecond)remainingTime/pow(10,i);
-			remainingTime -= evolutionDecade[i]*pow(10,i);
+			remainingTime -=  evolutionDecade[i]*pow(10,i);
 		}
 		
 		
@@ -199,7 +199,7 @@ IsotopicVector DecayDataBank::GetDecay(IsotopicVector isotopicvector, cSecond t)
 		
 		for (int i = 16; i >= 0; i--)
 		{
-			if(evolutionDecade[i]!=0)
+			if(evolutionDecade[i] != 0)
 			{
 				map<ZAI ,double> isotopicquantity = IV.GetIsotopicQuantity();
 				map<ZAI ,double >::iterator it;

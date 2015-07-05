@@ -203,13 +203,13 @@ EvolutionData XSM_CLOSEST::GetCrossSections(IsotopicVector isotopicvector, doubl
 			double distance = (*it_distance).first;
 			int ED_Indice = (*it_distance).second;
 
-			if(distance == 0 )
+			if(distance ==  0 )
 			{
 				EvolInterpolate = Multiply(1,fFuelDataBank[ED_Indice]);
 				return EvolInterpolate;
 			}
 
-			if(Nstep == 0)
+			if(Nstep ==  0)
 				EvolInterpolate = Multiply(1./distance, fFuelDataBank[ED_Indice]);
 			else
 			{
@@ -226,7 +226,7 @@ EvolutionData XSM_CLOSEST::GetCrossSections(IsotopicVector isotopicvector, doubl
 
 			SumOfDistance += 1./distance;
 			Nstep++;
-			if(Nstep == NClose) break;
+			if(Nstep ==  NClose) break;
 
 		}
 
@@ -286,7 +286,7 @@ EvolutionData XSM_CLOSEST::GetCrossSections(IsotopicVector isotopicvector, doubl
 void XSM_CLOSEST::CalculateDistanceParameter()
 {
 	DBGL
-	if(fDistanceType!=1){
+	if(fDistanceType != 1){
 		WARNING << " Distance Parameter will be calculate even if the distance type is not the good one. Any Distance Parameters given by the user will be overwriten" << endl;
 	}
 
@@ -300,12 +300,12 @@ void XSM_CLOSEST::CalculateDistanceParameter()
 		NevolutionDatainFuelDataBank++;
 		map<ZAI ,double>::iterator itit;
 		map<ZAI ,double> isovector = fFuelDataBank[i].GetIsotopicVectorAt(0).GetIsotopicQuantity();
-		for(itit=isovector.begin(); itit != isovector.end(); itit++) //Boucle sur ZAI
+		for(itit = isovector.begin(); itit != isovector.end(); itit++) //Boucle sur ZAI
 		{
-			double TmpXS=0;
+			double TmpXS = 0;
 
-			for( int i=1; i<4; i++ ) //Loop on Reactions 1==fission, 2==capture, 3==n2n
-				TmpXS+=	fFuelDataBank[i].GetXSForAt(0, (*itit).first, i);
+			for( int i = 1; i<4; i++ ) //Loop on Reactions 1 == fission, 2 == capture, 3 == n2n
+				TmpXS+= 	fFuelDataBank[i].GetXSForAt(0, (*itit).first, i);
 
 			fDistanceParameter.Add((*itit).first,TmpXS);
 		}
@@ -355,11 +355,11 @@ void XSM_CLOSEST::SetDistanceParameter(IsotopicVector DistanceParameter)
 void XSM_CLOSEST::SetDistanceType(int DistanceType)
 {
 
-	fDistanceType=DistanceType;
-	if(fDistanceType==1){
+	fDistanceType = DistanceType;
+	if(fDistanceType == 1){
 		CalculateDistanceParameter();
 	}
-	else if(fDistanceType == 2 && Norme(fDistanceParameter)==0){
+	else if(fDistanceType ==  2 && Norme(fDistanceParameter) == 0){
 		// This is so bad!! You will probably unsynchronize all the reactor....
 		WARNING << " Distance use weight defined by user for each isotope, but no weight have been given" << endl << "Use SetDistanceParameter()" << endl;
 		exit(1);

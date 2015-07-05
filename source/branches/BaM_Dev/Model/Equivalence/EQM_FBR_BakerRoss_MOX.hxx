@@ -59,7 +59,7 @@ class EQM_FBR_BakerRoss_MOX : public EquivalenceModel
 	 \param Weight_Pu_241 : reactivity weight @f$W_{^{241}Pu} = \frac{\alpha_{{^{241}Pu}} - \alpha_{^{238}U} }{\alpha_{^{239}Pu}-\alpha_{^{238}U}}@f$
 	 \param Weight_Pu_242 : reactivity weight @f$W_{^{242}Pu} = \frac{\alpha_{{^{242}Pu}} - \alpha_{^{238}U} }{\alpha_{^{239}Pu}-\alpha_{^{238}U}}@f$
 	 \param Weight_Am_241 : reactivity weight @f$W_{^{241}Pu} = \frac{\alpha_{{^{241}Am}} - \alpha_{^{238}U} }{\alpha_{^{239}Pu}-\alpha_{^{238}U}}@f$
-	 \param EquivalentFissile : reference fresh fuel @f$^{239}Pu@f$ content neeed in a @f$^{238}U@f$ + @f$^{239}Pu@f$ fuel to satisfy criticality at t=0
+	 \param EquivalentFissile : reference fresh fuel @f$^{239}Pu@f$ content neeed in a @f$^{238}U@f$ + @f$^{239}Pu@f$ fuel to satisfy criticality at t = 0
 	 */
 	EQM_FBR_BakerRoss_MOX(CLASSLogger* log, double Weight_U_235 = 0.791135, double Weight_Pu_238 = 0.686385, double Weight_Pu_240 = 0.13553, double Weight_Pu_241 = 1.54572 , double Weight_Pu_242 = 0.0829001, double Weight_Am_241 = -0.336945, double EquivalentFissile = 0.103213);
 	//}
@@ -75,7 +75,7 @@ class EQM_FBR_BakerRoss_MOX : public EquivalenceModel
 	 \param Weight_Pu_241 : reactivity weight @f$W_{^{241}Pu} = \frac{\alpha_{{^{241}Pu}} - \alpha_{^{238}U} }{\alpha_{^{239}Pu}-\alpha_{^{238}U}}@f$
 	 \param Weight_Pu_242 : reactivity weight @f$W_{^{242}Pu} = \frac{\alpha_{{^{242}Pu}} - \alpha_{^{238}U} }{\alpha_{^{239}Pu}-\alpha_{^{238}U}}@f$
 	 \param Weight_Am_241 : reactivity weight @f$W_{^{241}Pu} = \frac{\alpha_{{^{241}Am}} - \alpha_{^{238}U} }{\alpha_{^{239}Pu}-\alpha_{^{238}U}}@f$
-	 \param EquivalentFissile : reference fresh fuel @f$^{239}Pu@f$ content neeed in a @f$^{238}U@f$ + @f$^{239}Pu@f$ fuel to satisfy criticality at t=0
+	 \param EquivalentFissile : reference fresh fuel @f$^{239}Pu@f$ content neeed in a @f$^{238}U@f$ + @f$^{239}Pu@f$ fuel to satisfy criticality at t = 0
 	 */
 	EQM_FBR_BakerRoss_MOX(double Weight_U_235 = 0.791135, double Weight_Pu_238 = 0.686385, double Weight_Pu_240 = 0.13553, double Weight_Pu_241 = 1.54572 , double Weight_Pu_242 = 0.0829001, double Weight_Am_241 = -0.336945, double EquivalentFissile = 0.103213);
 	//}
@@ -84,7 +84,7 @@ class EQM_FBR_BakerRoss_MOX : public EquivalenceModel
 	virtual double GetFissileMolarFraction(IsotopicVector Fissil, IsotopicVector Fertil, double BurnUp = 0);
 
 	private :
-	double fReferenceFissilContent;   //!<The reference fraction of Pu for BurnUp=100Gwj/t with a ideal model(only @f$^{239}Pu@f$ and &@f$^{238}U@f$ are taken into account)
+	double fReferenceFissilContent;   //!<The reference fraction of Pu for BurnUp = 100Gwj/t with a ideal model(only @f$^{239}Pu@f$ and &@f$^{238}U@f$ are taken into account)
 
 	/*!
 	 \name Reactivity coefficients :
