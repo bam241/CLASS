@@ -17,13 +17,13 @@ int main(int argc, char** argv)
 	}
 
 	vector<string> VFileName;
-	int NumberOfFile=argc-1
+	int NumberOfFile = argc-1
 	;
-	for(int i=0;i<NumberOfFile;i++)
+	for(int i = 0;i<NumberOfFile;i++)
 		VFileName.push_back(string(argv[i+1]));
 	
 	CLASSRead* DataRead = new CLASSRead(VFileName[0]);
-	if(VFileName.size() == 0)
+	if(VFileName.size() ==  0)
 	{
 		cerr << endl << "Usage: CLASGui FileName1 FileName2 ... " << endl;
 		exit(0);
@@ -39,9 +39,9 @@ int main(int argc, char** argv)
 	cout << "Bienvenue dans le GUI" <<  endl;
 
 	
-	argc=1; //avoid to change directory by root TApplication...
+	argc = 1; //avoid to change directory by root TApplication...
 	TApplication theApp("App", &argc, argv);
-	MainWin *win=new MainWin(DataRead,VFileName);
+	MainWin *win = new MainWin(DataRead,VFileName);
 
 	
 	theApp.Run();

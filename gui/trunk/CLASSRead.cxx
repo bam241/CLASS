@@ -63,7 +63,7 @@ string ReadNucleusName[] = {
 
 int CurveColor(int graph_num)
 {
-	int ColorTable[]={1,kBlue,kRed,kGreen+1,kMagenta,kCyan+2,kOrange-3,kRed+2,kBlue-2,
+	int ColorTable[] = {1,kBlue,kRed,kGreen+1,kMagenta,kCyan+2,kOrange-3,kRed+2,kBlue-2,
 		kSpring+9,kGreen+3,kAzure+8,kMagenta+2,kYellow+2,kBlue-9,kOrange+2};
 	return ColorTable[graph_num%16];
 
@@ -87,7 +87,7 @@ CLASSRead::CLASSRead(TString filename)
 	FileIn = TFile::Open(filename);
 	fFileIn.push_back(FileIn);
 
-	for( int i =0; i < fFileIn.back()->GetNkeys(); i++)
+	for( int i  = 0; i < fFileIn.back()->GetNkeys(); i++)
 	{
 		//cout << "KeyNum " << i << endl;
 		fData.push_back( (TTree*)gDirectory->Get(fFileIn.back()->GetListOfKeys()->At(fFileIn.back()->GetNkeys()-1)->GetName() ) );
@@ -121,9 +121,9 @@ CLASSRead::CLASSRead(TString filename)
 //________________________________________________________________________
 CLASSRead::~CLASSRead()
 {
-	for(int i=fData.size()-1; i !=0; i--)
+	for(int i = fData.size()-1; i != 0; i--)
 		delete fData[i];
-	for(int i=fFileIn.size()-1; i !=0; i--)
+	for(int i = fFileIn.size()-1; i != 0; i--)
 		delete fFileIn[i];
 }
 
@@ -137,7 +137,7 @@ void CLASSRead::AddFile(TString filename)
 	TFile *FileIn;
 	FileIn = TFile::Open(filename);
 	fFileIn.push_back(FileIn);
-	for( int i =0; i < fFileIn.back()->GetNkeys(); i++)
+	for( int i  = 0; i < fFileIn.back()->GetNkeys(); i++)
 	{
 		fData.push_back( (TTree*)gDirectory->Get(fFileIn.back()->GetListOfKeys()->At(i)->GetName() ) );
 	}
@@ -155,33 +155,33 @@ void CLASSRead::ReadName()
 		vector<TString>	StockName;
 
 		Int_t nBranches = fData[j]->GetNbranches();
-		int place_reactor=0;
-		int place_pool=0;
-		int place_fabrication=0;
-		int place_stock=0;
-		for(Int_t i=0;i<nBranches;i++)
+		int place_reactor = 0;
+		int place_pool = 0;
+		int place_fabrication = 0;
+		int place_stock = 0;
+		for(Int_t i = 0;i<nBranches;i++)
 		{
 			string Name;
-			Name=fData[j]->GetListOfBranches()->At(i)->GetName();
+			Name = fData[j]->GetListOfBranches()->At(i)->GetName();
 			string TypeName = Name;
 			TypeName = TypeName.substr(0,2);
 
-			if(TypeName=="R_")
+			if(TypeName == "R_")
 			{
 				ReactorName.push_back(Name.substr(2,Name.size()-1));
 
 			}
-			else if(TypeName=="P_")
+			else if(TypeName == "P_")
 			{
 				PoolName.push_back(Name.substr(2,Name.size()-1));
 
 			}
-			else if(TypeName=="S_")
+			else if(TypeName == "S_")
 			{
 				StockName.push_back(Name.substr(2,Name.size()-1));
 
 			}
-			else if(TypeName=="F_")
+			else if(TypeName == "F_")
 			{
 				FabricationName.push_back(Name.substr(2,Name.size()-1));
 				
@@ -203,7 +203,7 @@ void CLASSRead::ReadZAI()
 	IsotopicVector IVTot;
 	for (int i = 0; i < (int)fData.size() ; i++)
 	{
-		IsotopicVector *IVIn=0;
+		IsotopicVector *IVIn = 0;
 		fData[i]->SetBranchStatus("TOTAL.",1);
 		fData[i]->SetBranchAddress("TOTAL.", &IVIn);
 
@@ -258,11 +258,11 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 
 	if(fLegendInv)
 	{
-		for(int i=0; i < (int)fGraphInv.size(); i++) delete fLegendInv[i];
+		for(int i = 0; i < (int)fGraphInv.size(); i++) delete fLegendInv[i];
 		delete [] fLegendInv;
 	}
 	
-	for(int i=0; i < (int)fGraphInv.size();i++) delete fGraphInv[i];
+	for(int i = 0; i < (int)fGraphInv.size();i++) delete fGraphInv[i];
 	fGraphInv.clear();
 	
 	if(fLegendInvSumOfSelected)
@@ -275,7 +275,7 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	if(fCNucleiInv && gROOT->FindObject("c_NucleiInv"))
 	{
 		delete fCNucleiInv;
-		fCNucleiInv=0;
+		fCNucleiInv = 0;
 	}
 	
 	fCNucleiInv = new TCanvas("c_NucleiInv","NucleiInv",50,110,400,300);
@@ -300,7 +300,7 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 
 	bool SumOfSelected = false;
 
-	if(toplot[0].fTreeId == -1 )
+	if(toplot[0].fTreeId ==  -1 )
 	{
 		SumOfSelected = true;
 		toplot.erase(toplot.begin());
@@ -315,8 +315,8 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
 		
-		if(i == 1) out += " same";
-		if(toplotTTree[i].size() !=0)
+		if(i ==  1) out += " same";
+		if(toplotTTree[i].size() != 0)
 		{
 			if(!DecayChain)
 				BuildTGraph(toplotTTree[i], 0, out);
@@ -340,9 +340,9 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 				double x;
 				double y;
 				fGraphInv[i]->GetPoint(j, x, y);
-				if(i == 0)
+				if(i ==  0)
 					X_Sum[j] = x;
-				if(i == 0)
+				if(i ==  0)
 					Y_Sum[j] = y;
 				else
 					Y_Sum[j] += y;
@@ -350,7 +350,7 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 		}
 
 
-		for (int i =0; i < fGraphInv[0]->GetN(); i++)
+		for (int i  = 0; i < fGraphInv[0]->GetN(); i++)
 		{
 			if(X_Sum[i] > Xmax) Xmax = X_Sum[i];
 			if(X_Sum[i] < Xmin) Xmin = X_Sum[i];
@@ -367,8 +367,8 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 
 
 	TH1F*	  fhr = fCNucleiInv->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
-	string Xtitle="Time [year]";
-	string Ytitle="Mass [kg]";
+	string Xtitle = "Time [year]";
+	string Ytitle = "Mass [kg]";
 	fhr->SetXTitle(Xtitle.c_str());
 	fhr->SetYTitle(Ytitle.c_str());
 	fhr->GetXaxis()->CenterTitle();
@@ -408,7 +408,7 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 
 	for (int i = 0; i < (int)fGraphInv.size(); i++)
 	{
-		if( i !=0 || SumOfSelected) out += " same";
+		if( i != 0 || SumOfSelected) out += " same";
 
 		fGraphInv[i]->SetName(GetTittleOutName(toplot[i]).c_str());
 		fGraphInv[i]->SetTitle(GetTittleOutName(toplot[i]).c_str());
@@ -445,11 +445,11 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 
 	if(fLegendTox)
 	{
-		for(int i=0; i < (int)fGraphTox.size();i++) delete fLegendTox[i];
+		for(int i = 0; i < (int)fGraphTox.size();i++) delete fLegendTox[i];
 		delete [] fLegendTox;
 	}
 	
-	for(int i=0; i < (int)fGraphTox.size();i++) delete fGraphTox[i];
+	for(int i = 0; i < (int)fGraphTox.size();i++) delete fGraphTox[i];
 	fGraphTox.clear();
 	
 	if(fLegendToxSumOfSelected)
@@ -460,7 +460,7 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 
 	if(fCNucleiTox && gROOT->FindObject("c_NucleiTox"))
 	{	delete fCNucleiTox;
-		fCNucleiTox=0;
+		fCNucleiTox = 0;
 	}
 	fCNucleiTox = new TCanvas("c_NucleiTox","NucleiTox",50,110,400,300);
 	if(!LinBin)
@@ -483,7 +483,7 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	
 	bool SumOfSelected = false;
 	
-	if(toplot[0].fTreeId == -1 )
+	if(toplot[0].fTreeId ==  -1 )
 	{
 		SumOfSelected = true;
 		toplot.erase(toplot.begin());
@@ -497,8 +497,8 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	string out = opt;
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
-		if(i == 1) out += " same";
-		if(toplotTTree[i].size() !=0)
+		if(i ==  1) out += " same";
+		if(toplotTTree[i].size() != 0)
 		{
 			if(!DecayChain)
 				BuildTGraph(toplotTTree[i], 1, out);
@@ -522,9 +522,9 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 				double x;
 				double y;
 				fGraphTox[i]->GetPoint(j, x, y);
-				if(i == 0)
+				if(i ==  0)
 					X_Sum[j] = x;
-				if(i == 0)
+				if(i ==  0)
 					Y_Sum[j] = y;
 				else
 					Y_Sum[j] += y;
@@ -532,7 +532,7 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 		}
 		
 		
-		for (int i =0; i < fGraphTox[0]->GetN(); i++)
+		for (int i  = 0; i < fGraphTox[0]->GetN(); i++)
 		{
 			if(X_Sum[i] > Xmax) Xmax = X_Sum[i];
 			if(X_Sum[i] < Xmin) Xmin = X_Sum[i];
@@ -549,8 +549,8 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	
 	
 	TH1F*	  fhr = fCNucleiTox->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
-	string Xtitle="Time [year]";
-	string Ytitle="Radio-Toxicity [Sv]";
+	string Xtitle = "Time [year]";
+	string Ytitle = "Radio-Toxicity [Sv]";
 	fhr->SetXTitle(Xtitle.c_str());
 	fhr->SetYTitle(Ytitle.c_str());
 	fhr->GetXaxis()->CenterTitle();
@@ -589,7 +589,7 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	
 	for (int i = 0; i < (int)fGraphTox.size(); i++)
 	{
-		if( i !=0 || SumOfSelected) out += " same";
+		if( i != 0 || SumOfSelected) out += " same";
 		
 		fGraphTox[i]->SetName(GetTittleOutName(toplot[i]).c_str());
 		fGraphTox[i]->SetTitle(GetTittleOutName(toplot[i]).c_str());
@@ -629,10 +629,10 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 	
 	if(fLegendHeat)
 	{
-		for(int i=0; i < (int)fGraphHeat.size();i++) delete fLegendHeat[i];
+		for(int i = 0; i < (int)fGraphHeat.size();i++) delete fLegendHeat[i];
 		delete [] fLegendHeat;
 	}
-	for(int i=0; i < (int)fGraphHeat.size();i++) delete fGraphHeat[i];
+	for(int i = 0; i < (int)fGraphHeat.size();i++) delete fGraphHeat[i];
 	fGraphHeat.clear();
 	if(fLegendHeatSumOfSelected)
 		delete fLegendHeatSumOfSelected;
@@ -642,7 +642,7 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 
 	if(fCNucleiHeat && gROOT->FindObject("c_NucleiHeat"))
 	{	delete fCNucleiHeat;
-		fCNucleiHeat=0;
+		fCNucleiHeat = 0;
 	}
 	fCNucleiHeat = new TCanvas("c_NucleiHeat","NucleiHeat",50,110,400,300);
 	if(!LinBin)
@@ -666,7 +666,7 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 	
 	bool SumOfSelected = false;
 	
-	if(toplot[0].fTreeId == -1 )
+	if(toplot[0].fTreeId ==  -1 )
 	{
 		SumOfSelected = true;
 		toplot.erase(toplot.begin());
@@ -680,8 +680,8 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 	string out = opt;
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
-		if(i == 1) out += " same";
-		if(toplotTTree[i].size() !=0)
+		if(i ==  1) out += " same";
+		if(toplotTTree[i].size() != 0)
 		{
 			if(!DecayChain)
 				BuildTGraph(toplotTTree[i], 2, out);
@@ -704,9 +704,9 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 				double x;
 				double y;
 				fGraphHeat[i]->GetPoint(j, x, y);
-				if(i == 0)
+				if(i ==  0)
 					X_Sum[j] = x;
-				if(i == 0)
+				if(i ==  0)
 					Y_Sum[j] = y;
 				else
 					Y_Sum[j] += y;
@@ -714,7 +714,7 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 		}
 		
 		
-		for (int i =0; i < fGraphHeat[0]->GetN(); i++)
+		for (int i  = 0; i < fGraphHeat[0]->GetN(); i++)
 		{
 			if(X_Sum[i] > Xmax) Xmax = X_Sum[i];
 			if(X_Sum[i] < Xmin) Xmin = X_Sum[i];
@@ -730,8 +730,8 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 	}
 	
 	TH1F*	  fhr = fCNucleiHeat->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
-	string Xtitle="Time [year]";
-	string Ytitle="Decay Heat [W]";
+	string Xtitle = "Time [year]";
+	string Ytitle = "Decay Heat [W]";
 	fhr->SetXTitle(Xtitle.c_str());
 	fhr->SetYTitle(Ytitle.c_str());
 	fhr->GetXaxis()->CenterTitle();
@@ -770,7 +770,7 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 	
 	for (int i = 0; i < (int)fGraphHeat.size(); i++)
 	{
-		if( i !=0 || SumOfSelected) out += " same";
+		if( i != 0 || SumOfSelected) out += " same";
 		
 		fGraphHeat[i]->SetName(GetTittleOutName(toplot[i]).c_str());
 		fGraphHeat[i]->SetTitle(GetTittleOutName(toplot[i]).c_str());
@@ -846,7 +846,7 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 	vector< double > vTime;
 	vector< double > vQuantity[toplot.size()];
 
-	for (int i=0; i < (int)toplot.size(); i++)
+	for (int i = 0; i < (int)toplot.size(); i++)
 	{
 
 		string InBranchName = GetBranchInName(toplot[i]);
@@ -854,15 +854,15 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 		string ActiveInBranchName = InBranchName + "*";
 		fData[toplot[0].fTreeId]->SetBranchStatus(ActiveInBranchName.c_str(),1);
 
-		if(toplot[i].fFacilityId == 0)
+		if(toplot[i].fFacilityId ==  0)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &IV[toplot[i].fFacylityNumber]);
-		else if(toplot[i].fFacilityId == 1)
+		else if(toplot[i].fFacilityId ==  1)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &reactor[toplot[i].fFacylityNumber]);
-		else if(toplot[i].fFacilityId == 2)
+		else if(toplot[i].fFacilityId ==  2)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &stock[toplot[i].fFacylityNumber]);
-		else if(toplot[i].fFacilityId == 3)
+		else if(toplot[i].fFacilityId ==  3)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &pool[toplot[i].fFacylityNumber]);
-		else if(toplot[i].fFacilityId == 4)
+		else if(toplot[i].fFacilityId ==  4)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &fabricationplant[toplot[i].fFacylityNumber]);
 	}
 
@@ -876,22 +876,22 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 		if(Xmin>vTime.back()) Xmin = vTime.back();
 		if(Xmax<vTime.back()) Xmax = vTime.back();
 
-		for (int i=0; i < (int)toplot.size(); i++)
+		for (int i = 0; i < (int)toplot.size(); i++)
 		{
 
-			if(toplot[i].fFacilityId == 0)
+			if(toplot[i].fFacilityId ==  0)
 			{
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
 				int I = toplot[i].fZAI.I();
 				double ZAIQuantity = IV[toplot[i].fFacylityNumber]->GetZAIIsotopicQuantity(Z,A,I);
 			
-				if(PlotId == 0)
-					ZAIQuantity *= cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
-				else if(PlotId == 1)
-					ZAIQuantity *= cZAITox.GetRadioTox(Z,A,I);
-				else if(PlotId == 2)
-					ZAIQuantity *= cZAIHeat.GetHeat(Z,A,I);
+				if(PlotId ==  0)
+					ZAIQuantity *=  cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
+				else if(PlotId ==  1)
+					ZAIQuantity *=  cZAITox.GetRadioTox(Z,A,I);
+				else if(PlotId ==  2)
+					ZAIQuantity *=  cZAIHeat.GetHeat(Z,A,I);
 				else
 				{
 					cout << "Bad PlotId" << endl;
@@ -907,7 +907,7 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
 
 			}
-			else if(toplot[i].fFacilityId == 1)
+			else if(toplot[i].fFacilityId ==  1)
 			{
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
@@ -915,11 +915,11 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 
 				double ZAIQuantity = 0;
 
-				if( toplot[i].fIVNumber == 0 )
+				if( toplot[i].fIVNumber ==  0 )
 					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I);
-				else if( toplot[i].fIVNumber == 1 )
+				else if( toplot[i].fIVNumber ==  1 )
 					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I);
-				else if( toplot[i].fIVNumber == 2 )
+				else if( toplot[i].fIVNumber ==  2 )
 					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I);
 				else
 				{
@@ -927,12 +927,12 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 					return;
 				}
 
-				if(PlotId == 0)
-					ZAIQuantity *= cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
-				else if(PlotId == 1)
-					ZAIQuantity *= cZAITox.GetRadioTox(Z,A,I);
-				else if(PlotId == 2)
-					ZAIQuantity *= cZAIHeat.GetHeat(Z,A,I);
+				if(PlotId ==  0)
+					ZAIQuantity *=  cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
+				else if(PlotId ==  1)
+					ZAIQuantity *=  cZAITox.GetRadioTox(Z,A,I);
+				else if(PlotId ==  2)
+					ZAIQuantity *=  cZAIHeat.GetHeat(Z,A,I);
 				else
 				{
 					cout << "Bad PlotId" << endl;
@@ -945,7 +945,7 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
 
 			}
-			else if(toplot[i].fFacilityId == 2)
+			else if(toplot[i].fFacilityId ==  2)
 			{
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
@@ -953,11 +953,11 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 
 				double ZAIQuantity = 0;
 
-				if( toplot[i].fIVNumber == 0 )
+				if( toplot[i].fIVNumber ==  0 )
 					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I);
-				else if( toplot[i].fIVNumber == 1 )
+				else if( toplot[i].fIVNumber ==  1 )
 					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I);
-				else if( toplot[i].fIVNumber == 2 )
+				else if( toplot[i].fIVNumber ==  2 )
 					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I);
 				else
 				{
@@ -965,12 +965,12 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 					return;
 				}
 				
-				if(PlotId == 0)
-					ZAIQuantity *= cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
-				else if(PlotId == 1)
-					ZAIQuantity *= cZAITox.GetRadioTox(Z,A,I);
-				else if(PlotId == 2)
-					ZAIQuantity *= cZAIHeat.GetHeat(Z,A,I);
+				if(PlotId ==  0)
+					ZAIQuantity *=  cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
+				else if(PlotId ==  1)
+					ZAIQuantity *=  cZAITox.GetRadioTox(Z,A,I);
+				else if(PlotId ==  2)
+					ZAIQuantity *=  cZAIHeat.GetHeat(Z,A,I);
 				else
 				{
 					cout << "Bad PlotId" << endl;
@@ -984,7 +984,7 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
 
 			}
-			else if(toplot[i].fFacilityId == 3)
+			else if(toplot[i].fFacilityId ==  3)
 			{
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
@@ -992,11 +992,11 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 
 				double ZAIQuantity = 0;
 
-				if( toplot[i].fIVNumber == 0 )
+				if( toplot[i].fIVNumber ==  0 )
 					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I);
-				else if( toplot[i].fIVNumber == 1 )
+				else if( toplot[i].fIVNumber ==  1 )
 					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I);
-				else if( toplot[i].fIVNumber == 2 )
+				else if( toplot[i].fIVNumber ==  2 )
 					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I);
 				else
 				{
@@ -1004,12 +1004,12 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 					return;
 				}
 				
-				if(PlotId == 0)
-					ZAIQuantity *= cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
-				else if(PlotId == 1)
-					ZAIQuantity *= cZAITox.GetRadioTox(Z,A,I);
-				else if(PlotId == 2)
-					ZAIQuantity *= cZAIHeat.GetHeat(Z,A,I);
+				if(PlotId ==  0)
+					ZAIQuantity *=  cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
+				else if(PlotId ==  1)
+					ZAIQuantity *=  cZAITox.GetRadioTox(Z,A,I);
+				else if(PlotId ==  2)
+					ZAIQuantity *=  cZAIHeat.GetHeat(Z,A,I);
 				else
 				{
 					cout << "Bad PlotId" << endl;
@@ -1023,7 +1023,7 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
 
 			}
-			else if(toplot[i].fFacilityId == 4)
+			else if(toplot[i].fFacilityId ==  4)
 			{
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
@@ -1031,11 +1031,11 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 
 				double ZAIQuantity = 0;
 
-				if( toplot[i].fIVNumber == 0 )
+				if( toplot[i].fIVNumber ==  0 )
 					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I);
-				else if( toplot[i].fIVNumber == 1 )
+				else if( toplot[i].fIVNumber ==  1 )
 					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I);
-				else if( toplot[i].fIVNumber == 2 )
+				else if( toplot[i].fIVNumber ==  2 )
 					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I);
 				else
 				{
@@ -1043,12 +1043,12 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 					return;
 				}
 				
-				if(PlotId == 0)
-					ZAIQuantity *= cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
-				else if(PlotId == 1)
-					ZAIQuantity *= cZAITox.GetRadioTox(Z,A,I);
-				else if(PlotId == 2)
-					ZAIQuantity *= cZAIHeat.GetHeat(Z,A,I);
+				if(PlotId ==  0)
+					ZAIQuantity *=  cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
+				else if(PlotId ==  1)
+					ZAIQuantity *=  cZAITox.GetRadioTox(Z,A,I);
+				else if(PlotId ==  2)
+					ZAIQuantity *=  cZAIHeat.GetHeat(Z,A,I);
 				else
 				{
 					cout << "Bad PlotId" << endl;
@@ -1070,13 +1070,13 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
 		
-		if(PlotId == 0)
+		if(PlotId ==  0)
 			fGraphInv.push_back(new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]));
 		
-		else if(PlotId == 1)
+		else if(PlotId ==  1)
 			fGraphTox.push_back(new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]));
 		
-		else if(PlotId == 2)
+		else if(PlotId ==  2)
 			fGraphHeat.push_back(new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]));
 		
 		else
@@ -1089,14 +1089,14 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 	
 	fData[toplot[0].fTreeId]->ResetBranchAddresses();
 	{
-		for(int i=0; i< (int)fReactorName[toplot[0].fTreeId].size(); i++) delete reactor[i];
+		for(int i = 0; i< (int)fReactorName[toplot[0].fTreeId].size(); i++) delete reactor[i];
 		
-		for(int i=0; i< (int)fPoolName[toplot[0].fTreeId].size(); i++) delete pool[i];
+		for(int i = 0; i< (int)fPoolName[toplot[0].fTreeId].size(); i++) delete pool[i];
 		
-		for(int i=0; i< (int)fFabricationName[toplot[0].fTreeId].size(); i++) delete fabricationplant[i];
+		for(int i = 0; i< (int)fFabricationName[toplot[0].fTreeId].size(); i++) delete fabricationplant[i];
 		
-		for(int i=0; i< (int)fStockName[toplot[0].fTreeId].size(); i++) delete stock[i];
-		for(int i=0; i< 8; i++) delete IV[i];
+		for(int i = 0; i< (int)fStockName[toplot[0].fTreeId].size(); i++) delete stock[i];
+		for(int i = 0; i< 8; i++) delete IV[i];
 	}
 
 
@@ -1142,7 +1142,7 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 	vector< IsotopicVector > vIV[toplot.size()];
 	vector< double > vQuantity[toplot.size()];
 
-	for (int i=0; i < (int)toplot.size(); i++)
+	for (int i = 0; i < (int)toplot.size(); i++)
 	{
 		
 		string InBranchName = GetBranchInName(toplot[i]);
@@ -1150,15 +1150,15 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 		string ActiveInBranchName = InBranchName + "*";
 		fData[toplot[0].fTreeId]->SetBranchStatus(ActiveInBranchName.c_str(),1);
 		
-		if(toplot[i].fFacilityId == 0)
+		if(toplot[i].fFacilityId ==  0)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &IV[toplot[i].fFacylityNumber]);
-		else if(toplot[i].fFacilityId == 1)
+		else if(toplot[i].fFacilityId ==  1)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &reactor[toplot[i].fFacylityNumber]);
-		else if(toplot[i].fFacilityId == 2)
+		else if(toplot[i].fFacilityId ==  2)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &stock[toplot[i].fFacylityNumber]);
-		else if(toplot[i].fFacilityId == 3)
+		else if(toplot[i].fFacilityId ==  3)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &pool[toplot[i].fFacylityNumber]);
-		else if(toplot[i].fFacilityId == 4)
+		else if(toplot[i].fFacilityId ==  4)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &fabricationplant[toplot[i].fFacylityNumber]);
 	}
 	
@@ -1173,10 +1173,10 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 	Xmax = vTime[0] + FinalTime/cYear;
 
 	
-	for (int i=0; i < (int)toplot.size(); i++)
+	for (int i = 0; i < (int)toplot.size(); i++)
 	{
 		
-		if(toplot[i].fFacilityId == 0)
+		if(toplot[i].fFacilityId ==  0)
 		{
 			int Z = toplot[i].fZAI.Z();
 			int A = toplot[i].fZAI.A();
@@ -1186,7 +1186,7 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 			vIV[i].push_back(ZAIQuantity);
 			
 		}
-		else if(toplot[i].fFacilityId == 1)
+		else if(toplot[i].fFacilityId ==  1)
 		{
 			int Z = toplot[i].fZAI.Z();
 			int A = toplot[i].fZAI.A();
@@ -1194,11 +1194,11 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 			
 			IsotopicVector ZAIQuantity;
 			
-			if( toplot[i].fIVNumber == 0 )
+			if( toplot[i].fIVNumber ==  0 )
 				ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
-			else if( toplot[i].fIVNumber == 1 )
+			else if( toplot[i].fIVNumber ==  1 )
 				ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
-			else if( toplot[i].fIVNumber == 2 )
+			else if( toplot[i].fIVNumber ==  2 )
 				ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
 			else
 			{
@@ -1209,7 +1209,7 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 			vIV[i].push_back(ZAIQuantity);
 			
 		}
-		else if(toplot[i].fFacilityId == 2)
+		else if(toplot[i].fFacilityId ==  2)
 		{
 			int Z = toplot[i].fZAI.Z();
 			int A = toplot[i].fZAI.A();
@@ -1217,11 +1217,11 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 			
 			IsotopicVector ZAIQuantity;
 			
-			if( toplot[i].fIVNumber == 0 )
+			if( toplot[i].fIVNumber ==  0 )
 				ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
-			else if( toplot[i].fIVNumber == 1 )
+			else if( toplot[i].fIVNumber ==  1 )
 				ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
-			else if( toplot[i].fIVNumber == 2 )
+			else if( toplot[i].fIVNumber ==  2 )
 				ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
 			else
 			{
@@ -1232,7 +1232,7 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 			vIV[i].push_back(ZAIQuantity);
 			
 		}
-		else if(toplot[i].fFacilityId == 3)
+		else if(toplot[i].fFacilityId ==  3)
 		{
 			int Z = toplot[i].fZAI.Z();
 			int A = toplot[i].fZAI.A();
@@ -1240,11 +1240,11 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 			
 			IsotopicVector ZAIQuantity;
 			
-			if( toplot[i].fIVNumber == 0 )
+			if( toplot[i].fIVNumber ==  0 )
 				ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
-			else if( toplot[i].fIVNumber == 1 )
+			else if( toplot[i].fIVNumber ==  1 )
 				ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
-			else if( toplot[i].fIVNumber == 2 )
+			else if( toplot[i].fIVNumber ==  2 )
 				ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
 			else
 			{
@@ -1255,7 +1255,7 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 			vIV[i].push_back(ZAIQuantity);
 			
 		}
-		else if(toplot[i].fFacilityId == 4)
+		else if(toplot[i].fFacilityId ==  4)
 		{
 			int Z = toplot[i].fZAI.Z();
 			int A = toplot[i].fZAI.A();
@@ -1263,11 +1263,11 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 			
 			IsotopicVector ZAIQuantity;
 			
-			if( toplot[i].fIVNumber == 0 )
+			if( toplot[i].fIVNumber ==  0 )
 				ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
-			else if( toplot[i].fIVNumber == 1 )
+			else if( toplot[i].fIVNumber ==  1 )
 				ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
-			else if( toplot[i].fIVNumber == 2 )
+			else if( toplot[i].fIVNumber ==  2 )
 				ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I) * ZAI(Z,A,I);
 			else
 			{
@@ -1297,7 +1297,7 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 		
 		double dt = 1./double(StepNUmber) * log( FinalTime/cYear /vTime[0]);
 		
-		for(int k=1 ; k <= StepNUmber; k++)
+		for(int k = 1 ; k <= StepNUmber; k++)
 		{
 			vTime.push_back( exp( dt*double(k) ) * vTime[0] );
 			
@@ -1322,11 +1322,11 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 
 			double ZAIQuantity = 0;
 			
-			if(PlotId == 0)
+			if(PlotId ==  0)
 				ZAIQuantity = vIV[j][i].GetZAIIsotopicQuantity(Z,A,I) * cZAIMass.GetMass(Z,A)/AVOGADRO*1e-3;
-			else if(PlotId == 1)
+			else if(PlotId ==  1)
 				ZAIQuantity = cZAITox.GetRadioTox( vIV[j][i] );
-			else if(PlotId == 2)
+			else if(PlotId ==  2)
 				ZAIQuantity = cZAIHeat.GetHeat( vIV[j][i] );
 			else
 			{
@@ -1353,13 +1353,13 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
 		
-		if(PlotId == 0)
+		if(PlotId ==  0)
 			fGraphInv.push_back(new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]));
 		
-		else if(PlotId == 1)
+		else if(PlotId ==  1)
 			fGraphTox.push_back(new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]));
 		
-		else if(PlotId == 2)
+		else if(PlotId ==  2)
 			fGraphHeat.push_back(new TGraph(vTime.size(), &vTime[0], &(vQuantity[i])[0]));
 		
 		else
@@ -1372,14 +1372,14 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 	
 	fData[toplot[0].fTreeId]->ResetBranchAddresses();
 	{
-		for(int i=0; i< (int)fReactorName[toplot[0].fTreeId].size(); i++) delete reactor[i];
+		for(int i = 0; i< (int)fReactorName[toplot[0].fTreeId].size(); i++) delete reactor[i];
 		
-		for(int i=0; i< (int)fPoolName[toplot[0].fTreeId].size(); i++) delete pool[i];
+		for(int i = 0; i< (int)fPoolName[toplot[0].fTreeId].size(); i++) delete pool[i];
 		
-		for(int i=0; i< (int)fFabricationName[toplot[0].fTreeId].size(); i++) delete fabricationplant[i];
+		for(int i = 0; i< (int)fFabricationName[toplot[0].fTreeId].size(); i++) delete fabricationplant[i];
 		
-		for(int i=0; i< (int)fStockName[toplot[0].fTreeId].size(); i++) delete stock[i];
-		for(int i=0; i< 8; i++) delete IV[i];
+		for(int i = 0; i< (int)fStockName[toplot[0].fTreeId].size(); i++) delete stock[i];
+		for(int i = 0; i< 8; i++) delete IV[i];
 	}
 	
 
@@ -1392,20 +1392,20 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 {
 	if(fGraphPower)
 	{
-		for(int i=0; i < fNumberGraphPowerIterator;i++) delete fGraphPower[i];
+		for(int i = 0; i < fNumberGraphPowerIterator;i++) delete fGraphPower[i];
 		delete [] fGraphPower;
 	}
 
 
 	if(fLegendPower)
 	{
-		for(int i=0; i < fNumberGraphPowerIterator;i++) delete fLegendPower[i];
+		for(int i = 0; i < fNumberGraphPowerIterator;i++) delete fLegendPower[i];
 		delete [] fLegendPower;
 	}
 
 	if(fCPower && gROOT->FindObject("fCPower"))
 	{	delete fCPower;
-		fCPower=0;
+		fCPower = 0;
 	}
 
 
@@ -1441,7 +1441,7 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 	{
 
 		if(i != 0) out += " same";
-		if(toplotTTree[i].size() !=0)
+		if(toplotTTree[i].size() != 0)
 			PlotTTreePower(toplotTTree[i], out);
 
 
@@ -1449,9 +1449,9 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 
 	fCPower->cd();
 
-	TH1F*	  fhrPower= fCPower->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
-	string Xtitle="Time [year]";
-	string Ytitle="Total Thermal Power [GW]";
+	TH1F*	  fhrPower =  fCPower->DrawFrame(Xmin,Ymin*0.95,Xmax,Ymax*1.05);
+	string Xtitle = "Time [year]";
+	string Ytitle = "Total Thermal Power [GW]";
 	fhrPower->SetXTitle(Xtitle.c_str());
 	fhrPower->SetYTitle(Ytitle.c_str());
 	fhrPower->GetXaxis()->CenterTitle();
@@ -1461,7 +1461,7 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 	for (int i = 0; i < (int)fNumberGraphPowerIterator; i++)
 	{
 		fCPower->cd();
-		if( i !=0 ) out += " same";
+		if( i != 0 ) out += " same";
 
 		fGraphPower[i]->SetName(GetTittleOutName(toplot[i]).c_str());
 		fGraphPower[i]->SetTitle(GetTittleOutName(toplot[i]).c_str());
@@ -1548,7 +1548,7 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 //________________________________________________________________________
 void CLASSRead::Write(string filename, string fileformat, string PadName)
 {
-	if(fileformat == "ASCII")
+	if(fileformat ==  "ASCII")
 		ASCIIWrite(filename,PadName);
 
 }
@@ -1565,12 +1565,12 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 
 	cout << "WARNING!! not working if using many CLASS.root file with different timestep!!!" << endl;
 
-	if ( (int)fGraphInv.size() != 0 && PadName=="c_NucleiInv")
+	if ( (int)fGraphInv.size() != 0 && PadName == "c_NucleiInv")
 	{
 		double* X = fGraphInv[0]->GetX();
 		
 		outfile << "time";
-		for(int i= 0; i < fGraphInv[0]->GetN(); i++)
+		for(int i =  0; i < fGraphInv[0]->GetN(); i++)
 			outfile << "\t" << X[i];
 		
 		outfile << endl;
@@ -1580,7 +1580,7 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 			
 			outfile << fGraphInvSumOfSelected->GetTitle();
 			double* Y = fGraphInvSumOfSelected->GetY();
-			for(int j= 0; j < fGraphInvSumOfSelected->GetN(); j++)
+			for(int j =  0; j < fGraphInvSumOfSelected->GetN(); j++)
 				outfile << "\t" << Y[j];
 			outfile << endl;
 		}
@@ -1590,7 +1590,7 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 		{
 			outfile << fGraphInv[i]->GetTitle();
 			double* Y = fGraphInv[i]->GetY();
-			for(int j= 0; j < fGraphInv[i]->GetN(); j++)
+			for(int j =  0; j < fGraphInv[i]->GetN(); j++)
 				outfile << "\t" << Y[j];
 			outfile << endl;
 		}
@@ -1598,12 +1598,12 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 	}
 	
 	
-	if ( (int)fGraphTox.size() != 0 && PadName=="c_NucleiTox")
+	if ( (int)fGraphTox.size() != 0 && PadName == "c_NucleiTox")
 	{
 		double* X = fGraphTox[0]->GetX();
 		
 		outfile << "time";
-		for(int i= 0; i < fGraphTox[0]->GetN(); i++)
+		for(int i =  0; i < fGraphTox[0]->GetN(); i++)
 			outfile << "\t" << X[i];
 		
 		outfile << endl;
@@ -1613,7 +1613,7 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 			
 			outfile << fGraphToxSumOfSelected->GetTitle();
 			double* Y = fGraphToxSumOfSelected->GetY();
-			for(int j= 0; j < fGraphToxSumOfSelected->GetN(); j++)
+			for(int j =  0; j < fGraphToxSumOfSelected->GetN(); j++)
 				outfile << "\t" << Y[j];
 			outfile << endl;
 		}
@@ -1623,19 +1623,19 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 		{
 			outfile << fGraphTox[i]->GetTitle();
 			double* Y = fGraphTox[i]->GetY();
-			for(int j= 0; j < fGraphTox[i]->GetN(); j++)
+			for(int j =  0; j < fGraphTox[i]->GetN(); j++)
 				outfile << "\t" << Y[j];
 			outfile << endl;
 		}
 		
 	}
 	
-	if ( (int)fGraphHeat.size() != 0 && PadName=="c_NucleiHeat")
+	if ( (int)fGraphHeat.size() != 0 && PadName == "c_NucleiHeat")
 	{
 		double* X = fGraphHeat[0]->GetX();
 		
 		outfile << "time";
-		for(int i= 0; i < fGraphHeat[0]->GetN(); i++)
+		for(int i =  0; i < fGraphHeat[0]->GetN(); i++)
 			outfile << "\t" << X[i];
 		
 		outfile << endl;
@@ -1645,7 +1645,7 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 			
 			outfile << fGraphHeatSumOfSelected->GetTitle();
 			double* Y = fGraphHeatSumOfSelected->GetY();
-			for(int j= 0; j < fGraphHeatSumOfSelected->GetN(); j++)
+			for(int j =  0; j < fGraphHeatSumOfSelected->GetN(); j++)
 				outfile << "\t" << Y[j];
 			outfile << endl;
 		}
@@ -1655,7 +1655,7 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 		{
 			outfile << fGraphHeat[i]->GetTitle();
 			double* Y = fGraphHeat[i]->GetY();
-			for(int j= 0; j < fGraphHeat[i]->GetN(); j++)
+			for(int j =  0; j < fGraphHeat[i]->GetN(); j++)
 				outfile << "\t" << Y[j];
 			outfile << endl;
 		}
@@ -1708,7 +1708,7 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 	vector< double > vTime;
 	vector< double > vQuantity[toplot.size()];
 
-	for (int i=0; i < (int)toplot.size(); i++)
+	for (int i = 0; i < (int)toplot.size(); i++)
 	{
 
 		string InBranchName = GetBranchInName(toplot[i]);
@@ -1716,15 +1716,15 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 		string ActiveInBranchName = InBranchName + "*";
 		fData[toplot[0].fTreeId]->SetBranchStatus(ActiveInBranchName.c_str(),1);
 
-		if(toplot[i].fFacilityId == 0)
+		if(toplot[i].fFacilityId ==  0)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &IV[toplot[i].fFacylityNumber]);
-		else if(toplot[i].fFacilityId == 1)
+		else if(toplot[i].fFacilityId ==  1)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &reactor[toplot[i].fFacylityNumber]);
-		else if(toplot[i].fFacilityId == 2)
+		else if(toplot[i].fFacilityId ==  2)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &stock[toplot[i].fFacylityNumber]);
-		else if(toplot[i].fFacilityId == 3)
+		else if(toplot[i].fFacilityId ==  3)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &pool[toplot[i].fFacylityNumber]);
-		else if(toplot[i].fFacilityId == 4)
+		else if(toplot[i].fFacilityId ==  4)
 			fData[toplot[i].fTreeId]->SetBranchAddress(InBranchName.c_str(), &fabricationplant[toplot[i].fFacylityNumber]);
 	}
 
@@ -1738,10 +1738,10 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 		if(Xmin>vTime.back()) Xmin = vTime.back();
 		if(Xmax<vTime.back()) Xmax = vTime.back();
 
-		for (int i=0; i < (int)toplot.size(); i++)
+		for (int i = 0; i < (int)toplot.size(); i++)
 		{
 
-			if(toplot[i].fFacilityId == 0)
+			if(toplot[i].fFacilityId ==  0)
 			{
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
@@ -1756,7 +1756,7 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
 
 			}
-			else if(toplot[i].fFacilityId == 1)
+			else if(toplot[i].fFacilityId ==  1)
 			{
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
@@ -1764,11 +1764,11 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 
 				double ZAIQuantity = 0;
 
-				if( toplot[i].fIVNumber == 0 )
+				if( toplot[i].fIVNumber ==  0 )
 					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot[i].fIVNumber == 1 )
+				else if( toplot[i].fIVNumber ==  1 )
 					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot[i].fIVNumber == 2 )
+				else if( toplot[i].fIVNumber ==  2 )
 					ZAIQuantity = reactor[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				else
 				{
@@ -1782,7 +1782,7 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
 
 			}
-			else if(toplot[i].fFacilityId == 2)
+			else if(toplot[i].fFacilityId ==  2)
 			{
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
@@ -1790,11 +1790,11 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 
 				double ZAIQuantity = 0;
 
-				if( toplot[i].fIVNumber == 0 )
+				if( toplot[i].fIVNumber ==  0 )
 					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot[i].fIVNumber == 1 )
+				else if( toplot[i].fIVNumber ==  1 )
 					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot[i].fIVNumber == 2 )
+				else if( toplot[i].fIVNumber ==  2 )
 					ZAIQuantity = stock[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				else
 				{
@@ -1809,7 +1809,7 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
 
 			}
-			else if(toplot[i].fFacilityId == 3)
+			else if(toplot[i].fFacilityId ==  3)
 			{
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
@@ -1817,11 +1817,11 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 
 				double ZAIQuantity = 0;
 
-				if( toplot[i].fIVNumber == 0 )
+				if( toplot[i].fIVNumber ==  0 )
 					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot[i].fIVNumber == 1 )
+				else if( toplot[i].fIVNumber ==  1 )
 					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot[i].fIVNumber == 2 )
+				else if( toplot[i].fIVNumber ==  2 )
 					ZAIQuantity = pool[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				else
 				{
@@ -1836,7 +1836,7 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 				if(Ymax<ZAIQuantity) Ymax = ZAIQuantity;
 
 			}
-			else if(toplot[i].fFacilityId == 4)
+			else if(toplot[i].fFacilityId ==  4)
 			{
 				int Z = toplot[i].fZAI.Z();
 				int A = toplot[i].fZAI.A();
@@ -1844,11 +1844,11 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 
 				double ZAIQuantity = 0;
 
-				if( toplot[i].fIVNumber == 0 )
+				if( toplot[i].fIVNumber ==  0 )
 					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetInsideIV().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot[i].fIVNumber == 1 )
+				else if( toplot[i].fIVNumber ==  1 )
 					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVIn().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
-				else if( toplot[i].fIVNumber == 2 )
+				else if( toplot[i].fIVNumber ==  2 )
 					ZAIQuantity = fabricationplant[toplot[i].fFacylityNumber]->GetCumulativeIVOut().GetZAIIsotopicQuantity(Z,A,I)*A/6.02e23*1e-3;
 				else
 				{
@@ -1880,19 +1880,19 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 		cout << "Impossible d'ouvrir le fichier en ecriture !" << endl;
 	else
 	{
-		f << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << endl;
-		f << "<file filename = \"" <<  filename << "\" created=\" \"" << endl;
-		f << "<unit time=\"years\"  Masse=\"kg\" power=\"MW\" />" << endl;
-                f << "<material matid=\" \">" << endl;
+		f << "<?xml version = \"1.0\" encoding = \"UTF-8\" ?>" << endl;
+		f << "<file filename = \"" <<  filename << "\" created = \" \"" << endl;
+		f << "<unit time = \"years\"  Masse = \"kg\" power = \"MW\" />" << endl;
+                f << "<material matid = \" \">" << endl;
 		f << "\t<time>" << endl;
 
 
 		//Print all information about time(always the same for 0 to 20 yeaur) and the module involved
 
 
-		for (int i =0; i < (int)vTime.size(); i++) {
+		for (int i  = 0; i < (int)vTime.size(); i++) {
 
-			f << "\t\t<timestamp tid=\"" << i  << "\"  time=\"" <<  vTime[i] << "\" />" << endl;
+			f << "\t\t<timestamp tid = \"" << i  << "\"  time = \"" <<  vTime[i] << "\" />" << endl;
 		}
 		f << "\t</time>" << endl;
 
@@ -1906,15 +1906,15 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 
 
 
-		for (int i =0; i < (int)vTime.size(); i++)
+		for (int i  = 0; i < (int)vTime.size(); i++)
 		{
 
-			f << "\t\t\t<compositiondata tid=\"" <<  i  << "\">" << endl;
+			f << "\t\t\t<compositiondata tid = \"" <<  i  << "\">" << endl;
 			f << "\t\t\t\t<composition>" << endl;
 
 
 
-			for (int j =0; j< (int)toplot.size(); j++)
+			for (int j  = 0; j< (int)toplot.size(); j++)
                         {
 
 				string name;
@@ -2016,7 +2016,7 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 				}
 
 
-				f << "\t\t\t\t\t<isotope zamid=\"" <<  itoa(toplot[j].fZAI.Z()) << itoa(toplot[j].fZAI.A()) << "\">" << endl;
+				f << "\t\t\t\t\t<isotope zamid = \"" <<  itoa(toplot[j].fZAI.Z()) << itoa(toplot[j].fZAI.A()) << "\">" << endl;
 				f << "\t\t\t\t\t\t<facility " <<  name  << ">" << "<masse>" << vQuantity[j][i] << "</masse>" << "</facility>" << endl;
 
 
@@ -2040,14 +2040,14 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 
 	fData[toplot[0].fTreeId]->ResetBranchAddresses();
 	{
-		for(int i=0; i< (int)fReactorName[toplot[0].fTreeId].size(); i++) delete reactor[i];
+		for(int i = 0; i< (int)fReactorName[toplot[0].fTreeId].size(); i++) delete reactor[i];
 
-		for(int i=0; i< (int)fPoolName[toplot[0].fTreeId].size(); i++) delete pool[i];
+		for(int i = 0; i< (int)fPoolName[toplot[0].fTreeId].size(); i++) delete pool[i];
 
-		for(int i=0; i< (int)fFabricationName[toplot[0].fTreeId].size(); i++) delete fabricationplant[i];
+		for(int i = 0; i< (int)fFabricationName[toplot[0].fTreeId].size(); i++) delete fabricationplant[i];
 
-		for(int i=0; i< (int)fStockName[toplot[0].fTreeId].size(); i++) delete stock[i];
-		for(int i=0; i< 8; i++) delete IV[i];
+		for(int i = 0; i< (int)fStockName[toplot[0].fTreeId].size(); i++) delete stock[i];
+		for(int i = 0; i< 8; i++) delete IV[i];
 	}
 	
 	
@@ -2070,7 +2070,7 @@ void CLASSRead::ConvertXmlMass(vector<CLASSPlotElement> toplot, string filename)
 	
 	for (int i = 0; i < (int)fData.size(); i++)
 	{
-		if(toplotTTree[i].size() !=0)
+		if(toplotTTree[i].size() != 0)
 			ConvertxmlTTreeMass(toplotTTree[i], filename);
 		
 	}
@@ -2183,46 +2183,46 @@ string CLASSRead::GetLegendOutName(CLASSPlotElement toplot)
 
 			case 0:
 				name = "P_{" + itoa(toplot.fTreeId) + "} TOT ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
-				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+				for (int i = 0; i < toplot.fZAI.I(); i++) name+=  "*";
 				return name;
 				break;
 
 			case 1:
 				name = "P_{" + itoa(toplot.fTreeId) + "} INcl ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
-				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+				for (int i = 0; i < toplot.fZAI.I(); i++) name+=  "*";
 				return name;
 				break;
 
 			case 2:
 				name = "P_{" + itoa(toplot.fTreeId) + "} Wst ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
-				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+				for (int i = 0; i < toplot.fZAI.I(); i++) name+=  "*";
 				return name;
 				break;
 
 			case 3:
 				name = "P_{" + itoa(toplot.fTreeId) + "} OUTINCOME ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
-				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+				for (int i = 0; i < toplot.fZAI.I(); i++) name+=  "*";
 				break;
 
 			case 4:
 				name = "P_{" + itoa(toplot.fTreeId) + "} R_{tot} ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
-				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+				for (int i = 0; i < toplot.fZAI.I(); i++) name+=  "*";
 				break;
 
 			case 5:
 				name = "P_{" + itoa(toplot.fTreeId) + "} Pl_{tot} ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
-				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+				for (int i = 0; i < toplot.fZAI.I(); i++) name+=  "*";
 				return name;
 				break;
 
 			case 6:
 				name = "P_{" + itoa(toplot.fTreeId) + "} Stk_{tot} ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
-				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+				for (int i = 0; i < toplot.fZAI.I(); i++) name+=  "*";
 				break;
 
 			case 7:
 				name = "P_{" + itoa(toplot.fTreeId) + "} FP_{tot} ^{" + itoa(toplot.fZAI.A()) + "}"  + ReadNucleusName[toplot.fZAI.Z()];
-				for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+				for (int i = 0; i < toplot.fZAI.I(); i++) name+=  "*";
 				return name;
 				break;
 
@@ -2233,23 +2233,23 @@ string CLASSRead::GetLegendOutName(CLASSPlotElement toplot)
 
 		case 1:
 			name = "P_{" + itoa(toplot.fTreeId) + "} " + fReactorName[toplot.fTreeId][toplot.fFacylityNumber] + " ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
-			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+			for (int i = 0; i < toplot.fZAI.I(); i++) name+=  "*";
 			break;
 
 		case 2:
 			name = "P_{" + itoa(toplot.fTreeId) + "} " + fStockName[toplot.fTreeId][toplot.fFacylityNumber] + " ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
-			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+			for (int i = 0; i < toplot.fZAI.I(); i++) name+=  "*";
 			break;
 
 		case 3:
 			name = "P_{" + itoa(toplot.fTreeId) + "} " + fPoolName[toplot.fTreeId][toplot.fFacylityNumber] + " ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
-			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+			for (int i = 0; i < toplot.fZAI.I(); i++) name+=  "*";
 
 			break;
 
 		case 4:
 			name = "P_{" + itoa(toplot.fTreeId) + "} " + fFabricationName[toplot.fTreeId][toplot.fFacylityNumber] + " ^{" + itoa(toplot.fZAI.A()) + "}" + ReadNucleusName[toplot.fZAI.Z()];
-			for (int i = 0; i < toplot.fZAI.I(); i++) name+= "*";
+			for (int i = 0; i < toplot.fZAI.I(); i++) name+=  "*";
 			break;
 
 
@@ -2261,17 +2261,17 @@ string CLASSRead::GetLegendOutName(CLASSPlotElement toplot)
 	{
 
 		case 0:
-			name+= " Inside";
+			name+=  " Inside";
 			return name;
 			break;
 
 		case 1:
-			name+= " CumuIN";
+			name+=  " CumuIN";
 			return name;
 			break;
 
 		case 2:
-			name+= " CumuOUT";
+			name+=  " CumuOUT";
 			return name;
 			break;
 

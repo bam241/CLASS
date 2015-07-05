@@ -54,7 +54,7 @@ using namespace std;
 
 //Here is the widget code: it correspond to signal emitted when a widget is activated 
 enum CommandId{
-	M_BUTTON_PLOT=20,
+	M_BUTTON_PLOT = 20,
 	M_BUTTON_SAVE,
 	M_BUTTON_MACRO,
 	M_BUTTON_QUIT,
