@@ -79,7 +79,7 @@ void SeparationPlant::SetBackEndDestination(CLASSBackEnd* storagedestination, Is
 void SeparationPlant::AddIV(IsotopicVector IV)
 { 
 DBGL
-	for(int fds=0; fds<(int)fDestinationStorage.size(); fds++)
+	for(int fds = 0; fds<(int)fDestinationStorage.size(); fds++)
 	{
 		cSecond CurrentTime = GetParc()->GetAbsoluteTime();
 
@@ -92,7 +92,7 @@ DBGL
 			IsotopicVector IVtmp;
 			IVtmp = IV*fDestinationStorageIV[fds];
 			fDestinationStorage[fds]->AddIV(IVtmp);
-			IV -= IVtmp;
+			IV -=  IVtmp;
 		}
 
 	}

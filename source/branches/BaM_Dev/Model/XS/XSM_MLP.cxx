@@ -161,7 +161,7 @@ void XSM_MLP::GetMLPWeightFiles()
 	struct dirent* fichierLu = NULL;
 	rep = opendir(fTMVAWeightFolder.c_str());
 	
-	if (rep == NULL)
+	if (rep ==  NULL)
 	{
 		ERROR << " Reading error for TMVA weight folder  " << fTMVAWeightFolder.c_str() << " : " << strerror(errno) << endl;
 		exit(1);
@@ -171,10 +171,10 @@ void XSM_MLP::GetMLPWeightFiles()
 	fWeightFiles.resize(0);
 	while ((fichierLu = readdir(rep)) != NULL)
 	{
-		string FileName= fichierLu->d_name ;
+		string FileName =  fichierLu->d_name ;
 		if(FileName != "." && FileName != ".." )
 		{
-			if(FileName[FileName.size()-3]=='x'  &&  FileName[FileName.size()-2]=='m' && FileName[FileName.size()-1]=='l' && FileName[0]!='.' )
+			if(FileName[FileName.size()-3] == 'x'  &&  FileName[FileName.size()-2] == 'm' && FileName[FileName.size()-1] == 'l' && FileName[0] != '.' )
 				fWeightFiles.push_back(FileName);
 			
 		}
@@ -189,16 +189,16 @@ void XSM_MLP::GetMLPWeightFiles()
 //________________________________________________________________________
 void XSM_MLP::ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction)
 {
-	Z=-1;
-	A=-1;
-	I=-1;
-	Reaction=-1;
+	Z = -1;
+	A = -1;
+	I = -1;
+	Reaction = -1;
 	
 	size_t found = Filename.find("XS");
 	
 	string NameJOB;
-	NameJOB=Filename.substr(found);
-	int pos=0;
+	NameJOB = Filename.substr(found);
+	int pos = 0;
 	
 	StringLine::NextWord(NameJOB, pos, '_');
 	
@@ -212,14 +212,14 @@ void XSM_MLP::ReadWeightFile(string Filename, int &Z, int &A, int &I, int &React
 	size_t foundext = sReaction.find(".weights.xml");
 	sReaction = sReaction.substr(0,foundext);
 	
-	if(sReaction=="fis")
-		Reaction=0;
-	if(sReaction=="cap")
-		Reaction=1;
-	if(sReaction=="n2n")
-		Reaction=2;
+	if(sReaction == "fis")
+		Reaction = 0;
+	if(sReaction == "cap")
+		Reaction = 1;
+	if(sReaction == "n2n")
+		Reaction = 2;
 	
-	if(Z<=0 || A<=0 || I<0 || Reaction==-1)
+	if(Z<= 0 || A<= 0 || I<0 || Reaction == -1)
 	{
 		ERROR << " wrong TMVA weight format " << endl;
 		exit(0);
@@ -236,16 +236,16 @@ TTree* XSM_MLP::CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep)
 	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
 		InputTMVA.push_back(0);
 	
-	float Time=0;
+	float Time = 0;
 	
 	IsotopicVector IVInputTMVA;
 	map<ZAI ,string >::iterator it;
-	int j=0;
+	int j = 0;
 	
-	for( it = fMapOfTMVAVariableNames.begin()  ; it!=fMapOfTMVAVariableNames.end() ; it++)
+	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
 	{
 		InputTree->Branch( ((*it).second).c_str() ,&InputTMVA[j], ((*it).second + "/F").c_str());
-		IVInputTMVA+= ((*it).first)*1;
+		IVInputTMVA+=  ((*it).first)*1;
 		j++;
 	}
 	
@@ -258,17 +258,17 @@ TTree* XSM_MLP::CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep)
 	
 	IVAccordingToUserInfoFile = IVAccordingToUserInfoFile/Ntot;
 	
-	j=0;
+	j = 0;
 	map<ZAI ,string >::iterator it2;
 	DBGV("INPUT TMVA");
-	for( it2 = fMapOfTMVAVariableNames.begin() ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
+	for( it2 = fMapOfTMVAVariableNames.begin() ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
 	{
 		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first ) ;
 		DBGV((*it2).first.Z() << " " << (*it2).first.A() << " " << InputTMVA[j]);
 		j++;
 	}
 	
-	Time=fMLP_Time[TimeStep];
+	Time = fMLP_Time[TimeStep];
 	
 	InputTree->Fill();
 	
@@ -289,8 +289,8 @@ double XSM_MLP::ExecuteTMVA(string WeightFile,TTree* InputTree)
 	Float_t Time;
 	
 	map<ZAI ,string >::iterator it;
-	int j=0;
-	for( it = fMapOfTMVAVariableNames.begin()  ; it!=fMapOfTMVAVariableNames.end() ; it++)
+	int j = 0;
+	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
 	{	reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
 		j++;
 	}
@@ -300,8 +300,8 @@ double XSM_MLP::ExecuteTMVA(string WeightFile,TTree* InputTree)
 	// --- Book the MVA methods
 	
 	string dir    = fTMVAWeightFolder;
-	if(dir[dir.size()-1]!='/')
-		dir+="/";
+	if(dir[dir.size()-1] != '/')
+		dir+= "/";
 	
 	// Book method MLP
 	TString methodName = "MLP method";
@@ -309,8 +309,8 @@ double XSM_MLP::ExecuteTMVA(string WeightFile,TTree* InputTree)
 	reader->BookMVA( methodName, weightpath );
 	
 	map<ZAI ,string >::iterator it2;
-	j=0;
-	for( it2 = fMapOfTMVAVariableNames.begin()  ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
+	j = 0;
+	for( it2 = fMapOfTMVAVariableNames.begin()  ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
 	{
 		InputTree->SetBranchAddress(( (*it2).second ).c_str(),&InputTMVA[j]);
 		j++;
@@ -341,16 +341,16 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 	EvolutionDataFromMLP.SetPower(fDBPower);
 	EvolutionDataFromMLP.SetHeavyMetalMass(fDBHMMass);
 	/************* The Cross sections***********/
-	for(int i=0;i<int(fWeightFiles.size());i++)
+	for(int i = 0;i<int(fWeightFiles.size());i++)
 	{
-		int Z=-2;
-		int A=-2;
-		int I=-2;
-		int Reaction=-2;
+		int Z = -2;
+		int A = -2;
+		int I = -2;
+		int Reaction = -2;
 		ReadWeightFile( fWeightFiles[i], Z, A, I, Reaction);
 		if( Z >= GetZAIThreshold() )
 		{
-			for(int TimeStep=0;TimeStep<int(fMLP_Time.size());TimeStep++)
+			for(int TimeStep = 0;TimeStep<int(fMLP_Time.size());TimeStep++)
 			{
 				TTree* InputTree = CreateTMVAInputTree(IV,TimeStep);
 				
@@ -375,7 +375,7 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 	}
 	
 	/**********Sorting TGraph*********/
-	for(int x=0;x<3;x++)
+	for(int x = 0;x<3;x++)
 	{	map<ZAI,TGraph*>::iterator it;
 		for(it = ExtrapolatedXS[x].begin(); it != ExtrapolatedXS[x].end(); it++)
 			it->second->Sort();
@@ -398,16 +398,16 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 //________________________________________________________________________
 void XSM_MLP::ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &Reaction, int &TimeStep)
 {
-	Z=-1;
-	A=-1;
-	I=-1;
-	Reaction=-1;
+	Z = -1;
+	A = -1;
+	I = -1;
+	Reaction = -1;
 	
 	size_t found = Filename.find("XS");
 	
 	string NameJOB;
-	NameJOB=Filename.substr(found);
-	int pos=0;
+	NameJOB = Filename.substr(found);
+	int pos = 0;
 	
 	StringLine::NextWord(NameJOB, pos, '_');
 	
@@ -416,16 +416,16 @@ void XSM_MLP::ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &R
 	I = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
 	
 	string  sReaction = (StringLine::NextWord(NameJOB,pos,'_') ).c_str() ;
-	if(sReaction=="fis")
-		Reaction=0;
-	if(sReaction=="cap")
-		Reaction=1;
-	if(sReaction=="n2n")
-		Reaction=2;
+	if(sReaction == "fis")
+		Reaction = 0;
+	if(sReaction == "cap")
+		Reaction = 1;
+	if(sReaction == "n2n")
+		Reaction = 2;
 	
 	TimeStep = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
 	
-	if(Z==-1 || A==-1 || I==-1 || Reaction==-1 || TimeStep==-1)
+	if(Z == -1 || A == -1 || I == -1 || Reaction == -1 || TimeStep == -1)
 	{
 		ERROR << " wrong TMVA weight format " << endl;
 		exit(0);
@@ -436,7 +436,7 @@ void XSM_MLP::ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &R
 EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 {
 	DBGL
-	TTree* InputTree=CreateTMVAInputTree(IV);
+	TTree* InputTree = CreateTMVAInputTree(IV);
 	
 	EvolutionData EvolutionDataFromMLP = EvolutionData();
 	
@@ -449,13 +449,13 @@ EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 	
 	/************* The Cross sections***********/
 	
-	for(int i=0;i<int(fWeightFiles.size());i++)
+	for(int i = 0;i<int(fWeightFiles.size());i++)
 	{
-		int Z=-2;
-		int A=-2;
-		int I=-2;
-		int Reaction=-2;
-		int TimeStep=-2;
+		int Z = -2;
+		int A = -2;
+		int I = -2;
+		int Reaction = -2;
+		int TimeStep = -2;
 		ReadWeightFileStep( fWeightFiles[i], Z, A, I, Reaction, TimeStep);
 		if( Z >= GetZAIThreshold() )
 		{
@@ -477,7 +477,7 @@ EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 	}
 	
 	/**********Sorting TGraph*********/
-	for(int x=0;x<3;x++)
+	for(int x = 0;x<3;x++)
 	{	map<ZAI,TGraph*>::iterator it;
 		for(it = ExtrapolatedXS[x].begin(); it != ExtrapolatedXS[x].end(); it++)
 			it->second->Sort();
@@ -495,15 +495,15 @@ EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 EvolutionData XSM_MLP::GetCrossSections(IsotopicVector IV ,double t)
 {
 	DBGL
-	if(t!=0)
+	if(t != 0)
 		WARNING << " Argument t has non effect here " << endl;
 	
 	EvolutionData EV;
 	if(fIsStepTime)
-		EV=GetCrossSectionsStep(IV);
+		EV = GetCrossSectionsStep(IV);
 	
 	else
-		EV=GetCrossSectionsTime(IV);
+		EV = GetCrossSectionsTime(IV);
 	
 	DBGL
 	return EV;

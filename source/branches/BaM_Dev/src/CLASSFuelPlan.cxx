@@ -43,7 +43,7 @@ pair< CLASSFuel, double > CLASSFuelPlan::GetFuelAt(cSecond t)
 
 	for (it = fLoadingPlan.begin(); it != fLoadingPlan.end(); it++ )
 	{
-		if( it == fLoadingPlan.begin())
+		if( it ==  fLoadingPlan.begin())
 		{
 			FuelAtT = (*it).second;
 		}

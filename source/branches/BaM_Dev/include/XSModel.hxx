@@ -77,7 +77,7 @@ class XSModel : public CLASSObject
 	 \deprecated t : XS update time (used in XSM_Closest)
 	 */
 	//}
-	virtual  EvolutionData GetCrossSections(IsotopicVector IV,double t=0) = 0 ;
+	virtual  EvolutionData GetCrossSections(IsotopicVector IV,double t = 0) = 0 ;
 	
 	/// Check either the IsotopicVector IV is in the validity domain of the models.
 	/*!
@@ -119,7 +119,7 @@ class XSModel : public CLASSObject
 	map<string, XSM_MthPtr> fKeyword;
 #endif
 	
-	int fZAIThreshold;	//!< Z threshold for handling nuclei mean cross section (take only ZAI reaction of Z>=fZAIThresold)
+	int fZAIThreshold;	//!< Z threshold for handling nuclei mean cross section (take only ZAI reaction of Z>= fZAIThresold)
 };
 
 #endif

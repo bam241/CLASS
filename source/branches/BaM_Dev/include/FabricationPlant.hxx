@@ -147,7 +147,7 @@ public :
 	 */
 	//@{
 
-	void SetSeparartionEfficiencyIV(ZAI zai, double factor);	//!< Set the extraction efficiency of zai to factor (0<=factor<=1)
+	void SetSeparartionEfficiencyIV(ZAI zai, double factor);	//!< Set the extraction efficiency of zai to factor (0<= factor<= 1)
 	void Evolution(cSecond t);					//!< Perform the FabricationPlant evolution
 	
 	void DumpStock(vector<double> lambdaArray);			//!< Update the Stock status after building process

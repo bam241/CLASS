@@ -56,7 +56,7 @@ double ZAIMass::GetMass(ZAI zai ) const
 	map<ZAI,double> ZAIMasscpy = fZAIMass ;
 	map<ZAI,double>::iterator  MassIT = ZAIMasscpy.find( ZAI(zai.Z(), zai.A(), 0) );
 
-	if(MassIT==fZAIMass.end())
+	if(MassIT == fZAIMass.end())
 		return zai.A();
 	else
 	   return MassIT->second;

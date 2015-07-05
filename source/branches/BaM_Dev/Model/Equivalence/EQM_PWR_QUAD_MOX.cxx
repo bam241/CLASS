@@ -33,7 +33,7 @@ EQM_PWR_QUAD_MOX::EQM_PWR_QUAD_MOX(string WeightPath):EquivalenceModel(new CLASS
 
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
-	double U5_enrich= 0.0025;
+	double U5_enrich =  0.0025;
 	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
 
 
@@ -74,7 +74,7 @@ EQM_PWR_QUAD_MOX::EQM_PWR_QUAD_MOX(CLASSLogger* log, string WeightPath):Equivale
 
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
-	double U5_enrich= 0.0025;
+	double U5_enrich =  0.0025;
 	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
 
 
@@ -120,7 +120,7 @@ double EQM_PWR_QUAD_MOX::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 		int par = 0;
 		for(int j = 0 ; j < 5 ; j++)
 		{
-			A += fFuelParameter[par]   * PuCompo[j] ;
+			A += fFuelParameter[par]  * PuCompo[j] ;
 			par++;
 			for(int i = j ; i < 5 ; i++)
 			{

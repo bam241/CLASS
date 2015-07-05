@@ -100,9 +100,9 @@ void EquivalenceModel::ReadType(const string &line)
 		ERROR << " Bad keyword : " << keyword << " Not found !" << endl;
 		exit(1);
 	}
-	if( keyword == "k_fuel" )
+	if( keyword ==  "k_fuel" )
 		fDBFType = StringLine::NextWord(line, pos, ' ');
-	else if( keyword == "k_reactor" )
+	else if( keyword ==  "k_reactor" )
 		fDBRType = StringLine::NextWord(line, pos, ' ');
 	
 	DBGL
@@ -227,13 +227,13 @@ double EquivalenceModel::LAMBDA_TOT_FOR(double MassNeeded, vector<IsotopicVector
 	double Lambda_tot = 0;
 	
 	// Calculating total mass of stock once and for all
-	if( fTotalFissileMassInStocks==0 || fTotalFertileMassInStocks==0 )
+	if( fTotalFissileMassInStocks == 0 || fTotalFertileMassInStocks == 0 )
 	{
 		double TotalMassInStocks = 0;
 		for( int i = 0 ; i<(int)Stocks.size() ; i++ )
 			TotalMassInStocks += Stocks[i].GetTotalMass() ;
 		
-		if(FisOrFer == "Fis")
+		if(FisOrFer ==  "Fis")
 			fTotalFissileMassInStocks = TotalMassInStocks * 1e6; // in grams
 		else
 			fTotalFertileMassInStocks = TotalMassInStocks * 1e6; // in grams
@@ -241,7 +241,7 @@ double EquivalenceModel::LAMBDA_TOT_FOR(double MassNeeded, vector<IsotopicVector
 	
 	double TotalMassInStocks = 0;
 	
-	if(FisOrFer == "Fis")
+	if(FisOrFer ==  "Fis")
 		TotalMassInStocks = fTotalFissileMassInStocks;
 	else
 		TotalMassInStocks = fTotalFertileMassInStocks;
@@ -259,12 +259,12 @@ double EquivalenceModel::LAMBDA_TOT_FOR(double MassNeeded, vector<IsotopicVector
 		
 		if( MassNeeded  >= (Stocks[i].GetTotalMass()*1e6) )
 		{
-			Lambda_tot+=1;
-			MassNeeded -= (Stocks[i].GetTotalMass()*1e6);
+			Lambda_tot+= 1;
+			MassNeeded -=  (Stocks[i].GetTotalMass()*1e6);
 		}
 		else
 		{
-			Lambda_tot+=MassNeeded/(Stocks[i].GetTotalMass()*1e6);
+			Lambda_tot+= MassNeeded/(Stocks[i].GetTotalMass()*1e6);
 			break;
 		}
 	}
@@ -314,14 +314,14 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<
 		lambda.push_back(0);
 	
 	/*** Test if there is a stock **/
-	if( (int)FissilArray.size()==0 )
+	if( (int)FissilArray.size() == 0 )
 	{
 		WARNING << " No fissile stocks available ! Fuel not build" << endl;
 		SetLambdaToErrorCode(lambda);
 		return lambda;
 	}
 	
-	HMMass *= 1e6; // Unit onversion : tons to gram
+	HMMass *=  1e6; // Unit onversion : tons to gram
 	
 	/**** Some initializations **/
 	fTotalFissileMassInStocks = 0;
@@ -340,7 +340,7 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<
 	do
 	{
 		double LAMBDA_NEEDED = LAMBDA_TOT_FOR(PuMassNeeded,FissilArray,"Fis");
-		if( LAMBDA_NEEDED == -1 )	// Check if previous lambda was well calculated
+		if( LAMBDA_NEEDED ==  -1 )	// Check if previous lambda was well calculated
 		{
 			SetLambdaToErrorCode(lambda);
 			WARNING << "Not enought fissile material to build fuel" << endl;
@@ -378,12 +378,12 @@ vector<double> EquivalenceModel::BuildFuel(double BurnUp, double HMMass, vector<
 		double MeanMolarPu = Fissile.GetMeanMolarMass();
 		double MeanMolarDepletedU = Fertile.GetMeanMolarMass();
 		
-		double MeanMolar = MeanMolarPu * MolarPuContent + (1-MolarPuContent)  * MeanMolarDepletedU;
+		double MeanMolar = MeanMolarPu * MolarPuContent + (1-MolarPuContent) * MeanMolarDepletedU;
 		
 		
 		WeightPuContent = MolarPuContent * MeanMolarPu / MeanMolar;
 		fActualFissileContent = MolarPuContent; //fActualFissileContent can be accessed by a derivated EquivalenModel to accelerate GetFissileMolarFraction function (exemple in EQM_PWR_MLP_Kinf)
-		PuMassNeeded = WeightPuContent  *  HMMass ;
+		PuMassNeeded = WeightPuContent *  HMMass ;
 		
 		DBGV( "MolarPuContent " << MolarPuContent << " DeltaM " << PuMassNeeded - AvailablePuMass << " g" );
 		
@@ -416,7 +416,7 @@ void EquivalenceModel::SetLambda(vector<double>& lambda ,int FirstStockID, int L
 	int IntegerPart = floor( LAMBDA_TOT );
 	double DecimalPart = LAMBDA_TOT - IntegerPart;
 	
-	for( int i=FirstStockID; i < FirstStockID +IntegerPart; i++ )
+	for( int i = FirstStockID; i < FirstStockID +IntegerPart; i++ )
 		lambda[i] = 1;
 	
 	lambda[FirstStockID + IntegerPart] = DecimalPart;
@@ -425,8 +425,8 @@ void EquivalenceModel::SetLambda(vector<double>& lambda ,int FirstStockID, int L
 //________________________________________________________________________
 void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
 {
-	for(int i=0 ; i < (int)lambda.size() ;i++ )
-		lambda[i]= -1;
+	for(int i = 0 ; i < (int)lambda.size() ;i++ )
+		lambda[i] =  -1;
 }
 
 
@@ -435,7 +435,7 @@ void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
 bool EquivalenceModel::isIVInDomain(IsotopicVector IV)
 {
 	DBGL
-	bool IsInDomain=true;
+	bool IsInDomain = true;
 	
 	if(fZAILimits.empty())
 	{
@@ -448,7 +448,7 @@ bool EquivalenceModel::isIVInDomain(IsotopicVector IV)
 	else
 	{
 		IsotopicVector IVNorm = IV /IV.GetSumOfAll();
-		for (map< ZAI,pair<double,double> >::iterator Domain_it=fZAILimits.begin(); Domain_it!=fZAILimits.end(); Domain_it++)
+		for (map< ZAI,pair<double,double> >::iterator Domain_it = fZAILimits.begin(); Domain_it != fZAILimits.end(); Domain_it++)
 		{
 			double ThatZAIProp = IVNorm.GetIsotopicQuantity()[Domain_it->first]	;
 			double ThatZAIMin  = Domain_it->second.first;
@@ -460,7 +460,7 @@ bool EquivalenceModel::isIVInDomain(IsotopicVector IV)
 				WARNING << "Fresh fuel out of model range" << endl;
 				WARNING << "\t AT LEAST this ZAI is accused to be outrange :" << endl;
 				WARNING << "\t\t" << Domain_it->first.Z() << " " << Domain_it->first.A() << " " << Domain_it->first.I() << endl;
-				WARNING << "\t\t min=" << ThatZAIMin  << " value=" << ThatZAIProp << " max=" << ThatZAIMax << endl;
+				WARNING << "\t\t min = " << ThatZAIMin  << " value = " << ThatZAIProp << " max = " << ThatZAIMax << endl;
 				WARNING << "\t IV accused :" << endl << endl;
 				WARNING << IVNorm.sPrint() << endl;
 				break;

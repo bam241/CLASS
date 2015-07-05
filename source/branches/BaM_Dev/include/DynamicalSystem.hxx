@@ -18,7 +18,7 @@ using namespace std;
 //!	DynamicalSystem class solves system of differential equations.  
 /*!
 //	A DynamicalSystem is a base class that solves system differential equations of 1st order.
-//	@f[ \frac{d\vec{Y}}{dt}=A\vec{Y}@f]
+//	@f[ \frac{d\vec{Y}}{dt} = A\vec{Y}@f]
 //	The differential equations are built in DynamicalSystem::BuildEqns ; the method MUST be
 //  defined in the derived classes.
 //	In this first version only Runge-Kutta method is implemented, but the aim of this class
@@ -43,7 +43,7 @@ class DynamicalSystem
 	*/
 	//@{
 	int GetNumberOfEquationSize(){return fNVar;}	//!< return the number of equations.
-	void SetNumberOfEquationSize(int n){fNVar=n;}	//!< set the number of equations.
+	void SetNumberOfEquationSize(int n){fNVar = n;}	//!< set the number of equations.
 	//@}
 
 	/*!
@@ -52,7 +52,7 @@ class DynamicalSystem
 	*/
 	//@{
 
-	void SetPrecision(double eps=1e-5){fPrecision=eps;}	//!< set RK precision to change the integration step
+	void SetPrecision(double eps = 1e-5){fPrecision = eps;}	//!< set RK precision to change the integration step
 	
 	//!	Forbid negative value during integration. 
 	/*!
@@ -61,7 +61,7 @@ class DynamicalSystem
 	Runge-Kutta wil produce very small negative value. This method is used to force
 	negative value to be zero.
 	*/	
-	void SetForbidNegativeValue(){fIsNegativeValueAllowed=false;}
+	void SetForbidNegativeValue(){fIsNegativeValueAllowed = false;}
 	
 	//!	Runge Kutta calling method. 
 	/*!

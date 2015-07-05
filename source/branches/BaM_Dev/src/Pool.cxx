@@ -142,14 +142,14 @@ void Pool::CoolingEvolution(cSecond t)
 {
 DBGL
 
-	if(t == fInternalTime && t!=0) return;
+	if(t ==  fInternalTime && t != 0) return;
 	int RemainingCoolingTime;
 	cSecond EvolutionTime = t - fInternalTime;
 
 #pragma omp parallel for
 	for ( int i = 0 ; i < (int)fIVArray.size() ; i++)
 	{
-		if ( abs(t -  fIVArrayArrivalTime[i] - fCycleTime) < 3600 ) // ">" should not append, only "=" is normal...
+		if ( abs(t -  fIVArrayArrivalTime[i] - fCycleTime) < 3600 ) // ">" should not append, only " = " is normal...
 		{
 			if (t -  fIVArrayArrivalTime[i] > fCycleTime) // Warning & Quit
 			{
@@ -183,7 +183,7 @@ void Pool::Evolution(cSecond t)
 {
 
 	// Check if the Pool has been created ...
-	if(t == fInternalTime && t!=0) return;
+	if(t ==  fInternalTime && t != 0) return;
 	// Make the evolution for the Cooling IV ...
 	CoolingEvolution(t);
 	// Update Inside IV
@@ -201,7 +201,7 @@ void Pool::Dump()
 {
 DBGL
 //------ Cooling ------//
-	for(int i = (int)fCoolingEndOfCycle.size()-1; i >=0 ; i--)	// IV End Of Cooling
+	for(int i = (int)fCoolingEndOfCycle.size()-1; i >= 0 ; i--)	// IV End Of Cooling
 	{
 	
 		int idx = fCoolingEndOfCycle[i];			// Get Index number

@@ -29,7 +29,7 @@ average @f$<k_{\infty}>(t)@f$ is calculated according :
 
 @f$<k_{\infty}>^{batch}(t) = \frac{1}{N}\sum_{i}^{N}k_{\infty}(t+\frac{iT}{N})@f$
 The maximal reachable burnup has to verify the following conditions :
-@f$<k_{\infty}>^{batch}(T/N) = <k_{\infty}>^{batch}(2T/N) =...= k_{Threshold}@f$
+@f$<k_{\infty}>^{batch}(T/N) = <k_{\infty}>^{batch}(2T/N)  = ... =  k_{Threshold}@f$
 Where @f$k_{Threshold}@f$ is the criticality threshold which take into account leakage and capture
 in non simulated devices such as control rods and mixing grid.
 
@@ -90,7 +90,7 @@ class EQM_PWR_MLP_Kinf : public EquivalenceModel
 	 \param  InformationFile : Total path to the file containing time steps, fissile and ferile list (ante and post fabrication time cooling). Default is the same total path as TMVAWeightPath but extension is replaced by .nfo
 	 \param  CriticalityThreshold : Threshold for the @f$k_{\infty}@f$ (see detailed description)
 	 */
-	EQM_PWR_MLP_Kinf(string TMVAWeightPath,int NumOfBatch, string InformationFile="", double CriticalityThreshold=1.01);
+	EQM_PWR_MLP_Kinf(string TMVAWeightPath,int NumOfBatch, string InformationFile = "", double CriticalityThreshold = 1.01);
 	//}
 	
 	//{
@@ -103,7 +103,7 @@ class EQM_PWR_MLP_Kinf : public EquivalenceModel
 	 \param  InformationFile : Total path to the file containing time steps, fissile and ferile list (ante and post fabrication time cooling). Default is the same total path as TMVAWeightPath but extension is replaced by .nfo
 	 \param  CriticalityThreshold : Threshold for the @f$k_{\infty}@f$ (see detailed description)
 	 */
-	EQM_PWR_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,int NumOfBatch, string InformationFile="", double CriticalityThreshold=1.01);
+	EQM_PWR_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,int NumOfBatch, string InformationFile = "", double CriticalityThreshold = 1.01);
 	//}
 	//@}
 	

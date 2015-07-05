@@ -85,7 +85,7 @@ EQM_PWR_MLP_Kinf::EQM_PWR_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, strin
 
 	/* INFORMATION FILE HANDLING */
 	
-	if(InformationFile=="")
+	if(InformationFile == "")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 	
 	fInformationFile = InformationFile;
@@ -111,7 +111,7 @@ EQM_PWR_MLP_Kinf::EQM_PWR_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,  int
 	/**The information file and tmva weight*/
 	fTMVAWeightPath.push_back(TMVAWeightPath);
 
-	if(InformationFile=="")
+	if(InformationFile == "")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 	
 	fInformationFile = InformationFile;
@@ -193,20 +193,20 @@ TTree* EQM_PWR_MLP_Kinf::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
 		InputTMVA.push_back(0);
 
-	float Time=0;
+	float Time = 0;
 
 	IsotopicVector IVInputTMVA;
 	map<ZAI ,string >::iterator it;
-	int j=0;
+	int j = 0;
 
-	for( it = fMapOfTMVAVariableNames.begin()  ; it!=fMapOfTMVAVariableNames.end() ; it++)
+	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
 	{
 		InputTree->Branch( ((*it).second).c_str()	,&InputTMVA[j], ((*it).second + "/F").c_str());
-		IVInputTMVA+= ((*it).first)*1;
+		IVInputTMVA+=  ((*it).first)*1;
 		j++;
 	}
 
-	if(ThisTime!=-1)
+	if(ThisTime != -1)
 		InputTree->Branch(	"Time"	,&Time	,"Time/F"	);
 
 	IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(IVInputTMVA);
@@ -215,17 +215,17 @@ TTree* EQM_PWR_MLP_Kinf::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 
 	IVAccordingToUserInfoFile = IVAccordingToUserInfoFile/Ntot;
 
-	j=0;
+	j = 0;
 	map<ZAI ,string >::iterator it2;
 
-	for( it2 = fMapOfTMVAVariableNames.begin() ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
+	for( it2 = fMapOfTMVAVariableNames.begin() ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
 	{
 		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first ) ;
 		//DBGV((*it2).first.Z() << " " << (*it2).first.A() << " " << InputTMVA[j]);
 		j++;
 	}
 
-	Time=ThisTime;
+	Time = ThisTime;
 
 	InputTree->Fill();
 
@@ -247,8 +247,8 @@ double EQM_PWR_MLP_Kinf::ExecuteTMVA(TTree* InputTree,string WeightPath, bool Is
 	Float_t Time;
 
 	map<ZAI ,string >::iterator it;
-	int j=0;
-	for( it = fMapOfTMVAVariableNames.begin()  ; it!=fMapOfTMVAVariableNames.end() ; it++)
+	int j = 0;
+	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
 	{	reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
 		j++;
 	}
@@ -263,8 +263,8 @@ double EQM_PWR_MLP_Kinf::ExecuteTMVA(TTree* InputTree,string WeightPath, bool Is
 	reader->BookMVA( methodName, WeightPath );
 
 	map<ZAI ,string >::iterator it2;
-	j=0;
-	for( it2 = fMapOfTMVAVariableNames.begin()  ; it2!=fMapOfTMVAVariableNames.end() ; it2++)
+	j = 0;
+	for( it2 = fMapOfTMVAVariableNames.begin()  ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
 	{
 		InputTree->SetBranchAddress(( (*it2).second ).c_str(),&InputTMVA[j]);
 		j++;
@@ -278,7 +278,7 @@ double EQM_PWR_MLP_Kinf::ExecuteTMVA(TTree* InputTree,string WeightPath, bool Is
 
 	delete reader;
 
-	return (double)val;//retourn k_{inf}(t=Time)
+	return (double)val;//retourn k_{inf}(t = Time)
 }
 
 
@@ -297,17 +297,17 @@ double EQM_PWR_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double Tar
 	double OldFinalTimePlus = BurnupToSecond(MaximumBU);
 	double k_av = 0; //average kinf
 	double OldPredictedk_av = 0;
- 	for(int b=0;b<fNumberOfBatch;b++)
+ 	for(int b = 0;b<fNumberOfBatch;b++)
  	{
  		float TheTime = (b+1)*TheFinalTime/fNumberOfBatch;
  		TTree* InputTree = CreateTMVAInputTree(TheFuel,TheTime);
- 		OldPredictedk_av +=	ExecuteTMVA(InputTree,fTMVAWeightPath[0],true);
+ 		OldPredictedk_av += 	ExecuteTMVA(InputTree,fTMVAWeightPath[0],true);
  		delete InputTree;
  	}
- 	OldPredictedk_av/=fNumberOfBatch;	
+ 	OldPredictedk_av/= fNumberOfBatch;	
 
  	//Algorithm control
-	int count=0;
+	int count = 0;
 	int MaximumLoopCount = 500;
 	do
 	{	
@@ -335,14 +335,14 @@ double EQM_PWR_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double Tar
  		}
 
  		k_av = 0;
- 		for(int b=0;b<fNumberOfBatch;b++)
+ 		for(int b = 0;b<fNumberOfBatch;b++)
  		{
  			float TheTime = (b+1)*TheFinalTime/fNumberOfBatch;
  			TTree* InputTree = CreateTMVAInputTree(TheFuel,TheTime);
- 			k_av +=	ExecuteTMVA(InputTree,fTMVAWeightPath[0],true);
+ 			k_av += 	ExecuteTMVA(InputTree,fTMVAWeightPath[0],true);
  			delete InputTree;
  		}
- 		k_av/=fNumberOfBatch;	
+ 		k_av/= fNumberOfBatch;	
 
 		OldPredictedk_av = k_av;
 	//	DBGV("OldPredictedk_av " << OldPredictedk_av << " Bumax " << SecondToBurnup(TheFinalTime) )
@@ -368,9 +368,9 @@ double EQM_PWR_MLP_Kinf::GetMaximumBurnUp_Pol2(IsotopicVector TheFuel,double Tar
 	double Sum = 0;
 	double SumSquare = 0;
 
-	for(int i = 1 ; i<=  fNumberOfBatch; i++)
-	{	Sum+=double(i)/double(fNumberOfBatch);
-		SumSquare+=double(i*i)/double(fNumberOfBatch*fNumberOfBatch);
+	for(int i = 1 ; i<=   fNumberOfBatch; i++)
+	{	Sum+= double(i)/double(fNumberOfBatch);
+		SumSquare+= double(i*i)/double(fNumberOfBatch*fNumberOfBatch);
 	}
 
 	double C = (Alpha_0-fKThreshold)*fNumberOfBatch;
@@ -403,7 +403,7 @@ double EQM_PWR_MLP_Kinf::GetMaximumBurnUp_Pol2(IsotopicVector TheFuel,double Tar
 			exit(1);
 		}
 	}	
-	else if(Delta==0)
+	else if(Delta == 0)
 	{	T = -B/(2*A);
 		if(T<0)
 		{	ERROR << "No positive solution" << endl;
@@ -433,9 +433,9 @@ double EQM_PWR_MLP_Kinf::GetMaximumBurnUp_Pol2(IsotopicVector TheFuel,double Tar
 double EQM_PWR_MLP_Kinf::GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU)
 {
 	double TheBurnUp = -1;
-	if(fTMVAWeightPath.size()==1)
-		TheBurnUp =	GetMaximumBurnUp_MLP(TheFuel,TargetBU);
-	else if(fTMVAWeightPath.size()==3)
+	if(fTMVAWeightPath.size() == 1)
+		TheBurnUp  = 	GetMaximumBurnUp_MLP(TheFuel,TargetBU);
+	else if(fTMVAWeightPath.size() == 3)
 		TheBurnUp = GetMaximumBurnUp_Pol2(TheFuel,TargetBU);
 
 	else
@@ -452,8 +452,8 @@ double EQM_PWR_MLP_Kinf::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicV
 
 	//initialization
 	double FissileContent = GetActualFissileContent(); 
-	double OldFissileContentMinus	= 0;
-	double OldFissileContentPlus	= fMaximalContent;
+	double OldFissileContentMinus =  0;
+	double OldFissileContentPlus =  fMaximalContent;
 	double PredictedBU = 0 ;
 	IsotopicVector FreshFuel = (1-FissileContent)*(Fertil/Fertil.GetSumOfAll()) + FissileContent*(Fissil/Fissil.GetSumOfAll());
 	double OldPredictedBU =  GetMaximumBurnUp(FreshFuel,TargetBU);

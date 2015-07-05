@@ -29,7 +29,7 @@ IrradiationModel::IrradiationModel():CLASSObject()
 {
 	fShorstestHalflife = 3600.*24*2.;
 	fZAIThreshold = 90;
-	fSpectrumType ="thermal";
+	fSpectrumType  = "thermal";
 
 	
 	fDataDirectoryName = getenv("CLASS_PATH");
@@ -42,7 +42,7 @@ IrradiationModel::IrradiationModel(CLASSLogger* log):CLASSObject(log)
 {
 	fShorstestHalflife = 3600.*24*2.;
 	fZAIThreshold = 90;
-	fSpectrumType ="thermal";
+	fSpectrumType  = "thermal";
 	
 	fDataDirectoryName = getenv("CLASS_PATH");
 	fDataDirectoryName += "/data/";
@@ -51,8 +51,8 @@ IrradiationModel::IrradiationModel(CLASSLogger* log):CLASSObject(log)
 	fNormalDecay = CLASSNucleiFiliation( log );
 	fFastDecay   = CLASSNucleiFiliation( log );
 
-	fCaptureReaction= CLASSNucleiFiliation( log );
-	fn2nReaction	= CLASSNucleiFiliation( log );
+	fCaptureReaction =  CLASSNucleiFiliation( log );
+	fn2nReaction =  CLASSNucleiFiliation( log );
 }
 //________________________________________________________________________
 //________________________________________________________________________
@@ -79,7 +79,7 @@ string IrradiationModel::GetDecay(string DecayModes, double &BR,int &Iso, int &S
 	if( ss < (int)DecayBR.size() ) 	//extraction of the BR if exist (i.e. for non stable isotop)
 		BR = atof(DecayBR.substr(ss+1).c_str());
 	
-	BR /= 100.;	//BR in % -> BR
+	BR /=  100.;	//BR in % -> BR
 	
 	
 	Iso = 0;
@@ -125,13 +125,13 @@ void IrradiationModel::LoadDecay()
 		{
 			// Get Isomeric State;
 			
-			if(Iname=="gs")
+			if(Iname == "gs")
 				I = 0;
 			else
 			{
-				if(Iname[0]=='m')
+				if(Iname[0] == 'm')
 				{
-					if( atoi( Iname.substr(1).c_str() )==0 )
+					if( atoi( Iname.substr(1).c_str() ) == 0 )
 						I = 1;
 					else
 						I = atoi( Iname.substr(1).c_str() );
@@ -149,37 +149,37 @@ void IrradiationModel::LoadDecay()
 			while(start<int(DecayModes.size()))
 			{
 				double BR;
-				int daughter_A=0;
-				int daughter_N=0;
-				int daughter_Z=0;
-				int Iso=0;
-				int DM=-1;
-				//				FPDistribution *FP=0;
+				int daughter_A = 0;
+				int daughter_N = 0;
+				int daughter_Z = 0;
+				int Iso = 0;
+				int DM = -1;
+				//				FPDistribution *FP = 0;
 				string decay_name = GetDecay(DecayModes, BR, Iso, start);
 				
-				if (decay_name == "s")	{DM=0;daughter_N=(A-Z);	daughter_Z=Z;BR=1;}
-				if (decay_name == "b-")	{DM=1;stable=false;	daughter_N=(A-Z)-1;	daughter_Z=Z+1;}
-				if (decay_name == "n")	{DM=2;stable=false;	daughter_N=(A-Z)-1;	daughter_Z=Z;}
-				if (decay_name == "nn")	{DM=3;stable=false;	daughter_N=(A-Z)-2;	daughter_Z=Z;}
-				if (decay_name == "b-n"){DM=4;stable=false;	daughter_N=(A-Z)-2;	daughter_Z=Z+1;}
-				if (decay_name == "p")	{DM=5;stable=false;	daughter_N=(A-Z);	daughter_Z=Z-1;}
-				if (decay_name == "b-a"){DM=6;stable=false;	daughter_N=(A-Z)-3;	daughter_Z=Z-1;}
-				if (decay_name == "pp")	{DM=7;stable=false;	daughter_N=(A-Z);	daughter_Z=Z-2;}
-				if (decay_name == "ce")	{DM=8;stable=false;	daughter_N=(A-Z)+1;	daughter_Z=Z-1;}
-				if (decay_name == "a")	{DM=9;stable=false;	daughter_N=(A-Z)-2;	daughter_Z=Z-2;}
-				if (decay_name == "cen"){DM=10;stable=false;	daughter_N=(A-Z);	daughter_Z=Z-1;}
-				if (decay_name == "cep"){DM=11;stable=false;	daughter_N=(A-Z)+1;	daughter_Z=Z-2;}
-				if (decay_name == "it")	{DM=12;stable=false;	daughter_N=(A-Z);	daughter_Z=Z;}
-				if (decay_name == "db-"){DM=13;stable=false;	daughter_N=(A-Z)-2;	daughter_Z=Z+2;}
-				if (decay_name == "db+"){DM=14;stable=false;	daughter_N=(A-Z)+2;	daughter_Z=Z-2;}
-				if (decay_name == "ita"){DM=15;stable=false;	daughter_N=(A-Z)-2;	daughter_Z=Z-2;}
-				if (decay_name == "sf")	{DM=16;stable=false;	daughter_N=0;		daughter_Z=-2;	Iso = -2;}
-				if (decay_name == "cesf"){DM=17;stable=false;	daughter_N=0;		daughter_Z=-2;	Iso = -2;}
-				if (decay_name == "b-sf"){DM=18;stable=false;	daughter_N=0;		daughter_Z=-2;	Iso = -2;}
+				if (decay_name ==  "s")	{DM = 0;daughter_N = (A-Z);	daughter_Z = Z;BR = 1;}
+				if (decay_name ==  "b-")	{DM = 1;stable = false;	daughter_N = (A-Z)-1;	daughter_Z = Z+1;}
+				if (decay_name ==  "n")	{DM = 2;stable = false;	daughter_N = (A-Z)-1;	daughter_Z = Z;}
+				if (decay_name ==  "nn")	{DM = 3;stable = false;	daughter_N = (A-Z)-2;	daughter_Z = Z;}
+				if (decay_name ==  "b-n"){DM = 4;stable = false;	daughter_N = (A-Z)-2;	daughter_Z = Z+1;}
+				if (decay_name ==  "p")	{DM = 5;stable = false;	daughter_N = (A-Z);	daughter_Z = Z-1;}
+				if (decay_name ==  "b-a"){DM = 6;stable = false;	daughter_N = (A-Z)-3;	daughter_Z = Z-1;}
+				if (decay_name ==  "pp")	{DM = 7;stable = false;	daughter_N = (A-Z);	daughter_Z = Z-2;}
+				if (decay_name ==  "ce")	{DM = 8;stable = false;	daughter_N = (A-Z)+1;	daughter_Z = Z-1;}
+				if (decay_name ==  "a")	{DM = 9;stable = false;	daughter_N = (A-Z)-2;	daughter_Z = Z-2;}
+				if (decay_name ==  "cen"){DM = 10;stable = false;	daughter_N = (A-Z);	daughter_Z = Z-1;}
+				if (decay_name ==  "cep"){DM = 11;stable = false;	daughter_N = (A-Z)+1;	daughter_Z = Z-2;}
+				if (decay_name ==  "it")	{DM = 12;stable = false;	daughter_N = (A-Z);	daughter_Z = Z;}
+				if (decay_name ==  "db-"){DM = 13;stable = false;	daughter_N = (A-Z)-2;	daughter_Z = Z+2;}
+				if (decay_name ==  "db+"){DM = 14;stable = false;	daughter_N = (A-Z)+2;	daughter_Z = Z-2;}
+				if (decay_name ==  "ita"){DM = 15;stable = false;	daughter_N = (A-Z)-2;	daughter_Z = Z-2;}
+				if (decay_name ==  "sf")	{DM = 16;stable = false;	daughter_N = 0;		daughter_Z = -2;	Iso = -2;}
+				if (decay_name ==  "cesf"){DM = 17;stable = false;	daughter_N = 0;		daughter_Z = -2;	Iso = -2;}
+				if (decay_name ==  "b-sf"){DM = 18;stable = false;	daughter_N = 0;		daughter_Z = -2;	Iso = -2;}
 				
 				daughter_A = daughter_Z + daughter_N;
 				{
-					if( daughter_Z < fZAIThreshold && daughter_Z!=-2 )
+					if( daughter_Z < fZAIThreshold && daughter_Z != -2 )
 						daughter_A = daughter_Z = Iso = -3;
 					// not spontaneous fission
 					
@@ -189,11 +189,11 @@ void IrradiationModel::LoadDecay()
 						{
 							ZAI DaughterZAI = ZAI(daughter_Z,daughter_A,Iso);
 							DaughtersIV += BR * DaughterZAI;
-							branch_test+=BR;
+							branch_test+= BR;
 						}
 						else if( DM <= 18)
 						{
-							if(fSpontaneusYield.size() == 0 )
+							if(fSpontaneusYield.size() ==  0 )
 							{
 								DaughtersIV += 2*BR * ZAI(-2,-2,-2);
 								
@@ -203,7 +203,7 @@ void IrradiationModel::LoadDecay()
 							{
 								
 								IsotopicVector SpontanuesFissionProduct = fSpontaneusYield.GetFiliation( ParentZAI );
-								if(SpontanuesFissionProduct.GetQuantity(-1,-1,-1) == 0)
+								if(SpontanuesFissionProduct.GetQuantity(-1,-1,-1) ==  0)
 								{
 									DaughtersIV += BR* SpontanuesFissionProduct ;
 									branch_test_f += BR* SpontanuesFissionProduct.GetSumOfAll();
@@ -221,7 +221,7 @@ void IrradiationModel::LoadDecay()
 					}
 					
 				}
-				if (DM !=0)
+				if (DM != 0)
 					stable = false;
 				// End of While loop
 			}
@@ -296,7 +296,7 @@ void IrradiationModel::GetNuclearProcessMatrix(TMatrixT<double> &NuclearProcessM
 		
 		int i = fMatrixIndex[Mother];
 		
-		NuclearProcessMatrix[i][i] -= XSValue;
+		NuclearProcessMatrix[i][i] -=  XSValue;
 		
 		for(int j = 0; j < (int)ProductedZAIList.size(); j++)
 		{
@@ -380,7 +380,7 @@ CLASSNucleiFiliation IrradiationModel::ReadFPYield(string Yield)
 		int Z = atof(StringLine::NextWord(line, start, ' ').c_str());
 		int A = atof(StringLine::NextWord(line, start, ' ').c_str());
 		int I = atof(StringLine::NextWord(line, start, ' ').c_str());
-		int i=0;
+		int i = 0;
 
 		do
 		{
@@ -397,7 +397,7 @@ CLASSNucleiFiliation IrradiationModel::ReadFPYield(string Yield)
 	} while (!infile.eof());
 	
 	
-	for(int i=0 ; i<(int) Fissile.size() ; i++)			// Fill the CLASSNucleiFiliation
+	for(int i = 0 ; i<(int) Fissile.size() ; i++)			// Fill the CLASSNucleiFiliation
 		MyYield.Add( Fissile[i], FPYields[i] );
 	
 	
@@ -417,17 +417,17 @@ void IrradiationModel::NuclearDataInitialization()
 {
 	DBGL
 	
-	if(fSpontaneusYieldFile!="")
+	if(fSpontaneusYieldFile != "")
 		fSpontaneusYield = ReadFPYield(fSpontaneusYieldFile);
-	if(fReactionYieldFile!="")
+	if(fReactionYieldFile != "")
 		fReactionYield = ReadFPYield(fReactionYieldFile);
 
 	LoadDecay();
 	
 	
-	if(fSpontaneusYieldFile!="")
+	if(fSpontaneusYieldFile != "")
 		fSpontaneusYield.FiliationCleanUp(fMatrixIndex, fFastDecay);		// remove the cutted nuclei....
-	if(fReactionYieldFile!="")
+	if(fReactionYieldFile != "")
 		fReactionYield.FiliationCleanUp(fMatrixIndex, fFastDecay);		// remove the cutted nuclei....
 
 	
@@ -450,7 +450,7 @@ void IrradiationModel::BuildReactionFiliation()
 	double BR_AG_110M = 0;
 	double BR_AG_108M = 0;
 	double BR_NP_236M = 0;
-	if(GetSpectrumType()=="thermal")
+	if(GetSpectrumType() == "thermal")
 	{ 
 		BR_AM_242M = 0.1267;
 		BR_HO_166M = 0.0510;
@@ -459,7 +459,7 @@ void IrradiationModel::BuildReactionFiliation()
 		BR_AG_108M = 0.0105;
 		BR_NP_236M = 0.8;
 	}
-	if(GetSpectrumType()=="fast")
+	if(GetSpectrumType() == "fast")
 	{
 		BR_AM_242M = 0.15;
 		BR_HO_166M = 0.0519;
@@ -477,7 +477,7 @@ void IrradiationModel::BuildReactionFiliation()
 			fCaptureReaction.Add( ZAI(95,241,0), ZAI(95,242,1) * BR_AM_242M );
 		}
 		
-		if(fReactionYieldFile!="")
+		if(fReactionYieldFile != "")
 		{// 165Ho(n,Gamma)
 			{
 				fCaptureReaction.Add( ZAI(67,165,0), ZAI(68,166,0) * (1-BR_HO_166M) ); //
@@ -527,11 +527,11 @@ void IrradiationModel::BuildReactionFiliation()
 		int Z = fReverseMatrixIndex[i].Z();
 		int A = fReverseMatrixIndex[i].A();
 
-		if(fCaptureReaction.GetFiliation(fReverseMatrixIndex[i]).GetQuantity(ZAI(-1,-1,-1))  == 1 )
+		if(fCaptureReaction.GetFiliation(fReverseMatrixIndex[i]).GetQuantity(ZAI(-1,-1,-1))  ==  1 )
 		{
 			fCaptureReaction.Add(fReverseMatrixIndex[i], ZAI(Z,A+1)*1);
 		}
-		if(fn2nReaction.GetFiliation(fReverseMatrixIndex[i]).GetQuantity(ZAI(-1,-1,-1))  == 1 )
+		if(fn2nReaction.GetFiliation(fReverseMatrixIndex[i]).GetQuantity(ZAI(-1,-1,-1))  ==  1 )
 		{
 			if(A>1)
 				fn2nReaction.Add(fReverseMatrixIndex[i], ZAI(Z,A-1)*1);
@@ -578,7 +578,7 @@ TMatrixT<double> IrradiationModel::GetFissionXsMatrix(EvolutionData EvolutionDat
 			GetNuclearProcessMatrix( FissionMatrix, Mother, FissionProductIV,  XS_Value );	// add the Nuclear process in the Reaction Matrix
 		else
 		{
-			if(fReactionYieldFile!="")
+			if(fReactionYieldFile != "")
 				WARNING << "Don't have fission Yield for this nuclei, ZAI : " << Mother.Z() << " " << Mother.A() << " " << Mother.I() << endl;
 			
 			GetNuclearProcessMatrix(FissionMatrix, Mother, ZAI(-2, -2, -2) * 2 , XS_Value );	// add the Nuclear process in the Reaction Matrix
@@ -664,14 +664,14 @@ TMatrixT<double> IrradiationModel::Getn2nXsMatrix(EvolutionData EvolutionDataSte
 //________________________________________________________________________
 void IrradiationModel::SetSpectrumType(string type)
 {
-	if(type !="fast" && type != "thermal")
+	if(type != "fast" && type != "thermal")
 	{	
 		ERROR << type << " is not a valid spectrum type" << endl;
 		ERROR << "\tSpectrum type must be either fast or thermal" << endl;
 		exit(0);
 	}
 	else
-		fSpectrumType=type;
+		fSpectrumType = type;
 
 }
 //________________________________________________________________________

@@ -12,7 +12,7 @@ using namespace std;
  Defines a EQM_PWR_POL_UO2
  It returns the @f$^{235}U@f$ enrichment e according to this polynom :
  
- @f$e=\alpha_{0} + \alpha_{1}\cdot Burnup + \alpha_{2}\cdot Burnup \cdot Burnup @f$
+ @f$e = \alpha_{0} + \alpha_{1}\cdot Burnup + \alpha_{2}\cdot Burnup \cdot Burnup @f$
  
  BU : Maximum achievable burnup
  

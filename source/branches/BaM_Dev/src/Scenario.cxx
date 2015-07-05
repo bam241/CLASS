@@ -162,7 +162,7 @@ void Scenario::AddPool(Pool* Pool)
 
 
 	string Pool_name = fPool.back()->GetName();
-	if(Pool_name == "P_Pool.")
+	if(Pool_name ==  "P_Pool.")
 	{
 		Pool_name = "P_Pool";
 		Pool_name += dtoa(fPool.back()->GetId());
@@ -195,7 +195,7 @@ void Scenario::AddReactor(Reactor* reactor)
 
 
 	string Reactor_name = fReactor.back()->GetName();
-	if(Reactor_name == "R_Reactor.")
+	if(Reactor_name ==  "R_Reactor.")
 	{
 		Reactor_name = "R_Reactor";
 		Reactor_name += dtoa(fReactor.back()->GetId());
@@ -229,7 +229,7 @@ void Scenario::AddStorage(Storage* storage)
 
 	string Storage_name = fStorage.back()->GetName();
 
-	if(Storage_name == "S_Storage.")
+	if(Storage_name ==  "S_Storage.")
 	{
 		Storage_name = "S_Storage";
 		Storage_name += dtoa(fStorage.back()->GetId());
@@ -262,7 +262,7 @@ void Scenario::AddFabricationPlant(FabricationPlant* fabricationplant)
 
 
 	string FP_name = fFabricationPlant.back()->GetName();
-	if(FP_name == "F_FabricationPlant.")
+	if(FP_name ==  "F_FabricationPlant.")
 	{
 		FP_name = "F_FabricationPlant";
 		FP_name += dtoa(fFabricationPlant.back()->GetId());
@@ -294,7 +294,7 @@ void Scenario::AddSeparationPlant(SeparationPlant* SeparationPlant)
 
 
 	string SeparationPlant_name = fSeparationPlant.back()->GetName();
-	if(SeparationPlant_name == "C_SepPlant.")
+	if(SeparationPlant_name ==  "C_SepPlant.")
 	{
 		SeparationPlant_name = "C_SepPlant";
 		SeparationPlant_name += dtoa(fSeparationPlant.back()->GetId());
@@ -344,7 +344,7 @@ void Scenario::BuildTimeVector(cSecond t)
 
 			if(fLogTimeStep)
 			{
-				timescale *= 10;
+				timescale *=  10;
 				step = fPrintStep*timescale;
 			}
 			else
@@ -368,7 +368,7 @@ void Scenario::BuildTimeVector(cSecond t)
 
 		double  R_BU = R_Fuel.second;
 		cSecond	R_CycleTime = (cSecond) (R_BU*1e9  / R_Power * R_HMMass *3600*24);
-		if(R_CycleTime == 0)
+		if(R_CycleTime ==  0)
 		{
 			ERROR << " Be carefull a reactor cycletime is set to 0 second....\"\n" << endl;
 			exit(1);
@@ -464,7 +464,7 @@ void Scenario::BuildTimeVector(cSecond t)
 		R_BU = fReactor[i]->GetFuelPlan()->GetFuelAt(step).second;
 		R_CycleTime = (cSecond) (R_BU*1e9 / R_Power * R_HMMass *3600*24);
 
-		if(R_CycleTime == 0)
+		if(R_CycleTime ==  0)
 		{
 			ERROR << " Be carefull a reactor cycletime is set to 0 second....\"\n" << endl;
 			exit(1);
@@ -525,7 +525,7 @@ void Scenario::BuildTimeVector(cSecond t)
 
 			R_BU = fReactor[i]->GetFuelPlan()->GetFuelAt(step).second;
 			R_CycleTime = (cSecond) (R_BU*1e9 / R_Power * R_HMMass *3600*24);
-			if(R_CycleTime == 0)
+			if(R_CycleTime ==  0)
 			{
 				ERROR << " Be carefull a reactor cycletime is set to 0 second....\"\n" << endl;
 				exit(1);
@@ -653,7 +653,7 @@ void Scenario::Evolution(cSecond t)
 		if( (*it).second & 1 || (*it).second & 2 || (*it).second & 4 )
 			ReactorEvolution();
 
-		if( (*it).second & 1 || it == fTimeStep.begin() )
+		if( (*it).second & 1 || it ==  fTimeStep.begin() )
 		{
 #pragma omp single
 			{
@@ -708,7 +708,7 @@ void Scenario::ProgressPrintout(cSecond t)
 
 void Scenario::ApplyZAIThreshold()
 {
-	for(int i =0; i < (int)fFabricationPlant.size(); i++)
+	for(int i  = 0; i < (int)fFabricationPlant.size(); i++)
 		fFabricationPlant[i]->ApplyZAIThreshold(fZAIThreshold);
 	
 	for(int i = 0; i < (int) fPool.size();i++)
@@ -734,7 +734,7 @@ void Scenario::UpdateParc()
 
 	ResetQuantity();
 
-	for(int i =0; i < (int)fFabricationPlant.size(); i++)
+	for(int i  = 0; i < (int)fFabricationPlant.size(); i++)
 		fFuelFabrication += fFabricationPlant[i]->GetInsideIV();
 
 	for(int i = 0; i < (int) fPool.size();i++)

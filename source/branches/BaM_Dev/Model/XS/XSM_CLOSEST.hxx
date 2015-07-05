@@ -85,7 +85,7 @@ class XSM_CLOSEST : public XSModel
 	 \name Get Method
 	 */
 	//@{
- 	virtual EvolutionData GetCrossSections(IsotopicVector isotopicvector,double t=0) ;	//!< Reason to live of this CLASS : Return the closest Evolutiondata
+ 	virtual EvolutionData GetCrossSections(IsotopicVector isotopicvector,double t = 0) ;	//!< Reason to live of this CLASS : Return the closest Evolutiondata
 	vector< EvolutionData >	GetFuelDataBank()	const	{ return fFuelDataBank; }	//!< Return the FuelDataBank
 	string 			GetDataBaseIndex()	const	{ return fDataBaseIndex; }	//!< Return the index Name
 	string			GetFuelType()		const	{ return fFuelType; }		//!< Return the fuel type of the DB

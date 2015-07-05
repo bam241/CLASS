@@ -121,10 +121,10 @@ public :
 
 	void	ApplyZAIThreshold(int z = 90);			//!< Put all nuclei below the threshold in -2 -2 -2 ZAI...
 
-	IsotopicVector& operator+=(IsotopicVector const& IVb);	//!< Operator += definition
-	IsotopicVector& operator-=(IsotopicVector const& IVb);	//!< Operator -= definition
-	IsotopicVector& operator*=(IsotopicVector const& IVb);	//!< Operator *= definition
-	IsotopicVector& operator*=(double const& factor);	//!< Operator *= definition (scalar)
+	IsotopicVector& operator+= (IsotopicVector const& IVb);	//!< Operator += definition
+	IsotopicVector& operator-= (IsotopicVector const& IVb);	//!< Operator -=  definition
+	IsotopicVector& operator*= (IsotopicVector const& IVb);	//!< Operator *=  definition
+	IsotopicVector& operator*= (double const& factor);	//!< Operator *=  definition (scalar)
 	bool operator <(const IsotopicVector& isotopicvector) const;	//!< IsotopicVector Comparator
 
 	//@}
@@ -140,10 +140,10 @@ public :
 
 	void	Write(string filename, cSecond time = -1 ) const;	//!< Write the Content of the IV in the filename file
 
-	void	Print(string o =" ") const ;				//!< Print the composition of the IV in terminal
+	void	Print(string o  = " ") const ;				//!< Print the composition of the IV in terminal
 	string	sPrint() const ;					//!< Print the composition of the IV in a string
 
-	void	PrintList(string o =" ") const ;			//!< Print the composition of the IV
+	void	PrintList(string o  = " ") const ;			//!< Print the composition of the IV
 
 	//@}
 	
@@ -173,11 +173,11 @@ IsotopicVector operator*(IsotopicVector const& IVa, IsotopicVector const& IVb);
 
 
 double 	RelativDistance(IsotopicVector IV1, IsotopicVector IV2 ); //!< return the euclidean distance between two IV. The two IV are normalize to unity
-double 	Distance(IsotopicVector IV1, IsotopicVector IV2 ,int DistanceType=0, IsotopicVector DistanceParameter=IsotopicVector()); //!< return weighted euclidean distance between two IV
+double 	Distance(IsotopicVector IV1, IsotopicVector IV2 ,int DistanceType = 0, IsotopicVector DistanceParameter = IsotopicVector()); //!< return weighted euclidean distance between two IV
 
 double	DistanceStandard(IsotopicVector IV1, IsotopicVector IV2); //!< return the euclidean distance between two IV
 double	DistanceAdjusted(IsotopicVector IV1, IsotopicVector IV2, IsotopicVector DistanceParameter); //!< return the weighted euclidean distance between two IV
-double 	Norme(IsotopicVector IV1,int DistanceType=0, IsotopicVector DistanceParameter=IsotopicVector());  //!< return the norm of an IV
+double 	Norme(IsotopicVector IV1,int DistanceType = 0, IsotopicVector DistanceParameter = IsotopicVector());  //!< return the norm of an IV
 
 
 #endif

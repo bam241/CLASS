@@ -15,7 +15,7 @@
 //________________________________________________________________________
 ClassImp(ZAI)
 
-ZAI ZAI::operator=(ZAI IVa)
+ZAI ZAI::operator = (ZAI IVa)
 {
 	fZ = IVa.Z();
 	fA = IVa.A();
@@ -28,9 +28,9 @@ ZAI ZAI::operator=(ZAI IVa)
 ZAI::ZAI()
 {
 		
-	fZ=0;
-	fA=0;
-	fI=0;
+	fZ = 0;
+	fA = 0;
+	fI = 0;
 
 }
 
@@ -47,9 +47,9 @@ ZAI::ZAI(int Z, int A, int I)
 		exit(1);
 	}
 
-	fZ=Z;
-	fA=A;
-	fI=I;
+	fZ = Z;
+	fA = A;
+	fI = I;
 
 }
 
