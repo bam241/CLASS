@@ -949,21 +949,21 @@ void EvolutionData::ReadInfo()
 	string line;
 	getline(InfoDB, line);
 	if ( tlc(StringLine::NextWord(line, start, ' ')) ==  "reactor")
-		fReactorType =  StringLine::NextWord(line, start, ' ');
+		fReactorType = StringLine::NextWord(line, start, ' ');
 	
 	start = 0;
 	getline(InfoDB, line);
 	if (tlc(StringLine::NextWord(line, start, ' ')) ==  "fueltype")
-		fFuelType =  StringLine::NextWord(line, start, ' ');
+		fFuelType = StringLine::NextWord(line, start, ' ');
 	start = 0;
 	getline(InfoDB, line);
 	if ( tlc(StringLine::NextWord(line, start, ' ')) ==  "cycletime")
-		fCycleTime =  atof(StringLine::NextWord(line, start, ' ').c_str());;
+		fCycleTime = atof(StringLine::NextWord(line, start, ' ').c_str());;
 	getline(InfoDB, line); // Assembly HM Mass
 	start = 0;
 	getline(InfoDB, line);
 	if ( tlc(StringLine::NextWord(line, start, ' ')) ==  "constantpower")
-		fPower =  atof(StringLine::NextWord(line, start, ' ').c_str());
+		fPower = atof(StringLine::NextWord(line, start, ' ').c_str());
 	InfoDB.close();
 }
 
@@ -1196,20 +1196,20 @@ void EvolutionData::OldReadDB(string DBfile)
 	start = 0;
 	getline(InfoDB, line);
 	if (StringLine::NextWord(line, start, ' ') ==  "Reactor")
-		fReactorType =  StringLine::NextWord(line, start, ' ');
+		fReactorType = StringLine::NextWord(line, start, ' ');
 	start = 0;
 	getline(InfoDB, line);
 	if (StringLine::NextWord(line, start, ' ') ==  "Fueltype")
-		fFuelType =  StringLine::NextWord(line, start, ' ');
+		fFuelType = StringLine::NextWord(line, start, ' ');
 	start = 0;
 	getline(InfoDB, line);
 	if (StringLine::NextWord(line, start, ' ') ==  "CycleTime")
-		fCycleTime =  atof(StringLine::NextWord(line, start, ' ').c_str());;
+		fCycleTime = atof(StringLine::NextWord(line, start, ' ').c_str());;
 	getline(InfoDB, line); // Assembly HM Mass
 	start = 0;
 	getline(InfoDB, line);
 	if (StringLine::NextWord(line, start, ' ') ==  "ConstantPower")
-		fPower =  atof(StringLine::NextWord(line, start, ' ').c_str());
+		fPower = atof(StringLine::NextWord(line, start, ' ').c_str());
 	getline(InfoDB, line); // cutoff
 	getline(InfoDB, line); // NUmber of Nuclei
 	start = 0;

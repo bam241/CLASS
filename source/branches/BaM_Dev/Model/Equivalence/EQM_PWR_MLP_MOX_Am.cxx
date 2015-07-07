@@ -27,11 +27,11 @@
 
 EQM_PWR_MLP_MOX_AM::EQM_PWR_MLP_MOX_AM(string TMVAWeightPath):EquivalenceModel(new CLASSLogger("EQM_PWR_MLP_MOX_AM.log"))
 {
-	fTMVAWeightPath =  TMVAWeightPath;
+	fTMVAWeightPath = TMVAWeightPath;
 
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
-	double U5_enrich =  0.0025;
+	double U5_enrich = 0.0025;
 
 	ZAI Pu8(94,238,0);
 	ZAI Pu9(94,239,0);
@@ -57,11 +57,11 @@ EQM_PWR_MLP_MOX_AM::EQM_PWR_MLP_MOX_AM(string TMVAWeightPath):EquivalenceModel(n
 //________________________________________________________________________
 EQM_PWR_MLP_MOX_AM::EQM_PWR_MLP_MOX_AM(CLASSLogger* log, string TMVAWeightPath):EquivalenceModel(log)
 {
-	fTMVAWeightPath =  TMVAWeightPath;
+	fTMVAWeightPath = TMVAWeightPath;
 
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
-	double U5_enrich =  0.0025;
+	double U5_enrich = 0.0025;
 
 	ZAI Pu8(94,238,0);
 	ZAI Pu9(94,239,0);
@@ -130,9 +130,9 @@ TTree* EQM_PWR_MLP_MOX_AM::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVec
 
 	Pu8 = Pu8  / TOTPU;
 	Pu9 = Pu9  / TOTPU;
-	Pu10 =  Pu10 / TOTPU;
-	Pu11 =  Pu11 / TOTPU;
-	Pu12 =  Pu12 / TOTPU;
+	Pu10 = Pu10 / TOTPU;
+	Pu11 = Pu11 / TOTPU;
+	Pu12 = Pu12 / TOTPU;
 	Am1 = Am1  / TOTPU;
 	Am2 = Am2  / TOTPU;
 	Am3 = Am3  / TOTPU;
@@ -176,15 +176,15 @@ double EQM_PWR_MLP_MOX_AM::ExecuteTMVA(TTree* theTree)
 	TString methodName = "MLP method";
 	reader->BookMVA( methodName, fTMVAWeightPath );
 	theTree->SetBranchAddress( "BU"   			,&BU 	);
-	theTree->SetBranchAddress( "U5_enrichment"		,&U5_enrichment   )	;
-	theTree->SetBranchAddress( "Pu8"  			,&Pu8   );
-	theTree->SetBranchAddress( "Pu9"  			,&Pu9   );
-	theTree->SetBranchAddress( "Pu10" 			,&Pu10  );
-	theTree->SetBranchAddress( "Pu11" 			,&Pu11  );
-	theTree->SetBranchAddress( "Pu12" 			,&Pu12  );
-	theTree->SetBranchAddress( "Am1"  			,&Am1   );
-	theTree->SetBranchAddress( "Am2"  			,&Am2   );
-	theTree->SetBranchAddress( "Am3"  			,&Am3   );
+	theTree->SetBranchAddress( "U5_enrichment"		,&U5_enrichment  )	;
+	theTree->SetBranchAddress( "Pu8"  			,&Pu8  );
+	theTree->SetBranchAddress( "Pu9"  			,&Pu9  );
+	theTree->SetBranchAddress( "Pu10" 			,&Pu10 );
+	theTree->SetBranchAddress( "Pu11" 			,&Pu11 );
+	theTree->SetBranchAddress( "Pu12" 			,&Pu12 );
+	theTree->SetBranchAddress( "Am1"  			,&Am1  );
+	theTree->SetBranchAddress( "Am2"  			,&Am2  );
+	theTree->SetBranchAddress( "Am3"  			,&Am3  );
 	theTree->GetEntry(0);
 
 	Float_t val = (reader->EvaluateRegression( methodName ))[0];

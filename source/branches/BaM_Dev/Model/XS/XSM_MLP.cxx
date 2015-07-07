@@ -171,7 +171,7 @@ void XSM_MLP::GetMLPWeightFiles()
 	fWeightFiles.resize(0);
 	while ((fichierLu = readdir(rep)) != NULL)
 	{
-		string FileName =  fichierLu->d_name ;
+		string FileName = fichierLu->d_name ;
 		if(FileName != "." && FileName != ".." )
 		{
 			if(FileName[FileName.size()-3] == 'x'  &&  FileName[FileName.size()-2] == 'm' && FileName[FileName.size()-1] == 'l' && FileName[0] != '.' )
@@ -317,7 +317,7 @@ double XSM_MLP::ExecuteTMVA(string WeightFile,TTree* InputTree)
 	}
 	
 	if(!fIsStepTime)
-		InputTree->SetBranchAddress( "Time" ,&Time  );
+		InputTree->SetBranchAddress( "Time" ,&Time );
 	
 	InputTree->GetEntry(0);
 	Float_t val = (reader->EvaluateRegression( methodName ))[0];

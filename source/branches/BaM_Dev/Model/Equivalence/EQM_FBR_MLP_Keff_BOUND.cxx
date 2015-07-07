@@ -160,7 +160,7 @@ TGraph* EQM_FBR_MLP_Keff_BOUND::BuildAverageKeffGraph(TGraph* GRAPH_KEFF)
 		{
 			if((step*p)> TimeFinal/(double)fNumberOfBatch)
 				p = 0;
-			k_av += 	GRAPH_KEFF->Eval( (step*p + b*TimeFinal/(double)fNumberOfBatch) , 0 , "S" );
+			k_av += GRAPH_KEFF->Eval( (step*p + b*TimeFinal/(double)fNumberOfBatch) , 0 , "S" );
 			
 		}
 		p++;
@@ -277,7 +277,7 @@ double EQM_FBR_MLP_Keff_BOUND::ExecuteTMVA(TTree* InputTree, bool IsTimeDependen
 	}
 	
 	if(IsTimeDependent)
-		InputTree->SetBranchAddress( "Time" ,&Time  );
+		InputTree->SetBranchAddress( "Time" ,&Time );
 	
 	InputTree->GetEntry(0);
 	Float_t val = (reader->EvaluateRegression( methodName ))[0];

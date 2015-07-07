@@ -197,7 +197,7 @@ double EQM_FBR_MLP_Keff::ExecuteTMVA(TTree* InputTree, bool IsTimeDependent)
 	}
 
 	if(IsTimeDependent)
-		InputTree->SetBranchAddress( "Time" ,&Time  );
+		InputTree->SetBranchAddress( "Time" ,&Time );
 
 	InputTree->GetEntry(0);
 	
@@ -292,11 +292,11 @@ double EQM_FBR_MLP_Keff::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 
 	//initialization
 	double FissileContent = GetActualFissileContent();
-	double OldFissileContentMinus =  0;
-	double OldFissileContentPlus =  fMaximalContent;
+	double OldFissileContentMinus = 0;
+	double OldFissileContentPlus = fMaximalContent;
 	double PredictedKeff = 0 ;
 	IsotopicVector FreshFuel = (1-FissileContent)*(Fertile/Fertile.GetSumOfAll()) + FissileContent*(Fissile/Fissile.GetSumOfAll());
-	double OldPredictedKeff =  GetKeffAtFixedTime(FreshFuel);
+	double OldPredictedKeff = GetKeffAtFixedTime(FreshFuel);
 	
 	double Precision = fPCMprecision/1e5*fTargetKeff; //pcm to 1
 	

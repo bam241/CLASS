@@ -12,7 +12,7 @@
 
 EQM_PWR_LIN_MOX::EQM_PWR_LIN_MOX(string WeightPath):EquivalenceModel(new CLASSLogger("EQM_PWR_LIN_MOX.log"))
 {
-	fWeightPath =  WeightPath;
+	fWeightPath = WeightPath;
 
 	ifstream DataDB(fWeightPath.c_str());							// Open the File
 	if(!DataDB)
@@ -47,7 +47,7 @@ EQM_PWR_LIN_MOX::EQM_PWR_LIN_MOX(string WeightPath):EquivalenceModel(new CLASSLo
 
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
-	double U5_enrich =  0.0025;
+	double U5_enrich = 0.0025;
 	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
 
 
@@ -64,7 +64,7 @@ EQM_PWR_LIN_MOX::EQM_PWR_LIN_MOX(string WeightPath):EquivalenceModel(new CLASSLo
 
 EQM_PWR_LIN_MOX::EQM_PWR_LIN_MOX(CLASSLogger* log, string WeightPath):EquivalenceModel(log)
 {
-	fWeightPath =  WeightPath;
+	fWeightPath = WeightPath;
 
 	ifstream DataDB(fWeightPath.c_str());							// Open the File
 	if(!DataDB)
@@ -99,7 +99,7 @@ EQM_PWR_LIN_MOX::EQM_PWR_LIN_MOX(CLASSLogger* log, string WeightPath):Equivalenc
 
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
-	double U5_enrich =  0.0025;
+	double U5_enrich = 0.0025;
 	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
 
 

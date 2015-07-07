@@ -82,7 +82,7 @@ void	FabricationPlant::SetSeparartionEfficiencyIV(ZAI zai, double factor)
 	
 	if(factor > 0)
 	{
-		IResult =  fSeparationLostFraction.GetIsotopicQuantity().insert( pair<ZAI ,double>(zai, 1 - factor));
+		IResult = fSeparationLostFraction.GetIsotopicQuantity().insert( pair<ZAI ,double>(zai, 1 - factor));
 		if(!IResult.second)
 			IResult.first->second = 1 - factor;
 	}
@@ -185,9 +185,9 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 
 
 
-	double R_HM_Mass =  GetParc()->GetReactor()[ ReactorId ]->GetHeavyMetalMass();
-	double R_CycleTime =  GetParc()->GetReactor()[ ReactorId ]->GetCycleTime();
-	double R_Power	 =  GetParc()->GetReactor()[ ReactorId ]->GetPower();
+	double R_HM_Mass = GetParc()->GetReactor()[ ReactorId ]->GetHeavyMetalMass();
+	double R_CycleTime = GetParc()->GetReactor()[ ReactorId ]->GetCycleTime();
+	double R_Power	 = GetParc()->GetReactor()[ ReactorId ]->GetPower();
 
 	pair<CLASSFuel, double > FuelBU = GetParc()->GetReactor()[ReactorId]->GetFuelPlan()->GetFuelAt(t+GetCycleTime()) ;
 	PhysicsModels FuelType = *FuelBU.first.GetPhysicsModels();
@@ -215,7 +215,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 	}
 
 	
-	vector<double> LambdaArray =  FuelType.GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fFissileArray, fFertileArray);
+	vector<double> LambdaArray = FuelType.GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fFissileArray, fFertileArray);
 
 	double  LambdaSum = 0;
 	for(int i = 0; i < (int)fFissileArray.size();i++)
@@ -405,15 +405,15 @@ void FabricationPlant::SortArray(int i)
 
 	if(i == 0) //Fissile
 	{
-		IVArray	 =  fFissileArray;
-		TimeArray =  fFissileArrayTime;
-		AdressArray =  fFissileArrayAdress;
+		IVArray	 = fFissileArray;
+		TimeArray = fFissileArrayTime;
+		AdressArray = fFissileArrayAdress;
 	}
 	else if (i == 1) //Fertile
 	{
-		IVArray	 =  fFertileArray;
-		TimeArray =  fFertileArrayTime;
-		AdressArray =  fFertileArrayAdress;
+		IVArray	 = fFertileArray;
+		TimeArray = fFertileArrayTime;
+		AdressArray = fFertileArrayAdress;
 
 	}
 
@@ -471,9 +471,9 @@ void FabricationPlant::SortArray(int i)
 
 	if(i == 0) //Fissile
 	{
-		fFissileArray	 =  IVArray;
-		fFissileArrayTime =  TimeArray;
-		fFissileArrayAdress =  AdressArray;
+		fFissileArray	 = IVArray;
+		fFissileArrayTime = TimeArray;
+		fFissileArrayAdress = AdressArray;
 	}
 	else if (i == 1) //Fertile
 	{

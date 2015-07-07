@@ -507,7 +507,7 @@ void Reactor::Dump()
 	// First trash the irradiated fuel
 	if(fIsAtEndOfCycle  && !fIsShutDown )
 	{
-		if(fIsStarted  )					// A Cycle has already been done
+		if(fIsStarted )					// A Cycle has already been done
 		{
 			fOutBackEndFacility->AddIV(fInsideIV);
 			AddCumulativeIVOut(fInsideIV);
