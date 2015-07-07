@@ -22,7 +22,7 @@ class ZAI;
 class CLASSLogger;
 
 double ReactionRateWeightedDistance(IsotopicVector IV1, EvolutionData DB );
-double ReactionRateWeightedDistance(EvolutionData DB, IsotopicVector IV1  );
+double ReactionRateWeightedDistance(EvolutionData DB, IsotopicVector IV1 );
 
 //-----------------------------------------------------------------------------//
 //! Describes outcore radioactive decays 

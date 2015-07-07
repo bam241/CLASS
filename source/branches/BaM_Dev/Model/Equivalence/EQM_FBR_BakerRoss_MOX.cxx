@@ -17,8 +17,8 @@ EQM_FBR_BakerRoss_MOX::EQM_FBR_BakerRoss_MOX(double Weight_U_235, double Weight_
 {
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
-	double U5_enrich =  0.0025;
-	fFertileList = U5*U5_enrich + U8*(1-U5_enrich); //Default Fertile composition (if no Fertile Storage is set for the FabricationPlant  )
+	double U5_enrich = 0.0025;
+	fFertileList = U5*U5_enrich + U8*(1-U5_enrich); //Default Fertile composition (if no Fertile Storage is set for the FabricationPlant )
 
 	ZAI Pu8(94,238,0);
 	ZAI Pu9(94,239,0);
@@ -58,8 +58,8 @@ EQM_FBR_BakerRoss_MOX::EQM_FBR_BakerRoss_MOX(CLASSLogger* log, double Weight_U_2
 {
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
-	double U5_enrich =  0.0025;
-	fFertileList = U5*U5_enrich + U8*(1-U5_enrich); //Default Fertile composition (if no Fertile Storage is set for the FabricationPlant  )
+	double U5_enrich = 0.0025;
+	fFertileList = U5*U5_enrich + U8*(1-U5_enrich); //Default Fertile composition (if no Fertile Storage is set for the FabricationPlant )
 
 	ZAI Pu8(94,238,0);
 	ZAI Pu9(94,239,0);

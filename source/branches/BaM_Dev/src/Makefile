@@ -1,22 +1,22 @@
 # Directory containing libraries
 LIBDIR          = $(CLASS_lib)
 # Directory containing includes for CLASS
-LOCALINC =  $(CLASS_include)
+LOCALINC = $(CLASS_include)
 
 
-EQM	 =  ../Model/Equivalence
-IM	 =  ../Model/Irradiation
-XSM	 =  ../Model/XS
+EQM	 = ../Model/Equivalence
+IM	 = ../Model/Irradiation
+XSM	 = ../Model/XS
 
 
-ROOTCFLAGS     =  `root-config --cflags`
-ROOTLIBS =  `root-config --libs`
-ROOTGLIBS =  `root-config --glibs`
+ROOTCFLAGS     = `root-config --cflags`
+ROOTLIBS = `root-config --libs`
+ROOTGLIBS = `root-config --glibs`
 
 ######### nothing to change from here #########
-INCLUDES =  $(LOCALINC)/*.hxx 
-LIBNAME  =  CLASSpkg
-OBJS	 =  CLASSLogger.o \
+INCLUDES = $(LOCALINC)/*.hxx 
+LIBNAME  = CLASSpkg
+OBJS	 = CLASSLogger.o \
 			ZAI.o ZAIDict.o \
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAIMass.o ZAIHeat.o ZAITox.o \
@@ -47,7 +47,7 @@ OBJMODEL = 	$(EQM)/EQM_PWR_MLP_MOX.o $(EQM)/EQM_PWR_QUAD_MOX.o $(EQM)/EQM_PWR_PO
 			$(IM)/IM_RK4.o $(IM)/IM_Matrix.o
 
 
-ROOTOBJS =  	CLASSLogger.o \
+ROOTOBJS = 	CLASSLogger.o \
 			ZAI.o ZAIDict.o \
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAIMass.o ZAIHeat.o ZAITox.o \
@@ -71,7 +71,7 @@ ROOTOBJS =  	CLASSLogger.o \
 CXX           = g++
 CXXFLAGS      = -O2 -g -fopenmp -fPIC -I$(LOCALINC) $(ROOTCFLAGS)
 LD            = g++
-LDFLAGS       =  -g -fPIC $(ROOTLIBS) -lTMVA -shared -lgomp
+LDFLAGS       = -g -fPIC $(ROOTLIBS) -lTMVA -shared -lgomp
 
 all:		$(OBJS) $(OBJMODEL)
 		$(LD) $(LDFLAGS) $(OBJS) $(OBJMODEL) -o $(LIBDIR)/lib$(LIBNAME).so

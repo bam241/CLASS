@@ -91,7 +91,7 @@ void Pool::SetIVArray(vector<IsotopicVector> ivarray)
 void Pool::SetIVArray(vector<IsotopicVector> ivarray, vector<cSecond> timearray)
 {
 	fIVArray = ivarray;
-	fIVArrayArrivalTime =  timearray;
+	fIVArrayArrivalTime = timearray;
 
 }
 //________________________________________________________________________

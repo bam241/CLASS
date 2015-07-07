@@ -79,7 +79,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	vector< TMatrixT<double> > NMatrix ;//  TMatrixT<double>(decayindex.size(),1))
 	{	// Filling the t = 0 State;
 		map<ZAI, double > isotopicquantity = isotopicvector.GetIsotopicQuantity();
-		TMatrixT<double>  N_0Matrix =  TMatrixT<double>( fReverseMatrixIndex.size(),1) ;
+		TMatrixT<double>  N_0Matrix = TMatrixT<double>( fReverseMatrixIndex.size(),1) ;
 		for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
 			N_0Matrix[i] = 0;
 
@@ -119,7 +119,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 
 	double M_ref = XSSet.GetHeavyMetalMass();
 	double M = cZAIMass.GetMass(isotopicvector.GetActinidesComposition());
-	double Power_ref =  XSSet.GetPower();
+	double Power_ref = XSSet.GetPower();
 
 
 	int NStep = XSSet.GetFissionXS().begin()->second->GetN();
@@ -229,7 +229,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 
 	Flux[NStep-1] = Power/ESigmaN;
 
-	GeneratedDB.SetFlux( new TGraph(NStep, timevector, Flux)  );
+	GeneratedDB.SetFlux( new TGraph(NStep, timevector, Flux) );
 
 	for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
 	{
@@ -242,9 +242,9 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 
 		for(int j = 0; j < NStep; j++)
 		{
-			FissionXS[j] =  FissionXSMatrix[j][i][i];
-			CaptureXS[j] =  CaptureXSMatrix[j][i][i];
-			n2nXS[j] =  n2nXSMatrix[j][i][i];
+			FissionXS[j] = FissionXSMatrix[j][i][i];
+			CaptureXS[j] = CaptureXSMatrix[j][i][i];
+			n2nXS[j] = n2nXSMatrix[j][i][i];
 		}
 
 		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NMatrix.size(), timevector, ZAIQuantity)));
@@ -281,7 +281,7 @@ void IM_RK4::ResetTheMatrix()
 
 	if(fTheMatrix)
 	{
-		for(int i =  0; i<fNVar; i++)
+		for(int i = 0; i<fNVar; i++)
 			delete [] fTheMatrix[i];
 		delete [] fTheMatrix;
 	}
@@ -296,7 +296,7 @@ void IM_RK4::SetTheMatrixToZero()
 	fTheMatrix = new double*[fNVar];
 
 #pragma omp parallel for
-	for(int i =  0; i < fNVar; i++)
+	for(int i = 0; i < fNVar; i++)
 		fTheMatrix[i] = new double[fNVar];
 
 	for(int i = 0; i < fNVar; i++)

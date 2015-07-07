@@ -51,8 +51,8 @@ IrradiationModel::IrradiationModel(CLASSLogger* log):CLASSObject(log)
 	fNormalDecay = CLASSNucleiFiliation( log );
 	fFastDecay   = CLASSNucleiFiliation( log );
 
-	fCaptureReaction =  CLASSNucleiFiliation( log );
-	fn2nReaction =  CLASSNucleiFiliation( log );
+	fCaptureReaction = CLASSNucleiFiliation( log );
+	fn2nReaction = CLASSNucleiFiliation( log );
 }
 //________________________________________________________________________
 //________________________________________________________________________

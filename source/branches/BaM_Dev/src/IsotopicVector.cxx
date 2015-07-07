@@ -521,7 +521,7 @@ IsotopicVector	IsotopicVector::GetSpeciesComposition(int z) const
 	map<ZAI ,double > IsotopicQuantity = GetIsotopicQuantity();
 	map<ZAI ,double >::iterator it;
 	for( it = IsotopicQuantity.begin(); it != IsotopicQuantity.end(); it++)
-		if( (*it).first.Z() ==  z  )
+		if( (*it).first.Z() ==  z )
 			IV += (*it).first * (*it).second;
 
 	return IV;

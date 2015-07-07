@@ -79,13 +79,13 @@ void EquivalenceModel::ReadLine(string line)
 void EquivalenceModel::LoadKeyword()
 {
 	DBGL
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",	& EquivalenceModel::ReadZAIlimits));
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",	& EquivalenceModel::ReadType)	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel",	& EquivalenceModel::ReadType)	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fissil",	& EquivalenceModel::ReadFissil)	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",	& EquivalenceModel::ReadFertil)	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",	& EquivalenceModel::ReadSpecificPower));
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",	& EquivalenceModel::ReadMaximalContent));
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",		& EquivalenceModel::ReadZAIlimits));
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",		& EquivalenceModel::ReadType)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel",		& EquivalenceModel::ReadType)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fissil",		& EquivalenceModel::ReadFissil)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",		& EquivalenceModel::ReadFertil)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower",	& EquivalenceModel::ReadSpecificPower));
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",		& EquivalenceModel::ReadMaximalContent));
 	DBGL
 }
 
@@ -426,7 +426,7 @@ void EquivalenceModel::SetLambda(vector<double>& lambda ,int FirstStockID, int L
 void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
 {
 	for(int i = 0 ; i < (int)lambda.size() ;i++ )
-		lambda[i] =  -1;
+		lambda[i] = -1;
 }
 
 

@@ -60,7 +60,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 	vector< TMatrixT<double> > NMatrix ;//  TMatrixT<double>(decayindex.size(),1))
 	{	// Filling the t = 0 State;
 		map<ZAI, double > isotopicquantity = isotopicvector.GetIsotopicQuantity();
-		TMatrixT<double>  N_0Matrix =  TMatrixT<double>( fReverseMatrixIndex.size(),1) ;
+		TMatrixT<double>  N_0Matrix = TMatrixT<double>( fReverseMatrixIndex.size(),1) ;
 		for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
 			N_0Matrix[i] = 0;
 
@@ -99,7 +99,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 
 	double M_ref = XSSet.GetHeavyMetalMass();
 	double M = cZAIMass.GetMass(isotopicvector.GetActinidesComposition());
-	double Power_ref =  XSSet.GetPower();
+	double Power_ref = XSSet.GetPower();
 
 	int NStep = XSSet.GetFissionXS().begin()->second->GetN();
 	double* DBTimeStep = XSSet.GetFissionXS().begin()->second->GetX();
@@ -240,7 +240,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 
 	Flux[NStep-1] = Power/ESigmaN;
 
-	GeneratedDB.SetFlux( new TGraph(NStep, timevector, Flux)  );
+	GeneratedDB.SetFlux( new TGraph(NStep, timevector, Flux) );
 
 	for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
 	{
@@ -253,9 +253,9 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 
 		for(int j = 0; j < NStep; j++)
 		{
-			FissionXS[j] =  FissionXSMatrix[j][i][i];
-			CaptureXS[j] =  CaptureXSMatrix[j][i][i];
-			n2nXS[j] =  n2nXSMatrix[j][i][i];
+			FissionXS[j] = FissionXSMatrix[j][i][i];
+			CaptureXS[j] = CaptureXSMatrix[j][i][i];
+			n2nXS[j] = n2nXSMatrix[j][i][i];
 		}
 
 		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NMatrix.size(), timevector, ZAIQuantity)));

@@ -178,7 +178,7 @@ public :
 	virtual void ApplyZAIThreshold(int z = 90);						//!< Put all nuclei below the threshold in -2 -2 -2 ZAI...
 	void AddCumulativeIVIn(IsotopicVector IV) { fCumulativeIVIn += IV;}		//!< Add the Input IsotopicVector in the cumulative IV IN
 	void AddCumulativeIVOut(IsotopicVector IV) { fCumulativeIVOut += IV;}		//!< Add the Input IsotopicVector in the cumulative IV OUT
-	virtual void Evolution(cSecond t) =  0;	//!< Performs the Evolution to time t
+	virtual void Evolution(cSecond t) = 0;	//!< Performs the Evolution to time t
 	virtual void Dump()			{ }	//!< Write Modification (IV In/Out, filling the TF...)
 		
 	//@}
