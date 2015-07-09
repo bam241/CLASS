@@ -47,10 +47,16 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(string TMVAWeightPath, double keff_target, st
 	if(InformationFile == "")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 
+	fMaximalContent = 0;
 	fInformationFile = InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fMLPInformationFile
-
+	
+	if(fMaximalContent == 0 )
+	{
+		ERROR<<"Can't find the k_maxfiscontent keyword in .nfo file\n this is mandatory"<<endl;
+		exit(0);
+	}
 	
 	fTargetKeff = keff_target;
 	
@@ -79,13 +85,18 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(CLASSLogger* log, string TMVAWeightPath, doub
 	if(InformationFile == "")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 
+	fMaximalContent = 0;
 	fInformationFile = InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fMLPInformationFile
 	
+	if(fMaximalContent == 0 )
+	{
+		ERROR<<"Can't find the k_maxfiscontent keyword in .nfo file\n this is mandatory"<<endl;
+		exit(0);
+	}
 
 	fTargetKeff = keff_target;
-
 	
 	SetPCMprecision(10);
 	SetBuildFuelFirstGuess(0.15);	//First fissile content guess for the EquivalenceModel::BuildFuel algorithm
@@ -215,8 +226,9 @@ void EQM_FBR_MLP_Keff::LoadKeyword()
 {
 	DBGL
 
-	fDKeyword.insert( pair<string, FBR_MLP_Keff_DMthPtr>( "k_timestep",	& EQM_FBR_MLP_Keff::ReadTimeSteps));
 	fDKeyword.insert( pair<string, FBR_MLP_Keff_DMthPtr>( "k_zainame",	& EQM_FBR_MLP_Keff::ReadZAIName)	 );
+
+	fDKeyword.insert( pair<string, FBR_MLP_Keff_DMthPtr>( "k_maxfiscontent", &EQM_FBR_MLP_Keff::ReadMaxFisContent) );
 
 	DBGL
 }
@@ -243,24 +255,22 @@ void EQM_FBR_MLP_Keff::ReadZAIName(const string &line)
 	DBGL
 }
 
-
 //________________________________________________________________________
-void EQM_FBR_MLP_Keff::ReadTimeSteps(const string &line)
+void EQM_FBR_MLP_Keff::ReadMaxFisContent(const string &line)
 {
 	DBGL
 	int pos = 0;
 	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_timestep" )	// Check the keyword
+	if( keyword != "k_maxfiscontent" )	// Check the keyword
 	{
-		ERROR << " Bad keyword : \"k_timestep\" not found !" << endl;
+		ERROR << " Bad keyword : \"k_maxfiscontent\" not found !" << endl;
 		exit(1);
 	}
 	
-	while( pos < (int)line.size() )
-		fMLP_Time.push_back( atof( (StringLine::NextWord(line,pos,' ')).c_str() ));
+	fMaximalContent = atof(StringLine::NextWord(line, pos, ' ').c_str());
+	
 	DBGL
 }
-
 
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff::ReadLine(string line)
