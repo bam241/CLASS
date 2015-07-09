@@ -154,6 +154,22 @@ class EQM_PWR_MLP_Kinf : public EquivalenceModel
 	//}
 	
 	//{
+	/// ReadMaxBurnUp : read a guessed (very overestimated) maximum burnup a fuel can reach (purpose : algorithm initialization)
+	/*!
+	 \param line : line suppossed to contain the ZAI name  starts with "k_zainame" keyword
+	 */
+	void ReadMaxBurnUp(const string &line);
+	//}
+	
+	//{
+	/// ReadMaxFisContent  : read a guessed (very overestimated) maximum fissile content (purpose : algorithm initialization)
+	/*!
+	 \param line : line suppossed to contain the ZAI name  starts with "k_zainame" keyword
+	 */
+	void ReadMaxFisContent(const string &line);
+	//}
+	
+	//{
 	/// ReadLine : read a line
 	/*!
 	 \param line : line to read
