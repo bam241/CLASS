@@ -23,6 +23,7 @@ XSModel::XSModel():CLASSObject()
 
 }
 
+//________________________________________________________________________
 
 XSModel::XSModel(CLASSLogger* log):CLASSObject(log)
 {
@@ -31,7 +32,7 @@ XSModel::XSModel(CLASSLogger* log):CLASSObject(log)
 	freaded = false;
 }
 
-
+//________________________________________________________________________
 void XSModel::ReadNFO()
 {
 	DBGL
@@ -80,7 +81,7 @@ void XSModel::ReadLine(string line)
 	DBGL
 }
 
-
+//________________________________________________________________________
 void XSModel::LoadKeyword()
 {
 	DBGL
@@ -92,6 +93,7 @@ void XSModel::LoadKeyword()
 	DBGL
 }
 
+//________________________________________________________________________
 void XSModel::ReadRParam(const string &line)
 {
 	DBGL
@@ -110,6 +112,7 @@ void XSModel::ReadRParam(const string &line)
 	DBGL
 }
 
+//________________________________________________________________________
 
 void XSModel::ReadType(const string &line)
 {
@@ -129,7 +132,7 @@ void XSModel::ReadType(const string &line)
 	DBGL
 }
 
-
+//________________________________________________________________________
 void XSModel::ReadZAIlimits(const string &line)
 {
 	DBGL
@@ -158,7 +161,7 @@ void XSModel::ReadZAIlimits(const string &line)
 	DBGL
 }
 
-
+//________________________________________________________________________
 bool XSModel::isIVInDomain(IsotopicVector IV)
 {
 	DBGL
