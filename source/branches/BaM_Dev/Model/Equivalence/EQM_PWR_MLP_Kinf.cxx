@@ -31,9 +31,17 @@ EQM_PWR_MLP_Kinf::EQM_PWR_MLP_Kinf(string WeightPathAlpha0, string WeightPathAlp
 	fTMVAWeightPath.push_back(WeightPathAlpha1);
 	fTMVAWeightPath.push_back(WeightPathAlpha2);
 	
+	fMaximalBU = 0;
+	fMaximalContent = 0;
 	fInformationFile = InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fMLPInformationFile
+	
+	if( fMaximalBU == 0 || fMaximalContent == 0 )
+	{
+		ERROR<<"Can't find the k_maxfiscontent and/or k_maxburnup keyword(s) in .nfo file\n this is mandatory"<<endl;
+		exit(0);
+	}
 	
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
@@ -58,9 +66,17 @@ EQM_PWR_MLP_Kinf::EQM_PWR_MLP_Kinf(CLASSLogger* log, string WeightPathAlpha0, st
 	fTMVAWeightPath.push_back(WeightPathAlpha1);
 	fTMVAWeightPath.push_back(WeightPathAlpha2);
 	
+	fMaximalBU = 0;
+	fMaximalContent = 0;
 	fInformationFile = InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fMLPInformationFile
+	
+	if( fMaximalBU == 0 || fMaximalContent == 0 )
+	{
+		ERROR<<"Can't find the k_maxfiscontent and/or k_maxburnup keyword(s) in .nfo file\n this is mandatory"<<endl;
+		exit(0);
+	}
 	
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
@@ -88,9 +104,17 @@ EQM_PWR_MLP_Kinf::EQM_PWR_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, strin
 	if(InformationFile == "")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 	
+	fMaximalBU = 0;
+	fMaximalContent = 0;
 	fInformationFile = InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fMLPInformationFile
+	
+	if( fMaximalBU == 0 || fMaximalContent == 0 )
+	{
+		ERROR<<"Can't find the k_maxfiscontent and/or k_maxburnup keyword(s) in .nfo file\n this is mandatory"<<endl;
+		exit(0);
+	}
 	
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
@@ -114,9 +138,17 @@ EQM_PWR_MLP_Kinf::EQM_PWR_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,  int
 	if(InformationFile == "")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 	
+	fMaximalBU = 0;
+	fMaximalContent = 0;
 	fInformationFile = InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fMLPInformationFile
+	
+	if( fMaximalBU == 0 || fMaximalContent == 0 )
+	{
+		ERROR<<"Can't find the k_maxfiscontent and/or k_maxburnup keyword(s) in .nfo file\n this is mandatory"<<endl;
+		exit(0);
+	}
 	
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
@@ -138,7 +170,8 @@ void EQM_PWR_MLP_Kinf::LoadKeyword()
 	DBGL
 	
 	fDKeyword.insert( pair<string, PWR_MLP_KINF_DMthPtr>( "k_zainame", &EQM_PWR_MLP_Kinf::ReadZAIName) );
-	
+	fDKeyword.insert( pair<string, PWR_MLP_KINF_DMthPtr>( "k_maxburnup", &EQM_PWR_MLP_Kinf::ReadMaxBurnUp) );
+	fDKeyword.insert( pair<string, PWR_MLP_KINF_DMthPtr>( "k_maxfiscontent", &EQM_PWR_MLP_Kinf::ReadMaxFisContent) );
 	DBGL
 }
 
@@ -163,8 +196,38 @@ void EQM_PWR_MLP_Kinf::ReadZAIName(const string &line)
 	
 	DBGL
 }
+//________________________________________________________________________
+void EQM_PWR_MLP_Kinf::ReadMaxBurnUp(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_maxburnup" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_maxburnup\" not found !" << endl;
+		exit(1);
+	}
+	
+	fMaximalBU = atof(StringLine::NextWord(line, pos, ' ').c_str());
 
-
+	DBGL
+}
+//________________________________________________________________________
+void EQM_PWR_MLP_Kinf::ReadMaxFisContent(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_maxfiscontent" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_maxfiscontent\" not found !" << endl;
+		exit(1);
+	}
+	
+	fMaximalContent = atof(StringLine::NextWord(line, pos, ' ').c_str());
+	
+	DBGL
+}
 //________________________________________________________________________
 void EQM_PWR_MLP_Kinf::ReadLine(string line)
 {
