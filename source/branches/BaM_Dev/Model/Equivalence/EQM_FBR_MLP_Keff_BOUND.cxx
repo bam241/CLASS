@@ -368,12 +368,6 @@ double EQM_FBR_MLP_Keff_BOUND::GetFissileMolarFraction(IsotopicVector Fissile, I
 	/**Algorithm  not so clever ...**/
 	/**need improvements to make it faster*/
 	
-	if(!fIsAverageKeff)
-	{
-		ERROR << " Can't be used with EQM_FBR_MLP_Keff_BOUND(string TMVAWeightPath, double keff_target, string InformationFile) constructor";
-		exit(1);
-	}
-	
 	double FissileContent = 0.01;
 	double test_Keff_beg = fKmin - 0.01;
 	double test_keff_end = fKmax + 0.01;

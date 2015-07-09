@@ -186,8 +186,6 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	
 	double 	fKThreshold;		//!< The @f$k_{Threshold}@f$
 	double 	fPCMprecision;		//!< precision on <k> prediction [pcm]
-	
-	bool	fIsAverageKeff;		//!< True if using the first contructor (fissile content prediction with average keff (over batches))
 	double  fKmin;				//!< Lower edge of kedd Used by second constructor (fissile content prediction using keff at BOC (or other time)
 	double  fKmax;				//!< Upper edge of kedd Used by second constructor (fissile content prediction using keff at BOC (or other time)
 	double 	fTargetKeff;		//!< Use for Varying Fissile content to reach fTargetKeff at time used in the MLP Training
