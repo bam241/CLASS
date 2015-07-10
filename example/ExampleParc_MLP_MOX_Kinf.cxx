@@ -5,7 +5,7 @@
 // Simple Scenario with 8 PWR UOX and one PWR MOX
 // 
 // 
-//   _______     ____    ______    	_______________
+//   _______     ____    ______  	_______________
 //  | 10 x  |   |    |  |       |      |		|
 //  |Reactor| =>|Pool|=>|Storage|=====>|FabricationPlant| 
 //  | UOx   |	|UOX |	| UOX 	|      |________________|
@@ -14,7 +14,7 @@
 //						\/
 //		 ______  	 ____ 	  _______
 //		|       |	|    |	 |  1 x  |
-//		|Storage|<===   |Pool|<==|Reactor|
+//		|Storage|<===	|Pool|<==|Reactor|
 //		| MOX 	|	|MOX |	 | MOX	 |
 //		|_______|	|____|	 |_______|
 //
@@ -28,7 +28,7 @@
 #include <string>
 #include "XS/XSM_MLP.hxx"			//Load the include for Neural network cross section predictor
 #include "Irradiation/IM_RK4.hxx"		//Load the include for Runge Kutta 4 resolution
-#include "Equivalence/EQM_PWR_MLP_MOX.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
+#include "Equivalence/EQM_MLP_Kinf.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
 using namespace std;
 
 int main(int argc, char** argv)
@@ -44,10 +44,10 @@ int main(int argc, char** argv)
 	/******SCENARIO**********************************/
 	// The scenario start at year 1977
 	Scenario *gCLASS=new Scenario(1977*year,Logger);
-	gCLASS->SetStockManagement(true);					//If false all the IsotopicVector in stocks are mixed together.
-	gCLASS->SetTimeStep(year/4.);	 					//the scenario calculation is updated every 3 months
-	cSecond EndOfScenarioTime=2040*year;				//Scenario ends in year 2040
-	gCLASS->SetOutputFileName("ExampleParc_MLP.root");	//Set the name of the output file
+	gCLASS->SetStockManagement(true);								//If false all the IsotopicVector in stocks are mixed together.
+	gCLASS->SetTimeStep(year/2.);	 								//the scenario calculation is updated every 3 months
+	cSecond EndOfScenarioTime=2010*year;							//Scenario ends in year 2040
+	gCLASS->SetOutputFileName("ExampleParc_MLP_Kinf_Kpred.root");	//Set the name of the output file
 
 	/******DATA BASES**********************************/
 	//Geting CLASS to path
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 		cout<<" Please setenv CLASS_PATH to your CLASS installation folder in your .bashs or .tcshrc"<<endl;
    	 	exit(0);
    	}
-   	string PATH_TO_DATA = CLASS_PATH + "/DATA_BASES/";
+   	string PATH_TO_DATA = CLASS_PATH+"/DATA_BASES/";
 
 	/*===Decay data base===*/
 	//The decay data base is taken from the file Decay.idx
@@ -66,16 +66,32 @@ int main(int argc, char** argv)
 
 	/*===Reactor data base===*/
 
-		// Reprocessed fuel PWR MOX
-	XSM_MLP* XSMOX = new XSM_MLP(gCLASS->GetLog(), PATH_TO_DATA + "PWR/MOX/XSModel/30Wg_FullMOX");//Defining the XS Predictor
-	IM_RK4 *IMRK4 = new IM_RK4(gCLASS->GetLog());	//Bateman's equation solver method (RungeKutta4)
-	EQM_PWR_MLP_MOX* EQMMLPPWRMOX = new EQM_PWR_MLP_MOX(gCLASS->GetLog(),PATH_TO_DATA + "PWR/MOX/EQModel/MLP/EQM_MLP_PWR_MOX_3batch.xml");//Defining the EquivalenceModel
-	PhysicsModels* PHYMOD = new PhysicsModels(XSMOX, EQMMLPPWRMOX, IMRK4); 							//The PhysicsModels containing the 3 object previously defined
+	// Reprocessed fuel PWR MOX
+	XSM_MLP* XSMOX 	= new XSM_MLP(gCLASS->GetLog(), PATH_TO_DATA + "PWR/MOX/XSModel/30Wg_FullMOX");//Defining the XS Predictor
+	IM_RK4 *IMRK4 	= new IM_RK4(gCLASS->GetLog());	//Bateman's equation solver method (RungeKutta4)
+	
+	//Defining the EquivalenceModel
+	int NumberOfBatches 	= 3 ;		//The maximum reachable burnup is calculated using a fuel management of 1/3
+	double K_Threshold 		= 1.02 ;	//Threshold on the average (over batches) kinfinite .
 
-		//Fixed fuel : PWR UOX
-	EvolutionData *CYCLADE = new EvolutionData(gCLASS->GetLog(), PATH_TO_DATA + "PWR/UOX/FixedFuel/CYCLADES.dat");
-	EvolutionData *GARANCE = new EvolutionData(gCLASS->GetLog(), PATH_TO_DATA + "PWR/UOX/FixedFuel/GARANCE.dat");
-	EvolutionData *STD900 = new EvolutionData(gCLASS->GetLog(), PATH_TO_DATA + "PWR/UOX/FixedFuel/STD900.dat");
+	//Constructor where kinfini is predicted  with a mlp
+	EQM_MLP_Kinf* EQMMLPPWRMOX = new EQM_MLP_Kinf(gCLASS->GetLog(),PATH_TO_DATA + "PWR/MOX/EQModel/MLP_Kinf/MLP/PWR_MOX_30Wg.xml",NumberOfBatches,"",K_Threshold);
+
+	//Constructor where kinfini is predicted as a 2nd order polynome with weight predicted with mlps
+	/*EQM_MLP_Kinf* EQMMLPPWRMOX = new EQM_MLP_Kinf(gCLASS->GetLog(),
+	PATH_TO_DATA + "PWR/MOX/EQModel/MLP_Kinf/POL2/MLP_POL2_Alpha_0.xml",
+	PATH_TO_DATA + "PWR/MOX/EQModel/MLP_Kinf/POL2/MLP_POL2_Alpha_1.xml",
+	PATH_TO_DATA + "PWR/MOX/EQModel/MLP_Kinf/POL2/MLP_POL2_Alpha_2.xml",
+	PATH_TO_DATA + "PWR/MOX/EQModel/MLP_Kinf/POL2/PWR_MOX_30Wg.nfo",
+	NumberOfBatches,K_Threshold);//Defining the EquivalenceModel
+	*/
+
+	PhysicsModels* PHYMOD = new PhysicsModels(XSMOX, EQMMLPPWRMOX, IMRK4); 							 //The PhysicsModels containing the 3 object previously defined
+
+	//Fixed fuel : PWR UOX
+	EvolutionData *CYCLADE 	= new EvolutionData(gCLASS->GetLog(), PATH_TO_DATA + "PWR/UOX/FixedFuel/CYCLADES.dat");
+	EvolutionData *GARANCE 	= new EvolutionData(gCLASS->GetLog(), PATH_TO_DATA + "PWR/UOX/FixedFuel/GARANCE.dat");
+	EvolutionData *STD900 	= new EvolutionData(gCLASS->GetLog(), PATH_TO_DATA + "PWR/UOX/FixedFuel/STD900.dat");
 
 	/******FACILITIES*********************************/
 	/*=== Stock===*/
@@ -358,7 +374,7 @@ int main(int argc, char** argv)
 //==========================================================================================
 /*
  
- \rm CLASS* ; g++ -o CLASS_Exec ExampleParc_MLP_MOX.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
+ \rm CLASS* ; g++ -o CLASS_Exec ExampleParc_MLP_MOX_Kinf.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result 
  
  
  */

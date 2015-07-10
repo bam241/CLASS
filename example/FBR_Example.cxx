@@ -23,7 +23,7 @@
 #include <string>
 #include "XS/XSM_MLP.hxx"				//Load the include for Neural network cross section predictor
 #include "Irradiation/IM_RK4.hxx"			//Load the include for Runge Kutta 4 resolution
-#include "Equivalence/EQM_BakerRoss_FBR_MOX.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
+#include "Equivalence/EQM_FBR_BakerRoss_MOX.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
 using namespace std;
 
 int main(int argc, char** argv)
@@ -32,33 +32,42 @@ int main(int argc, char** argv)
 	cSecond year = 3600*24.*365.25; 
 	/******LOG MANAGEMENT**********************************/
 	//Definition of the Log file : CLASS messages output 
-	int Std_output_level=0;  // Only error are shown in terminal
-	int File_output_level=3; // Error + Warning + Info are shown in the file CLASS_OUTPUT.log
-	CLASSLogger *Logger	 = new CLASSLogger("CLASS_OUTPUT.log",Std_output_level,File_output_level);
+	int Std_output_level 	= 0;  // Only error are shown in terminal
+	int File_output_level 	= 2; // Error + Warning + Info are shown in the file CLASS_OUTPUT.log
+	CLASSLogger *Logger 	= new CLASSLogger("CLASS_OUTPUT.log",Std_output_level,File_output_level);
 
 	/******SCENARIO**********************************/
 	// The scenario start at year 1977
 	Scenario *gCLASS=new Scenario(1977*year,Logger);
-	gCLASS->SetStockManagement(true);//If false all the IsotopicVector in stocks are mixed together.
-	gCLASS->SetTimeStep(year/4.);	 //the scenario calculation is updated every 3 months
+	gCLASS->SetStockManagement(true);				//If false all the IsotopicVector in stocks are mixed together.
+	gCLASS->SetTimeStep(year/4.);	 				//the scenario calculation is updated every 3 months
 	gCLASS->SetOutputFileName("FBR_Example.root");	//Set the name of the output file
 
 	/******DATA BASES**********************************/
-	/*===Decay data base===*/
+	//Geting CLASS to path
+	string CLASS_PATH = getenv("CLASS_PATH");
+	if (CLASS_PATH=="")
+   	{
+		cout<<" Please setenv CLASS_PATH to your CLASS installation folder in your .bashs or .tcshrc"<<endl;
+   	 	exit(0);
+   	}
+   	string PATH_TO_DATA = CLASS_PATH + "/DATA_BASES/";
+
+   	/*===Decay data base===*/
 	//The decay data base is taken from the file Decay.idx
-	DecayDataBank* DecayDB = new DecayDataBank(gCLASS->GetLog(), "../DATA_BASES/DECAY/ALL/Decay.idx");
+	DecayDataBank* DecayDB = new DecayDataBank(gCLASS->GetLog(), PATH_TO_DATA + "DECAY/ALL/Decay.idx");
 	gCLASS->SetDecayDataBase(DecayDB);//This decay data base will be used for all the decay calculations in this Scenario
 
 	/*===Reactor data base===*/
 
-	XSM_MLP* XS_FBRMOX = new XSM_MLP(gCLASS->GetLog(), "../DATA_BASES/FBR_Na/MOX/XSModel/ESFR_48Wg");//Defining the XS Predictor
-	IM_RK4 *IMRK4 = new IM_RK4(gCLASS->GetLog());							 //Bateman's equation solver method (RungeKutta4)
+	XSM_MLP* XS_FBRMOX = new XSM_MLP(gCLASS->GetLog(), PATH_TO_DATA + "FBR_Na/MOX/XSModel/ESFR_48Wg");//Defining the XS Predictor
+	IM_RK4 *IMRK4 = new IM_RK4(gCLASS->GetLog());					 //Bateman's equation solver method (RungeKutta4)
 	IMRK4->SetSpectrumType("fast");									 //Set the spectrum to fast for reactions isomeric branching ratios (can be fast or thermal)
-	IMRK4->LoadFPYield("","../data/FPyield_Fast_JEFF3.1.dat");						 //Add the handling of fission procuct and gets fission yields from this file (the first argument is for spontaneousfission yield : here is not handle)
+	IMRK4->LoadFPYield("" , CLASS_PATH + "/data/FPyield_Fast_JEFF3.1.dat");//Add the handling of fission procuct and gets fission yields from this file (the first argument is for spontaneousfission yield : here is not handle)
 	
-	EQM_BakerRoss_FBR_MOX* EQM_FBRMOX = new EQM_BakerRoss_FBR_MOX(gCLASS->GetLog());//Defining the EquivalenceModel
-	EQM_FBRMOX->SetBuildFuelFirstGuess(0.12);					//Set the first guess of fissile content to 12 per cent of plutonium (default : 5%)
-	PhysicsModels* PHYMOD = new PhysicsModels(XS_FBRMOX, EQM_FBRMOX, IMRK4);	//The PhysicsModels containing the 3 object previously defined
+	EQM_FBR_BakerRoss_MOX* EQM_FBRMOX = new EQM_FBR_BakerRoss_MOX(gCLASS->GetLog());//Defining the EquivalenceModel
+	EQM_FBRMOX->SetBuildFuelFirstGuess(0.12);										//Set the first guess of fissile content to 12 per cent of plutonium (default : 5%)
+	PhysicsModels* PHYMOD = new PhysicsModels(XS_FBRMOX, EQM_FBRMOX, IMRK4);		//The PhysicsModels containing the 3 object previously defined
 
 
 	/******FACILITIES*********************************/

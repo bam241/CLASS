@@ -23,22 +23,32 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
+
 	//seconds in one year
 	cSecond year = 3600*24.*365.25; 
 	/******LOG MANAGEMENT**********************************/
 	//Definition of the Log file : CLASS messages output 
-	int Std_output_level=0; //Only error are shown in terminal
-	int File_output_level=2; // Error + Warning + Info are shown in the file CLASS_OUTPUT.log
-	CLASSLogger *Logger		 = new CLASSLogger("CLASS_OUTPUT.log",Std_output_level,File_output_level);
+	int Std_output_level 	= 0; //Only error are shown in terminal
+	int File_output_level 	= 2; // Error + Warning + Info are shown in the file CLASS_OUTPUT.log
+	CLASSLogger *Logger 	= new CLASSLogger("CLASS_OUTPUT.log",Std_output_level,File_output_level);
 
 	/******SCENARIO**********************************/
 	// The scenario start at year 1977
 	Scenario *gCLASS=new Scenario(1977*year,Logger);
-	gCLASS->SetStockManagement(true);//If false all the IsotopicVector in stocks are mixed together.
-	gCLASS->SetTimeStep(year/4.);//the scenario calculation is updated every 3 months
+	gCLASS->SetStockManagement(true);					//If false all the IsotopicVector in stocks are mixed together.
+	gCLASS->SetTimeStep(year/4.);						//the scenario calculation is updated every 3 months
 	gCLASS->SetOutputFileName("SimpleReactor2.root");	//Set the name of the output file
 
 	/******DATA BASES**********************************/
+	//Geting CLASS to path
+	string CLASS_PATH = getenv("CLASS_PATH");
+	if (CLASS_PATH=="")
+   	{
+		cout<<" Please setenv CLASS_PATH to your CLASS installation folder in your .bashs or .tcshrc"<<endl;
+   	 	exit(0);
+   	}
+   	string PATH_TO_DATA = CLASS_PATH+"/DATA_BASES/"; 
+
 	/*===Decay data base===*/
 	//The decay data base is taken from the file Decay.idx
 	DecayDataBank* DecayDB = new DecayDataBank(gCLASS->GetLog(), "../DATA_BASES/DECAY/ALL/Decay.idx");
