@@ -1,5 +1,5 @@
-#ifndef _EQM_PWR_MLP_Kinf_HXX
-#define _EQM_PWR_MLP_Kinf_HXX
+#ifndef _EQM_MLP_Kinf_HXX
+#define _EQM_MLP_Kinf_HXX
 
 #include "EquivalenceModel.hxx"
 #include "TTree.h"
@@ -7,7 +7,7 @@
 
 /*!
  \file
- \brief Header file for EQM_PWR_MLP_Kinf class.
+ \brief Header file for EQM_MLP_Kinf class.
 
 
  @author BLG
@@ -38,13 +38,13 @@ in non simulated devices such as control rods and mixing grid.
  */
 //________________________________________________________________________
 
-class EQM_PWR_MLP_Kinf;
+class EQM_MLP_Kinf;
 #ifndef __CINT__
-typedef void (EQM_PWR_MLP_Kinf::*PWR_MLP_KINF_DMthPtr)( const string & ) ;
+typedef void (EQM_MLP_Kinf::*PWR_MLP_KINF_DMthPtr)( const string & ) ;
 #endif
 
 
-class EQM_PWR_MLP_Kinf : public EquivalenceModel
+class EQM_MLP_Kinf : public EquivalenceModel
 {
 	public :
 	/*!
@@ -56,7 +56,7 @@ class EQM_PWR_MLP_Kinf : public EquivalenceModel
 	/// Polynnomial 2nd order constructor @f$k_{\infty} = \alpha_{0} + \alpha_{1}t + \alpha_{2}t^{2}@f$
  	/// @f$\alpha_{0}@f$, @f$\alpha_{1}@f$, @f$\alpha_{2}@f$ are predict by 3 MLP (one for each)
  	/*!
-	 Create a EQM_PWR_MLP_Kinf 
+	 Create a EQM_MLP_Kinf 
 	 \param  TMVAWeightPath0 :  PAth to the .xml file containing neural network informations for @f$\alpha_{0}@f$ prediction : PATH/TMVAWeight.xml (total path to tmva weight)
 	 \param  TMVAWeightPath1 :  PAth to the .xml file containing neural network informations for @f$\alpha_{1}@f$ prediction: PATH/TMVAWeight.xml (total path to tmva weight)
 	 \param  TMVAWeightPath2 :  PAth to the .xml file containing neural network informations for @f$\alpha_{2}@f$ prediction: PATH/TMVAWeight.xml (total path to tmva weight)
@@ -64,13 +64,13 @@ class EQM_PWR_MLP_Kinf : public EquivalenceModel
 	 \param  NumOfBatch : Number of batch for the loading plan (often 3 or 4 for PWR)
 	 \param  CriticalityThreshold : Threshold for the @f$k_{\infty}@f$ (see detailed description)
 	 */
-	EQM_PWR_MLP_Kinf(string WeightPathAlpha0, string WeightPathAlpha1, string WeightPathAlpha2, string InformationFile,  int NumOfBatch, double CriticalityThreshold = 1.01);
+	EQM_MLP_Kinf(string WeightPathAlpha0, string WeightPathAlpha1, string WeightPathAlpha2, string InformationFile,  int NumOfBatch, double CriticalityThreshold = 1.01);
 	//}
 	//{
 	/// Polynnomial 2nd order constructor @f$k_{\infty} = \alpha_{0} + \alpha_{1}t + \alpha_{2}t^{2}@f$
  	/// @f$\alpha_{0}@f$, @f$\alpha_{1}@f$, @f$\alpha_{2}@f$ are predict by 3 MLP (one for each)
 	 /*!
-	 Create a EQM_PWR_MLP_Kinf 
+	 Create a EQM_MLP_Kinf 
 	 \param log : use for log
 	 \param  TMVAWeightPath0 :  PAth to the .xml file containing neural network informations for @f$\alpha_{0}@f$ prediction : PATH/TMVAWeight.xml (total path to tmva weight)
 	 \param  TMVAWeightPath1 :  PAth to the .xml file containing neural network informations for @f$\alpha_{1}@f$ prediction: PATH/TMVAWeight.xml (total path to tmva weight)
@@ -79,31 +79,31 @@ class EQM_PWR_MLP_Kinf : public EquivalenceModel
 	 \param  NumOfBatch : Number of batch for the loading plan (often 3 or 4 for PWR)
 	 \param  CriticalityThreshold : Threshold for the @f$k_{\infty}@f$ (see detailed description)
 	 */
-	EQM_PWR_MLP_Kinf(CLASSLogger* log, string WeightPathAlpha0, string WeightPathAlpha1, string WeightPathAlpha2, string InformationFile,  int NumOfBatch, double CriticalityThreshold = 1.01 );
+	EQM_MLP_Kinf(CLASSLogger* log, string WeightPathAlpha0, string WeightPathAlpha1, string WeightPathAlpha2, string InformationFile,  int NumOfBatch, double CriticalityThreshold = 1.01 );
 	//}
 	//{
 	/// Neural network predictor. The kinf(t) is predicted with a MLP 
 	/*!
-	 Create a EQM_PWR_MLP_Kinf 
+	 Create a EQM_MLP_Kinf 
 	 \param  TMVAWeightPath :  PAth to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
 	 \param  NumOfBatch : Number of batch for the loading plan (often 3 or 4 for PWR)
 	 \param  InformationFile : Total path to the file containing time steps, fissile and ferile list (ante and post fabrication time cooling). Default is the same total path as TMVAWeightPath but extension is replaced by .nfo
 	 \param  CriticalityThreshold : Threshold for the @f$k_{\infty}@f$ (see detailed description)
 	 */
-	EQM_PWR_MLP_Kinf(string TMVAWeightPath,int NumOfBatch, string InformationFile = "", double CriticalityThreshold = 1.01);
+	EQM_MLP_Kinf(string TMVAWeightPath,int NumOfBatch, string InformationFile = "", double CriticalityThreshold = 1.01);
 	//}
 	
 	//{
 	/// Neural network predictor. The kinf(t) is predicted with a MLP 
 	/*!
-	 Create a EQM_PWR_MLP_Kinf
+	 Create a EQM_MLP_Kinf
 	 \param log : use for log
 	 \param  TMVAWeightPath :  PAth to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
 	 \param  NumOfBatch : Number of batch for the loading plan (often 3 or 4 for PWR)
 	 \param  InformationFile : Total path to the file containing time steps, fissile and ferile list (ante and post fabrication time cooling). Default is the same total path as TMVAWeightPath but extension is replaced by .nfo
 	 \param  CriticalityThreshold : Threshold for the @f$k_{\infty}@f$ (see detailed description)
 	 */
-	EQM_PWR_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,int NumOfBatch, string InformationFile = "", double CriticalityThreshold = 1.01);
+	EQM_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,int NumOfBatch, string InformationFile = "", double CriticalityThreshold = 1.01);
 	//}
 	//@}
 	
