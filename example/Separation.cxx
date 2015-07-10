@@ -1,6 +1,6 @@
 /*****************************************************************/
 //              DESCRIPTION
-// More complex (and dumby) scenario to illustrate how to use 
+// Illustrative scenario to show how to use the
 // SeparationPlant and BackEnd Facilities (Pool/Storage/Separation)
 // This park is constituted by a simple PWR UOX Reactor, a pool
 // 4 Storage and 2 FabricationPlant.
@@ -27,26 +27,35 @@ int main(int argc, char** argv)
 	cSecond year = 3600*24.*365.25; 
 	/******LOG MANAGEMENT**********************************/
 	//Definition of the Log file : CLASS messages output 
-	int Std_output_level=0; //Only error are shown in terminal
-	int File_output_level=2; // Error + Warning + Info are shown in the file CLASS_OUTPUT.log
-	CLASSLogger *Logger		 = new CLASSLogger("CLASS_OUTPUT.log",Std_output_level,File_output_level);
+	int Std_output_level 	= 0; //Only error are shown in terminal
+	int File_output_level 	= 2; // Error + Warning + Info are shown in the file CLASS_OUTPUT.log
+	CLASSLogger *Logger 	= new CLASSLogger("CLASS_OUTPUT.log",Std_output_level,File_output_level);
 
 	/******SCENARIO**********************************/
 	// The scenario start at year 1977
 	Scenario *gCLASS=new Scenario(1977*year,Logger);
-	gCLASS->SetStockManagement(true);//If false all the IsotopicVector in stocks are mixed together.
-	gCLASS->SetTimeStep(year/4.);//the scenario calculation is updated every 3 months
-	gCLASS->SetOutputFileName("Separation.root");	//Set the name of the output file
+	gCLASS->SetStockManagement(true);					//If false all the IsotopicVector in stocks are mixed together.
+	gCLASS->SetTimeStep(year/4.);						//the scenario calculation is updated every 3 months
+	gCLASS->SetOutputFileName("Separation.root");		//Set the name of the output file
 
 	/******DATA BASES**********************************/
+	//Geting CLASS to path
+	string CLASS_PATH = getenv("CLASS_PATH");
+	if (CLASS_PATH=="")
+   	{
+		cout<<" Please setenv CLASS_PATH to your CLASS installation folder in your .bashs or .tcshrc"<<endl;
+   	 	exit(0);
+   	}
+   	string PATH_TO_DATA = CLASS_PATH + "/DATA_BASES/";
+
 	/*===Decay data base===*/
 	//The decay data base is taken from the file Decay.idx
-	DecayDataBank* DecayDB = new DecayDataBank(gCLASS->GetLog(), "../DATA_BASES/DECAY/ALL/Decay.idx");
+	DecayDataBank* DecayDB = new DecayDataBank(gCLASS->GetLog(), PATH_TO_DATA + "DECAY/ALL/Decay.idx");
 	gCLASS->SetDecayDataBase(DecayDB);//This decay data base will be used for all the decay calculations in this Scenario
 
 	/*===Reactor data base===*/
 	//The file STD900.dat correspond to a fuel evolution of a UOX PWR (see manual for details)
-	EvolutionData *STD900 = new EvolutionData(gCLASS->GetLog(), "../DATA_BASES/PWR/UOX/FixedFuel/STD900.dat");
+	EvolutionData *STD900 = new EvolutionData(gCLASS->GetLog(), PATH_TO_DATA + "PWR/UOX/FixedFuel/STD900.dat");
 	/******FACILITIES*********************************/
 	/*===The 4 Stocks ===*/
 	Storage* MyStorage1 = new Storage(Logger);

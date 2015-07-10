@@ -28,7 +28,7 @@
 #include <string>
 #include "XS/XSM_MLP.hxx"			//Load the include for Neural network cross section predictor
 #include "Irradiation/IM_RK4.hxx"		//Load the include for Runge Kutta 4 resolution
-#include "Equivalence/EQM_QUAD_PWR_MOX.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
+#include "Equivalence/EQM_PWR_QUAD_MOX.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
 using namespace std;
 
 int main(int argc, char** argv)
@@ -37,36 +37,45 @@ int main(int argc, char** argv)
 	cSecond year = 3600*24.*365.25; 
 	/******LOG MANAGEMENT**********************************/
 	//Definition of the Log file : CLASS messages output 
-	int Std_output_level=0;  // Only error are shown in terminal
-	int File_output_level=2; // Error + Warning + Info are shown in the file CLASS_OUTPUT.log
-	CLASSLogger *Logger	 = new CLASSLogger("CLASS_OUTPUT.log",Std_output_level,File_output_level);
+	int Std_output_level 	= 0;  // Only error are shown in terminal
+	int File_output_level 	= 2; // Error + Warning + Info are shown in the file CLASS_OUTPUT.log
+	CLASSLogger *Logger 	= new CLASSLogger("CLASS_OUTPUT.log",Std_output_level,File_output_level);
 
 	/******SCENARIO**********************************/
 	// The scenario start at year 1977
 	Scenario *gCLASS=new Scenario(1977*year,Logger);
-	gCLASS->SetStockManagement(true);//If false all the IsotopicVector in stocks are mixed together.
-	gCLASS->SetTimeStep(year/4.);	 //the scenario calculation is updated every 3 months
-	cSecond EndOfScenarioTime=2040*year;//Scenario ends in year 2040
+	gCLASS->SetStockManagement(true);					//If false all the IsotopicVector in stocks are mixed together.
+	gCLASS->SetTimeStep(year/4.);	 					//the scenario calculation is updated every 3 months
+	cSecond EndOfScenarioTime=2040*year;				//Scenario ends in year 2040
 	gCLASS->SetOutputFileName("ExampleParc_QUAD.root");	//Set the name of the output file
 
 	/******DATA BASES**********************************/
+	//Geting CLASS to path
+	string CLASS_PATH = getenv("CLASS_PATH");
+	if (CLASS_PATH=="")
+   	{
+		cout<<" Please setenv CLASS_PATH to your CLASS installation folder in your .bashs or .tcshrc"<<endl;
+   	 	exit(0);
+   	}
+   	string PATH_TO_DATA = CLASS_PATH+"/DATA_BASES/";
+
 	/*===Decay data base===*/
 	//The decay data base is taken from the file Decay.idx
-	DecayDataBank* DecayDB = new DecayDataBank(gCLASS->GetLog(), "../DATA_BASES/DECAY/ALL/Decay.idx"); //you may have to open this file and do the proper changes according your path
+	DecayDataBank* DecayDB = new DecayDataBank(gCLASS->GetLog(), PATH_TO_DATA + "DECAY/ALL/Decay.idx"); //you may have to open this file and do the proper changes according your path
 	gCLASS->SetDecayDataBase(DecayDB);//This decay data base will be used for all the decay calculations in this Scenario
 
 	/*===Reactor data base===*/
 
 		// Reprocessed fuel PWR MOX
-	XSM_MLP* XSMOX = new XSM_MLP(gCLASS->GetLog(), "../DATA_BASES/PWR/MOX/XSModel/30Wg_FullMOX");//Defining the XS Predictor
-	IM_RK4 *IMRK4 = new IM_RK4(gCLASS->GetLog());	//Bateman's equation solver method (RungeKutta4)
-	EQM_QUAD_PWR_MOX* EQMQUADPWRMOX = new EQM_QUAD_PWR_MOX(gCLASS->GetLog(),"../DATA_BASES/PWR/MOX/EQModel/EQM_QUAD_PWR_MOX_3batch_35GWdt.dat");//Defining the EquivalenceModel
-	PhysicsModels* PHYMOD = new PhysicsModels(XSMOX, EQMQUADPWRMOX, IMRK4); 							 //The PhysicsModels containing the 3 object previously defined
+	XSM_MLP* XSMOX					= new XSM_MLP(gCLASS->GetLog(), PATH_TO_DATA + "PWR/MOX/XSModel/30Wg_FullMOX");//Defining the XS Predictor
+	IM_RK4 *IMRK4 					= new IM_RK4(gCLASS->GetLog());	//Bateman's equation solver method (RungeKutta4)
+	EQM_PWR_QUAD_MOX* EQMQUADPWRMOX = new EQM_PWR_QUAD_MOX(gCLASS->GetLog(),PATH_TO_DATA + "PWR/MOX/EQModel/QUADRATIQUE/EQM_QUAD_PWR_MOX_3batch_35GWdt.dat");//Defining the EquivalenceModel
+	PhysicsModels* PHYMOD 			= new PhysicsModels(XSMOX, EQMQUADPWRMOX, IMRK4); 							 //The PhysicsModels containing the 3 object previously defined
 
 		//Fixed fuel : PWR UOX
-	EvolutionData *CYCLADE = new EvolutionData(gCLASS->GetLog(), "../DATA_BASES/PWR/UOX/FixedFuel/CYCLADES.dat");
-	EvolutionData *GARANCE = new EvolutionData(gCLASS->GetLog(), "../DATA_BASES/PWR/UOX/FixedFuel/GARANCE.dat");
-	EvolutionData *STD900 = new EvolutionData(gCLASS->GetLog(), "../DATA_BASES/PWR/UOX/FixedFuel/STD900.dat");
+	EvolutionData *CYCLADE 	= new EvolutionData(gCLASS->GetLog(), PATH_TO_DATA + "PWR/UOX/FixedFuel/CYCLADES.dat");
+	EvolutionData *GARANCE 	= new EvolutionData(gCLASS->GetLog(), PATH_TO_DATA + "PWR/UOX/FixedFuel/GARANCE.dat");
+	EvolutionData *STD900 	= new EvolutionData(gCLASS->GetLog(), PATH_TO_DATA + "PWR/UOX/FixedFuel/STD900.dat");
 
 	/******FACILITIES*********************************/
 	/*=== Stock===*/
@@ -110,7 +119,7 @@ int main(int argc, char** argv)
 			//Fessenheim power plant
 				//reactor n°1
 				cSecond StartingTime =  1978*year;
-				cSecond LifeTime     =  (EndOfScenarioTime-StartingTime);
+				cSecond LifeTime     =  (EndOfScenarioTime - StartingTime);
 								
 				Reactor* Fessenheim_1 = new Reactor(gCLASS->GetLog(),// Log
 										   CYCLADE,			// The DataBase used
@@ -128,7 +137,7 @@ int main(int argc, char** argv)
 								
 				//reactor n°2
 				StartingTime =  1978*year;
-				LifeTime     =  (EndOfScenarioTime-StartingTime);
+				LifeTime     =  (EndOfScenarioTime - StartingTime);
 								
 				Reactor* Fessenheim_2 = new Reactor(gCLASS->GetLog(),// Log
 										   CYCLADE,			// The DataBase used
@@ -147,7 +156,7 @@ int main(int argc, char** argv)
 			//Bugey power plant
 				//reactor n°2
 				StartingTime =  1979*year;
-				LifeTime     =  (EndOfScenarioTime-StartingTime);
+				LifeTime     =  (EndOfScenarioTime - StartingTime);
 				Reactor* Bugey_2 = new Reactor(gCLASS->GetLog(),// Log
 										   CYCLADE,			// The DataBase used
 										   Cooling_UOX,			// Connected Backend facility : The reactor discharge its fuel into the Pool "Cooling_UOX"
@@ -163,7 +172,7 @@ int main(int argc, char** argv)
 				gCLASS->AddReactor(Bugey_2);//Add this reactor to the scenario
 				//reactor n° 3
 				StartingTime =  1979*year;
-				LifeTime     =  (EndOfScenarioTime-StartingTime);
+				LifeTime     =  (EndOfScenarioTime - StartingTime);
 				Reactor* Bugey_3 = new Reactor(gCLASS->GetLog(),// Log
 										   CYCLADE,			// The DataBase used
 										   Cooling_UOX,			// Connected Backend facility : The reactor discharge its fuel into the Pool "Cooling_UOX"
@@ -180,7 +189,7 @@ int main(int argc, char** argv)
 
 				//reactor n° 4
 				StartingTime =  1979*year;
-				LifeTime     =  (EndOfScenarioTime-StartingTime);
+				LifeTime     =  (EndOfScenarioTime - StartingTime);
 				Reactor* Bugey_4 = new Reactor(gCLASS->GetLog(),// Log
 										   CYCLADE,			// The DataBase used
 										   Cooling_UOX,			// Connected Backend facility : The reactor discharge its fuel into the Pool "Cooling_UOX"
@@ -197,7 +206,7 @@ int main(int argc, char** argv)
 
 				//reactor n° 5
 				StartingTime =  1980*year;
-				LifeTime     =  (EndOfScenarioTime-StartingTime);
+				LifeTime     =  (EndOfScenarioTime - StartingTime);
 				Reactor* Bugey_5 = new Reactor(gCLASS->GetLog(),// Log
 										   CYCLADE,			// The DataBase used
 										   Cooling_UOX,			// Connected Backend facility : The reactor discharge its fuel into the Pool "Cooling_UOX"
@@ -222,7 +231,7 @@ int main(int argc, char** argv)
 			// Gravelines power plant
 				//reactor n° 1
 				StartingTime =  1980*year;
-				LifeTime     =  (EndOfScenarioTime-StartingTime);
+				LifeTime     =  (EndOfScenarioTime - StartingTime);
 				Reactor* Gravelines_1 = new Reactor(gCLASS->GetLog(),// Log
 										   GARANCE,			// The DataBase used
 										   Cooling_UOX,			// Connected Backend
@@ -243,7 +252,7 @@ int main(int argc, char** argv)
 
 				//reactor n° 2
 				StartingTime =  1980*year;
-				LifeTime     =  (EndOfScenarioTime-StartingTime);
+				LifeTime     =  (EndOfScenarioTime - StartingTime);
 				Reactor* Gravelines_2 = new Reactor(gCLASS->GetLog(),// Log
 										   STD900,			// The DataBase used
 										   Cooling_UOX,			// Connected Backend
@@ -262,7 +271,7 @@ int main(int argc, char** argv)
 
 				//reactor n° 1
 				StartingTime =  1980*year;
-				LifeTime     =  (EndOfScenarioTime-StartingTime);
+				LifeTime     =  (EndOfScenarioTime - StartingTime);
 				Reactor* Tricastin_1 = new Reactor(gCLASS->GetLog(),// Log
 										   STD900,			// The DataBase used
 										   Cooling_UOX,			// Connected Backend
@@ -279,7 +288,7 @@ int main(int argc, char** argv)
 
 				//reactor n° 2
 				StartingTime =  1980*year;
-				LifeTime     =  (EndOfScenarioTime-StartingTime);
+				LifeTime     =  (EndOfScenarioTime - StartingTime);
 				Reactor* Tricastin_2 = new Reactor(gCLASS->GetLog(),// Log
 										   STD900,			// The DataBase used
 										   Cooling_UOX,			// Connected Backend
@@ -302,7 +311,7 @@ int main(int argc, char** argv)
 				cSecond Dampierre_MOX_Time		 =  1991*year;
 
 				StartingTime =  1980*year;
-				LifeTime     =  Dampierre_MOX_Time-StartingTime;
+				LifeTime     =  Dampierre_MOX_Time - StartingTime;
 				double BunrUpMOX = 35;
 				Reactor* Dampierre_UOX = new Reactor(gCLASS->GetLog(),// Log
 										   STD900,			// The DataBase used
@@ -320,7 +329,7 @@ int main(int argc, char** argv)
 
 				//the PWR MOX
 				StartingTime =  Dampierre_MOX_Time;
-				LifeTime     =  EndOfScenarioTime-StartingTime;
+				LifeTime     =  EndOfScenarioTime - StartingTime;
 				Reactor* Dampierre_MOX = new Reactor(gCLASS->GetLog(),// Log
 							 			   PHYMOD,			// The models used to build the fuel & to calculate its evolution
 							 			   FP_MOX,			// The FabricationPlant
