@@ -1,5 +1,5 @@
 #include "EquivalenceModel.hxx"
-#include "EQM_PWR_MLP_MOX_AM.hxx"
+#include "EQM_PWR_MLP_MOX_Am.hxx"
 #include "CLASSLogger.hxx"
 #include "StringLine.hxx"
 
