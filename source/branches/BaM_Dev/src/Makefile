@@ -40,7 +40,8 @@ OBJS	 = CLASSLogger.o \
 			CLASSFuelPlan.o\
 			Scenario.o
 
-OBJMODEL = 	$(EQM)/EQM_PWR_MLP_MOX.o $(EQM)/EQM_PWR_QUAD_MOX.o $(EQM)/EQM_PWR_POL_UO2.o\
+OBJMODEL = 	$(EQM)/EQM_PWR_MLP_MOX.o $(EQM)/EQM_PWR_MLP_MOX_Am.o \
+			$(EQM)/EQM_PWR_QUAD_MOX.o $(EQM)/EQM_PWR_POL_UO2.o\
 			$(EQM)/EQM_PWR_LIN_MOX.o $(EQM)/EQM_FBR_BakerRoss_MOX.o $(EQM)/EQM_MLP_Kinf.o\
 			$(EQM)/EQM_FBR_MLP_Keff.o $(EQM)/EQM_FBR_MLP_Keff_BOUND.o\
 			$(XSM)/XSM_MLP.o $(XSM)/XSM_CLOSEST.o \
