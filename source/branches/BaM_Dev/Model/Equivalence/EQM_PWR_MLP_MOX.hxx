@@ -4,16 +4,6 @@
 #include "EquivalenceModel.hxx"
 #include "TTree.h"
 
-/*!
- \file
- \brief Header file for EQM_PWR_MLP_MOX class.
-
-
- @author BLG
- @version 1.0
- */
-
-
 using namespace std;
 
 //-----------------------------------------------------------------------------//
@@ -27,7 +17,6 @@ using namespace std;
  @version 3.0
  */
 //________________________________________________________________________
-
 
 class EQM_PWR_MLP_MOX : public EquivalenceModel
 {
