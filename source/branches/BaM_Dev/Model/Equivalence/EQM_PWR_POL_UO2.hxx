@@ -21,8 +21,6 @@ using namespace std;
  */
 //________________________________________________________________________
 
-
-
 class EQM_PWR_POL_UO2 : public EquivalenceModel
 {
 	

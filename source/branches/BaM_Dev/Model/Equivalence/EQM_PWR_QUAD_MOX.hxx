@@ -5,15 +5,6 @@
 
 #include <string>
 
-/*!
- \file
- \brief Header file for EQM_PWR_QUAD_MOX class.
-
-
- @author BaM
- @version 1.0
- */
-
 using namespace std;
 
 //-----------------------------------------------------------------------------//

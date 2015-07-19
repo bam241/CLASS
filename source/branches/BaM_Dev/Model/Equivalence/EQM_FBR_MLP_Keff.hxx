@@ -10,47 +10,35 @@
 #include <map>
 #include <vector>
 
-/*!
- \file
- \brief Header file for EQM_FBR_MLP_Keff class.
-
-
- @author BLG
- @author BaM
- @version 1.0
- */
-
-
 using namespace std;
 
+class EQM_FBR_MLP_Keff;
+#ifndef __CINT__
+typedef void (EQM_FBR_MLP_Keff::*FBR_MLP_Keff_DMthPtr)( const string & ) ;
+#endif
+
 //-----------------------------------------------------------------------------//
-//! Defines an EquivalenceModel based on neural network to predict @f$k_{eff}@f$
+//! Defines an EquivalenceModel based on neural network to predict @f$k_{eff}@f$.
+
 /*!
 The aim of these class is to constuct a fuel from an equivalence model
-based on a  Multi layer perceptron (MLP). 
-This MLP aims to predict either :
-
-The Pu content is set such as it has to verify
+based on a  Multi layer perceptron (MLP).
+This MLP aims to predict the Pu content such as it has to verify
  @f$ k(WantedTime) = k_{target}@f$  with @f$k_{target}@f$ is often close to 1.0 
  but can be set by user. The wanted time is often either 
  the begining of cycle or end of cycle. WantedTime can't be set by user since it is
  contain in the .xml file. Indeed this method suppose you have trained your MLP to predict 
- the keffective either at BOC or EOC (or any other time)
+ the @f$k_{eff}@f$ either at BOC or EOC (or any other time)
 
  @author BLG
  @author BaM
  @version 1.0
  */
 //________________________________________________________________________
-class EQM_FBR_MLP_Keff;
-#ifndef __CINT__
-typedef void (EQM_FBR_MLP_Keff::*FBR_MLP_Keff_DMthPtr)( const string & ) ;
-#endif
-
 
 class EQM_FBR_MLP_Keff : public EquivalenceModel
 {
-	public :
+	public:
 	/*!
 	 \name Constructor
 	 */
@@ -99,8 +87,8 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	 \name Get/Set methods
 	 */
 	//@{
-	void 	SetPCMprecision(double pcm){fPCMprecision = pcm;}	//!< Set the precision on <k> prediction [pcm]. Neural network predictor constructors
-	double 	GetPCMprecision(){return fPCMprecision/1e5;}		//!< Get the precision on <k> prediction []. Neural network predictor constructors
+	void 	SetPCMprecision(double pcm){fPCMprecision = pcm;}	//!< Set the precision on @f$\langle k \rangle@f$ prediction [pcm]. Neural network predictor constructors
+	double 	GetPCMprecision(){return fPCMprecision/1e5;}		//!< Get the precision on @f$\langle k \rangle@f$ prediction []. Neural network predictor constructors
 
 	//@}
 	
@@ -186,7 +174,7 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	int 	fNumberOfBatch;		//!< The number of batches for the loading plan
 	
 	double 	fKThreshold;		//!< The @f$k_{Threshold}@f$
-	double 	fPCMprecision;		//!< precision on <k> prediction [pcm]
+	double 	fPCMprecision;		//!< precision on @f$\langle k \rangle@f$ prediction [pcm]
 	
 	double 	fTargetKeff;		//!< Use for Varying Fissile content to reach fTargetKeff at time used in the MLP Training
 	

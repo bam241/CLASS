@@ -5,15 +5,6 @@
 
 #include <string>
 
-/*!
- \file
- \brief Header file for EQM_FBR_BakerRoss_MOX class.
-
-
- @author BLG
- @version 1.0
- */
-
 using namespace std;
 
 //-----------------------------------------------------------------------------//

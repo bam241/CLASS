@@ -5,31 +5,27 @@
 #include "TTree.h"
 #include <map>
 
-/*!
- \file
- \brief Header file for EQM_MLP_Kinf class.
-
-
- @author BLG
- @version 1.0
- */
-
-
 using namespace std;
 
+class EQM_MLP_Kinf;
+#ifndef __CINT__
+typedef void (EQM_MLP_Kinf::*PWR_MLP_KINF_DMthPtr)( const string & ) ;
+#endif
+
 //-----------------------------------------------------------------------------//
-//! Defines an EquivalenceModel based on neural network to predict @f$k_{\infty}@f$
+//! Defines an EquivalenceModel based on neural network to predict @f$k_{\infty}@f$.
+
 /*!
 The aim of these class is to constuct a fuel from an equivalence model
-based on a  Multi layer perceptron (MLP). 
+based on a  Multi layer perceptron (MLP)
 This MLP aims to predict the @f$k_{\infty}(t)@f$ of a PWR-MOX from a given fresh fuel 
-composition.
+composition
 With this MLP prediction and a given number of batch (for the loading plan) an 
-average @f$<k_{\infty}>(t)@f$ is calculated according :
+average @f$\langle k_{\infty}\rangle (t)@f$ is calculated according :
 
-@f$<k_{\infty}>^{batch}(t) = \frac{1}{N}\sum_{i}^{N}k_{\infty}(t+\frac{iT}{N})@f$
+@f$\langle k_{\infty}\rangle ^{batch}(t) = \frac{1}{N}\sum_{i}^{N}k_{\infty}(t+\frac{iT}{N})@f$
 The maximal reachable burnup has to verify the following conditions :
-@f$<k_{\infty}>^{batch}(T/N) = <k_{\infty}>^{batch}(2T/N)  = ... = k_{Threshold}@f$
+@f$\langle k_{\infty}\rangle ^{batch}(T/N) = <\langle k_{\infty}\rangle ^{batch}(2T/N)  = ... = k_{Threshold}@f$
 Where @f$k_{Threshold}@f$ is the criticality threshold which take into account leakage and capture
 in non simulated devices such as control rods and mixing grid.
 
@@ -38,15 +34,10 @@ in non simulated devices such as control rods and mixing grid.
  */
 //________________________________________________________________________
 
-class EQM_MLP_Kinf;
-#ifndef __CINT__
-typedef void (EQM_MLP_Kinf::*PWR_MLP_KINF_DMthPtr)( const string & ) ;
-#endif
-
 
 class EQM_MLP_Kinf : public EquivalenceModel
 {
-	public :
+	public:
 	/*!
 	 \name Constructor
 	 */
@@ -123,10 +114,10 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	//@{
 
 	void SetBurnUpPrecision(double prop){fBurnUpPrecision = prop;} //!< Set the precision on Burnup : proportion of the targeted burnup
-	void SetPCMprecision(double pcm){fPCMprecision = pcm;}		  //!< Set the precision on <k> prediction [pcm]. Neural network predictor constructors
+	void SetPCMprecision(double pcm){fPCMprecision = pcm;}		  //!< Set the precision on @f$\langle k \rangle@f$ prediction [pcm]. Neural network predictor constructors
 
 	double GetBurnUpPrecision(){return fBurnUpPrecision;}//!< Get the precision on Burnup : proportion of the targeted burnup
-	double GetPCMprecision(){return fPCMprecision/1e5;}//!< Get the precision on <k> prediction []. Neural network predictor constructors
+	double GetPCMprecision(){return fPCMprecision/1e5;}//!< Get the precision on @f$\langle k \rangle@f$ prediction []. Neural network predictor constructors
 	double GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetBU);
 
 	//@}
@@ -202,7 +193,7 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	double 	fMaximalBU;			//!< The approx. maximum burnup reachable by the MLP model		
 	double  fMaximalContent;	//!< The approx. maximum fissile content reachable by the MLP model
 	double 	fBurnUpPrecision;	//!< precision on Burnup 
-	double 	fPCMprecision;		//!< precision on <k> prediction [pcm]
+	double 	fPCMprecision;		//!< precision on @f$\langle k \rangle@f$ prediction [pcm]
 			
 
 };

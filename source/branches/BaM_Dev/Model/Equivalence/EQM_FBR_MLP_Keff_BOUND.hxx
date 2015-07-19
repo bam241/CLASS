@@ -5,21 +5,16 @@
 #include "TTree.h"
 #include "TGraph.h"
 
-/*!
- \file
- \brief Header file for EQM_FBR_MLP_Keff_BOUND class.
- 
- 
- @author BLG
- @author BaM
- @version 1.0
- */
-
-
 using namespace std;
 
+class EQM_FBR_MLP_Keff_BOUND;
+#ifndef __CINT__
+typedef void (EQM_FBR_MLP_Keff_BOUND::*FBR_MLP_Keff_BOUND_DMthPtr)( const string & ) ;
+#endif
+
 //-----------------------------------------------------------------------------//
-//! Defines an EquivalenceModel based on neural network to predict @f$k_{eff}@f$
+//! Defines an EquivalenceModel based on neural network to predict @f$k_{\infty}@f$
+
 /*!
  The aim of these class is to constuct a fuel from an equivalence model
  based on a  Multi layer perceptron (MLP).
@@ -44,15 +39,9 @@ using namespace std;
  */
 //________________________________________________________________________
 
-class EQM_FBR_MLP_Keff_BOUND;
-#ifndef __CINT__
-typedef void (EQM_FBR_MLP_Keff_BOUND::*FBR_MLP_Keff_BOUND_DMthPtr)( const string & ) ;
-#endif
-
-
 class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 {
-	public :
+	public:
 	/*!
 	 \name Constructor
 	 */
@@ -104,8 +93,8 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	 \name Get/Set methods
 	 */
 	//@{
-	void 	SetPCMprecision(double pcm){fPCMprecision = pcm;}	//!< Set the precision on <k> prediction [pcm]. Neural network predictor constructors
-	double 	GetPCMprecision(){return fPCMprecision/1e5;}		//!< Get the precision on <k> prediction []. Neural network predictor constructors
+	void 	SetPCMprecision(double pcm){fPCMprecision = pcm;}	//!< Set the precision on @f$\langle k \rangle@f$ prediction [pcm]. Neural network predictor constructors
+	double 	GetPCMprecision(){return fPCMprecision/1e5;}		//!< Get the precision on @f$\langle k \rangle@f$ prediction []. Neural network predictor constructors
 	
 	//@}
 	
@@ -185,7 +174,7 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	int 	fNumberOfBatch;		//!< The number of batches for the loading plan
 	
 	double 	fKThreshold;		//!< The @f$k_{Threshold}@f$
-	double 	fPCMprecision;		//!< precision on <k> prediction [pcm]
+	double 	fPCMprecision;		//!< precision on @f$\langle k \rangle@f$ prediction [pcm]
 	double  fKmin;				//!< Lower edge of kedd Used by second constructor (fissile content prediction using keff at BOC (or other time)
 	double  fKmax;				//!< Upper edge of kedd Used by second constructor (fissile content prediction using keff at BOC (or other time)
 	double 	fTargetKeff;		//!< Use for Varying Fissile content to reach fTargetKeff at time used in the MLP Training
