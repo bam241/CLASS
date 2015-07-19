@@ -18,12 +18,12 @@ A PhysicsModels is called in the CLASS input like the following example :
 ...
 #include "XS/XSM_MLP.hxx"
 #include "Irradiation/IM_RK4.hxx"
-#include "Equivalence/EQM_MLP_PWR_MOX.hxx"
+#include "Equivalence/EQM_PWR_MLP_MOX.hxx"
 int main()
 {
 	....
 
-	EQM_MLP_MOX* Equivalence 	= new EQM_MLP_MOX( "PathToTMVAWeightFile/TMVAWeightFile.xml" );
+	EQM_PWR_MLP_MOX* Equivalence 	= new EQM_PWR_MLP_MOX( "PathToTMVAWeightFile/TMVAWeightFile.xml" );
 	XSM_MLP* XS = new XSM_MLP( gCLASS->GetLog(),"PathToTMVAWeighstFolder" , OneMLPPerTimeStep );
 	IM_RK4* Solver = new IM_RK4( gCLASS->GetLog() );
 	PhysicsModels* PHYMOD = new PhysicsModels( XS , Equivalence , Solver );
@@ -49,13 +49,13 @@ All the existing models are defined in the following sections, furthermore, the 
 \chapter{Equivalence Model}\label{sec:EquivalenceModel}
 The aim of an equivalence model is to predict the content of fissile element needed in a fuel to reach a given burnup or to satisfied criticality conditions.
 \section{Available Equivalence Models}
-The CLASS package contains, at the moment, 5 different equivalence models where three are related to the building of fuels for a PWR-MOX , one to the building of  PWR-UOX fuels and one for the FBR-Na MOX:
+The CLASS package contains, at the moment, 9 different equivalence models where three are related to the building of fuels for a PWR-MOX , one to the building of  PWR-UOX fuels, one for the FBR-Na MOX, two dedicated to fast breeder and one suitable for all non-breeder reactors, an other model allows to handle (Pu,Am,U)O$_{2}$ fuel loaded in PWR :
 \subsection{PWR-MOX models :}
 The following models returns the molar fraction $\%_{Pu}$ of plutonium needed to reach a given burnup according to the plutonium isotopic composition available in stocks.
 
 
 
-\subsubsection{Linear BU model : EQM\_LIN\_MOX } 
+\subsubsection{Linear BU model : EQM\_PWR\_LIN\_MOX } 
 It was initially applied for MOX fuel, but because of the lack of precision, this model could be deprecated (at least in the PWR MOX case). It remain in the CLASS packages only because it was present historically.\\
  Nevertheless it could be use as an example for similar model for other fuel. This model suppose it is possible to describe the maximal burnup accessible for a set fuel using its initial composition using a simple linear modelisation (equation~\ref{eq:EQM_LIN}):\\ 
 \begin{equation}\label{eq:EQM_LIN}
@@ -64,7 +64,7 @@ BU_{max} = \alpha_{0} +   \sum_{i}^{N} \alpha_{i} \cdot n_{i},
 where $BU_{max}$ represent the maximal accessible burnup for the fuel, $n_{i}$ the isotopic fraction of the isotope $i$, $N$ the number of isotope present in the fuel, and the $\alpha_{i}$ the parameter of the model. 
 The main difficulty concerning this model, is the determination of the $\alpha_{i}$: to be correct the $\alpha_{i}$ should be fitted on a set of evolution data which are not constrain to reach an unique burnup, but a large burnup region. One can see the problem guessing it is possible to build a set a fuel evolution reaching exactly a unique burnup (45 GWd/t by example), the $\chi^{2}$ minimization of the $\alpha_i$ will end up with $\alpha_{0} = 45$ and all the other at zero. That why, when using a linear burnup description model, one should test the validity of the model, on many random compositions by example... 
 
-\subsubsection{Quadratic Model : EQM\_QUAD\_MOX}
+\subsubsection{Quadratic Model : EQM\_PWR\_QUAD\_MOX}
 The $\%_{Pu}$ is calculated according a quadratic model. See equation~\ref{eq:EQM_QUAD_MOX}.
 \begin{equation}\label{eq:EQM_QUAD_MOX}
 \%_{Pu} = \alpha_{0} +   \sum_{i\in Pu}^{N} \left(\alpha_{i} \cdot n_{i}\ + \sum_{j\leq i} \alpha_{ij} \cdot n_{i}\cdot n_{j}\right),
@@ -90,14 +90,14 @@ Where 238Pu stands for $\alpha_{^{238}Pu}$ and it is the first order weight  rel
 \textbf{Implementation in a .cxx }
 \begin{lstlisting}[label=lst:IMP_EQMQUAD,caption=Equivalence Model EQM\_QUAD\_MOX ]
 ...
-#include "Equivalence/EQM_QUAD_PWR_MOX.hxx"
+#include "Equivalence/EQM_PWR_QUAD_MOX.hxx"
 ...
 int main()
 {
 ...
-EQM_QUAD_PWR_MOX* Equivalence = new	EQM_QUAD_PWR_MOX( LogObject, AlphasFile );
+EQM_PWR_QUAD_MOX* Equivalence = new	EQM_PWR_QUAD_MOX( LogObject, AlphasFile );
 // or
-// EQM_QUAD_PWR_MOX* Equivalence = new	EQM_QUAD_PWR_MOX( AlphasFile );
+// EQM_PWR_QUAD_MOX* Equivalence = new	EQM_PWR_QUAD_MOX( AlphasFile );
 ...
 }
 \end{lstlisting}
@@ -119,7 +119,7 @@ With LogObject a \hyperref[sec:CLASSLogger]{CLASSLogger} object (see section~\re
 %\end{minipage}
 %\end{center}
 
-\subsubsection{Neural network model : EQM\_MLP\_MOX}\label{sec:EQMMOX}
+\subsubsection{Neural network model : EQM\_PWR\_MLP\_MOX}\label{sec:EQMMOX}
 This equivalence model  is based on a Multi Layer Perceptron (MLP) and  predict the amount of plutonium needed to reach \textbf{any burnup}. The MLP inputs are the isotopic compositions of the plutonium (\textbf{including $^{241}Am$}), the enrichment of depleted uranium, and the targeted burnup. The output is the plutonium content needed to reach the burnup. This method uses the neural networks of the root module TMVA (@@@  Ref TMVA). To executes this model, TMVA is run in CLASS and need a .xml file. This file contains the neural network architecture and the weights resulting from the training procedure.
 \\
 \\
@@ -128,14 +128,14 @@ This equivalence model  is based on a Multi Layer Perceptron (MLP) and  predict 
 \textbf{Implementation in a .cxx : }
 \begin{lstlisting}[label=lst:IMP_EQMMLP,caption=Equivalence Model EQM\_MLP\_PWR\_MOX ]
 ...
-#include "Equivalence/EQM_MLP_PWR_MOX.hxx"
+#include "Equivalence/EQM_PWR_MLP_MOX.hxx"
 ...
 int main()
 {
 ...
-EQM_MLP_PWR_MOX* Equivalence = new	EQM_MLP_PWR_MOX( LogObject, TMVAWeightPath );
+EQM_PWR_MLP_MOX* Equivalence = new	EQM_PWR_MLP_MOX( LogObject, TMVAWeightPath );
 // or
-// EQM_MLP_PWR_MOX.* Equivalence = new	EQM_MLP_PWR_MOX( TMVAWeightPath );
+// EQM_PWR_MLP_MOX.* Equivalence = new	EQM_PWR_MLP_MOX( TMVAWeightPath );
 ...
 \end{lstlisting}
 \end{minipage}
@@ -227,6 +227,8 @@ For more informations about this model please refer to \cite{MLP_MOX}\\
 \item \textbf{\$CLASS\_PATH/DATA\_BASES/PWR/MOX/EQModel/EQM\_MLP\_PWR\_MOX\_3batch.xml} : Generated with 5000 MURE evolutions with different fuel composition, using a full mirrored assembly calculation with JEFF3.1.1 cross section and fission yield data bases. Valid for mono-recycling of plutonium and a fuel management of 3 batches. More details about the generation of this .xml file can be found in reference \cite{MLP_MOX}.
 \end{itemize}
 
+\subsection{PWR-Am model}
+This model is based on the same philosophy of the $EQM\_PWR\_MLP\_MOX$ model. The only difference is in the number of inputs of the MLP (additional isotopes : Americium 241 , isomeric 242 , 243). The MLP weights given with the package are for a third batch reloading pattern. The weight are suitable to work with plutonium and americium coming from the reprocessing of PWR-UOX fuels. 
 
 \subsection{PWR-UOX model :}
 
@@ -239,7 +241,7 @@ See in \textbf{\$CLASS\_PATH/DATA\_BASES/PWR/UOX} for available model.
 
 \subsection{FBR-Na-MOX model :}
 This model is used to compute the plutonium content needed for a fast reactor loaded with MOX fuel.
-\subsubsection{Baker \& Ross Model: EQM\_BakerRoss\_FBR\_MOX}
+\subsubsection{Baker \& Ross Model: EQM\_FBR\_BakerRoss\_MOX}
 It calculates the plutonium content (E) needed for the FBR Na loaded with a given Pu vector according to :
  \begin{equation}
  E = \frac{E_{ref} - \sum_{fertile}N_{i}W_{i} }{\sum_{fissile}N_{i}W_{i}-\sum_{fertile}N_{i}W_{i}}
@@ -255,7 +257,7 @@ W_i = \frac{\alpha_{i} - \alpha_{^{238}U} }{\alpha_{^{239}Pu}-\alpha_{^{238}U}}
 
 With $E_{ref}$ the plutonium content needed for a FBR Na to satisfy criticality condition at begining of cycle ($k_{eff}(t=0) =1.00$) with a reference fresh fuel composition. 
 The reference plutonium composition is 100\% $^{239}$Pu and uranium is 100\%
- $^{238}U$. $\bar{\nu_{i}}$ is the average number of total neutron emitted per fission, $\sigma_{i}^{fis}$ is the mean fission cross section of nucleus $i$ and $\sigma_{i}^{cap}$ is the mean capture cross section of nucleus $i$. The default values of the weight $W_{i}$ given in the constructor are from an average of many calculation with different fresh fuel composition. These calculations have been performed with MCNP/MURE  for a ESFR like core.
+ $^{238}U$. $\bar{\nu_{i}}$ is the average number of total neutron emitted per fission, $\sigma_{i}^{fis}$ is the mean fission cross section of nucleus $i$ and $\sigma_{i}^{cap}$ is the mean capture cross section of nucleus $i$. The default values of the weight $W_{i}$ given in the constructor have been calculated from a MURE/MCNP run of an ESFR lire reactor loaded with a fresh fuel composition given in table and allowing to access $k_{eff}(t=0) = 1.00$ .
 To implement this model in your CLASS input proceed as follow :
 
 \begin{center}
@@ -263,21 +265,193 @@ To implement this model in your CLASS input proceed as follow :
 \textbf{Implementation in a .cxx }
 \begin{lstlisting}[label=lst:IMP_EQMBER,caption=Equivalence Model EQM\_BakerRoss\_FBR\_MOX ]
 ...
-#include "Equivalence/EQM_BakerRoss_FBR_MOX.hxx"
+#include "Equivalence/EQM_FBR_BakerRoss_MOX.hxx"
 ...
 int main()
 {
 ...
-EQM_BakerRoss_FBR_MOX* Equivalence = new	EQM_BakerRoss_FBR_MOX( ); //the default weight and Eref are used
+EQM_FBR_BakerRoss_MOX* Equivalence = new	EQM_FBR_BakerRoss_MOX( ); //the default weight and Eref are used
 // or
- EQM_BakerRoss_FBR_MOX* Equivalence = new EQM_BakerRoss_FBR_MOX( Weight_U_235,  Weight_Pu_238,  Weight_Pu_240, Weight_Pu_241, Weight_Pu_242, Weight_Am_241, Eref); 
+ EQM_FBR_BakerRoss_MOX* Equivalence = new EQM_FBR_BakerRoss_MOX( Weight_U_235,  Weight_Pu_238,  Weight_Pu_240, Weight_Pu_241, Weight_Pu_242, Weight_Am_241, Eref); 
 ;
 ...
 }
 \end{lstlisting}
 \end{minipage}
 \end{center}
+\subsection{General non breeder model}\label{sec:GenNoBreed}
+This model called EQM\_MLP\_kinf can be applied for any non breeder reactors and for fuel constituted with a fertile and a fissile part. It determines the fissile content needed to reach an user defined maximal burnup ($BU_{target}$) according a user defined number of batches $N$ (for the loading pattern) and a threshold on the multiplication factor ($k_{threshold}$).
+The fissile content is varied until the maximal burnup ($BU_{max}$) is equal to $BU_{target}$.
+The maximal burnup $BU_{max}$ for a given fresh fuel composition, a given number of batch and a given $k_{threshold}$ is such as : 
+\[
+<k_{\infty}>^{batch}(BU_{max}) = \frac{1}{N}\sum_{i=1}^{i=N-1} k_{\infty}(i*BU_{max}/N) = k_{threshold}
+\]
+The $k_{\infty}$ is predicted with a multi layer percetron.
+To implement this model in your CLASS input proceed as follow :
 
+\begin{center}
+\begin{minipage}{\textwidth}
+\textbf{Implementation in a .cxx }
+\begin{lstlisting}[label=lst:IMP_EQMBER,caption=Equivalence Model EQM\_BakerRoss\_FBR\_MOX ]
+...
+#include "Equivalence/EQM_MLP_Kinf.hxx"
+...
+int main()
+{
+...
+
+ EQM_MLP_Kinf* Equivalence = new EQM_MLP_Kinf( TMVAWeightPath, NumOfBatch, InformationFile , CriticalityThreshold 
+...
+}
+\end{lstlisting}
+\end{minipage}
+\end{center}
+Where TMVAWeightPath is the path to the weight file of the MLP (.xml file) , NumOfBatch is the number of batches for the loading pattern and CriticalityThreshold is the $k_{threshold}$. InformationFile contains information regarding the MLP inputs and are listed above (the quotes have to be removed):
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=lst:infoEQMKinf,caption=Information file format]
+Specific Power (W/gHM) :
+k_specpower "specificpower" // the power density in Watt per gram of heavy metal
+
+Maximal burnup (GWd/tHM) : // for the algorithm initialization : a relatively high Burnup value
+k_maxburnup "BUmax"		  // e.g 100 for a PWR 	
+
+Maximal fissile content (molar proportion) : // for the algorithm initialization : a relatively high fissile content
+k_maxfiscontent "maxFisContent"  // e.g 0.25 for a PWR MOX
+
+Z A I Name (input MLP) : // name for the MLP inputs
+k_zainame "Z1 A1 I1 Name1"
+...
+k_zainame "Z2 A2 I2 Name2"
+...
+Fissile Liste (Z A I) : // the fissile list to be taken in the stocks for fuel manufacturing
+k_fissil "Z1 A1 I1"
+..
+k_fissil "Z2 A2 I2"
+
+Fertile Liste (Z A I Default Proportion) :// the fertile list to be taken in the stocks for fuel manufacturing
+k_fertil "Z1 A1 I1 prop"
+..
+k_fertil "Z2 A2 I2 prop2"
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+A weight file (.xml) and .nfo file can be found in \\
+\$CLASS\_PATH/DATA\_BASES/PWR/MOX/EQModel/MLP\_Kinf/MLP
+
+\subsection{General breeder models}
+\subsubsection{ $k_{eff}(t=0)$ prediction using MLP }
+This model aims to predict the fissile content satisfying $k_{eff}(t=t_{user})=k_{user}$. A MLP is used to predict the $k_{eff}$ for a given irradiation time. Then the fissile content is adjusted until $k_{eff}=k_{user}$. A MLP weight file is given in \$DATA\_BASES/FBR\_Na/MOX/EQModel/MLP\_K\_EFF\_BOC and is tuned to predict the $k_{eff}$ of an ESFR like reactor loaded with MOX fuel at BOC ($t_{user} = 0$). To change the $t_{user}$ you have to train your neural network to predict $k_{eff}$ at this irradiation time. For this model to work a nfo file is also required the format is given above :
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=lst:infoEQMKeffFBR,caption=Information file format]
+Specific Power (W/gHM) :
+k_specpower "specificpower" // the power density in Watt per gram of heavy metal
+
+Maximal fissile content (molar proportion) : // for the algorithm initialization : a relatively high fissile content
+k_maxfiscontent "maxFisContent"  // e.g 0.4 for a FBR MOX
+
+Z A I Name (input MLP) : // name for the MLP inputs
+k_zainame "Z1 A1 I1 Name1"
+...
+k_zainame "Z2 A2 I2 Name2"
+...
+Fissile Liste (Z A I) : // the fissile list to be taken in the stocks for fuel manufacturing
+k_fissil "Z1 A1 I1"
+..
+k_fissil "Z2 A2 I2"
+
+Fertile Liste (Z A I Default Proportion) :// the fertile list to be taken in the stocks for fuel manufacturing
+k_fertil "Z1 A1 I1 prop"
+..
+k_fertil "Z2 A2 I2 prop2"
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+To implement this model in your CLASS input proceed as follow :
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\textbf{Implementation in a .cxx }
+\begin{lstlisting}[label=lst:IMP_EQMBER,caption=Equivalence Model EQM\_BakerRoss\_FBR\_MOX ]
+...
+#include "Equivalence/EQM_FBR_MLP_Keff.hxx"
+...
+int main()
+{
+...
+
+EQM_FBR_MLP_Keff* Equivalence = EQM_FBR_MLP_Keff( TMVAWeightPath,  keff_user )
+//TMVAWeightPath is the path to the .xml file
+..
+}
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\subsubsection{ Upper and lower limits on $<k_{\infty}>^{batch}$}
+In order to take into account the impact of the loading pattern this model used the $<k_{\infty}>^{batch}$ function defined in section~\ref{sec:GenNoBreed}. The fissile content is such as this value is contained in a user defined range. We suggest to use $1/P_{noleak}$ as the lower bound and $1/P_{noleak} + |\rho_{controlRods}|$ as upper bound. With $P_{noleak}$ is the no leak probability ($\sim$ 0.88 for ESFR like reactor) and $\rho_{controlRods}$ the anti-reactivity of the control rods (estimated for a ESFR like to be 2000 pcm for all control rods put at half of the core high). Not than in rare occasion no solution are available for a given fissile and fertile composition. The $k_{\infty}(t)$ is determined using a MLP.
+
+To implement this model in your CLASS input proceed as follow :
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\textbf{Implementation in a .cxx }
+\begin{lstlisting}[label=lst:IMP_EQMBER,caption=Equivalence Model EQM\_BakerRoss\_FBR\_MOX ]
+...
+#include "Equivalence/EQM_FBR_MLP_Kinf_BOUND.hxx"
+...
+int main()
+{
+...
+
+EQM_FBR_MLP_Kinf_BOUND* Equivalence = EQM_FBR_MLP_Kinf_BOUND( TMVAWeightPath, NumOfBatch ,  LowerK,  UpperK)
+//TMVAWeightPath is the path to the .xml file
+// NumOfBatch is the number of batches for the fuel loading pattern
+// LowerK is the lower bound on <k_{\infty}>^{batch}$
+// UpperK is the upper bound on <k_{\infty}>^{batch}$
+
+..
+}
+\end{lstlisting}
+\end{minipage}
+\end{center}
+For this model to work a nfo file is also required the format is given above :
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[label=lst:infoEQMKeffFBR,caption=Information file format]
+Specific Power (W/gHM) :
+k_specpower "theSpecificPower" // i.e the power density in watt per gram of heavy metal
+
+Time (s) :// the time used to train the MLP
+K_TIMESTEP "0 t1 t2 ..."
+
+
+Z A I Name (input MLP) : // name for the MLP inputs
+k_zainame "Z1 A1 I1 Name1"
+...
+k_zainame "Z2 A2 I2 Name2"
+...
+Fissile Liste (Z A I) : // the fissile list to be taken in the stocks for fuel manufacturing
+k_fissil "Z1 A1 I1"
+..
+k_fissil "Z2 A2 I2"
+
+Fertile Liste (Z A I Default Proportion) :// the fertile list to be taken in the stocks for fuel manufacturing
+k_fertil "Z1 A1 I1 prop"
+..
+k_fertil "Z2 A2 I2 prop2"
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+A weight file (.xml) and .nfo file can be found in \\
+\$CLASS\_PATH/DATA\_BASES/FBR\_Na/MOX/EQModel/MLP\_K\_INF\_BOUND
 
 \section{How to build an Equivalence Model}
 The strength of CLASS is to allow the user to build his own Physics models, this section explains how to build a new equivalence model and to incorporate it into CLASS.
@@ -487,23 +661,28 @@ int main()
 \end{lstlisting}
 \end{minipage}
 \end{center}
-\textbf{PathToWeightFolder} (string) is the path to the folder containing the weight files (.xml files). \textbf{OneMLPPerTime} is a boolean setted to true if there is one MLP per reaction and per time step. \textbf{InfoFileName} (string) is the name of the file located in PathToWeightFolder which is informing on the reactor and on the inputs of the XS\_MLP model. Its default name is Data\_Base\_Info.nfo .
-Format of InfoFileName is :
+\textbf{PathToWeightFolder} (string) is the path to the folder containing the weight files (.xml files). \textbf{OneMLPPerTime} is a boolean set to true if there is one MLP per reaction and per time step. \textbf{InfoFileName} (string) is the name of the file located in PathToWeightFolder which is informing on the reactor and on the inputs of the XS\_MLP model. Its default name is Data\_Base\_Info.nfo .
+The InfoFileName contains keywords beginnings with k\_ (note that it is not case sensitive) and corresponding value(s). Any comments can be added. The quotes must be removed.
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[label=lst:informationfile,caption=Information file format]
-ReactorType :"ReactorName"	//without space
-FuelType :"FuelName" //without space
-Heavy Metal (t) :"m"
-Thermal Power (W) :"P"     //power corresponding to the heavy metal mass
-Time (s) :"0 t2 t3 t4 ..." //Time when the cross section are updated
+ReactorType :
+K_REACTOR "ReactorName"	//without space
+FuelType :
+K_FUEL "FuelName" //without space
+Heavy Metal (t) :
+K_MASS "m"
+Thermal Power (W) :
+K_POWER "P"     //power corresponding to the heavy metal mass
+Time (s) :
+K_TIMESTEP "0 t2 t3 t4 ..." //Time when the cross section are updated
 Z A I Name (input MLP) : //see explanations below
-"z a i InputName"
-"z2 a2 i2 InputName2"
+K_ZAINAME "z a i InputName"
+K_ZAINAME "z2 a2 i2 InputName2"
 "..."
 Fuel range (Z A I min max) :
-"z a i min max" //minimal and maximal proportion of the zai in the fresh fuel (heavy nuclei only, ie without oxygen)"
-"z2 a2 i2 min2 max2"
+K_ZAIL "z a i min max" //minimal and maximal proportion of the zai in the fresh fuel (heavy nuclei only, ie without oxygen)"
+K_ZAIL "z2 a2 i2 min2 max2"
 \end{lstlisting}
 \end{minipage}
 \end{center}
@@ -515,7 +694,7 @@ The input of MLPs are the atomic proportion of each nuclei present in the fresh 
 \begin{lstlisting}
 ...
 Z A I Name (input MLP) :
-94 238 0 Pu8//(if Pu8 is the variable name used for 238Pu proportion in fresh fuel in your training sample) 
+K_ZAINAME 94 238 0 Pu8//(if Pu8 is the variable name used for 238Pu proportion in fresh fuel in your training sample) 
 ...
 \end{lstlisting}
 \end{minipage}
@@ -531,6 +710,8 @@ The weight files and .nfo file contained in this folder are representative of a 
 The weight files and .nfo file contained in this folder are representative of a FBR-Na MOX. The specific power is 48W/g oxide. To perform this data base, MURE depletion calculations have been performed using a 1/12 of ESFR like core with mirror boundaries. 
 \item \$CLASS\_PATH/DATA\_BASES/PWR/UOX/XSModel/30Wg\_FullUOX :
 The weight files and .nfo file contained in this folder are representative of a PWR UOX. The specific power is 30W/g oxide. To perform this data base, MURE depletion calculations have been performed using a full UOX assembly with mirror boundaries. 
+\item \$CLASS\_PATH/DATA\_BASES/PWR/MOX\_Am/XSModel/30Wg\_FullMOX\_Am :
+The weight files and .nfo file contained in this folder are representative of a PWR loaded with (Pu,U,Am)$O_{2}$. Plutonium and Americium compositions are representative of compositions in UOX spent fuels. The specific power is 30W/g oxide. To perform this data base, MURE depletion calculations have been performed using an assembly with mirror boundaries. 
 \end{itemize}
 
 \textcolor{blue}{\large{\textbf{Training MLPs for cross sections prediction :}}}\\
