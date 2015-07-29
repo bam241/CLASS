@@ -31,7 +31,7 @@ typedef void (EQM_FBR_MLP_Keff_BOUND::*FBR_MLP_Keff_BOUND_DMthPtr)( const string
  
  \warning
  it is not guaranted that there is a solution for Pu content verifying :
- @f$<k_{\infty}>^{batch}(t) = \frac{1}{N}\sum_{i}^{N}k_{\infty}(t+\frac{iT}{N} )@f$
+ @f$ k_{\infty Max} \geq <k_{\infty}>^{batch}(T/N) \geq k_{\infty Min} @f$
  
  @author BLG
  @author BaM
@@ -183,7 +183,11 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	
 	
 	
-	
+	/*!
+	 \name kinf prediction methods & keff averaging
+	 */
+	//@{
+	 
 	double 	GetKeffAtFixedTime(IsotopicVector FreshFuel){return ExecuteTMVA( CreateTMVAInputTree(FreshFuel,-1), false );} //!<time independant since the MLP is trained for 1 time
 	
 	TGraph* BuildKeffGraph(IsotopicVector FreshFuel);
@@ -191,6 +195,7 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	
 	double 	GetKeffAt(TGraph* GRAPH_KEFF, int Step);
 	
+	//@}
 	
 	
 	
