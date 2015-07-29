@@ -146,9 +146,30 @@ void EquivalenceModel::ReadFissil(const string &line)
 	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	double Q = atof(StringLine::NextWord(line, pos, ' ').c_str());
 	
+	fFissileList.Add(Z, A, I, 1.0);
+	
+	DBGL
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadFertil(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_fertil" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_fertil\" not found !" << endl;
+		exit(1);
+	}
+	
+	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	double Q = atof(StringLine::NextWord(line, pos, ' ').c_str());
+
 	fFertileList.Add(Z, A, I, Q);
+
 	
 	DBGL
 }
@@ -181,27 +202,6 @@ void EquivalenceModel::ReadMaximalContent(const string &line)
 	}
 	
 	fMaximalContent = atof(StringLine::NextWord(line, pos, ' ').c_str());
-	
-	DBGL
-}
-//________________________________________________________________________
-void EquivalenceModel::ReadFertil(const string &line)
-{
-	DBGL
-	int pos = 0;
-	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_fertil" )	// Check the keyword
-	{
-		ERROR << " Bad keyword : \"k_fertil\" not found !" << endl;
-		exit(1);
-	}
-	
-	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	
-	fFissileList.Add(Z, A, I, 1.0);
-
 	
 	DBGL
 }
