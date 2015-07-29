@@ -35,14 +35,19 @@ typedef void (EquivalenceModel::*EQM_MthPtr)( const string & );
  
  \warning
  Never instantiate EquivalenceModel in your CLASS input but it's derivated class
- @see EQM_FBR_BakerRoss_MOX
- @see EQM_PWR_LIN_MOX
+ @see EQM_FBR_BakerRoss_MOX.
  @see EQM_PWR_MLP_MOX
+ @see EQM_FBR_MLP_Keff.hxx  
+ @see EQM_PWR_MLP_MOX_Am
+ @see EQM_FBR_MLP_Keff_BOUND
  @see EQM_PWR_POL_UO2
+ @see EQM_MLP_Kinf.hxx      
  @see EQM_PWR_QUAD_MOX
- 
- @author BaM
+ @see EQM_PWR_LIN_MOX
+
  @author BLG
+ @author BaM
+
  @version 3.0
  */
 //________________________________________________________________________
@@ -95,7 +100,7 @@ class EquivalenceModel : public CLASSObject
 	double GetRelativMassPrecision() const	{ return fRelativMassPrecision; }	//!< Mass precision
 	int GetMaxInterration()		 const	{ return fMaxInterration; }		//!< Max iterration in build fueld algorythm
 
-	double GetActualFissileContent() const { return fActualFissileContent; }	//!< Get the fissile content at the actual dichotomy step (usefull for EQM_MLP_Kinf)
+	double GetActualFissileContent() const { return fActualFissileContent; }	//!< Get the fissile content at the actual algorithm step (usefull for EQM_MLP_Kinf)
 	
 	void SetFertileList(IsotopicVector IV) {fFertileList = IV;}//!<set the fertile list
 	void SetFissileList(IsotopicVector IV) {fFissileList = IV;}//!<set the fissile list
@@ -185,9 +190,9 @@ class EquivalenceModel : public CLASSObject
 	 */
 	//@{
 	void 	SetLambda(vector<double>& lambda ,int FirstStockID, int LastStockID, double LAMBDA_TOT);	//!< Set individual lambda according to the LAMBDA_TOT (lambda of all stocks)
-	void	SetLambdaToErrorCode(vector<double>& lambda);
-	double 	LAMBDA_TOT_FOR(double MassNeeded, vector<IsotopicVector> StockArray, string FisOrFer);//!< Calculate the proportion of each stocks in StockArray to take in oder to get a mass of MassNeeded (can be Fer(fertile) or Fis(Fissile))
-	bool 	Build_Fuel_According_Lambda(vector<double> &lambda,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray, double HMMass,IsotopicVector &Fissile, IsotopicVector &Fertile);
+	void	SetLambdaToErrorCode(vector<double>& lambda);												//!< Set all vector elements to -1
+	double 	LAMBDA_TOT_FOR(double MassNeeded, vector<IsotopicVector> StockArray, string FisOrFer);		//!< Calculate the proportion of each stocks in StockArray to take in oder to get a mass of MassNeeded (can be Fer(fertile) or Fis(Fissile))
+	bool 	Build_Fuel_According_Lambda(vector<double> &lambda,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray, double HMMass,IsotopicVector &Fissile, IsotopicVector &Fertile);	//!< Compute the fuel isotopy according to the proportion of each IV taken
 	
 	//@}
 
