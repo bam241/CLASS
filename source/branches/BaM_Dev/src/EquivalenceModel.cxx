@@ -2,6 +2,7 @@
 #include "StringLine.hxx"
 #include "CLASSMethod.hxx"
 
+//________________________________________________________________________
 EquivalenceModel::EquivalenceModel():CLASSObject()
 {
 	fRelativMassPrecision = 1/10000.; // Mass precision
@@ -10,7 +11,7 @@ EquivalenceModel::EquivalenceModel():CLASSObject()
 	freaded = false;
 	
 }
-
+//________________________________________________________________________
 EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 {
 	fRelativMassPrecision = 1/10000.; // Mass precision
@@ -19,14 +20,12 @@ EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 	freaded = false;
 	
 }
-
+//________________________________________________________________________
 EquivalenceModel::~EquivalenceModel()
 {
 	
 }
-
-
-
+//________________________________________________________________________
 void EquivalenceModel::ReadNFO()
 {
 	DBGL
@@ -49,7 +48,6 @@ void EquivalenceModel::ReadNFO()
 	
 	DBGL
 }
-
 //________________________________________________________________________
 void EquivalenceModel::ReadLine(string line)
 {
@@ -74,8 +72,7 @@ void EquivalenceModel::ReadLine(string line)
 	
 	DBGL
 }
-
-
+//________________________________________________________________________
 void EquivalenceModel::LoadKeyword()
 {
 	DBGL
@@ -88,8 +85,7 @@ void EquivalenceModel::LoadKeyword()
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",		& EquivalenceModel::ReadMaximalContent));
 	DBGL
 }
-
-
+//________________________________________________________________________
 void EquivalenceModel::ReadType(const string &line)
 {
 	DBGL
@@ -107,8 +103,7 @@ void EquivalenceModel::ReadType(const string &line)
 	
 	DBGL
 }
-
-
+//________________________________________________________________________
 void EquivalenceModel::ReadZAIlimits(const string &line)
 {
 	DBGL
@@ -136,8 +131,6 @@ void EquivalenceModel::ReadZAIlimits(const string &line)
 	fZAILimits.insert(pair<ZAI, pair<double, double> >(ZAI(Z,A,I), pair<double,double>(downLimit, upLimit)));
 	DBGL
 }
-
-
 //________________________________________________________________________
 void EquivalenceModel::ReadFissil(const string &line)
 {
@@ -159,8 +152,6 @@ void EquivalenceModel::ReadFissil(const string &line)
 	
 	DBGL
 }
-
-
 //________________________________________________________________________
 void EquivalenceModel::ReadSpecificPower(const string &line)
 {
@@ -177,7 +168,6 @@ void EquivalenceModel::ReadSpecificPower(const string &line)
 	
 	DBGL
 }
-
 //________________________________________________________________________
 void EquivalenceModel::ReadMaximalContent(const string &line)
 {
@@ -194,8 +184,6 @@ void EquivalenceModel::ReadMaximalContent(const string &line)
 	
 	DBGL
 }
-
-
 //________________________________________________________________________
 void EquivalenceModel::ReadFertil(const string &line)
 {
@@ -217,10 +205,6 @@ void EquivalenceModel::ReadFertil(const string &line)
 	
 	DBGL
 }
-
-
-
-
 //________________________________________________________________________
 double EquivalenceModel::LAMBDA_TOT_FOR(double MassNeeded, vector<IsotopicVector> Stocks, string FisOrFer)
 {
@@ -428,9 +412,6 @@ void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
 	for(int i = 0 ; i < (int)lambda.size() ;i++ )
 		lambda[i] = -1;
 }
-
-
-
 //________________________________________________________________________
 bool EquivalenceModel::isIVInDomain(IsotopicVector IV)
 {
