@@ -179,14 +179,18 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	double 	fTargetKeff;		//!< Use for Varying Fissile content to reach fTargetKeff at time used in the MLP Training
 	
 
+	/*!
+	 \name keff prediction methods & keff averaging
+	 */
+	//@{
+
+		double 	GetKeffAtFixedTime(IsotopicVector FreshFuel){return ExecuteTMVA( CreateTMVAInputTree(FreshFuel,-1), false );} //!<time independant since the MLP is trained for 1 time
 	
-	double 	GetKeffAtFixedTime(IsotopicVector FreshFuel){return ExecuteTMVA( CreateTMVAInputTree(FreshFuel,-1), false );} //!<time independant since the MLP is trained for 1 time
+		TGraph* BuildKeffGraph(IsotopicVector FreshFuel);
+		TGraph* BuildAverageKeffGraph(TGraph* GRAPH_KEFF);
+		double 	GetKeffAt(TGraph* GRAPH_KEFF, int Step);
 
-	TGraph* BuildKeffGraph(IsotopicVector FreshFuel);
-	TGraph* BuildAverageKeffGraph(TGraph* GRAPH_KEFF);
-
-	double 	GetKeffAt(TGraph* GRAPH_KEFF, int Step);
-
+	//@}	
 
 
 	

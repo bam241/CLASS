@@ -25,7 +25,7 @@ average @f$\langle k_{\infty}\rangle (t)@f$ is calculated according :
 
 @f$\langle k_{\infty}\rangle ^{batch}(t) = \frac{1}{N}\sum_{i}^{N}k_{\infty}(t+\frac{iT}{N})@f$
 The maximal reachable burnup has to verify the following conditions :
-@f$\langle k_{\infty}\rangle ^{batch}(T/N) = <\langle k_{\infty}\rangle ^{batch}(2T/N)  = ... = k_{Threshold}@f$
+@f$\langle k_{\infty}\rangle ^{batch}(T/N) = \langle k_{\infty}\rangle ^{batch}(2T/N)  = ... = k_{Threshold}@f$
 Where @f$k_{Threshold}@f$ is the criticality threshold which take into account leakage and capture
 in non simulated devices such as control rods and mixing grid.
 
@@ -115,17 +115,34 @@ class EQM_MLP_Kinf : public EquivalenceModel
 
 	void SetBurnUpPrecision(double prop){fBurnUpPrecision = prop;} //!< Set the precision on Burnup : proportion of the targeted burnup
 	void SetPCMprecision(double pcm){fPCMprecision = pcm;}		  //!< Set the precision on @f$\langle k \rangle@f$ prediction [pcm]. Neural network predictor constructors
-
 	double GetBurnUpPrecision(){return fBurnUpPrecision;}//!< Get the precision on Burnup : proportion of the targeted burnup
 	double GetPCMprecision(){return fPCMprecision/1e5;}//!< Get the precision on @f$\langle k \rangle@f$ prediction []. Neural network predictor constructors
-	double GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetBU);
+	
+	double GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU);//!<Get the maximum reachable burnup according the freshfuel composition
+	void   GetModelInformation();//!<Read the fMLPInformationFile and fill containers and variables
+	
+	//@}
+
+	/*!
+	 \name Time <-> Burnup conversion
+	 */
+	//@{
+
+	double SecondToBurnup(double Second){return Second*fSpecificPower/(24*3.6e6);}
+	double BurnupToSecond(double BurnUp){return BurnUp/fSpecificPower*(24*3.6e6);}
 
 	//@}
+
+	/*!
+	 \name TMVA related methods
+	 */
+	//@{
+
 	TTree* CreateTMVAInputTree(IsotopicVector FreshFuel, double ThisTime);//!<Create input tmva tree to be read by ExecuteTMVA
 	double ExecuteTMVA(TTree* theTree, string WeightPath, bool IsTimeDependant);//!<Execute the MLP according to the input tree created by CreateTMVAInputTree
-	double SecondToBurnup(double Second){return Second*fSpecificPower/(24*3.6e6);}
 
-	
+	//@}
+
 	/*!
 	 \name Reading NFO related Method
 	 */
@@ -179,13 +196,15 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	
 	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 
-	
-	
+	/*!
+	 \name private Get/Set methods
+	 */
+	//@{
+
+	double GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetBU);
 	double GetMaximumBurnUp_Pol2(IsotopicVector TheFuel, double TargetBU);
-	double GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU);//!<Get the maximum reachable burnup according the freshfuel composition
-	void   GetModelInformation();//!<Read the fMLPInformationFile and fill containers and variables
-	
-	double BurnupToSecond(double BurnUp){return BurnUp/fSpecificPower*(24*3.6e6);}
+
+	//@}
 
 	int 	fNumberOfBatch;		//!< The number of batches for the loading plan
 	double 	fKThreshold;		//!< The @f$k_{Threshold}@f$

@@ -56,10 +56,17 @@ class EQM_PWR_MLP_MOX : public EquivalenceModel
 	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);
 	//}
 	
+	/*!
+	 \name TMVA related methods
+	 */
+	//@{
+
+		TTree* CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);//!<Create input tmva tree to be read by ExecuteTMVA
+		double ExecuteTMVA(TTree* theTree);//!<Execute the MLP according to the input tree created by CreateTMVAInputTree
+		
+	//@}	
+
 	private :
-	
-	TTree* CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);//!<Create input tmva tree to be read by ExecuteTMVA
-	double ExecuteTMVA(TTree* theTree);//!<Execute the MLP according to the input tree created by CreateTMVAInputTree
 
 
 	string fTMVAWeightPath;;//!<The weight needed by TMVA to construct and execute the multilayer perceptron
