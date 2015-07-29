@@ -76,13 +76,13 @@ void EquivalenceModel::ReadLine(string line)
 void EquivalenceModel::LoadKeyword()
 {
 	DBGL
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",		& EquivalenceModel::ReadZAIlimits));
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",		& EquivalenceModel::ReadType)	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel",		& EquivalenceModel::ReadType)	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fissil",		& EquivalenceModel::ReadFissil)	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",		& EquivalenceModel::ReadFertil)	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower",	& EquivalenceModel::ReadSpecificPower));
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",		& EquivalenceModel::ReadMaximalContent));
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",				& EquivalenceModel::ReadZAIlimits));
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",				& EquivalenceModel::ReadType)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel",				& EquivalenceModel::ReadType)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fissil",				& EquivalenceModel::ReadFissil)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",				& EquivalenceModel::ReadFertil)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower",			& EquivalenceModel::ReadSpecificPower));
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_maxfiscontent",		& EquivalenceModel::ReadMaximalContent));
 	DBGL
 }
 //________________________________________________________________________
@@ -195,9 +195,9 @@ void EquivalenceModel::ReadMaximalContent(const string &line)
 	DBGL
 	int pos = 0;
 	string keyword = tlc(StringLine::NextWord(line, pos, ' ').c_str());
-	if( keyword != "k_contentmax")	// Check the keyword
+	if( keyword != "k_maxfiscontent")	// Check the keyword
 	{
-		ERROR << " Bad keyword : \"k_contentmax\" Not found !" << endl;
+		ERROR << " Bad keyword : \"k_maxfiscontent\" Not found !" << endl;
 		exit(1);
 	}
 	
