@@ -158,6 +158,8 @@ class EquivalenceModel : public CLASSObject
 	void ReadFertil(const string &line);
 	//}
 	
+	void PrintInfo(); //Print the information red in the INFO stream
+
 	//@}
 	
 	
