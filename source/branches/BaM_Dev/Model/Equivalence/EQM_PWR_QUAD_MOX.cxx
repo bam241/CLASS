@@ -45,6 +45,7 @@ EQM_PWR_QUAD_MOX::EQM_PWR_QUAD_MOX(string WeightPath):EquivalenceModel(new CLASS
 	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
 
 	SetBuildFuelFirstGuess(0.04);
+	EquivalenceModel::PrintInfo();
 
 
 }
@@ -86,6 +87,7 @@ EQM_PWR_QUAD_MOX::EQM_PWR_QUAD_MOX(CLASSLogger* log, string WeightPath):Equivale
 	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
 
 	SetBuildFuelFirstGuess(0.04);
+	EquivalenceModel::PrintInfo();
 
 }
 

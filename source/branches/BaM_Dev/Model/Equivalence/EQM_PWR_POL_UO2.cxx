@@ -25,6 +25,7 @@ EQM_PWR_POL_UO2::EQM_PWR_POL_UO2(string PathToWeightFile):EquivalenceModel(new C
 	fFissileList = U5*1;
 
 	ReadWeightFile(PathToWeightFile);
+	EquivalenceModel::PrintInfo();
 
 }
 // _______________________________________________________________________
@@ -40,6 +41,7 @@ EQM_PWR_POL_UO2::EQM_PWR_POL_UO2(CLASSLogger* log,string PathToWeightFile):Equiv
 	fFissileList = U5*1;
 
 	ReadWeightFile(PathToWeightFile);
+	EquivalenceModel::PrintInfo();
 
 }
 // _______________________________________________________________________

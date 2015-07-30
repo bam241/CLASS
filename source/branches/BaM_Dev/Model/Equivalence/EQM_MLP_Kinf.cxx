@@ -35,13 +35,7 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(string WeightPathAlpha0, string WeightPathAlpha1, str
 	fMaximalContent = 0;
 	fInformationFile = InformationFile;
 	LoadKeyword();
-	ReadNFO();//Getting information from fMLPInformationFile
-	
-	if( fMaximalBU == 0 || fMaximalContent == 0 )
-	{
-		ERROR<<"Can't find the k_maxfiscontent and/or k_maxburnup keyword(s) in .nfo file\n this is mandatory"<<endl;
-		exit(0);
-	}
+	ReadNFO();//Getting information from fInformationFile
 	
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
@@ -56,7 +50,16 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(string WeightPathAlpha0, string WeightPathAlpha1, str
 	INFO << "\t" << fTMVAWeightPath[2] << endl;
 	INFO << "\tThe Information file is :" << endl;
 	INFO << "\t" << fInformationFile << endl;
-	
+	INFO << "Maximal fissile content (molar proportion) : " << fMaximalContent << endl;
+	INFO << "Maximal burnup (GWd/tHM) : " <<  fMaximalBU << endl;
+	EquivalenceModel::PrintInfo();
+
+	if(fMapOfTMVAVariableNames.empty() || fFertileList.GetIsotopicQuantity().empty() || fFissileList.GetIsotopicQuantity().empty() || fMaximalBU == 0 || fMaximalContent == 0 )	
+	{
+		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
+		exit(1);
+	}
+
 }
 //________________________________________________________________________
 EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string WeightPathAlpha0, string WeightPathAlpha1, string WeightPathAlpha2, string InformationFile,  int NumOfBatch, double CriticalityThreshold):EquivalenceModel(log)
@@ -70,13 +73,7 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string WeightPathAlpha0, string Wei
 	fMaximalContent = 0;
 	fInformationFile = InformationFile;
 	LoadKeyword();
-	ReadNFO();//Getting information from fMLPInformationFile
-	
-	if( fMaximalBU == 0 || fMaximalContent == 0 )
-	{
-		ERROR<<"Can't find the k_maxfiscontent and/or k_maxburnup keyword(s) in .nfo file\n this is mandatory"<<endl;
-		exit(0);
-	}
+	ReadNFO();//Getting information from fInformationFile
 	
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
@@ -91,7 +88,16 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string WeightPathAlpha0, string Wei
 	INFO << "\t" << fTMVAWeightPath[2] << endl;
 	INFO << "\tThe Information file is :" << endl;
 	INFO << "\t" << fInformationFile << endl;
-	
+	INFO << "Maximal fissile content (molar proportion) : " << fMaximalContent << endl;
+	INFO << "Maximal burnup (GWd/tHM) : " <<  fMaximalBU << endl;
+	EquivalenceModel::PrintInfo();
+
+	if(fMapOfTMVAVariableNames.empty() || fFertileList.GetIsotopicQuantity().empty() || fFissileList.GetIsotopicQuantity().empty() || fMaximalBU == 0 || fMaximalContent == 0 )	
+	{
+		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
+		exit(1);
+	}
+
 }
 //________________________________________________________________________
 EQM_MLP_Kinf::EQM_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, string InformationFile, double CriticalityThreshold):EquivalenceModel(new CLASSLogger("EQM_MLP_Kinf.log"))
@@ -108,13 +114,7 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, string Inform
 	fMaximalContent = 0;
 	fInformationFile = InformationFile;
 	LoadKeyword();
-	ReadNFO();//Getting information from fMLPInformationFile
-	
-	if( fMaximalBU == 0 || fMaximalContent == 0 )
-	{
-		ERROR<<"Can't find the k_maxfiscontent and/or k_maxburnup keyword(s) in .nfo file\n this is mandatory"<<endl;
-		exit(0);
-	}
+	ReadNFO();//Getting information from fInformationFile
 	
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
@@ -126,7 +126,16 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, string Inform
 	INFO << "\tThis model is based on the prediction of kinf" << endl;
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
 	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | " << fInformationFile << " )" << endl;
-	
+	INFO << "Maximal fissile content (molar proportion) : " << fMaximalContent << endl;
+	INFO << "Maximal burnup (GWd/tHM) : " <<  fMaximalBU << endl;
+	EquivalenceModel::PrintInfo();
+
+	if(fMapOfTMVAVariableNames.empty() || fFertileList.GetIsotopicQuantity().empty() || fFissileList.GetIsotopicQuantity().empty() || fMaximalBU == 0 || fMaximalContent == 0 )	
+	{
+		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
+		exit(1);
+	}
+
 }
 //________________________________________________________________________
 EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,  int NumOfBatch, string InformationFile, double CriticalityThreshold):EquivalenceModel(log)
@@ -144,12 +153,6 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,  int NumOfBa
 	LoadKeyword();
 	ReadNFO();//Getting information from fMLPInformationFile
 	
-	if( fMaximalBU == 0 || fMaximalContent == 0 )
-	{
-		ERROR<<"Can't find the k_maxfiscontent and/or k_maxburnup keyword(s) in .nfo file\n this is mandatory"<<endl;
-		exit(0);
-	}
-	
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
 	SetBurnUpPrecision(0.005);//1 % of the targeted burnup
@@ -160,10 +163,20 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,  int NumOfBa
 	INFO << "\tThis model is based on the prediction of kinf" << endl;
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
 	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | " << fInformationFile << " )" << endl;
-	
+	INFO << "Maximal fissile content (molar proportion) : " << fMaximalContent << endl;
+	INFO << "Maximal burnup (GWd/tHM) : " <<  fMaximalBU << endl;
+
+
+	EquivalenceModel::PrintInfo();
+
+	if(fMapOfTMVAVariableNames.empty() || fFertileList.GetIsotopicQuantity().empty() || fFissileList.GetIsotopicQuantity().empty() || fMaximalBU == 0 || fMaximalContent == 0 )	
+	{
+		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
+		exit(1);
+	}
+
 	
 }
-
 //________________________________________________________________________
 void EQM_MLP_Kinf::LoadKeyword()
 {
@@ -174,12 +187,11 @@ void EQM_MLP_Kinf::LoadKeyword()
 	fDKeyword.insert( pair<string, PWR_MLP_KINF_DMthPtr>( "k_maxfiscontent", &EQM_MLP_Kinf::ReadMaxFisContent) );
 	DBGL
 }
-
-
 //________________________________________________________________________
 void EQM_MLP_Kinf::ReadZAIName(const string &line)
 {
 	DBGL
+	
 	int pos = 0;
 	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
 	if( keyword != "k_zainame" )	// Check the keyword
@@ -192,9 +204,11 @@ void EQM_MLP_Kinf::ReadZAIName(const string &line)
 	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	
-	fFissileList.Add(Z, A, I, 1.0);
+	string name = StringLine::NextWord(line, pos, ' ');
 	
-	DBGL
+	fMapOfTMVAVariableNames.insert( pair<ZAI,string>( ZAI(Z, A, I), name ) );
+
+	DBGL	
 }
 //________________________________________________________________________
 void EQM_MLP_Kinf::ReadMaxBurnUp(const string &line)
@@ -243,9 +257,6 @@ void EQM_MLP_Kinf::ReadLine(string line)
 	
 	DBGL
 }
-
-
-
 //________________________________________________________________________
 TTree* EQM_MLP_Kinf::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double ThisTime)
 {
@@ -342,8 +353,6 @@ double EQM_MLP_Kinf::ExecuteTMVA(TTree* InputTree,string WeightPath, bool IsTime
 	
 	return (double)val;//retourn k_{inf}(t = Time)
 }
-
-
 //________________________________________________________________________
 double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetBU)
 {

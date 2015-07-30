@@ -51,6 +51,7 @@ EQM_PWR_MLP_MOX_AM::EQM_PWR_MLP_MOX_AM(string TMVAWeightPath):EquivalenceModel(n
 	INFO << "\tThis model is based on a multi layer perceptron" << endl;
 	INFO << "\t\tThe TMVA weight file is :" << endl;
 	INFO << "\t\t\t"<<fTMVAWeightPath << endl;
+	EquivalenceModel::PrintInfo();
 
 }
 
@@ -81,6 +82,7 @@ EQM_PWR_MLP_MOX_AM::EQM_PWR_MLP_MOX_AM(CLASSLogger* log, string TMVAWeightPath):
 	INFO << "\tThis model is based on a multi layer perceptron" << endl;
 	INFO << "\t\tThe TMVA weight file is :" << endl;
 	INFO << "\t\t\t"<<fTMVAWeightPath << endl;
+	EquivalenceModel::PrintInfo();
 
 }
 
