@@ -57,6 +57,8 @@ EQM_PWR_LIN_MOX::EQM_PWR_LIN_MOX(string WeightPath):EquivalenceModel(new CLASSLo
 	ZAI Pu1(94,241,0);
 	ZAI Pu2(94,242,0);
 	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
+	
+	EquivalenceModel::PrintInfo();
 
 
 }

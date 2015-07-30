@@ -137,7 +137,7 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	//{
 	/// ReadMaxFisContent  : read a guessed (very overestimated) maximum fissile content (purpose : algorithm initialization)
 	/*!
-	 \param line : line suppossed to contain the ZAI name  starts with "k_zainame" keyword
+	 \param line : line suppossed to contain the ZAI name  starts with "k_maxfiscontent" keyword
 	 */
 	void ReadMaxFisContent(const string &line);
 	//}
@@ -184,8 +184,8 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	 */
 	//@{
 
-		double 	GetKeffAtFixedTime(IsotopicVector FreshFuel){return ExecuteTMVA( CreateTMVAInputTree(FreshFuel,-1), false );} //!<time independant since the MLP is trained for 1 time
-	
+		double 	GetKeffAtFixedTime(IsotopicVector FreshFuel){TTree* Input = CreateTMVAInputTree(FreshFuel,-1);  double Keff = ExecuteTMVA( Input, false ); delete Input; return Keff;} //!<time independant since the MLP is trained for 1 time
+
 		TGraph* BuildKeffGraph(IsotopicVector FreshFuel);
 		TGraph* BuildAverageKeffGraph(TGraph* GRAPH_KEFF);
 		double 	GetKeffAt(TGraph* GRAPH_KEFF, int Step);

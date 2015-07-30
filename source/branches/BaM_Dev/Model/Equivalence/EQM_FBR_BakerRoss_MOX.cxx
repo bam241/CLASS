@@ -51,6 +51,7 @@ EQM_FBR_BakerRoss_MOX::EQM_FBR_BakerRoss_MOX(double Weight_U_235, double Weight_
 	INFO << "\t\t\tPu_241 " << Weight_Pu_241 << endl;
 	INFO << "\t\t\tPu_242 " << Weight_Pu_242 << endl;
 	INFO << "\t\t\tAm_241 " << Weight_Am_241 << endl;
+	EquivalenceModel::PrintInfo();
 
 }
 //________________________________________________________________________
@@ -92,6 +93,7 @@ EQM_FBR_BakerRoss_MOX::EQM_FBR_BakerRoss_MOX(CLASSLogger* log, double Weight_U_2
 	INFO << "\t\t\tPu_241 " << Weight_Pu_241 << endl;
 	INFO << "\t\t\tPu_242 " << Weight_Pu_242 << endl;
 	INFO << "\t\t\tAm_241 " << Weight_Am_241 << endl;
+	EquivalenceModel::PrintInfo();
 
 
 }

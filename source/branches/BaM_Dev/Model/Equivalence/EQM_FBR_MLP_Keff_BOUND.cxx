@@ -51,7 +51,7 @@ EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(string TMVAWeightPath,  int NumOf
 	fInformationFile = InformationFile;
 	
 	LoadKeyword();
-	ReadNFO();//Getting information from fMLPInformationFile
+	ReadNFO();//Getting information from fInformationFile
 	
 	
 	/* OTHER MODEL PARAMETERS */
@@ -73,8 +73,26 @@ EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(string TMVAWeightPath,  int NumOf
 	INFO << "__An equivalence model has been define__" << endl;
 	INFO << "\tThis model is based on the prediction of keff averaged over the number of batch" << endl;
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
-	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | " << fMLPInformationFile << " )" << endl;
+	INFO << "\t" << "( " << fTMVAWeightPath << " | " << fInformationFile << " )" << endl;
+	INFO << "Time (s) :"<<endl;
+	for(int i=0;i<fMLP_Time.size();i++)
+			INFO<<fMLP_Time[i]<<endl;
+	INFO<<endl;
+	INFO<<"Z A I Name (input MLP) :"<<endl;
+	map<ZAI ,string >::iterator it;
+	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
+		INFO<<(*it).first.Z()<<" "<<(*it).first.A()<<" "<<(*it).first.I()<<" "<<(*it).second<<endl;
+	INFO<<endl;
+	EquivalenceModel::PrintInfo();
 
+
+
+
+	if(fMapOfTMVAVariableNames.empty() || fFertileList.GetIsotopicQuantity().empty() || fFissileList.GetIsotopicQuantity().empty() || fMLP_Time.size()== 0 )	
+	{
+		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
+		exit(1);
+	}
 	
 	DBGL
 }
@@ -95,7 +113,7 @@ EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(CLASSLogger* log, string TMVAWeig
 	
 	fInformationFile = InformationFile;
 	LoadKeyword();
-	ReadNFO();//Getting information from fMLPInformationFile
+	ReadNFO();//Getting information from fInformationFile
 	
 	
 	
@@ -115,13 +133,30 @@ EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(CLASSLogger* log, string TMVAWeig
 	INFO << "__An equivalence model has been define__" << endl;
 	INFO << "\tThis model is based on the prediction of keff averaged over the number of batch" << endl;
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
-	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | " << fMLPInformationFile << " )" << endl;
-	
-	
+	INFO << "\t" << "( " << fTMVAWeightPath << " | " << fInformationFile << " )" << endl;
+	INFO << "Time (s) :"<<endl;
+	for(int i=0;i<fMLP_Time.size();i++)
+			INFO<<fMLP_Time[i]<<endl;
+	INFO<<endl;
+	INFO<<"Z A I Name (input MLP) :"<<endl;
+	map<ZAI ,string >::iterator it;
+	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
+		INFO<<(*it).first.Z()<<" "<<(*it).first.A()<<" "<<(*it).first.I()<<" "<<(*it).second<<endl;
+	INFO<<endl;
+	EquivalenceModel::PrintInfo();
+
+
+	if(fMapOfTMVAVariableNames.empty() || fFertileList.GetIsotopicQuantity().empty() || fFissileList.GetIsotopicQuantity().empty() || fMLP_Time.size()== 0 )	
+	{
+		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
+		exit(1);
+	}
+
 	DBGL
+
+
+
 }
-
-
 //________________________________________________________________________
 TGraph* EQM_FBR_MLP_Keff_BOUND::BuildKeffGraph(IsotopicVector FreshFuel)
 {
@@ -130,7 +165,9 @@ TGraph* EQM_FBR_MLP_Keff_BOUND::BuildKeffGraph(IsotopicVector FreshFuel)
 	TGraph * keffGraph = new TGraph();
 	for(int i = 0 ; i < (int) fMLP_Time.size() ; i++)
 	{
-		double keff_t = ExecuteTMVA( CreateTMVAInputTree(FreshFuel,(float) fMLP_Time[i]), true );
+		TTree *InputTree = CreateTMVAInputTree(FreshFuel,(float) fMLP_Time[i]);
+		double keff_t = ExecuteTMVA( InputTree, true );
+		delete InputTree;
 		keffGraph->SetPoint(i, (double)fMLP_Time[i], keff_t );
 	}
 	
@@ -184,8 +221,6 @@ double EQM_FBR_MLP_Keff_BOUND::GetKeffAt(TGraph* GRAPH_KEFF, int Step)
 	DBGL
 	return Keff;
 }
-
-
 //________________________________________________________________________
 TTree* EQM_FBR_MLP_Keff_BOUND::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double ThisTime)
 {
@@ -287,7 +322,6 @@ double EQM_FBR_MLP_Keff_BOUND::ExecuteTMVA(TTree* InputTree, bool IsTimeDependen
 	DBGL
 	return (double)val;	//return k_{eff}(t = Time)
 }
-
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff_BOUND::LoadKeyword()
 {
@@ -298,8 +332,6 @@ void EQM_FBR_MLP_Keff_BOUND::LoadKeyword()
 	
 	DBGL
 }
-
-
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff_BOUND::ReadZAIName(const string &line)
 {
@@ -321,8 +353,6 @@ void EQM_FBR_MLP_Keff_BOUND::ReadZAIName(const string &line)
 	fMapOfTMVAVariableNames.insert( pair<ZAI,string>( ZAI(Z, A, I), name ) );
 	DBGL
 }
-
-
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff_BOUND::ReadTimeSteps(const string &line)
 {
@@ -339,8 +369,6 @@ void EQM_FBR_MLP_Keff_BOUND::ReadTimeSteps(const string &line)
 		fMLP_Time.push_back( atof( (StringLine::NextWord(line,pos,' ')).c_str() ));
 	DBGL
 }
-
-
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff_BOUND::ReadLine(string line)
 {
@@ -356,8 +384,6 @@ void EQM_FBR_MLP_Keff_BOUND::ReadLine(string line)
 	
 	DBGL
 }
-
-
 //________________________________________________________________________
 double EQM_FBR_MLP_Keff_BOUND::GetFissileMolarFraction(IsotopicVector Fissile, IsotopicVector Fertile, double TargetBU)
 {
