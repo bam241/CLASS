@@ -9,7 +9,7 @@ EquivalenceModel::EquivalenceModel():CLASSObject()
 	fMaxInterration = 100; // Max iterration in build fueld algorythum
 	fFirstGuessFissilContent = 0.02;
 	freaded = false;
-	
+	EquivalenceModel::LoadKeyword();
 }
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
@@ -18,7 +18,8 @@ EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 	fMaxInterration = 100; // Max iterration in build fueld algorythm
 	fFirstGuessFissilContent = 0.02;
 	freaded = false;
-	
+	EquivalenceModel::LoadKeyword();
+
 }
 //________________________________________________________________________
 EquivalenceModel::~EquivalenceModel()
@@ -82,8 +83,40 @@ void EquivalenceModel::LoadKeyword()
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fissil",				& EquivalenceModel::ReadFissil)	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",				& EquivalenceModel::ReadFertil)	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower",			& EquivalenceModel::ReadSpecificPower));
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_maxfiscontent",		& EquivalenceModel::ReadMaximalContent));
 	DBGL
+}
+//________________________________________________________________________
+void EquivalenceModel::PrintInfo()
+{
+	INFO << "Reactor Type : "<< fDBRType << endl;
+	INFO << "Fuel Type : "<< fDBFType << endl;
+	INFO << "Specific Power [W/g]: "<< fSpecificPower << endl;
+
+	INFO << "Fissile Liste (Z A I) :" << endl;
+	map<ZAI ,double >::iterator it1;
+	map<ZAI ,double > fMap1 = fFissileList.GetIsotopicQuantity();
+	for(it1 = fMap1.begin()  ; it1 != fMap1.end() ; it1++)
+		INFO << (*it1).first.Z() <<" "<< (*it1).first.A() <<" "<< (*it1).first.I() << endl;
+
+	INFO<<"Fertile Liste (Z A I Quantity) :"<<endl;
+	map<ZAI ,double >::iterator it2;
+	map<ZAI ,double > fMap2 = fFertileList.GetIsotopicQuantity();
+	for(it2 = fMap2.begin()  ; it2 != fMap2.end() ; it2++)	
+		INFO << (*it2).first.Z() <<" "<< (*it2).first.A() << " "<< (*it2).first.I() <<" "<< (*it2).second << endl;
+
+
+	INFO<<"ZAI limits (validity domain)[prop in fresh fuel] (Z A I min max) :"<<endl;
+	for (map< ZAI,pair<double,double> >::iterator Domain_it = fZAILimits.begin(); Domain_it != fZAILimits.end(); Domain_it++)
+	{	
+		double ThatZAIMin  = Domain_it->second.first;
+		double ThatZAIMax  = Domain_it->second.second;
+		int Z = Domain_it->first.Z();
+		int A = Domain_it->first.A();
+		int I = Domain_it->first.I();
+
+		INFO <<ThatZAIMin<<" < ZAI ("<< Z<< " " << A << " " << I<<")"<<" < "<<ThatZAIMax<< endl;
+	}
+
 }
 //________________________________________________________________________
 void EquivalenceModel::ReadType(const string &line)
@@ -146,7 +179,7 @@ void EquivalenceModel::ReadFissil(const string &line)
 	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	
+
 	fFissileList.Add(Z, A, I, 1.0);
 	
 	DBGL
@@ -186,22 +219,6 @@ void EquivalenceModel::ReadSpecificPower(const string &line)
 	}
 	
 	fSpecificPower = atof(StringLine::NextWord(line, pos, ' ').c_str());
-	
-	DBGL
-}
-//________________________________________________________________________
-void EquivalenceModel::ReadMaximalContent(const string &line)
-{
-	DBGL
-	int pos = 0;
-	string keyword = tlc(StringLine::NextWord(line, pos, ' ').c_str());
-	if( keyword != "k_maxfiscontent")	// Check the keyword
-	{
-		ERROR << " Bad keyword : \"k_maxfiscontent\" Not found !" << endl;
-		exit(1);
-	}
-	
-	fMaximalContent = atof(StringLine::NextWord(line, pos, ' ').c_str());
 	
 	DBGL
 }
