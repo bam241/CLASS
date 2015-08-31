@@ -53,6 +53,7 @@ Scenario::Scenario(CLASSLogger* log, cSecond abstime):CLASSObject(log)
 	fParcPower = 0;
 
 	fZAIThreshold = -1;
+	fOldProgressBar = false;
 
 	// Warning
 
@@ -66,8 +67,6 @@ Scenario::Scenario(CLASSLogger* log, cSecond abstime):CLASSObject(log)
 
 
 }
-
-
 //________________________________________________________________________
 Scenario::Scenario( cSecond abstime, CLASSLogger* log):CLASSObject(log)
 {
@@ -89,7 +88,8 @@ Scenario::Scenario( cSecond abstime, CLASSLogger* log):CLASSObject(log)
 	fParcPower = 0;
 	
 	fZAIThreshold = -1;
-	
+	fOldProgressBar = false;
+
 	// Warning
 	
 	
@@ -102,9 +102,8 @@ Scenario::Scenario( cSecond abstime, CLASSLogger* log):CLASSObject(log)
 	
 	
 }
-
 //________________________________________________________________________
-Scenario::Scenario( cSecond abstime ):CLASSObject(new CLASSLogger("CLASS_OUTPUT.log"))
+Scenario::Scenario( cSecond abstime):CLASSObject(new CLASSLogger("CLASS_OUTPUT.log"))
 {
 	
 	
@@ -124,6 +123,7 @@ Scenario::Scenario( cSecond abstime ):CLASSObject(new CLASSLogger("CLASS_OUTPUT.
 	fParcPower = 0;
 	
 	fZAIThreshold = -1;
+	fOldProgressBar = false;
 	
 	// Warning
 	
@@ -137,8 +137,6 @@ Scenario::Scenario( cSecond abstime ):CLASSObject(new CLASSLogger("CLASS_OUTPUT.
 	
 	
 }
-
-
 //________________________________________________________________________
 Scenario::~Scenario()
 {
@@ -148,7 +146,6 @@ Scenario::~Scenario()
 
 
 }
-
 //________________________________________________________________________
 void Scenario::AddPool(Pool* Pool)
 {
@@ -183,7 +180,6 @@ void Scenario::AddPool(Pool* Pool)
 
 
 }
-
 //________________________________________________________________________
 void Scenario::AddReactor(Reactor* reactor)
 {
@@ -216,7 +212,6 @@ void Scenario::AddReactor(Reactor* reactor)
 
 
 }
-
 //________________________________________________________________________
 void Scenario::AddStorage(Storage* storage)
 {
@@ -324,6 +319,7 @@ void Scenario::AddSeparationPlant(SeparationPlant* SeparationPlant)
 void Scenario::BuildTimeVector(cSecond t)
 {
 	DBGL
+
 	fTimeStep.clear();
 	fTimeStep.insert( pair<cSecond ,int>(t,1) );
 	//********* Printing Step *********//
@@ -565,7 +561,7 @@ void Scenario::BackEndEvolution()
 	PoolDump();
 	DBGL
 }
-
+//________________________________________________________________________
 void Scenario::PoolEvolution()
 {
 	DBGL
@@ -575,7 +571,7 @@ void Scenario::PoolEvolution()
 
 	DBGL
 }
-
+//________________________________________________________________________
 void Scenario::StorageEvolution()
 {
 	DBGL
@@ -585,7 +581,7 @@ void Scenario::StorageEvolution()
 
 	DBGL
 }
-
+//________________________________________________________________________
 void Scenario::FabricationPlantEvolution()
 {
 	DBGL
@@ -595,8 +591,7 @@ void Scenario::FabricationPlantEvolution()
 
 	DBGL
 }
-
-
+//________________________________________________________________________
 void Scenario::PoolDump()
 {
 	DBGL
@@ -626,6 +621,8 @@ void Scenario::ReactorEvolution()
 void Scenario::Evolution(cSecond t)
 {
 	DBGL
+	fCloverCount = 0;
+	PrintCLASSPresentation();
 
 	BuildTimeVector(t);
 
@@ -667,14 +664,18 @@ void Scenario::Evolution(cSecond t)
 		}
 
 	}
-	cout << endl;
+	cout<<"Calculation complete successfully     "<<endl<<endl;
 
 	DBGL
 }
 
-void Scenario::ProgressPrintout(cSecond t)
-{
+//_______________________________________________________________________
+//______________________________ Out Method ______________________________
+//________________________________________________________________________
 
+//________________________________________________________________________
+void Scenario::OldProgressPrintout(cSecond t)
+{
 	double Time = (fAbsoluteTime-fStartingTime)/cYear ;
 	double Total = (t-fStartingTime)/cYear;
 
@@ -690,22 +691,195 @@ void Scenario::ProgressPrintout(cSecond t)
 		cout << "-";
 	cout << "] ";
 
-	cout << " Processed ";
+	//cout << " Processed ";
 	if (Time < 10) cout << " ";
 	if (Time < 100) cout << " ";
 	cout << (int)Time << " / " << (int)Total << " Years \r";
 	if( fLog->GetVerboseLVL() < 2) cout << flush;
 	else cout << endl;
 
+}
+//________________________________________________________________________
+void Scenario::ProgressPrintout(cSecond t)
+{
+	double Time = (fAbsoluteTime-fStartingTime)/cYear ;
+	double Total = (t-fStartingTime)/cYear;
+
+	if(fOldProgressBar)
+		OldProgressPrintout(t);
+
+	else
+	{
+		system("clear");
+		/****Printing CLASS  info + nuclear clover****/
+		if(fCloverCount>3)
+			fCloverCount=0;
+		PrintClover(fCloverCount);
+		fCloverCount++;
+
+		/****Printing  Progression bar r****/
+		static  int ProgressBarlength = 47;
+		cout << "╭";
+		for(int i = 0; i < ProgressBarlength; i++)
+			cout <<"─" ;
+
+		cout << "╮"<<endl;
+		cout<<"│";
+
+		stringstream Completed ; Completed << "\033[42m";
+		for(int i = 0; i < (int)(Time/Total*ProgressBarlength); i++)
+			Completed<< " ";
+
+		Completed << "\033[0m";
+
+		for(int i = ProgressBarlength; i >= (int)(Time/Total*ProgressBarlength); i--)
+			Completed << " ";
+
+		cout<<Completed.str();
+		cout<<"│"<<endl;
+
+		cout << "╰";
+		for(int i = 0; i < ProgressBarlength; i++)
+			cout <<"─" ;	
+		cout << "╯"<<endl;
+
+
+		if (Time < 10) cout << " ";
+		if (Time < 100) cout << " ";
+		cout << (int)Time << " / " << (int)Total << " Years";
+		cout << endl<<endl;
+	}
 
 	INFO << " Proccessed " << (int)Time << " / " << (int)Total << " Years \r" << endl;
 
 }
-
 //________________________________________________________________________
-//______________________________ Out Method ______________________________
+void Scenario::PrintCLASSPresentation()
+{ 	
+	cout<<endl;	
+	cout<<"╭───────────────────────────────────────────────╮"<<endl;
+	cout<<"│   ██████╗██╗      █████╗ ███████╗███████╗     │"<<endl;
+	cout<<"│  ██╔════╝██║     ██╔══██╗██╔════╝██╔════╝     │"<<endl;
+	cout<<"│  ██║     ██║     ███████║███████╗███████╗     │"<<endl;
+	cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │"<<endl;
+	cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │"<<endl;
+	cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │"<<endl;
+	cout<<"│                                  Version 4.1  │"<<endl;
+	cout<<"├───────────────────────────────────────────────┤"<<endl;
+	cout<<"│ Core Lybrary for Advance Scenario Simulation  │"<<endl;
+	cout<<"│                                               │"<<endl;
+	cout<<"│ A dynamical nuclear fuel cycle code developed │"<<endl; 
+	cout<<"│           by the CNRS/IN2P3 & IRSN            │"<<endl;
+	cout<<"│ https://forge.in2p3.fr/projects/classforge    │"<<endl;
+	cout<<"├───────────────────────────────────────────────┤"<<endl;
+	cout<<"│ Authors :                                     │"<<endl;
+	cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │"<<endl;
+	cout<<"│    F. COURTIN  (@FaC)  N. THIOLIERE (@NT)     │"<<endl;
+	cout<<"╰───────────────────────────────────────────────╯"<<endl;
+	cout<<"                                                 "<<endl;
+	cout<<"        BEGINING FUEL CYCLE EVOLUTION           "<<endl;
+	cout<<"                                                "<<endl;
+	cout<<"Evolution progression   :                       "<<endl;	
+}
 //________________________________________________________________________
+void Scenario::PrintClover(int i)
+{
+                      
+    if(i == 0)   
+    {	cout<<"╭───────────────────────────────────────────────╮                       "<<endl;
+		cout<<"│   ██████╗██╗      █████╗ ███████╗███████╗     │         @@            "<<endl;
+		cout<<"│  ██╔════╝██║     ██╔══██╗██╔════╝██╔════╝     │      @@@@@            "<<endl;
+		cout<<"│  ██║     ██║     ███████║███████╗███████╗     │     @@@@@@            "<<endl;
+		cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │    @@@@@@@            "<<endl;
+		cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │    @@@@@@@            "<<endl;
+		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │     @@@@@@       @    "<<endl;
+		cout<<"│                                  Version 4.1  │       @@@@     @@@@   "<<endl;
+		cout<<"├───────────────────────────────────────────────┤         @@   @@@@@@   "<<endl;
+		cout<<"│ Core Lybrary for Advance Scenario Simulation  │           @ @@@@@@@   "<<endl;
+		cout<<"│                                               │          @@ @@@@@@@   "<<endl;
+		cout<<"│ A dynamical nuclear fuel cycle code developed │         @    @@@@@@   "<<endl;
+		cout<<"│           by the CNRS/IN2P3 & IRSN            │       @@@@    @@@@@   "<<endl;
+		cout<<"│ https://forge.in2p3.fr/projects/classforge    │      @@@@@      @@@@  "<<endl;
+		cout<<"├───────────────────────────────────────────────┤    @@@@@@@            "<<endl;
+		cout<<"│ Authors :                                     │    @@@@@@@            "<<endl;
+		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │     @@@@@@            "<<endl;
+		cout<<"│    F. COURTIN  (@FaC)  N. THIOLIERE (@NT)     │      @@@@@            "<<endl;
+		cout<<"╰───────────────────────────────────────────────╯        @@@            "<<endl;
+		cout<<"                                                                        "<<endl;
+	}	                                       
+	    if(i == 1)   
+    {	cout<<"╭───────────────────────────────────────────────╮                       "<<endl;
+		cout<<"│   ██████╗██╗      █████╗ ███████╗███████╗     │      @ @@@@@@@@      "<<endl;
+		cout<<"│  ██╔════╝██║     ██╔══██╗██╔════╝██╔════╝     │       @@@@@@@@       "<<endl;
+		cout<<"│  ██║     ██║     ███████║███████╗███████╗     │       @@@@@@@        "<<endl;
+		cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │        @@@@@@        "<<endl;
+		cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │         @@@@@        "<<endl;
+		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │         @@@@         "<<endl;
+		cout<<"│                                  Version 4.1  │          @@          "<<endl;
+		cout<<"├───────────────────────────────────────────────┤          @           "<<endl;
+		cout<<"│ Core Lybrary for Advance Scenario Simulation  │           @          "<<endl;
+		cout<<"│                                               │  @@@@@@@ @@ @@@@@@@  "<<endl;
+		cout<<"│ A dynamical nuclear fuel cycle code developed │  @@@@@@@@  @@@@@@@@  "<<endl;
+		cout<<"│           by the CNRS/IN2P3 & IRSN            │  @@@@@@@@   @@@@@@@  "<<endl;
+		cout<<"│ https://forge.in2p3.fr/projects/classforge    │   @@@@@@    @@@@@@   "<<endl;
+		cout<<"├───────────────────────────────────────────────┤   @@@@@      @@@@@   "<<endl;
+		cout<<"│ Authors :                                     │    @@@@      @@@@    "<<endl;
+		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │     @@        @@@    "<<endl;
+		cout<<"│    F. COURTIN  (@FaC)  N. THIOLIERE (@NT)     │      @          @    "<<endl;
+		cout<<"╰───────────────────────────────────────────────╯                      "<<endl;
+		cout<<"                                                                        "<<endl;
+	}
 
+    if(i == 2)   
+    {	cout<<"╭───────────────────────────────────────────────╮                      "<<endl;
+		cout<<"│   ██████╗██╗      █████╗ ███████╗███████╗     │           @@@        "<<endl;
+		cout<<"│  ██╔════╝██║     ██╔══██╗██╔════╝██╔════╝     │           @@@@@      "<<endl;
+		cout<<"│  ██║     ██║     ███████║███████╗███████╗     │           @@@@@@     "<<endl;
+		cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │           @@@@@@@    "<<endl;
+		cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │           @@@@@@@@   "<<endl;
+		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │   @@      @@@@@@     "<<endl;
+		cout<<"│                                  Version 4.1  │   @@@     @@@@       "<<endl;
+		cout<<"├───────────────────────────────────────────────┤  @@@@@@    @@        "<<endl;
+		cout<<"│ Core Lybrary for Advance Scenario Simulation  │  @@@@@@@@ @          "<<endl;
+		cout<<"│                                               │  @@@@@@@ @@          "<<endl;
+		cout<<"│ A dynamical nuclear fuel cycle code developed │  @@@@@@    @         "<<endl;
+		cout<<"│           by the CNRS/IN2P3 & IRSN            │  @@@@@    @@@@       "<<endl;
+		cout<<"│ https://forge.in2p3.fr/projects/classforge    │  @@       @@@@@@     "<<endl;
+		cout<<"├───────────────────────────────────────────────┤           @@@@@@@    "<<endl;
+		cout<<"│ Authors :                                     │           @@@@@@@    "<<endl;
+		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │           @@@@@@@    "<<endl;
+		cout<<"│    F. COURTIN  (@FaC)  N. THIOLIERE (@NT)     │           @@@@@      "<<endl;
+		cout<<"╰───────────────────────────────────────────────╯           @@@@       "<<endl;
+		cout<<"                                                                        "<<endl;
+
+	}
+
+    if(i == 3)   
+    {	cout<<"╭───────────────────────────────────────────────╮                       "<<endl;
+		cout<<"│   ██████╗██╗      █████╗ ███████╗███████╗     │                      "<<endl;
+		cout<<"│  ██╔════╝██║     ██╔══██╗██╔════╝██╔════╝     │                      "<<endl;
+		cout<<"│  ██║     ██║     ███████║███████╗███████╗     │     @@        @@     "<<endl; 
+		cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │    @@@@       @@@    "<<endl; 
+		cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │   @@@@@      @@@@@   "<<endl; 
+		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │   @@@@@@    @@@@@@   "<<endl; 
+		cout<<"│                                  Version 4.1  │   @@@@@@    @@@@@@@  "<<endl; 
+		cout<<"├───────────────────────────────────────────────┤  @@@@@@@@  @@@@@@@@  "<<endl; 
+		cout<<"│ Core Lybrary for Advance Scenario Simulation  │  @@@@@@@@ @ @@@@@@@  "<<endl; 
+		cout<<"│                                               │          @@          "<<endl; 
+		cout<<"│ A dynamical nuclear fuel cycle code developed │          @@          "<<endl; 
+		cout<<"│           by the CNRS/IN2P3 & IRSN            │         @@@@         "<<endl; 
+		cout<<"│ https://forge.in2p3.fr/projects/classforge    │         @@@@@        "<<endl; 
+		cout<<"├───────────────────────────────────────────────┤        @@@@@@        "<<endl; 
+		cout<<"│ Authors :                                     │        @@@@@@@       "<<endl; 
+		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │       @@@@@@@@       "<<endl;
+		cout<<"│    F. COURTIN  (@FaC)  N. THIOLIERE (@NT)     │                      "<<endl;
+		cout<<"╰───────────────────────────────────────────────╯                      "<<endl;
+		cout<<"                                                                        "<<endl;
+
+	}
+
+}
+//________________________________________________________________________
 void Scenario::ApplyZAIThreshold()
 {
 	for(int i  = 0; i < (int)fFabricationPlant.size(); i++)
@@ -725,10 +899,7 @@ void Scenario::ApplyZAIThreshold()
 	
 	
 }
-
-
-
-
+//________________________________________________________________________
 void Scenario::UpdateParc()
 {
 
@@ -749,9 +920,7 @@ void Scenario::UpdateParc()
 	fIVTotal = fWaste + fTotalStorage + fTotalCooling + fFuelFabrication + fTotalInReactor;
 	fIVInCycleTotal = fTotalStorage + fTotalCooling + fFuelFabrication + fTotalInReactor;
 }
-
-
-
+//________________________________________________________________________
 void Scenario::ResetQuantity()
 {
 
@@ -763,7 +932,6 @@ void Scenario::ResetQuantity()
 	fIVTotal.Clear();
 
 }
-
 //________________________________________________________________________
 void Scenario::OpenOutputTree()
 {
@@ -791,6 +959,7 @@ void Scenario::OpenOutputTree()
 	INFO <<  "\t ...OK!" << endl;
 
 }
+//________________________________________________________________________
 void Scenario::CloseOutputTree()
 {
 
@@ -853,7 +1022,6 @@ void Scenario::OutAttach()
 
 
 }
-
 //________________________________________________________________________
 void Scenario::Write()
 {
@@ -862,7 +1030,6 @@ void Scenario::Write()
 
 
 }
-
 //________________________________________________________________________
 void Scenario::Print()
 {
