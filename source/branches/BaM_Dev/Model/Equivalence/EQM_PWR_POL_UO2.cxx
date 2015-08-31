@@ -70,6 +70,9 @@ void EQM_PWR_POL_UO2::ReadWeightFile(string PathToWeightFile)
 // _______________________________________________________________________
 double EQM_PWR_POL_UO2::GetFissileMolarFraction ( IsotopicVector Fissil , IsotopicVector Fertil , double BurnUp )
 {
-	return fParam_Bu_0 + fParam_Bu*BurnUp + fParam_BuSquare*BurnUp*BurnUp ;
+	double Fraction =  fParam_Bu_0 + fParam_Bu*BurnUp + fParam_BuSquare*BurnUp*BurnUp;
+	DBGV("Fissile molar fraction : "<<Fraction)
+
+	return Fraction ;
 	
 }
