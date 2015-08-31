@@ -123,7 +123,9 @@ DBGL
 		double R_BU = R_Fuel.second;
 		double R_Power = GetParc()->GetReactor()[ReactorId]->GetPower();
 		double R_HMMass = GetParc()->GetReactor()[ReactorId]->GetHeavyMetalMass();
-		cSecond R_CycleTime = cSecond (R_BU / R_Power * R_HMMass * 1e9 *3600*24);
+		cSecond R_CycleTime = (cSecond) (R_BU*1e9 / (R_Power) * R_HMMass * 3600 * 24);
+
+
 		if( R_CycleTime < GetCycleTime())
 		{
 			ERROR << "Reactor Cycle Time is shorter than Fabrication Time of the fuel, we cannot deal it upto now!!!" <<  endl;
