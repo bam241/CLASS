@@ -452,21 +452,21 @@ void IrradiationModel::BuildReactionFiliation()
 	double BR_NP_236M = 0;
 	if(GetSpectrumType() == "thermal")
 	{ 
-		BR_AM_242M = 0.1267;
-		BR_HO_166M = 0.0510;
-		BR_PM_148M = 0.4670;
-		BR_AG_110M = 0.0492;
-		BR_AG_108M = 0.0105;
-		BR_NP_236M = 0.8;
+		BR_AM_242M =1-0.8733;
+		BR_HO_166M =1-0.9490;
+		BR_PM_148M =1-0.5330;
+		BR_AG_110M =1-0.9508;
+		BR_AG_108M =1-0.9895;
+		BR_NP_236M =1-0.2000;
 	}
 	if(GetSpectrumType() == "fast")
 	{
-		BR_AM_242M = 0.15;
-		BR_HO_166M = 0.0519;
-		BR_PM_148M = 0.4670;
-		BR_AG_110M = 0.0466;
-		BR_AG_108M = 0.0135;
-		BR_NP_236M = 0.8;
+		BR_AM_242M = 1-0.8500;
+		BR_HO_166M = 1-0.9481;
+		BR_PM_148M = 1-0.5340;
+		BR_AG_110M = 1-0.9224;
+		BR_AG_108M = 1-0.9865;
+		BR_NP_236M = 1-0.2000;
 	}
 	// (n,Gamma) Special Reaction.....
 	{
