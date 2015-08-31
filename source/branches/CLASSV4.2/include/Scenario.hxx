@@ -243,9 +243,13 @@ class Scenario : public CLASSObject
 	 */
 	//@{
 	
-	
+	void	PrintCLASSPresentation();	//!< CLASS informations when first running the code
+	void	PrintClover(int i);		//!< Print a nuclear clover for progression
+
 	void	ProgressPrintout(cSecond t);		//!< Update the prompt output to the time t
-	
+	void	OldProgressPrintout(cSecond t);		//!< Update the prompt output to the time t (without nuclear clover)
+	void	SetSoberTerminalOutput(){fOldProgressBar = true;} //!< Dont display animated nuclear clover in terminal
+
 	void	Print();				//!< Print some information about the Parc
 	void	Write();				//!< Write information in a file
 	
@@ -264,7 +268,8 @@ class Scenario : public CLASSObject
 	bool			fNewTtree;		//!< Tru if we want to define a new TTree in the output File
 	bool			fStockManagement;	///< True if real StockManagement false unstead (Default = true)
 	bool			fLogTimeStep;
-	
+	bool			fOldProgressBar; ///< if set to true : no nuclear clover are drawn in terminal
+
 	cSecond			fPrintStep;		///< Time interval between two output update in [s]
 	cSecond			fAbsoluteTime;		///< Absolute Clock in [s]
 	cSecond			fStartingTime;		///< Starting Time in [s]
@@ -275,8 +280,8 @@ class Scenario : public CLASSObject
 	/// \li 8 end of Cooling,
 	/// \li 16 fuel Fabrication
 	
-	
-	int			fZAIThreshold;		///<
+	int			fZAIThreshold;
+	int			fCloverCount;		///<
 	
 	vector<Storage*>		fStorage;		///< Vector of Storages
 	vector<Pool*>			fPool;			///< Vector of Pool
