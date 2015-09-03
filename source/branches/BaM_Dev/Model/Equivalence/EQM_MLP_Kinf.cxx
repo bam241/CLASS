@@ -536,6 +536,11 @@ double EQM_MLP_Kinf::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVecto
 		if(count > MaximumLoopCount )
 		{
 			ERROR << "CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on burnup using :\nYourEQM_MLP_Kinf->SetBurnUpPrecision(prop); with prop the precision  (default 0.5percent :  0.005) INCREASE IT\nIf this message still appear mail to leniau@subatech.in2p3.fr\nor nicolas.thiolliere@subatech.in2p3.fr " << endl;
+			ERROR << "Targeted Burnup :" <<TargetBU<<endl;
+			ERROR << "Last calculated Burnup :" <<OldPredictedBU<<endl;
+			ERROR << "Last Fresh fuel composition :" <<endl;
+			ERROR << FreshFuel.sPrint()<<endl;
+			
 			exit(1);
 		}
 		

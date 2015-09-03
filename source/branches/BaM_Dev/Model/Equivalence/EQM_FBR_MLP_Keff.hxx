@@ -166,7 +166,6 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 
 	vector<double> fMLP_Time;	//!< Time (in seconds) when the MLP(t) = keff(t) has been trained.
-	double 	fSpecificPower; 	//!< The specific power in W/gHM (HM: heavy Metal)
 	double  fMaximalContent;	//!< The approx. maximum fissile content reachable by the MLP model
 	
 
