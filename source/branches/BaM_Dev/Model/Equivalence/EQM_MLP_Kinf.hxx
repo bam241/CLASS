@@ -208,7 +208,6 @@ class EQM_MLP_Kinf : public EquivalenceModel
 
 	int 	fNumberOfBatch;		//!< The number of batches for the loading plan
 	double 	fKThreshold;		//!< The @f$k_{Threshold}@f$
-	double 	fSpecificPower; 	//!< The specific power in W/gHM (HM: heavy Metal)
 	double 	fMaximalBU;			//!< The approx. maximum burnup reachable by the MLP model		
 	double  fMaximalContent;	//!< The approx. maximum fissile content reachable by the MLP model
 	double 	fBurnUpPrecision;	//!< precision on Burnup 
