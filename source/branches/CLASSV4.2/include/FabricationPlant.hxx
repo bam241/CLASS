@@ -41,6 +41,7 @@ typedef long long int cSecond;
  @see EquivalenceModel.hxx
  
  @author BaM
+ @author FaC
  @version 2.0
  */
 //_______________________________________________________________________________________________________
