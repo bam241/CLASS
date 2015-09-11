@@ -5,7 +5,7 @@
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel():CLASSObject()
 {
-	fRelativMassPrecision = 1/10000.; // Mass precision
+	fRelativMassPrecision = 5/10000.; // Mass precision
 	fMaxInterration = 100; // Max iterration in build fueld algorythum
 	fFirstGuessFissilContent = 0.02;
 	freaded = false;
@@ -14,7 +14,7 @@ EquivalenceModel::EquivalenceModel():CLASSObject()
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 {
-	fRelativMassPrecision = 1/10000.; // Mass precision
+	fRelativMassPrecision = 5/10000.; // Mass precision
 	fMaxInterration = 100; // Max iterration in build fueld algorythm
 	fFirstGuessFissilContent = 0.02;
 	freaded = false;
