@@ -9,7 +9,7 @@
 
 #include <iostream>
 #include <cmath>
-#include <omp.h>
+#include "../../config/config.hxx"
 #include <typeinfo>
 
 //________________________________________________________________________

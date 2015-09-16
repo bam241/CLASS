@@ -1,17 +1,14 @@
-# Directory containing libraries
-LIBDIR          = $(CLASS_lib)
+#################### CLASS main Makefile #########################
+# include config file
+
+include ../../config/Makefile.config
 # Directory containing includes for CLASS
-LOCALINC = $(CLASS_include)
+LOCALINC = ../include
 
+EQMINC	 = ../Model/Equivalence
+IMINC	 = ../Model/Irradiation
+XSMINC	 = ../Model/XS
 
-EQM	 = ../Model/Equivalence
-IM	 = ../Model/Irradiation
-XSM	 = ../Model/XS
-
-
-ROOTCFLAGS     = `root-config --cflags`
-ROOTLIBS = `root-config --libs`
-ROOTGLIBS = `root-config --glibs`
 
 ######### nothing to change from here #########
 INCLUDES = $(LOCALINC)/*.hxx 
@@ -40,12 +37,12 @@ OBJS	 = CLASSLogger.o \
 			CLASSFuelPlan.o\
 			Scenario.o
 
-OBJMODEL = 	$(EQM)/EQM_PWR_MLP_MOX.o $(EQM)/EQM_PWR_MLP_MOX_Am.o \
-			$(EQM)/EQM_PWR_QUAD_MOX.o $(EQM)/EQM_PWR_POL_UO2.o\
-			$(EQM)/EQM_PWR_LIN_MOX.o $(EQM)/EQM_FBR_BakerRoss_MOX.o $(EQM)/EQM_MLP_Kinf.o\
-			$(EQM)/EQM_FBR_MLP_Keff.o $(EQM)/EQM_FBR_MLP_Keff_BOUND.o\
-			$(XSM)/XSM_MLP.o $(XSM)/XSM_CLOSEST.o \
-			$(IM)/IM_RK4.o $(IM)/IM_Matrix.o
+OBJMODEL = 	$(EQMINC)/EQM_PWR_MLP_MOX.o $(EQMINC)/EQM_PWR_MLP_MOX_Am.o \
+			$(EQMINC)/EQM_PWR_QUAD_MOX.o $(EQMINC)/EQM_PWR_POL_UO2.o\
+			$(EQMINC)/EQM_PWR_LIN_MOX.o $(EQMINC)/EQM_FBR_BakerRoss_MOX.o $(EQMINC)/EQM_MLP_Kinf.o\
+			$(EQMINC)/EQM_FBR_MLP_Keff.o $(EQMINC)/EQM_FBR_MLP_Keff_BOUND.o\
+			$(XSMINC)/XSM_MLP.o $(XSMINC)/XSM_CLOSEST.o \
+			$(IMINC)/IM_RK4.o $(IMINC)/IM_Matrix.o
 
 
 ROOTOBJS = 	CLASSLogger.o \
@@ -69,15 +66,15 @@ ROOTOBJS = 	CLASSLogger.o \
 			PhysicsModels.o
 
 
-CXX           = g++
-CXXFLAGS      = -O2 -g -fopenmp -fPIC -I$(LOCALINC) $(ROOTCFLAGS)
-LD            = g++
-LDFLAGS       = -g -fPIC $(ROOTLIBS) -lTMVA -shared -lgomp
+CXXFLAGS      += -I$(LOCALINC) $(ROOTCFLAGS)
+LD             = $(CXX)
+LIBS           = -L$(LIBDIR) $(ROOTLIBS) -lTMVA $(OMPLIB)
+LDFLAGS       += -shared 
 
 all:		$(OBJS) $(OBJMODEL)
-		$(LD) $(LDFLAGS) $(OBJS) $(OBJMODEL) -o $(LIBDIR)/lib$(LIBNAME).so
+		$(LD) $(LDFLAGS) $(OBJS) $(OBJMODEL) $(LIBS) -o $(LIBDIR)/lib$(LIBNAME).so
 		@echo "lib$(LIBNAME).so done"
-		$(LD) $(LDFLAGS) $(ROOTOBJS) -o $(LIBDIR)/lib$(LIBNAME)_root.so
+		$(LD) $(LDFLAGS) $(ROOTOBJS) $(LIBS) -o $(LIBDIR)/lib$(LIBNAME)_root.so
 		@echo "lib$(LIBNAME)_root.so done"
 
 clean:
@@ -126,4 +123,4 @@ EvolutionDataDict.cxx:		$(LOCALINC)/EvolutionData.hxx
 .SUFFIXES: .cxx
 
 %.o: %.cxx $(INCLUDES)
-	$(CXX) $(CXXFLAGS) -c $*.cxx -o $*.o
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $*.cxx -o $*.o
