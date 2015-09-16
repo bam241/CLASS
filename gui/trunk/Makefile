@@ -1,12 +1,10 @@
-include ./Makefile.config
+include ../config/Makefile.config
 
 OMPFLAGS=
 OMPLIB=
 
-# Directory containing libraries
-LIBDIR          = $(CLASS_lib)
 # Directory containing includes for CLASS
-LOCALINC	= $(CLASS_include)
+LOCALINC	= ../source/include
 
 ######################################################
 ######### nothing to change from here ################
@@ -15,11 +13,11 @@ LOCALINC	= $(CLASS_include)
 #------------------------------------------------------------------------------
 CXXFLAGS      += -g -I$(LOCALINC)
 LD            = $(CXX)
-LIBS          += -L$(LIBDIR) -lCLASSpkg -lgomp
-LDFLAGS       = -g
+LIBS          += -L$(LIBDIR) -lCLASSpkg $(OMPLIB)
+LDFLAGS       =
 GLIBS         = $(ROOTGLIBS) -lTMVA
 
-CXXFLAGS     += -g $(ROOTCFLAGS)
+CXXFLAGS     += $(ROOTCFLAGS)
 
 #------------------------------------------------------------------------------
 subO	= CLASSPlotElement.o \
@@ -48,7 +46,7 @@ all:    $(OBJS)
 	@mkdir -p bin
 	@mv  $(main) bin/
 	@echo "$(main) done"
-	@echo "CLASSGui is now available in $(CLASS_PATH)/Gui/bin !!"
+	@echo "CLASSGui is now available in $LIBDIR/../gui/bin "
 
 
 
@@ -69,5 +67,5 @@ CLASSWin.o:	CLASSRead.hxx \
 CLASSPlotElement.o:	CLASSPlotElement.hxx
 
 .cxx.o:
-	$(CXX) $(CXXFLAGS)  -c  $<
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c  $<
 
