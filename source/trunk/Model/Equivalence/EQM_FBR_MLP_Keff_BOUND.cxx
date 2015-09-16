@@ -75,7 +75,7 @@ EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(string TMVAWeightPath,  int NumOf
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
 	INFO << "\t" << "( " << fTMVAWeightPath << " | " << fInformationFile << " )" << endl;
 	INFO << "Time (s) :"<<endl;
-	for(int i=0;i<fMLP_Time.size();i++)
+	for(int i=0;i< (int) fMLP_Time.size();i++)
 			INFO<<fMLP_Time[i]<<endl;
 	INFO<<endl;
 	INFO<<"Z A I Name (input MLP) :"<<endl;
@@ -135,7 +135,7 @@ EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(CLASSLogger* log, string TMVAWeig
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
 	INFO << "\t" << "( " << fTMVAWeightPath << " | " << fInformationFile << " )" << endl;
 	INFO << "Time (s) :"<<endl;
-	for(int i=0;i<fMLP_Time.size();i++)
+	for(int i=0;i< (int) fMLP_Time.size();i++)
 			INFO<<fMLP_Time[i]<<endl;
 	INFO<<endl;
 	INFO<<"Z A I Name (input MLP) :"<<endl;
