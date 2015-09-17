@@ -251,6 +251,7 @@ echo
 CLASS_PATH_To_Set=""
 CLASS_include_To_Set=""
 CLASS_lib_To_Set=""
+SetEnvSucceed=false
 
 if [ -z "$CLASS_PATH" ]; then
 	echo "Not found in your loaded $SHELLPreference."
@@ -275,11 +276,16 @@ if [ -z "$CLASS_PATH" ]; then
 	if [ "$MYDefaultSHELL" = "/bin/tcsh" ] || [ "$MYDefaultSHELL" = "/bin/csh" ] ; then
 		EXPORT="setenv "
 		EQUAL=" "
+
 	else
 		EXPORT="export "
 		EQUAL="="
 		QUOTE="\""
 	fi
+
+
+	if [ -f HOME/$SHELLPreference ] ; then
+		SetEnvSucceed=true
 		echo "" >>$HOME/$SHELLPreference
 		echo "##################" >> $HOME/$SHELLPreference
 		echo "####CLASSV4.1#####" >> $HOME/$SHELLPreference
@@ -290,14 +296,22 @@ if [ -z "$CLASS_PATH" ]; then
 		echo "$EXPORT CLASS_lib$EQUAL$QUOTE$CLASS_lib_To_Set$QUOTE" >> $HOME/$SHELLPreference
 
 		echo "Environnment variables added in $HOME/$SHELLPreference"
+	else
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		echo "!!!!!! WARNING  $HOME/$SHELLPreference NOT FOUND !!!!!!!!!!"
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
-
+		
+	fi
 else
+	SetEnvSucceed=true
 	echo "A CLASS_PATH is already defined in your $SHELLPreference: $CLASS_PATH"
 
 	if [ -z "$CLASS_lib" ]; then
 		echo "Path to CLASS libraries is not set "
-		echo "delete the CLASS_PATH set in your bashrc or tcshrc, source bashrc(tcshrc), and rerun this script"
+		echo "delete the CLASS_PATH set in your $SHELLPreference, source $SHELLPreference, and rerun this script"
+		SetEnvSucceed=false
+
 	else
 		echo "CLASS_lib is: $CLASS_lib"
 
@@ -305,22 +319,32 @@ else
 
 	if [ -z "$CLASS_include" ]; then
 		echo "Path to CLASS includes is not set "
-		echo "delete the CLASS_PATH set in your bashrc or tcshrc, source bashrc(tcshrc), and rerun this script"
-
+		echo "delete the CLASS_PATH set in your $SHELLPreference, source $SHELLPreference, and rerun this script"
+		SetEnvSucceed=false
 	else
 		echo "CLASS_include is : $CLASS_include"
 	fi
 
 fi	
-echo "LOADING $HOME/$SHELLPreference ... done"
-echo
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-echo " Congratulations you are now able to compile your first     "
-echo "               CLASS .cxx input.                            "
-echo " Please read $CLASS_PATH_To_Set/documentation/Manual/USEGUIDE.pdf"                                     
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-
-$MYDefaultSHELL
+ 
+if [ "$SetEnvSucceed" = true ] ; then 
+	echo "LOADING $HOME/$SHELLPreference ... done"
+	echo
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	echo " Congratulations you are now able to compile your first     "
+	echo "               CLASS .cxx input.                            "
+	echo " Please read $CLASS_PATH_To_Set/documentation/Manual/USEGUIDE.pdf"                                     
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	$MYDefaultSHELL #LOAD THE DEFAULT SHELL WITH THE NEW ENV VAR
+else
+	echo " I CAN'T MANAGE TO SET THE CLASS ENVIRONEMENT VARIABLE 	  "    
+	echo " ADD THE FOLLOWING IN YOUR SHELL PREFERENCE FILE (RC FILE) :" 
+	echo                    
+	echo "$EXPORT CLASS_PATH$EQUAL$QUOTE$CLASS_PATH_To_Set$QUOTE      " 
+	echo "$EXPORT CLASS_include$EQUAL$QUOTE$CLASS_include_To_Set$QUOTE" 
+	echo "$EXPORT CLASS_lib$EQUAL$QUOTE$CLASS_lib_To_Set$QUOTE        "		     
+	echo
+fi	
 
 
 
