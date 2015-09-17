@@ -333,7 +333,8 @@ if [ "$SetEnvSucceed" = true ] ; then
 	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 	echo " Congratulations you are now able to compile your first     "
 	echo "               CLASS .cxx input.                            "
-	echo " Please read $CLASS_PATH_To_Set/documentation/Manual/USEGUIDE.pdf"                                     
+	echo " Please read $CLASS_PATH_To_Set/documentation/Manual/USEGUIDE.pdf"  
+	echo " (Check if echo \$CLASS_PATH gives you the correct path)    "                                   
 	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 	$MYDefaultSHELL #LOAD THE DEFAULT SHELL WITH THE NEW ENV VAR
 else
