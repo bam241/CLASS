@@ -1,7 +1,5 @@
 #!/bin/bash
-###############################################################
-######This script has to be executed in CLASS root folder######
-###############################################################
+
 option=$1
 case "$option" in
   "-h" | "--help")
@@ -10,7 +8,6 @@ cat <<\_ACEOF
 ###############################################################
 ############## configures and compiles CLASS V4.1 #############
 ###############################################################
-######This script has to be executed in CLASS root folder######
 
 Usage: install.sh [VAR=VALUE] [OPTION]
 Defaults for the options are specified in brackets.
@@ -287,7 +284,7 @@ if [ -z "$CLASS_PATH" ]; then
 	fi
 
 
-	if [ -f HOME/$SHELLPreference ] ; then
+	if [ -f $HOME/$SHELLPreference ] ; then
 		SetEnvSucceed=true
 		echo "" >>$HOME/$SHELLPreference
 		echo "##################" >> $HOME/$SHELLPreference
