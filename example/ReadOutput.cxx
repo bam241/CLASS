@@ -271,6 +271,7 @@ int main(int argc, char** argv)
 
 		delete fData;
 	
+cout << "Results have been written in ReadRootOuput.dat"<<endl;
 
 }
 
