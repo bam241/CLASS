@@ -17,7 +17,8 @@ Configuration:
 Optional Features:
   --disable-OMP      do not compile with OpenMP support for evolution 
                      [default: enable for gcc version >= 4.1]
-  --InstallLib-path=path     Location of made CLASS's libraries [default= $PWD/lib]
+  --InstallLib-path=path     Install location of CLASS's libraries [default= $PWD/lib]
+  --InstallGui-path=path     Install location of the GUI binary [default= $PWD/gui/bin]
 
 Some influential environment variables:
   CXX         C++ compiler command [default=g++]
@@ -44,6 +45,7 @@ ROOTGLIBS=
 ROOTLIBS=
 
 LIBDIR=${PWD}/lib
+Gui_bin_PATH=${PWD}/gui/bin
 
 CXX=""
 CXXFLAGS=""
@@ -61,6 +63,8 @@ do
   case $option in
   	--InstallLib-path=*)
   		LIBDIR="$ac_optarg" ;;
+  	--InstallGui-path=*)
+  		Gui_bin_PATH="$ac_optarg" ;;
 	--disable-OMP)
 		IsOMPEnable="disable" ;;
 	 *) 
@@ -186,6 +190,12 @@ echo "LIBDIR=$LIBDIR" >> $MAKEFILE_INC
 echo "Building Librairies Folder @ $LIBDIR"
 mkdir -p $LIBDIR
 
+
+echo "####Installation folder of Gui##" >>$MAKEFILE_INC
+echo "Gui_bin_PATH=$Gui_bin_PATH" >> $MAKEFILE_INC
+echo "Building Gui Folder @ $Gui_bin_PATH"
+mkdir -p $Gui_bin_PATH
+
 #######################################################
 ### Include flags 
 #######################################################
@@ -239,7 +249,7 @@ echo "####################################################"
 echo "########## ENVIRONEMENT VARIABLES ##################"
 echo "####################################################"
 
-MYDefaultSHELL=$(finger ${LOGNAME} | grep Shell: | awk '{print $4}')
+MYDefaultSHELL=$(env | grep SHELL | awk -F "=" '{ print $2 }')
 SHELLPreference=".$(echo "$MYDefaultSHELL" | awk -F "/bin/" '{print $2}')rc"
 echo "-> Your default shell is : $MYDefaultSHELL"
 echo "-> Your $SHELLPreference will be edited if CLASS_PATH CLASS_include" 
@@ -269,9 +279,12 @@ if [ -z "$CLASS_PATH" ]; then
 	[ -z "${CLASS_lib_To_Set}" ] && CLASS_lib_To_Set="$LIBDIR"
 	echo "Path of the CLASS lib folder is $CLASS_lib_To_Set"
 	echo 
+	read -p "====>ENTER THE PATH WHERE CLASSGui is INSTALLED (default: $Gui_bin_PATH): " CLASS_Gui_path_to_set
+	[ -z "${CLASS_Gui_path_to_set}" ] && CLASS_Gui_path_to_set="$Gui_bin_PATH"
+	echo "Path of the CLASS lib folder is $CLASS_Gui_path_to_set"
+	echo 
 
 	EXPORT=
-	QUOTE=
 	EQUAL=
 	if [ "$MYDefaultSHELL" = "/bin/tcsh" ] || [ "$MYDefaultSHELL" = "/bin/csh" ] ; then
 		EXPORT="setenv "
@@ -280,7 +293,6 @@ if [ -z "$CLASS_PATH" ]; then
 	else
 		EXPORT="export "
 		EQUAL="="
-		QUOTE="\""
 	fi
 
 
@@ -291,16 +303,17 @@ if [ -z "$CLASS_PATH" ]; then
 		echo "####CLASSV4.1#####" >> $HOME/$SHELLPreference
 		echo "##################" >> $HOME/$SHELLPreference
 
-		echo "$EXPORT CLASS_PATH$EQUAL$QUOTE$CLASS_PATH_To_Set$QUOTE" >> $HOME/$SHELLPreference
-		echo "$EXPORT CLASS_include$EQUAL$QUOTE$CLASS_include_To_Set$QUOTE" >> $HOME/$SHELLPreference
-		echo "$EXPORT CLASS_lib$EQUAL$QUOTE$CLASS_lib_To_Set$QUOTE" >> $HOME/$SHELLPreference
+		echo "$EXPORT CLASS_PATH$EQUAL$CLASS_PATH_To_Set" >> $HOME/$SHELLPreference
+		echo "$EXPORT CLASS_include$EQUAL$CLASS_include_To_Set" >> $HOME/$SHELLPreference
+		echo "$EXPORT CLASS_lib$EQUAL$CLASS_lib_To_Set" >> $HOME/$SHELLPreference
+		echo "#### CLASS Gui ####" >> $HOME/$SHELLPreference
+		echo "$EXPORT PATH$EQUAL\${PATH}:$CLASS_Gui_path_to_set" >> $HOME/$SHELLPreference
 
 		echo "Environnment variables added in $HOME/$SHELLPreference"
 	else
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		echo "!!!!!! WARNING  $HOME/$SHELLPreference NOT FOUND !!!!!!!!!!"
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-
 		
 	fi
 else
@@ -341,9 +354,11 @@ else
 	echo " I CAN'T MANAGE TO SET THE CLASS ENVIRONEMENT VARIABLE 	  "    
 	echo " ADD THE FOLLOWING IN YOUR SHELL PREFERENCE FILE (RC FILE) :" 
 	echo                    
-	echo "$EXPORT CLASS_PATH$EQUAL$QUOTE$CLASS_PATH_To_Set$QUOTE      " 
-	echo "$EXPORT CLASS_include$EQUAL$QUOTE$CLASS_include_To_Set$QUOTE" 
-	echo "$EXPORT CLASS_lib$EQUAL$QUOTE$CLASS_lib_To_Set$QUOTE        "		     
+	echo "$EXPORT CLASS_PATH$EQUAL$CLASS_PATH_To_Set      " 
+	echo "$EXPORT CLASS_include$EQUAL$CLASS_include_To_Set" 
+	echo "$EXPORT CLASS_lib$EQUAL$CLASS_lib_To_Set        "		
+	echo "$EXPORT PATH$EQUAL\${PATH}:$CLASS_Gui_path_to_set"
+
 	echo
 fi	
 
