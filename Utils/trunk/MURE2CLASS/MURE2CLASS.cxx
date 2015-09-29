@@ -135,7 +135,7 @@ int main(int argc, char** argv)
 		cout << "Arg should be :" << endl << "\t1 Path," << endl << "\t2 OutName," << endl << "\t3 ReactorType," << endl << "\t4 FuelType," << endl;
 		cout << "\t5 Power," << endl << endl << "\t6 NormalizationFactor(Before Normalization)," << endl << "\t7 WantedCell (by default should be 0)" <<  endl << "\t8 Step to Skip," << endl;
 		exit(1);}
-	string DBPath 			= sPWD + "/" + argv[1];
+	string DBPath 			= argv[1];
 	string OutName			= argv[2];
 	string ReactorType		= argv[3];
 	string FuelType			= argv[4];
