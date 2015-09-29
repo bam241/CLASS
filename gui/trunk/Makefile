@@ -43,10 +43,10 @@ OBJS    = $(subO) $(mainO)
 all:    $(OBJS)
 		
 	$(LD) $(LDFLAGS) $(OBJS) $(LIBS) $(GLIBS) -o $(main)
-	@mkdir -p bin
-	@mv  $(main) bin/
+	@mkdir -p $(Gui_bin_PATH)
+	@mv  $(main) $(Gui_bin_PATH)
 	@echo "$(main) done"
-	@echo "CLASSGui is now available in $LIBDIR/../gui/bin "
+	@echo "CLASSGui is now available in $(Gui_bin_PATH) "
 
 
 
