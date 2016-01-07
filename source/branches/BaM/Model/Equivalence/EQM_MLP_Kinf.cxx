@@ -35,7 +35,9 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(string WeightPathAlpha0, string WeightPathAlpha1, str
 	fInformationFile = InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fInformationFile
-	
+
+    InitialiseTMVAReader();
+
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
 	SetBurnUpPrecision(0.005);//1 % of the targeted burnup
@@ -274,7 +276,7 @@ void EQM_MLP_Kinf::InitialiseTMVAReader()
 
     // Create a set of variables and declare them to the reader
     // - the variable names MUST corresponds in name and type to those given in the weight file(s) used
-    vector<float> 	InputTMVA;
+    InputTMVA;
     for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
         InputTMVA.push_back(0);
     Float_t Time;
@@ -300,6 +302,9 @@ void EQM_MLP_Kinf::UpdateInputComposition(IsotopicVector TheFreshfuel, double Th
 
     IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(IVInputTMVA);
 
+    double Ntot = IVAccordingToUserInfoFile.GetSumOfAll();
+
+    IVAccordingToUserInfoFile *= 1/Ntot;
 
     map<ZAI,string>::iterator it;
     int j = 0;

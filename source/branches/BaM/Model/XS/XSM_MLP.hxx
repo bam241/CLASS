@@ -13,7 +13,11 @@
  @version 1.0
  */
 #include "XSModel.hxx"
+
 #include "TTree.h"
+#include "TMVA/Reader.h"
+
+
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -38,6 +42,7 @@ typedef void (XSM_MLP::*XS_MLP_DMthPtr)( const string & ) ;
  set of Multi Layer Perceptrons (MLP)
  
  @authors BLG
+ @authors BaM
  @version 1.0
  */
 //________________________________________________________________________
@@ -127,9 +132,10 @@ class XSM_MLP : public XSModel
 	void ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &Reaction, int &TimeStep);; 	//!<  Select the reaction according to the weight file name
 	
 	
-	
-	double ExecuteTMVA(string WeightFile, TTree* InputTree);			//!<Execute the MLP according to the input tree created
-	TTree* CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep = 0);	//!<Create input tmva tree to be read by ExecuteTMVA
+    void InitialiseTMVAReader();
+
+	double ExecuteTMVA(string WeightFile, IsotopicVector isotopicvector, int TimeStep = 0);			//!<Execute the MLP according to the input tree created
+	void UpdateInputComposition(IsotopicVector TheFreshfuel,int TimeStep = 0);	//!<Create input tmva tree to be read by ExecuteTMVA
 	
 	
 	vector<double> 	fMLP_Time;	//!<  Time vector of the data base
@@ -141,7 +147,12 @@ class XSM_MLP : public XSModel
 	bool fIsStepTime;		//!<  true if one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
 	
 	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
-	
+
+    TMVA::Reader *reader;
+    vector<float> InputTMVA;
+    IsotopicVector IVInputTMVA;
+    float Time;
+
 #ifndef __CINT__
 	map<string, XS_MLP_DMthPtr> fDKeyword;
 #endif
