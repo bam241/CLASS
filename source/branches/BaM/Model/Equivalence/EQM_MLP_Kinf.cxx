@@ -11,7 +11,6 @@
 #include <cassert>
 
 #include "TSystem.h"
-#include "TMVA/Reader.h"
 #include "TMVA/Tools.h"
 #include "TMVA/MethodCuts.h"
 
@@ -75,7 +74,9 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string WeightPathAlpha0, string Wei
 	LoadKeyword();
 	ReadNFO();//Getting information from fInformationFile
 	
-	fNumberOfBatch = NumOfBatch;
+    InitialiseTMVAReader();
+
+    fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
 	SetBurnUpPrecision(0.005);//1 % of the targeted burnup
 	SetBuildFuelFirstGuess(0.04);//First fissile content guess for the EquivalenceModel::BuildFuel algorithm
@@ -115,7 +116,9 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, string Inform
 	fInformationFile = InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fInformationFile
-	
+
+    InitialiseTMVAReader();
+
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
 	SetBurnUpPrecision(0.005);//1 % of the targeted burnup
@@ -152,7 +155,9 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,  int NumOfBa
 	fInformationFile = InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fMLPInformationFile
-	
+
+    InitialiseTMVAReader();
+
 	fNumberOfBatch = NumOfBatch;
 	fKThreshold = CriticalityThreshold ;
 	SetBurnUpPrecision(0.005);//1 % of the targeted burnup
@@ -257,100 +262,66 @@ void EQM_MLP_Kinf::ReadLine(string line)
 	
 	DBGL
 }
-//________________________________________________________________________
-TTree* EQM_MLP_Kinf::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double ThisTime)
+
+void EQM_MLP_Kinf::InitialiseTMVAReader()
 {
-	/******Create Input data tree to be interpreted by TMVA::Reader***/
-	TTree*   InputTree = new TTree("InTMPKinf", "InTMPKinf");
-	
-	vector<float> 	InputTMVA;
-	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
-		InputTMVA.push_back(0);
-	
-	float Time = 0;
-	
-	IsotopicVector IVInputTMVA;
-	map<ZAI ,string >::iterator it;
-	int j = 0;
-	
-	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
+
+    for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
+        InputTMVA.push_back(0);
+
+    reader = new TMVA::Reader( "Silent" );
+
+
+    // Create a set of variables and declare them to the reader
+    // - the variable names MUST corresponds in name and type to those given in the weight file(s) used
+    vector<float> 	InputTMVA;
+    for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
+        InputTMVA.push_back(0);
+    Float_t Time;
+
+    map<ZAI ,string >::iterator it;
+    int j = 0;
+    for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
+        {
+            reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
+            IVInputTMVA +=  ((*it).first)*1;
+            j++;
+        }
+
+    if(fTMVAWeightPath.size() == 1)
+        reader->AddVariable( "Time" ,&Time);
+
+}
+
+
+void EQM_MLP_Kinf::UpdateInputComposition(IsotopicVector TheFreshfuel, double ThisTime)
+{
+
+
+    IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(IVInputTMVA);
+
+
+    map<ZAI,string>::iterator it;
+    int j = 0;
+
+	for( it = fMapOfTMVAVariableNames.begin() ; it != fMapOfTMVAVariableNames.end() ; it++)
 	{
-		InputTree->Branch( ((*it).second).c_str()	,&InputTMVA[j], ((*it).second + "/F").c_str());
-		IVInputTMVA+=  ((*it).first)*1;
-		j++;
-	}
-	
-	if(ThisTime != -1)
-		InputTree->Branch(	"Time"	,&Time	,"Time/F"	);
-	
-	IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(IVInputTMVA);
-	
-	double Ntot = IVAccordingToUserInfoFile.GetSumOfAll();
-	
-	IVAccordingToUserInfoFile = IVAccordingToUserInfoFile/Ntot;
-	
-	j = 0;
-	map<ZAI ,string >::iterator it2;
-	
-	for( it2 = fMapOfTMVAVariableNames.begin() ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
-	{
-		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first ) ;
+		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it).first ) ;
 		j++;
 	}
 	
 	Time = ThisTime;
-	
-	InputTree->Fill();
-	
-	return InputTree;
-	
+
 }
 //________________________________________________________________________
-double EQM_MLP_Kinf::ExecuteTMVA(TTree* InputTree,string WeightPath, bool IsTimeDependent)
+double EQM_MLP_Kinf::ExecuteTMVA(IsotopicVector TheFreshfuel, double ThisTime, string TMVAWeightPath)
 {
-	
-	// --- Create the Reader object
-	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
-	
-	// Create a set of variables and declare them to the reader
-	// - the variable names MUST corresponds in name and type to those given in the weight file(s) used
-	vector<float> 	InputTMVA;
-	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
-		InputTMVA.push_back(0);
-	Float_t Time;
-	
-	map<ZAI ,string >::iterator it;
-	int j = 0;
-	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
-	{	reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
-		j++;
-	}
-	
-	if(IsTimeDependent)
-		reader->AddVariable( "Time" ,&Time);
-	
-	// --- Book the MVA methods
-	
-	// Book method MLP
-	TString methodName = "MLP method";
-	reader->BookMVA( methodName, WeightPath );
-	
-	map<ZAI ,string >::iterator it2;
-	j = 0;
-	for( it2 = fMapOfTMVAVariableNames.begin()  ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
-	{
-		InputTree->SetBranchAddress(( (*it2).second ).c_str(),&InputTMVA[j]);
-		j++;
-	}
-	
-	if(IsTimeDependent)
-		InputTree->SetBranchAddress( "Time" ,&Time );
-	
-	InputTree->GetEntry(0);
-	Float_t val = (reader->EvaluateRegression( methodName ))[0];
-	
-	delete reader;
-	
+    UpdateInputComposition(TheFreshfuel,ThisTime);
+
+    reader->BookMVA( "MLP Method", TMVAWeightPath );
+
+    Float_t val = (reader->EvaluateRegression(  "MLP Method" ))[0];
+
 	return (double)val;//retourn k_{inf}(t = Time)
 }
 //________________________________________________________________________
@@ -371,9 +342,7 @@ double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetB
 	for(int b = 0;b<fNumberOfBatch;b++)
 	{
 		float TheTime = (b+1)*TheFinalTime/fNumberOfBatch;
-		TTree* InputTree = CreateTMVAInputTree(TheFuel,TheTime);
-		OldPredictedk_av += ExecuteTMVA(InputTree,fTMVAWeightPath[0],true);
-		delete InputTree;
+        OldPredictedk_av += ExecuteTMVA(TheFuel,TheTime, fTMVAWeightPath[0]);
 	}
 	OldPredictedk_av/= fNumberOfBatch;
 	
@@ -409,9 +378,7 @@ double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetB
 		for(int b = 0;b<fNumberOfBatch;b++)
 		{
 			float TheTime = (b+1)*TheFinalTime/fNumberOfBatch;
-			TTree* InputTree = CreateTMVAInputTree(TheFuel,TheTime);
-			k_av += ExecuteTMVA(InputTree,fTMVAWeightPath[0],true);
-			delete InputTree;
+			k_av += ExecuteTMVA(TheFuel,TheTime, fTMVAWeightPath[0]);
 		}
 		k_av/= fNumberOfBatch;
 		
@@ -426,12 +393,10 @@ double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetB
 double EQM_MLP_Kinf::GetMaximumBurnUp_Pol2(IsotopicVector TheFuel,double TargetBU)
 {
 	
-	TTree* InputTree = CreateTMVAInputTree(TheFuel,-1);
-	double Alpha_0 = ExecuteTMVA(InputTree,fTMVAWeightPath[0],false);
-	double Alpha_1 = ExecuteTMVA(InputTree,fTMVAWeightPath[1],false);
-	double Alpha_2 = ExecuteTMVA(InputTree,fTMVAWeightPath[2],false);
-	delete InputTree;
-	
+	double Alpha_0 = ExecuteTMVA(TheFuel, -1, fTMVAWeightPath[0]);
+	double Alpha_1 = ExecuteTMVA(TheFuel, -1, fTMVAWeightPath[1]);
+	double Alpha_2 = ExecuteTMVA(TheFuel, -1, fTMVAWeightPath[2]);
+
 	if(Alpha_0 < fKThreshold) //not enought fissile for sure !!
 		return 0;
 	

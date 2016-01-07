@@ -2,6 +2,7 @@
 #define _EQM_PWR_MLP_MOX_HXX
 
 #include "EquivalenceModel.hxx"
+#include "TMVA/Reader.h"
 #include "TTree.h"
 
 using namespace std;
@@ -30,7 +31,7 @@ class EQM_PWR_MLP_MOX : public EquivalenceModel
 	/// normal constructor
 	/*!
 	 Create a EQM_PWR_MLP_MOX 
-	 \param  TMVAWeightPath :  PAth to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
+	 \param  TMVAWeightPath :  Path to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
 	 */
 	EQM_PWR_MLP_MOX(string TMVAWeightPath);
 	//}
@@ -40,7 +41,7 @@ class EQM_PWR_MLP_MOX : public EquivalenceModel
 	/*!
 	 Create a EQM_PWR_MLP_MOX
 	 \param log : use for log
-	 \param  TMVAWeightPath :  PAth to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
+	 \param  TMVAWeightPath :  Path to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
 	 */
 	EQM_PWR_MLP_MOX(CLASSLogger* log, string TMVAWeightPath);
 	//}
@@ -61,14 +62,24 @@ class EQM_PWR_MLP_MOX : public EquivalenceModel
 	 */
 	//@{
 
-		TTree* CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);//!<Create input tmva tree to be read by ExecuteTMVA
-		double ExecuteTMVA(TTree* theTree);//!<Execute the MLP according to the input tree created by CreateTMVAInputTree
+    void UpdateInputComposition(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);
+    double ExecuteTMVA(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);//!<Execute the MLP according to the input tree created by CreateTMVAInputTree
 		
 	//@}	
 
 	private :
 
+    float Pu8;
+    float Pu9;
+    float Pu10;
+    float Pu11;
+    float Pu12;
+    float Am1;
 
+    float BU;
+    float U5_enrichment;
+
+    TMVA::Reader *reader;
 	string fTMVAWeightPath;;//!<The weight needed by TMVA to construct and execute the multilayer perceptron
 
 };

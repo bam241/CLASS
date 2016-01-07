@@ -102,7 +102,9 @@ class PhysicsModels : public CLASSObject
 	PhysicsModels*		GetPhysicsModels()	{return this;}//!< return the PhysicsModels
 
 
-
+    void SetXSModel(XSModel* myXSModel) { fXSModel = myXSModel;}
+    void SetEquivlalenceModel(EquivalenceModel* myEqModel) { fEquivalenceModel = myEqModel;}
+    void SetIrradiationModel(IrradiationModel* myIRModel) { fIrradiationModel = myIRModel;}
 
 
 
