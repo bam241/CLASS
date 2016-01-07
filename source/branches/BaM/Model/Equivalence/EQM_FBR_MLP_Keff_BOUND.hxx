@@ -2,6 +2,8 @@
 #define _EQM_FBR_MLP_Keff_BOUND_HXX_
 
 #include "EquivalenceModel.hxx"
+
+#include "TMVA/Reader.h"
 #include "TTree.h"
 #include "TGraph.h"
 
@@ -106,9 +108,12 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	 \name TMVA related  methods
 	 */
 	//@{
-	TTree* 	CreateTMVAInputTree(IsotopicVector FreshFuel, double ThisTime);//!<Create input tmva tree to be read by ExecuteTMVA
-	
-	double 	ExecuteTMVA(TTree* theTree, bool IsTimeDependant);//!<Execute the MLP according to the input tree created by CreateTMVAInputTree
+
+    void InitialiseTMVAReader();
+
+    void UpdateInputComposition(IsotopicVector TheFreshfuel, double ThisTime);
+
+	double 	ExecuteTMVA(IsotopicVector TheFreshfuel, double ThisTime);//!<Execute the MLP according to the input tree created by CreateTMVAInputTree
 	//@}
 	
 	
@@ -179,7 +184,11 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	double 	fTargetKeff;		//!< Use for Varying Fissile content to reach fTargetKeff at time used in the MLP Training
 	
 	
-	
+    TMVA::Reader *reader;
+    vector<float> InputTMVA;
+    IsotopicVector IVInputTMVA;
+    float Time;
+
 	
 	
 	/*!
@@ -187,8 +196,10 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	 */
 	//@{
 	 
-	double 	GetKeffAtFixedTime(IsotopicVector FreshFuel){TTree* Input = CreateTMVAInputTree(FreshFuel,-1);  double Keff = ExecuteTMVA( Input, false ); delete Input; return Keff;} //!<time independant since the MLP is trained for 1 time
-
+/*	double 	GetKeffAtFixedTime(IsotopicVector FreshFuel){
+        TTree* Input = CreateTMVAInputTree(FreshFuel,-1);
+        double Keff = ExecuteTMVA( Input, false ); delete Input; return Keff;} //!<time independant since the MLP is trained for 1 time
+*/
 	TGraph* BuildKeffGraph(IsotopicVector FreshFuel);
 	TGraph* BuildAverageKeffGraph(TGraph* GRAPH_KEFF);
 	

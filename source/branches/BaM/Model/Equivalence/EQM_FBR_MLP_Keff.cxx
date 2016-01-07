@@ -12,7 +12,6 @@
 #include <map>
 
 #include "TSystem.h"
-#include "TMVA/Reader.h"
 #include "TMVA/Tools.h"
 #include "TMVA/MethodCuts.h"
 
@@ -51,7 +50,9 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(string TMVAWeightPath, double keff_target, st
 	fInformationFile = InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fMLPInformationFile
-	
+
+    InitialiseTMVAReader();
+
 	if(fMaximalContent == 0 )
 	{
 		ERROR<<"Can't find the k_maxfiscontent keyword in .nfo file\n this is mandatory"<<endl;
@@ -97,7 +98,9 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(CLASSLogger* log, string TMVAWeightPath, doub
 	fInformationFile = InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fMLPInformationFile
-	
+
+    InitialiseTMVAReader();
+
 	if(fMaximalContent == 0 )
 	{
 		ERROR<<"Can't find the k_maxfiscontent keyword in .nfo file\n this is mandatory"<<endl;
@@ -124,112 +127,60 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(CLASSLogger* log, string TMVAWeightPath, doub
 
 	DBGL
 }
-//________________________________________________________________________
-TTree* EQM_FBR_MLP_Keff::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double ThisTime)
+
+void EQM_FBR_MLP_Keff::InitialiseTMVAReader()
 {
-	DBGL
 
-	/******Create Input data tree to be interpreted by TMVA::Reader***/
-	TTree*   InputTree = new TTree("InTMPKef", "InTMPKef");
+    for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
+        InputTMVA.push_back(0);
 
-	vector<float> 	InputTMVA;
-	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
-		InputTMVA.push_back(0);
+    reader = new TMVA::Reader( "Silent" );
 
-	float Time = 0;
 
-	IsotopicVector IVInputTMVA;
-	map<ZAI ,string >::iterator it;
-	int j = 0;
+    // Create a set of variables and declare them to the reader
+    // - the variable names MUST corresponds in name and type to those given in the weight file(s) used
+    vector<float> 	InputTMVA;
+    for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
+        InputTMVA.push_back(0);
+    Float_t Time;
 
-	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
-	{
-		InputTree->Branch( ((*it).second).c_str()	,&InputTMVA[j], ((*it).second + "/F").c_str());
-		IVInputTMVA+=  ((*it).first)*1;
-		j++;
-	}
-
-	if(ThisTime != -1)
-		InputTree->Branch(	"Time"	,&Time	,"Time/F"	);
-
-	IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(IVInputTMVA);
-
-	double Ntot = IVAccordingToUserInfoFile.GetSumOfAll();
-
-	IVAccordingToUserInfoFile = IVAccordingToUserInfoFile/Ntot;
-
-	j = 0;
-	map<ZAI ,string >::iterator it2;
-
-	for( it2 = fMapOfTMVAVariableNames.begin() ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
-	{
-		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first ) ;
-		j++;
-	}
-
-	Time = ThisTime;
-
-	InputTree->Fill();
-
-	DBGL
-	return InputTree;
+    map<ZAI ,string >::iterator it;
+    int j = 0;
+    for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
+        {
+        reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
+        IVInputTMVA +=  ((*it).first)*1;
+        j++;
+        }
 
 }
+
+void EQM_FBR_MLP_Keff::UpdateInputComposition(IsotopicVector TheFreshfuel)
+{
+
+
+    IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(IVInputTMVA);
+
+
+    map<ZAI,string>::iterator it;
+    int j = 0;
+
+    for( it = fMapOfTMVAVariableNames.begin() ; it != fMapOfTMVAVariableNames.end() ; it++)
+        {
+        InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it).first ) ;
+        j++;
+        }
+
+}
+
+
 //________________________________________________________________________
-double EQM_FBR_MLP_Keff::ExecuteTMVA(TTree* InputTree, bool IsTimeDependent)
+double EQM_FBR_MLP_Keff::ExecuteTMVA(IsotopicVector TheFreshfuel)
 {
 	DBGL
-
-	// --- Create the Reader object
-	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
-
-	// Create a set of variables and declare them to the reader
-	// - the variable names MUST corresponds in name and type to those given in the weight file(s) used
-	vector<float> 	InputTMVA;
-	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
-		InputTMVA.push_back(0);
 	
-	Float_t Time = 0;
+	Float_t val = (reader->EvaluateRegression( "MLP Method" ))[0];
 
-	
-	map<ZAI ,string >::iterator it;
-	int j = 0;
-	
-	
-	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
-	{	reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
-		j++;
-	}
-
-	if(IsTimeDependent)
-		reader->AddVariable( "Time" ,&Time);
-
-	
-	
-	// --- Book the MVA methods
-
-	// Book method MLP
-	TString methodName = "MLP method";
-	reader->BookMVA( methodName, fTMVAWeightPath );
-
-	map<ZAI ,string >::iterator it2;
-	j = 0;
-	for( it2 = fMapOfTMVAVariableNames.begin()  ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
-	{
-		InputTree->SetBranchAddress(( (*it2).second ).c_str(),&InputTMVA[j]);
-		j++;
-	}
-
-	if(IsTimeDependent)
-		InputTree->SetBranchAddress( "Time" ,&Time );
-
-	InputTree->GetEntry(0);
-	
-	Float_t val = (reader->EvaluateRegression( methodName ))[0];
-
-	delete reader;
-
-	DBGL
 	return (double)val;	//return k_{eff}(t = Time)
 }
 //________________________________________________________________________
@@ -312,7 +263,7 @@ double EQM_FBR_MLP_Keff::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 	double OldFissileContentPlus = fMaximalContent;
 	double PredictedKeff = 0 ;
 	IsotopicVector FreshFuel = (1-FissileContent)*(Fertile/Fertile.GetSumOfAll()) + FissileContent*(Fissile/Fissile.GetSumOfAll());
-	double OldPredictedKeff = GetKeffAtFixedTime(FreshFuel);
+	double OldPredictedKeff = ExecuteTMVA(FreshFuel);
 	
 	double Precision = fPCMprecision/1e5*fTargetKeff; //pcm to 1
 	
@@ -339,7 +290,7 @@ double EQM_FBR_MLP_Keff::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 		
 		IsotopicVector FreshFuel = (1-FissileContent)*(Fertile/Fertile.GetSumOfAll()) + FissileContent*(Fissile/Fissile.GetSumOfAll());
 		
-		PredictedKeff = GetKeffAtFixedTime(FreshFuel);
+		PredictedKeff = ExecuteTMVA(FreshFuel);
 		
 		OldPredictedKeff = PredictedKeff;
 		count ++;

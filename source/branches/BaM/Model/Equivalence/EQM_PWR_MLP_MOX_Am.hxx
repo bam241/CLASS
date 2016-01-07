@@ -2,6 +2,8 @@
 #define _EQM_PWR_MLP_MOX_AM_HXX
 
 #include "EquivalenceModel.hxx"
+#include "TMVA/Reader.h"
+
 #include "TTree.h"
 
 using namespace std;
@@ -30,7 +32,7 @@ class EQM_PWR_MLP_MOX_AM : public EquivalenceModel
 	/// normal constructor
 	/*!
 	 Create a EQM_PWR_MLP_MOX_AM 
-	 \param  TMVAWeightPath :  PAth to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
+	 \param  TMVAWeightPath :  Path to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
 	 */
 	EQM_PWR_MLP_MOX_AM(string TMVAWeightPath);
 	//}
@@ -40,7 +42,7 @@ class EQM_PWR_MLP_MOX_AM : public EquivalenceModel
 	/*!
 	 Create a EQM_PWR_MLP_MOX_AM
 	 \param log : use for log
-	 \param  TMVAWeightPath :  PAth to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
+	 \param  TMVAWeightPath :  Path to the .xml file containing neural network informations : PATH/TMVAWeight.xml (total path to tmva weight)
 	 */
 	EQM_PWR_MLP_MOX_AM(CLASSLogger* log, string TMVAWeightPath);
 	//}
@@ -61,14 +63,26 @@ class EQM_PWR_MLP_MOX_AM : public EquivalenceModel
 	 */
 	//@{
 
-		TTree* CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);//!<Create input tmva tree to be read by ExecuteTMVA
-		double ExecuteTMVA(TTree* theTree);//!<Execute the MLP according to the input tree created by CreateTMVAInputTree
+		void UpdateInputComposition(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);//!<Create input tmva tree to be read by ExecuteTMVA
+		double ExecuteTMVA(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);//!<Execute the MLP according to the input tree created by CreateTMVAInputTree
 
 	//@}	
 
 	private :
-	
 
+    float Pu8;
+    float Pu9;
+    float Pu10;
+    float Pu11;
+    float Pu12;
+    float Am1;
+    float Am2;
+    float Am3;
+
+    float BU;
+    float U5_enrichment;
+
+    TMVA::Reader *reader;
 	string fTMVAWeightPath;;//!<The weight needed by TMVA to construct and execute the multilayer perceptron
 
 };

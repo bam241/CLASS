@@ -11,7 +11,6 @@
 #include <cassert>
 
 #include "TSystem.h"
-#include "TMVA/Reader.h"
 #include "TMVA/Tools.h"
 #include "TMVA/MethodCuts.h"
 
@@ -28,6 +27,20 @@
 EQM_PWR_MLP_MOX_AM::EQM_PWR_MLP_MOX_AM(string TMVAWeightPath):EquivalenceModel(new CLASSLogger("EQM_PWR_MLP_MOX_AM.log"))
 {
 	fTMVAWeightPath = TMVAWeightPath;
+
+    reader = new TMVA::Reader( "Silent" );
+    reader->BookMVA( "MLP Method", fTMVAWeightPath );
+    reader->AddVariable( "Pu8"  		,&Pu8 );
+    reader->AddVariable( "Pu9"  		,&Pu9 );
+    reader->AddVariable( "Pu10" 		,&Pu10);
+    reader->AddVariable( "Pu11" 		,&Pu11);
+    reader->AddVariable( "Pu12" 		,&Pu12);
+    reader->AddVariable( "Am1"  		,&Am1 );
+    reader->AddVariable( "Am2"          ,&Am2 );
+    reader->AddVariable( "Am3"          ,&Am3 );
+    reader->AddVariable( "BU"   		,&BU );
+    reader->AddVariable( "U5_enrichment",&U5_enrichment );
+
 
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
@@ -60,6 +73,19 @@ EQM_PWR_MLP_MOX_AM::EQM_PWR_MLP_MOX_AM(CLASSLogger* log, string TMVAWeightPath):
 {
 	fTMVAWeightPath = TMVAWeightPath;
 
+    reader = new TMVA::Reader( "Silent" );
+    reader->BookMVA( "MLP Method", fTMVAWeightPath );
+    reader->AddVariable( "Pu8"  		,&Pu8 );
+    reader->AddVariable( "Pu9"  		,&Pu9 );
+    reader->AddVariable( "Pu10" 		,&Pu10);
+    reader->AddVariable( "Pu11" 		,&Pu11);
+    reader->AddVariable( "Pu12" 		,&Pu12);
+    reader->AddVariable( "Am1"  		,&Am1 );
+    reader->AddVariable( "Am2"          ,&Am2 );
+    reader->AddVariable( "Am3"          ,&Am3 );
+    reader->AddVariable( "BU"   		,&BU );
+    reader->AddVariable( "U5_enrichment",&U5_enrichment );
+
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
 	double U5_enrich = 0.0025;
@@ -87,31 +113,8 @@ EQM_PWR_MLP_MOX_AM::EQM_PWR_MLP_MOX_AM(CLASSLogger* log, string TMVAWeightPath):
 }
 
 //________________________________________________________________________
-TTree* EQM_PWR_MLP_MOX_AM::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
+void EQM_PWR_MLP_MOX_AM::UpdateInputComposition(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
 {
-	TTree*   InputTree = new TTree("EQTMP", "EQTMP");
-	float Pu8   		 = 0;
-	float Pu9   		 = 0;
-	float Pu10  		 = 0;
-	float Pu11  		 = 0;
-	float Pu12  		 = 0;
-	float Am1   		 = 0;
-	float Am2   		 = 0;
-	float Am3   		 = 0;
-	float U5_enrichment  = 0;
-	float BU  			  = 0;
-
-	InputTree->Branch(	"Pu8"	,&Pu8	,"Pu8/F"	);
-	InputTree->Branch(	"Pu9"	,&Pu9	,"Pu9/F"	);
-	InputTree->Branch(	"Pu10"	,&Pu10	,"Pu10/F"	);
-	InputTree->Branch(	"Pu11"	,&Pu11	,"Pu11/F"	);
-	InputTree->Branch(	"Pu12"	,&Pu12	,"Pu12/F"	);
-	InputTree->Branch(	"Am1"	,&Am1	,"Am1/F"	);
-	InputTree->Branch(	"Am2"	,&Am2	,"Am2/F"	);
-	InputTree->Branch(	"Am3"	,&Am3	,"Am3/F"	);
-	InputTree->Branch(	"U5_enrichment"	,&U5_enrichment	,"U5_enrichment/F"	);
-	InputTree->Branch(	"BU"	,&BU	,"BU/F"	);
-
 
 	float U8     = Fertil.GetZAIIsotopicQuantity(92,238,0);
 	float U5     = Fertil.GetZAIIsotopicQuantity(92,235,0);
@@ -149,55 +152,18 @@ TTree* EQM_PWR_MLP_MOX_AM::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVec
 	}
 	// All value are molar (!weight)
 
-	InputTree->Fill();
-	return InputTree;
 }
 //________________________________________________________________________
-double EQM_PWR_MLP_MOX_AM::ExecuteTMVA(TTree* theTree)
+double EQM_PWR_MLP_MOX_AM::ExecuteTMVA(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
 {
-	// --- Create the Reader object
-	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
-	// Create a set of variables and declare them to the reader
-	// - the variable names MUST corresponds in name and type to those given in the weight file(s) used
-	Float_t Pu8,Pu9,Pu10,Pu11,Pu12,Am1, Am2,Am3,BU,U5_enrichment;
 
-	reader->AddVariable( "BU"   		,&BU );
-	reader->AddVariable( "U5_enrichment",&U5_enrichment );
-	reader->AddVariable( "Pu8"  		,&Pu8 );
-	reader->AddVariable( "Pu9"  		,&Pu9 );
-	reader->AddVariable( "Pu10" 		,&Pu10);
-	reader->AddVariable( "Pu11" 		,&Pu11);
-	reader->AddVariable( "Pu12" 		,&Pu12);
-	reader->AddVariable( "Am1"  		,&Am1 );
-	reader->AddVariable( "Am2"  		,&Am2 );
-	reader->AddVariable( "Am3"  		,&Am3 );
+    UpdateInputComposition(Fissil, Fertil, BurnUp);
+	Float_t val = (reader->EvaluateRegression( "MLP method" ))[0];
 
-	// --- Book the MVA methods
-
-	// Book method MLP
-	TString methodName = "MLP method";
-	reader->BookMVA( methodName, fTMVAWeightPath );
-	theTree->SetBranchAddress( "BU"   			,&BU 	);
-	theTree->SetBranchAddress( "U5_enrichment"		,&U5_enrichment  )	;
-	theTree->SetBranchAddress( "Pu8"  			,&Pu8  );
-	theTree->SetBranchAddress( "Pu9"  			,&Pu9  );
-	theTree->SetBranchAddress( "Pu10" 			,&Pu10 );
-	theTree->SetBranchAddress( "Pu11" 			,&Pu11 );
-	theTree->SetBranchAddress( "Pu12" 			,&Pu12 );
-	theTree->SetBranchAddress( "Am1"  			,&Am1  );
-	theTree->SetBranchAddress( "Am2"  			,&Am2  );
-	theTree->SetBranchAddress( "Am3"  			,&Am3  );
-	theTree->GetEntry(0);
-
-	Float_t val = (reader->EvaluateRegression( methodName ))[0];
-
-	delete reader;
-	delete theTree;
-
-	return (double)val; //retourne teneur
+    return (double)val; //retourne teneur
 }
 //________________________________________________________________________
 double EQM_PWR_MLP_MOX_AM::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
 {DBGL
-	return	ExecuteTMVA(CreateTMVAInputTree(Fissil,Fertil,BurnUp));
+	return	ExecuteTMVA( Fissil, Fertil, BurnUp);
 }

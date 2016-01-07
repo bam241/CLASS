@@ -11,7 +11,6 @@
 #include <cassert>
 
 #include "TSystem.h"
-#include "TMVA/Reader.h"
 #include "TMVA/Tools.h"
 #include "TMVA/MethodCuts.h"
 
@@ -52,7 +51,10 @@ EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(string TMVAWeightPath,  int NumOf
 	
 	LoadKeyword();
 	ReadNFO();//Getting information from fInformationFile
-	
+
+
+    InitialiseTMVAReader();
+
 	
 	/* OTHER MODEL PARAMETERS */
 	
@@ -115,7 +117,8 @@ EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(CLASSLogger* log, string TMVAWeig
 	LoadKeyword();
 	ReadNFO();//Getting information from fInformationFile
 	
-	
+    InitialiseTMVAReader();
+
 	
 	/* OTHER MODEL PARAMETERS */
 	
@@ -165,9 +168,7 @@ TGraph* EQM_FBR_MLP_Keff_BOUND::BuildKeffGraph(IsotopicVector FreshFuel)
 	TGraph * keffGraph = new TGraph();
 	for(int i = 0 ; i < (int) fMLP_Time.size() ; i++)
 	{
-		TTree *InputTree = CreateTMVAInputTree(FreshFuel,(float) fMLP_Time[i]);
-		double keff_t = ExecuteTMVA( InputTree, true );
-		delete InputTree;
+		double keff_t = ExecuteTMVA( FreshFuel, (float)fMLP_Time[i] );
 		keffGraph->SetPoint(i, (double)fMLP_Time[i], keff_t );
 	}
 	
@@ -222,106 +223,72 @@ double EQM_FBR_MLP_Keff_BOUND::GetKeffAt(TGraph* GRAPH_KEFF, int Step)
 	return Keff;
 }
 //________________________________________________________________________
-TTree* EQM_FBR_MLP_Keff_BOUND::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double ThisTime)
-{
-	DBGL
 
-	/******Create Input data tree to be interpreted by TMVA::Reader***/
-	TTree*   InputTree = new TTree("InTMPKef", "InTMPKef");
-	
-	vector<float> 	InputTMVA;
-	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
-		InputTMVA.push_back(0);
-	
-	float Time = 0;
-	
-	IsotopicVector IVInputTMVA;
-	map<ZAI ,string >::iterator it;
-	int j = 0;
-	
-	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
-	{
-		InputTree->Branch( ((*it).second).c_str()	,&InputTMVA[j], ((*it).second + "/F").c_str());
-		IVInputTMVA+=  ((*it).first)*1;
-		j++;
-	}
-	
-	if(ThisTime != -1)
-		InputTree->Branch(	"Time"	,&Time	,"Time/F"	);
-	
-	IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(IVInputTMVA);
-	
-	double Ntot = IVAccordingToUserInfoFile.GetSumOfAll();
-	
-	IVAccordingToUserInfoFile = IVAccordingToUserInfoFile/Ntot;
-	
-	j = 0;
-	map<ZAI ,string >::iterator it2;
-	
-	for( it2 = fMapOfTMVAVariableNames.begin() ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
-	{
-		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first ) ;
-		j++;
-	}
-	
-	Time = ThisTime;
-	
-	InputTree->Fill();
-	
-	DBGL
-	return InputTree;
-	
+
+void EQM_FBR_MLP_Keff_BOUND::UpdateInputComposition(IsotopicVector TheFreshfuel, double ThisTime)
+{
+
+
+    IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(IVInputTMVA);
+
+
+    map<ZAI,string>::iterator it;
+    int j = 0;
+
+    for( it = fMapOfTMVAVariableNames.begin() ; it != fMapOfTMVAVariableNames.end() ; it++)
+        {
+        InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it).first ) ;
+        j++;
+        }
+    
+    Time = ThisTime;
+    
 }
+
+
+void EQM_FBR_MLP_Keff_BOUND::InitialiseTMVAReader()
+{
+
+    for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
+        InputTMVA.push_back(0);
+
+    reader = new TMVA::Reader( "Silent" );
+
+
+    // Create a set of variables and declare them to the reader
+    // - the variable names MUST corresponds in name and type to those given in the weight file(s) used
+    vector<float> 	InputTMVA;
+    for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
+        InputTMVA.push_back(0);
+    Float_t Time;
+
+    map<ZAI ,string >::iterator it;
+    int j = 0;
+    for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
+        {
+        reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
+        IVInputTMVA +=  ((*it).first)*1;
+        j++;
+        }
+
+    if(fTMVAWeightPath.size() == 1)
+        reader->AddVariable( "Time" ,&Time);
+    
+    
+}
+
 //________________________________________________________________________
-double EQM_FBR_MLP_Keff_BOUND::ExecuteTMVA(TTree* InputTree, bool IsTimeDependent)
+double EQM_FBR_MLP_Keff_BOUND::ExecuteTMVA(IsotopicVector TheFreshfuel, double ThisTime)
 {
-	DBGL
+    UpdateInputComposition(TheFreshfuel,ThisTime);
 
-	// --- Create the Reader object
-	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
-	
-	// Create a set of variables and declare them to the reader
-	// - the variable names MUST corresponds in name and type to those given in the weight file(s) used
-	vector<float> 	InputTMVA;
-	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
-		InputTMVA.push_back(0);
-	Float_t Time;
-	
-	map<ZAI ,string >::iterator it;
-	int j = 0;
-	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
-	{	reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
-		j++;
-	}
-	
-	if(IsTimeDependent)
-		reader->AddVariable( "Time" ,&Time);
-	
-	// --- Book the MVA methods
-	
-	// Book method MLP
-	TString methodName = "MLP method";
-	reader->BookMVA( methodName, fTMVAWeightPath );
-	
-	map<ZAI ,string >::iterator it2;
-	j = 0;
-	for( it2 = fMapOfTMVAVariableNames.begin()  ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
-	{
-		InputTree->SetBranchAddress(( (*it2).second ).c_str(),&InputTMVA[j]);
-		j++;
-	}
-	
-	if(IsTimeDependent)
-		InputTree->SetBranchAddress( "Time" ,&Time );
-	
-	InputTree->GetEntry(0);
-	Float_t val = (reader->EvaluateRegression( methodName ))[0];
-	
-	delete reader;
-	
-	DBGL
-	return (double)val;	//return k_{eff}(t = Time)
+    reader->BookMVA( "MLP Method", fTMVAWeightPath );
+
+    Float_t val = (reader->EvaluateRegression(  "MLP Method" ))[0];
+
+    return (double)val;//retourn k_{inf}(t = Time)
 }
+
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff_BOUND::LoadKeyword()
 {
