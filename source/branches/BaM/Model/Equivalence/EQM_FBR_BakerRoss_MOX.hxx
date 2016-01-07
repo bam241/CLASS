@@ -26,6 +26,7 @@ using namespace std;
  @f$\alpha_{i} = \bar{\nu_{i}}\cdot\sigma_{i}^{fis} - \sigma_{i}^{abs}@f$
 
  @author BLG
+ @author BaM
  @version 3.0
  */
 //________________________________________________________________________

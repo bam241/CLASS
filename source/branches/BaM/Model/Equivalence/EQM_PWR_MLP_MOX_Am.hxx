@@ -16,6 +16,7 @@ using namespace std;
  based on a  Multi layer perceptron
 
  @author BLG
+ @author BaM
  @version 3.0
  */
 //________________________________________________________________________

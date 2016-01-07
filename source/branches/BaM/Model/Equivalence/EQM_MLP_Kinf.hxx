@@ -32,7 +32,8 @@ Where @f$k_{Threshold}@f$ is the criticality threshold which take into account l
 in non simulated devices such as control rods and mixing grid.
 
  @author BLG
- @version 1.0
+ @author BaM
+@version 1.0
  */
 //________________________________________________________________________
 
