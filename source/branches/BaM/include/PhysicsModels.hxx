@@ -92,7 +92,7 @@ class PhysicsModels : public CLASSObject
 	 \param cycletime : The irradiation time [s]
 	 \param Power : The thermal (as always in CLASS) Power [W]
 	 */
-	EvolutionData GenerateEvolutionData(IsotopicVector IV, double cycletime, double Power);
+	EvolutionData GenerateEvolutionData(IsotopicVector IV, cSecond cycletime, double Power);
 	//}
 	
 	XSModel*		GetXSModel()   {return fXSModel;} //!< return the mean cross section predictor
