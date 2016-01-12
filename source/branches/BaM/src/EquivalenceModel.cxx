@@ -77,12 +77,12 @@ void EquivalenceModel::ReadLine(string line)
 void EquivalenceModel::LoadKeyword()
 {
 	DBGL
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",				& EquivalenceModel::ReadZAIlimits));
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",				& EquivalenceModel::ReadType)	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel",				& EquivalenceModel::ReadType)	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fissil",				& EquivalenceModel::ReadFissil)	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",				& EquivalenceModel::ReadFertil)	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower",			& EquivalenceModel::ReadSpecificPower));
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",		& EquivalenceModel::ReadZAIlimits));
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",		& EquivalenceModel::ReadType)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel",		& EquivalenceModel::ReadType)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fissil",		& EquivalenceModel::ReadFissil)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fertil",		& EquivalenceModel::ReadFertil)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower",	& EquivalenceModel::ReadSpecificPower));
 	DBGL
 }
 //________________________________________________________________________

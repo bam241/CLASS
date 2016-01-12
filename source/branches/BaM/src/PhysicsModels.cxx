@@ -48,7 +48,7 @@ PhysicsModels::PhysicsModels(CLASSLogger* log, XSModel* XS, EquivalenceModel* EM
 }
 
 //________________________________________________________________________
-EvolutionData PhysicsModels::GenerateEvolutionData(IsotopicVector IV, double cycletime, double Power)
+EvolutionData PhysicsModels::GenerateEvolutionData(IsotopicVector IV, cSecond cycletime, double Power)
 {
 	fXSModel->isIVInDomain(IV);
 
