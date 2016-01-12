@@ -148,10 +148,10 @@ class XSM_MLP : public XSModel
 	
 	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 
-    TMVA::Reader *reader;
-    vector<float> InputTMVA;
-    IsotopicVector IVInputTMVA;
-    float Time;
+    TMVA::Reader *freader;
+    vector<float> fInputTMVA;
+    IsotopicVector fIVInputTMVA;
+    float fTime;
 
 #ifndef __CINT__
 	map<string, XS_MLP_DMthPtr> fDKeyword;

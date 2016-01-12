@@ -128,30 +128,33 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(CLASSLogger* log, string TMVAWeightPath, doub
 	DBGL
 }
 
+EQM_FBR_MLP_Keff::~EQM_FBR_MLP_Keff()
+{
+    delete freader;
+}
+
 void EQM_FBR_MLP_Keff::InitialiseTMVAReader()
 {
 
     for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
-        InputTMVA.push_back(0);
+        fInputTMVA.push_back(0);
 
-    reader = new TMVA::Reader( "Silent" );
+    freader = new TMVA::Reader( "Silent" );
 
 
     // Create a set of variables and declare them to the reader
     // - the variable names MUST corresponds in name and type to those given in the weight file(s) used
-    vector<float> 	InputTMVA;
     for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
-        InputTMVA.push_back(0);
-    Float_t Time;
+        fInputTMVA.push_back(0);
 
     map<ZAI ,string >::iterator it;
     int j = 0;
     for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
-        {
-        reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
-        IVInputTMVA +=  ((*it).first)*1;
+    {
+        freader->AddVariable( ( (*it).second ).c_str(),&fInputTMVA[j]);
+        fIVInputTMVA +=  ((*it).first)*1;
         j++;
-        }
+    }
 
 }
 
@@ -159,17 +162,17 @@ void EQM_FBR_MLP_Keff::UpdateInputComposition(IsotopicVector TheFreshfuel)
 {
 
 
-    IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(IVInputTMVA);
+    IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(fIVInputTMVA);
 
 
     map<ZAI,string>::iterator it;
     int j = 0;
 
     for( it = fMapOfTMVAVariableNames.begin() ; it != fMapOfTMVAVariableNames.end() ; it++)
-        {
-        InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it).first ) ;
+    {
+        fInputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it).first ) ;
         j++;
-        }
+    }
 
 }
 
@@ -179,7 +182,7 @@ double EQM_FBR_MLP_Keff::ExecuteTMVA(IsotopicVector TheFreshfuel)
 {
 	DBGL
 	
-	Float_t val = (reader->EvaluateRegression( "MLP Method" ))[0];
+	Float_t val = (freader->EvaluateRegression( "MLP Method" ))[0];
 
 	return (double)val;	//return k_{eff}(t = Time)
 }

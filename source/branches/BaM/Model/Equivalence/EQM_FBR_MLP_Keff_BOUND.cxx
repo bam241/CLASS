@@ -160,6 +160,14 @@ EQM_FBR_MLP_Keff_BOUND::EQM_FBR_MLP_Keff_BOUND(CLASSLogger* log, string TMVAWeig
 
 
 }
+
+
+EQM_FBR_MLP_Keff_BOUND::~EQM_FBR_MLP_Keff_BOUND()
+{
+    delete freader;
+}
+
+
 //________________________________________________________________________
 TGraph* EQM_FBR_MLP_Keff_BOUND::BuildKeffGraph(IsotopicVector FreshFuel)
 {
@@ -229,7 +237,7 @@ void EQM_FBR_MLP_Keff_BOUND::UpdateInputComposition(IsotopicVector TheFreshfuel,
 {
 
 
-    IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(IVInputTMVA);
+    IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(fIVInputTMVA);
 
 
     map<ZAI,string>::iterator it;
@@ -237,11 +245,11 @@ void EQM_FBR_MLP_Keff_BOUND::UpdateInputComposition(IsotopicVector TheFreshfuel,
 
     for( it = fMapOfTMVAVariableNames.begin() ; it != fMapOfTMVAVariableNames.end() ; it++)
         {
-        InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it).first ) ;
+        fInputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it).first ) ;
         j++;
         }
     
-    Time = ThisTime;
+    fTime = ThisTime;
     
 }
 
@@ -250,29 +258,27 @@ void EQM_FBR_MLP_Keff_BOUND::InitialiseTMVAReader()
 {
 
     for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
-        InputTMVA.push_back(0);
+        fInputTMVA.push_back(0);
 
-    reader = new TMVA::Reader( "Silent" );
+    freader = new TMVA::Reader( "Silent" );
 
 
     // Create a set of variables and declare them to the reader
     // - the variable names MUST corresponds in name and type to those given in the weight file(s) used
-    vector<float> 	InputTMVA;
     for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
-        InputTMVA.push_back(0);
-    Float_t Time;
+        fInputTMVA.push_back(0);
 
     map<ZAI ,string >::iterator it;
     int j = 0;
     for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
         {
-        reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
-        IVInputTMVA +=  ((*it).first)*1;
+        freader->AddVariable( ( (*it).second ).c_str(),&fInputTMVA[j]);
+        fIVInputTMVA +=  ((*it).first)*1;
         j++;
         }
 
     if(fTMVAWeightPath.size() == 1)
-        reader->AddVariable( "Time" ,&Time);
+        freader->AddVariable( "Time" ,&fTime);
     
     
 }
@@ -282,9 +288,9 @@ double EQM_FBR_MLP_Keff_BOUND::ExecuteTMVA(IsotopicVector TheFreshfuel, double T
 {
     UpdateInputComposition(TheFreshfuel,ThisTime);
 
-    reader->BookMVA( "MLP Method", fTMVAWeightPath );
+    freader->BookMVA( "MLP Method", fTMVAWeightPath );
 
-    Float_t val = (reader->EvaluateRegression(  "MLP Method" ))[0];
+    Float_t val = (freader->EvaluateRegression(  "MLP Method" ))[0];
 
     return (double)val;//retourn k_{inf}(t = Time)
 }

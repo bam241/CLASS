@@ -100,6 +100,8 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	EQM_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,int NumOfBatch, string InformationFile = "", double CriticalityThreshold = 1.01);
 	//}
 	//@}
+
+    ~EQM_MLP_Kinf();
 	
 	//{
 	/// Return the molar fissile fraction according fissile & ferile content 
@@ -217,10 +219,10 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	double 	fBurnUpPrecision;	//!< precision on Burnup 
 	double 	fPCMprecision;		//!< precision on @f$\langle k \rangle@f$ prediction [pcm]
 			
-    TMVA::Reader *reader;
-    vector<float> InputTMVA;
-    IsotopicVector IVInputTMVA;
-    float Time;
+    TMVA::Reader *freader;
+    vector<float> fInputTMVA;
+    IsotopicVector fIVInputTMVA;
+    float fTime;
 
 };
 

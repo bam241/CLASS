@@ -48,7 +48,10 @@ class EQM_PWR_MLP_MOX_AM : public EquivalenceModel
 	EQM_PWR_MLP_MOX_AM(CLASSLogger* log, string TMVAWeightPath);
 	//}
 	//@}
-	
+
+    ~EQM_PWR_MLP_MOX_AM();
+
+
 	//{
 	/// Return the molar fissile fraction according fissile & ferile content using a Multi Layer Peceptron (MLP)
 	/*!
@@ -71,19 +74,19 @@ class EQM_PWR_MLP_MOX_AM : public EquivalenceModel
 
 	private :
 
-    float Pu8;
-    float Pu9;
-    float Pu10;
-    float Pu11;
-    float Pu12;
-    float Am1;
-    float Am2;
-    float Am3;
+    float fPu8;
+    float fPu9;
+    float fPu10;
+    float fPu11;
+    float fPu12;
+    float fAm1;
+    float fAm2;
+    float fAm3;
 
-    float BU;
-    float U5_enrichment;
+    float fBU;
+    float fU5_enrichment;
 
-    TMVA::Reader *reader;
+    TMVA::Reader *freader;
 	string fTMVAWeightPath;;//!<The weight needed by TMVA to construct and execute the multilayer perceptron
 
 };

@@ -79,6 +79,7 @@ XSM_MLP::XSM_MLP(CLASSLogger* Log,string TMVA_Weight_Directory,string Informatio
 XSM_MLP::~XSM_MLP()
 {
 	DBGL
+    delete freader;
 	fMapOfTMVAVariableNames.clear();
 	fDKeyword.clear();
 	DBGL
@@ -233,7 +234,7 @@ void XSM_MLP::ReadWeightFile(string Filename, int &Z, int &A, int &I, int &React
 void XSM_MLP::UpdateInputComposition(IsotopicVector TheFreshfuel,int TimeStep)
 {
 	
-    IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(IVInputTMVA);
+    IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(fIVInputTMVA);
 
     double Ntot = IVAccordingToUserInfoFile.GetSumOfAll();
 
@@ -247,34 +248,31 @@ void XSM_MLP::UpdateInputComposition(IsotopicVector TheFreshfuel,int TimeStep)
 
 	for( it2 = fMapOfTMVAVariableNames.begin() ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
 	{
-		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first );
-		DBGV((*it2).first.Z() << " " << (*it2).first.A() << " " << InputTMVA[j]);
+		fInputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first );
+		DBGV((*it2).first.Z() << " " << (*it2).first.A() << " " << fInputTMVA[j]);
 		j++;
 	}
 	
-	Time = fMLP_Time[TimeStep];
+	fTime = fMLP_Time[TimeStep];
 
 }
 
 void XSM_MLP::InitialiseTMVAReader()
 {
-    reader = new TMVA::Reader( "Silent" );
+    freader = new TMVA::Reader( "Silent" );
 
     for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
-        InputTMVA.push_back(0);
-
-
-    for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
-        InputTMVA.push_back(0);
+        fInputTMVA.push_back(0);
 
     map<ZAI ,string >::iterator it;
     int j = 0;
     for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
-        {	reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
+        {
+            freader->AddVariable( ( (*it).second ).c_str(),&fInputTMVA[j]);
             j++;
         }
     if(!fIsStepTime)
-        reader->AddVariable( "Time" ,&Time);
+        freader->AddVariable( "Time" ,&fTime);
 }
 
 //________________________________________________________________________
@@ -295,9 +293,9 @@ double XSM_MLP::ExecuteTMVA(string WeightFile, IsotopicVector isotopicvector, in
 	// Book method MLP
 	TString methodName = "MLP method";
 	TString weightpath = dir + WeightFile ;
-	reader->BookMVA( methodName, weightpath );
+	freader->BookMVA( methodName, weightpath );
 
-	float val = (reader->EvaluateRegression( methodName ))[0];
+	float val = (freader->EvaluateRegression( methodName ))[0];
 	
 	DBGL
 	
