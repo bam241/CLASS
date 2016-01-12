@@ -80,6 +80,8 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	
 	
 	//@}
+
+    ~EQM_FBR_MLP_Keff_BOUND();
 	
 	//{
 	/// Return the molar fissile fraction according fissile & ferile content using @f$<k_{\infty}>(t)@f$ prediction
@@ -184,10 +186,10 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	double 	fTargetKeff;		//!< Use for Varying Fissile content to reach fTargetKeff at time used in the MLP Training
 	
 	
-    TMVA::Reader *reader;
-    vector<float> InputTMVA;
-    IsotopicVector IVInputTMVA;
-    float Time;
+    TMVA::Reader *freader;
+    vector<float> fInputTMVA;
+    IsotopicVector fIVInputTMVA;
+    float fTime;
 
 	
 	

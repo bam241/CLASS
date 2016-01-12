@@ -28,16 +28,16 @@ EQM_PWR_MLP_MOX::EQM_PWR_MLP_MOX(string TMVAWeightPath):EquivalenceModel(new CLA
 {
 	fTMVAWeightPath = TMVAWeightPath;
 
-    reader = new TMVA::Reader( "Silent" );
-    reader->BookMVA( "MLP Method", fTMVAWeightPath );
-    reader->AddVariable( "BU"   		,&BU );
-    reader->AddVariable( "U5_enrichment",&U5_enrichment );
-    reader->AddVariable( "Pu8"  		,&Pu8 );
-    reader->AddVariable( "Pu9"  		,&Pu9 );
-    reader->AddVariable( "Pu10" 		,&Pu10);
-    reader->AddVariable( "Pu11" 		,&Pu11);
-    reader->AddVariable( "Pu12" 		,&Pu12);
-    reader->AddVariable( "Am1"  		,&Am1 );
+    freader = new TMVA::Reader( "Silent" );
+    freader->BookMVA( "MLP Method", fTMVAWeightPath );
+    freader->AddVariable( "BU"   		,&fBU );
+    freader->AddVariable( "U5_enrichment",&fU5_enrichment );
+    freader->AddVariable( "Pu8"  		,&fPu8 );
+    freader->AddVariable( "Pu9"  		,&fPu9 );
+    freader->AddVariable( "Pu10" 		,&fPu10);
+    freader->AddVariable( "Pu11" 		,&fPu11);
+    freader->AddVariable( "Pu12" 		,&fPu12);
+    freader->AddVariable( "Am1"  		,&fAm1 );
 
 
 	ZAI U8(92,238,0);
@@ -68,16 +68,16 @@ EQM_PWR_MLP_MOX::EQM_PWR_MLP_MOX(CLASSLogger* log, string TMVAWeightPath):Equiva
 {
 	fTMVAWeightPath = TMVAWeightPath;
 
-    reader = new TMVA::Reader( "Silent" );
-    reader->BookMVA( "MLP Method", fTMVAWeightPath );
-    reader->AddVariable( "BU"   		,&BU );
-    reader->AddVariable( "U5_enrichment",&U5_enrichment );
-    reader->AddVariable( "Pu8"  		,&Pu8 );
-    reader->AddVariable( "Pu9"  		,&Pu9 );
-    reader->AddVariable( "Pu10" 		,&Pu10);
-    reader->AddVariable( "Pu11" 		,&Pu11);
-    reader->AddVariable( "Pu12" 		,&Pu12);
-    reader->AddVariable( "Am1"  		,&Am1 );
+    freader = new TMVA::Reader( "Silent" );
+    freader->BookMVA( "MLP Method", fTMVAWeightPath );
+    freader->AddVariable( "BU"   		,&fBU );
+    freader->AddVariable( "U5_enrichment",&fU5_enrichment );
+    freader->AddVariable( "Pu8"  		,&fPu8 );
+    freader->AddVariable( "Pu9"  		,&fPu9 );
+    freader->AddVariable( "Pu10" 		,&fPu10);
+    freader->AddVariable( "Pu11" 		,&fPu11);
+    freader->AddVariable( "Pu12" 		,&fPu12);
+    freader->AddVariable( "Am1"  		,&fAm1 );
 
 
 
@@ -104,6 +104,12 @@ EQM_PWR_MLP_MOX::EQM_PWR_MLP_MOX(CLASSLogger* log, string TMVAWeightPath):Equiva
 
 }
 
+
+EQM_PWR_MLP_MOX::~EQM_PWR_MLP_MOX()
+{
+    delete freader;
+}
+
 //________________________________________________________________________
 void EQM_PWR_MLP_MOX::UpdateInputComposition(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
 {
@@ -115,28 +121,28 @@ void EQM_PWR_MLP_MOX::UpdateInputComposition(IsotopicVector Fissil,IsotopicVecto
 
     float UTOT = U8 + U5 + U4;
 
-    Pu8    	   = Fissil.GetZAIIsotopicQuantity(94,238,0);
-    Pu9    	   = Fissil.GetZAIIsotopicQuantity(94,239,0);
-    Pu10   	   = Fissil.GetZAIIsotopicQuantity(94,240,0);
-    Pu11   	   = Fissil.GetZAIIsotopicQuantity(94,241,0);
-    Pu12   	   = Fissil.GetZAIIsotopicQuantity(94,242,0);
-    Am1        = Fissil.GetZAIIsotopicQuantity(95,241,0);
+    fPu8    	   = Fissil.GetZAIIsotopicQuantity(94,238,0);
+    fPu9    	   = Fissil.GetZAIIsotopicQuantity(94,239,0);
+    fPu10   	   = Fissil.GetZAIIsotopicQuantity(94,240,0);
+    fPu11   	   = Fissil.GetZAIIsotopicQuantity(94,241,0);
+    fPu12   	   = Fissil.GetZAIIsotopicQuantity(94,242,0);
+    fAm1        = Fissil.GetZAIIsotopicQuantity(95,241,0);
 
-    double TOTPU = (Pu8+Pu9+Pu10+Pu11+Pu12+Am1);
+    double TOTPU = (fPu8 + fPu9 + fPu10 + fPu11 + fPu12 + fAm1);
 
-    Pu8 = Pu8  / TOTPU;
-    Pu9 = Pu9  / TOTPU;
-    Pu10 = Pu10 / TOTPU;
-    Pu11 = Pu11 / TOTPU;
-    Pu12 = Pu12 / TOTPU;
-    Am1 = Am1  / TOTPU;
+    fPu8 = fPu8  / TOTPU;
+    fPu9 = fPu9  / TOTPU;
+    fPu10 = fPu10 / TOTPU;
+    fPu11 = fPu11 / TOTPU;
+    fPu12 = fPu12 / TOTPU;
+    fAm1 = fAm1  / TOTPU;
 
-    U5_enrichment = U5 / UTOT;
+    fU5_enrichment = U5 / UTOT;
 
-	BU = BurnUp;
-	if(Pu8 + Pu9 + Pu10 + Pu11 + Pu12 + Am1 > 1.00001 )//?????1.00001??? I don't know it! goes in condition if  = 1 !! may be float/double issue ...
+	fBU = BurnUp;
+	if(fPu8 + fPu9 + fPu10 + fPu11 + fPu12 + fAm1 > 1.00001 )//?????1.00001??? I don't know it! goes in condition if  = 1 !! may be float/double issue ...
 	{
-		ERROR << Pu8 << " " << Pu9 << " " << Pu10 << " " << Pu11 << " " << Pu12 << " " << Am1 << endl;
+		ERROR << fPu8 << " " << fPu9 << " " << fPu10 << " " << fPu11 << " " << fPu12 << " " << fAm1 << endl;
 		exit(0);
 	}
 }
@@ -144,7 +150,7 @@ void EQM_PWR_MLP_MOX::UpdateInputComposition(IsotopicVector Fissil,IsotopicVecto
 double EQM_PWR_MLP_MOX::ExecuteTMVA(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
 {
     UpdateInputComposition(Fissil, Fertil, BurnUp);
-    Float_t val = (reader->EvaluateRegression( "MLP method" ))[0];
+    Float_t val = (freader->EvaluateRegression( "MLP method" ))[0];
 
     return (double)val; //retourne teneur
 
