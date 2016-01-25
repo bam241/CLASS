@@ -29,7 +29,6 @@ EQM_PWR_MLP_MOX_AM::EQM_PWR_MLP_MOX_AM(string TMVAWeightPath):EquivalenceModel(n
 	fTMVAWeightPath = TMVAWeightPath;
 
     freader = new TMVA::Reader( "Silent" );
-    freader->BookMVA( "MLP Method", fTMVAWeightPath );
     freader->AddVariable( "Pu8"  		,&fPu8 );
     freader->AddVariable( "Pu9"  		,&fPu9 );
     freader->AddVariable( "Pu10" 		,&fPu10);
@@ -40,6 +39,9 @@ EQM_PWR_MLP_MOX_AM::EQM_PWR_MLP_MOX_AM(string TMVAWeightPath):EquivalenceModel(n
     freader->AddVariable( "Am3"          ,&fAm3 );
     freader->AddVariable( "BU"   		,&fBU );
     freader->AddVariable( "U5_enrichment",&fU5_enrichment );
+  // --- Book the MVA methods
+  TString methodName = "MLP method";
+  freader->BookMVA( methodName, fTMVAWeightPath );
 
 
 	ZAI U8(92,238,0);
@@ -73,18 +75,21 @@ EQM_PWR_MLP_MOX_AM::EQM_PWR_MLP_MOX_AM(CLASSLogger* log, string TMVAWeightPath):
 {
 	fTMVAWeightPath = TMVAWeightPath;
 
-    freader = new TMVA::Reader( "Silent" );
-    freader->BookMVA( "MLP Method", fTMVAWeightPath );
-    freader->AddVariable( "Pu8"  		,&fPu8 );
-    freader->AddVariable( "Pu9"  		,&fPu9 );
-    freader->AddVariable( "Pu10" 		,&fPu10);
-    freader->AddVariable( "Pu11" 		,&fPu11);
-    freader->AddVariable( "Pu12" 		,&fPu12);
-    freader->AddVariable( "Am1"  		,&fAm1 );
-    freader->AddVariable( "Am2"          ,&fAm2 );
-    freader->AddVariable( "Am3"          ,&fAm3 );
-    freader->AddVariable( "BU"   		,&fBU );
-    freader->AddVariable( "U5_enrichment",&fU5_enrichment );
+  freader = new TMVA::Reader( "Silent" );
+  freader->AddVariable( "Pu8"  		,&fPu8 );
+  freader->AddVariable( "Pu9"  		,&fPu9 );
+  freader->AddVariable( "Pu10" 		,&fPu10);
+  freader->AddVariable( "Pu11" 		,&fPu11);
+  freader->AddVariable( "Pu12" 		,&fPu12);
+  freader->AddVariable( "Am1"  		,&fAm1 );
+  freader->AddVariable( "Am2"          ,&fAm2 );
+  freader->AddVariable( "Am3"          ,&fAm3 );
+  freader->AddVariable( "BU"   		,&fBU );
+  freader->AddVariable( "U5_enrichment",&fU5_enrichment );
+  // --- Book the MVA methods
+  TString methodName = "MLP method";
+  freader->BookMVA( methodName, fTMVAWeightPath );
+
 
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
