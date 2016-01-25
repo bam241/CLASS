@@ -35,7 +35,6 @@ IM_RK4::IM_RK4():IrradiationModel(new CLASSLogger("IM_RK4.log")), DynamicalSyste
 {
 	fTheNucleiVector = 0;
 	fTheMatrix = 0;
-
 	SetForbidNegativeValue();
 
 }
@@ -160,7 +159,6 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	for(int i = 0; i < NStep-1; i++)
 	{
 		double TStepMax = ( (DBTimeStep[i+1]-DBTimeStep[i] ) ) * Power_ref/M_ref / Power*M ;	// Get the next Time step
-
 
 		TMatrixT<double> BatemanMatrix = TMatrixT<double>(fReverseMatrixIndex.size(),fReverseMatrixIndex.size());
 		TMatrixT<double> BatemanReactionMatrix = TMatrixT<double>(fReverseMatrixIndex.size(),fReverseMatrixIndex.size());

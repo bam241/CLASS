@@ -5,6 +5,7 @@
 #include "CLASSMethod.hxx"
 #include "StringLine.hxx"
 
+#include "TMVA/Reader.h"
 #include "TMVA/Tools.h"
 #include "TMVA/MethodCuts.h"
 
@@ -48,9 +49,7 @@ XSM_MLP::XSM_MLP(string TMVA_Weight_Directory,string InformationFile, bool IsTim
 	
 	LoadKeyword();
 	ReadNFO();
-
-    InitialiseTMVAReader();
-
+	
 }
 
 //________________________________________________________________________
@@ -70,16 +69,13 @@ XSM_MLP::XSM_MLP(CLASSLogger* Log,string TMVA_Weight_Directory,string Informatio
 	
 	LoadKeyword();
 	ReadNFO();
-
-    InitialiseTMVAReader();
-
+	
 }
 
 //________________________________________________________________________
 XSM_MLP::~XSM_MLP()
 {
 	DBGL
-    delete freader;
 	fMapOfTMVAVariableNames.clear();
 	fDKeyword.clear();
 	DBGL
@@ -231,59 +227,76 @@ void XSM_MLP::ReadWeightFile(string Filename, int &Z, int &A, int &I, int &React
 	
 }
 //________________________________________________________________________
-void XSM_MLP::UpdateInputComposition(IsotopicVector TheFreshfuel,int TimeStep)
+TTree* XSM_MLP::CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep)
 {
+	/******Create Input data tree to be interpreted by TMVA::Reader***/
+	TTree*   InputTree = new TTree("InTMP", "InTMP");
 	
-    IsotopicVector IVAccordingToUserInfoFile = TheFreshfuel.GetThisComposition(fIVInputTMVA);
-
-    double Ntot = IVAccordingToUserInfoFile.GetSumOfAll();
-
-    IVAccordingToUserInfoFile *= 1/Ntot;
+	vector<float> 	InputTMVA;
+	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
+		InputTMVA.push_back(0);
 	
-
-    DBGV("INPUT TMVA");
-
-    int j = 0;
-	map<ZAI ,string >::iterator it2;
-
-	for( it2 = fMapOfTMVAVariableNames.begin() ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
+	float Time = 0;
+	
+	IsotopicVector IVInputTMVA;
+	map<ZAI ,string >::iterator it;
+	int j = 0;
+	
+	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
 	{
-		fInputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first );
-		DBGV((*it2).first.Z() << " " << (*it2).first.A() << " " << fInputTMVA[j]);
+		InputTree->Branch( ((*it).second).c_str() ,&InputTMVA[j], ((*it).second + "/F").c_str());
+		IVInputTMVA+=  ((*it).first)*1;
 		j++;
 	}
 	
-	fTime = fMLP_Time[TimeStep];
-
+	if( !fIsStepTime)
+		InputTree->Branch(	"Time"	,&Time	,"Time/F"	);
+	
+	IsotopicVector IVAccordingToUserInfoFile = isotopicvector.GetThisComposition(IVInputTMVA);
+	
+	double Ntot = IVAccordingToUserInfoFile.GetSumOfAll();
+	
+	IVAccordingToUserInfoFile = IVAccordingToUserInfoFile/Ntot;
+	
+	j = 0;
+	map<ZAI ,string >::iterator it2;
+	DBGV("INPUT TMVA");
+	for( it2 = fMapOfTMVAVariableNames.begin() ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
+	{
+		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it2).first ) ;
+		DBGV((*it2).first.Z() << " " << (*it2).first.A() << " " << InputTMVA[j]);
+		j++;
+	}
+	
+	Time = fMLP_Time[TimeStep];
+	
+	InputTree->Fill();
+	
+	return InputTree;
 }
-
-void XSM_MLP::InitialiseTMVAReader()
-{
-    freader = new TMVA::Reader( "Silent" );
-
-    for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
-        fInputTMVA.push_back(0);
-
-    map<ZAI ,string >::iterator it;
-    int j = 0;
-    for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
-        {
-            freader->AddVariable( ( (*it).second ).c_str(),&fInputTMVA[j]);
-            j++;
-        }
-    if(!fIsStepTime)
-        freader->AddVariable( "Time" ,&fTime);
-}
-
 //________________________________________________________________________
-double XSM_MLP::ExecuteTMVA(string WeightFile, IsotopicVector isotopicvector, int TimeStep)
+double XSM_MLP::ExecuteTMVA(string WeightFile,TTree* InputTree)
 {
-
-    UpdateInputComposition(isotopicvector, TimeStep);
-
-
-    DBGV( "File :" << WeightFile);
-
+	DBGV( "File :" << WeightFile);
+	// --- Create the Reader object
+	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
+	
+	// Create a set of variables and declare them to the reader
+	// - the variable names MUST corresponds in name and type to those given in the weight file(s) used
+	vector<float> 	InputTMVA;
+	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
+		InputTMVA.push_back(0);
+	Float_t Time;
+	
+	map<ZAI ,string >::iterator it;
+	int j = 0;
+	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
+	{	reader->AddVariable( ( (*it).second ).c_str(),&InputTMVA[j]);
+		j++;
+	}
+	if(!fIsStepTime)
+		reader->AddVariable( "Time" ,&Time);
+	
 	// --- Book the MVA methods
 	
 	string dir    = fTMVAWeightFolder;
@@ -293,10 +306,23 @@ double XSM_MLP::ExecuteTMVA(string WeightFile, IsotopicVector isotopicvector, in
 	// Book method MLP
 	TString methodName = "MLP method";
 	TString weightpath = dir + WeightFile ;
-	freader->BookMVA( methodName, weightpath );
-
-	float val = (freader->EvaluateRegression( methodName ))[0];
+	reader->BookMVA( methodName, weightpath );
 	
+	map<ZAI ,string >::iterator it2;
+	j = 0;
+	for( it2 = fMapOfTMVAVariableNames.begin()  ; it2 != fMapOfTMVAVariableNames.end() ; it2++)
+	{
+		InputTree->SetBranchAddress(( (*it2).second ).c_str(),&InputTMVA[j]);
+		j++;
+	}
+	
+	if(!fIsStepTime)
+		InputTree->SetBranchAddress( "Time" ,&Time );
+	
+	InputTree->GetEntry(0);
+	Float_t val = (reader->EvaluateRegression( methodName ))[0];
+	
+	delete reader;
 	DBGL
 	
 	return (double)val;
@@ -322,22 +348,29 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 		int I = -2;
 		int Reaction = -2;
 		ReadWeightFile( fWeightFiles[i], Z, A, I, Reaction);
-
 		if( Z >= GetZAIThreshold() )
 		{
-
-            TGraph* ZAIXSTGraph = new TGraph();
-
-			for(int TimeStep = 0; TimeStep < int(fMLP_Time.size()) ; TimeStep++)
+			for(int TimeStep = 0;TimeStep<int(fMLP_Time.size());TimeStep++)
 			{
-				double XSValue = ExecuteTMVA(fWeightFiles[i], IV, TimeStep );
-                ZAIXSTGraph->SetPoint( ZAIXSTGraph->GetN(), (double)fMLP_Time[TimeStep], XSValue );
-            }
-
-            pair< map<ZAI, TGraph*>::iterator, bool> IResult;
-
-            IResult = ExtrapolatedXS[Reaction].insert( pair<ZAI ,TGraph* >(ZAI(Z,A,I), ZAIXSTGraph) );
-
+				TTree* InputTree = CreateTMVAInputTree(IV,TimeStep);
+				
+				pair< map<ZAI, TGraph*>::iterator, bool> IResult;
+				
+				IResult = ExtrapolatedXS[Reaction].insert( pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph()) );
+				
+				double XSValue = ExecuteTMVA(fWeightFiles[i],InputTree );
+				if(IResult.second )
+				{
+					(IResult.first)->second->SetPoint(0, (double)fMLP_Time[TimeStep], XSValue );
+					
+				}
+				else
+				{
+					(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)fMLP_Time[TimeStep], XSValue );
+				}
+				
+				delete InputTree;
+			}
 		}
 	}
 	
@@ -403,7 +436,8 @@ void XSM_MLP::ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &R
 EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 {
 	DBGL
-
+	TTree* InputTree = CreateTMVAInputTree(IV);
+	
 	EvolutionData EvolutionDataFromMLP = EvolutionData();
 	
 	map<ZAI,TGraph*> ExtrapolatedXS[3];
@@ -433,11 +467,11 @@ EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 			
 			if( IResult.second )
 			{
-				(IResult.first)->second->SetPoint(0, (double)fMLP_Time[TimeStep], ExecuteTMVA(fWeightFiles[i],IV) );
+				(IResult.first)->second->SetPoint(0, (double)fMLP_Time[TimeStep], ExecuteTMVA(fWeightFiles[i],InputTree) );
 			}
 			else
 			{
-				(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)fMLP_Time[TimeStep], ExecuteTMVA(fWeightFiles[i],IV) );
+				(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)fMLP_Time[TimeStep], ExecuteTMVA(fWeightFiles[i],InputTree) );
 			}
 		}
 	}
@@ -453,6 +487,7 @@ EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 	EvolutionDataFromMLP.SetCaptureXS(ExtrapolatedXS[1]);
 	EvolutionDataFromMLP.Setn2nXS(ExtrapolatedXS[2]);
 	
+	delete InputTree;
 	DBGL
 	return EvolutionDataFromMLP;
 }
