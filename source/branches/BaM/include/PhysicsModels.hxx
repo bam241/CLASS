@@ -95,9 +95,9 @@ class PhysicsModels : public CLASSObject
 	EvolutionData GenerateEvolutionData(IsotopicVector IV, cSecond cycletime, double Power);
 	//}
 	
-	XSModel*		GetXSModel()   {return fXSModel;} //!< return the mean cross section predictor
-	EquivalenceModel*	GetEquivalenceModel() {return fEquivalenceModel;} //!< return Fissile content predictor
-	IrradiationModel*	GetIrradiationModel()  {return fIrradiationModel;} //!< return the Bateman solver
+  XSModel*		GetXSModel(); //!< return the mean cross section predictor
+  EquivalenceModel*	GetEquivalenceModel(); //!< return Fissile content predictor
+  IrradiationModel*	GetIrradiationModel(); //!< return the Bateman solver
 	
 	PhysicsModels*		GetPhysicsModels()	{return this;}//!< return the PhysicsModels
 

@@ -27,7 +27,7 @@ PhysicsModels::PhysicsModels(XSModel* XS, EquivalenceModel* EM, IrradiationModel
 	fXSModel	 = XS;
 	fEquivalenceModel = EM;
 	fIrradiationModel = IM;
-	
+
 	int Z_ZAIThreshold = fIrradiationModel->GetZAIThreshold();
 	fXSModel->SetZAIThreshold(Z_ZAIThreshold);
 
@@ -40,7 +40,7 @@ PhysicsModels::PhysicsModels(CLASSLogger* log, XSModel* XS, EquivalenceModel* EM
 	fXSModel	 = XS;
 	fEquivalenceModel = EM;
 	fIrradiationModel = IM;
-	
+
 	int Z_ZAIThreshold = fIrradiationModel->GetZAIThreshold();
 	fXSModel->SetZAIThreshold(Z_ZAIThreshold);
 
@@ -50,8 +50,24 @@ PhysicsModels::PhysicsModels(CLASSLogger* log, XSModel* XS, EquivalenceModel* EM
 //________________________________________________________________________
 EvolutionData PhysicsModels::GenerateEvolutionData(IsotopicVector IV, cSecond cycletime, double Power)
 {
+
 	fXSModel->isIVInDomain(IV);
 
 	return fIrradiationModel->GenerateEvolutionData(IV, fXSModel->GetCrossSections(IV), Power, cycletime);
 }
 //________________________________________________________________________
+
+
+XSModel*		PhysicsModels::GetXSModel()
+{
+	return fXSModel;
+} //!< return the mean cross section predictor
+
+EquivalenceModel*	PhysicsModels::GetEquivalenceModel() {
+	return fEquivalenceModel;
+} //!< return Fissile content predictor
+
+IrradiationModel*	PhysicsModels::GetIrradiationModel()
+{
+	return fIrradiationModel;
+} //!< return the Bateman solver
