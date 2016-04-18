@@ -19,6 +19,8 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <ctime>        
+#include <cstdlib>  
 
 ClassImp(FabricationPlant)
 
@@ -34,7 +36,7 @@ ClassImp(FabricationPlant)
 	//________________________________________________________________________
 	//________________________________________________________________________
 
-
+//________________________________________________________________________
 FabricationPlant::FabricationPlant():CLASSFacility(16)
 {
 	SetName("F_FabricationPLant.");
@@ -43,13 +45,14 @@ FabricationPlant::FabricationPlant():CLASSFacility(16)
 	fIsReusable = false;
 }
 
-
+//________________________________________________________________________
 FabricationPlant::FabricationPlant(CLASSLogger* log, double fabricationtime):CLASSFacility(log, fabricationtime, 16)
 {
 DBGL
 	SetName("F_FabricationPLant.");
 
-	fFiFo = false;
+	fStorageManagement = kpLiFo;
+	fIsSeparationManagement = true;
 	fSubstitutionFuel = false;
 	fSubstitutionFissile = false;
 	fIsReplaceFissileStock = false;
@@ -63,9 +66,7 @@ DBGL
 DBGL
 }
 
-
-
-	//________________________________________________________________________
+//________________________________________________________________________
 FabricationPlant::~FabricationPlant()
 {
 	
@@ -73,7 +74,7 @@ FabricationPlant::~FabricationPlant()
 }
 
 
-	//________________________________________________________________________
+//________________________________________________________________________
 void	FabricationPlant::SetSeparartionEfficiencyIV(ZAI zai, double factor)
 {
 
@@ -89,11 +90,11 @@ void	FabricationPlant::SetSeparartionEfficiencyIV(ZAI zai, double factor)
 	
 }
 
+//________________________________________________________________________
+//_______________________________ Evolution ______________________________
+//________________________________________________________________________
 
-
-	//________________________________________________________________________
-	//_______________________________ Evolution ______________________________
-	//________________________________________________________________________
+//________________________________________________________________________
 void FabricationPlant::Evolution(cSecond t)
 {
 	
@@ -108,7 +109,7 @@ void FabricationPlant::Evolution(cSecond t)
 	
 }
 
-	//________________________________________________________________________
+//________________________________________________________________________
 void FabricationPlant::FabricationPlantEvolution(cSecond t)
 {
 DBGL
@@ -160,6 +161,7 @@ DBGL
 DBGL
 }
 
+//________________________________________________________________________
 void FabricationPlant::UpdateInsideIV()
 {
 	DBGL
@@ -172,8 +174,7 @@ void FabricationPlant::UpdateInsideIV()
 	DBGL
 }
 
-
-	//________________________________________________________________________
+//________________________________________________________________________
 void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 {
 	DBGL
@@ -336,8 +337,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 DBGL
 }
 
-
-
+//________________________________________________________________________
 void FabricationPlant::BuildFissileArray()
 {
 DBGL
@@ -369,7 +369,7 @@ DBGL
 DBGL
 }
 
-
+//________________________________________________________________________
 void FabricationPlant::BuildFertileArray()
 {
 DBGL
@@ -397,12 +397,13 @@ DBGL
 DBGL
 }
 
+//________________________________________________________________________
 void FabricationPlant::SortArray(int i)
 {
 
 
 	vector<IsotopicVector>	IVArray;
-	vector<cSecond>		TimeArray;
+	vector<cSecond>			TimeArray;
 	vector< pair<int,int> >	AdressArray;
 
 	if(i == 0) //Fissile
@@ -419,8 +420,53 @@ void FabricationPlant::SortArray(int i)
 
 	}
 
-	if(fFiFo)
+
+	switch(fStorageManagement)
 	{
+		case kpFiFo: SortFiFo(IVArray, TimeArray, AdressArray);
+					break;
+
+		case kpLiFo: SortLiFo(IVArray, TimeArray, AdressArray);
+					break;
+
+		case kpMix: SortMix(IVArray, TimeArray, AdressArray);
+					break;
+
+		case kpRand: SortRandom(IVArray, TimeArray, AdressArray);
+					break;			
+
+		default: 
+			ERROR<<" Posibble Storage Management are"<<endl;
+			ERROR<<" YourFabPlant->SetStorageManagement(key); //with key can be either"<<endl;
+			ERROR<<"\tkFiFo : First In First Out (i.e the older storage first)"<<endl;
+			ERROR<<"\tkLiFo : Last In First Out  (i.e the youger storage first)"<<endl;
+			ERROR<<"\tkMix : IVs are sorted that way : "<<"\n"<<"First: The younger , Second: The older, Third: The second younger ,4th : the second older ...."<<endl;
+			ERROR<<"\tkRand : IVs order in storage is random"<<endl;
+	
+			exit(1);
+	}
+
+
+	if(i == 0) //Fissile
+	{
+		fFissileArray	 = IVArray;
+		fFissileArrayTime = TimeArray;
+		fFissileArrayAdress = AdressArray;
+	}
+	else if (i == 1) //Fertile
+	{
+		fFertileArray = IVArray;
+		fFertileArrayTime = TimeArray;
+		fFertileArrayAdress = AdressArray;
+
+	}
+
+
+}
+
+//________________________________________________________________________
+void FabricationPlant::SortFiFo(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray)
+{
 		for(int j = 0; j < (int)TimeArray.size(); j++)
 		{
 			for (int k = j+1; k < (int)TimeArray.size(); k++)
@@ -443,10 +489,13 @@ void FabricationPlant::SortArray(int i)
 
 			}
 		}
-	}
-	else
-	{
-		for(int j = 0; j < (int)fFissileArrayTime.size(); j++)
+
+}	
+
+//________________________________________________________________________
+void FabricationPlant::SortLiFo(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray)
+{
+		for(int j = 0; j < (int)TimeArray.size(); j++)
 		{
 			for (int k = j+1; k < (int)TimeArray.size(); k++)
 			{
@@ -468,28 +517,103 @@ void FabricationPlant::SortArray(int i)
 				
 			}
 		}
-	}
-
-
-	if(i == 0) //Fissile
-	{
-		fFissileArray	 = IVArray;
-		fFissileArrayTime = TimeArray;
-		fFissileArrayAdress = AdressArray;
-	}
-	else if (i == 1) //Fertile
-	{
-		fFertileArray = IVArray;
-		fFertileArrayTime = TimeArray;
-		fFertileArrayAdress = AdressArray;
-
-	}
-
 
 }
 
+//________________________________________________________________________
+void FabricationPlant::SortMix(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray)
+{
+
+	//Sort by anti-chronoligical order (youger first)
+	SortLiFo(IVArray, TimeArray, AdressArray);
+	/*******Store it ******/
+ 	vector<IsotopicVector>		Saved_IVArray		= IVArray	 ;
+ 	vector<cSecond> 			Saved_TimeArray		= TimeArray	 ; 
+ 	vector< pair<int,int> > 	Saved_AdressArray	= AdressArray;
+
+ 	int IVsize = (int)IVArray.size();
+	/*******Then reset the vectors ******/
+	IVArray.clear();
+	TimeArray.clear();
+	AdressArray.clear();
 
 
+	int HalfSize = floor( (double)IVsize/2. );
+
+	int old = IVsize;
+
+	bool isYoung=true;//change to false to begin with an old isotopicvector
+
+	int RemainingIV = -1;
+
+
+	for(int young = 0 ; young < HalfSize ; young++)
+	{
+
+		if(isYoung)
+		{
+			IVArray.push_back(Saved_IVArray[young]);
+			TimeArray.push_back(Saved_TimeArray[young]);
+			AdressArray.push_back(Saved_AdressArray[young]);
+
+			isYoung=!isYoung;
+			RemainingIV = young+1; // +1 ? -> The next young will be the +1
+		}
+		if(!isYoung)
+		{
+			old--;
+
+			IVArray.push_back(Saved_IVArray[old]);
+			TimeArray.push_back(Saved_TimeArray[old]);
+			AdressArray.push_back(Saved_AdressArray[old]);
+
+			isYoung=!isYoung;
+			RemainingIV = old-1; // -1 ? -> The next old will be the -1
+
+		}
+
+	}
+
+	if(  (double)IVsize/2. - (double)HalfSize  > 0.0 ) //if odd number of isotopic vector : one isotopic vector is still missing add it @ the end
+	{
+
+		IVArray.push_back(Saved_IVArray[RemainingIV]);
+		TimeArray.push_back(Saved_TimeArray[RemainingIV]);
+		AdressArray.push_back(Saved_AdressArray[RemainingIV]);
+
+	}
+
+
+}	
+
+//________________________________________________________________________
+void FabricationPlant::SortRandom(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray)
+{
+	  int SizeOfIVArray = IVArray.size();
+
+/*********Create a Random list of vector position**********/
+  srand ( unsigned ( std::time(0) ) );
+  vector<int> RandomPosition;
+  	for (int i=0 ; i < (int) SizeOfIVArray ; ++i) 
+  		RandomPosition.push_back(i); 
+
+  random_shuffle(RandomPosition.begin(), RandomPosition.end());
+
+/*******Store old vectors ******/
+ vector<IsotopicVector>		Saved_IVArray		= IVArray	 ;
+ vector<cSecond> 			Saved_TimeArray		= TimeArray	 ; 
+ vector< pair<int,int> > 	Saved_AdressArray	= AdressArray;
+
+/*******Asign values ******/
+
+	for (int i=0 ; i < (int) SizeOfIVArray ; ++i) 
+	{
+		IVArray[i]		=	Saved_IVArray[RandomPosition[i]];
+		TimeArray[i]	=	Saved_TimeArray[RandomPosition[i]];
+		AdressArray[i]	=	Saved_AdressArray[RandomPosition[i]];
+	}
+
+}	
 
 //________________________________________________________________________
 void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel, bool ReplaceTheStock)
@@ -502,6 +626,7 @@ void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel, bool ReplaceTheSt
 	fSubstitutionEvolutionData = fuel / M0;
 
 }
+
 //________________________________________________________________________
 void	FabricationPlant::SetSubstitutionFissile(IsotopicVector IV)
 {
@@ -513,10 +638,11 @@ void	FabricationPlant::SetSubstitutionFissile(IsotopicVector IV)
 
 }
 
-	//________________________________________________________________________
-	//_____________________________ Reactor & DB _____________________________
-	//________________________________________________________________________
-	//________________________________________________________________________
+//________________________________________________________________________
+//_____________________________ Reactor & DB _____________________________
+//________________________________________________________________________
+
+//________________________________________________________________________
 void FabricationPlant::TakeReactorFuel(int Id)
 {
 DBGL
@@ -542,9 +668,10 @@ EvolutionData FabricationPlant::GetReactorEvolutionDB(int ReactorId)
 	map< int,EvolutionData >::iterator it = fReactorFuturDB.find(ReactorId);
 	return (*it).second;
 }
-	//________________________________________________________________________
-	//_______________________________ Storage ________________________________
-	//________________________________________________________________________
+
+//________________________________________________________________________
+//_______________________________ Storage ________________________________
+//________________________________________________________________________
 IsotopicVector FabricationPlant::BuildFuelFromEqModel(vector<double> LambdaArray)
 {
 DBGL
@@ -603,8 +730,7 @@ DBGL
 	return BuildedFuel;
 }
 
-
-	//________________________________________________________________________
+//________________________________________________________________________
 void FabricationPlant::DumpStock(vector<double> LambdaArray)
 {
 DBGL
@@ -643,6 +769,7 @@ DBGL
 
 DBGL
 }
+
 //________________________________________________________________________
 void FabricationPlant::ResetArrays()
 {
@@ -656,19 +783,31 @@ void FabricationPlant::ResetArrays()
 
 	fFertileList = fFissileList = IsotopicVector();
 }
+
 //________________________________________________________________________
 pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector isotopicvector, IsotopicVector ExtractedList)
 {
 DBGL
+	IsotopicVector SeparatedPart;
+	IsotopicVector LostPart;
+
+	if(fIsSeparationManagement)
+	{
 		//[0] = re-use ; [1] = waste
-	IsotopicVector LostInReprocessing  = isotopicvector.GetThisComposition(ExtractedList) * fSeparationLostFraction;
-	IsotopicVector SeparatedPart  = isotopicvector.GetThisComposition(ExtractedList) - LostInReprocessing;
-	IsotopicVector LostPart = isotopicvector - SeparatedPart;
+		IsotopicVector LostInReprocessing  = isotopicvector.GetThisComposition(ExtractedList) * fSeparationLostFraction;
+		SeparatedPart  = isotopicvector.GetThisComposition(ExtractedList) - LostInReprocessing;
+		LostPart = isotopicvector - SeparatedPart;
+	}
+	else
+	{
+		//[0] = re-use ; [1] = waste
+		//IsotopicVector LostInReprocessing  = isotopicvector.GetThisComposition(ExtractedList) * fSeparationLostFraction;
+		SeparatedPart  = isotopicvector;
+		LostPart = isotopicvector - SeparatedPart;
+	}
 DBGL
 	return pair<IsotopicVector, IsotopicVector> (SeparatedPart, LostPart);
 }
-
-
 
 //________________________________________________________________________
 //	Get Decay
@@ -692,9 +831,4 @@ IsotopicVector FabricationPlant::GetDecay(IsotopicVector isotopicvector, cSecond
 	return IV;
 	
 }
-
-
-
-
-
 

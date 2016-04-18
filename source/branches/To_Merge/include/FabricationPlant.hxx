@@ -43,9 +43,23 @@ Once the fuel is built, the FabricationPlant store the corresponding EvolutionDa
  @see EquivalenceModel.hxx
  
  @author BaM
+ @author BLG
  @version 2.0
  */
 //________________________________________________________________________
+
+	//! Define the storage management for fuel fresh construction.
+	/*!
+	// Posible  Storage Management are
+		using : YourFabPlant->SetStorageManagement(key);
+		kpFiFo : First In First Out (i.e the older storage first)
+		kpLiFo : Last In First Out  (i.e the youger storage first)
+		kpMix : IVs are sorted that way : First: The younger , 
+		Second: The older, Third: The second younger ,4th : the second older ....
+		kpRand : IVs order in storage is random
+
+	*/
+	enum StorageManagement{ kpFiFo, kpLiFo ,kpMix, kpRand};
 
 class DecayDataBank;
 class FuelDataBank;
@@ -93,11 +107,14 @@ public :
 #ifndef __CINT__
 	void SetDecayDataBank(DecayDataBank* decayDB) {fDecayDataBase = decayDB;}	//! Set the Decay DataBank
 
-	void SetFiFo(bool bval = true)	{ fFiFo = bval;}				//!< Set the chronological priority (true for chronological, false instead)
-	
+	void SetFiFo(bool bval = true)	{ if(bval) fStorageManagement=kpFiFo; else fStorageManagement=kpLiFo ;}	//!< Set the chronological priority (true for chronological, false instead).Equivalent to SetStorageManagement(kpFiFo) or SetStorageManagement(kpLiFo)
+	void SetStorageManagement(StorageManagement SM){fStorageManagement = SM ;} //!<  The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
+
+
 	void SetSubstitutionFuel(EvolutionData fuel, bool ReplaceTheStock = false);					//!< To use a substitution fuel if the fabrication fail (not enough material in stock) 
 	void SetSubstitutionFissile(IsotopicVector IV);					//!< To use a substitution fissile if the fabrication fail (not enough material in stock) the composition of the fissile is given normalize to 1 by IV.
 
+	void SetSeparationManagement(bool bval = true)	{ fIsSeparationManagement = bval;}				//!< Set the separation managmeent for the fabrication plant
 
 	void AddReactor(int reactorid, double creationtime)
 	{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }	//!< Add a new reactor to be filled with the fresh fuel build by the FabricationPlant
@@ -163,14 +180,19 @@ public :
 	void BuildFuelForReactor(int ReactorId, cSecond t);			//!< Build a fuel for the reactor ReactorId
 #endif
 
-	void SortArray(int i); //!< Sort IsotopicVector array according priority preferences (e.g first in first out)
+	void SortArray(int i); //!< Sort IsotopicVector array according priority preferences (given by key in YourFabPlant->SetStorageManagement(key);)
+
+	void SortFiFo(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray);
+	void SortLiFo(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray);
+	void SortMix(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray);
+	void SortRandom(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray);
 
 	//@}
 
 
 
 
-protected :
+protected:
 
 
 
@@ -185,8 +207,9 @@ protected :
 
 
 
+	StorageManagement fStorageManagement;	//!< The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
 
-	bool	fFiFo;					//!< First In First Out flag
+	bool	fIsSeparationManagement; //!< Separation managment 
 
 	bool	fSubstitutionFuel;			//!< true if a substitution fuel as been set
 	bool 	fSubstitutionFissile;		//!< true if a substitution fissile as been set
