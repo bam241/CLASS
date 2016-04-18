@@ -146,6 +146,9 @@ public :
 	void	SetCaptureXS(map<ZAI, TGraph*> maptoinsert)	{ fCaptureXS = maptoinsert;}	///< Set capture cross section map
 	void	Setn2nXS(map<ZAI, TGraph*> maptoinsert)		{ fn2nXS = maptoinsert;}	///< Set (n,2n) cross section map
 
+
+	void 	Print(string filename); //!< Print EvolutionData in a .dat format in a file of Name filename
+
 	//@}
 
 	
