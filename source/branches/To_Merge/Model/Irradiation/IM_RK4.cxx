@@ -40,7 +40,7 @@ IM_RK4::IM_RK4():IrradiationModel(new CLASSLogger("IM_RK4.log")), DynamicalSyste
 
 }
 
-
+//________________________________________________________________________
 IM_RK4::IM_RK4(CLASSLogger* log):IrradiationModel(log), DynamicalSystem()
 {
 	fTheNucleiVector = 0;
@@ -49,13 +49,6 @@ IM_RK4::IM_RK4(CLASSLogger* log):IrradiationModel(log), DynamicalSystem()
 	SetForbidNegativeValue();
 
 }
-
-
-
-
-
-
-
 
 
 //________________________________________________________________________
@@ -248,10 +241,11 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 		}
 
 		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NMatrix.size(), timevector, ZAIQuantity)));
-/*		GeneratedDB.FissionXSInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NStep, timevector, FissionXS)));
+	/*	GeneratedDB.FissionXSInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NStep, timevector, FissionXS)));
 		GeneratedDB.CaptureXSInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NStep, timevector, CaptureXS)));
 		GeneratedDB.n2nXSInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NStep, timevector, n2nXS)));
-*/	}
+	*/
+	}
 	DBGL
 	GeneratedDB.SetPower(Power );
 	GeneratedDB.SetHeavyMetalMass(M);
@@ -275,7 +269,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 
 }
 
-
+//________________________________________________________________________
 void IM_RK4::ResetTheMatrix()
 {
 
@@ -288,6 +282,7 @@ void IM_RK4::ResetTheMatrix()
 	fTheMatrix = 0;
 }
 
+//________________________________________________________________________
 void IM_RK4::SetTheMatrixToZero()
 {
 	ResetTheMatrix();
@@ -378,19 +373,3 @@ TMatrixT<double> IM_RK4::GetTheNucleiVector()
 	
 	return NEvolutionMatrix;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
