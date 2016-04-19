@@ -58,7 +58,7 @@ class EQM_PWR_LIN_MOX : public EquivalenceModel
 	~EQM_PWR_LIN_MOX();
 	//@}
 
-	virtual vector<double> BuildFuel(double BurnUp, double HMMass, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray );
+	virtual vector<double> BuildFuel(double BurnUp, double HMMass, vector < vector <IsotopicVector> > StreamArray);
 
 	private :
 

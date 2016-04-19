@@ -68,14 +68,6 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(string TMVAWeightPath, double keff_target, st
 	INFO << "\tThis model is based on the prediction of keff at a specific time" << endl;
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
 	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | " << fInformationFile << " )" << endl;
-	INFO << "Maximal fissile content (molar proportion) : "<<fMaximalContent<<endl;
-	EquivalenceModel::PrintInfo();
-
-	if(fMapOfTMVAVariableNames.empty() || fFertileList.GetIsotopicQuantity().empty() || fFissileList.GetIsotopicQuantity().empty())	
-	{
-		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
-		exit(1);
-	}
 
 	DBGL
 }
@@ -114,16 +106,10 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(CLASSLogger* log, string TMVAWeightPath, doub
 	INFO << "\tThis model is based on the prediction of keff at a specific time" << endl;
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
 	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | "  << fInformationFile << " )" << endl;
-	EquivalenceModel::PrintInfo();
-
-	if(fMapOfTMVAVariableNames.empty() || fFertileList.GetIsotopicQuantity().empty() || fFissileList.GetIsotopicQuantity().empty())	
-	{
-		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
-		exit(1);
-	}
 
 	DBGL
 }
+
 //________________________________________________________________________
 TTree* EQM_FBR_MLP_Keff::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double ThisTime)
 {
@@ -232,6 +218,7 @@ double EQM_FBR_MLP_Keff::ExecuteTMVA(TTree* InputTree, bool IsTimeDependent)
 	DBGL
 	return (double)val;	//return k_{eff}(t = Time)
 }
+
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff::LoadKeyword()
 {
@@ -243,11 +230,11 @@ void EQM_FBR_MLP_Keff::LoadKeyword()
 
 	DBGL
 }
+
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff::ReadZAIName(const string &line)
 {
 	DBGL
-
 	int pos = 0;
 	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
 	if( keyword != "k_zainame" )	// Check the keyword
@@ -260,12 +247,12 @@ void EQM_FBR_MLP_Keff::ReadZAIName(const string &line)
 	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	
-	string name = StringLine::NextWord(line, pos, ' ');
+	fFissileList.Add(Z, A, I, 1.0);
+	fStreamList.push_back(fFissileList);
 	
-	fMapOfTMVAVariableNames.insert( pair<ZAI,string>( ZAI(Z, A, I), name ) );
-
-	DBGL	
+	DBGL
 }
+
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff::ReadMaxFisContent(const string &line)
 {
@@ -282,6 +269,7 @@ void EQM_FBR_MLP_Keff::ReadMaxFisContent(const string &line)
 	
 	DBGL
 }
+
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff::ReadLine(string line)
 {
@@ -297,14 +285,17 @@ void EQM_FBR_MLP_Keff::ReadLine(string line)
 	
 	DBGL
 }
+
 //________________________________________________________________________
-double EQM_FBR_MLP_Keff::GetFissileMolarFraction(IsotopicVector Fissile,IsotopicVector Fertile,double TargetBU)
+map < string , double> EQM_FBR_MLP_Keff::GetMolarFraction(vector <IsotopicVector> IVStream,double TargetBU)
 {
 	DBGL
 	
 	if(TargetBU != 0)
 		WARNING << "The third arguement : Burnup has no effect here.";
 
+	IsotopicVector Fissile = IVStream["Fissile"];
+	IsotopicVector Fertile = IVStream["Fertile"];
 
 	//initialization
 	double FissileContent = GetActualFissileContent();
@@ -347,7 +338,13 @@ double EQM_FBR_MLP_Keff::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 	}while(fabs(fTargetKeff-PredictedKeff)>Precision);
 	
 	DBGV( "Predicted keff " << PredictedKeff << " FissileContent " << FissileContent << endl);
-	return FissileContent;
+	
+	map < string , double> MolarFraction;
+	MolarFraction["Fissile"] = FissileContent;
+	MolarFraction["Fertile"] = 1.- FissileContent;
+
+	return MolarFraction; //return Molar content of each component in the fuel
+
 
 }
 //________________________________________________________________________

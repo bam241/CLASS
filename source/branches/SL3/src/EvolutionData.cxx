@@ -661,7 +661,6 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 	{
 		ERROR << " Bad Database file : " <<  DBfile << endl;
 		ERROR << " The first Line MUST be the time line !!!" << endl;
-		ERROR << " last line red : \n" <<line<< endl;
 		exit (1);
 	}
 	
@@ -1229,86 +1228,6 @@ void EvolutionData::OldReadDB(string DBfile)
 }
 
 
-//________________________________________________________________________
-void EvolutionData::Print(string filename)
-{	
-
-	map<ZAI ,TGraph* >::iterator iterator;
-	ofstream out(filename.c_str());
 
 
-	out<<"time ";
-	for(int t = 0 ; t < fInventoryEvolution.begin()->second->GetN() ; t++ )
-			out<<fInventoryEvolution.begin()->second->GetX()[t]<< " ";
-	out<<endl;
-	
-	if(fFlux)	
-	{	
-		out<<"flux ";
-		for(int t = 0 ; t < fFlux->GetN() ; t++ )
-			out<<fFlux->GetY()[t]<< " ";
-		out<<endl;
-	}
-
-	if(fKeff)	
-	{	out<<"keff ";
-		for(int t = 0 ; t < fKeff->GetN() ; t++ )
-			out<<fKeff->GetY()[t]<< " ";
-		out<<endl;
-	}
-	for( iterator = fInventoryEvolution.begin(); iterator != fInventoryEvolution.end(); iterator++)
-	{
-		int N = (*iterator).second->GetN();
-
-		if((*iterator).second->GetY()[N-1] != 0)
-		{	out<<"Inv "<<(*iterator).first.Z()<<" "<<(*iterator).first.A()<<" "<<(*iterator).first.I()<<" ";
-
-		for(int t = 0 ; t < N ; t++ )
-			out<<(*iterator).second->GetY()[t]<< " ";
-		out<<endl;
-		}
-	}
-
-	for( iterator = fFissionXS.begin(); iterator != fFissionXS.end(); iterator++)
-	{
-		int N = (*iterator).second->GetN();
-		if((*iterator).second->GetY()[N-1] != 0)
-		{	out<<"XSFis "<<(*iterator).first.Z()<<" "<<(*iterator).first.A()<<" "<<(*iterator).first.I()<<" ";
-
-		for(int t = 0 ; t < (*iterator).second->GetN() ; t++ )
-			out<<-(*iterator).second->GetY()[t]*1e24<< " ";
-
-		out<<endl;
-		}
-	}
-
-	for( iterator = fCaptureXS.begin(); iterator != fCaptureXS.end(); iterator++)
-	{
-		int N = (*iterator).second->GetN();
-		if((*iterator).second->GetY()[N-1] != 0)
-		{			out<<"XSCap "<<(*iterator).first.Z()<<" "<<(*iterator).first.A()<<" "<<(*iterator).first.I()<<" ";
-
-		for(int t = 0 ; t < (*iterator).second->GetN() ; t++ )
-			out<<-(*iterator).second->GetY()[t]*1e24<< " ";
-
-		out<<endl;
-		}
-	}
-
-	for( iterator = fn2nXS.begin(); iterator != fn2nXS.end(); iterator++)
-	{
-		int N = (*iterator).second->GetN();
-		if((*iterator).second->GetY()[N-1] != 0)
-		{			out<<"XSn2n "<<(*iterator).first.Z()<<" "<<(*iterator).first.A()<<" "<<(*iterator).first.I()<<" ";
-
-		for(int t = 0 ; t < (*iterator).second->GetN() ; t++ )
-			out<<-(*iterator).second->GetY()[t]*1e24<< " ";
-
-		out<<endl;
-		}
-	}
-
-
-	
-}
 

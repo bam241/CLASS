@@ -53,7 +53,7 @@ public:
 	
 	//@}
 	/**This function IS the equivalence model**/
-	double GetFissileMolarFraction(IsotopicVector Fissil, IsotopicVector Fertil,double BurnUp) ; // !<Return the molar fraction of fissile element
+	double GetFissileMolarFraction(vector <IsotopicVector> IVStream,double BurnUp) ; // !<Return the molar fraction of fissile element
 	
 	
 private:
