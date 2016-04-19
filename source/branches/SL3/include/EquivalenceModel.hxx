@@ -7,14 +7,14 @@
  \brief Header file for EquivalenceModel class.
  
  
- @author BaM
  @author BLG
+ @author BaM
+ @author FaC
  @version 3.0
  */
 
 #include "IsotopicVector.hxx"
 #include <math.h>
-#include <map>
 #include "CLASSObject.hxx"
 
 
@@ -47,7 +47,8 @@ typedef void (EquivalenceModel::*EQM_MthPtr)( const string & );
 
  @author BLG
  @author BaM
-
+ @author FaC
+ 
  @version 3.0
  */
 //________________________________________________________________________
@@ -77,11 +78,9 @@ class EquivalenceModel : public CLASSObject
 	 Build the fuel following the equivalance model with the proper requierment in term of mass, burnup....
 	 \param double burnup reached by the fuel at the end of irradiation
 	 \param double HMMass, Heavy metal mass needed
-	 \param vector<double> &lambda, fraction of the stock to take (initialy should be 0)
-	 \param vector<IsotopicVector> FissilArray, isotopicvectors to use to get the fissile part of the fuel
-	 \param vector<IsotopicVector> FertilArray, isotopicvectors to use to get the fertile part of the fuel (if empty take it from the OutIncome)
-	 */
-	virtual	 vector<double> BuildFuel(double BurnUp, double HMMass, vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray );
+     \param map < string , vector <IsotopicVector> > StreamArray, the string is the stream code (fissile fertile ,...) the IsotopicVector the fraction of each IV to take in the (fissile, fertile,..) stock .
+     */
+	virtual	 map <string , vector<double> > BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray);
 	//}
 		
 	//@}
@@ -90,27 +89,27 @@ class EquivalenceModel : public CLASSObject
 	 \name Get/Set Method
 	 */
 	//@{
+
+	IsotopicVector GetStreamList(string keyword) {return fStreamList[keyword];}	//!<return the list of ZAI of stream type keyword
+	map < string, IsotopicVector> GetAllStreamList() {return fStreamList;}	 	//!<return all the lists
+
+	int GetStreamListNumber(){return fStreamList.size();};
 	
-	IsotopicVector GetFertileList() {return fFertileList;}	//!<return the fertile list
-	IsotopicVector GetFissileList() {return fFissileList;}	//!<return the fissile list
-	
-	double GetBuildFuelFirstGuess(){return fFirstGuessFissilContent;} //!<Get the initialization value for BuildFuel algorithm
-	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp) {return 0;} //!< Return the molar fraction of fissile element in the fuel according to the burnup, and a given fuel composition (this is the heart of the equivalence model)
+	map < string, double> GetBuildFuelFirstGuess(){return fFirstGuessContent;} 	//!<Get the initialization value for BuildFuel algorithm
+	map < string, double> GetActualMassContent() const  { return  fActualMassContentInFuel ; }
+	map < string, double> GetActualMolarContent() const { return fActualMolarContentInFuel ; }
+
+	virtual map < string , double> GetMolarFraction(map < string , IsotopicVector> IVStream, double BurnUp) = 0; //!< Return the molar fractions of each element in the fuel according to the burnup, and a given fuel composition (this is the heart of the equivalence model)
 
 	double GetRelativMassPrecision() const	{ return fRelativMassPrecision; }	//!< Mass precision
 	int GetMaxInterration()		 const	{ return fMaxInterration; }		//!< Max iterration in build fueld algorythm
-
-	double GetActualFissileContent() const { return fActualFissileContent; }	//!< Get the fissile content at the actual algorithm step (usefull for EQM_MLP_Kinf)
 	
-	void SetFertileList(IsotopicVector IV) {fFertileList = IV;}//!<set the fertile list
-	void SetFissileList(IsotopicVector IV) {fFissileList = IV;}//!<set the fissile list
-	void SetBuildFuelFirstGuess(double FirstGuess){fFirstGuessFissilContent = FirstGuess;} //!<set the initialization value for BuildFuel algorithm
+	void SetBuildFuelFirstGuess(map < string, double> FirstGuess){fFirstGuessContent = FirstGuess;} //!<set the initialization value for BuildFuel algorithm (one FistGuess for each component of the fresh fuel
 	void SetRelativMassPrecision( double val)	{ fRelativMassPrecision = val; }	//!< Mass precision
-	void SetMaxInterration(int val)			{ fMaxInterration = val; }		//!< Max iterration in build fueld algorythm
+	void SetMaxInterration(int val)			{ fMaxInterration = val; }	//!< Max iteration in build fuel algorithm
 
+	
 	//@}
-	
-	
 	
 	/*!
 	 \name Reading NFO related Method
@@ -140,61 +139,42 @@ class EquivalenceModel : public CLASSObject
 	 */
 	void ReadMaximalContent(const string &line);
 	//}
-	
+
+	void PrintInfo(); //Print the information red in the INFO stream	
 	
 	//{
 	/// ReadFissil : read the zai name in the TMWA MLP model starts with "k_fissil" keyword
 	/*!
 	 \param line : line suppossed to contain the fissil list
 	 */
-	void ReadFissil(const string &line);
-	//}
-	
-	//{
-	/// ReadFertil : read the zai name in the TMWA MLP model starts with "k_fertil" keyword
-	/*!
-	 \param line : line suppossed to contain the fertil list & their default isotopic fraction
-	 */
-	void ReadFertil(const string &line);
-	//}
-	
-	void PrintInfo(); //Print the information red in the INFO stream
+	void ReadList(const string &line);
 
-	//@}
-	
+	void ReadFirstGuessContent(const string &line);	
 	
 	bool isIVInDomain(IsotopicVector IV);
 
 	
-	protected :
-	
-	IsotopicVector fFertileList;	//!< contain the list of zai, needed as fertile, taken in a stock before fabrication
-	//!< if no stock are provided, will take the isotopic vector in the Park income
-	
-	IsotopicVector fFissileList;	//!< contain the list of zai, needed as fissile, taken in a stock before fabrication
-	//!< if no stock are provided the fuel will not be made
-	
-	double fFirstGuessFissilContent;//!< fissile content for BuildFuel initialization (in weight proportion)
-	double fActualFissileContent;	//!< fissile content at the actual dichotomy step (usefull for EQM_MLP_Kinf)
 	
 	
 	protected :
-	/*!
-	 \name Algorithm parameters
-	 */
-	//@{	
-	double 	fRelativMassPrecision;		//!< Mass precision
-	int 	fMaxInterration;			//!< Max iterration in build fueld algorythm
-	//@}
+	
+	map < string, IsotopicVector> fStreamList;		//!< contains all lists of zai needed to build a fuel (example : 2 -> fissileList+fertileList)
+								//!< each list is identified by a keyword (example : -> "Fissile" & "Fertile")
+								
+	map < string, double> fFirstGuessContent;		//!< fissile content for BuildFuel initialization (in weight proportion)
+	map < string, double> fActualMolarContentInFuel; 	//!< Molar Content in fuel of each list at this step of the calculation
+	map < string, double> fActualMassContentInFuel; 	//!< Mass  Content in fuel of each list at this step of the calculation
+	double 	fSpecificPower; 				//!< The specific power in W/gHM (HM: heavy Metal)
+	double  fMaximalContent;				//!< The approx. maximum fissile content reachable by the model
 
-	/*!
-	 \name Algorithm related functions for default BuildFuel function
-	 */
-	//@{
-	void 	SetLambda(vector<double>& lambda ,int FirstStockID, int LastStockID, double LAMBDA_TOT);	//!< Set individual lambda according to the LAMBDA_TOT (lambda of all stocks)
-	void	SetLambdaToErrorCode(vector<double>& lambda);												//!< Set all vector elements to -1
-	double 	LAMBDA_TOT_FOR(double MassNeeded, vector<IsotopicVector> StockArray, string FisOrFer);		//!< Calculate the proportion of each stocks in StockArray to take in oder to get a mass of MassNeeded (can be Fer(fertile) or Fis(Fissile))
-	bool 	Build_Fuel_According_Lambda(vector<double> &lambda,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray, double HMMass,IsotopicVector &Fissile, IsotopicVector &Fertile);	//!< Compute the fuel isotopy according to the proportion of each IV taken
+	
+	double LambdaCalculation(string MaterialDenomination, double LambdaPreviousStep, double MaterialMassNeeded, double DeltaMass, vector <IsotopicVector>  Stocks); //!< Calculate the proportion of each stocks in StockArray to take in oder to get a mass of MassNeeded (can be Fer(fertile) or Fis(Fissile))
+	void SetLambda(vector<double>& lambda , double Lambda_tot);	//!< Set individual lambda according to the LAMBDA_TOT (lambda of all stocks)	
+	void SetLambdaToErrorCode(vector<double>& lambda);
+	void StocksTotalMassCalculation(map < string , vector <IsotopicVector> >  Stocks);
+	double fRelativMassPrecision;				//!< Mass precision
+	int fMaxInterration;					//!< Max iterration in build fueld algorythm
+
 	
 	//@}
 
@@ -203,21 +183,23 @@ class EquivalenceModel : public CLASSObject
 #endif
 	
 	bool freaded;
-	map< ZAI, pair<double,double> > fZAILimits; //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
+	map< ZAI, pair<double,double> > fZAILimits; 		//!< Fresh fuel range : map<ZAI<min edge ,max edge >>
 
-	string fInformationFile;	//!<  file containing Reactor Type, Fuel type, HM mass, Power, time vector, and TMVA input variables names (looks the manual for format details)
-	string fDBFType;		//!<  Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
-	string fDBRType;		//!<  Reactor Type (e.g PWR, FBR-Na, ADS..)
-	double 	fSpecificPower; 	//!< The specific power in W/gHM (HM: heavy Metal)
-	double  fMaximalContent;	//!< The approx. maximum fissile content reachable by the model
+	string fInformationFile;					//!<  file containing Reactor Type, Fuel type, HM mass, Power, time vector, and TMVA input variables names (looks the manual for format details)
+	string fDBFType;					//!<  Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
+	string fDBRType;					//!<  Reactor Type (e.g PWR, FBR-Na, ADS..)
 	
 	/*!
 	 \name Others 
 	 */
 	//@{
-	double fTotalFissileMassInStocks;//!< Total mass in fissile stocks
-	double fTotalFertileMassInStocks;//!< Total mass in fertile stocks
+	map <string , double > fTotalMassInStocks;  		//!< Total mass in each vector of stock
+	map <string , double > fLambdaMax;  			//!< Total lambda of available stocks
+
 	//@}
+
+
+
 };
 
 #endif
