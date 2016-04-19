@@ -7,8 +7,6 @@
  @version 2.0
  */
 
-
-
 #include <vector>
 #include <map>
 
@@ -25,25 +23,27 @@
 using namespace std;
 typedef long long int cSecond;
 
-//-----------------------------------------------------------------------------//
+//_________________________________________________________________________________________________________
 //! CLASS object to build the fresh fuel (do chemical separation) & store it until core loading
-
 /*!
- Define a FabricationPLant.
- The aim of these class is to manage the manufacturing of reprocessed fuel.
- It includes the fabrication of the fuel from a stock of material, using the appropriate
- algrorithm, and the storage of the fresh fuel until reactor loading.
- The parameters used for the fuel fabrication are recover from a PhysicsModels.
- The PhysicsModels MUST include an EquivalenceModel to build the fuel.
-Some EquivalenceModel are available in the CLASS package, but an user can make his own.
+ 	Define a FabricationPLant.
+ 	 The aim of these class is to manage the manufacturing of reprocessed fuel.
+ 	 It includes the fabrication of the fuel from a stock of material, using the appropriate
+ 	 algrorithm, and the storage of the fresh fuel until reactor loading.
+ 	 The parameters used for the fuel fabrication are recover from a PhysicsModels.
+ 	 The PhysicsModels MUST include an EquivalenceModel to build the fuel.
+	 Some EquivalenceModel are available in the CLASS package, but an user can make his own.
 
-Once the fuel is built, the FabricationPlant store the corresponding EvolutionData 
- generated using the PhysicsModels.
+	Once the fuel is built, the FabricationPlant store the corresponding EvolutionData 
+ 	generated using the PhysicsModels.
+ 
  @see PhysicsModels.hxx
  @see EquivalenceModel.hxx
  
  @author BaM
  @author BLG
+ @author FaC
+ 
  @version 2.0
  */
 //________________________________________________________________________
@@ -79,7 +79,6 @@ public :
 
 	FabricationPlant();	///< Normal constructor
 
-
 	//{
 	/// Special Constructor.
 	/*!
@@ -93,9 +92,6 @@ public :
 	~FabricationPlant(); 	///< Normal Destructor.
 
 	//@}
-
-
-
 	
 //********* Set Method *********//
 
@@ -104,31 +100,36 @@ public :
 	 */
 	//@{
 
-#ifndef __CINT__
 	void SetDecayDataBank(DecayDataBank* decayDB) {fDecayDataBase = decayDB;}	//! Set the Decay DataBank
 
-	void SetFiFo(bool bval = true)	{ if(bval) fStorageManagement=kpFiFo; else fStorageManagement=kpLiFo ;}	//!< Set the chronological priority (true for chronological, false instead).Equivalent to SetStorageManagement(kpFiFo) or SetStorageManagement(kpLiFo)
-	void SetStorageManagement(StorageManagement SM){fStorageManagement = SM ;} //!<  The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
+    void SetFiFo(bool bval = true)	{ if(bval) fStorageManagement=kpFiFo; else fStorageManagement=kpLiFo ;}	//!< Set the chronological priority (true for chronological, false instead).Equivalent to SetStorageManagement(kpFiFo) or SetStorageManagement(kpLiFo)
+    void SetStorageManagement(StorageManagement SM){fStorageManagement = SM ;} //!<  The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
 
+	void SetSubstitutionMaterialFromIV(string keyword, IsotopicVector SubstitutionIV) 						//!< If the construction fails : it creates a substitution material according to the IV defined by the user
+		{fSubstitutionMaterialFromIV[keyword] = true; fSubstitutionIV[keyword]= SubstitutionIV;} 	
+	
+	void SetSubstitutionFuel(EvolutionData fuel);											//!< To use a substitution fuel if the fabrication fail (not enough material in stock)
 
-	void SetSubstitutionFuel(EvolutionData fuel, bool ReplaceTheStock = false);					//!< To use a substitution fuel if the fabrication fail (not enough material in stock) 
-	void SetSubstitutionFissile(IsotopicVector IV);					//!< To use a substitution fissile if the fabrication fail (not enough material in stock) the composition of the fissile is given normalize to 1 by IV.
-
-	void SetSeparationManagement(bool bval = true)	{ fIsSeparationManagement = bval;}				//!< Set the separation managmeent for the fabrication plant
+    void SetSeparationManagement(bool bval = true)	{ fIsSeparationManagement = bval;}				//!< Set the separation managmeent for the fabrication plant
 
 	void AddReactor(int reactorid, double creationtime)
-	{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }	//!< Add a new reactor to be filled with the fresh fuel build by the FabricationPlant
+		{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }		//!< Add a new reactor to be filled with the fresh fuel build by the FabricationPlant
 
-	void SetReUsableStorage(Storage* store) { fReUsable = store; fIsReusable = true;} //!< Set the Storage where all the separated matetial not used in the fabrication process will be sent. (if not present it goes to WASTE)
+#ifndef __CINT__
+	void SetReUsableStorage(Storage* store) { fReUsable = store; fIsReusable = true;} 					//!< Set the Storage where all the separated matetial not used in the fabrication process will be sent. (if not present it goes to WASTE)
 #endif
 
 	using CLASSFacility::SetName;
 
 	//@}
 
+#ifndef __CINT__
+		
+	void AddStorage(string keyword, Storage* Stock) {fStorage[keyword].push_back(Stock);};	//!< Fill the storage vector for a list
+	void AddInfiniteStorage(string keyword);							//!< Creates an infinite stock of this material according to the list defined in the EqM
 
-
-
+#endif
+	
 //********* Get Method *********//
 
 	/*!
@@ -137,25 +138,19 @@ public :
 	//@{
 	
 #ifndef __CINT__
-	vector<Storage*>	GetFissileStorage()		{ return fFissileStorage; }		//!< Return the Pointer to the fissile Storage
-	vector<Storage*>	GetFertileStorage()		{ return fFertileStorage; }		//!< Return the Pointer to the fertile Storage
+	map < string , vector <Storage*> > GetAllStorage() {return fStorage;}			//!< Return the map containing all the storage vectors (useful in CLASS Reactor to check list consistency)
+	
+	vector<Storage*> GetStorage(string keyword) { return fStorage[keyword]; }		//!< Return the Pointer to Storage associated to a StreamList 
 
-	EvolutionData GetReactorEvolutionDB(int ReactorId);			//!< Return the EvolutionData of Reactor ReactorId
-	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector Decay at time t
+	EvolutionData GetReactorEvolutionDB(int ReactorId);						//!< Return the EvolutionData of Reactor ReactorId
 #endif
+	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);				//!< Get IsotopicVector Decay at time t
 
 	map<int, IsotopicVector >	GetReactorFuturIncome() const
-						{ return fReactorFuturIV;}	//!< Return the list of the futur fuel IV
+						{ return fReactorFuturIV;}				//!< Return the list of the futur fuel IV
 
-	cSecond GetFabricationTime() const	{return GetCycleTime();}
+
 	//@}
-
-
-
-#ifndef __CINT__
-	void AddFissileStorage(Storage* stock) { fFissileStorage.push_back(stock); } //!< Add a new Storage to the list of fissile material provider.
-	void AddFertileStorage(Storage* stock) { fFertileStorage.push_back(stock); } //!< Add a new Storage to the list of fertile material provider.
-#endif
 
 //********* Fabrication & Evolution Method *********//
 
@@ -163,18 +158,14 @@ public :
 	 \name Fabrication & Evolution Method
 	 */
 	//@{
+	void SetSeparartionEfficiencyIV(ZAI zai, double factor);					//!< Set the extraction efficiency of zai to factor (0<=factor<=1)
+	void Evolution(cSecond t);									//!< Perform the FabricationPlant evolution
+	void DumpStock(map <string , vector<double> > LambdaArray);				//!< Update the Stock status after building process
+	void TakeReactorFuel(int ReactorId) ;								//!< Remove the fuel of reactor ReactorId from stock
+	void UpdateInsideIV();										
 
-	void SetSeparartionEfficiencyIV(ZAI zai, double factor);	//!< Set the extraction efficiency of zai to factor (0<= factor<= 1)
-	void Evolution(cSecond t);					//!< Perform the FabricationPlant evolution
-	
-	void DumpStock(vector<double> lambdaArray);			//!< Update the Stock status after building process
-
-	void TakeReactorFuel(int ReactorId) ;				//!< Remove the fuel of reactor ReactorId from stock
-	void UpdateInsideIV();
-
-	IsotopicVector BuildFuelFromEqModel(vector<double> LambdaArray); //!<Build the fresh fuel for the reactor according the results of the EquivalenceModel (@see  EquivalenceModel)
-	void BuildFissileArray();					//!< virtualy extract fissile nuclei from Storage according EquivalenceModel fFissileList and make it virtually decay FabricationTime
-	void BuildFertileArray();					//!< virtualy extract fertile nuclei from Storage according EquivalenceModel fFertileList and make it virtually decay FabricationTime
+	IsotopicVector BuildFuelFromEqModel(map <string , vector<double> > LambdaArray); 	//!<Build the fresh fuel for the reactor according the results of the EquivalenceModel (@see  EquivalenceModel)
+	void BuildArray(int ReactorId);									//!< virtualy extract fissile nuclei from Storage according EquivalenceModel fStreamList and make it virtually decay FabricationTime
 
 #ifndef __CINT__
 	void BuildFuelForReactor(int ReactorId, cSecond t);			//!< Build a fuel for the reactor ReactorId
@@ -207,40 +198,38 @@ protected:
 
 
 
-	StorageManagement fStorageManagement;	//!< The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
+    StorageManagement fStorageManagement;	//!< The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
 
-	bool	fIsSeparationManagement; //!< Separation managment 
+    bool	fIsSeparationManagement; //!< Separation managment
 
-	bool	fSubstitutionFuel;			//!< true if a substitution fuel as been set
-	bool 	fSubstitutionFissile;		//!< true if a substitution fissile as been set
-	bool 	fIsReplaceFissileStock;		//!< If there is not enough fissile: true all the fissile comes from an infinite stock; false: just the missing Pu quantity comes from this infinite stock 
+    bool	fSubstitutionFuel;									//!< True if a substitution fuel as been set
 
-	void	FabricationPlantEvolution(cSecond t);	//!< Deal the FabricationPlant evolution
-	void 	ResetArrays();				//!< empty the fFertileArray and fFissileArray
+	void	FabricationPlantEvolution(cSecond t);							//!< Deal the FabricationPlant evolution
+	void 	ResetArrays();										//!< Empty Arrays
 
 
 #ifndef __CINT__
-	
-	vector<Storage*>	fFissileStorage;	//!< Pointer to the Storage used to get the fissile part of the fuel
-	vector<IsotopicVector>  fFissileArray;		//!< The vector of isotopicVector use as fissile material
-	vector<cSecond>		fFissileArrayTime;	//!< Time when a IsotopicVector arrives in its storage
-	vector< pair<int,int> > fFissileArrayAdress;
-	IsotopicVector		fFissileList;		//!< The list of fissile ZAI to consider
 
-	vector<Storage*>	fFertileStorage;	//!< Pointer to the Storage used to get the fertile part of the fuel
-	vector<IsotopicVector>  fFertileArray;		//!< The vector of isotopicVector used as fissile material
-	vector<cSecond>		fFertileArrayTime;	//!< Time when a IsotopicVector arrives in its storage
+	map < string , IsotopicVector>			fStreamList;					//!< contains all lists of zai needed to build a fuel (example : 2 -> fissileList+fertileList)
+																			//!< each list is identified by a keyword (example : -> "Fissil" & "Fertil") 
 
-	vector< pair<int,int> > fFertileArrayAdress;
-	IsotopicVector		fFertileList;		//!< The List of fertile ZAI to consider
+	map < string , vector <Storage*> >			fStorage;					//!< Pointer to the Storages defined for each list
+	map < string , vector <IsotopicVector> >  	fStreamArray;				//!< The vector of isotopicVector of each material and each stock
+	map < string , vector <cSecond> >	  		fStreamArrayTime;			//!< Time when a IsotopicVector arrives in its storage
+	map < string , vector < pair<int,int> > >  	fStreamArrayAdress;
+	map < string , IsotopicVector>				fSubstitutionIV;			//!< contains the susbstitution IV defined by the user 
 
-	Storage*	fReUsable;			//!< Pointer to the Storage using for storing unused material
-	bool		fIsReusable;
+	map < string , bool > fSubstitutionMaterialFromIV;						//!< True = a substitution IV is set for this material in case of failure in fuel building 
+	map < string , bool > fInfiniteMaterialFromList;						//!< True = an infinite stock of this material is created according to the list defined in the EqM
 
-	EvolutionData	fSubstitutionEvolutionData;	//!< EvolutionData of the subtitution fuel
-	IsotopicVector 	fSubstitutionFissileIV;		//!< IsotopicVector of the subtitution fissile
+	map < string , bool > fErrorOnLambda;							//!< True = lambdas haven't been well calculated for this material (not enough material in stock....)
 
-	DecayDataBank*	fDecayDataBase;			//!< Pointer to the DecayDataBank
+	EvolutionData	fSubstitutionEvolutionData;							//!< EvolutionData of the subtitution fuel
+
+	Storage*	fReUsable;									//!< Pointer to the Storage used to storing unused material
+	bool		fIsReusable;									//!< Sets a storage used to storing unused material
+
+	DecayDataBank*	fDecayDataBase;							//!< Pointer to the DecayDataBank
 
 
 	//{
@@ -255,7 +244,6 @@ protected:
 
 #endif
 
-	
 	ClassDef(FabricationPlant,3);
 
 };
