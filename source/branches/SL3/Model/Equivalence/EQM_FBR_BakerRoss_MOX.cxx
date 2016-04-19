@@ -18,17 +18,22 @@ EQM_FBR_BakerRoss_MOX::EQM_FBR_BakerRoss_MOX(double Weight_U_235, double Weight_
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
 	double U5_enrich = 0.0025;
-	fFertileList = U5*U5_enrich + U8*(1-U5_enrich); //Default Fertile composition (if no Fertile Storage is set for the FabricationPlant )
 
 	ZAI Pu8(94,238,0);
 	ZAI Pu9(94,239,0);
 	ZAI Pu0(94,240,0);
 	ZAI Pu1(94,241,0);
 	ZAI Pu2(94,242,0);
-	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1; //ZAI to be extracted by the FabricationPlant in its affiliated Fissile Storage 
+
+	FertileList = U5*U5_enrich + U8*(1-U5_enrich); //Default Fertile composition (if no Fertile Storage is set for the FabricationPlant  )	
+	FissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1; //ZAI to be extracted by the FabricationPlant in its affiliated Fissile Storage 
+	fStreamList["Fissile"] = FissileList;
+	fStreamList["Fertile"] = FertileList;
 
 	fReferenceFissilContent = EquivalentFissile;//Equivalent fissile content
-	SetBuildFuelFirstGuess(fReferenceFissilContent);
+
+	fFirstGuessContent["Fissile"] = fReferenceFissilContent;
+	fFirstGuessContent["Fertile"] = 1 - fFirstGuessContent["Fissile"];
 
 	fWeight_U_235  = Weight_U_235 ;
 	fWeight_Pu_238 = Weight_Pu_238;
@@ -51,7 +56,6 @@ EQM_FBR_BakerRoss_MOX::EQM_FBR_BakerRoss_MOX(double Weight_U_235, double Weight_
 	INFO << "\t\t\tPu_241 " << Weight_Pu_241 << endl;
 	INFO << "\t\t\tPu_242 " << Weight_Pu_242 << endl;
 	INFO << "\t\t\tAm_241 " << Weight_Am_241 << endl;
-	EquivalenceModel::PrintInfo();
 
 }
 //________________________________________________________________________
@@ -60,17 +64,22 @@ EQM_FBR_BakerRoss_MOX::EQM_FBR_BakerRoss_MOX(CLASSLogger* log, double Weight_U_2
 	ZAI U8(92,238,0);
 	ZAI U5(92,235,0);
 	double U5_enrich = 0.0025;
-	fFertileList = U5*U5_enrich + U8*(1-U5_enrich); //Default Fertile composition (if no Fertile Storage is set for the FabricationPlant )
-
+	
 	ZAI Pu8(94,238,0);
 	ZAI Pu9(94,239,0);
 	ZAI Pu0(94,240,0);
 	ZAI Pu1(94,241,0);
 	ZAI Pu2(94,242,0);
-	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1; //ZAI to be extracted by the FabricationPlant in its affiliated Fissile Storage 
 
-	fReferenceFissilContent = EquivalentFissile;//Equivalent fissile content
-	SetBuildFuelFirstGuess(fReferenceFissilContent);
+	FertileList = U5*U5_enrich + U8*(1-U5_enrich); 	//Default Fertile composition (if no Fertile Storage is set for the FabricationPlant  )	
+	FissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1; 	//ZAI to be extracted by the FabricationPlant in its affiliated Fissile Storage 
+	fStreamList["Fissile"] = FissileList;
+	fStreamList["Fertile"] = FertileList;
+
+	fReferenceFissilContent = EquivalentFissile;		//Equivalent fissile content
+
+	fFirstGuessContent["Fissile"] = fReferenceFissilContent;
+	fFirstGuessContent["Fertile"] = 1 - fFirstGuessContent["Fissile"];
 
 	fWeight_U_235  = Weight_U_235 ;
 	fWeight_Pu_238 = Weight_Pu_238;
@@ -93,19 +102,20 @@ EQM_FBR_BakerRoss_MOX::EQM_FBR_BakerRoss_MOX(CLASSLogger* log, double Weight_U_2
 	INFO << "\t\t\tPu_241 " << Weight_Pu_241 << endl;
 	INFO << "\t\t\tPu_242 " << Weight_Pu_242 << endl;
 	INFO << "\t\t\tAm_241 " << Weight_Am_241 << endl;
-	EquivalenceModel::PrintInfo();
 
 
 }
 //________________________________________________________________________
-double EQM_FBR_BakerRoss_MOX::GetFissileMolarFraction(IsotopicVector Fissile,IsotopicVector Fertile,double BurnUp)
+map < string , double> EQM_FBR_BakerRoss_MOX::GetMolarFraction(map < string , IsotopicVector> IVStream, double BurnUp)
 {
 
 	if( BurnUp != 0 )
 		WARNING << "Burn up (third argument) has no effect " << endl;
 	
+	IsotopicVector Fissile = IVStream["Fissile"];
+	IsotopicVector Fertile = IVStream["Fertile"];
 
-	double FissileContent = 0.;               
+	double FissileContent = 0.;       
 
 	IsotopicVector FissileListPlusDecay;
 	FissileListPlusDecay.Add(94,238,0,1);
@@ -138,8 +148,10 @@ double EQM_FBR_BakerRoss_MOX::GetFissileMolarFraction(IsotopicVector Fissile,Iso
 
 	FissileContent = (fReferenceFissilContent - SumWeightNFertile )/(SumWeightNFissile-SumWeightNFertile); //Baker & Ross formula
 
+	map < string , double> MolarFraction;
+	
+	MolarFraction["Fissile"] = FissileContent;
+	MolarFraction["Fertile"] = 1.- FissileContent;
 
-    return FissileContent;
-
-
+	return MolarFraction; //return Molar content of each component in the fuel
 }
