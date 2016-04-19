@@ -338,289 +338,81 @@ DBGL
 }
 
 //________________________________________________________________________
-void FabricationPlant::BuildFissileArray()
+void FabricationPlant::SortArray()
 {
-DBGL
-	
-	for(int i = 0; i < (int)fFissileStorage.size(); i++)
-	{
-		
-		vector<IsotopicVector> IVArray = fFissileStorage[i]->GetIVArray();
-
-		for(int j = 0; j < (int)IVArray.size(); j++)
-		{
-
-			IsotopicVector SeparatedIV = Separation(IVArray[j], fFissileList).first;
-
-			if(Norme(SeparatedIV) != 0)
-			{
-				IsotopicVector CooledSeparatedIV = GetDecay( SeparatedIV , GetCycleTime());
-
-				fFissileArray.push_back( CooledSeparatedIV );
-				fFissileArrayAdress.push_back( pair<int,int>(i,j) );
-				fFissileArrayTime.push_back(fFissileStorage[i]->GetIVArrayArrivalTime()[j]);
-			}
-
-		}
-
-	}
-
-	SortArray(0);
-DBGL
+    map < string , vector <IsotopicVector> >::iterator it_s_vIV;
+    
+    for( it_s_vIV = fStreamArray.begin();  it_s_vIV != fStreamArray.end(); it_s_vIV++)
+    {
+        
+        vector<IsotopicVector> IVArray;
+        vector<cSecond>	 TimeArray;
+        vector< pair<int,int> >	 AdressArray;
+        
+        IVArray		= fStreamArray[(*it_s_vIV).first] ;
+        TimeArray	= fStreamArrayTime[(*it_s_vIV).first] ;
+        AdressArray	= fStreamArrayAdress[(*it_s_vIV).first] ;
+        
+        if(fFiFo)
+        {
+            for(int j = 0; j < (int)TimeArray.size(); j++)
+            {
+                for (int k = j+1; k < (int)TimeArray.size(); k++)
+                {
+                    cSecond time_tmp 		= TimeArray[j];
+                    pair<int,int> Adress_tmp 	= AdressArray[j];
+                    IsotopicVector IV_tmp 		= IVArray[j];
+                    
+                    if(time_tmp > TimeArray[k])
+                    {
+                        TimeArray[j] 	= TimeArray[k];
+                        TimeArray[k] 	= time_tmp;
+                        
+                        AdressArray[j] 	= AdressArray[k];
+                        AdressArray[k] 	= Adress_tmp;
+                        
+                        IVArray[j] 	= IVArray[k];
+                        IVArray[k] 	= IV_tmp;
+                    }
+                }
+            }
+        }
+        else
+        {
+            for(int j = 0; j < (int)TimeArray.size(); j++)
+            {
+                
+                for (int k = j+1; k < (int)TimeArray.size(); k++)
+                {
+                    cSecond time_tmp 		= TimeArray[j];
+                    pair<int,int> Adress_tmp 	= AdressArray[j];
+                    IsotopicVector IV_tmp 		= IVArray[j];
+                    
+                    if(time_tmp < TimeArray[k])
+                    {
+                        TimeArray[j] 	= TimeArray[k];
+                        TimeArray[k] 	= time_tmp;
+                        
+                        AdressArray[j] 	= AdressArray[k];
+                        AdressArray[k] 	= Adress_tmp;
+                        
+                        IVArray[j] 	= IVArray[k];
+                        IVArray[k] 	= IV_tmp;
+                    }	
+                }
+            }
+        }
+        fStreamArray[(*it_s_vIV).first]		= IVArray;
+        fStreamArrayTime[(*it_s_vIV).first]	= TimeArray;
+        fStreamArrayAdress[(*it_s_vIV).first]	= AdressArray;
+    }
 }
 
 //________________________________________________________________________
-void FabricationPlant::BuildFertileArray()
-{
-DBGL
-
-	for(int i = 0; i < (int)fFertileStorage.size(); i++)
-	{
-		vector<IsotopicVector> IVArray = fFertileStorage[i]->GetIVArray();
-		for(int j = 0; j < (int)IVArray.size(); j++)
-		{
-
-			IsotopicVector SeparatedIV = Separation(IVArray[j], fFertileList).first;
-			if(Norme(SeparatedIV) != 0)
-			{
-				IsotopicVector CooledSeparatedIV = GetDecay( SeparatedIV , GetCycleTime());
-
-				fFertileArray.push_back( CooledSeparatedIV );
-				fFertileArrayAdress.push_back( pair<int,int>(i,j) );
-				fFertileArrayTime.push_back(fFertileStorage[i]->GetIVArrayArrivalTime()[j]);
-			}
-		}
-
-	}
-
-	SortArray(1);
-DBGL
-}
-
-//________________________________________________________________________
-void FabricationPlant::SortArray(int i)
-{
-
-
-	vector<IsotopicVector>	IVArray;
-	vector<cSecond>			TimeArray;
-	vector< pair<int,int> >	AdressArray;
-
-	if(i == 0) //Fissile
-	{
-		IVArray	 = fFissileArray;
-		TimeArray = fFissileArrayTime;
-		AdressArray = fFissileArrayAdress;
-	}
-	else if (i == 1) //Fertile
-	{
-		IVArray	 = fFertileArray;
-		TimeArray = fFertileArrayTime;
-		AdressArray = fFertileArrayAdress;
-
-	}
-
-
-	switch(fStorageManagement)
-	{
-		case kpFiFo: SortFiFo(IVArray, TimeArray, AdressArray);
-					break;
-
-		case kpLiFo: SortLiFo(IVArray, TimeArray, AdressArray);
-					break;
-
-		case kpMix: SortMix(IVArray, TimeArray, AdressArray);
-					break;
-
-		case kpRand: SortRandom(IVArray, TimeArray, AdressArray);
-					break;			
-
-		default: 
-			ERROR<<" Posibble Storage Management are"<<endl;
-			ERROR<<" YourFabPlant->SetStorageManagement(key); //with key can be either"<<endl;
-			ERROR<<"\tkFiFo : First In First Out (i.e the older storage first)"<<endl;
-			ERROR<<"\tkLiFo : Last In First Out  (i.e the youger storage first)"<<endl;
-			ERROR<<"\tkMix : IVs are sorted that way : "<<"\n"<<"First: The younger , Second: The older, Third: The second younger ,4th : the second older ...."<<endl;
-			ERROR<<"\tkRand : IVs order in storage is random"<<endl;
-	
-			exit(1);
-	}
-
-
-	if(i == 0) //Fissile
-	{
-		fFissileArray	 = IVArray;
-		fFissileArrayTime = TimeArray;
-		fFissileArrayAdress = AdressArray;
-	}
-	else if (i == 1) //Fertile
-	{
-		fFertileArray = IVArray;
-		fFertileArrayTime = TimeArray;
-		fFertileArrayAdress = AdressArray;
-
-	}
-
-
-}
-
-//________________________________________________________________________
-void FabricationPlant::SortFiFo(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray)
-{
-		for(int j = 0; j < (int)TimeArray.size(); j++)
-		{
-			for (int k = j+1; k < (int)TimeArray.size(); k++)
-			{
-				cSecond time_tmp = TimeArray[j];
-				pair<int,int> Adress_tmp = AdressArray[j];
-				IsotopicVector IV_tmp = IVArray[j];
-
-				if(time_tmp > TimeArray[k])
-				{
-					TimeArray[j] = TimeArray[k];
-					TimeArray[k] = time_tmp;
-
-					AdressArray[j] = AdressArray[k];
-					AdressArray[k] = Adress_tmp;
-
-					IVArray[j] = IVArray[k];
-					IVArray[k] = IV_tmp;
-				}
-
-			}
-		}
-
-}	
-
-//________________________________________________________________________
-void FabricationPlant::SortLiFo(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray)
-{
-		for(int j = 0; j < (int)TimeArray.size(); j++)
-		{
-			for (int k = j+1; k < (int)TimeArray.size(); k++)
-			{
-				cSecond time_tmp = TimeArray[j];
-				pair<int,int> Adress_tmp = AdressArray[j];
-				IsotopicVector IV_tmp = IVArray[j];
-
-				if(time_tmp < TimeArray[k])
-				{
-					TimeArray[j] = TimeArray[k];
-					TimeArray[k] = time_tmp;
-
-					AdressArray[j] = AdressArray[k];
-					AdressArray[k] = Adress_tmp;
-
-					IVArray[j] = IVArray[k];
-					IVArray[k] = IV_tmp;
-				}
-				
-			}
-		}
-
-}
-
-//________________________________________________________________________
-void FabricationPlant::SortMix(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray)
-{
-
-	//Sort by anti-chronoligical order (youger first)
-	SortLiFo(IVArray, TimeArray, AdressArray);
-	/*******Store it ******/
- 	vector<IsotopicVector>		Saved_IVArray		= IVArray	 ;
- 	vector<cSecond> 			Saved_TimeArray		= TimeArray	 ; 
- 	vector< pair<int,int> > 	Saved_AdressArray	= AdressArray;
-
- 	int IVsize = (int)IVArray.size();
-	/*******Then reset the vectors ******/
-	IVArray.clear();
-	TimeArray.clear();
-	AdressArray.clear();
-
-
-	int HalfSize = floor( (double)IVsize/2. );
-
-	int old = IVsize;
-
-	bool isYoung=true;//change to false to begin with an old isotopicvector
-
-	int RemainingIV = -1;
-
-
-	for(int young = 0 ; young < HalfSize ; young++)
-	{
-
-		if(isYoung)
-		{
-			IVArray.push_back(Saved_IVArray[young]);
-			TimeArray.push_back(Saved_TimeArray[young]);
-			AdressArray.push_back(Saved_AdressArray[young]);
-
-			isYoung=!isYoung;
-			RemainingIV = young+1; // +1 ? -> The next young will be the +1
-		}
-		if(!isYoung)
-		{
-			old--;
-
-			IVArray.push_back(Saved_IVArray[old]);
-			TimeArray.push_back(Saved_TimeArray[old]);
-			AdressArray.push_back(Saved_AdressArray[old]);
-
-			isYoung=!isYoung;
-			RemainingIV = old-1; // -1 ? -> The next old will be the -1
-
-		}
-
-	}
-
-	if(  (double)IVsize/2. - (double)HalfSize  > 0.0 ) //if odd number of isotopic vector : one isotopic vector is still missing add it @ the end
-	{
-
-		IVArray.push_back(Saved_IVArray[RemainingIV]);
-		TimeArray.push_back(Saved_TimeArray[RemainingIV]);
-		AdressArray.push_back(Saved_AdressArray[RemainingIV]);
-
-	}
-
-
-}	
-
-//________________________________________________________________________
-void FabricationPlant::SortRandom(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray)
-{
-	  int SizeOfIVArray = IVArray.size();
-
-/*********Create a Random list of vector position**********/
-  srand ( unsigned ( std::time(0) ) );
-  vector<int> RandomPosition;
-  	for (int i=0 ; i < (int) SizeOfIVArray ; ++i) 
-  		RandomPosition.push_back(i); 
-
-  random_shuffle(RandomPosition.begin(), RandomPosition.end());
-
-/*******Store old vectors ******/
- vector<IsotopicVector>		Saved_IVArray		= IVArray	 ;
- vector<cSecond> 			Saved_TimeArray		= TimeArray	 ; 
- vector< pair<int,int> > 	Saved_AdressArray	= AdressArray;
-
-/*******Asign values ******/
-
-	for (int i=0 ; i < (int) SizeOfIVArray ; ++i) 
-	{
-		IVArray[i]		=	Saved_IVArray[RandomPosition[i]];
-		TimeArray[i]	=	Saved_TimeArray[RandomPosition[i]];
-		AdressArray[i]	=	Saved_AdressArray[RandomPosition[i]];
-	}
-
-}	
-
-//________________________________________________________________________
-void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel, bool ReplaceTheStock)
+void FabricationPlant::SetSubstitutionFuel(EvolutionData fuel)
 {
 	
 	fSubstitutionFuel = true;
-	fIsReplaceFissileStock = ReplaceTheStock;
 
 	double M0 = cZAIMass.GetMass( fuel.GetIsotopicVectorAt(0.).GetActinidesComposition() );
 	fSubstitutionEvolutionData = fuel / M0;
@@ -628,15 +420,158 @@ void	FabricationPlant::SetSubstitutionFuel(EvolutionData fuel, bool ReplaceTheSt
 }
 
 //________________________________________________________________________
-void	FabricationPlant::SetSubstitutionFissile(IsotopicVector IV)
+void FabricationPlant::SortFiFo(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray)
 {
-	
-	fSubstitutionFuel = true;
-	fSubstitutionFissile = true;
-
-	fSubstitutionFissileIV = IV / IV.GetSumOfAll();
-
+    for(int j = 0; j < (int)TimeArray.size(); j++)
+    {
+        for (int k = j+1; k < (int)TimeArray.size(); k++)
+        {
+            cSecond time_tmp = TimeArray[j];
+            pair<int,int> Adress_tmp = AdressArray[j];
+            IsotopicVector IV_tmp = IVArray[j];
+            
+            if(time_tmp > TimeArray[k])
+            {
+                TimeArray[j] = TimeArray[k];
+                TimeArray[k] = time_tmp;
+                
+                AdressArray[j] = AdressArray[k];
+                AdressArray[k] = Adress_tmp;
+                
+                IVArray[j] = IVArray[k];
+                IVArray[k] = IV_tmp;
+            }
+            
+        }
+    }
+    
 }
+
+//________________________________________________________________________
+void FabricationPlant::SortLiFo(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray)
+{
+    for(int j = 0; j < (int)TimeArray.size(); j++)
+    {
+        for (int k = j+1; k < (int)TimeArray.size(); k++)
+        {
+            cSecond time_tmp = TimeArray[j];
+            pair<int,int> Adress_tmp = AdressArray[j];
+            IsotopicVector IV_tmp = IVArray[j];
+            
+            if(time_tmp < TimeArray[k])
+            {
+                TimeArray[j] = TimeArray[k];
+                TimeArray[k] = time_tmp;
+                
+                AdressArray[j] = AdressArray[k];
+                AdressArray[k] = Adress_tmp;
+                
+                IVArray[j] = IVArray[k];
+                IVArray[k] = IV_tmp;
+            }
+            
+        }
+    }
+    
+}
+
+
+//________________________________________________________________________
+void FabricationPlant::SortMix(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray)
+{
+    
+    //Sort by anti-chronoligical order (youger first)
+    SortLiFo(IVArray, TimeArray, AdressArray);
+    /*******Store it ******/
+    vector<IsotopicVector>		Saved_IVArray		= IVArray	 ;
+    vector<cSecond> 			Saved_TimeArray		= TimeArray	 ;
+    vector< pair<int,int> > 	Saved_AdressArray	= AdressArray;
+    
+    int IVsize = (int)IVArray.size();
+    /*******Then reset the vectors ******/
+    IVArray.clear();
+    TimeArray.clear();
+    AdressArray.clear();
+    
+    
+    int HalfSize = floor( (double)IVsize/2. );
+    
+    int old = IVsize;
+    
+    bool isYoung=true;//change to false to begin with an old isotopicvector
+    
+    int RemainingIV = -1;
+    
+    
+    for(int young = 0 ; young < HalfSize ; young++)
+    {
+        
+        if(isYoung)
+        {
+            IVArray.push_back(Saved_IVArray[young]);
+            TimeArray.push_back(Saved_TimeArray[young]);
+            AdressArray.push_back(Saved_AdressArray[young]);
+            
+            isYoung=!isYoung;
+            RemainingIV = young+1; // +1 ? -> The next young will be the +1
+        }
+        if(!isYoung)
+        {
+            old--;
+            
+            IVArray.push_back(Saved_IVArray[old]);
+            TimeArray.push_back(Saved_TimeArray[old]);
+            AdressArray.push_back(Saved_AdressArray[old]);
+            
+            isYoung=!isYoung;
+            RemainingIV = old-1; // -1 ? -> The next old will be the -1
+            
+        }
+        
+    }
+    
+    if(  (double)IVsize/2. - (double)HalfSize  > 0.0 ) //if odd number of isotopic vector : one isotopic vector is still missing add it @ the end
+    {
+        
+        IVArray.push_back(Saved_IVArray[RemainingIV]);
+        TimeArray.push_back(Saved_TimeArray[RemainingIV]);
+        AdressArray.push_back(Saved_AdressArray[RemainingIV]);
+        
+    }
+    
+    
+}
+
+//________________________________________________________________________
+void FabricationPlant::SortRandom(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray)
+{
+    int SizeOfIVArray = IVArray.size();
+    
+    /*********Create a Random list of vector position**********/
+    srand ( unsigned ( std::time(0) ) );
+    vector<int> RandomPosition;
+    for (int i=0 ; i < (int) SizeOfIVArray ; ++i) 
+        RandomPosition.push_back(i); 
+    
+    random_shuffle(RandomPosition.begin(), RandomPosition.end());
+    
+    /*******Store old vectors ******/
+    vector<IsotopicVector>		Saved_IVArray		= IVArray	 ;
+    vector<cSecond> 			Saved_TimeArray		= TimeArray	 ; 
+    vector< pair<int,int> > 	Saved_AdressArray	= AdressArray;
+    
+    /*******Asign values ******/
+    
+    for (int i=0 ; i < (int) SizeOfIVArray ; ++i) 
+    {
+        IVArray[i]		=	Saved_IVArray[RandomPosition[i]];
+        TimeArray[i]	=	Saved_TimeArray[RandomPosition[i]];
+        AdressArray[i]	=	Saved_AdressArray[RandomPosition[i]];
+    }
+    
+}	
+
+
 
 //________________________________________________________________________
 //_____________________________ Reactor & DB _____________________________
