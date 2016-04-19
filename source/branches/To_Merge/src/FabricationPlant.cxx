@@ -334,6 +334,54 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 
 		return;
 	}
+    DBGL
+}
+//________________________________________________________________________
+void FabricationPlant::BuildArray(int ReactorId)
+{
+DBGL
+    double R_HM_Mass	= GetParc()->GetReactor()[ ReactorId ]->GetHeavyMetalMass();
+
+    vector <IsotopicVector>  StreamArray;
+    vector <cSecond> 	   StreamArrayTime;
+    vector < pair<int,int> >  StreamArrayAdress;
+    
+    map < string , IsotopicVector>::iterator it;
+    
+    for( it = fStreamList.begin();  it != fStreamList.end(); it++)
+    {
+        if(fInfiniteMaterialFromList[(*it).first])
+        {
+            IsotopicVector IV = (*it).second / (*it).second.GetTotalMass() * R_HM_Mass;
+            StreamArray.push_back(IV);
+            StreamArrayAdress.push_back(pair<int,int>(0,0));
+            StreamArrayTime.push_back(0);
+        }
+        else
+        {
+            for(int j = 0; j < (int)fStorage[(*it).first].size(); j++)
+            {
+                vector<IsotopicVector> IVArray = fStorage[(*it).first][j]->GetIVArray();
+                for(int k = 0; k < (int)IVArray.size(); k++)
+                {
+                    IsotopicVector SeparatedIV = Separation(IVArray[k], (*it).second).first;
+                    if(Norme(SeparatedIV) != 0)
+                    {
+                        IsotopicVector CooledSeparatedIV = GetDecay( SeparatedIV , GetCycleTime());
+                        StreamArray.push_back( CooledSeparatedIV );
+                        StreamArrayAdress.push_back( pair<int,int>(j,k) );
+                        StreamArrayTime.push_back(fStorage[(*it).first][j]->GetIVArrayArrivalTime()[k]);
+                    }
+                }
+            }
+        }
+        
+        fStreamArray[(*it).first] 	= StreamArray;			StreamArray.clear();
+        fStreamArrayAdress[(*it).first]	= StreamArrayAdress;		StreamArrayAdress.clear();
+        fStreamArrayTime[(*it).first]	= StreamArrayTime; 		StreamArrayTime.clear();
+    }
+
+    SortArray();
 DBGL
 }
 
@@ -409,6 +457,9 @@ void FabricationPlant::SortArray()
 }
 
 //________________________________________________________________________
+//	Substitution Fuel
+//________________________________________________________________________
+
 void FabricationPlant::SetSubstitutionFuel(EvolutionData fuel)
 {
 	
