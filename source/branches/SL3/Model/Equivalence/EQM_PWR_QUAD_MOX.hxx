@@ -57,7 +57,7 @@ class EQM_PWR_QUAD_MOX : public EquivalenceModel
 	~EQM_PWR_QUAD_MOX();
 	//@}
 	
-	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);
+	virtual double GetFissileMolarFraction(vector <IsotopicVector> IVStream,double BurnUp);
 
 	private :
 

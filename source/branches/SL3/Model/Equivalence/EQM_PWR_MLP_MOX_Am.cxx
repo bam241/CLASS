@@ -47,11 +47,13 @@ EQM_PWR_MLP_MOX_AM::EQM_PWR_MLP_MOX_AM(string TMVAWeightPath):EquivalenceModel(n
 
 	SetBuildFuelFirstGuess(0.04);
 
+	fStreamList.push_back(FissileList);
+	fStreamList.push_back(FertileList);
+	
 	INFO << "__An equivalence model of PWR MOX has been define__" << endl;
 	INFO << "\tThis model is based on a multi layer perceptron" << endl;
 	INFO << "\t\tThe TMVA weight file is :" << endl;
 	INFO << "\t\t\t"<<fTMVAWeightPath << endl;
-	EquivalenceModel::PrintInfo();
 
 }
 
@@ -78,17 +80,22 @@ EQM_PWR_MLP_MOX_AM::EQM_PWR_MLP_MOX_AM(CLASSLogger* log, string TMVAWeightPath):
 
 	SetBuildFuelFirstGuess(0.04);
 
+	fStreamList.push_back(FissileList);
+	fStreamList.push_back(FertileList);
+
 	INFO << "__An equivalence model of PWR MOX has been define__" << endl;
 	INFO << "\tThis model is based on a multi layer perceptron" << endl;
 	INFO << "\t\tThe TMVA weight file is :" << endl;
 	INFO << "\t\t\t"<<fTMVAWeightPath << endl;
-	EquivalenceModel::PrintInfo();
 
 }
 
 //________________________________________________________________________
-TTree* EQM_PWR_MLP_MOX_AM::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
+TTree* EQM_PWR_MLP_MOX_AM::CreateTMVAInputTree(vector <IsotopicVector> IVStream,double BurnUp)
 {
+	IsotopicVector Fissil = IVStream[0];
+	IsotopicVector Fertil = IVStream[1];
+
 	TTree*   InputTree = new TTree("EQTMP", "EQTMP");
 	float Pu8   		 = 0;
 	float Pu9   		 = 0;
@@ -197,7 +204,7 @@ double EQM_PWR_MLP_MOX_AM::ExecuteTMVA(TTree* theTree)
 	return (double)val; //retourne teneur
 }
 //________________________________________________________________________
-double EQM_PWR_MLP_MOX_AM::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
+double EQM_PWR_MLP_MOX_AM::GetFissileMolarFraction(vector <IsotopicVector> IVStream,double BurnUp)
 {DBGL
-	return	ExecuteTMVA(CreateTMVAInputTree(Fissil,Fertil,BurnUp));
+	return	ExecuteTMVA(CreateTMVAInputTree(IVStream,BurnUp));
 }

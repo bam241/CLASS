@@ -774,7 +774,7 @@ void Scenario::PrintCLASSPresentation()
 	cout<<"├───────────────────────────────────────────────┤"<<endl;
 	cout<<"│ Authors :                                     │"<<endl;
 	cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │"<<endl;
-	cout<<"│    F. COURTIN  (@FaC)  N. THIOLIERE (@NT)     │"<<endl;
+	cout<<"│    F. COURTIN  (@FaC)  N. THIOLLIERE (@NT)     │"<<endl;
 	cout<<"╰───────────────────────────────────────────────╯"<<endl;
 	cout<<"                                                 "<<endl;
 	cout<<"        BEGINING FUEL CYCLE EVOLUTION           "<<endl;
@@ -803,7 +803,7 @@ void Scenario::PrintClover(int i)
 		cout<<"├───────────────────────────────────────────────┤    @@@@@@@            "<<endl;
 		cout<<"│ Authors :                                     │    @@@@@@@            "<<endl;
 		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │     @@@@@@            "<<endl;
-		cout<<"│    F. COURTIN  (@FaC)  N. THIOLIERE (@NT)     │      @@@@@            "<<endl;
+		cout<<"│    F. COURTIN  (@FaC)  N. THIOLLIERE (@NT)     │      @@@@@            "<<endl;
 		cout<<"╰───────────────────────────────────────────────╯        @@@            "<<endl;
 		cout<<"                                                                        "<<endl;
 	}	                                       
@@ -825,7 +825,7 @@ void Scenario::PrintClover(int i)
 		cout<<"├───────────────────────────────────────────────┤   @@@@@      @@@@@   "<<endl;
 		cout<<"│ Authors :                                     │    @@@@      @@@@    "<<endl;
 		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │     @@        @@@    "<<endl;
-		cout<<"│    F. COURTIN  (@FaC)  N. THIOLIERE (@NT)     │      @          @    "<<endl;
+		cout<<"│    F. COURTIN  (@FaC)  N. THIOLLIERE (@NT)     │      @          @    "<<endl;
 		cout<<"╰───────────────────────────────────────────────╯                      "<<endl;
 		cout<<"                                                                        "<<endl;
 	}
@@ -848,7 +848,7 @@ void Scenario::PrintClover(int i)
 		cout<<"├───────────────────────────────────────────────┤           @@@@@@@    "<<endl;
 		cout<<"│ Authors :                                     │           @@@@@@@    "<<endl;
 		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │           @@@@@@@    "<<endl;
-		cout<<"│    F. COURTIN  (@FaC)  N. THIOLIERE (@NT)     │           @@@@@      "<<endl;
+		cout<<"│    F. COURTIN  (@FaC)  N. THIOLLIERE (@NT)     │           @@@@@      "<<endl;
 		cout<<"╰───────────────────────────────────────────────╯           @@@@       "<<endl;
 		cout<<"                                                                        "<<endl;
 
@@ -872,7 +872,7 @@ void Scenario::PrintClover(int i)
 		cout<<"├───────────────────────────────────────────────┤        @@@@@@        "<<endl; 
 		cout<<"│ Authors :                                     │        @@@@@@@       "<<endl; 
 		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │       @@@@@@@@       "<<endl;
-		cout<<"│    F. COURTIN  (@FaC)  N. THIOLIERE (@NT)     │                      "<<endl;
+		cout<<"│    F. COURTIN  (@FaC)  N. THIOLLIERE (@NT)     │                      "<<endl;
 		cout<<"╰───────────────────────────────────────────────╯                      "<<endl;
 		cout<<"                                                                        "<<endl;
 

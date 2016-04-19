@@ -57,8 +57,6 @@ EQM_PWR_LIN_MOX::EQM_PWR_LIN_MOX(string WeightPath):EquivalenceModel(new CLASSLo
 	ZAI Pu1(94,241,0);
 	ZAI Pu2(94,242,0);
 	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
-	
-	EquivalenceModel::PrintInfo();
 
 
 }
@@ -121,7 +119,7 @@ EQM_PWR_LIN_MOX::~EQM_PWR_LIN_MOX()
 }
 
 //________________________________________________________________________
-vector<double> EQM_PWR_LIN_MOX::BuildFuel(double BurnUp, double HMMass,vector<IsotopicVector> FissilArray, vector<IsotopicVector> FertilArray)
+vector<double> EQM_PWR_LIN_MOX::BuildFuel(double BurnUp, double HMMass,vector <IsotopicVector> IVStream)
 {
 
 	//-----------------------------------------------------------------------------//
@@ -135,6 +133,8 @@ vector<double> EQM_PWR_LIN_MOX::BuildFuel(double BurnUp, double HMMass,vector<Is
 	//-----------------------------------------------------------------------------//
 	//-----------------------------------------------------------------------------//
 
+	vector<IsotopicVector> FissilArray = StreamArray[0];
+	vector<IsotopicVector> FertilArray = StreamArray[1];
 
 	vector<double> lambda;
 	for(int i = 0; i < (int) (FissilArray.size() + FertilArray.size()); i++)

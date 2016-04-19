@@ -39,16 +39,16 @@ EQM_PWR_MLP_MOX::EQM_PWR_MLP_MOX(string TMVAWeightPath):EquivalenceModel(new CLA
 	ZAI Pu1(94,241,0);
 	ZAI Pu2(94,242,0);
 
-	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
-	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
-
-	SetBuildFuelFirstGuess(0.04);
+	fStreamList["Fissile"] = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
+	fStreamList["Fertile"] = U5*U5_enrich + U8*(1-U5_enrich);
+	
+	fFirstGuessContent["Fissile"] = 0.02;
+	fFirstGuessContent["Fertile"] = 1 - fFirstGuessContent["Fissile"];
 
 	INFO << "__An equivalence model of PWR MOX has been define__" << endl;
 	INFO << "\tThis model is based on a multi layer perceptron" << endl;
 	INFO << "\t\tThe TMVA weight file is :" << endl;
 	INFO << "\t\t\t" << fTMVAWeightPath << endl;
-	EquivalenceModel::PrintInfo();
 
 }
 
@@ -67,21 +67,21 @@ EQM_PWR_MLP_MOX::EQM_PWR_MLP_MOX(CLASSLogger* log, string TMVAWeightPath):Equiva
 	ZAI Pu1(94,241,0);
 	ZAI Pu2(94,242,0);
 
-	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
-	fFertileList = U5*U5_enrich + U8*(1-U5_enrich);
-
-	SetBuildFuelFirstGuess(0.04);
+	fStreamList["Fissile"] = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
+	fStreamList["Fertile"] = U5*U5_enrich + U8*(1-U5_enrich);
+	
+	fFirstGuessContent["Fissile"] = 0.02;
+	fFirstGuessContent["Fertile"] = 1 - fFirstGuessContent["Fissile"];
 
 	INFO << "__An equivalence model of PWR MOX has been define__" << endl;
 	INFO << "\tThis model is based on a multi layer perceptron" << endl;
 	INFO << "\t\tThe TMVA weight file is :" << endl;
 	INFO << "\t\t\t" << fTMVAWeightPath << endl;
-	EquivalenceModel::PrintInfo();
 
 }
 
 //________________________________________________________________________
-TTree* EQM_PWR_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
+TTree* EQM_PWR_MLP_MOX::CreateTMVAInputTree(map < string , IsotopicVector> IVStream, double BurnUp)
 {
 	TTree*   InputTree = new TTree("EQTMP", "EQTMP");
 	float Pu8   		 = 0;
@@ -90,40 +90,40 @@ TTree* EQM_PWR_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector
 	float Pu11  		 = 0;
 	float Pu12  		 = 0;
 	float Am1   		 = 0;
-	float U5_enrichment  = 0;
-	float BU  			  = 0;
+	float U5_enrichment  	 = 0;
+	float BU  		 = 0;
 
-	InputTree->Branch(	"Pu8"	,&Pu8	,"Pu8/F"	);
-	InputTree->Branch(	"Pu9"	,&Pu9	,"Pu9/F"	);
-	InputTree->Branch(	"Pu10"	,&Pu10	,"Pu10/F"	);
-	InputTree->Branch(	"Pu11"	,&Pu11	,"Pu11/F"	);
-	InputTree->Branch(	"Pu12"	,&Pu12	,"Pu12/F"	);
-	InputTree->Branch(	"Am1"	,&Am1	,"Am1/F"	);
+	InputTree->Branch(	"Pu8"			,&Pu8			,"Pu8/F"		);
+	InputTree->Branch(	"Pu9"			,&Pu9			,"Pu9/F"		);
+	InputTree->Branch(	"Pu10"			,&Pu10			,"Pu10/F"		);
+	InputTree->Branch(	"Pu11"			,&Pu11			,"Pu11/F"		);
+	InputTree->Branch(	"Pu12"			,&Pu12			,"Pu12/F"		);
+	InputTree->Branch(	"Am1"			,&Am1			,"Am1/F"		);
 	InputTree->Branch(	"U5_enrichment"	,&U5_enrichment	,"U5_enrichment/F"	);
-	InputTree->Branch(	"BU"	,&BU	,"BU/F"	);
+	InputTree->Branch(	"BU"			,&BU			,"BU/F"			);
 
 
-	float U8     = Fertil.GetZAIIsotopicQuantity(92,238,0);
-	float U5     = Fertil.GetZAIIsotopicQuantity(92,235,0);
-	float U4     = Fertil.GetZAIIsotopicQuantity(92,234,0);
+	float U8     = IVStream["Fertile"].GetZAIIsotopicQuantity(92,238,0);
+	float U5     = IVStream["Fertile"].GetZAIIsotopicQuantity(92,235,0);
+	float U4     = IVStream["Fertile"].GetZAIIsotopicQuantity(92,234,0);
 
 	float UTOT = U8 + U5 + U4;
 
-	Pu8    	   = Fissil.GetZAIIsotopicQuantity(94,238,0);
-	Pu9    	   = Fissil.GetZAIIsotopicQuantity(94,239,0);
-	Pu10   	   = Fissil.GetZAIIsotopicQuantity(94,240,0);
-	Pu11   	   = Fissil.GetZAIIsotopicQuantity(94,241,0);
-	Pu12   	   = Fissil.GetZAIIsotopicQuantity(94,242,0);
-	Am1        = Fissil.GetZAIIsotopicQuantity(95,241,0);
+	Pu8    	= IVStream["Fissile"].GetZAIIsotopicQuantity(94,238,0);
+	Pu9    	= IVStream["Fissile"].GetZAIIsotopicQuantity(94,239,0);
+	Pu10   	= IVStream["Fissile"].GetZAIIsotopicQuantity(94,240,0);
+	Pu11   	= IVStream["Fissile"].GetZAIIsotopicQuantity(94,241,0);
+	Pu12   	= IVStream["Fissile"].GetZAIIsotopicQuantity(94,242,0);
+	Am1   	= IVStream["Fissile"].GetZAIIsotopicQuantity(95,241,0);
 
 	double TOTPU = (Pu8+Pu9+Pu10+Pu11+Pu12+Am1);
 
-	Pu8 = Pu8  / TOTPU;
-	Pu9 = Pu9  / TOTPU;
-	Pu10 = Pu10 / TOTPU;
-	Pu11 = Pu11 / TOTPU;
-	Pu12 = Pu12 / TOTPU;
-	Am1 = Am1  / TOTPU;
+	Pu8 	= Pu8	 / TOTPU ;
+	Pu9 	= Pu9  	 / TOTPU ;
+	Pu10 	= Pu10	 / TOTPU ;
+	Pu11 	= Pu11	 / TOTPU ;
+	Pu12	= Pu12	 / TOTPU ;
+	Am1 	= Am1  / TOTPU ;
 
 	U5_enrichment = U5 / UTOT;
 
@@ -139,47 +139,51 @@ TTree* EQM_PWR_MLP_MOX::CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector
 	return InputTree;
 }
 //________________________________________________________________________
-double EQM_PWR_MLP_MOX::ExecuteTMVA(TTree* theTree)
+map < string , double> EQM_PWR_MLP_MOX::ExecuteTMVA(TTree* theTree)
 {
+	map < string , double> MolarFraction;
 	// --- Create the Reader object
 	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
 	// Create a set of variables and declare them to the reader
 	// - the variable names MUST corresponds in name and type to those given in the weight file(s) used
 	Float_t Pu8,Pu9,Pu10,Pu11,Pu12,Am1,BU,U5_enrichment;
 
-	reader->AddVariable( "BU"   		,&BU );
-	reader->AddVariable( "U5_enrichment",&U5_enrichment );
-	reader->AddVariable( "Pu8"  		,&Pu8 );
-	reader->AddVariable( "Pu9"  		,&Pu9 );
-	reader->AddVariable( "Pu10" 		,&Pu10);
-	reader->AddVariable( "Pu11" 		,&Pu11);
-	reader->AddVariable( "Pu12" 		,&Pu12);
-	reader->AddVariable( "Am1"  		,&Am1 );
+	reader->AddVariable( "BU"   			,&BU 			);
+	reader->AddVariable( "U5_enrichment"	,&U5_enrichment 	);
+	reader->AddVariable( "Pu8"  			,&Pu8 			);
+	reader->AddVariable( "Pu9"  			,&Pu9 			);
+	reader->AddVariable( "Pu10" 			,&Pu10			);
+	reader->AddVariable( "Pu11" 			,&Pu11			);
+	reader->AddVariable( "Pu12" 			,&Pu12			);
+	reader->AddVariable( "Am1"  			,&Am1 			);
 
 	// --- Book the MVA methods
 
 	// Book method MLP
 	TString methodName = "MLP method";
 	reader->BookMVA( methodName, fTMVAWeightPath );
-	theTree->SetBranchAddress( "BU"   			,&BU 	);
-	theTree->SetBranchAddress( "U5_enrichment"  ,&U5_enrichment  )	;
-	theTree->SetBranchAddress( "Pu8"  			,&Pu8  );
-	theTree->SetBranchAddress( "Pu9"  			,&Pu9  );
-	theTree->SetBranchAddress( "Pu10" 			,&Pu10 );
-	theTree->SetBranchAddress( "Pu11" 			,&Pu11 );
-	theTree->SetBranchAddress( "Pu12" 			,&Pu12 );
-	theTree->SetBranchAddress( "Am1"  			,&Am1  );
+	theTree->SetBranchAddress( "BU"   			,&BU 			);
+	theTree->SetBranchAddress( "U5_enrichment"  	,&U5_enrichment  	);
+	theTree->SetBranchAddress( "Pu8"  			,&Pu8  			);
+	theTree->SetBranchAddress( "Pu9"  			,&Pu9  			);
+	theTree->SetBranchAddress( "Pu10" 			,&Pu10 		);
+	theTree->SetBranchAddress( "Pu11" 			,&Pu11 		);
+	theTree->SetBranchAddress( "Pu12" 			,&Pu12 		);
+	theTree->SetBranchAddress( "Am1"  			,&Am1 			);
 	theTree->GetEntry(0);
 
 	Float_t val = (reader->EvaluateRegression( methodName ))[0];
 
 	delete reader;
 	delete theTree;
+	
+	MolarFraction["Fissile"] = (double)val;
+	MolarFraction["Fertile"] = 1.- (double)val;
 
-	return (double)val; //retourne teneur
+	return MolarFraction; //return Molar content of each component in the fuel
 }
 //________________________________________________________________________
-double EQM_PWR_MLP_MOX::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp)
+map < string , double> EQM_PWR_MLP_MOX::GetMolarFraction(map < string , IsotopicVector> IVStream, double BurnUp)
 {DBGL
-	return	ExecuteTMVA(CreateTMVAInputTree(Fissil,Fertil,BurnUp));
+	return	ExecuteTMVA(CreateTMVAInputTree(IVStream,BurnUp));
 }

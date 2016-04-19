@@ -25,7 +25,6 @@ EQM_PWR_POL_UO2::EQM_PWR_POL_UO2(string PathToWeightFile):EquivalenceModel(new C
 	fFissileList = U5*1;
 
 	ReadWeightFile(PathToWeightFile);
-	EquivalenceModel::PrintInfo();
 
 }
 // _______________________________________________________________________
@@ -41,7 +40,6 @@ EQM_PWR_POL_UO2::EQM_PWR_POL_UO2(CLASSLogger* log,string PathToWeightFile):Equiv
 	fFissileList = U5*1;
 
 	ReadWeightFile(PathToWeightFile);
-	EquivalenceModel::PrintInfo();
 
 }
 // _______________________________________________________________________
@@ -68,11 +66,8 @@ void EQM_PWR_POL_UO2::ReadWeightFile(string PathToWeightFile)
 	INFO  << "\t U enrichment = " << fParam_Bu_0 << " + " << fParam_Bu << "*Burnup + " <<  fParam_BuSquare << "*Burnup*Burnup" << endl;
 }
 // _______________________________________________________________________
-double EQM_PWR_POL_UO2::GetFissileMolarFraction ( IsotopicVector Fissil , IsotopicVector Fertil , double BurnUp )
+double EQM_PWR_POL_UO2::GetFissileMolarFraction ( vector <IsotopicVector> IVStream , double BurnUp )
 {
-	double Fraction =  fParam_Bu_0 + fParam_Bu*BurnUp + fParam_BuSquare*BurnUp*BurnUp;
-	DBGV("Fissile molar fraction : "<<Fraction)
-
-	return Fraction ;
+	return fParam_Bu_0 + fParam_Bu*BurnUp + fParam_BuSquare*BurnUp*BurnUp ;
 	
 }

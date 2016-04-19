@@ -31,16 +31,16 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(string WeightPathAlpha0, string WeightPathAlpha1, str
 	fTMVAWeightPath.push_back(WeightPathAlpha1);
 	fTMVAWeightPath.push_back(WeightPathAlpha2);
 	
-	fMaximalBU = 0;
-	fMaximalContent = 0;
-	fInformationFile = InformationFile;
+	fMaximalBU 		= 0;
+	fMaximalContent 	= 0;
+	fNumberOfBatch 	= NumOfBatch;
+	fKThreshold 		= CriticalityThreshold ;
+
+	SetBurnUpPrecision(0.005);//1 % of the targeted burnup
+
+	fInformationFile 	= InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fInformationFile
-	
-	fNumberOfBatch = NumOfBatch;
-	fKThreshold = CriticalityThreshold ;
-	SetBurnUpPrecision(0.005);//1 % of the targeted burnup
-	SetBuildFuelFirstGuess(0.04);//First fissile content guess for the EquivalenceModel::BuildFuel algorithm
 	
 	INFO << "__An equivalence model has been define__" << endl;
 	INFO << "\tThis model is based on the prediction of kinf" << endl;
@@ -54,7 +54,23 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(string WeightPathAlpha0, string WeightPathAlpha1, str
 	INFO << "Maximal burnup (GWd/tHM) : " <<  fMaximalBU << endl;
 	EquivalenceModel::PrintInfo();
 
-	if(fMapOfTMVAVariableNames.empty() || fFertileList.GetIsotopicQuantity().empty() || fFissileList.GetIsotopicQuantity().empty() || fMaximalBU == 0 || fMaximalContent == 0 )	
+	map < string , IsotopicVector >::iterator it_s_IV;
+	map < string , double >::iterator it_s_D;
+	bool EmptyList = false;
+	bool FirstContentNULL = false;
+
+	for(  it_s_IV = fStreamList.begin();   it_s_IV != fStreamList.end();  it_s_IV++)
+	{	
+		if(fStreamList[(* it_s_IV).first].GetIsotopicQuantity().empty()){EmptyList=true;}
+	}
+
+	for(  it_s_D = fFirstGuessContent .begin();   it_s_D != fFirstGuessContent.end();  it_s_D++)
+	{	
+		if(fFirstGuessContent[(* it_s_D).first] ==0){FirstContentNULL=true;}
+	}
+
+
+	if(fMapOfTMVAVariableNames.empty() || EmptyList==true || FirstContentNULL==true || fMaximalBU == 0 || fMaximalContent == 0 )	
 	{
 		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
 		exit(1);
@@ -69,16 +85,16 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string WeightPathAlpha0, string Wei
 	fTMVAWeightPath.push_back(WeightPathAlpha1);
 	fTMVAWeightPath.push_back(WeightPathAlpha2);
 	
-	fMaximalBU = 0;
-	fMaximalContent = 0;
-	fInformationFile = InformationFile;
+	fMaximalBU 		= 0;
+	fMaximalContent 	= 0;
+	fNumberOfBatch 	= NumOfBatch;
+	fKThreshold 		= CriticalityThreshold ;
+
+	SetBurnUpPrecision(0.005);//1 % of the targeted burnup
+	
+	fInformationFile 	= InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fInformationFile
-	
-	fNumberOfBatch = NumOfBatch;
-	fKThreshold = CriticalityThreshold ;
-	SetBurnUpPrecision(0.005);//1 % of the targeted burnup
-	SetBuildFuelFirstGuess(0.04);//First fissile content guess for the EquivalenceModel::BuildFuel algorithm
 	
 	INFO << "__An equivalence model has been define__" << endl;
 	INFO << "\tThis model is based on the prediction of kinf" << endl;
@@ -92,7 +108,23 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string WeightPathAlpha0, string Wei
 	INFO << "Maximal burnup (GWd/tHM) : " <<  fMaximalBU << endl;
 	EquivalenceModel::PrintInfo();
 
-	if(fMapOfTMVAVariableNames.empty() || fFertileList.GetIsotopicQuantity().empty() || fFissileList.GetIsotopicQuantity().empty() || fMaximalBU == 0 || fMaximalContent == 0 )	
+	map < string , IsotopicVector >::iterator it_s_IV;
+	map < string , double >::iterator it_s_D;
+	bool EmptyList = false;
+	bool FirstContentNULL = false;
+
+	for(  it_s_IV = fStreamList.begin();   it_s_IV != fStreamList.end();  it_s_IV++)
+	{	
+		if(fStreamList[(* it_s_IV).first].GetIsotopicQuantity().empty()){EmptyList=true;}
+	}
+
+	for(  it_s_D = fFirstGuessContent .begin();   it_s_D != fFirstGuessContent.end();  it_s_D++)
+	{	
+		if(fFirstGuessContent[(* it_s_D).first] ==0){FirstContentNULL=true;}
+	}
+
+
+	if(fMapOfTMVAVariableNames.empty() || EmptyList==true || FirstContentNULL==true || fMaximalBU == 0 || fMaximalContent == 0 )	
 	{
 		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
 		exit(1);
@@ -110,17 +142,17 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, string Inform
 	if(InformationFile == "")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 	
-	fMaximalBU = 0;
-	fMaximalContent = 0;
-	fInformationFile = InformationFile;
+	fMaximalBU 		= 0;
+	fMaximalContent 	= 0;
+	fNumberOfBatch 	= NumOfBatch;
+	fKThreshold 		= CriticalityThreshold ;
+
+	SetBurnUpPrecision(0.005);//1 % of the targeted burnup
+	SetPCMPrecision(10);
+	
+	fInformationFile 	= InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fInformationFile
-	
-	fNumberOfBatch = NumOfBatch;
-	fKThreshold = CriticalityThreshold ;
-	SetBurnUpPrecision(0.005);//1 % of the targeted burnup
-	SetPCMprecision(10);
-	SetBuildFuelFirstGuess(0.04);//First fissile content guess for the EquivalenceModel::BuildFuel algorithm
 	
 	INFO << "__An equivalence model has been define__" << endl;
 	INFO << "\tThis model is based on the prediction of kinf" << endl;
@@ -130,7 +162,23 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, string Inform
 	INFO << "Maximal burnup (GWd/tHM) : " <<  fMaximalBU << endl;
 	EquivalenceModel::PrintInfo();
 
-	if(fMapOfTMVAVariableNames.empty() || fFertileList.GetIsotopicQuantity().empty() || fFissileList.GetIsotopicQuantity().empty() || fMaximalBU == 0 || fMaximalContent == 0 )	
+	map < string , IsotopicVector >::iterator it_s_IV;
+	map < string , double >::iterator it_s_D;
+	bool EmptyList 		= false;
+	bool FirstContentNULL 	= false;
+
+	for(  it_s_IV = fStreamList.begin();   it_s_IV != fStreamList.end();  it_s_IV++)
+	{	
+		if(fStreamList[(* it_s_IV).first].GetIsotopicQuantity().empty()){EmptyList=true;}
+	}
+
+	for(  it_s_D = fFirstGuessContent .begin();   it_s_D != fFirstGuessContent.end();  it_s_D++)
+	{	
+		if(fFirstGuessContent[(* it_s_D).first] ==0){FirstContentNULL=true;}
+	}
+
+
+	if(fMapOfTMVAVariableNames.empty() || EmptyList==true || FirstContentNULL==true || fMaximalBU == 0 || fMaximalContent == 0 )	
 	{
 		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
 		exit(1);
@@ -147,17 +195,16 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,  int NumOfBa
 	if(InformationFile == "")
 		InformationFile = StringLine::ReplaceAll(TMVAWeightPath,".xml",".nfo");
 	
-	fMaximalBU = 0;
-	fMaximalContent = 0;
-	fInformationFile = InformationFile;
+	fMaximalBU 		= 0;
+	fMaximalContent 	= 0;
+	fInformationFile 	= InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fMLPInformationFile
 	
-	fNumberOfBatch = NumOfBatch;
-	fKThreshold = CriticalityThreshold ;
+	fNumberOfBatch 	= NumOfBatch;
+	fKThreshold 		= CriticalityThreshold ;
 	SetBurnUpPrecision(0.005);//1 % of the targeted burnup
-	SetPCMprecision(10);
-	SetBuildFuelFirstGuess(0.04);//First fissile content guess for the EquivalenceModel::BuildFuel algorithm
+	SetPCMPrecision(10);
 	
 	INFO << "__An equivalence model has been define__" << endl;
 	INFO << "\tThis model is based on the prediction of kinf" << endl;
@@ -166,10 +213,25 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,  int NumOfBa
 	INFO << "Maximal fissile content (molar proportion) : " << fMaximalContent << endl;
 	INFO << "Maximal burnup (GWd/tHM) : " <<  fMaximalBU << endl;
 
-
 	EquivalenceModel::PrintInfo();
 
-	if(fMapOfTMVAVariableNames.empty() || fFertileList.GetIsotopicQuantity().empty() || fFissileList.GetIsotopicQuantity().empty() || fMaximalBU == 0 || fMaximalContent == 0 )	
+	map < string , IsotopicVector >::iterator it_s_IV;
+	map < string , double >::iterator it_s_D;
+	bool EmptyList 		= false;
+	bool FirstContentNULL 	= false;
+
+	for(  it_s_IV = fStreamList.begin();   it_s_IV != fStreamList.end();  it_s_IV++)
+	{	
+		if(fStreamList[(* it_s_IV).first].GetIsotopicQuantity().empty()){EmptyList=true;}
+	}
+
+	for(  it_s_D = fFirstGuessContent .begin();   it_s_D != fFirstGuessContent.end();  it_s_D++)
+	{	
+		if(fFirstGuessContent[(* it_s_D).first] ==0){FirstContentNULL=true;}
+	}
+
+
+	if(fMapOfTMVAVariableNames.empty() || EmptyList==true || FirstContentNULL==true || fMaximalBU == 0 || fMaximalContent == 0 )	
 	{
 		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
 		exit(1);
@@ -202,7 +264,7 @@ void EQM_MLP_Kinf::ReadZAIName(const string &line)
 	
 	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int I  = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	
 	string name = StringLine::NextWord(line, pos, ' ');
 	
@@ -384,7 +446,7 @@ double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetB
 	{
 		if(count > MaximumLoopCount )
 		{
-			ERROR << "CRITICAL ! Can't manage to predict burnup\nHint : Try to increase the precision on k effective using :\n YourEQM_MLP_Kinf->SetPCMprecision(pcm); with pcm the precision in pcm (default 10) REDUCE IT\n If this message still appear mail to leniau@subatech.in2p3.fr\nor nicolas.thiolliere@subatech.in2p3.fr " << endl;
+			ERROR << "CRITICAL ! Can't manage to predict burnup\nHint : Try to increase the precision on k effective using :\n YourEQM_MLP_Kinf->SetPCMPrecision(pcm); with pcm the precision in pcm (default 10) REDUCE IT\n If this message still appear mail to leniau@subatech.in2p3.fr\nor nicolas.thiolliere@subatech.in2p3.fr " << endl;
 			exit(1);
 		}
 		
@@ -414,12 +476,12 @@ double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetB
 			delete InputTree;
 		}
 		k_av/= fNumberOfBatch;
-		
+		//cout<<SecondToBurnup(TheFinalTime)<<" ";
 		OldPredictedk_av = k_av;
 		count++;
-	}	while( fabs(OldPredictedk_av-fKThreshold) > GetPCMprecision() )  ;
+	}	while( fabs(OldPredictedk_av-fKThreshold) > GetPCMPrecision() )  ;
 	
-	
+	//cout<<endl;
 	return SecondToBurnup(TheFinalTime);
 }
 //________________________________________________________________________
@@ -517,20 +579,25 @@ double EQM_MLP_Kinf::GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU)
 	return TheBurnUp;
 }
 //________________________________________________________________________
-double EQM_MLP_Kinf::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double TargetBU)
+map < string , double>  EQM_MLP_Kinf::GetMolarFraction(map <string , IsotopicVector > IVStream, double TargetBU)
 {
-	
 	//initialization
-	double FissileContent = GetActualFissileContent();
-	double OldFissileContentMinus = 0;
-	double OldFissileContentPlus = fMaximalContent;
-	double PredictedBU = 0 ;
-	IsotopicVector FreshFuel = (1-FissileContent)*(Fertil/Fertil.GetSumOfAll()) + FissileContent*(Fissil/Fissil.GetSumOfAll());
-	double OldPredictedBU = GetMaximumBurnUp(FreshFuel,TargetBU);
+	IsotopicVector Fissil 	= IVStream["Fissile"];
+	IsotopicVector Fertil 	= IVStream["Fertile"];
+
+	map < string , double> MolarFraction ;
+
+	double FissileContent 		= fActualMolarContentInFuel["Fissile"];
+	double OldFissileContentMinus  	= 0;
+	double OldFissileContentPlus 	= fMaximalContent;
+
+	double PredictedBU 		= 0 ;
+	IsotopicVector FreshFuel 	= (1-FissileContent)*(Fertil/Fertil.GetSumOfAll()) + FissileContent*(Fissil/Fissil.GetSumOfAll());
+	double OldPredictedBU 		= GetMaximumBurnUp(FreshFuel,TargetBU);
 	
-	double Precision = GetBurnUpPrecision()*TargetBU; //1 % of the targeted burnup
-	int count = 0;
-	int MaximumLoopCount = 500;
+	double Precision 		= GetBurnUpPrecision()*TargetBU; //1 % of the targeted burnup
+	int count 			= 0;
+	int MaximumLoopCount 	= 500;
 	do
 	{
 		if(count > MaximumLoopCount )
@@ -557,15 +624,17 @@ double EQM_MLP_Kinf::GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVecto
 		
 		IsotopicVector FreshFuel = (1-FissileContent)*(Fertil/Fertil.GetSumOfAll()) + FissileContent*(Fissil/Fissil.GetSumOfAll());
 		PredictedBU = GetMaximumBurnUp(FreshFuel,TargetBU);
-		
+
 		OldPredictedBU = PredictedBU;
 		count ++;
 		
 	}while(fabs(TargetBU-PredictedBU)>Precision);
 	
-	
-	
 	DBGV("Predicted BU " << PredictedBU << " FissileContent " << FissileContent);
-	return FissileContent;
+	
+	MolarFraction["Fissile"] 	= FissileContent;
+	MolarFraction["Fertile"] 	= 1 - FissileContent;
+
+	return MolarFraction;
 }
 //________________________________________________________________________

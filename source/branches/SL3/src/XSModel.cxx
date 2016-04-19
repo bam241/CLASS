@@ -37,13 +37,12 @@ void XSModel::ReadNFO()
 {
 	DBGL
 	ifstream NFO(fInformationFile.c_str());
-	
+
 	if(!NFO)
 	{
 		ERROR << "Can't find/open file " << fInformationFile << endl;
 		exit(0);
 	}
-	
 	do
 	{
 		string line;
@@ -70,7 +69,7 @@ void XSModel::ReadLine(string line)
 		
 		if(it != fKeyword.end())
 			(this->*(it->second))( line );
-		
+	
 		freaded = true;
 		ReadLine(line);
 		
@@ -86,7 +85,7 @@ void XSModel::LoadKeyword()
 {
 	DBGL
 	fKeyword.insert( pair<string, XSM_MthPtr>( "k_zail",	& XSModel::ReadZAIlimits));
-	fKeyword.insert( pair<string, XSM_MthPtr>( "k_reactor",	& XSModel::ReadType)	 );
+	fKeyword.insert( pair<string, XSM_MthPtr>( "k_reactor",& XSModel::ReadType)	 );
 	fKeyword.insert( pair<string, XSM_MthPtr>( "k_fuel",	& XSModel::ReadType)	 );
 	fKeyword.insert( pair<string, XSM_MthPtr>( "k_mass",	& XSModel::ReadRParam)	 );
 	fKeyword.insert( pair<string, XSM_MthPtr>( "k_power",	& XSModel::ReadRParam)	 );

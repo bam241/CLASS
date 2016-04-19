@@ -45,8 +45,9 @@ EQM_PWR_QUAD_MOX::EQM_PWR_QUAD_MOX(string WeightPath):EquivalenceModel(new CLASS
 	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
 
 	SetBuildFuelFirstGuess(0.04);
-	EquivalenceModel::PrintInfo();
-
+	
+	fStreamList.push_back(FissileList);
+	fStreamList.push_back(FertileList);
 
 }
 
@@ -87,7 +88,9 @@ EQM_PWR_QUAD_MOX::EQM_PWR_QUAD_MOX(CLASSLogger* log, string WeightPath):Equivale
 	fFissileList = Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
 
 	SetBuildFuelFirstGuess(0.04);
-	EquivalenceModel::PrintInfo();
+
+	fStreamList.push_back(FissileList);
+	fStreamList.push_back(FertileList);
 
 }
 
@@ -101,9 +104,11 @@ EQM_PWR_QUAD_MOX::~EQM_PWR_QUAD_MOX()
 
 
 
-double EQM_PWR_QUAD_MOX::GetFissileMolarFraction(IsotopicVector Fissile,IsotopicVector Fertile,double BurnUp)
+double EQM_PWR_QUAD_MOX::GetFissileMolarFraction(vector <IsotopicVector> IVStream,double BurnUp)
 {
 
+	IsotopicVector Fissile = IVStream[0];
+	IsotopicVector Fertile = IVStream[1];
 
 	ZAI ZAIList[6] = {ZAI(94,238,0), ZAI(94,239,0), ZAI(94,240,0), ZAI(94,241,0), ZAI(94,242,0), ZAI(95,241,0)  };
 

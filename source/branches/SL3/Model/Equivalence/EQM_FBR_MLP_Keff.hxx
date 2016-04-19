@@ -80,7 +80,7 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	 \param Fertil : The composition of the Fertil matter
 	 \param BurnUp : Maximum achievable burn up envisaged
 	 */
-	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp = 0);
+	virtual double GetFissileMolarFraction(vector <IsotopicVector> IVStream, double BurnUp = 0);
 	//}
 	
 	/*!
@@ -137,7 +137,7 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	//{
 	/// ReadMaxFisContent  : read a guessed (very overestimated) maximum fissile content (purpose : algorithm initialization)
 	/*!
-	 \param line : line suppossed to contain the ZAI name  starts with "k_maxfiscontent" keyword
+	 \param line : line suppossed to contain the ZAI name  starts with "k_zainame" keyword
 	 */
 	void ReadMaxFisContent(const string &line);
 	//}
@@ -166,6 +166,7 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 
 	vector<double> fMLP_Time;	//!< Time (in seconds) when the MLP(t) = keff(t) has been trained.
+	double 	fSpecificPower; 	//!< The specific power in W/gHM (HM: heavy Metal)
 	double  fMaximalContent;	//!< The approx. maximum fissile content reachable by the MLP model
 	
 
@@ -178,18 +179,14 @@ class EQM_FBR_MLP_Keff : public EquivalenceModel
 	double 	fTargetKeff;		//!< Use for Varying Fissile content to reach fTargetKeff at time used in the MLP Training
 	
 
-	/*!
-	 \name keff prediction methods & keff averaging
-	 */
-	//@{
+	
+	double 	GetKeffAtFixedTime(IsotopicVector FreshFuel){return ExecuteTMVA( CreateTMVAInputTree(FreshFuel,-1), false );} //!<time independant since the MLP is trained for 1 time
 
-		double 	GetKeffAtFixedTime(IsotopicVector FreshFuel){TTree* Input = CreateTMVAInputTree(FreshFuel,-1);  double Keff = ExecuteTMVA( Input, false ); delete Input; return Keff;} //!<time independant since the MLP is trained for 1 time
+	TGraph* BuildKeffGraph(IsotopicVector FreshFuel);
+	TGraph* BuildAverageKeffGraph(TGraph* GRAPH_KEFF);
 
-		TGraph* BuildKeffGraph(IsotopicVector FreshFuel);
-		TGraph* BuildAverageKeffGraph(TGraph* GRAPH_KEFF);
-		double 	GetKeffAt(TGraph* GRAPH_KEFF, int Step);
+	double 	GetKeffAt(TGraph* GRAPH_KEFF, int Step);
 
-	//@}	
 
 
 	
