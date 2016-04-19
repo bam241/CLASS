@@ -86,7 +86,7 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	 \param Fertil : The composition of the Fertil matter
 	 \param BurnUp : Maximum achievable burn up envisaged
 	 */
-	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp = 0);
+	virtual double GetFissileMolarFraction(vector <IsotopicVector> IVStream,double BurnUp = 0);
 	//}
 	
 	/*!
@@ -157,12 +157,13 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	private :
 	
 	string fTMVAWeightPath;					//!<The weight needed by TMVA to construct and execute the multilayer perceptron
+	string fMLPInformationFile;				//!<The path to the informations necessary to execute the MLP
 	
 #ifndef __CINT__
 	map<string, FBR_MLP_Keff_BOUND_DMthPtr> fDKeyword;
 #endif
 	
-	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fInformationFile ) , name depends on the training step
+	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 	
 	vector<double> fMLP_Time;	//!< Time (in seconds) when the MLP(t) = keff(t) has been trained.
 	
@@ -182,19 +183,14 @@ class EQM_FBR_MLP_Keff_BOUND : public EquivalenceModel
 	
 	
 	
-	/*!
-	 \name kinf prediction methods & keff averaging
-	 */
-	//@{
-	 
-	double 	GetKeffAtFixedTime(IsotopicVector FreshFuel){TTree* Input = CreateTMVAInputTree(FreshFuel,-1);  double Keff = ExecuteTMVA( Input, false ); delete Input; return Keff;} //!<time independant since the MLP is trained for 1 time
-
+	
+	double 	GetKeffAtFixedTime(IsotopicVector FreshFuel){return ExecuteTMVA( CreateTMVAInputTree(FreshFuel,-1), false );} //!<time independant since the MLP is trained for 1 time
+	
 	TGraph* BuildKeffGraph(IsotopicVector FreshFuel);
 	TGraph* BuildAverageKeffGraph(TGraph* GRAPH_KEFF);
 	
 	double 	GetKeffAt(TGraph* GRAPH_KEFF, int Step);
 	
-	//@}
 	
 	
 	
