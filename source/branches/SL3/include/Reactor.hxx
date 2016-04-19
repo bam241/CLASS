@@ -263,7 +263,7 @@ class Reactor : public CLASSFacility
 	void Evolution(cSecond t);						//!< Performs the Evolution until time t
 	void Dump();								//!< Write modification (IV In/Out, filling the TF...)
 	void SetNewFuel(EvolutionData ivdb);					//!< Change the Evolutive DB of the Reactor
-	
+	void CheckListConsistency(PhysicsModels* fueltypeDB, FabricationPlant* fabricationplant); //!< Check if FP/EqM lists are identical
 #ifndef __CINT__
 
 	void AddFuel(cSecond time,  CLASSFuel fuel, double BurnUp)	//!< Add A new CLASSFuel at the corresponding time and Burnup
