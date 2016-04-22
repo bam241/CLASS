@@ -1,12 +1,13 @@
 To be used with : EQM_FBR_MLP_Keff.cxx
 
+k_reactor FBR-Na
+k_fuel MOX
+
 Specific Power (W/gHM) :
 k_specpower 4.81231953801732431e+01
 
 Maximal fissile content (molar proportion) :
 k_maxfiscontent 0.40
-
-
 
 Z A I Name (input MLP) :
 k_zainame 92 235 0 U5
@@ -20,21 +21,20 @@ k_zainame 94 242 0 Pu12
 k_zainame 95 241 0 Am1
 
 
-
 Fissile Liste (Z A I) :
-k_fissil 94 238 0
-k_fissil 94 239 0
-k_fissil 94 240 0
-k_fissil 94 241 0
-k_fissil 94 242 0
-
-
+k_list Fissile 94 238 0 1
+k_list Fissile 94 239 0 1
+k_list Fissile 94 240 0 1
+k_list Fissile 94 241 0 1
+k_list Fissile 94 242 0 1
 
 Fertile Liste (Z A I Default Proportion) :
-k_fertil 92 235 0 0.0025
-k_fertil 92 238 0 0.9975
+k_list Fertile 92 235 0 0.0025
+k_list Fertile 92 238 0 0.9975
 
-
+Starting fissile content in fuel for equivalence model calculation :  
+k_firstguesscontent Fissile 0.10
+k_firstguesscontent Fertile 0.90
 
 
 Date : 02/2015
@@ -55,3 +55,4 @@ Half-life cut : 36000
 Multi group treatment : 17900
 Time vector : 0 17960294 35920588 53880884 71841176 89801472 107761768 125722064 143682352 161642656 179602944
 Others :
+This model has been trained to predict the keff @ begining of cycle according the fresh fuel composition.
