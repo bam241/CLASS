@@ -72,7 +72,7 @@ class EQM_FBR_BakerRoss_MOX : public EquivalenceModel
 	//}
 	//@}
 	
-	virtual double GetFissileMolarFraction(IsotopicVector Fissil, IsotopicVector Fertil, double BurnUp = 0);
+	virtual map < string , double> GetMolarFraction(map < string , IsotopicVector> IVStream, double BurnUp=0);
 
 	private :
 	double fReferenceFissilContent;   //!<The reference fraction of Pu for BurnUp = 100Gwj/t with a ideal model(only @f$^{239}Pu@f$ and &@f$^{238}U@f$ are taken into account)
