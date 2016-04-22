@@ -53,8 +53,8 @@ public:
 	
 	//@}
 	/**This function IS the equivalence model**/
-	double GetFissileMolarFraction(IsotopicVector Fissil, IsotopicVector Fertil,double BurnUp) ; // !<Return the molar fraction of fissile element
-	
+	map < string , double> GetMolarFraction(map < string , IsotopicVector> IVStream, double BurnUp);
+		
 	
 private:
 	

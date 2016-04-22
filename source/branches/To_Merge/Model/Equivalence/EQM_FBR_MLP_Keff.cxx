@@ -61,21 +61,14 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(string TMVAWeightPath, double keff_target, st
 	fTargetKeff = keff_target;
 	
 	SetPCMprecision(10);
-	SetBuildFuelFirstGuess(0.15);	//First fissile content guess for the EquivalenceModel::BuildFuel algorithm
-	fActualFissileContent = fFirstGuessFissilContent ;
+
+	fActualFissileContent = fFirstGuessContent["Fissile"] ;
 
 	INFO << "__An equivalence model has been define__" << endl;
 	INFO << "\tThis model is based on the prediction of keff at a specific time" << endl;
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
-	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | " << fInformationFile << " )" << endl;
-	INFO << "Maximal fissile content (molar proportion) : "<<fMaximalContent<<endl;
+	INFO << "\t" << "( " << fTMVAWeightPath << " | " << fInformationFile << " )" << endl;
 	EquivalenceModel::PrintInfo();
-
-	if(fMapOfTMVAVariableNames.empty() || fFertileList.GetIsotopicQuantity().empty() || fFissileList.GetIsotopicQuantity().empty())	
-	{
-		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
-		exit(1);
-	}
 
 	DBGL
 }
@@ -97,7 +90,7 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(CLASSLogger* log, string TMVAWeightPath, doub
 	fInformationFile = InformationFile;
 	LoadKeyword();
 	ReadNFO();//Getting information from fMLPInformationFile
-	
+
 	if(fMaximalContent == 0 )
 	{
 		ERROR<<"Can't find the k_maxfiscontent keyword in .nfo file\n this is mandatory"<<endl;
@@ -107,23 +100,18 @@ EQM_FBR_MLP_Keff::EQM_FBR_MLP_Keff(CLASSLogger* log, string TMVAWeightPath, doub
 	fTargetKeff = keff_target;
 	
 	SetPCMprecision(10);
-	SetBuildFuelFirstGuess(0.15);	//First fissile content guess for the EquivalenceModel::BuildFuel algorithm
-	fActualFissileContent = fFirstGuessFissilContent ;
+
+	fActualFissileContent = fFirstGuessContent["Fissile"] ;
 
 	INFO << "__An equivalence model has been define__" << endl;
 	INFO << "\tThis model is based on the prediction of keff at a specific time" << endl;
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
-	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | "  << fInformationFile << " )" << endl;
+	INFO << "\t" << "( " << fTMVAWeightPath << " | "  << fInformationFile << " )" << endl;
 	EquivalenceModel::PrintInfo();
-
-	if(fMapOfTMVAVariableNames.empty() || fFertileList.GetIsotopicQuantity().empty() || fFissileList.GetIsotopicQuantity().empty())	
-	{
-		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
-		exit(1);
-	}
 
 	DBGL
 }
+
 //________________________________________________________________________
 TTree* EQM_FBR_MLP_Keff::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double ThisTime)
 {
@@ -232,6 +220,19 @@ double EQM_FBR_MLP_Keff::ExecuteTMVA(TTree* InputTree, bool IsTimeDependent)
 	DBGL
 	return (double)val;	//return k_{eff}(t = Time)
 }
+
+//________________________________________________________________________
+double 	EQM_FBR_MLP_Keff::GetKeffAtFixedTime(IsotopicVector FreshFuel)
+{ 
+	TTree* Input = CreateTMVAInputTree(FreshFuel,-1) ;   
+
+	double keff =  ExecuteTMVA( Input, false );
+
+	delete Input;
+
+	return keff;
+} 
+
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff::LoadKeyword()
 {
@@ -243,11 +244,12 @@ void EQM_FBR_MLP_Keff::LoadKeyword()
 
 	DBGL
 }
+
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff::ReadZAIName(const string &line)
 {
 	DBGL
-
+	
 	int pos = 0;
 	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
 	if( keyword != "k_zainame" )	// Check the keyword
@@ -258,7 +260,7 @@ void EQM_FBR_MLP_Keff::ReadZAIName(const string &line)
 	
 	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-	int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int I  = atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	
 	string name = StringLine::NextWord(line, pos, ' ');
 	
@@ -266,6 +268,7 @@ void EQM_FBR_MLP_Keff::ReadZAIName(const string &line)
 
 	DBGL	
 }
+
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff::ReadMaxFisContent(const string &line)
 {
@@ -282,6 +285,7 @@ void EQM_FBR_MLP_Keff::ReadMaxFisContent(const string &line)
 	
 	DBGL
 }
+
 //________________________________________________________________________
 void EQM_FBR_MLP_Keff::ReadLine(string line)
 {
@@ -297,14 +301,17 @@ void EQM_FBR_MLP_Keff::ReadLine(string line)
 	
 	DBGL
 }
+
 //________________________________________________________________________
-double EQM_FBR_MLP_Keff::GetFissileMolarFraction(IsotopicVector Fissile,IsotopicVector Fertile,double TargetBU)
+map < string , double> EQM_FBR_MLP_Keff::GetMolarFraction(map < string , IsotopicVector> IVStream,double TargetBU)
 {
 	DBGL
 	
 	if(TargetBU != 0)
 		WARNING << "The third arguement : Burnup has no effect here.";
 
+	IsotopicVector Fissile = IVStream["Fissile"];
+	IsotopicVector Fertile = IVStream["Fertile"];
 
 	//initialization
 	double FissileContent = GetActualFissileContent();
@@ -347,7 +354,13 @@ double EQM_FBR_MLP_Keff::GetFissileMolarFraction(IsotopicVector Fissile,Isotopic
 	}while(fabs(fTargetKeff-PredictedKeff)>Precision);
 	
 	DBGV( "Predicted keff " << PredictedKeff << " FissileContent " << FissileContent << endl);
-	return FissileContent;
+	
+	map < string , double> MolarFraction;
+	MolarFraction["Fissile"] = FissileContent;
+	MolarFraction["Fertile"] = 1.- FissileContent;
+
+	return MolarFraction; //return Molar content of each component in the fuel
+
 
 }
 //________________________________________________________________________

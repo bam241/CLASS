@@ -18,14 +18,14 @@ EQM_PWR_POL_UO2::EQM_PWR_POL_UO2(string PathToWeightFile):EquivalenceModel(new C
 	
 	// Fertile
 	ZAI U8(92 ,238 ,0) ;
-	fFertileList = U8*1;
 	// Fissile
 	ZAI U5(92 ,235 ,0) ;
 	// ...
-	fFissileList = U5*1;
+
+	fStreamList["Fissile"] = U5*1;
+	fStreamList["Fertile"] = U8*1;
 
 	ReadWeightFile(PathToWeightFile);
-	EquivalenceModel::PrintInfo();
 
 }
 // _______________________________________________________________________
@@ -34,14 +34,14 @@ EQM_PWR_POL_UO2::EQM_PWR_POL_UO2(CLASSLogger* log,string PathToWeightFile):Equiv
 	
 	// Fertile
 	ZAI U8(92 ,238 ,0) ;
-	fFertileList = U8*1;
 	// Fissile
 	ZAI U5(92 ,235 ,0) ;
 	// ...
-	fFissileList = U5*1;
+
+	fStreamList["Fissile"] = U5*1;
+	fStreamList["Fertile"] = U8*1;
 
 	ReadWeightFile(PathToWeightFile);
-	EquivalenceModel::PrintInfo();
 
 }
 // _______________________________________________________________________
@@ -68,11 +68,15 @@ void EQM_PWR_POL_UO2::ReadWeightFile(string PathToWeightFile)
 	INFO  << "\t U enrichment = " << fParam_Bu_0 << " + " << fParam_Bu << "*Burnup + " <<  fParam_BuSquare << "*Burnup*Burnup" << endl;
 }
 // _______________________________________________________________________
-double EQM_PWR_POL_UO2::GetFissileMolarFraction ( IsotopicVector Fissil , IsotopicVector Fertil , double BurnUp )
+map < string , double>  EQM_PWR_POL_UO2::GetMolarFraction( map < string , IsotopicVector> IVStream , double BurnUp )
 {
-	double Fraction =  fParam_Bu_0 + fParam_Bu*BurnUp + fParam_BuSquare*BurnUp*BurnUp;
-	DBGV("Fissile molar fraction : "<<Fraction)
+	map < string , double> MolarFraction;
 
-	return Fraction ;
+	double U5 = fParam_Bu_0 + fParam_Bu*BurnUp + fParam_BuSquare*BurnUp*BurnUp;
+
+	MolarFraction["Fissile"] = U5;
+	MolarFraction["Fertile"] = 1. - U5;
+
+	return MolarFraction ;
 	
 }

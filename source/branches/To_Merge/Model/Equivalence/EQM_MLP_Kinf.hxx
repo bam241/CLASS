@@ -37,7 +37,7 @@ in non simulated devices such as control rods and mixing grid.
 
 class EQM_MLP_Kinf : public EquivalenceModel
 {
-	public:
+	public :
 	/*!
 	 \name Constructor
 	 */
@@ -94,7 +94,7 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	 \param  InformationFile : Total path to the file containing time steps, fissile and ferile list (ante and post fabrication time cooling). Default is the same total path as TMVAWeightPath but extension is replaced by .nfo
 	 \param  CriticalityThreshold : Threshold for the @f$k_{\infty}@f$ (see detailed description)
 	 */
-	EQM_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,int NumOfBatch, string InformationFile = "", double CriticalityThreshold = 1.01);
+	EQM_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath, int NumOfBatch, string InformationFile = "", double CriticalityThreshold = 1.01);
 	//}
 	//@}
 	
@@ -105,7 +105,7 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	 \param Fertil : The composition of the Fertil matter
 	 \param BurnUp : Maximum achievable burn up envisaged
 	 */
-	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);
+	map < string , double> GetMolarFraction(map < string , IsotopicVector> IVStream, double BurnUp);
 	//}
 	
 	/*!
@@ -114,9 +114,9 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	//@{
 
 	void SetBurnUpPrecision(double prop){fBurnUpPrecision = prop;} //!< Set the precision on Burnup : proportion of the targeted burnup
-	void SetPCMprecision(double pcm){fPCMprecision = pcm;}		  //!< Set the precision on @f$\langle k \rangle@f$ prediction [pcm]. Neural network predictor constructors
+	void SetPCMPrecision(double pcm){fPCMprecision = pcm;}		  //!< Set the precision on @f$\langle k \rangle@f$ prediction [pcm]. Neural network predictor constructors
 	double GetBurnUpPrecision(){return fBurnUpPrecision;}//!< Get the precision on Burnup : proportion of the targeted burnup
-	double GetPCMprecision(){return fPCMprecision/1e5;}//!< Get the precision on @f$\langle k \rangle@f$ prediction []. Neural network predictor constructors
+	double GetPCMPrecision(){return fPCMprecision/1e5;}//!< Get the precision on @f$\langle k \rangle@f$ prediction []. Neural network predictor constructors
 	
 	double GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU);//!<Get the maximum reachable burnup according the freshfuel composition
 	void   GetModelInformation();//!<Read the fMLPInformationFile and fill containers and variables
@@ -185,6 +185,9 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	void ReadLine(string line);
 	//}
 	
+	double GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetBU);
+	double GetMaximumBurnUp_Pol2(IsotopicVector TheFuel, double TargetBU);
+
 	//@}
 	
 	private :
@@ -201,17 +204,15 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	 */
 	//@{
 
-	double GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetBU);
-	double GetMaximumBurnUp_Pol2(IsotopicVector TheFuel, double TargetBU);
 
 	//@}
 
 	int 	fNumberOfBatch;		//!< The number of batches for the loading plan
-	double 	fKThreshold;		//!< The @f$k_{Threshold}@f$
+	double 	fKThreshold;			//!< The @f$k_{Threshold}@f$
 	double 	fMaximalBU;			//!< The approx. maximum burnup reachable by the MLP model		
-	double  fMaximalContent;	//!< The approx. maximum fissile content reachable by the MLP model
-	double 	fBurnUpPrecision;	//!< precision on Burnup 
-	double 	fPCMprecision;		//!< precision on @f$\langle k \rangle@f$ prediction [pcm]
+	double  fMaximalContent;		//!< The approx. maximum fissile content reachable by the MLP model
+	double 	fBurnUpPrecision;		//!< precision on Burnup 
+	double 	fPCMprecision;			//!< precision on @f$\langle k \rangle@f$ prediction [pcm]
 			
 
 };

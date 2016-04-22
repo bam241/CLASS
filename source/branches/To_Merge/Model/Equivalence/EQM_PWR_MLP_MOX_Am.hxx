@@ -53,21 +53,14 @@ class EQM_PWR_MLP_MOX_AM : public EquivalenceModel
 	 \param Fertil : The composition of the Fertil matter
 	 \param BurnUp : Maximum achievable burn up envisaged
 	 */
-	virtual double GetFissileMolarFraction(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);
+	map < string , double> GetMolarFraction(map < string , IsotopicVector> IVStream, double BurnUp);
 	//}
 	
-	/*!
-	 \name TMVA related methods
-	 */
-	//@{
-
-		TTree* CreateTMVAInputTree(IsotopicVector Fissil,IsotopicVector Fertil,double BurnUp);//!<Create input tmva tree to be read by ExecuteTMVA
-		double ExecuteTMVA(TTree* theTree);//!<Execute the MLP according to the input tree created by CreateTMVAInputTree
-
-	//@}	
-
 	private :
 	
+	TTree* CreateTMVAInputTree(map < string , IsotopicVector> IVStream,double BurnUp);//!<Create input tmva tree to be read by ExecuteTMVA
+	map < string , double>  ExecuteTMVA(TTree* theTree);//!<Execute the MLP according to the input tree created by CreateTMVAInputTree
+
 
 	string fTMVAWeightPath;;//!<The weight needed by TMVA to construct and execute the multilayer perceptron
 
