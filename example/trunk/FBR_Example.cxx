@@ -66,7 +66,7 @@ int main(int argc, char** argv)
 	IMRK4->LoadFPYield("" , CLASS_PATH + "/data/FPyield_Fast_JEFF3.1.dat");//Add the handling of fission procuct and gets fission yields from this file (the first argument is for spontaneousfission yield : here is not handle)
 	
 	EQM_FBR_BakerRoss_MOX* EQM_FBRMOX = new EQM_FBR_BakerRoss_MOX(gCLASS->GetLog());//Defining the EquivalenceModel
-	EQM_FBRMOX->SetBuildFuelFirstGuess(0.12);										//Set the first guess of fissile content to 12 per cent of plutonium (default : 5%)
+
 	PhysicsModels* PHYMOD = new PhysicsModels(XS_FBRMOX, EQM_FBRMOX, IMRK4);		//The PhysicsModels containing the 3 object previously defined
 
 
@@ -95,8 +95,9 @@ int main(int argc, char** argv)
 	FabricationPlant *FP_MOX = new FabricationPlant(gCLASS->GetLog(), 3*year); //Declare a FabricationPlant. After the build of the fuel, it decays during 3years before to be loaded in Reactor
 	FP_MOX->SetFiFo(false); //The latest isotopicVector to enter in "Stock" will be used to build the fuel (Opposite of First In First Out)
 	FP_MOX->SetName("Fab_MOX");
-	FP_MOX->AddFissileStorage(Stock);	//Tell the FP to look in Stock for fissionable material 
-	//FP_MOX->AddFertileStorage(Stock2);//Tell the FP to look in Stock2 for fertile material 
+	FP_MOX->AddStorage("Fissile", Stock);
+	FP_MOX->AddInfiniteStorage("Fertile");	//Tell the FP to  take fertile material defined in the EquivalenceModel from an infinite stock
+	//FP_MOX->AddStorage("Fertile",Stock2);//Tell the FP to look in Stock2 for fertile material 
 	//If fertile stock is not defined (like here), CLASS get fertile from nature (OUTCOMING vector)
 	//FP_MOX->SetReUsableStorage(wastestock);//By default the fabricationplant get the list of nuclei defined in the EquivalenceModel (here EQM_MLP_MOX) from stock and send the others nuclei in WASTE. If user want these nuclei to go in another stock  he can use the SetReUsableStorage function
 	gCLASS->AddFabricationPlant(FP_MOX);
