@@ -6,10 +6,11 @@
 #include "Storage.hxx"
 #include "Scenario.hxx"
 #include "CLASSConstante.hxx"
+#include "../../config/config.hxx"
 
 #include <iostream>
 #include <cmath>
-#include "../../config/config.hxx"
+
 #include <typeinfo>
 
 //________________________________________________________________________
@@ -37,7 +38,7 @@ Reactor::Reactor():CLASSFacility(4)
 	fFuelPlan = 0;
 	
 }
-
+//________________________________________________________________________
 Reactor::Reactor(CLASSLogger* log):CLASSFacility(log, 4)
 {
 	DBGL
@@ -50,7 +51,7 @@ Reactor::Reactor(CLASSLogger* log):CLASSFacility(log, 4)
 	
 	DBGL
 }
-
+//________________________________________________________________________
 Reactor::Reactor(CLASSLogger* log,
 		 CLASSBackEnd* Pool,
 		 cSecond creationtime,
@@ -100,7 +101,7 @@ Reactor::Reactor(CLASSLogger* log,
 	DBGL
 	
 }
-
+//________________________________________________________________________
 Reactor::Reactor(CLASSLogger* log,
 		 FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
 		 cSecond creationtime, cSecond lifetime,
@@ -143,8 +144,7 @@ Reactor::Reactor(CLASSLogger* log,
 	DBGL
 	
 }
-
-
+//________________________________________________________________________
 Reactor::Reactor(CLASSLogger* log, PhysicsModels* fueltypeDB, FabricationPlant* fabricationplant, CLASSBackEnd* Pool,
 		 cSecond creationtime, cSecond lifetime,
 		 double Power, double HMMass, double BurnUp, double CapacityFactor):CLASSFacility(log, creationtime, lifetime, 4)
@@ -174,7 +174,7 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels* fueltypeDB, FabricationPlant* 
 	fFuelPlan = new CLASSFuelPlan(log);
 	fFuelPlan->AddFuel(creationtime, CLASSFuel(fueltypeDB), fBurnUp);
 	
-	
+	CheckListConsistency(fueltypeDB, fabricationplant);
 	
 	INFO << " A Reactor has been define :" << endl;
 	INFO << "\t Fuel Composition is not fixed ! " <<  endl;
@@ -218,8 +218,9 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels* 	fueltypeDB,
 	
 	fFuelPlan = new CLASSFuelPlan(log);
 	fFuelPlan->AddFuel(creationtime, CLASSFuel(fueltypeDB), fBurnUp);
-	
-	
+
+	CheckListConsistency(fueltypeDB, fabricationplant);
+
 	INFO << " A Reactor has been define :" << endl;
 	INFO << "\t Fuel Composition is not fixed ! " <<  endl;
 	INFO << "\t Creation time set at \t " << ((double)GetCreationTime())/((double)cYear) << " year" << endl;
@@ -460,7 +461,7 @@ void Reactor::Evolution(cSecond t)
 	cSecond EvolutionTime = t - fInternalTime; // Calculation of the evolution time (relativ)
 	
 	
-	if( EvolutionTime + fInCycleTime ==  fCycleTime )		//End of Cycle
+	if( EvolutionTime + fInCycleTime ==  fCycleTime )			//End of Cycle
 	{
 		fIsAtEndOfCycle = true;
 		fInternalTime += EvolutionTime; 				// Update Internal Time
@@ -638,3 +639,74 @@ cSecond Reactor::GetNextCycleTime(cSecond time)
 	return LastCycle;
 }
 
+void Reactor::CheckListConsistency(PhysicsModels* fueltypeDB, FabricationPlant* fabricationplant)
+{
+	//Get Lists containers defined in EqM and FP
+	map < string , IsotopicVector> StreamList 	= fueltypeDB->GetEquivalenceModel()->GetAllStreamList();
+	map < string , vector <Storage*> > Stocks 	= fabricationplant->GetAllStorage();
+
+	vector <string> StreamListEqM;	
+	vector <string> StreamListFP; 
+
+	vector <bool> CheckOnLists;	
+	bool AreListsConsistent  = true;
+
+	//Iterators
+	map < string , vector <Storage*> >::iterator it_s_vS;
+	map < string , IsotopicVector>::iterator it_s_IV;
+	
+	for( it_s_vS = Stocks.begin();  it_s_vS != Stocks.end(); it_s_vS++)
+		StreamListFP.push_back((*it_s_vS).first);
+
+	for( it_s_IV = StreamList.begin();  it_s_IV != StreamList.end(); it_s_IV++)
+		StreamListEqM.push_back((*it_s_IV).first);
+
+	if((int)StreamListEqM.size() != (int)StreamListFP.size())
+	{
+		WARNING <<" Not the same number of lists in FP and associated EqM"<< endl;
+		AreListsConsistent = false;
+	}
+
+	else
+	{	
+		for(int i=0; i <  (int)StreamListEqM.size(); i++)
+		{
+			CheckOnLists.push_back(false);
+		}
+		
+		for(int i=0; i <  (int)StreamListEqM.size(); i++)
+		{
+			for(int j=0; j < (int)StreamListFP.size(); j++)
+			{
+				if (StreamListEqM[i] == StreamListFP[j]) {CheckOnLists[i] = true;}
+			}
+		}
+
+		for(int i=0; i < (int)CheckOnLists.size(); i++)
+		{
+			if (!CheckOnLists[i]) {AreListsConsistent = false;}
+		}
+	}
+	
+	if (!AreListsConsistent)
+	{
+		ERROR <<"Lists defined in Fabrication plant and in EqM are not the same."<< endl;
+		ERROR <<"Lists defined in Fabrication plant :"<< endl;
+		for(int j=0; j < (int)StreamListFP.size(); j++)
+		{
+			ERROR <<"-> "<<StreamListFP[j]<<"  "<< endl;
+		}
+		ERROR <<"Lists defined in EqM :"<< endl;
+		
+		for(int i=0; i <  (int)StreamListEqM.size(); i++)
+		{
+			ERROR <<"-> "<<StreamListEqM[i]<<"  "<< endl;
+		}
+		ERROR <<"Check in your scenario."<< endl;
+
+		exit(1);
+
+	}	
+
+
+}
