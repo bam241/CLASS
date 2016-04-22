@@ -359,7 +359,6 @@ void FabricationPlant::BuildArray(int ReactorId)
     vector < pair<int,int> >  StreamArrayAdress;
     
     map < string , IsotopicVector>::iterator it;
-    
     for( it = fStreamList.begin();  it != fStreamList.end(); it++)
     {
         if(fInfiniteMaterialFromList[(*it).first])
@@ -370,7 +369,7 @@ void FabricationPlant::BuildArray(int ReactorId)
             StreamArrayTime.push_back(0);
         }
         else
-        {
+        {   
             for(int j = 0; j < (int)fStorage[(*it).first].size(); j++)
             {
                 vector<IsotopicVector> IVArray = fStorage[(*it).first][j]->GetIVArray();
@@ -387,7 +386,7 @@ void FabricationPlant::BuildArray(int ReactorId)
                 }
             }
         }
-        
+
         fStreamArray[(*it).first] 	= StreamArray;			StreamArray.clear();
         fStreamArrayAdress[(*it).first]	= StreamArrayAdress;		StreamArrayAdress.clear();
         fStreamArrayTime[(*it).first]	= StreamArrayTime; 		StreamArrayTime.clear();

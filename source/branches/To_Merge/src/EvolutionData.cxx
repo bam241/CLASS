@@ -661,7 +661,6 @@ void EvolutionData::ReadDB(string DBfile, bool oldread)
 	{
 		ERROR << " Bad Database file : " <<  DBfile << endl;
 		ERROR << " The first Line MUST be the time line !!!" << endl;
-		ERROR << " last line red : \n" <<line<< endl;
 		exit (1);
 	}
 	
