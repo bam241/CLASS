@@ -6,7 +6,6 @@
 #include "Storage.hxx"
 #include "Scenario.hxx"
 #include "CLASSConstante.hxx"
-#include "../../config/config.hxx"
 
 #include <iostream>
 #include <cmath>
