@@ -9,7 +9,6 @@
 
 #include <iostream>
 #include <cmath>
-#include "../../config/config.hxx"
 #include <typeinfo>
 
 //________________________________________________________________________

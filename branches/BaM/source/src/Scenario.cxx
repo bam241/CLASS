@@ -8,7 +8,6 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-#include "../../config/config.hxx"
 #include "stdlib.h"
 
 #include "Storage.hxx"
