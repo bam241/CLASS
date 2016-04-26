@@ -7,12 +7,43 @@ template <typename T>
 Graph<T>::Graph () :
 	Array<T>() , ftime()
 { ; }
-
+//____________________________________________________________________________
 template <typename T>
 Graph<T>::Graph ( const Graph<T> & a ) :
 	Array<T>(a) , ftime(a.ftime)
 { ; }
 
+//____________________________________________________________________________
+template <typename T>
+Graph<T>::Graph ( std::size_t size ) :
+	Array<T>(size) , ftime(size)
+{ ; }
+//____________________________________________________________________________
+template <typename T>
+Graph<T>::Graph ( std::size_t size , const T * time ) :
+	Array<T>(size) , ftime(time,size)
+{ ; }
+//____________________________________________________________________________
+template <typename T>
+Graph<T>::Graph ( const T * a , std::size_t size , const T * time ) :
+	Array<T>(a,size) , ftime(time,size)
+{ ; }
+//____________________________________________________________________________
+template <typename T>
+Graph<T>::Graph ( const std::valarray<T> & a , const T * time ) :
+	Array<T>(a) , ftime(time,a.size())
+{ ; }
+//____________________________________________________________________________
+template <typename T>
+Graph<T>::Graph ( const std::vector<T> & a , const T * time ) :
+	Array<T>(a) , ftime(time,a.size())
+{ ; }
+
+//____________________________________________________________________________
+template <typename T> template <typename F>
+Graph<T>::Graph ( std::size_t size , F f , const T * time ) :
+	Array<T>(size,f) , ftime(time,size)
+{ ; }
 
 ///// DESTRUCTOR /////////////////////////////////////////////////////////////
 template <typename T>

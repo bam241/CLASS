@@ -5,7 +5,7 @@
 ///// CONSTRUCTOR ////////////////////////////////////////////////////////////
 template <typename T>
 Array<T>::Array () :
-	fdata() , fxInit(0) , fxStep(0)
+	fdata(0) , fxInit(0) , fxStep(0)
 { ; }
 
 //____________________________________________________________________________
@@ -54,7 +54,7 @@ Array<T>::~Array ()
 
 ///// OPERATOR ///////////////////////////////////////////////////////////////
 template <typename T>
-Array & Array<T>::operator = ( const Array<T> & a )
+Array<T> & Array<T>::operator = ( const Array<T> & a )
 {
 	set( a );
 	return *this;
@@ -62,71 +62,86 @@ Array & Array<T>::operator = ( const Array<T> & a )
 
 //____________________________________________________________________________
 template <typename T>
-Array & Array<T>::operator += ( const Array<T> & a )
+Array<T> & Array<T>::operator += ( const Array<T> & a )
 {
+	//if ( fdata.size() != a.fdata.size() )
+	//	{ throw std::length_error(__PRETTY_FUNCTION__ + ": two arrays have not the same size"); }
+
 	fdata += a.fdata;
 	return *this;
 }
 //____________________________________________________________________________
 template <typename T>
-Array & Array<T>::operator -= ( const Array<T> & a )
+Array<T> & Array<T>::operator -= ( const Array<T> & a )
 {
+	//if ( fdata.size() != a.fdata.size() )
+	//	{ throw std::length_error(__PRETTY_FUNCTION__ + ": two arrays have not the same size"); }
+	
 	fdata -= a.fdata;
 	return *this;
 }
 //____________________________________________________________________________
 template <typename T>
-Array & Array<T>::operator *= ( const Array<T> & a )
+Array<T> & Array<T>::operator *= ( const Array<T> & a )
 {
+	//if ( fdata.size() != a.fdata.size() )
+	//	{ throw std::length_error(__PRETTY_FUNCTION__ + ": two arrays have not the same size"); }
+	
 	fdata *= a.fdata;
 	return *this;
 }
 //____________________________________________________________________________
 template <typename T>
-Array & Array<T>::operator /= ( const Array<T> & a )
+Array<T> & Array<T>::operator /= ( const Array<T> & a )
 {
+	//if ( fdata.size() != a.fdata.size() )
+	//	{ throw std::length_error(__PRETTY_FUNCTION__ + ": two arrays have not the same size"); }
+	
 	fdata /= a.fdata;
 	return *this;
 }
 
 //____________________________________________________________________________
 template <typename T>
-Array & Array<T>::operator += ( const T & v )
+Array<T> & Array<T>::operator += ( const T & v )
 {
 	fdata += v;
 	return *this;
 }
 //____________________________________________________________________________
 template <typename T>
-Array & Array<T>::operator -= ( const T & v )
+Array<T> & Array<T>::operator -= ( const T & v )
 {
 	fdata -= v;
 	return *this;
 }
 //____________________________________________________________________________
 template <typename T>
-Array & Array<T>::operator *= ( const T & v )
+Array<T> & Array<T>::operator *= ( const T & v )
 {
 	fdata *= v;
 	return *this;
 }
 //____________________________________________________________________________
 template <typename T>
-Array & Array<T>::operator /= ( const T & v )
+Array<T> & Array<T>::operator /= ( const T & v )
 {
+	//if ( v == 0 )
+	//	{ throw std::invalid_argument(__PRETTY_FUNCTION__ + ": you try something wrong (you can't divide by zero !!!)"); }
+
 	fdata /= v;
 	return *this;
 }
 
 //____________________________________________________________________________
 template <typename T>
-Array Array<T>::operator + () const
+Array<T> Array<T>::operator + () const
 {
 	return Array<T>( +fdata , fxInit , fxStep );
 }
 //____________________________________________________________________________
 template <typename T>
-Array Array<T>::operator - () const
+Array<T> Array<T>::operator - () const
 {
 	return Array<T>( -fdata , fxInit , fxStep );
 }
@@ -135,12 +150,18 @@ Array Array<T>::operator - () const
 template <typename T>
 T & Array<T>::operator [] ( std::size_t i )
 {
+	//if ( i < 0 || i > fdata.size() )
+	//	{ throw std::domain_error(__PRETTY_FUNCTION__ + ": out of bounds"); }
+
 	return fdata[i];
 }
 //____________________________________________________________________________
 template <typename T>
 T Array<T>::operator [] ( std::size_t i ) const
 {
+	//if ( i < 0 || i > fdata.size() )
+	//	{ throw std::domain_error(__PRETTY_FUNCTION__ + ": out of bounds"); }
+
 	return fdata[i];
 }
 
@@ -153,7 +174,12 @@ std::size_t Array<T>::size () const
 //____________________________________________________________________________
 template <typename T>
 T Array<T>::at ( std::size_t i ) const
-{ return fdata[i]; }
+{
+	//if ( i < 0 || i > fdata.size() )
+	//	{ throw std::domain_error(__PRETTY_FUNCTION__ + ": out of bounds"); }
+	
+	return fdata[i];
+}
 
 //____________________________________________________________________________
 template <typename T>
@@ -163,10 +189,36 @@ std::size_t Array<T>::getBin ( T x ) const
 }
 //____________________________________________________________________________
 template <typename T>
-std::size_t Array<T>::getX ( std::size_t i ) const
+T Array<T>::getX ( std::size_t i ) const
 {
 	return fxInit + (i+0.0)*fxStep;
 }
+
+//____________________________________________________________________________
+template <typename T>
+T Array<T>::xBegin () const
+{
+	return fxInit;
+}
+//____________________________________________________________________________
+template <typename T>
+T Array<T>::xEnd () const
+{
+	return fxInit + fxStep*fdata.size();
+}
+//____________________________________________________________________________
+template <typename T>
+T Array<T>::xStep () const
+{
+	return fxStep;
+}
+
+//____________________________________________________________________________
+template <typename T>
+T * Array<T>::begin () { return &fdata[0]; }
+//____________________________________________________________________________
+template <typename T>
+T * Array<T>::end   () { return &fdata[ fdata.size() ]; }
 
 ///// METHOD /////////////////////////////////////////////////////////////////
 template <typename T>
@@ -219,4 +271,112 @@ void Array<T>::set ( const Array<T> & a )
 		fxInit = a.fxInit;
 		fxStep = a.fxStep;
 	}
+}
+
+
+///// OPERATOR ///////////////////////////////////////////////////////////////
+template <typename T>
+Array<bool> operator < ( const Array<T> & a , const Array<T> & b )
+{
+	return Array<bool> ( a.data() < b.data() , a.xBegin() < b.xBegin() , a.xStep() < b.xStep() );
+}
+//____________________________________________________________________________
+template <typename T>
+Array<bool> operator >  ( const Array<T> & a , const Array<T> & b )
+{
+	return Array<bool> ( a.data() > b.data() , a.xBegin() > b.xBegin() , a.xStep() > b.xStep() );
+}
+//____________________________________________________________________________
+template <typename T>
+Array<bool> operator == ( const Array<T> & a , const Array<T> & b )
+{
+	return Array<bool> ( a.data() == b.data() , a.xBegin() == b.xBegin() , a.xStep() == b.xStep() );
+}
+//____________________________________________________________________________
+template <typename T>
+Array<bool> operator <=  ( const Array<T> & a , const Array<T> & b )
+{
+	return Array<bool> ( a.data() <= b.data() , a.xBegin() <= b.xBegin() , a.xStep() <= b.xStep() );
+}
+//____________________________________________________________________________
+template <typename T>
+Array<bool> operator >=  ( const Array<T> & a , const Array<T> & b )
+{
+	return Array<bool> ( a.data() >= b.data() , a.xBegin() >= b.xBegin() , a.xStep() >= b.xStep() );
+}
+
+
+//____________________________________________________________________________
+template <typename T>
+Array<T> operator + ( const Array<T> & a , const Array<T> & b )
+{
+	return Array<T>( a.data()+b.data() , a.xBegin() , a.xStep() );
+}
+//____________________________________________________________________________
+template <typename T>
+Array<T> operator - ( const Array<T> & a , const Array<T> & b )
+{
+	return Array<T>( a.data()-b.data() , a.xBegin() , a.xStep() );
+}
+//____________________________________________________________________________
+template <typename T>
+Array<T> operator * ( const Array<T> & a , const Array<T> & b )
+{
+	return Array<T>( a.data()*b.data() , a.xBegin() , a.xStep() );
+}
+//____________________________________________________________________________
+template <typename T>
+Array<T> operator / ( const Array<T> & a , const Array<T> & b )
+{
+	return Array<T>( a.data()/b.data() , a.xBegin() , a.xStep() );
+}
+
+//____________________________________________________________________________
+template <typename T>
+Array<T> operator + ( const T & v , const Array<T> & a )
+{
+	return Array<T>( v+a.data() , a.xBegin() , a.xStep() );
+}
+//____________________________________________________________________________
+template <typename T>
+Array<T> operator - ( const T & v , const Array<T> & a )
+{
+	return Array<T>( v-a.data() , a.xBegin() , a.xStep() );
+}
+//____________________________________________________________________________
+template <typename T>
+Array<T> operator * ( const T & v , const Array<T> & a )
+{
+	return Array<T>( v*a.data() , a.xBegin() , a.xStep() );
+}
+//____________________________________________________________________________
+template <typename T>
+Array<T> operator / ( const T & v , const Array<T> & a )
+{
+	return Array<T>( v/a.data() , a.xBegin() , a.xStep() );
+}
+
+//____________________________________________________________________________
+template <typename T>
+Array<T> operator + ( const Array<T> & a , const T & v )
+{
+	return Array<T>( a.data()+v , a.xBegin() , a.xStep() );
+}
+//____________________________________________________________________________
+template <typename T>
+Array<T> operator - ( const Array<T> & a , const T & v )
+{
+	return Array<T>( a.data()-v , a.xBegin() , a.xStep() );
+}
+//____________________________________________________________________________
+template <typename T>
+Array<T> operator * ( const Array<T> & a , const T & v )
+{
+	return Array<T>( a.data()*v , a.xBegin() , a.xStep() );
+}
+//____________________________________________________________________________
+template <typename T>
+Array<T> operator / ( const Array<T> & a , const T & v )
+{
+	return Array<T>( a.data()/v , a.xBegin() , a.xStep() );
 }
