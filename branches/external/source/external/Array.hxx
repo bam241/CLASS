@@ -2,8 +2,10 @@
 #define _ARRAY_H
 
 #include <iostream>
+#include <vector>
 #include <valarray>
 #include <algorithm>
+#include <stdexcept>
 
 template<typename T>
 class Array
@@ -12,6 +14,7 @@ class Array
 		// CONSTRUCTOR
 		Array ();
 		Array ( const Array<T> & );
+		
 		Array ( std::size_t , T xInit=0 , T xStep=1 );
 		Array ( const T * , std::size_t  , T xInit=0 , T xStep=1 );
 		Array ( const std::valarray<T> & , T xInit=0 , T xStep=1 );
@@ -43,11 +46,19 @@ class Array
 		//  TODO rajouter les autres opérateur [] de la classe valarray
 
 		// GETTER
-		std::size_t size () const;
+		std::size_t size  () const;
 		T at ( std::size_t ) const;
 
 		virtual std::size_t getBin ( T )           const;
 		virtual T           getX   ( std::size_t ) const;
+
+		virtual T xBegin () const;
+		virtual T xEnd   () const;
+
+		virtual T xStep  () const;
+
+		virtual T * begin ();
+		virtual T * end   ();
 
 		// SETTER
 
@@ -68,7 +79,7 @@ class Array
 		std::valarray<T>   data () const;
 
 		template <typename F>
-		Array<T> apply ( F ) const;
+		virtual Array<T> apply ( F ) const;
 
 		virtual T eval ( T ) const;
 
@@ -80,6 +91,46 @@ class Array
 		T fxInit;
 		T fxStep;
 };
+
+template <typename T>
+Array<bool> operator <  ( const Array<T> & , const Array<T> & );
+template <typename T>
+Array<bool> operator >  ( const Array<T> & , const Array<T> & );
+template <typename T>
+Array<bool> operator == ( const Array<T> & , const Array<T> & );
+template <typename T>
+Array<bool> operator <= ( const Array<T> & , const Array<T> & );
+template <typename T>
+Array<bool> operator >= ( const Array<T> & , const Array<T> & );
+
+template <typename T>
+Array<T> operator + ( const Array<T> & , const Array<T> & );
+template <typename T>
+Array<T> operator - ( const Array<T> & , const Array<T> & );
+template <typename T>
+Array<T> operator * ( const Array<T> & , const Array<T> & );
+template <typename T>
+Array<T> operator / ( const Array<T> & , const Array<T> & );
+
+template <typename T>
+Array<T> operator + ( const T & , const Array<T> & );
+template <typename T>
+Array<T> operator - ( const T & , const Array<T> & );
+template <typename T>
+Array<T> operator * ( const T & , const Array<T> & );
+template <typename T>
+Array<T> operator / ( const T & , const Array<T> & );
+
+template <typename T>
+Array<T> operator + ( const Array<T> & , const T & );
+template <typename T>
+Array<T> operator - ( const Array<T> & , const T & );
+template <typename T>
+Array<T> operator * ( const Array<T> & , const T & );
+template <typename T>
+Array<T> operator / ( const Array<T> & , const T & );
+
+
 
 #include "Array.cpp"
 

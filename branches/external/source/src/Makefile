@@ -9,6 +9,7 @@ EQMINC	 = ../Model/Equivalence
 IMINC	 = ../Model/Irradiation
 XSMINC	 = ../Model/XS
 
+EXTERNINC = ../external
 
 ######### nothing to change from here #########
 INCLUDES = $(LOCALINC)/*.hxx 
@@ -44,6 +45,10 @@ OBJMODEL = 	$(EQMINC)/EQM_PWR_MLP_MOX.o $(EQMINC)/EQM_PWR_MLP_MOX_Am.o \
 			$(XSMINC)/XSM_MLP.o $(XSMINC)/XSM_CLOSEST.o \
 			$(IMINC)/IM_RK4.o $(IMINC)/IM_Matrix.o
 
+# flemme d'écrire la liste des fichiers...
+# .cpp -> template donc ne pas compiler, .cxx -> source donc compiler
+SRCEXTERN = $(wildcard $(EXTERNINC)/*.cxx)
+OBJEXTERN = $(SRCEXTERN:$(EXTERNINC)/%.cxx=$(EXTERNINC)/%.o)
 
 ROOTOBJS = 	CLASSLogger.o \
 			ZAI.o ZAIDict.o \
@@ -66,13 +71,13 @@ ROOTOBJS = 	CLASSLogger.o \
 			PhysicsModels.o
 
 
-CXXFLAGS      += -I$(LOCALINC) $(ROOTCFLAGS)
+CXXFLAGS      += -I$(LOCALINC) $(ROOTCFLAGS) 
 LD             = $(CXX)
 LIBS           = -L$(LIBDIR) $(ROOTLIBS) -lTMVA $(OMPLIB)
 LDFLAGS       += -shared 
 
-all:		$(OBJS) $(OBJMODEL)
-		$(LD) $(LDFLAGS) $(OBJS) $(OBJMODEL) $(LIBS) -o $(LIBDIR)/lib$(LIBNAME).so
+all:		$(OBJS) $(OBJMODEL) $(OBJEXTERN)
+		$(LD) $(LDFLAGS) $(OBJS) $(OBJMODEL) $(OBJEXTERN) $(LIBS) -o $(LIBDIR)/lib$(LIBNAME).so
 		@echo "lib$(LIBNAME).so done"
 		$(LD) $(LDFLAGS) $(ROOTOBJS) $(LIBS) -o $(LIBDIR)/lib$(LIBNAME)_root.so
 		@echo "lib$(LIBNAME)_root.so done"
