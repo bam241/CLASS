@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <cmath>
+#include <string>
 
 
 #include <TApplication.h>
@@ -1072,16 +1073,14 @@ void MainWin::FillReactorTab()
 	
 	for (int p = 0;p<fNumberOfParc;p++)
 	{
-		string TabName[NTab[p]];
 		
 		for(int l = 0; l<NTab[p] ; l++)
 		{
 			stringstream tmp;
 			tmp << "Reactor " << l;
-			TabName[l] = tmp.str();
 			//cout << l << " " << TabName[l] << endl;
 			
-			fTabFoilReactor[p][l] = fItemTab[p][1]->AddTab(TabName[l].c_str());
+			fTabFoilReactor[p][l] = fItemTab[p][1]->AddTab(tmp.str().c_str());
 			fTabFoilReactor[p][l]->SetLayoutManager(new TGMatrixLayout(fTabFoilReactor[p][l], Nline, 0, 5));
 		}
 		
@@ -1135,14 +1134,12 @@ void MainWin::FillStockTab()
 	
 	for (int p = 0;p<fNumberOfParc;p++)
 	{
-		string TabName[NTab[p]];
 		for(int l = 0; l<NTab[p] ; l++)
 		{
 			stringstream tmp;
 			tmp.str("");
 			tmp << "Stock " << l;
-			TabName[l] = tmp.str();
-			fTabFoilStock[p][l] = fItemTab[p][2]->AddTab(TabName[l].c_str());
+			fTabFoilStock[p][l] = fItemTab[p][2]->AddTab(tmp.str().c_str());
 			fTabFoilStock[p][l]->SetLayoutManager(new TGMatrixLayout(fTabFoilStock[p][l], Nline, 0, 5));
 		}
 		
@@ -1197,14 +1194,12 @@ void MainWin::FillPoolTab()
 	for (int p = 0;p<fNumberOfParc;p++)
 	{
 		
-		string TabName[NTab[p]];
 		for(int l = 0; l<NTab[p] ; l++)
 		{
 			stringstream tmp;
 			tmp.str("");
 			tmp << "Pool " << l;
-			TabName[l] = tmp.str();
-			fTabFoilPool[p][l] = fItemTab[p][3]->AddTab(TabName[l].c_str());
+			fTabFoilPool[p][l] = fItemTab[p][3]->AddTab(tmp.str().c_str());
 			fTabFoilPool[p][l]->SetLayoutManager(new TGMatrixLayout(fTabFoilPool[p][l], Nline, 0, 5));
 		}
 		
@@ -1259,14 +1254,12 @@ void MainWin::FillFabricationTab()
 	for (int p = 0;p<fNumberOfParc;p++)
 	{
 		
-		string TabName[NTab[p]];
 		for(int l = 0; l<NTab[p] ; l++)
 		{
 			stringstream tmp;
 			tmp.str("");
 			tmp << "Fab " << l;
-			TabName[l] = tmp.str();
-			fTabFoilFab[p][l] = fItemTab[p][4]->AddTab(TabName[l].c_str());
+			fTabFoilFab[p][l] = fItemTab[p][4]->AddTab(tmp.str().c_str());
 			fTabFoilFab[p][l]->SetLayoutManager(new TGMatrixLayout(fTabFoilFab[p][l], Nline, 0, 5));
 		}
 		

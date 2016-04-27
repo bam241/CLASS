@@ -262,7 +262,7 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	
 	fHeavyMetalMass = HMMass;
 	
-	double M0 = cZAIMass.GetMass( evolutivedb->GetIsotopicVectorAt(0.).GetActinidesComposition() );
+	double M0 = cZAIMass.GetMass( evolutivedb->GetIsotopicVectorAt(0.) );
 	
 	fEvolutionDB = (*evolutivedb) * (fHeavyMetalMass/M0);
 	
@@ -314,7 +314,7 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	
 	fHeavyMetalMass = HMMass;
 	
-	double M0 = cZAIMass.GetMass( evolutivedb->GetIsotopicVectorAt(0.).GetActinidesComposition() );
+	double M0 = cZAIMass.GetMass( evolutivedb->GetIsotopicVectorAt(0.) );
 	
 	fEvolutionDB = (*evolutivedb) * (fHeavyMetalMass/M0);
 	
@@ -400,7 +400,7 @@ void Reactor::SetEvolutionDB(EvolutionData evolutionDB)
 	
 	//fEvolutionDB.DeleteEvolutionDataCopy();
 	
-	double M0 = cZAIMass.GetMass( evolutionDB.GetIsotopicVectorAt(0.).GetActinidesComposition() );
+	double M0 = cZAIMass.GetMass( evolutionDB.GetIsotopicVectorAt(0.) );
 	fEvolutionDB = evolutionDB * (fHeavyMetalMass/M0);
 	
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
