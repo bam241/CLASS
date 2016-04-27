@@ -68,7 +68,7 @@ ROOTOBJS = 	CLASSLogger.o \
 
 CXXFLAGS      += -I$(LOCALINC) $(ROOTCFLAGS)
 LD             = $(CXX)
-LIBS           = -L$(LIBDIR) $(ROOTLIBS) -lTMVA $(OMPLIB)
+LIBS           = -L$(LIBDIR) $(ROOTLIBS) -lTMVA
 LDFLAGS       += -shared 
 
 all:		$(OBJS) $(OBJMODEL)
