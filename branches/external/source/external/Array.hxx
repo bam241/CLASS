@@ -14,7 +14,7 @@ class Array
 		// CONSTRUCTOR
 		Array ();
 		Array ( const Array<T> & );
-		
+
 		Array ( std::size_t , T xInit=0 , T xStep=1 );
 		Array ( const T * , std::size_t  , T xInit=0 , T xStep=1 );
 		Array ( const std::valarray<T> & , T xInit=0 , T xStep=1 );
@@ -31,12 +31,12 @@ class Array
 		Array & operator += ( const Array<T> & );
 		Array & operator -= ( const Array<T> & );
 		Array & operator *= ( const Array<T> & );
-		Array & operator /= ( const Array<T> & );
+		Array & operator /= ( const Array<T> & ); // TODO: throw exception si une composante est nulle
 
 		Array & operator += ( const T & );
 		Array & operator -= ( const T & );
 		Array & operator *= ( const T & );
-		Array & operator /= ( const T & );
+		Array & operator /= ( const T & ); // TODO: throw exception si la valeur est nulle
 
 		Array   operator + () const;
 		Array   operator - () const;
@@ -79,7 +79,7 @@ class Array
 		std::valarray<T>   data () const;
 
 		template <typename F>
-		virtual Array<T> apply ( F ) const;
+		Array<T> apply ( F ) const;
 
 		virtual T eval ( T ) const;
 

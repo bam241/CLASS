@@ -43,7 +43,7 @@ template <typename T> template <typename F>
 Array<T>::Array ( std::size_t size , F f , T xInit , T xStep ) :
 	fdata(size) , fxInit(xInit) , fxStep(xStep)
 {
-	std::generate( &fdata[0] , &fdata[size] , f );
+	std::generate( begin() , end() , f );
 }
 
 
@@ -185,13 +185,13 @@ T Array<T>::at ( std::size_t i ) const
 template <typename T>
 std::size_t Array<T>::getBin ( T x ) const
 {
-	return (std::size_t)(x - fxInit)/fxStep;
+	return (std::size_t)( (x - fxInit)/fxStep );
 }
 //____________________________________________________________________________
 template <typename T>
 T Array<T>::getX ( std::size_t i ) const
 {
-	return fxInit + (i+0.0)*fxStep;
+	return fxInit + fxStep*(T)i;
 }
 
 //____________________________________________________________________________
@@ -218,7 +218,7 @@ template <typename T>
 T * Array<T>::begin () { return &fdata[0]; }
 //____________________________________________________________________________
 template <typename T>
-T * Array<T>::end   () { return &fdata[ fdata.size() ]; }
+T * Array<T>::end   () { return &fdata[ fdata.size()-1 ]+1; }
 
 ///// METHOD /////////////////////////////////////////////////////////////////
 template <typename T>
