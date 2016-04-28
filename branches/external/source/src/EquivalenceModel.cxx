@@ -1,5 +1,5 @@
 #include "EquivalenceModel.hxx"
-#include "StringLine.hxx"
+#include "external/StringLine.hxx"
 #include "CLASSMethod.hxx"
 
 //________________________________________________________________________

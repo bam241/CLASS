@@ -3,7 +3,7 @@
 #include "XSM_MLP.hxx"
 #include "CLASSLogger.hxx"
 #include "CLASSMethod.hxx"
-#include "StringLine.hxx"
+#include "external/StringLine.hxx"
 
 #include "TMVA/Reader.h"
 #include "TMVA/Tools.h"

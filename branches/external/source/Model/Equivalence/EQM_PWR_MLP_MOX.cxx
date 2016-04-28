@@ -1,7 +1,7 @@
 #include "EquivalenceModel.hxx"
 #include "EQM_PWR_MLP_MOX.hxx"
 #include "CLASSLogger.hxx"
-#include "StringLine.hxx"
+#include "external/StringLine.hxx"
 
 #include <string>
 #include <iostream>
