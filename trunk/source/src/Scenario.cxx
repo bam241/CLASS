@@ -765,7 +765,7 @@ void Scenario::PrintCLASSPresentation()
 	cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │"<<endl;
 	cout<<"│                                  Version dev  │"<<endl;
 	cout<<"├───────────────────────────────────────────────┤"<<endl;
-	cout<<"│ Core Lybrary for Advance Scenario Simulation  │"<<endl;
+	cout<<"│ Core Lybrary for Advanced Scenario Simulation  │"<<endl;
 	cout<<"│                                               │"<<endl;
 	cout<<"│ A dynamical nuclear fuel cycle code developed │"<<endl; 
 	cout<<"│           by the CNRS/IN2P3 & IRSN            │"<<endl;
@@ -794,7 +794,7 @@ void Scenario::PrintClover(int i)
 		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │     @@@@@@       @    "<<endl;
 		cout<<"│                                  Version dev  │       @@@@     @@@@   "<<endl;
 		cout<<"├───────────────────────────────────────────────┤         @@   @@@@@@   "<<endl;
-		cout<<"│ Core Lybrary for Advance Scenario Simulation  │           @ @@@@@@@   "<<endl;
+		cout<<"│ Core Lybrary for Advanced Scenario Simulation  │           @ @@@@@@@   "<<endl;
 		cout<<"│                                               │          @@ @@@@@@@   "<<endl;
 		cout<<"│ A dynamical nuclear fuel cycle code developed │         @    @@@@@@   "<<endl;
 		cout<<"│           by the CNRS/IN2P3 & IRSN            │       @@@@    @@@@@   "<<endl;
@@ -816,7 +816,7 @@ void Scenario::PrintClover(int i)
 		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │         @@@@         "<<endl;
 		cout<<"│                                  Version dev  │          @@          "<<endl;
 		cout<<"├───────────────────────────────────────────────┤          @           "<<endl;
-		cout<<"│ Core Lybrary for Advance Scenario Simulation  │           @          "<<endl;
+		cout<<"│ Core Lybrary for Advanced Scenario Simulation  │           @          "<<endl;
 		cout<<"│                                               │  @@@@@@@ @@ @@@@@@@  "<<endl;
 		cout<<"│ A dynamical nuclear fuel cycle code developed │  @@@@@@@@  @@@@@@@@  "<<endl;
 		cout<<"│           by the CNRS/IN2P3 & IRSN            │  @@@@@@@@   @@@@@@@  "<<endl;
@@ -839,7 +839,7 @@ void Scenario::PrintClover(int i)
 		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │   @@      @@@@@@     "<<endl;
 		cout<<"│                                  Version dev  │   @@@     @@@@       "<<endl;
 		cout<<"├───────────────────────────────────────────────┤  @@@@@@    @@        "<<endl;
-		cout<<"│ Core Lybrary for Advance Scenario Simulation  │  @@@@@@@@ @          "<<endl;
+		cout<<"│ Core Lybrary for Advanced Scenario Simulation  │  @@@@@@@@ @          "<<endl;
 		cout<<"│                                               │  @@@@@@@ @@          "<<endl;
 		cout<<"│ A dynamical nuclear fuel cycle code developed │  @@@@@@    @         "<<endl;
 		cout<<"│           by the CNRS/IN2P3 & IRSN            │  @@@@@    @@@@       "<<endl;
@@ -863,7 +863,7 @@ void Scenario::PrintClover(int i)
 		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │   @@@@@@    @@@@@@   "<<endl; 
 		cout<<"│                                  Version dev  │   @@@@@@    @@@@@@@  "<<endl;
 		cout<<"├───────────────────────────────────────────────┤  @@@@@@@@  @@@@@@@@  "<<endl; 
-		cout<<"│ Core Lybrary for Advance Scenario Simulation  │  @@@@@@@@ @ @@@@@@@  "<<endl; 
+		cout<<"│ Core Lybrary for Advanced Scenario Simulation  │  @@@@@@@@ @ @@@@@@@  "<<endl;
 		cout<<"│                                               │          @@          "<<endl; 
 		cout<<"│ A dynamical nuclear fuel cycle code developed │          @@          "<<endl; 
 		cout<<"│           by the CNRS/IN2P3 & IRSN            │         @@@@         "<<endl; 
