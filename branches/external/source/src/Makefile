@@ -77,9 +77,10 @@ LIBS           = -L$(LIBDIR) $(ROOTLIBS) -lTMVA $(OMPLIB)
 LDFLAGS       += -shared 
 
 all:		$(OBJS) $(OBJMODEL) $(OBJEXTERN)
-		$(LD) $(LDFLAGS) $(OBJS) $(OBJMODEL) $(OBJEXTERN) $(LIBS) -o $(LIBDIR)/lib$(LIBNAME).so
+		@echo "\033[32m lib$(LIBNAME).so \033[0m"
+		@$(LD) $(LDFLAGS) $(OBJS) $(OBJMODEL) $(OBJEXTERN) $(LIBS) -o $(LIBDIR)/lib$(LIBNAME).so
 		@echo "lib$(LIBNAME).so done"
-		$(LD) $(LDFLAGS) $(ROOTOBJS) $(LIBS) -o $(LIBDIR)/lib$(LIBNAME)_root.so
+		@$(LD) $(LDFLAGS) $(ROOTOBJS) $(LIBS) -o $(LIBDIR)/lib$(LIBNAME)_root.so
 		@echo "lib$(LIBNAME)_root.so done"
 
 clean:
@@ -92,40 +93,52 @@ install:
 
 
 CLASSObjectDict.cxx:		$(LOCALINC)/CLASSObject.hxx
-				rootcint -f $@ -c $^
+				@echo "\033[33m $@ \033[0m"
+				@rootcint -f $@ -c $^
 
 CLASSFacilityDict.cxx:		$(LOCALINC)/CLASSFacility.hxx
-				rootcint -f $@ -c $^
+				@echo "\033[33m $@ \033[0m"
+				@rootcint -f $@ -c $^
 
 CLASSBackEndDict.cxx:		$(LOCALINC)/CLASSBackEnd.hxx
-				rootcint -f $@ -c $^
+				@echo "\033[33m $@ \033[0m"
+				@rootcint -f $@ -c $^
 
 StorageDict.cxx:		$(LOCALINC)/Storage.hxx
-				rootcint -f $@ -c $^
+				@echo "\033[33m $@ \033[0m"
+				@rootcint -f $@ -c $^
 
 ReactorDict.cxx:		$(LOCALINC)/Reactor.hxx
-				rootcint -f $@ -c $^
+				@echo "\033[33m $@ \033[0m"
+				@rootcint -f $@ -c $^
 				
 FabricationPlantDict.cxx:	$(LOCALINC)/FabricationPlant.hxx
-				rootcint -f $@ -c $^
+				@echo "\033[33m $@ \033[0m"
+				@rootcint -f $@ -c $^
 
 PoolDict.cxx:			$(LOCALINC)/Pool.hxx
-				rootcint -f $@ -c $^
+				@echo "\033[33m $@ \033[0m"
+				@rootcint -f $@ -c $^
 
 SeparationPlantDict.cxx:	$(LOCALINC)/SeparationPlant.hxx
-				rootcint -f $@ -c $^
+				@echo "\033[33m $@ \033[0m"
+				@rootcint -f $@ -c $^
 
 IsotopicVectorDict.cxx:		$(LOCALINC)/IsotopicVector.hxx
-				rootcint -f $@ -c $^
+				@echo "\033[33m $@ \033[0m"
+				@rootcint -f $@ -c $^
 
 ZAIDict.cxx:			$(LOCALINC)/ZAI.hxx
-				rootcint -f $@ -c $^
+				@echo "\033[33m $@ \033[0m"
+				@rootcint -f $@ -c $^
 
 EvolutionDataDict.cxx:		$(LOCALINC)/EvolutionData.hxx
-				rootcint -f $@ -c $^
+				@echo "\033[33m $@ \033[0m"
+				@rootcint -f $@ -c $^
 
 
 .SUFFIXES: .cxx
 
 %.o: %.cxx $(INCLUDES)
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $*.cxx -o $*.o
+	@echo "\033[34m $@ \033[0m"
+	@$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $*.cxx -o $*.o

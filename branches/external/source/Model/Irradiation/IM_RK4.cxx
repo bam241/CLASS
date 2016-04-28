@@ -12,7 +12,7 @@
 #include "CLASSConstante.hxx"
 #include "CLASSLogger.hxx"
 
-#include "StringLine.hxx"
+#include "external/StringLine.hxx"
 
 #include <TGraph.h>
 #include <TString.h>
