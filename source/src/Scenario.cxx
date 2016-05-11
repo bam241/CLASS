@@ -763,7 +763,7 @@ void Scenario::PrintCLASSPresentation()
 	cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │"<<endl;
 	cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │"<<endl;
 	cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │"<<endl;
-	cout<<"│                                  Version dev  │"<<endl;
+	cout<<"│                                  Version 4.2  │"<<endl;
 	cout<<"├───────────────────────────────────────────────┤"<<endl;
 	cout<<"│ Core Lybrary for Advanced Scenario Simulation  │"<<endl;
 	cout<<"│                                               │"<<endl;
@@ -792,7 +792,7 @@ void Scenario::PrintClover(int i)
 		cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │    @@@@@@@            "<<endl;
 		cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │    @@@@@@@            "<<endl;
 		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │     @@@@@@       @    "<<endl;
-		cout<<"│                                  Version dev  │       @@@@     @@@@   "<<endl;
+		cout<<"│                                  Version 4.2  │       @@@@     @@@@   "<<endl;
 		cout<<"├───────────────────────────────────────────────┤         @@   @@@@@@   "<<endl;
 		cout<<"│ Core Lybrary for Advanced Scenario Simulation  │           @ @@@@@@@   "<<endl;
 		cout<<"│                                               │          @@ @@@@@@@   "<<endl;
@@ -814,7 +814,7 @@ void Scenario::PrintClover(int i)
 		cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │        @@@@@@        "<<endl;
 		cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │         @@@@@        "<<endl;
 		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │         @@@@         "<<endl;
-		cout<<"│                                  Version dev  │          @@          "<<endl;
+		cout<<"│                                  Version 4.2  │          @@          "<<endl;
 		cout<<"├───────────────────────────────────────────────┤          @           "<<endl;
 		cout<<"│ Core Lybrary for Advanced Scenario Simulation  │           @          "<<endl;
 		cout<<"│                                               │  @@@@@@@ @@ @@@@@@@  "<<endl;
@@ -837,7 +837,7 @@ void Scenario::PrintClover(int i)
 		cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │           @@@@@@@    "<<endl;
 		cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │           @@@@@@@@   "<<endl;
 		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │   @@      @@@@@@     "<<endl;
-		cout<<"│                                  Version dev  │   @@@     @@@@       "<<endl;
+		cout<<"│                                  Version 4.2  │   @@@     @@@@       "<<endl;
 		cout<<"├───────────────────────────────────────────────┤  @@@@@@    @@        "<<endl;
 		cout<<"│ Core Lybrary for Advanced Scenario Simulation  │  @@@@@@@@ @          "<<endl;
 		cout<<"│                                               │  @@@@@@@ @@          "<<endl;
@@ -861,7 +861,7 @@ void Scenario::PrintClover(int i)
 		cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │    @@@@       @@@    "<<endl; 
 		cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │   @@@@@      @@@@@   "<<endl; 
 		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │   @@@@@@    @@@@@@   "<<endl; 
-		cout<<"│                                  Version dev  │   @@@@@@    @@@@@@@  "<<endl;
+		cout<<"│                                  Version 4.2  │   @@@@@@    @@@@@@@  "<<endl;
 		cout<<"├───────────────────────────────────────────────┤  @@@@@@@@  @@@@@@@@  "<<endl; 
 		cout<<"│ Core Lybrary for Advanced Scenario Simulation  │  @@@@@@@@ @ @@@@@@@  "<<endl;
 		cout<<"│                                               │          @@          "<<endl; 
