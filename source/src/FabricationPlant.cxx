@@ -411,35 +411,39 @@ void FabricationPlant::SortArray()
         TimeArray	= fStreamArrayTime[(*it_s_vIV).first] ;
         AdressArray	= fStreamArrayAdress[(*it_s_vIV).first] ;
         
-        
-        switch(fStorageManagement)
+        if( (int)IVArray.size() > 1 ) // no need to sort if there is only one IV in stock !!
         {
-            case kpFiFo: SortFiFo(IVArray, TimeArray, AdressArray);
-                break;
-                
-            case kpLiFo: SortLiFo(IVArray, TimeArray, AdressArray);
-                break;
-                
-            case kpMix: SortMix(IVArray, TimeArray, AdressArray);
-                break;
-                
-            case kpRand: SortRandom(IVArray, TimeArray, AdressArray);
-                break;
-                
-            default:
-                ERROR<<" Posibble Storage Management are"<<endl;
-                ERROR<<" YourFabPlant->SetStorageManagement(key); //with key can be either"<<endl;
-                ERROR<<"\tkFiFo : First In First Out (i.e the older storage first)"<<endl;
-                ERROR<<"\tkLiFo : Last In First Out  (i.e the youger storage first)"<<endl;
-                ERROR<<"\tkMix : IVs are sorted that way : "<<"\n"<<"First: The younger , Second: The older, Third: The second younger ,4th : the second older ...."<<endl;
-                ERROR<<"\tkRand : IVs order in storage is random"<<endl;
-                
-                exit(1);
-        }
+        	
+     	  switch(fStorageManagement)
+     	  {
+     	      case kpFiFo: SortFiFo(IVArray, TimeArray, AdressArray);
+     	          break;
+     	          
+     	      case kpLiFo: SortLiFo(IVArray, TimeArray, AdressArray);
+     	          break;
+     	          
+     	      case kpMix: SortMix(IVArray, TimeArray, AdressArray);
+     	          break;
+     	          
+     	      case kpRand: SortRandom(IVArray, TimeArray, AdressArray);
+     	          break;
+     	          
+     	      default:
+     	          ERROR<<" Posibble Storage Management are"<<endl;
+     	          ERROR<<" YourFabPlant->SetStorageManagement(key); //with key can be either"<<endl;
+     	          ERROR<<"\tkFiFo : First In First Out (i.e the older storage first)"<<endl;
+     	          ERROR<<"\tkLiFo : Last In First Out  (i.e the youger storage first)"<<endl;
+     	          ERROR<<"\tkMix : IVs are sorted that way : "<<"\n"<<"First: The younger , Second: The older, Third: The second younger ,4th : the second older ...."<<endl;
+     	          ERROR<<"\tkRand : IVs order in storage is random"<<endl;
+     	          
+     	          exit(1);
+     	  }
         
         fStreamArray[(*it_s_vIV).first]		= IVArray;
         fStreamArrayTime[(*it_s_vIV).first]	= TimeArray;
         fStreamArrayAdress[(*it_s_vIV).first]	= AdressArray;
+
+       } 
     }
     
 }
