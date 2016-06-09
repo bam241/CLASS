@@ -675,8 +675,8 @@ void Scenario::Evolution(cSecond t)
 //________________________________________________________________________
 void Scenario::OldProgressPrintout(cSecond t)
 {
-	double Time = (fAbsoluteTime-fStartingTime)/cYear ;
-	double Total = (t-fStartingTime)/cYear;
+	double Time = (fAbsoluteTime-fStartingTime)/(double)cYear ;
+	double Total = (t-fStartingTime)/(double)cYear;
 
 	// Reset the line
 	for(int i = 0; i < 10; i++)
@@ -701,8 +701,8 @@ void Scenario::OldProgressPrintout(cSecond t)
 //________________________________________________________________________
 void Scenario::ProgressPrintout(cSecond t)
 {
-	double Time = (fAbsoluteTime-fStartingTime)/cYear ;
-	double Total = (t-fStartingTime)/cYear;
+	double Time = (fAbsoluteTime-fStartingTime)/(double)cYear ;
+	double Total = (t-fStartingTime)/(double)cYear;
 
 	if(fOldProgressBar)
 		OldProgressPrintout(t);
