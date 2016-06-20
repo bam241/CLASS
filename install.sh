@@ -47,7 +47,7 @@ ROOTLIBS=
 LIBDIR=${PWD}/lib
 Gui_bin_PATH=${PWD}/gui/bin
 
-CXX=""
+CXX="g++"
 CXXFLAGS=""
 CPPFLAGS=""
 
@@ -106,7 +106,7 @@ echo "int main(){ return 0;}" >> testconf.cxx
 if [ "$IsOMPEnable" = "yes" ]
 then
 
-	g++ -o testconf -fopenmp  testconf.cxx -lgomp > script.errors 2>&1
+	${CXX} -o testconf -fopenmp  testconf.cxx -lgomp > script.errors 2>&1
  	
 	ok=`cat script.errors|wc -l`
  	if [ $ok = 0 ]
