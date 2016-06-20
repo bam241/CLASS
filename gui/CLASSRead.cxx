@@ -289,8 +289,8 @@ void CLASSRead::PlotInv(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	for (int i = 0; i < (int)toplot.size(); i++)
 		fLegendInv[i] = 0;
 
-	vector<CLASSPlotElement> toplotTTree[fData.size()];
-
+	vector < vector<CLASSPlotElement> > toplotTTree;
+	toplotTTree.resize(fData.size());
 
 
 	Xmin = +1.e36;
@@ -472,8 +472,9 @@ void CLASSRead::PlotTox(vector<CLASSPlotElement> toplot, bool DecayChain, int St
 	fLegendTox = new TLatex*[toplot.size()];
 	for (int i = 0; i < (int)toplot.size(); i++)
 		fLegendTox[i] = 0;
-	
-	vector<CLASSPlotElement> toplotTTree[fData.size()];
+
+	vector < vector<CLASSPlotElement> > toplotTTree;
+	toplotTTree.resize(fData.size());
 
 	
 	Xmin = +1.e36;
@@ -655,8 +656,8 @@ void CLASSRead::PlotHeat(vector<CLASSPlotElement> toplot, bool DecayChain, int S
 	for (int i = 0; i < (int)toplot.size(); i++)
 		fLegendHeat[i] = 0;
 	
-	vector<CLASSPlotElement> toplotTTree[fData.size()];
-	
+	vector < vector<CLASSPlotElement> > toplotTTree;
+	toplotTTree.resize(fData.size());
 	
 	
 	Xmin = +1.e36;
@@ -844,7 +845,9 @@ void CLASSRead::BuildTGraph(vector<CLASSPlotElement> toplot, int PlotId, string 
 		IV[i] = 0;
 
 	vector< double > vTime;
-	vector< double > vQuantity[toplot.size()];
+	vector< vector< double > > vQuantity;
+	vQuantity.resize(toplot.size());
+
 
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
@@ -1139,8 +1142,11 @@ void CLASSRead::BuildTGraphUsingDecayChain(vector<CLASSPlotElement> toplot, int 
 		IV[i] = 0;
 	
 	vector< double > vTime;
-	vector< IsotopicVector > vIV[toplot.size()];
-	vector< double > vQuantity[toplot.size()];
+	vector< vector< IsotopicVector > > vIV;
+	vIV.resize(toplot.size());
+
+	vector < vector< double > > vQuantity;
+	vQuantity.resize(toplot.size());
 
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
@@ -1420,7 +1426,9 @@ void CLASSRead::PlotPower(vector<CLASSPlotElement> toplot, string opt)
 		fLegendPower[i] = 0;
 	}
 
-	vector<CLASSPlotElement> toplotTTree[fData.size()];
+	vector < vector<CLASSPlotElement> > toplotTTree;
+	toplotTTree.resize(fData.size());
+
 
 	fNumberGraphPowerIterator = 0;
 	Xmin = +1.e36;
@@ -1706,7 +1714,9 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 		IV[i] = 0;
 
 	vector< double > vTime;
-	vector< double > vQuantity[toplot.size()];
+	vector < vector< double > > vQuantity;
+	vQuantity.resize(toplot.size());
+
 
 	for (int i = 0; i < (int)toplot.size(); i++)
 	{
@@ -2059,8 +2069,8 @@ void CLASSRead::ConvertxmlTTreeMass(vector<CLASSPlotElement> toplot, string file
 void CLASSRead::ConvertXmlMass(vector<CLASSPlotElement> toplot, string filename)
 {
 	
-	vector<CLASSPlotElement> toplotTTree[fData.size()];
-	
+	vector < vector<CLASSPlotElement> > toplotTTree;
+	toplotTTree.resize(fData.size());
 	
 	
 	for (int i = 0; i < (int)toplot.size(); i++)
