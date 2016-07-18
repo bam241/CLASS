@@ -1,33 +1,99 @@
-#ifndef _GRAPH_H
-#define _GRAPH_H
+#ifndef _GRAPH_HXX
+#define _GRAPH_HXX
 
-template <typename T>
-class Graph : Array<T>
+#include <iostream>
+#include <algorithm>
+#include <iterator>
+#include <valarray>
+
+#include <TObject.h>
+#include <TGraph.h>
+
+
+class Graph : public TObject
 {
 	public:
-		// CONSTRUCTOR
+	// constructor -----------------------------------------------------------
 		Graph ();
-		Graph ( const Graph<T> & );
-		// TODO : constructeurs
+		Graph ( const Graph & );
+		Graph ( std::size_t );
+		Graph ( std::size_t , const double * , const double * y=nullptr );
+		Graph ( const TGraph & );
+		Graph ( const TGraph * );
 
-		// DESTRUCTOR
+	// destructor ------------------------------------------------------------
 		virtual ~Graph ();
 
-		// OPERATOR
-		virtual Graph<T> & operator = ( const Graph<T> & );
+	// operator --------------------------------------------------------------
+		Graph &  operator =  ( const Graph & );
+		void     operator = ( const TGraph & );
+		void     operator = ( const TGraph * );
+		operator TGraph () const; // cast operator
 
-		// GETTER
-		virtual std::size_t getBin ( T )           const;
-		virtual T           getX   ( std::size_t ) const;
+		Graph & operator += ( const Graph & );
+		Graph & operator -= ( const Graph & );
+		Graph & operator *= ( const Graph & );
 
-		// METHOD
-		T eval ( T ) const;
+		const double & operator [] ( std::size_t ) const;
+		double & operator [] ( std::size_t );
 
-	protected:
-		virtual void set ( const Graph<T> & );
+	// getter ----------------------------------------------------------------
+		std::size_t size () const;
 
+		const double * Xbegin () const;
+		double *       Xbegin ();
+		const double * Ybegin () const;
+		double *       Ybegin ();
+
+		const double * Xend   () const;
+		double *       Xend   ();
+		const double * Yend   () const;
+		double *       Yend   ();
+
+		const double * GetX () const;
+		double * GetX ();
+		const double * GetY () const;
+		double * GetY ();
+
+		double GetX ( std::size_t ) const;
+		double GetY ( std::size_t ) const;
+		double GetY ( double      ) const;
+
+		std::size_t GetN () const;
+
+		int    GetPoint ( int , double & , double & ) const;
+
+
+	// setter ----------------------------------------------------------------
+		void resize ( std::size_t , double x=0 , double y=0 );
+
+		void SetX ( std::size_t , double );
+		void SetY ( std::size_t , double );
+
+		void SetPoint ( std::size_t , double , double );
+
+	// method ----------------------------------------------------------------
+		double Eval    ( double x ) const;
+		double ExpEval ( double x ) const;
+
+		void Sort ();
+
+
+		ClassDef(Graph,0)
 	private:
-		std::valarray<T> ftime;
+	// attribut --------------------------------------------------------------
+		std::valarray<double> fx;
+		std::valarray<double> fy;
 };
+
+// external operator ---------------------------------------------------------
+Graph operator + ( const Graph & , const Graph & );
+Graph operator - ( const Graph & , const Graph & );
+
+Graph operator * ( const Graph & , const Graph & );
+Graph operator * ( double , const Graph & );
+Graph operator * ( const Graph & , double );
+
+Graph operator / ( const Graph & , double );
 
 #endif
