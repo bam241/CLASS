@@ -3,10 +3,11 @@
 
 #include "CLASSLogger.hxx"
 #include "CLASSConstante.hxx"
-#include "StringLine.hxx"
+#include "external/StringLine.hxx"
+
+#include "external/Graph.hxx"
 
 #include <TGraph.h>
-#include <TString.h>
 
 #include <cmath>
 #include <iostream>
@@ -23,73 +24,67 @@
 //________________________________________________________________________
 
 
-double 	Distance(IsotopicVector IV1, EvolutionData Evd1 )
+double 	Distance ( const IsotopicVector & IV1 , const EvolutionData & Evd1 )
 {
 	
 	double d2 = 0;
 	IsotopicVector IV2 = Evd1.GetIsotopicVectorAt(0.);
 	
-	IsotopicVector IVtmp = IV1;
-	map<ZAI ,double> IVtmpIsotopicQuantity = IVtmp.GetIsotopicQuantity();
-	map<ZAI ,double >::iterator it;
-	
 	double SumOfXs = 0;
-	for( it = IVtmpIsotopicQuantity.begin(); it != IVtmpIsotopicQuantity.end(); it++)
+	for( IsotopicVector::const_iterator it = IV1.begin() ; it != IV1.end() ; ++it )
 	{
 		
-		SumOfXs += Evd1.GetXSForAt(0., (*it).first, 1);
-		SumOfXs += Evd1.GetXSForAt(0., (*it).first, 2);
-		SumOfXs += Evd1.GetXSForAt(0., (*it).first, 3);
+		SumOfXs += Evd1.GetXSForAt( 0., it->first, 1 );
+		SumOfXs += Evd1.GetXSForAt( 0., it->first, 2 );
+		SumOfXs += Evd1.GetXSForAt( 0., it->first, 3 );
 		
 	}
 	
 	
-	for( it = IVtmpIsotopicQuantity.begin(); it != IVtmpIsotopicQuantity.end(); it++)
+	for( IsotopicVector::const_iterator it = IV1.begin() ; it != IV1.end() ; ++it )
 	{
 		double Z1 = 0.0;
 		double Z2 = 0.0;
 		double XS = 0.0;
 		
-		Z1 = IV1.GetZAIIsotopicQuantity( (*it).first );
-		Z2 = IV2.GetZAIIsotopicQuantity( (*it).first );
-		XS = Evd1.GetXSForAt(0., (*it).first, 1)
-		+ Evd1.GetXSForAt(0., (*it).first, 2)
-		+ Evd1.GetXSForAt(0., (*it).first, 3);
+		Z1 = IV1.GetZAIIsotopicQuantity( it->first );
+		Z2 = IV2.GetZAIIsotopicQuantity( it->first );
+		XS = Evd1.GetXSForAt(0., it->first, 1)
+		+ Evd1.GetXSForAt(0., it->first, 2)
+		+ Evd1.GetXSForAt(0., it->first, 3);
 		
-		d2 += pow(Z1-Z2 , 2 ) * pow(XS,2);
+		d2 += (Z1-Z2)*(Z1-Z2) * (XS*XS);
 		
 	}
 	
-	return sqrt(d2)/SumOfXs;
+	return std::sqrt(d2)/SumOfXs;
 	
 }
 
-double 	Distance(EvolutionData Evd1, IsotopicVector IV1 )
+double 	Distance ( const EvolutionData & Evd1 , const IsotopicVector & IV1 )
 {
 	return Distance(IV1,Evd1);
 }
 //________________________________________________________________________
 //________________________________________________________________________
 //________________________________________________________________________
-EvolutionData operator*(EvolutionData const& evol, double F)
+EvolutionData operator * ( EvolutionData const& evol , double F )
 {
 	
 	EvolutionData evoltmp;
 	
-	map<ZAI ,TGraph* > EvolutionData = evol.GetInventoryEvolution();
-	map<ZAI ,TGraph* >::iterator it;
-	for(it = EvolutionData.begin(); it != EvolutionData.end(); it++)
+	for ( map<ZAI,Graph*>::const_iterator it = evol.InventoryEvolution_begin() ; it != evol.InventoryEvolution_end() ; ++it )
 	{
-		double X[(*it).second->GetN()];
-		double Y[(*it).second->GetN()];
+		double X[ it->second->GetN() ];
+		double Y[ it->second->GetN() ];
 		
 		for(int i = 0; i < (*it).second->GetN(); i++)
 		{
 			double y;
-			(*it).second->GetPoint( i, X[i], y );
+			it->second->GetPoint( i, X[i], y );
 			Y[i] = y*F;
 		}
-		evoltmp.NucleiInsert( pair<ZAI, TGraph*> ( (*it).first,new TGraph((*it).second->GetN(), X, Y) ) );
+		evoltmp.NucleiInsert( pair<ZAI, Graph*> ( (*it).first,new Graph((*it).second->GetN(), X, Y) ) );
 		
 	}
 	evoltmp.SetPower(evol.GetPower()*F);
@@ -102,30 +97,25 @@ EvolutionData operator*(EvolutionData const& evol, double F)
 	
 }
 //________________________________________________________________________
-EvolutionData operator*(double F, EvolutionData const& evol)
+EvolutionData operator * ( double F , EvolutionData const& evol )
 {
-	
 	return evol*F;
-	
 }
 //________________________________________________________________________
-EvolutionData operator/(EvolutionData const& evol, double F)
-{
-	
+EvolutionData operator / ( EvolutionData const& evol , double F )
+{	
 	return evol*(1./F);
-	
 }
 
-EvolutionData Multiply(EvolutionData const& evol, double F)
+//________________________________________________________________________
+EvolutionData Multiply ( EvolutionData const& evol , double F )
 {
 	
 	EvolutionData evoltmp;
-	map<ZAI ,TGraph* > EvolutionData = evol.GetInventoryEvolution();
-	map<ZAI ,TGraph* >::iterator it;
-	for(it = EvolutionData.begin(); it != EvolutionData.end(); it++)
+	for( map<ZAI,Graph*>::const_iterator it = evol.InventoryEvolution_begin() ; it != evol.InventoryEvolution_end() ; ++it )
 	{
-		double X[(*it).second->GetN()];
-		double Y[(*it).second->GetN()];
+		double X[ it->second->GetN() ];
+		double Y[ it->second->GetN() ];
 		
 		for(int i = 0; i < (*it).second->GetN(); i++)
 		{
@@ -133,13 +123,11 @@ EvolutionData Multiply(EvolutionData const& evol, double F)
 			(*it).second->GetPoint( i, X[i], y );
 			Y[i] = y*F;
 		}
-		evoltmp.NucleiInsert( pair<ZAI, TGraph*> ( (*it).first,new TGraph((*it).second->GetN(), X, Y) ) );
+		evoltmp.NucleiInsert( pair<ZAI, Graph*> ( (*it).first,new Graph((*it).second->GetN(), X, Y) ) );
 		
 	}
 	
-	
-	EvolutionData = evol.GetFissionXS();
-	for(it = EvolutionData.begin(); it != EvolutionData.end(); it++)
+	for( map<ZAI,Graph*>::const_iterator it = evol.FissionXS_begin() ; it != evol.FissionXS_end() ; ++it )
 	{
 		double X[(*it).second->GetN()];
 		double Y[(*it).second->GetN()];
@@ -150,12 +138,11 @@ EvolutionData Multiply(EvolutionData const& evol, double F)
 			(*it).second->GetPoint( i, X[i], y );
 			Y[i] = y*F;
 		}
-		evoltmp.FissionXSInsert( pair<ZAI, TGraph*> ( (*it).first,new TGraph((*it).second->GetN(), X, Y) ) );
+		evoltmp.FissionXSInsert( pair<ZAI, Graph*> ( (*it).first,new Graph((*it).second->GetN(), X, Y) ) );
 		
 	}
 	
-	EvolutionData = evol.GetCaptureXS();
-	for(it = EvolutionData.begin(); it != EvolutionData.end(); it++)
+	for( map<ZAI,Graph*>::const_iterator it = evol.CaptureXS_begin() ; it != evol.CaptureXS_end() ; ++it )
 	{
 		double X[(*it).second->GetN()];
 		double Y[(*it).second->GetN()];
@@ -166,11 +153,11 @@ EvolutionData Multiply(EvolutionData const& evol, double F)
 			(*it).second->GetPoint( i, X[i], y );
 			Y[i] = y*F;
 		}
-		evoltmp.CaptureXSInsert( pair<ZAI, TGraph*> ( (*it).first,new TGraph((*it).second->GetN(), X, Y) ) );
+		evoltmp.CaptureXSInsert( pair<ZAI, Graph*> ( (*it).first,new Graph((*it).second->GetN(), X, Y) ) );
 		
 	}
-	EvolutionData = evol.Getn2nXS();
-	for(it = EvolutionData.begin(); it != EvolutionData.end(); it++)
+
+	for( map<ZAI,Graph*>::const_iterator it = evol.n2nXS_begin() ; it != evol.n2nXS_end() ; ++it )
 	{
 		double X[(*it).second->GetN()];
 		double Y[(*it).second->GetN()];
@@ -181,7 +168,7 @@ EvolutionData Multiply(EvolutionData const& evol, double F)
 			(*it).second->GetPoint( i, X[i], y );
 			Y[i] = y*F;
 		}
-		evoltmp.n2nXSInsert( pair<ZAI, TGraph*> ( (*it).first,new TGraph((*it).second->GetN(), X, Y) ) );
+		evoltmp.n2nXSInsert( pair<ZAI, Graph*> ( (*it).first,new Graph((*it).second->GetN(), X, Y) ) );
 		
 	}
 	
@@ -204,20 +191,20 @@ EvolutionData Multiply(double F, EvolutionData const& evol)
 EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 {
 	EvolutionData EvolSum = evol1;
-	map<ZAI ,TGraph* > EvolutionData1 = EvolSum.GetInventoryEvolution();
-	map<ZAI ,TGraph* > EvolutionData2 = evol2.GetInventoryEvolution();
-	map<ZAI ,TGraph* >::iterator it;
+	map<ZAI ,Graph* > EvolutionData1 = EvolSum.GetInventoryEvolution();
+	map<ZAI ,Graph* > EvolutionData2 = evol2.GetInventoryEvolution();
+	map<ZAI ,Graph* >::iterator it;
 	
 	for(it = EvolutionData2.begin(); it != EvolutionData2.end(); it++)
 	{
-		pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+		pair<map<ZAI, Graph*>::iterator, bool> IResult;
 		
-		IResult  = EvolutionData1.insert( pair<ZAI, TGraph*> ( *it ) );
+		IResult  = EvolutionData1.insert( pair<ZAI, Graph*> ( *it ) );
 		if(!(IResult.second) )
 		{
 			double X[(*it).second->GetN()];
 			double Y[(*it).second->GetN()];
-			map<ZAI ,TGraph* >::iterator it2 = EvolutionData1.find( (*it).first );
+			map<ZAI ,Graph* >::iterator it2 = EvolutionData1.find( (*it).first );
 			
 			
 			for(int i = 0; i < (*it).second->GetN(); i++)
@@ -226,7 +213,7 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 				(*it).second->GetPoint( i, X[i], y );
 				Y[i] = y + (*it2).second->Eval(X[i]);
 			}
-			IResult.first->second = new TGraph((*it).second->GetN(), X, Y);
+			IResult.first->second = new Graph((*it).second->GetN(), X, Y);
 			
 		}
 		
@@ -239,15 +226,15 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 	
 	for(it = EvolutionData2.begin(); it != EvolutionData2.end(); it++)
 	{
-		pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+		pair<map<ZAI, Graph*>::iterator, bool> IResult;
 		
-		IResult  = EvolutionData1.insert( pair<ZAI, TGraph*> ( *it ) );
+		IResult  = EvolutionData1.insert( pair<ZAI, Graph*> ( *it ) );
 		
 		if(!(IResult.second) )
 		{
 			double X[(*it).second->GetN()];
 			double Y[(*it).second->GetN()];
-			map<ZAI ,TGraph* >::iterator it2 = EvolutionData1.find( (*it).first );
+			map<ZAI ,Graph* >::iterator it2 = EvolutionData1.find( (*it).first );
 			
 			
 			for(int i = 0; i < (*it).second->GetN(); i++)
@@ -256,7 +243,7 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 				(*it).second->GetPoint( i, X[i], y );
 				Y[i] = y + (*it2).second->Eval(X[i]);
 			}
-			IResult.first->second = new TGraph((*it).second->GetN(), X, Y);
+			IResult.first->second = new Graph((*it).second->GetN(), X, Y);
 		}
 	}
 	EvolSum.SetFissionXS(EvolutionData1);
@@ -267,15 +254,15 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 	
 	for(it = EvolutionData2.begin(); it != EvolutionData2.end(); it++)
 	{
-		pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+		pair<map<ZAI, Graph*>::iterator, bool> IResult;
 		
-		IResult  = EvolutionData1.insert( pair<ZAI, TGraph*> ( *it ) );
+		IResult  = EvolutionData1.insert( pair<ZAI, Graph*> ( *it ) );
 		
 		if(!(IResult.second) )
 		{
 			double X[(*it).second->GetN()];
 			double Y[(*it).second->GetN()];
-			map<ZAI ,TGraph* >::iterator it2 = EvolutionData1.find( (*it).first );
+			map<ZAI ,Graph* >::iterator it2 = EvolutionData1.find( (*it).first );
 			
 			
 			for(int i = 0; i < (*it).second->GetN(); i++)
@@ -284,7 +271,7 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 				(*it).second->GetPoint( i, X[i], y );
 				Y[i] = y + (*it2).second->Eval(X[i]);
 			}
-			IResult.first->second = new TGraph((*it).second->GetN(), X, Y);
+			IResult.first->second = new Graph((*it).second->GetN(), X, Y);
 		}
 	}
 	EvolSum.SetCaptureXS(EvolutionData1);
@@ -295,15 +282,15 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 	
 	for(it = EvolutionData2.begin(); it != EvolutionData2.end(); it++)
 	{
-		pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+		pair<map<ZAI, Graph*>::iterator, bool> IResult;
 		
-		IResult  = EvolutionData1.insert( pair<ZAI, TGraph*> ( *it ) );
+		IResult  = EvolutionData1.insert( pair<ZAI, Graph*> ( *it ) );
 		
 		if(!(IResult.second) )
 		{
 			double X[(*it).second->GetN()];
 			double Y[(*it).second->GetN()];
-			map<ZAI ,TGraph* >::iterator it2 = EvolutionData1.find( (*it).first );
+			map<ZAI ,Graph* >::iterator it2 = EvolutionData1.find( (*it).first );
 			
 			
 			for(int i = 0; i < (*it).second->GetN(); i++)
@@ -312,7 +299,7 @@ EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2)
 				(*it).second->GetPoint( i, X[i], y );
 				Y[i] = y + (*it2).second->Eval(X[i]);
 			}
-			IResult.first->second = new TGraph((*it).second->GetN(), X, Y);
+			IResult.first->second = new Graph((*it).second->GetN(), X, Y);
 		}
 	}
 	EvolSum.Setn2nXS(EvolutionData1);
@@ -418,7 +405,7 @@ EvolutionData::~EvolutionData()
 void EvolutionData::DeleteEvolutionData()
 {
 	
-	map<ZAI ,TGraph* >::iterator it_del;
+	map<ZAI ,Graph* >::iterator it_del;
 	
 	for( it_del = fInventoryEvolution.begin(); it_del != fInventoryEvolution.end(); it_del++)
 	{
@@ -463,7 +450,7 @@ void EvolutionData::DeleteEvolutionDataCopy()
 	
 	if(fDB_file == "")
 	{
-		map<ZAI ,TGraph* >::iterator it_del;
+		map<ZAI ,Graph* >::iterator it_del;
 		
 		for( it_del = fInventoryEvolution.begin(); it_del != fInventoryEvolution.end(); it_del++)
 		{
@@ -502,37 +489,37 @@ void EvolutionData::DeleteEvolutionDataCopy()
 	
 }
 
-bool EvolutionData::NucleiInsert(pair<ZAI, TGraph*> zaitoinsert)
+bool EvolutionData::NucleiInsert(pair<ZAI, Graph*> zaitoinsert)
 {
 	
-	pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+	pair<map<ZAI, Graph*>::iterator, bool> IResult;
 	IResult = fInventoryEvolution.insert( zaitoinsert);
 	return IResult.second;
 	
 }
 
-bool EvolutionData::FissionXSInsert(pair<ZAI, TGraph*> zaitoinsert)
+bool EvolutionData::FissionXSInsert(pair<ZAI, Graph*> zaitoinsert)
 {
 	
-	pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+	pair<map<ZAI, Graph*>::iterator, bool> IResult;
 	IResult = fFissionXS.insert( zaitoinsert);
 	return IResult.second;
 	
 }
 
-bool EvolutionData::CaptureXSInsert(pair<ZAI, TGraph*> zaitoinsert)
+bool EvolutionData::CaptureXSInsert(pair<ZAI, Graph*> zaitoinsert)
 {
 	
-	pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+	pair<map<ZAI, Graph*>::iterator, bool> IResult;
 	IResult = fCaptureXS.insert( zaitoinsert);
 	return IResult.second;
 	
 }
 
-bool EvolutionData::n2nXSInsert(pair<ZAI, TGraph*> zaitoinsert)
+bool EvolutionData::n2nXSInsert(pair<ZAI, Graph*> zaitoinsert)
 {
 	
-	pair<map<ZAI, TGraph*>::iterator, bool> IResult;
+	pair<map<ZAI, Graph*>::iterator, bool> IResult;
 	IResult = fn2nXS.insert( zaitoinsert);
 	return IResult.second;
 	
@@ -545,73 +532,65 @@ void EvolutionData::AddAsStable(ZAI zai)
 	double time[2] = {0, (500*cYear)};
 	double quantity[2] = {1., 1.};
 	
-	fInventoryEvolution.insert(pair<ZAI ,TGraph* >(zai, new TGraph(2, time, quantity) ) );
+	fInventoryEvolution.insert(pair<ZAI ,Graph* >(zai, new Graph(2, time, quantity) ) );
 	
 }
 
 //________________________________________________________________________
-Double_t EvolutionData::Interpolate(double t, TGraph& EvolutionGraph)
+double EvolutionData::Interpolate(double t, const Graph& EvolutionGraph) const
 {
-	
-	TString fOption;
-	return (double)EvolutionGraph.Eval(t,0x0,fOption);
-	
+	return (double)EvolutionGraph.Eval(t);
 }
 
 //________________________________________________________________________
-TGraph*	EvolutionData::GetEvolutionTGraph(const ZAI& zai)
+Graph*	EvolutionData::GetEvolutionGraph(const ZAI& zai)
 {
 	
-	map<ZAI ,TGraph *>::iterator it = GetInventoryEvolution().find(zai) ;
+	map<ZAI ,Graph *>::iterator it = GetInventoryEvolution().find(zai) ;
 	
 	if ( it != GetInventoryEvolution().end() )
 		return it->second;
 	else
-		return new TGraph();
+		return new Graph();
 	
 	
 }
 
 //________________________________________________________________________
-IsotopicVector	EvolutionData::GetIsotopicVectorAt(double t)
+IsotopicVector	EvolutionData::GetIsotopicVectorAt(double t) const
 {
 	
 	IsotopicVector IsotopicVectorTmp;
-	map<ZAI ,TGraph* >::iterator it;
-	for( it = fInventoryEvolution.begin(); it != fInventoryEvolution.end(); it++ )
+	std::map<ZAI ,Graph* >::const_iterator it;
+	for( it = fInventoryEvolution.begin(); it != fInventoryEvolution.end(); ++it )
 	{
-		IsotopicVectorTmp.Add( (*it).first, Interpolate(t, *((*it).second)) );
+		IsotopicVectorTmp.Add( it->first, Interpolate(t, *(it->second)) );
 	}
-	
 	
 	return IsotopicVectorTmp;
 }
 
 //________________________________________________________________________
-double	EvolutionData::GetXSForAt(double t, ZAI zai, int ReactionId)
+double	EvolutionData::GetXSForAt(double t, ZAI zai, int ReactionId) const
 {
-	
-	map<ZAI ,TGraph* > XSEvol;
+	std::map<ZAI ,Graph* >::const_iterator it;
+	std::map<ZAI ,Graph* >::const_iterator end;
 	switch(ReactionId)
 	{
-		case 1: XSEvol = GetFissionXS();
+		case 1: it = fFissionXS.find(zai); end = fFissionXS.end();
 			break;
-		case 2: XSEvol = GetCaptureXS();
+		case 2: it = fCaptureXS.find(zai); end = fCaptureXS.end();
 			break;
-		case 3: XSEvol = Getn2nXS();
+		case 3: it = fn2nXS.find(zai);     end = fn2nXS.end();
 			break;
 		default:ERROR << " Wrong ReactionId !!" << endl;
 			exit(1);
 	}
-	
-	map<ZAI ,TGraph* >::iterator it = XSEvol.find(zai);
-	
-	
-	if (it ==  XSEvol.end())
+		
+	if ( it == end )
 		return 0.;
 	else
-		return Interpolate(t, *((*it).second) );
-	
+		return Interpolate(t, *(it->second) );
 }
 
 
@@ -754,7 +733,7 @@ void EvolutionData::ReadKeff(string line, double* time, int NTimeStep)
 	}
 	
 	
-	fKeff = new TGraph(NTimeStep, time, Keff);			// Add the TGraph
+	fKeff = new Graph(NTimeStep, time, Keff);			// Add the Graph
 	
 	
 	
@@ -785,7 +764,7 @@ void EvolutionData::ReadFlux(string line, double* time, int NTimeStep)
 	}
 	
 	
-	fFlux = new TGraph(NTimeStep, time, Flux);			// Add the TGraph
+	fFlux = new Graph(NTimeStep, time, Flux);			// Add the Graph
 	
 	
 	
@@ -817,8 +796,8 @@ void	EvolutionData::ReadInv(string line, double* time, int NTimeStep)
 			Inv[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
 			i++;
 		}
-		// Add the TGraph
-		fInventoryEvolution.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, Inv) ) );
+		// Add the Graph
+		fInventoryEvolution.insert(pair<ZAI ,Graph* >(ZAI(Z,A,I), new Graph(NTimeStep, time, Inv) ) );
 	}
 	
 	
@@ -851,8 +830,8 @@ void	EvolutionData::ReadXSFis(string line, double* time, int NTimeStep)
 			i++;
 		}
 		
-		// Add the TGraph
-		fFissionXS.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, XSFis) ) );
+		// Add the Graph
+		fFissionXS.insert(pair<ZAI ,Graph* >(ZAI(Z,A,I), new Graph(NTimeStep, time, XSFis) ) );
 	}
 	
 	
@@ -884,8 +863,8 @@ void	EvolutionData::ReadXSCap(string line, double* time, int NTimeStep)
 			i++;
 		}
 		
-		// Add the TGraph
-		fCaptureXS.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, XSCap) ) );
+		// Add the Graph
+		fCaptureXS.insert(pair<ZAI ,Graph* >(ZAI(Z,A,I), new Graph(NTimeStep, time, XSCap) ) );
 	}
 	
 	
@@ -916,8 +895,8 @@ void	EvolutionData::ReadXSn2n(string line, double* time, int NTimeStep)
 			XSn2n[i] = atof(StringLine::NextWord(line, start, ' ').c_str()) ;
 			i++;
 		}
-		// Add the TGraph
-		fn2nXS.insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph(NTimeStep, time, XSn2n) ) );
+		// Add the Graph
+		fn2nXS.insert(pair<ZAI ,Graph* >(ZAI(Z,A,I), new Graph(NTimeStep, time, XSn2n) ) );
 	}
 	
 	
@@ -1013,7 +992,7 @@ void EvolutionData::OldReadDB(string DBfile)
 		for(int i = 0; i < (int)vKeff.size();i++)
 			Keff[i] = vKeff[i];
 		
-		fKeff = new TGraph(vTime.size(), Time, Keff);
+		fKeff = new Graph(vTime.size(), Time, Keff);
 		
 		start = 0;
 		getline(DecayDB, line);
@@ -1028,7 +1007,7 @@ void EvolutionData::OldReadDB(string DBfile)
 			for(int i = 0; i < (int)vFlux.size();i++)
 				Flux[i] = vFlux[i];
 			
-			fFlux = new TGraph(vTime.size(), Time, Flux);
+			fFlux = new Graph(vTime.size(), Time, Flux);
 			
 		}
 	}
@@ -1059,8 +1038,8 @@ void EvolutionData::OldReadDB(string DBfile)
 				i++;
 				
 			}
-			TGraph* tgraphtmp = new TGraph((int)vTime.size()-1, Time, DPQuantity);
-			fInventoryEvolution.insert(pair<ZAI ,TGraph* >(zaitmp, tgraphtmp) );
+			Graph* Graphtmp = new Graph((int)vTime.size()-1, Time, DPQuantity);
+			fInventoryEvolution.insert(pair<ZAI ,Graph* >(zaitmp, Graphtmp) );
 		}
 		
 		getline(DecayDB, line);
@@ -1099,7 +1078,7 @@ void EvolutionData::OldReadDB(string DBfile)
 						i++;
 						
 					}
-					fFissionXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
+					fFissionXS.insert(pair<ZAI ,Graph* >(zaitmp, new Graph(vTime.size()-1, Time, DPQuantity) ) );
 				}
 				getline(DecayDB, line);
 				if(line ==  "" || line ==  "Capture" ) break;
@@ -1135,7 +1114,7 @@ void EvolutionData::OldReadDB(string DBfile)
 						i++;
 						
 					}
-					fCaptureXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
+					fCaptureXS.insert(pair<ZAI ,Graph* >(zaitmp, new Graph(vTime.size()-1, Time, DPQuantity) ) );
 				}
 				getline(DecayDB, line); // Nuclei is given with "A Z"
 				if(line ==  "" || line ==  "n2n" ) break;
@@ -1172,7 +1151,7 @@ void EvolutionData::OldReadDB(string DBfile)
 						i++;
 						
 					}
-					fn2nXS.insert(pair<ZAI ,TGraph* >(zaitmp, new TGraph(vTime.size()-1, Time, DPQuantity) ) );
+					fn2nXS.insert(pair<ZAI ,Graph* >(zaitmp, new Graph(vTime.size()-1, Time, DPQuantity) ) );
 				}
 				getline(DecayDB, line); // Nuclei is given with "A Z"
 				if(line ==  "" ) break;
@@ -1222,7 +1201,7 @@ void EvolutionData::OldReadDB(string DBfile)
 		for(int i = 0; i < (int)vFlux.size();i++)
 			Flux[i] = vFlux[i];
 		
-		fFlux = new TGraph(vTime.size()-1, Time, Flux);
+		fFlux = new Graph(vTime.size()-1, Time, Flux);
 	}
 	InfoDB.close();
 }
@@ -1232,7 +1211,7 @@ void EvolutionData::OldReadDB(string DBfile)
 void EvolutionData::Print(string filename)
 {	
 
-	map<ZAI ,TGraph* >::iterator iterator;
+	map<ZAI ,Graph* >::iterator iterator;
 	ofstream out(filename.c_str());
 
 

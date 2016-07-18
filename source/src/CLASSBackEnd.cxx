@@ -72,19 +72,17 @@ void CLASSBackEnd::UpdateInsideIV()
 //________________________________________________________________________
 //	Get Decay
 //________________________________________________________________________
-IsotopicVector CLASSBackEnd::GetDecay(IsotopicVector isotopicvector, cSecond t)
+IsotopicVector CLASSBackEnd::GetDecay( const IsotopicVector & isotopicvector, cSecond t)
 {
 	DBGL
 
 	IsotopicVector IV;
 
-	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
-	map<ZAI ,double >::iterator it;
-	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+	for( IsotopicVector::const_iterator it = isotopicvector.begin(); it != isotopicvector.end(); ++it )
 	{
-		if((*it).second > 0)
+		if( it->second > 0 )
 		{
- 			IsotopicVector ivtmp = fDecayDataBase->Evolution(it->first, t) * (*it).second ;
+ 			IsotopicVector ivtmp = fDecayDataBase->Evolution(it->first, t) * it->second ;
 			IV += ivtmp;
 		}
 	}

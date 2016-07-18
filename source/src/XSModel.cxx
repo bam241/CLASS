@@ -7,7 +7,7 @@
 //
 
 #include "XSModel.hxx"
-#include "StringLine.hxx"
+#include "external/StringLine.hxx"
 #include "CLASSMethod.hxx"
 #include "ZAI.hxx"
 
@@ -162,7 +162,7 @@ void XSModel::ReadZAIlimits(const string &line)
 }
 
 //________________________________________________________________________
-bool XSModel::isIVInDomain(IsotopicVector IV)
+bool XSModel::isIVInDomain(const IsotopicVector & IV)
 {
 	DBGL
 	bool IsInDomain = true;

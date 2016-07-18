@@ -64,16 +64,14 @@ double ZAIMass::GetMass(ZAI zai ) const
 }
 
 
-double ZAIMass::GetMass(const IsotopicVector IV) const
+double ZAIMass::GetMass(const IsotopicVector & IV) const
 {
 	double AVOGADRO = 6.02214129e23;
 	double TotalMass = 0;
 
-	map<ZAI ,double >::iterator it;
-	map<ZAI ,double > isotopicquantity = IV.GetIsotopicQuantity();
-	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+	for( IsotopicVector::const_iterator it = IV.begin(); it != IV.end(); it++)
 	{
-		TotalMass += (*it).second/AVOGADRO * GetMass( (*it).first ) ;
+		TotalMass += it->second/AVOGADRO * GetMass( it->first ) ;
 	}
 
 	return TotalMass*1e-6;

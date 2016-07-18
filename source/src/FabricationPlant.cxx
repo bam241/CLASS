@@ -58,7 +58,20 @@ FabricationPlant::FabricationPlant(CLASSLogger* log, double fabricationtime):CLA
     INFO	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/cYear) << " year" << endl << endl;
     DBGL
 }
-
+/*
+//________________________________________________________________________
+FabricationPlant::FabricationPlant ( const FabricationPlant & a ) :
+    CLASSFacility(a) ,
+    fSeparationLostFraction(a.fSeparationLostFraction) , fReactorNextStep(a.fReactorNextStep) ,
+#ifndef __CINT__
+    fReactorFuturDB(a.fReactorFuturDB) ,
+#endif
+    fReactorFuturIV(a.fReactorFuturIV) , fStorageManagement(a.fStorageManagement) , fIsSeparationManagement(a.fIsSeparationManagement) , fSubstitutionFuel(a.fSubstitutionFuel)
+#ifndef __CINT__
+    , fStreamList(a.fStreamList) , fStorage(a.fStorage) , fStreamArray(a.fStreamArray) , fStreamArrayTime(a.fStreamArrayTime) , fStreamArrayAdress(a.fStreamArrayAdress) , fSubstitutionIV(a.fSubstitutionIV) , fSubstitutionMaterialFromIV(a.fSubstitutionMaterialFromIV) , fInfiniteMaterialFromList(a.fInfiniteMaterialFromList) , fErrorOnLambda(a.fErrorOnLambda) , fSubstitutionEvolutionData(a.fSubstitutionEvolutionData) , fReUsable(a.fReUsable) , fIsReusable(a.fIsReusable) , fDecayDataBase(a.fDecayDataBase)
+#endif
+{ ; }
+*/
 //________________________________________________________________________
 FabricationPlant::~FabricationPlant()
 {
