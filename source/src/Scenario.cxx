@@ -704,12 +704,14 @@ void Scenario::ProgressPrintout(cSecond t)
 	double Time = (fAbsoluteTime-fStartingTime)/cYear ;
 	double Total = (t-fStartingTime)/cYear;
 
+	int sys;
+
 	if(fOldProgressBar)
 		OldProgressPrintout(t);
 
 	else
 	{
-		system("clear");
+		sys = system("clear");
 		/****Printing CLASS  info + nuclear clover****/
 		if(fCloverCount>3)
 			fCloverCount=0;
