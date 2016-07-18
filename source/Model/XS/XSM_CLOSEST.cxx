@@ -1,7 +1,7 @@
 #include "XSModel.hxx"
 #include "XSM_CLOSEST.hxx"
 #include "CLASSLogger.hxx"
-#include "StringLine.hxx"
+#include "external/StringLine.hxx"
 
 
 #include <TGraph.h>
@@ -121,7 +121,7 @@ void XSM_CLOSEST::ReadDataBase()
 //________________________________________________________________________
 //________________________________________________________________________
 //________________________________________________________________________
-map<double, int> XSM_CLOSEST::GetDistancesTo(IsotopicVector isotopicvector, double t)
+map<double, int> XSM_CLOSEST::GetDistancesTo( const IsotopicVector & isotopicvector, double t)
 {
 
 	map<double, int> distances;
@@ -148,7 +148,7 @@ map<double, int> XSM_CLOSEST::GetDistancesTo(IsotopicVector isotopicvector, doub
 
 }
 //________________________________________________________________________
-EvolutionData XSM_CLOSEST::GetCrossSections(IsotopicVector isotopicvector, double t)
+EvolutionData XSM_CLOSEST::GetCrossSections(const IsotopicVector & isotopicvector, double t)
 {
 	DBGL
 	double distance = 0;
@@ -332,7 +332,7 @@ void XSM_CLOSEST::CalculateDistanceParameter()
 	DBGL
 }
 //________________________________________________________________________
-void XSM_CLOSEST::SetDistanceParameter(IsotopicVector DistanceParameter)
+void XSM_CLOSEST::SetDistanceParameter( const IsotopicVector & DistanceParameter)
 {
 
 	fDistanceParameter = DistanceParameter;

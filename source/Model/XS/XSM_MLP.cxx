@@ -3,7 +3,8 @@
 #include "XSM_MLP.hxx"
 #include "CLASSLogger.hxx"
 #include "CLASSMethod.hxx"
-#include "StringLine.hxx"
+#include "external/StringLine.hxx"
+#include "external/Graph.hxx"
 
 #include "TMVA/Reader.h"
 #include "TMVA/Tools.h"
@@ -328,13 +329,13 @@ double XSM_MLP::ExecuteTMVA(string WeightFile,TTree* InputTree)
 	return (double)val;
 }
 //________________________________________________________________________
-EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
+EvolutionData XSM_MLP::GetCrossSectionsTime( const IsotopicVector & IV)
 {
 	DBGL
 	
 	EvolutionData EvolutionDataFromMLP = EvolutionData();
 	
-	map<ZAI,TGraph*> ExtrapolatedXS[3];
+	map<ZAI,Graph*> ExtrapolatedXS[3];
 	/*************DATA BASE INFO****************/
 	EvolutionDataFromMLP.SetReactorType(fDBRType);
 	EvolutionDataFromMLP.SetFuelType(fDBFType);
@@ -354,9 +355,9 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 			{
 				TTree* InputTree = CreateTMVAInputTree(IV,TimeStep);
 				
-				pair< map<ZAI, TGraph*>::iterator, bool> IResult;
+				pair< map<ZAI, Graph*>::iterator, bool> IResult;
 				
-				IResult = ExtrapolatedXS[Reaction].insert( pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph()) );
+				IResult = ExtrapolatedXS[Reaction].insert( pair<ZAI ,Graph* >(ZAI(Z,A,I), new Graph()) );
 				
 				double XSValue = ExecuteTMVA(fWeightFiles[i],InputTree );
 				if(IResult.second )
@@ -374,9 +375,9 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 		}
 	}
 	
-	/**********Sorting TGraph*********/
+	/**********Sorting Graph*********/
 	for(int x = 0;x<3;x++)
-	{	map<ZAI,TGraph*>::iterator it;
+	{	map<ZAI,Graph*>::iterator it;
 		for(it = ExtrapolatedXS[x].begin(); it != ExtrapolatedXS[x].end(); it++)
 			it->second->Sort();
 		
@@ -433,14 +434,14 @@ void XSM_MLP::ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &R
 }
 
 //________________________________________________________________________
-EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
+EvolutionData XSM_MLP::GetCrossSectionsStep( const IsotopicVector & IV)
 {
 	DBGL
 	TTree* InputTree = CreateTMVAInputTree(IV);
 	
 	EvolutionData EvolutionDataFromMLP = EvolutionData();
 	
-	map<ZAI,TGraph*> ExtrapolatedXS[3];
+	map<ZAI,Graph*> ExtrapolatedXS[3];
 	/*************DATA BASE INFO****************/
 	EvolutionDataFromMLP.SetReactorType("PWR");
 	EvolutionDataFromMLP.SetFuelType("MOX");
@@ -461,9 +462,9 @@ EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 		{
 			ZAI zaitmp = ZAI(Z,A,I);
 			
-			pair< map<ZAI, TGraph*>::iterator, bool> IResult;
+			pair< map<ZAI, Graph*>::iterator, bool> IResult;
 			
-			IResult = ExtrapolatedXS[Reaction].insert(pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph() ) );
+			IResult = ExtrapolatedXS[Reaction].insert(pair<ZAI ,Graph* >(ZAI(Z,A,I), new Graph() ) );
 			
 			if( IResult.second )
 			{
@@ -476,9 +477,9 @@ EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 		}
 	}
 	
-	/**********Sorting TGraph*********/
+	/**********Sorting Graph*********/
 	for(int x = 0;x<3;x++)
-	{	map<ZAI,TGraph*>::iterator it;
+	{	map<ZAI,Graph*>::iterator it;
 		for(it = ExtrapolatedXS[x].begin(); it != ExtrapolatedXS[x].end(); it++)
 			it->second->Sort();
 	}
@@ -492,7 +493,7 @@ EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 	return EvolutionDataFromMLP;
 }
 //________________________________________________________________________
-EvolutionData XSM_MLP::GetCrossSections(IsotopicVector IV ,double t)
+EvolutionData XSM_MLP::GetCrossSections( const IsotopicVector & IV ,double t)
 {
 	DBGL
 	if(t != 0)
