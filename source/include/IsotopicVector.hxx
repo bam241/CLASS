@@ -1,23 +1,28 @@
 #ifndef _ISOTOPICVECTOR_
 #define _ISOTOPICVECTOR_
 
-
 /*!
  \file
  \brief Header file for IsotopicVector class. 
  @version 2.0
  */
+
 #include "ZAI.hxx"
 
-#include "TObject.h"
-#include <string>
-#include <vector>
-#include <map>
+#include <TObject.h>
 
-using namespace std;
+#include <iostream>
+#include <map>
+#include <algorithm>
+#include <iterator>
+#include <string>
+#include <sstream>
+#include <cmath>
+#include <fstream>
+
 typedef long long int cSecond;
 
-//-----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------
 //! Allows to store & operate on radioactive sample
 
 /*!
@@ -28,156 +33,160 @@ typedef long long int cSecond;
  @author BaM
  @author BLG
  @author Marc
- @version 2.0
- */
-//________________________________________________________________________
-
-
-
+ @version 2.1
+*/
+//____________________________________________________________________________
 class IsotopicVector : public TObject
 {
-public :
-
-//********* Constructor/Destructor Method *********//
+	public :
+		typedef std::map<ZAI,double>::const_iterator	const_iterator;
+		typedef std::map<ZAI,double>::iterator			iterator;
 
 	/*!
-	 \name Constructor/Desctructor
-	 */
+		\name Constructor/Destructor
+	!*/
 	//@{
+// CONSTRUCTOR ---------------------------------------------------------------
+		IsotopicVector ();                         ///< Default constructor
+		IsotopicVector ( const IsotopicVector & ); ///< Copy constructor
 
-	IsotopicVector();	///< Normal Constructor.
-
-
- 	~IsotopicVector();	///< Normal Destructor.
-
+// DESTRUCTOR ----------------------------------------------------------------
+		~IsotopicVector (); ///< Destructor
+ 
 	//@}
 
+// OPERATOR ------------------------------------------------------------------
+	/*!
+	 \name Internal Operator Method
+	 */
+	//@{
+		IsotopicVector & operator = ( const IsotopicVector & ); ///< Assignment operator
+		
+		double   operator [] ( const ZAI & ) const; ///< Access operator
+		double & operator [] ( const ZAI & );       ///< Access operator
 
-//********* Get Method *********//
+		IsotopicVector & operator += ( const IsotopicVector & ); //!< Operator += definition
+		IsotopicVector & operator -= ( const IsotopicVector & ); //!< Operator -= definition
+		IsotopicVector & operator *= ( const IsotopicVector & ); //!< Operator *= definition
+		IsotopicVector & operator *= ( double );                 //!< Operator *= definition (scalar)
+	//@}
 
+// GETTER --------------------------------------------------------------------
 	/*!
 	 \name Get Method
 	 */
 	//@{
+		std::map<ZAI ,double> GetIsotopicQuantity       () const; //!< Return the IsotopicVector as a map
+		std::map<ZAI ,double> GetIsotopicQuantityNeeded () const; //!< Return the needed IsotopicVector as a map
 
-	map<ZAI ,double>	GetIsotopicQuantity()		const
-						{ return fIsotopicQuantity; }		//!< Return the IsotopicVector as a map
-	map<ZAI ,double>	GetIsotopicQuantityNeeded()	const
-						{ return fIsotopicQuantityNeeded; }	//!< Return the needed IsotopicVector as a map 
-	IsotopicVector		GetSpeciesComposition(int z)	const;			//!< Return the Species composition of the "z" atom
-	IsotopicVector		GetThisComposition(IsotopicVector IV)	const;		//!< Return the composition according the IV list...
-	vector<ZAI>		GetZAIList()			const;			//!< Return the list of ZAI present in the IV
-	IsotopicVector		GetActinidesComposition()	const;			//!< Return the Actinides composition (Z >= 89)
+		IsotopicVector GetSpeciesComposition ( const int ) const; //!< Return the Species composition of the "z"
+		IsotopicVector GetThisComposition ( const IsotopicVector & ) const; //!< Return the composition according the IV list...
+		std::vector< ZAI > GetZAIList () const; //!< Return the list of ZAI present in the IV
+		IsotopicVector GetActinidesComposition () const; //!< Return the Actinides composition (89 <= Z <= 103)
 
-	double	GetZAIIsotopicQuantity(const ZAI& zai)		const;			///< Return the quantity of the ZAI
-	double	GetZAIIsotopicQuantity(const int z, const int a, const int i) const;	///< Return the quantity of the ZAI
-	double	GetQuantity(const int z, const int a, const int i)	const {return GetZAIIsotopicQuantity(z,a,i);}
-	double	GetQuantity(const ZAI& zai)				const {return GetZAIIsotopicQuantity(zai);}
-	
-	void Initiatlize(double val);
-	
-	
-	double	GetTotalMass() const;							//!< Return the mass (in tons) of the isotopic vector
-	double	GetMeanMolarMass() const;							//<! Return the mean molar mass of the isotopic vector
-	
-	vector<int>		GetChemicalSpecies()		const;			//!< Return the list of chemichal species contained
-	int			GetZAIQuantity()		const
-						{return  fIsotopicQuantity.size(); }	//!< Return the number of different ZAI in the IsotopicVector
+		double GetZAIIsotopicQuantity ( const short int , const short int , const short int ) const; ///< Return the quantity of the ZAI
+		double GetZAIIsotopicQuantity ( const ZAI & ) const; ///< Return the quantity of the ZAI
+		double GetQuantity ( const short int , const short int , const short int ) const;
+		double GetQuantity ( const ZAI & ) const;
 
-	double			GetSumOfAll()			const;			//!< Return the Sum of nuclei in the IsotopicVector
+		double GetTotalMass     () const; //!< Return the mass (in tons) of the isotopic vector
+		double GetMeanMolarMass () const; //<! Return the mean molar mass of the isotopic vector
 
+		std::vector< int > GetChemicalSpecies () const; //!< Return the list of chemichal species contained
+
+		double GetSumOfAll () const; //!< Return the Sum of nuclei in the IsotopicVector
+
+		std::size_t size () const; ///< Get size of the list
+		
+		const_iterator begin () const; ///< Return an iterator at the begining of IsotopicVector
+		iterator       begin (); ///< Return an iterator at the begining of IsotopicVector
+		const_iterator end   () const; ///< Return an iterator at the end of IsotopicVector
+		iterator       end   (); ///< Return an iterator at the end of IsotopicVector
+
+		const_iterator find ( const ZAI & ) const; ///< Emulate map comportement with find
+		iterator       find ( const ZAI & ); ///< Emulate map comportement with find
 	//@}
 
 
-
-
-//*********  Internal Operation Method *********//
-
+// SETTER --------------------------------------------------------------------
 	/*!
-	 \name Internal Operation Method
+	 \name Set Method
 	 */
 	//@{
+		void Initialize ( double );
+		void Clear ();
+		void ClearNeed();
 
+		void Add ( const short int , const short int , const short int , double );
+		void Add ( const ZAI & , double );
+		void Add ( const std::pair<ZAI,double> & );
+		void Add ( const IsotopicVector & );
+		void Add ( const std::map<ZAI,double> & );
 
-	void 	Clear();					//!< Empty all the IV
-	void 	ClearNeed();					//!< Empty Need componant of the IV 
+		void Remove ( const short int , const short int , const short int , double );
+		void Remove ( const ZAI & , double );
+		void Remove ( const std::pair<ZAI,double> & );
+		void Remove ( const IsotopicVector & );
 
-	void	Add(const ZAI& zai, double quantity); 		//!< Add Quantity gramme of the ZAI Element
-	void	Add(const IsotopicVector& isotopicvector); 	//!< Add IsotopicVector to the existing IsotopicVector
-	void	Add(const map<ZAI ,double>& quantity);		//!< Add IsotopicVector to the existing IsotopicVector
-	void	Add(int Z, int A, int I, double quantity)
-		{ (*this).Add(ZAI(Z,A,I), quantity); } 		//!< Add Quantity gramme of the ZAI Element
+		void Multiply ( double );
 
-
-	void	Need(const ZAI& zai, double quantity);		//!< Fill the fIsotopicQuantityNeeded
-	void	Need(const IsotopicVector& isotopicvector);	//!< Fill the fIsotopicQuantityNeeded
-	void	Need(const map<ZAI ,double>& quantityneeded) { fIsotopicQuantityNeeded = quantityneeded; }	
-								//!< Fill the fIsotopicQuantityNeeded
-
-	void	Remove(const ZAI& zai, double quantity); 	//!< Remove Quantity gramme of the ZAI Element
-	void	Remove(const IsotopicVector& isotopicvector); 	//!< Remove IsotopicVector to the existing IsotopicVector
-
-	void 	Multiply(double factor);			//!< Multiply the IV by a Factor
-
-	void	ApplyZAIThreshold(int z = 90);			//!< Put all nuclei below the threshold in -2 -2 -2 ZAI...
-
-	IsotopicVector& operator+= (IsotopicVector const& IVb);	//!< Operator += definition
-	IsotopicVector& operator-= (IsotopicVector const& IVb);	//!< Operator -=  definition
-	IsotopicVector& operator*= (IsotopicVector const& IVb);	//!< Operator *=  definition
-	IsotopicVector& operator*= (double const& factor);	//!< Operator *=  definition (scalar)
-	bool operator <(const IsotopicVector& isotopicvector) const;	//!< IsotopicVector Comparator
-
+		void ApplyZAIThreshold ( int );
 	//@}
 
-
-
-//********* In/Out related Method *********//
-
+// METHOD --------------------------------------------------------------------
 	/*!
 	 \name  In/Out Method
 	 */
 	//@{
-
-	void	Write(string filename, cSecond time = -1 ) const;	//!< Write the Content of the IV in the filename file
-
-	void	Print(string o  = " ") const ;				//!< Print the composition of the IV in terminal
-	string	sPrint() const ;					//!< Print the composition of the IV in a string
-
-	void	PrintList(string o  = " ") const ;			//!< Print the composition of the IV
-
+		void Write ( std::string filename , cSecond time = -1 ) const;
+		void Print ( std::string o  = " ") const;
+		std::string sPrint() const;
+		void PrintList( std::string o  = " " ) const;
 	//@}
-	
-
-//***************************************************///< 
-
-	
-	protected :
-
-	map<ZAI ,double>	fIsotopicQuantity;		///< Isotopic vector composition in atomes Number
-	
-	map<ZAI ,double>	fIsotopicQuantityNeeded;	///< map where negative value are saved
 
 	ClassDef(IsotopicVector,1);
+// ATTRIBUT ------------------------------------------------------------------
+	private :
+		std::map< ZAI , double > fdata; // data of the IsotopicVector, this is isotopic quantities
+		std::map< ZAI , double > fIsotopicQuantityNeeded; // quantity needed, never use, here just for retrocompatibility
+
 };
 
-IsotopicVector operator/(IsotopicVector const& IVA, double F);
-IsotopicVector operator/(ZAI const& zai, double F);
-IsotopicVector operator*(IsotopicVector const& IVA, double F);
-IsotopicVector operator*(ZAI const& zai, double F);
-IsotopicVector operator*(double F, IsotopicVector const& IVA);
-IsotopicVector operator*(double F, ZAI const& zai);
-IsotopicVector operator+(IsotopicVector const& IVa, IsotopicVector const& IVb);
-IsotopicVector operator-(IsotopicVector const& IVa, IsotopicVector const& IVb);
+/*!
+ \name  Boolean IsotopicVector comparator
+ */
+//@{
+bool operator == ( const IsotopicVector & , const IsotopicVector & ); //!< IsotopicVector Comparator
+bool operator != ( const IsotopicVector & , const IsotopicVector & ); //!< IsotopicVector Comparator
+bool operator <  ( const IsotopicVector & , const IsotopicVector & ); //!< IsotopicVector Comparator
+bool operator >  ( const IsotopicVector & , const IsotopicVector & ); //!< IsotopicVector Comparator
+bool operator <= ( const IsotopicVector & , const IsotopicVector & ); //!< IsotopicVector Comparator
+bool operator >= ( const IsotopicVector & , const IsotopicVector & ); //!< IsotopicVector Comparator
+//@}
 
-IsotopicVector operator*(IsotopicVector const& IVa, IsotopicVector const& IVb);
 
+/*!
+ \name  Aritmetic IsotopicVector comparator
+ */
+//@{
+IsotopicVector operator / ( const IsotopicVector & , double );
+IsotopicVector operator / ( const ZAI & , double ); ///< Build an IsotopicVector from a ZAI with an initial quantity
+IsotopicVector operator * ( const IsotopicVector & , double );
+IsotopicVector operator * ( const ZAI & , double ); ///< Build an IsotopicVector from a ZAI with an initial quantity
+IsotopicVector operator * ( double , const IsotopicVector & );
+IsotopicVector operator * ( double , const ZAI & ); ///< Build an IsotopicVector from a ZAI with an initial quantity
 
-double 	RelativDistance(IsotopicVector IV1, IsotopicVector IV2 ); //!< return the euclidean distance between two IV. The two IV are normalize to unity
-double 	Distance(IsotopicVector IV1, IsotopicVector IV2 ,int DistanceType = 0, IsotopicVector DistanceParameter = IsotopicVector()); //!< return weighted euclidean distance between two IV
+IsotopicVector operator + ( const IsotopicVector & , const IsotopicVector & );
+IsotopicVector operator - ( const IsotopicVector & , const IsotopicVector & );
+IsotopicVector operator * ( const IsotopicVector & , const IsotopicVector & );
+//@}
 
-double	DistanceStandard(IsotopicVector IV1, IsotopicVector IV2); //!< return the euclidean distance between two IV
-double	DistanceAdjusted(IsotopicVector IV1, IsotopicVector IV2, IsotopicVector DistanceParameter); //!< return the weighted euclidean distance between two IV
-double 	Norme(IsotopicVector IV1,int DistanceType = 0, IsotopicVector DistanceParameter = IsotopicVector());  //!< return the norm of an IV
+std::ostream & operator << ( std::ostream & , const IsotopicVector & );
 
+double 	RelativDistance ( const IsotopicVector & , const IsotopicVector & ); //!< return the euclidean distance between two IV. The two IV are normalize to unity
+double 	Distance ( const IsotopicVector & , const IsotopicVector & , int DistanceType = 0 , const IsotopicVector & DistanceParameter = IsotopicVector() ); //!< return weighted euclidean distance between two IV
+double	DistanceStandard( const IsotopicVector & , const IsotopicVector & ); //!< return the euclidean distance between two IV
+double	DistanceAdjusted( const IsotopicVector & , const IsotopicVector & , const IsotopicVector & ); //!< return the weighted euclidean distance between two IV
+double 	Norme( const IsotopicVector & , int DistanceType = 0 , const IsotopicVector & DistanceParameter = IsotopicVector() ); //!< return the norm of an IV
 
 #endif
