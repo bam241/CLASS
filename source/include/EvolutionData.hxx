@@ -16,23 +16,24 @@
 
 #include "TMatrix.h"
 
-class TGraph;
+#include "external/Graph.hxx"
+
 class EvolutionData;
 class CLASSLogger;
 
 using namespace std;
 typedef long long int cSecond;
 
+double 	Distance ( const IsotopicVector & IV1  , const EvolutionData  & Evd1 );
+double 	Distance ( const EvolutionData  & Evd1 , const IsotopicVector & IV1  );
 
-EvolutionData operator*(EvolutionData const& evol, double F);
-EvolutionData operator*(double F, EvolutionData const& evol);
+EvolutionData operator * ( EvolutionData const& evol , double F );
+EvolutionData operator * ( double F , EvolutionData const& evol );
 EvolutionData operator/(EvolutionData const& evol, double F);
 EvolutionData Sum(EvolutionData const& evol1, EvolutionData const& evol2);
 EvolutionData Multiply(EvolutionData const& evol, double F);
 EvolutionData Multiply(double F, EvolutionData const& evol);
 
-double 	Distance(IsotopicVector IV1, EvolutionData Evd1 );
-double 	Distance(EvolutionData Evd1, IsotopicVector IV1 );
 
 //-----------------------------------------------------------------------------//
 //! Stores fuel inventory evolution , mean cross sections evolution, flux evolution, power , ...
@@ -42,7 +43,7 @@ double 	Distance(EvolutionData Evd1, IsotopicVector IV1 );
  The aim of these class is to describe the evolution of a single evoluting system in CLASS.
  The system can either be a fuel evolution trough irradiation or a nuclei which produce, trough its decay, a large nuclei tree.
  
- The nuclei tree resulting of the evolution are stored in a map of ZAI and TGraph, each TGraph correspond to the evolution of the quantity of the associeted ZAI.
+ The nuclei tree resulting of the evolution are stored in a map of ZAI and Graph, each Graph correspond to the evolution of the quantity of the associeted ZAI.
 
  @author BaM
  @version 2.0
@@ -103,7 +104,7 @@ public :
 	//{
 	/// Normal Destructor.
 	/*!
-	 Only remove the map without deleting the pointer to TGraph...
+	 Only remove the map without deleting the pointer to Graph...
 	 One need to call the DeleteEvolutionData() method to fully delete the EvolutionData, and then avoiding memory leak...
 	 */
 	~EvolutionData();
@@ -112,7 +113,7 @@ public :
 	//{
 	/// Delete the EvolutionData.
 	/*!
-	 Use to fully delete the EvolutionData and all associeted TGraph.
+	 Use to fully delete the EvolutionData and all associeted Graph.
 	 In some case needed to be called to avoid memory leaks.
 	 */
 	void DeleteEvolutionData();
@@ -137,14 +138,14 @@ public :
 	void 	SetReactorType(string reactortype)	{ fReactorType = reactortype; }		///< Set the reactor type (e.g PWR, FBR-Na,...)
 	void	SetFuelType(string fueltype)		{ fFuelType = fueltype; }		///< Set the fuel type (e.g MOX,UOX,...)
 	void 	SetPower(double power)			{ fPower = power; }			///< Set the power of the EvolutionData [W]
-	void	SetFlux(TGraph* flux )			{ fFlux = flux; }			///< Set the neutron flux of the EvolutionData [cm^{-2}.s^{-1}]
+	void	SetFlux(Graph* flux )			{ fFlux = flux; }			///< Set the neutron flux of the EvolutionData [cm^{-2}.s^{-1}]
 	void	SetCycleTime(cSecond cycletime)		{ fCycleTime = cycletime; }		///< Set cycletime of the EvolutionData [s]
 
 
-	void	SetInventoryEvolution(map<ZAI, TGraph*> maptoinsert)	{ fInventoryEvolution = maptoinsert;}///< Set EvolutionData map
-	void	SetFissionXS(map<ZAI, TGraph*> maptoinsert)	{ fFissionXS = maptoinsert;}	///< Set fission cross section map
-	void	SetCaptureXS(map<ZAI, TGraph*> maptoinsert)	{ fCaptureXS = maptoinsert;}	///< Set capture cross section map
-	void	Setn2nXS(map<ZAI, TGraph*> maptoinsert)		{ fn2nXS = maptoinsert;}	///< Set (n,2n) cross section map
+	void	SetInventoryEvolution(map<ZAI, Graph*> maptoinsert)	{ fInventoryEvolution = maptoinsert;}///< Set EvolutionData map
+	void	SetFissionXS(map<ZAI, Graph*> maptoinsert)	{ fFissionXS = maptoinsert;}	///< Set fission cross section map
+	void	SetCaptureXS(map<ZAI, Graph*> maptoinsert)	{ fCaptureXS = maptoinsert;}	///< Set capture cross section map
+	void	Setn2nXS(map<ZAI, Graph*> maptoinsert)		{ fn2nXS = maptoinsert;}	///< Set (n,2n) cross section map
 
 
 	void 	Print(string filename); //!< Print EvolutionData in a .dat format in a file of Name filename
@@ -162,12 +163,35 @@ public :
 	//@{
 
 #ifndef __CINT__
-	map<ZAI ,TGraph* >	GetInventoryEvolution()	const { return fInventoryEvolution; }	//!< return the EvolutionData map
-	map<ZAI ,TGraph* >	GetFissionXS()		const { return fFissionXS; }		//!< return the fission cross section map
-	map<ZAI ,TGraph* >	GetCaptureXS()		const { return fCaptureXS; }		//!< return the capture cross section map
-	map<ZAI ,TGraph* >	Getn2nXS()		const { return fn2nXS; }		//!< return the (n,2n) cross section map
-	TGraph*			GetKeff()		const { return fKeff; }			//!< return the evolution of the keff (TGraph*)
-	TGraph*			GetFlux()		const { return fFlux; }			//!< return the evolution of the neutron flux (TGraph*)
+	map<ZAI ,Graph* >	GetInventoryEvolution()	const { return fInventoryEvolution; }	//!< return the EvolutionData map
+	map<ZAI ,Graph* >	GetFissionXS()		const { return fFissionXS; }		//!< return the fission cross section map
+	map<ZAI ,Graph* >	GetCaptureXS()		const { return fCaptureXS; }		//!< return the capture cross section map
+	map<ZAI ,Graph* >	Getn2nXS()		const { return fn2nXS; }		//!< return the (n,2n) cross section map
+
+	map<ZAI,Graph*>::const_iterator InventoryEvolution_begin () const { return fInventoryEvolution.begin(); }
+	map<ZAI,Graph*>::iterator       InventoryEvolution_begin ()       { return fInventoryEvolution.begin(); }
+	map<ZAI,Graph*>::const_iterator InventoryEvolution_end   () const { return fInventoryEvolution.end();   }
+	map<ZAI,Graph*>::iterator       InventoryEvolution_end   ()       { return fInventoryEvolution.end();   }
+
+	map<ZAI,Graph*>::const_iterator FissionXS_begin          () const { return fFissionXS.begin();          }
+	map<ZAI,Graph*>::iterator       FissionXS_begin          ()       { return fFissionXS.begin();          }
+	map<ZAI,Graph*>::const_iterator FissionXS_end            () const { return fFissionXS.end();            }
+	map<ZAI,Graph*>::iterator       FissionXS_end            ()       { return fFissionXS.end();            }
+
+	map<ZAI,Graph*>::const_iterator CaptureXS_begin          () const { return fCaptureXS.begin();          }
+	map<ZAI,Graph*>::iterator       CaptureXS_begin          ()       { return fCaptureXS.begin();          }
+	map<ZAI,Graph*>::const_iterator CaptureXS_end            () const { return fCaptureXS.end();            }
+	map<ZAI,Graph*>::iterator       CaptureXS_end            ()       { return fCaptureXS.end();            }
+
+	map<ZAI,Graph*>::const_iterator n2nXS_begin              () const { return fn2nXS.begin();              }
+	map<ZAI,Graph*>::iterator       n2nXS_begin              ()       { return fn2nXS.begin();              }
+	map<ZAI,Graph*>::const_iterator n2nXS_end                () const { return fn2nXS.end();                }
+	map<ZAI,Graph*>::iterator       n2nXS_end                ()       { return fn2nXS.end();                }
+
+
+
+	Graph*			GetKeff()		const { return fKeff; }			//!< return the evolution of the keff (Graph*)
+	Graph*			GetFlux()		const { return fFlux; }			//!< return the evolution of the neutron flux (Graph*)
 #endif
 
 	double	GetFinalTime()		const { return fFinalTime; }			//!< return the final time - last point (double)
@@ -175,9 +199,9 @@ public :
 	double	GetPower()		const { return fPower; }			//!< return the power (double)
 	string	GetDB_file()		const { return fDB_file; }			//!< return the name of the Database file (string)
 	string	GetReactorType()	const { return fReactorType; }			//!< return the type of reactor (string)
-	TGraph*	GetEvolutionTGraph(const ZAI& zai);					//!< return the evolution of the ZAI quantity (TGraph*)
+	Graph*	GetEvolutionGraph(const ZAI& zai);					//!< return the evolution of the ZAI quantity (Graph*)
 
-	IsotopicVector	GetIsotopicVectorAt(double t);					///< Return the Product IsotopicVector at time t
+	IsotopicVector	GetIsotopicVectorAt(double t) const;					///< Return the Product IsotopicVector at time t
 
 	double	GetHeavyMetalMass()	const	{ return fHeavyMetalMass; }	//!< Return the heavy metal mass in the core at the begining of the cycle [t]
 
@@ -195,7 +219,7 @@ public :
 		\li 2 capture,
 		\li 3 (n,2n).
 	 */
-	double	GetXSForAt(double t, ZAI zai, int ReactionId); 		
+	double	GetXSForAt(double t, ZAI zai, int ReactionId) const; 		
 	//}
 
 	//@}
@@ -211,10 +235,10 @@ public :
 	 */
 	//@{
 
-	bool NucleiInsert(pair<ZAI, TGraph*> zaitoinsert);		//!< Add a nuclei evolution to the evolution map
-	bool FissionXSInsert(pair<ZAI, TGraph*> zaitoinsert);		//!< Add a nuclei to the fission cross section map
-	bool CaptureXSInsert(pair<ZAI, TGraph*> zaitoinsert);		//!< Add a nuclei to the capture cross section map
-	bool n2nXSInsert(pair<ZAI, TGraph*> zaitoinsert);		//!< Add a nuclei to the (n,2n) cross section map
+	bool NucleiInsert(pair<ZAI, Graph*> zaitoinsert);		//!< Add a nuclei evolution to the evolution map
+	bool FissionXSInsert(pair<ZAI, Graph*> zaitoinsert);		//!< Add a nuclei to the fission cross section map
+	bool CaptureXSInsert(pair<ZAI, Graph*> zaitoinsert);		//!< Add a nuclei to the capture cross section map
+	bool n2nXSInsert(pair<ZAI, Graph*> zaitoinsert);		//!< Add a nuclei to the (n,2n) cross section map
 	
 
 	//@}
@@ -227,12 +251,12 @@ protected :
 	
 	
 #ifndef __CINT__
-	map<ZAI ,TGraph* >	fInventoryEvolution;	//!< evolution map
-	map<ZAI ,TGraph* >	fFissionXS;		//!< fission cross section map
-	map<ZAI ,TGraph* >	fCaptureXS;		//!< capture cross section map
-	map<ZAI ,TGraph* >	fn2nXS;			//!< (n,2n) cross section map
-	TGraph*	fKeff;					//!< Keff evolution
-	TGraph*	fFlux;					//!< Flux evolution
+	map<ZAI ,Graph* >	fInventoryEvolution;	//!< evolution map
+	map<ZAI ,Graph* >	fFissionXS;		//!< fission cross section map
+	map<ZAI ,Graph* >	fCaptureXS;		//!< capture cross section map
+	map<ZAI ,Graph* >	fn2nXS;			//!< (n,2n) cross section map
+	Graph*	fKeff;					//!< Keff evolution
+	Graph*	fFlux;					//!< Flux evolution
 #endif
 	
 	cSecond	fFinalTime;			///< time of the last point
@@ -258,7 +282,7 @@ protected :
 	void	ReadInfo();						//!< Read the info file of the database
 
 	
-	double	Interpolate(double t, TGraph& EvolutionGraph);		///< Interpolating the value of EvolutionGraph at the t time
+	double	Interpolate(double t, const Graph& EvolutionGraph) const;		///< Interpolating the value of EvolutionGraph at the t time
 
 	void	AddAsStable(ZAI zai);					///< Use when adding an EvolutionData of a stable nuclei (for "non" decay)
 

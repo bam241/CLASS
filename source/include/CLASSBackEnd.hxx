@@ -131,7 +131,7 @@ class CLASSBackEnd : public CLASSFacility
 	
 	
 	protected :
-	IsotopicVector		GetDecay(IsotopicVector isotopicvector, cSecond t);	//!< Get IsotopicVector decay at time t [s]
+	IsotopicVector		GetDecay( const IsotopicVector & isotopicvector, cSecond t);	//!< Get IsotopicVector decay at time t [s]
 	vector<IsotopicVector>	fIVArray;						///< Vector containning all the fuel stored.
 	vector<cSecond>		fIVArrayArrivalTime;					///< Vector containning the arrival time of each fuel in [s]
 	

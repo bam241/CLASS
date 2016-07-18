@@ -77,7 +77,7 @@ class XSModel : public CLASSObject
 	 \deprecated t : XS update time (used in XSM_Closest)
 	 */
 	//}
-	virtual  EvolutionData GetCrossSections(IsotopicVector IV,double t = 0) = 0 ;
+	virtual  EvolutionData GetCrossSections( const IsotopicVector & IV,double t = 0) = 0 ;
 	
 	/// Check either the IsotopicVector IV is in the validity domain of the models.
 	/*!
@@ -87,7 +87,7 @@ class XSModel : public CLASSObject
 	 \param t : deprecated parameter :
 	 \deprecated t : XS update time (used in XSM_Closest)
 	 */
-	virtual  bool isIVInDomain(IsotopicVector IV) ;
+	virtual  bool isIVInDomain(const IsotopicVector & IV) ;
 	//@}
 	
 	void ReadNFO();
