@@ -1,7 +1,7 @@
 #include "EQM_FBR_MLP_Keff.hxx"
 #include "CLASSLogger.hxx"
 #include "CLASSMethod.hxx"
-#include "StringLine.hxx"
+#include "external/StringLine.hxx"
 
 #include <string>
 #include <iostream>
