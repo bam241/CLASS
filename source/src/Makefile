@@ -40,7 +40,8 @@ OBJS	 = CLASSLogger.o \
 OBJMODEL = 	$(EQMINC)/EQM_PWR_MLP_MOX.o $(EQMINC)/EQM_PWR_MLP_MOX_Am.o \
 			$(EQMINC)/EQM_PWR_POL_UO2.o\
 			$(EQMINC)/EQM_FBR_BakerRoss_MOX.o $(EQMINC)/EQM_MLP_Kinf.o\
-			$(EQMINC)/EQM_FBR_MLP_Keff.o \
+			$(EQMINC)/EQM_FBR_MLP_Keff.o $(EQMINC)/EQM_MLP_PWR_MOxEUS.o\
+			$(EQMINC)/EQM_PWR_FixedContent.o\
 			$(XSMINC)/XSM_MLP.o $(XSMINC)/XSM_CLOSEST.o \
 			$(IMINC)/IM_RK4.o $(IMINC)/IM_Matrix.o
 

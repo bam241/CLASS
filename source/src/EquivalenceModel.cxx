@@ -317,10 +317,20 @@ void EquivalenceModel::SetLambda(vector<double>& lambda, double Lambda_tot)
 //________________________________________________________________________
 void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
 {
-	for( int i=0; i < (int)lambda.size(); i++)
-	{	
-		lambda[i] = -1;	
-	}
+
+	if(lambda.size() == 0) //then we have to add an element to send the error code to the fab (case for no storage in stream)
+	{
+		lambda.push_back(-1);
+	}	
+
+	else // other errors (no enought material or too many steps)
+	{
+		for( int i=0; i < (int)lambda.size(); i++)
+		{	
+			lambda[i] = -1;	
+		}
+	}	
+
 }
 
 //________________________________________________________________________

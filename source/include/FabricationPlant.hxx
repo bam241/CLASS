@@ -228,7 +228,7 @@ protected:
 
 	Storage*	fReUsable;									//!< Pointer to the Storage used to storing unused material
 	bool		fIsReusable;									//!< Sets a storage used to storing unused material
-
+	bool		fFuelCanBeBuilt;							//!< Default fuel fabrication process has failed
 	DecayDataBank*	fDecayDataBase;							//!< Pointer to the DecayDataBank
 
 

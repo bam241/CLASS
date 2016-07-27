@@ -25,6 +25,9 @@ EQM_PWR_POL_UO2::EQM_PWR_POL_UO2(string PathToWeightFile):EquivalenceModel(new C
 	fStreamList["Fissile"] = U5*1;
 	fStreamList["Fertile"] = U8*1;
 
+	fFirstGuessContent["Fissile"]     = 0.04;
+	fFirstGuessContent["Fertile"]     =  1 - fFirstGuessContent["Fissile"];
+
 	ReadWeightFile(PathToWeightFile);
 
 }
@@ -40,6 +43,9 @@ EQM_PWR_POL_UO2::EQM_PWR_POL_UO2(CLASSLogger* log,string PathToWeightFile):Equiv
 
 	fStreamList["Fissile"] = U5*1;
 	fStreamList["Fertile"] = U8*1;
+
+	fFirstGuessContent["Fissile"]     = 0.04;
+	fFirstGuessContent["Fertile"]     =  1 - fFirstGuessContent["Fissile"];
 
 	ReadWeightFile(PathToWeightFile);
 

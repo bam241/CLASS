@@ -192,29 +192,34 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
     // string="MA, .." LambdaArray = tableau sur les IV
     map < string , vector <double> > LambdaArray =  FuelType.GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray);
     
-    bool FuelCanBeBuilt 	= true;
+     fFuelCanBeBuilt 	= true;
     double  LambdaSum 		= 0;
     
-    for( it_s_vD = LambdaArray.begin();  it_s_vD != LambdaArray.end(); it_s_vD++)
-    {
-        for(int i = 0; i < (int)LambdaArray[(*it_s_vD).first].size();i++) {fErrorOnLambda[(*it_s_vD).first] = false;}
-    }
+     map < string, IsotopicVector>::iterator it_s_IV;
+
+     //initialize error map
+    for( it_s_IV = fStreamList.begin();  it_s_IV != fStreamList.end(); it_s_IV++)
+        fErrorOnLambda[(*it_s_IV).first] = false;
     
-    for( it_s_vD = LambdaArray.begin();  it_s_vD != LambdaArray.end(); it_s_vD++)
+
+    for( it_s_IV = fStreamList.begin();  it_s_IV != fStreamList.end(); it_s_IV++)
     {
-        for(int i = 0; i < (int)LambdaArray[(*it_s_vD).first].size();i++)
-        {
-            if(LambdaArray[(*it_s_vD).first][i] == -1){fErrorOnLambda[(*it_s_vD).first] = true;}
-            LambdaSum += LambdaArray[(*it_s_vD).first][i];
-        }
+        string StreamName =  it_s_IV->first ;
+
+        if(find(LambdaArray[StreamName].begin(), LambdaArray[StreamName].end(), -1 )!= LambdaArray[StreamName].end()) //There is IV but with  enought material
+            fErrorOnLambda[StreamName] = true;
+
+        for(int i = 0; i < (int)LambdaArray[StreamName].size();i++)
+            LambdaSum += LambdaArray[StreamName][i];
+        
     }
     
     for( it_s_B = fErrorOnLambda.begin();  it_s_B != fErrorOnLambda.end(); it_s_B++)
     {
-        if(fErrorOnLambda[(*it_s_B).first]){FuelCanBeBuilt = false;}
+        if(fErrorOnLambda[(*it_s_B).first]){fFuelCanBeBuilt = false;}
     }
     
-    if(FuelCanBeBuilt && LambdaSum > 0 )
+    if(fFuelCanBeBuilt && LambdaSum > 0 )
     {
         DBGV("Building process from initial stocks has succeeded : ")
         IsotopicVector IV 		= BuildFuelFromEqModel(LambdaArray);
@@ -266,10 +271,11 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
             
             for( it_s_vIV = fStreamArray.begin();  it_s_vIV != fStreamArray.end(); it_s_vIV++)
             {
-                if(fErrorOnLambda[(*it_s_vIV).first])
+                if(fErrorOnLambda[it_s_vIV->first])
                 {
-                    fStreamArray[(*it_s_vIV).first].clear();
-                    fStreamArray[(*it_s_vIV).first].push_back(CooledSeparatedIV[(*it_s_vIV).first]);
+                    fStreamArray[it_s_vIV->first].clear();
+                    fStreamArray[it_s_vIV->first].push_back(CooledSeparatedIV[(*it_s_vIV).first]);
+
                 }
             }
             
@@ -704,25 +710,28 @@ void FabricationPlant::DumpStock(map <string , vector<double> > LambdaArray)
         for(int i = 0; i < (int)fStreamArray[(*it).first].size(); i++)
         {
             if(fInfiniteMaterialFromList[(*it).first])
-            {
+            {DBGL
                 GetParc()->AddOutIncome( fStreamArray[(*it).first][0]*LambdaArray[(*it).first][i] );
+                DBGL
             }	
             
             else
             {		
-                if(LambdaArray[(*it).first][i] != 0)
+                if(LambdaArray[(*it).first][i] != 0 && fFuelCanBeBuilt)
                 {
+                    DBGL
                     int Stor_N = fStreamArrayAdress[(*it).first][i].first;
+                    DBGL
                     int IV_N = fStreamArrayAdress[(*it).first][i].second;
+                    DBGL
                     fStorage[(*it).first][Stor_N]->TakeFractionFromStock( IV_N, LambdaArray[(*it).first][i] );
                 }
             }
         }
     }
-    
+
     ResetArrays();
-    
-    
+        
     DBGL
 }
 
