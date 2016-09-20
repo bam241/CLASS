@@ -113,11 +113,13 @@ void FabricationPlant::FabricationPlantEvolution(cSecond t)
         double R_LifeTime 	   = GetParc()->GetReactor()[ (*it).first ]->GetLifeTime();
         
         int ReactorId = (*it).first;
-        pair<CLASSFuel, double> R_Fuel = GetParc()->GetReactor()[ReactorId]->GetFuelPlan()->GetFuelAt( t + GetCycleTime() );
-        double R_BU 		= R_Fuel.second;
-        double R_Power 	= GetParc()->GetReactor()[ReactorId]->GetPower();
-        double R_HMMass 	= GetParc()->GetReactor()[ReactorId]->GetHeavyMetalMass();
-        cSecond R_CycleTime 	= (cSecond) (R_BU*1e9 / (R_Power) * R_HMMass * 3600 * 24);
+        ScheduleEntry* R_Entry = GetParc()->GetReactor()[ReactorId]->GetScheduler()->GetEntryAt(t + GetCycleTime());
+        double R_BU 		   = R_Entry->GetBurnUp();
+        double R_Power 	       = R_Entry->GetPower();
+        double R_HMMass 	   = R_Entry->GetHeavyMetalMass();
+        cSecond R_CycleTime    = (cSecond) (R_BU*1e9 / (R_Power) * R_HMMass * 3600 * 24);
+
+        DBGL
         if( R_CycleTime < GetCycleTime())
         {
             ERROR << "Reactor Cycle Time is shorter than Fabrication Time of the fuel, we cannot deal it upto now!!!"<< endl;
@@ -131,7 +133,7 @@ void FabricationPlant::FabricationPlantEvolution(cSecond t)
             {
 #pragma omp critical(FuelBuild)
                 {
-                    if( R_Fuel.first.GetPhysicsModels() )
+                    if( R_Entry->GetReactorModel()->GetPhysicsModels() )
                     {
                         BuildFuelForReactor( (*it).first, t );
                     }
@@ -169,28 +171,27 @@ void FabricationPlant::UpdateInsideIV()
 void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
 {
     DBGL
-    
-    double R_HM_Mass	= GetParc()->GetReactor()[ ReactorId ]->GetHeavyMetalMass();
-    double R_CycleTime	= GetParc()->GetReactor()[ ReactorId ]->GetCycleTime();
-    double R_Power	= GetParc()->GetReactor()[ ReactorId ]->GetPower();
-    
-    pair<CLASSFuel, double > FuelBU  	= GetParc()->GetReactor()[ReactorId]->GetFuelPlan()->GetFuelAt(t+GetCycleTime()) ;
-    PhysicsModels FuelType 		= *FuelBU.first.GetPhysicsModels();
-    double R_BU	      			= FuelBU.second;
-    
+
+    ScheduleEntry* R_Entry  = GetParc()->GetReactor()[ ReactorId ]->GetScheduler()->GetEntryAt(t + GetCycleTime());
+    double R_BU             = R_Entry->GetBurnUp();
+    double R_Power          = R_Entry->GetPower();
+    double R_HM_Mass        = R_Entry->GetHeavyMetalMass();
+    PhysicsModels* FuelType = R_Entry->GetReactorModel()->GetPhysicsModels();
+    cSecond R_CycleTime     = (cSecond) (R_BU*1e9 / (R_Power) * R_HM_Mass * 3600 * 24);
+
     map < string , vector <IsotopicVector> >::iterator it_s_vIV;
     map < string , vector <double> >::iterator it_s_vD;
     map < string , bool >::iterator it_s_B;
     
-    fStreamList = FuelType.GetEquivalenceModel()->GetAllStreamList();
+    fStreamList = FuelType->GetEquivalenceModel()->GetAllStreamList();
     
-    BuildArray(ReactorId); // Checker chez les stocks si les StreamList sont présentes
+    BuildArray(ReactorId, t +  GetCycleTime()); // Checker chez les stocks si les StreamList sont présentes
     // Grosse map qui contient tous les IV
     // séparation + refroidissement virtuel
     // Construit les stocks de matière infini (=taille du réacteur)
     
     // string="MA, .." LambdaArray = tableau sur les IV
-    map < string , vector <double> > LambdaArray =  FuelType.GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray);
+    map < string , vector <double> > LambdaArray =  FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray);
     
      fFuelCanBeBuilt 	= true;
     double  LambdaSum 		= 0;
@@ -225,7 +226,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
         IsotopicVector IV 		= BuildFuelFromEqModel(LambdaArray);
         IsotopicVector LoadedIV 	= GetDecay(IV,fCycleTime);
         
-        EvolutionData EvolDB = FuelType.GenerateEvolutionData(GetDecay(IV,fCycleTime), R_CycleTime, R_Power);
+        EvolutionData EvolDB = FuelType->GenerateEvolutionData(GetDecay(IV,fCycleTime), R_CycleTime, R_Power);
         
         {
             pair<map<int, IsotopicVector>::iterator, bool> IResult;
@@ -283,11 +284,11 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
             for( it_s_vD = LambdaArray.begin();  it_s_vD != LambdaArray.end(); it_s_vD++)
                 LambdaArray[(*it_s_vD).first].clear();
             
-            LambdaArray 			= FuelType.GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray);
+            LambdaArray 			= FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray);
             IsotopicVector IV 		= BuildFuelFromEqModel(LambdaArray);
             
             //Generating the EvolutionData
-            EvolutionData EvolDB = FuelType.GenerateEvolutionData(GetDecay(IV,fCycleTime), R_CycleTime, R_Power);
+            EvolutionData EvolDB = FuelType->GenerateEvolutionData(GetDecay(IV,fCycleTime), R_CycleTime, R_Power);
             {
                 pair<map<int, IsotopicVector>::iterator, bool> IResult;
                 IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId, IV) );
@@ -355,10 +356,11 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
     DBGL
 }
 //________________________________________________________________________
-void FabricationPlant::BuildArray(int ReactorId)
+void FabricationPlant::BuildArray(int ReactorId, cSecond ReactorLoadingTime)
 {
     DBGL
-    double R_HM_Mass	= GetParc()->GetReactor()[ ReactorId ]->GetHeavyMetalMass();
+    ScheduleEntry* R_Entry  = GetParc()->GetReactor()[ ReactorId ]->GetScheduler()->GetEntryAt(ReactorLoadingTime);
+    double R_HM_Mass         = R_Entry->GetHeavyMetalMass();
     
     vector <IsotopicVector>  StreamArray;
     vector <cSecond> 	   StreamArrayTime;

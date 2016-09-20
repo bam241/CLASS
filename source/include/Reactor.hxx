@@ -13,7 +13,7 @@
 #include "IsotopicVector.hxx"
 #include "EvolutionData.hxx"
 #include "PhysicsModels.hxx"
-#include "CLASSFuelPlan.hxx"
+#include "ReactorScheduler.hxx"
 
 using namespace std;
 
@@ -189,10 +189,10 @@ class Reactor : public CLASSFacility
 	
 	IsotopicVector 	GetIVReactor()		const	{ return GetInsideIV(); } 	//!< Return the IV contain in the Reactor
 	IsotopicVector	GetIVBeginCycle()	const	{ return fIVBeginCycle; }	//!< Return the Starting Cycle IV
-	//!< (Note : IVBegin != IVIn, only if using charging plan)
+	//!< (Note : IVBegin != IVIn, only if using ReactorScheduler)
 	IsotopicVector	GetIVOutCycle()		const	{ return fIVOutCycle; }		//!< Return the Out Cycle IV
 	IsotopicVector	GetIVInCycle()		const	{ return fIVInCycle; }		//!< Return the In Cycle IV
-	//!< (Note : IVIn != IVBegin, only if using charging plan)
+	//!< (Note : IVIn != IVBegin, only if using ReactorScheduler)
 	
 	cSecond GetNextCycleTime(cSecond time);
 	
@@ -208,7 +208,7 @@ class Reactor : public CLASSFacility
 	FabricationPlant*	GetFabricationPlant()	const	{ return fFabricationPlant; }	//!< Return the pointer to the FabricationPlant
 	
 	
-	CLASSFuelPlan*	GetFuelPlan()		const	{ return fFuelPlan; }	//!< return the LoadingPlan
+	ReactorScheduler*	GetScheduler()		const	{ return fReactorScheduler; }	//!< return the ReactorScheduler
 	
 #endif
 	//@}
@@ -223,7 +223,7 @@ class Reactor : public CLASSFacility
 	 */
 	//@{
 	
-	void SetFuelPlan(CLASSFuelPlan* fuelplan)	{ fFuelPlan = fuelplan; }	//!< return the LoadingPlan
+	void SetReactorScheduler(ReactorScheduler* reactorscheduler)	{ fReactorScheduler = reactorscheduler; }	//!< Set the ReactorScheduler
 	void SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}	//!< Set the heavy metal mass in the core at the begining of the cycle
 	void SetCycleTime(double cycletime);				//!< Set the cycle time (Power fixed)
 	void SetPower(double Power);					//!< Set the power (burnup cte)
@@ -266,12 +266,12 @@ class Reactor : public CLASSFacility
 	void CheckListConsistency(PhysicsModels* fueltypeDB, FabricationPlant* fabricationplant); //!< Check if FP/EqM lists are identical
 #ifndef __CINT__
 
-	void AddFuel(cSecond time,  CLASSFuel fuel, double BurnUp)	//!< Add A new CLASSFuel at the corresponding time and Burnup
-	{ fFuelPlan->AddFuel( time, fuel, BurnUp); }			//!< Add A new EvolutionData at the corresponding time and Burnup
-	void AddFuel(cSecond time,  EvolutionData* fuel, double BurnUp)
-	{ fFuelPlan->AddFuel( time, CLASSFuel(fuel), BurnUp); }			//!< Add A new EvolutionData at the corresponding time and Burnup
-	void AddFuel(cSecond time,  PhysicsModels* fuel, double BurnUp)
-	{ fFuelPlan->AddFuel( time, CLASSFuel(fuel), BurnUp); }			//!< Add A new EvolutionData at the corresponding time and Burnup
+	void AddScheduleEntry(cSecond time,  ReactorModel* Model, double BurnUp, double Power, double HMMass)	//!< Add A new schedule entry 
+	{ DBGL; fReactorScheduler->AddEntry( time, Model, BurnUp, Power*fCapacityFactor, HMMass); }			//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
+	void AddScheduleEntry(cSecond time,  EvolutionData* Model, double BurnUp, double Power, double HMMass)
+	{ DBGL; fReactorScheduler->AddEntry( time, new ReactorModel(Model), BurnUp, Power*fCapacityFactor, HMMass); }			//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
+	void AddScheduleEntry(cSecond time,  PhysicsModels* Model, double BurnUp, double Power, double HMMass)
+	{ DBGL;  fReactorScheduler->AddEntry( time, new ReactorModel(Model), BurnUp,  Power*fCapacityFactor, HMMass); }			//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
 #endif
 
 	//@}
@@ -288,6 +288,7 @@ class Reactor : public CLASSFacility
 	double 		fPower;			///< Power (in Watt)
 	double 		fElectricPower;		///< ElectrocPower (in Watt)
 	double 		fEfficiencyFactor;	///< ElectrocPower (in Watt)
+	double		fCapacityFactor;    ///< Capacity factor  [0-1]
 	
 	IsotopicVector	fIVBeginCycle;		///< Fuel IV at the beginning of a cycle
 	IsotopicVector	fIVInCycle;		///< IVBegin add at the beginning of the cycle
@@ -299,7 +300,7 @@ class Reactor : public CLASSFacility
 	CLASSBackEnd*	fOutBackEndFacility;	//!< Pointer to the BackEnd Facility which collect the spend fuel
 	
 	
-	CLASSFuelPlan*	fFuelPlan;		//!< Pointer to the fuel Plan
+	ReactorScheduler*	fReactorScheduler;		//!< Pointer to the ReactorScheduler
 	
 	FabricationPlant*	fFabricationPlant;		//!< Pointer to the FabricationPlant
 	

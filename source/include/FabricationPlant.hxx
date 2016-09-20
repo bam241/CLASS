@@ -165,7 +165,7 @@ public :
 	void UpdateInsideIV();										
 
 	IsotopicVector BuildFuelFromEqModel(map <string , vector<double> > LambdaArray); 	//!<Build the fresh fuel for the reactor according the results of the EquivalenceModel (@see  EquivalenceModel)
-	void BuildArray(int ReactorId);									//!< virtualy extract fissile nuclei from Storage according EquivalenceModel fStreamList and make it virtually decay FabricationTime
+	void BuildArray(int ReactorId, cSecond ReactorLoadingTime);									//!< virtualy extract fissile nuclei from Storage according EquivalenceModel fStreamList and make it virtually decay FabricationTime
 
 #ifndef __CINT__
 	void BuildFuelForReactor(int ReactorId, cSecond t);			//!< Build a fuel for the reactor ReactorId
