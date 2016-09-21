@@ -267,11 +267,19 @@ class Reactor : public CLASSFacility
 #ifndef __CINT__
 
 	void AddScheduleEntry(cSecond time,  ReactorModel* Model, double BurnUp, double Power, double HMMass)	//!< Add A new schedule entry 
-	{ DBGL; fReactorScheduler->AddEntry( time, Model, BurnUp, Power*fCapacityFactor, HMMass); }			//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
+	{ 	if(Model->GetPhysicsModels() && !fFabricationPlant )
+			{ERROR<<"You must add a FabicationPlant to Reactor " <<GetName()
+		   <<"\n"<< "Use YourReactor->AddFabricationPlant(YourFP);"<<endl;exit(0);}
+		fReactorScheduler->AddEntry( time, Model, BurnUp, Power*fCapacityFactor, HMMass); 
+	}			//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
 	void AddScheduleEntry(cSecond time,  EvolutionData* Model, double BurnUp, double Power, double HMMass)
-	{ DBGL; fReactorScheduler->AddEntry( time, new ReactorModel(Model), BurnUp, Power*fCapacityFactor, HMMass); }			//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
+	{  fReactorScheduler->AddEntry( time, new ReactorModel(Model), BurnUp, Power*fCapacityFactor, HMMass); }			//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
 	void AddScheduleEntry(cSecond time,  PhysicsModels* Model, double BurnUp, double Power, double HMMass)
-	{ DBGL;  fReactorScheduler->AddEntry( time, new ReactorModel(Model), BurnUp,  Power*fCapacityFactor, HMMass); }			//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
+	{	if(!fFabricationPlant) 
+			{ERROR<<"You must add a FabicationPlant to Reactor " <<GetName()
+		   <<"\n"<< "Use YourReactor->AddFabricationPlant(YourFP);"<<endl;exit(0);}
+		fReactorScheduler->AddEntry( time, new ReactorModel(Model), BurnUp,  Power*fCapacityFactor, HMMass); 
+	}			//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
 #endif
 
 	//@}
