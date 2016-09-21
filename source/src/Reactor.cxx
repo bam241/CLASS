@@ -471,8 +471,8 @@ void Reactor::Evolution(cSecond t)
 		fInternalTime += EvolutionTime; 				// Update Internal Time
 		fInCycleTime += EvolutionTime;					// Update InCycleTime
 		
-		if(t >=  GetCreationTime() + GetLifeTime())				// if the Next Cycle don't 'Exist...
-			fIsShutDown = true;
+		fInsideIV = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fInCycleTime/fEvolutionDB.GetPower()*fPower) );	// update the fuel composition
+		if(t >=  GetCreationTime() + GetLifeTime())	fIsShutDown = true;		// if the Next Cycle don't 'Exist...
 		
 		
 	}
