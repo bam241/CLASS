@@ -1,12 +1,45 @@
-#!/bin/bash
+#! /bin/bash
 
-option=$1
-case "$option" in
-  "-h" | "--help")
+### CONFIGURATION ############################################################
+# ROOT_v : require version of ROOT
+ROOT_v="5.34/32" # useless variable...
+ROOT_v_low="5.34"
+ROOT_v_up="5.99"
 
-cat <<\_ACEOF
+# flags
+ROOTCFLAGS='$(shell ${ROOTSYS}/bin/root-config --cflags)'
+ROOTGLIBS='$(shell ${ROOTSYS}/bin/root-config --glibs)'
+ROOTLIBS='$(shell ${ROOTSYS}/bin/root-config --libs)'
+
+OMPFLAGS="-fopenmp -DOpenMP"
+OMPLIB="-lgomp"
+
+# default value, could be change by argument (see usage for more information)
+OMPenable="yes"
+libDir="lib"
+guiDir="bin"
+
+
+#_____________________________________________________________________________
+# compilator and options
+if [[ -z "$CXX" ]]; then
+	CXX="g++ -std=c++11" # default compiler is g++ with C++11
+fi
+if [[ -z "$CXXFLAGS" ]]; then
+	CXXFLAGS="-O2 -g -fPIC -finline-functions" # some optimization flags for GCC, -fPIC and -finline-functions are not avalable for clang
+fi
+if [[ -z "$CPPFLAGS" ]]; then
+	CPPFLAGS=$OMPFLAGS
+fi
+
+#_____________________________________________________________________________
+# usage
+# call if option -h, -help or --help, display usage and quit
+function usage ()
+{
+	cat <<\MANUAL_EOF
 ###############################################################
-############## configures and compiles CLASS V4.1 #############
+############# configures and compiles CLASS V4.1 ##############
 ###############################################################
 
 Usage: install.sh [VAR=VALUE] [OPTION]
@@ -29,339 +62,368 @@ Some influential environment variables:
 
 Report bugs to <leniau@subatech.in2p3.fr>.
 (special thanks to PTO)
-_ACEOF
+MANUAL_EOF
 
-exit ;;
-esac
+exit 418
+}
 
-####### set default
+# colors
+# test file descriptor, if it's 1 so this is standard output, else we don't need colors
+	# explication : si le script est exéctué normalement, le `file descriptor`
+	# de sortie est la sortie standard, donc le `file descriptor` 1, sinon il
+	# y a redirection du flux donc il ne faut pas afficher les caractères de
+	# changement de couleur. (NB: si la redirection se fait dans le flux
+	# d'erreur, il n'y a pas de couleur non plus).
+if [[ -t 1 ]]; then
+	# sepecial color characters
+	c_default="\033[0m";
+	c_black="\033[30m";
+	c_red="\033[31m";
+	c_green="\033[32m";
+	c_yellow="\033[33m";
+	c_blue="\033[34m";
+	c_magenta="\033[35m";
+	c_cyan="\033[36m";
+	c_lgray="\033[37m";
+	c_dgray="\033[90m";
+	c_lred="\033[91m";
+	c_lgreen="\033[92m";
+	c_lyellow="\033[93m";
+	c_lblue="\033[94m";
+	c_lmagenta="\033[95m";
+	c_lcyan="\033[96m";
+	c_white="\033[97m";
+	c_bold="\033[1m";
+else
+	c_default=""; c_black=""; c_red=""; c_green=""; c_yellow=""; c_blue=""; c_magenta=""; c_cyan=""; c_lgray=""; c_dgray=""; c_lred=""; c_lgreen=""; c_lyellow=""; c_lblue=""; c_lmagenta=""; c_lcyan=""; c_white=""; c_bold="";
+fi
 
-IsGCCSupportOMP="no"
-IsOMPEnable="yes"
-OMPFLAGS=
+### ROOT support #############################################################
+# root_version
+# return the version of ROOT without the patch release (only major.minor)
+function root_version () {
+	$ROOTSYS/bin/root-config --version | cut -d '/' -f 1
+}
+#_____________________________________________________________________________
+# root_TMVA
+# return "ok" if the version of ROOT implement the TMVA feature, "ko" else
+function root_TMVA () {
+	local features=$($ROOTSYS/bin/root-config --features)
+	if [[ "$features" =~ "tmva" ]]; then
+		echo "ok"
+	else
+		echo "ko"
+	fi
+}
 
-ROOTCFLAGS=
-ROOTGLIBS=
-ROOTLIBS=
+#_____________________________________________________________________________
+# test_root
+# test version and TMVA feature of ROOT
+function test_root () {
+	# test version between ROOT_v_low and ROOT_v_up (remove . and patch release)
+	if [[ "$(echo ${ROOT_v_low} | tr -d '.')" -le "$(echo $(root_version) | tr -d '.')" ]] && [[ "$(echo $(root_version) | tr -d '.')" -le "$(echo ${ROOT_v_up} | tr -d '.')" ]]; then
+		echo -e "[ROOT]  version between ${ROOT_v_low} and ${ROOT_v_up}      [ ${c_green}ok${c_default} ]"
+	else
+		echo -e "[ROOT]  version between ${ROOT_v_low} and ${ROOT_v_up}      [${c_red}fail${c_default}]"
+		echo -e "Please install ROOT-${ROOT_v} :\n\thttps://root.cern.ch/content/release-53432"
+		exit 505
+	fi
 
-LIBDIR=${PWD}/lib
-Gui_bin_PATH=${PWD}/gui/bin
+	# TMVA
+	if [[ $(root_TMVA) == "ok" ]]; then
+		echo -e "[ROOT]  TMVA feature                       [ ${c_green}ok${c_default} ]"
+	else
+		echo -e "[ROOT]  TMVA feature                       [${c_red}fail${c_default}]"
+		exit 501
+	fi
+}
 
-CXX="g++"
-CXXFLAGS=""
-CPPFLAGS=""
+### OMP ######################################################################
+# write_OMP_test
+# write a small file to test OpenMP feature
+function write_OMP_test () {
+	echo "#include <omp.h>"
+	echo "int main (int,char**) { return 0; }"
+}
 
-####### evaluate options
-for option
-do
-  case $option in
-   *=?*) ac_optarg=`expr "X$option" : '[^=]*=\(.*\)'` ;;
-   *=)   ac_optarg= ;;
-   *)    ac_optarg=yes ;;
-  esac
-#  echo $ac_optarg
-  case $option in
-  	--InstallLib-path=*)
-  		LIBDIR="$ac_optarg" ;;
-  	--InstallGui-path=*)
-  		Gui_bin_PATH="$ac_optarg" ;;
-	--disable-OMP)
-		IsOMPEnable="disable" ;;
-	 *) 
-	 	echo "Unrecognized option $option"
-	   	exit ;;
+#_____________________________________________________________________________
+# test_OMP
+# if OpenMP is enable, test the OMP feature by compiling the small test
+function test_OMP () {
+	write_OMP_test > test_conf_OMP.cxx
+	local isOMPenable=$(g++ -fopenmp  test_conf_OMP.cxx -lgomp 2>&1 | wc -l)
+
+	rm a.out test_conf_OMP.cxx
+	
+	if [[ $isOMPenable == 0 ]]; then
+		echo -e "[OMP]   enable                             [ ${c_green}ok${c_default} ]"
+	else
+		echo -e "[OMP]   enable                             [${c_red}fail${c_default}]"
+		exit 501
+	fi
+}
+
+### Makefile.config ##########################################################
+# write_makefileconfig
+# write Makefile.config file with correct value
+function write_makefileconfig () {
+	now=`date +%F\ %T`
+	echo -e "# autogenerate by $0 ($now)"
+	echo -e "
+#####################
+###### OPEN MP ######
+#####################
+OMPFLAGS=$OMPFLAGS
+OMPLIB=$OMPLIB
+
+#####################
+####### ROOT ########
+#####################
+ROOTCFLAGS:=$ROOTCFLAGS
+ROOTGLIBS:=$ROOTGLIBS
+ROOTLIBS:=$ROOTLIBS
+
+#####################
+##### COMPILER ######
+#####################
+CXX= ${CXX}
+CXXFLAGS= ${CXXFLAGS}
+
+####Installation folder of librairies##
+LIBDIR=${PWD}/$LIBDIR
+####Installation folder of Gui##
+Gui_bin_PATH=$Gui_bin_PATH
+"
+}
+#_____________________________________________________________________________
+# make-dirs
+# make config, lib, gui/bin directories
+function make_dirs () {
+	mkdir -p config
+	mkdir -p $LIBDIR
+	mkdir -p $Gui_bin_PATH
+}
+
+#_____________________________________________________________________________
+# makefileconfig
+# test directories, write Makefile.config, an test it
+function makefileconfig () {
+	make_dirs
+
+	if [[ -d config ]]; then
+		echo -e "[DIR]   build config dir                   [ ${c_green}ok${c_default} ]"
+	else
+		echo -e "[DIR]   build config dir                   [${c_red}fail${c_default}]"
+		exit 507
+	fi
+	if [[ -d $LIBDIR ]]; then
+		echo -e "[DIR]   build lib dir                      [ ${c_green}ok${c_default} ]"
+	else
+		echo -e "[DIR]   build lib dir                      [${c_red}fail${c_default}]"
+		exit 507
+	fi
+	if [[ -d $Gui_bin_PATH ]]; then
+		echo -e "[DIR]   build gui dir                      [ ${c_green}ok${c_default} ]"
+	else
+		echo -e "[DIR]   build gui dir                      [${c_red}fail${c_default}]"
+		exit 507
+	fi
+
+	write_makefileconfig > config/Makefile.config
+
+	if [[ -f config/Makefile.config ]]; then
+		echo -e "[DIR]   write Makefile.config              [ ${c_green}ok${c_default} ]"
+	else
+		echo -e "[DIR]   write Makefile.config              [${c_red}fail${c_default}]"
+		exit 404
+	fi
+}
+
+### config.hxx ###############################################################
+# write_confighxx
+# wrtie config.hxx file
+function write_confighxx () {
+	local omp="$1"
+	if [[ $omp =~ "no" ]]; then
+		echo -e "#define omp_get_thread_num() 0"
+	else
+		echo -e "#include <omp.h>"
+	fi
+}
+
+#_____________________________________________________________________________
+# confighxx
+# write and test config/config.hxx file
+function confighxx () {
+	local omp="$1"
+	write_confighxx $omp > config/config.hxx
+
+	if [[ -f config/config.hxx ]]; then
+		echo -e "[FILE]  write config.hxx                   [ ${c_green}ok${c_default} ]"
+	else
+		echo -e "[FILE]  write config.hxx                   [${c_red}fail${c_default}]"
+		exit 404
+	fi
+}
+
+### compilation CLASS ########################################################
+
+# compile_class_lib
+# clean, compile and make symbolic links in CLASS
+function compile_class_lib () {
+	# clean
+	make -C source clean   && echo -e "[CLASS] clean source directory             [ ${c_green}ok${c_default} ]" || (echo -e "[CLASS] clean source directory             [${c_red}fail${c_default}]"; exit 418)
+
+	# links
+	make -C source external && echo -e "[CLASS] create external link               [ ${c_green}ok${c_default} ]" || (echo -e "[CLASS] create external link               [${c_red}fail${c_default}]"; exit 418)
+	
+	# make dir for *.o files
+	mkdir -p source/obj
+	if [[ -d source/obj ]]; then
+		echo -e "[DIR]   build obj dir                      [ ${c_green}ok${c_default} ]"
+	else
+		echo -e "[DIR]   build obj dir                      [${c_red}fail${c_default}]"
+		exit 507
+	fi
+	
+	# compile
+	make -C source -j 4    && echo -e "[CLASS] compile CLASS                      [ ${c_green}ok${c_default} ]" || (echo -e "[CLASS] compile CLASS                                             [${c_red}fail${c_default}]"; exit 501)
+
+	# make links (install)
+	make -C source install && echo -e "[CLASS] install CLASS                      [ ${c_green}ok${c_default} ]" || (echo -e "[CLASS] install CLASS           [${c_red}fail${c_default}]"; exit 501)
+}
+
+#_____________________________________________________________________________
+# compile_class_gui
+# clean and compile CLASSGui
+function compile_class_gui () {
+	make -C gui clean && echo -e "[CLASS] clean gui directory                [ ${c_green}ok${c_default} ]" || (echo -e "[CLASS] clean gui directory     [${c_red}fail${c_default}]"; exit 501)
+	make -C gui -j 4  && echo -e "[CLASS] compile GUI                        [ ${c_green}ok${c_default} ]" || (echo -e "[CLASS] compile GUI             [${c_red}fail${c_default}]"; exit 501)
+}
+
+### decay data bases #########################################################
+# set_decaydata
+# write DATA_BASE/DECAY/ALL/Decay.idx file with the correct path
+function set_decaydata () {
+	local decay_dir="DATA_BASES/DECAY/ALL"
+	local decay_databases_path="$(pwd)/${decay_dir}"
+	sed -e "s%PATHTOBASE%${decay_databases_path}%" ${decay_dir}/.Decay.tmp > ${decay_dir}/Decay.idx && echo -e "[DB]    decay databases pathes             [ ${c_green}ok${c_default} ]" || (echo -e "[DB]    decay databases pathes             [${c_red}fail${c_default}]"; exit 505)
+}
+
+### environement variables ###################################################
+# write_shellrc
+# write a small file with environment variables, the format depends on the default shell
+function write_shellrc () {
+	if [[ $SHELL =~ "csh" ]]; then
+		export_="setenv"
+		equal_=" "
+	else
+		export_="export"
+		equal_="="
+	fi
+
+	echo "#! $(which $SHELL)
+
+${export_} CLASS_PATH${equal_}${PWD}
+${export_} CLASS_include${equal_}\${CLASS_PATH}/source/include
+${export_} CLASS_lib${equal_}\${CLASS_PATH}/lib
+
+${export_} PATH${equal_}\${PATH}:\${CLASS_PATH}/gui/bin
+${export_} LD_LIBRARY_PATH${equal_}\${LD_LIBRARY_PATH}:\${CLASS_lib}
+"
+}
+
+#_____________________________________________________________________________
+# test_write_shellrc
+# write and test the class_env.sh file
+function test_write_shellrc () {
+	write_shellrc > class_env.sh
+	if [[ -f class_env.sh ]]; then
+		echo -e "[ENV]   write source file                  [ ${c_green}ok${c_default} ]";
+	else
+		echo -e "[ENV]   write source file                  [${c_red}fail${c_default}]";
+		exit 404
+	fi
+}
+
+### final information ########################################################
+# display_final_info
+# display final information to congragulate the user
+function display_final_info () {
+	echo -e "${c_bold}
+Congratulations you are now able to compile your first CLASS .cxx input.
+Please read ${PWD}/documentation/Manual/USEGUIDE.pdf
+And source ${PWD}/class_env.sh in your \$HOME/.$(echo ${SHELL} | awk -F / '{ print $NF }')rc to finalize installation.${c_default}
+
+echo \"source ${PWD}/class_env.sh\" >> \$HOME/.$(echo ${SHELL} | awk -F / '{ print $NF }')rc
+"
+}
+
+### procedure of installation ################################################
+# CLASS_install
+# complet procedure of installation
+function CLASS_install () {
+	local omp="$1"
+	test_root
+
+	if [[ $omp =~ "no" ]]; then
+		echo -e "[OMP]   checking for omp.h                 [ ${c_green}no${c_default} ]"
+	else
+		echo -e "[OMP]   checking for omp.h                 [ ${c_green}ok${c_default} ]"
+		test_OMP
+	fi
+
+	makefileconfig
+	confighxx $omp
+
+	compile_class_lib
+	compile_class_gui
+	
+	set_decaydata
+	
+	test_write_shellrc
+	
+	display_final_info
+}
+
+##############################################################################
+### calls of all functions
+##############################################################################
+
+# loop on all arguments
+for arg in "$@"; do
+	case $arg in
+		-h|-help|--help )
+			usage ;;
+		--disable-OMP )
+			OMPenable="no" ;;
+		--InstallLib-path=* )
+			libDir="${arg//--InstallLib-path=/}" ;;
+		--InstallGui-path=* )
+			guiDir="${arg//--InstallGui-path=/}" ;;
 	esac
 done
 
-####### ROOT Support
-if [ -f $ROOTSYS/bin/root-config ]
-then
-	echo "Checking for ROOT cern lib... yes"
-	ROOTCFLAGS='$(shell ${ROOTSYS}/bin/root-config --cflags)'
-	ROOTGLIBS='$(shell ${ROOTSYS}/bin/root-config --glibs)'
-	ROOTLIBS='$(shell ${ROOTSYS}/bin/root-config --libs)'
+# change default value with argument
+LIBDIR=$libDir
+Gui_bin_PATH=$guiDir
 
-	if [ "$ROOTSYS/bin/root-config --features-tmva" = "no" ]
-	then
-		echo "TMVA is not activated : consider rebuild ROOT activating this feature"
-		exit 0
-	fi
-	
-else
-		echo "Checking for ROOT cern lib... no"
-		echo "********************* ERROR *********************"
-		echo "** CLASS need ROOT (cern) to work"
-		echo "** Either set the ROOTSYS env variable or intall"
-		echo "** the ROOT library FROM SOURCES with the same C++"
-		echo "** compiler you will use for comipling CLASS"
-		echo "***************************************************"
-		exit 0
-fi
+# call the complet install procedure
+CLASS_install $OMPenable
 
-####### OMP support
-### write a testconf prog
-echo "#include <omp.h>" > testconf.cxx
-echo "int main(){ return 0;}" >> testconf.cxx
+exit 0
 
-if [ "$IsOMPEnable" = "yes" ]
-then
+EOF
+##############################################################################
 
-	${CXX} -o testconf -fopenmp  testconf.cxx -lgomp > script.errors 2>&1
- 	
-	ok=`cat script.errors|wc -l`
- 	if [ $ok = 0 ]
- 	then
- 		IsGCCSupportOMP="yes"
-	else
-		IsOMPEnable="no"
-		IsGCCSupportOMP="no"
- 	fi
-	rm -f script.errors
-fi
+%DOC
 
-if [ "$IsOMPEnable" = "yes" ]
-then
-	echo "Checking for omp.h... yes"
-	echo "   You can disable the use of this library with \"--disable-OMP\" option"
-	OMPFLAGS="-fopenmp -DOpenMP"
-	OMPLIB=-lgomp
-else 
-	if [ "$IsOMPEnable" = "no" ]
-	then
-		echo "Checking for omp.h... no"
-		echo "   OpenMP support not found."
-		echo "   Either gcc is to old either install libgomp.so"
-	else
-		if [ "$IsOMPEnable" = "disable" ]
-		then
-			echo "Checking for omp.h... disable"
-		fi
-	fi
-fi
+# Exit status
+In `bash`, a correct exectution of a script return an exit status equals to `0` (that why a *C*/*C++* program end by `return 0;`). There is no standard for other exit status, so I (Josselin Massot) use the list of status code in HTTP for exit status.
 
-rm -f script.errors testconf testconf.cxx
-
-
-#######################################################
-### Preprocessor flags & Makefile variables 
-#######################################################
-mkdir -p config
-MAKEFILE_INC="config/Makefile.config"
-rm config/Makefile.config
-echo "#####################">> $MAKEFILE_INC
-echo "###### OPEN MP ######">> $MAKEFILE_INC
-echo "#####################">> $MAKEFILE_INC
-echo "OMPFLAGS=$OMPFLAGS" >> $MAKEFILE_INC
-echo "OMPLIB=$OMPLIB" >> $MAKEFILE_INC
-echo >> $MAKEFILE_INC
-echo "#####################">> $MAKEFILE_INC
-echo "####### ROOT ########">> $MAKEFILE_INC
-echo "#####################">> $MAKEFILE_INC
-echo "ROOTCFLAGS:=$ROOTCFLAGS" >> $MAKEFILE_INC
-echo "ROOTGLIBS:=$ROOTGLIBS" >> $MAKEFILE_INC
-echo "ROOTLIBS:=$ROOTLIBS" >> $MAKEFILE_INC
-echo >> $MAKEFILE_INC
-echo "#####################">> $MAKEFILE_INC
-echo "##### COMPILER ######">> $MAKEFILE_INC
-echo "#####################">> $MAKEFILE_INC
-
-if [ "$CXX" = "" ]
-then
-	echo "CXX= g++" >> $MAKEFILE_INC
-else
-	echo "CXX=$CXX" >> $MAKEFILE_INC
-fi
-
-if [ "$CXXFLAGS" = "" ]
-then
-	echo "CXXFLAGS=-O2 -g -fPIC -Wall -Wno-unused">> $MAKEFILE_INC
-else
-	echo "CXXFLAGS=$CXXFLAGS" >> $MAKEFILE_INC
-fi
-if [ "$CPPFLAGS" = "" ]
-then
-	echo "CPPFLAGS= \$(OMPFLAGS) " >> $MAKEFILE_INC
-else
-	echo "CPPFLAGS=$CPPFLAGS" >> $MAKEFILE_INC
-fi
-
-echo "####Installation folder of librairies##" >>$MAKEFILE_INC
-echo "LIBDIR=$LIBDIR" >> $MAKEFILE_INC
-echo "Building Librairies Folder @ $LIBDIR"
-mkdir -p $LIBDIR
-
-
-echo "####Installation folder of Gui##" >>$MAKEFILE_INC
-echo "Gui_bin_PATH=$Gui_bin_PATH" >> $MAKEFILE_INC
-echo "Building Gui Folder @ $Gui_bin_PATH"
-mkdir -p $Gui_bin_PATH
-
-#######################################################
-### Include flags 
-#######################################################
-INCLUDE_INC="config/config.hxx"
-if [ "$IsOMPEnable" = "yes" ]
-then
-	echo "#include <omp.h>" > $INCLUDE_INC
-else
-	echo "#define omp_get_thread_num() 0" > $INCLUDE_INC
-fi
-
-#######################################################
-### compile libraries 
-#######################################################
-echo "####################################################"
-echo "######### Compilation of CLASS libraries ###########"
-echo "####################################################"
-cd  source/src ; make clean ; make -j 4 ; make install ; cd ../..
-echo "####################################################"
-echo "########## Compilation Done  #######################"
-echo "####################################################"
-echo "MURE libraries installed in"
-echo  "----> $LIBDIR"
-echo "####################################################"
-echo "######### Compilation of CLASSGUI binary ###########"
-echo "####################################################"
-cd gui ; make clean ; make -j 4 ; cd ../
-echo "####################################################"
-echo "########## Compilation Done  #######################"
-echo "####################################################"
-echo
-#######################################################
-### set the pathes of DECAY data base
-#######################################################
-echo
-echo
-echo "####################################################"
-echo "########## SET DECAY DATA BASES PATHES #############"
-echo "####################################################"
-cd DATA_BASES/DECAY/ALL/
-sed -e "s%PATHTOBASE%`pwd`%" .Decay.tmp > Decay.idx
-echo "-> Done"
-cd -
-
-#######################################################
-### set the environement variables
-#######################################################
-echo
-echo
-echo "####################################################"
-echo "########## ENVIRONEMENT VARIABLES ##################"
-echo "####################################################"
-
-MYDefaultSHELL=$(env | grep SHELL | awk -F "=" '{ print $2 }')
-SHELLPreference=".$(echo "$MYDefaultSHELL" | awk -F "/bin/" '{print $2}')rc"
-echo "-> Your default shell is : $MYDefaultSHELL"
-echo "-> Your $SHELLPreference will be edited if CLASS_PATH CLASS_include" 
-echo "   and CLASS_lib aren't defined yet "
-echo
-echo "CHECKING LOADED ENVIRONEMENT VARIABLES "
-echo
-
-CLASS_PATH_To_Set=""
-CLASS_include_To_Set=""
-CLASS_lib_To_Set=""
-SetEnvSucceed=false
-
-if [ -z "$CLASS_PATH" ]; then
-	echo "Not found in your loaded $SHELLPreference."
-	echo "Setting variables ..."
-	echo "PRESS ENTER IF DEFAULT IS CORRECT"
-	read -p "====>ENTER THE PATH TO THE CLASS root folder (defalut ${PWD}) " CLASS_PATH_To_Set
-	[ -z "${CLASS_PATH_To_Set}" ] && CLASS_PATH_To_Set="${PWD}"
-	echo "Path of the CLASS include folder is $CLASS_PATH_To_Set"
-	echo
-	read -p "====>ENTER THE PATH TO THE CLASS INCLUDE (default: $CLASS_PATH_To_Set/source/include/): " CLASS_include_To_Set
-	[ -z "${CLASS_include_To_Set}" ] && CLASS_include_To_Set="${CLASS_PATH_To_Set}/source/include/"
-	echo "Path of the CLASS include folder is $CLASS_include_To_Set"
-	echo 
-	read -p "====>ENTER THE PATH WHERE CLASS LIB ARE INSTALLED (default: $LIBDIR): " CLASS_lib_To_Set
-	[ -z "${CLASS_lib_To_Set}" ] && CLASS_lib_To_Set="$LIBDIR"
-	echo "Path of the CLASS lib folder is $CLASS_lib_To_Set"
-	echo 
-	read -p "====>ENTER THE PATH WHERE CLASSGui is INSTALLED (default: $Gui_bin_PATH): " CLASS_Gui_path_to_set
-	[ -z "${CLASS_Gui_path_to_set}" ] && CLASS_Gui_path_to_set="$Gui_bin_PATH"
-	echo "Path of the CLASS lib folder is $CLASS_Gui_path_to_set"
-	echo 
-
-	EXPORT=
-	EQUAL=
-	if [ "$MYDefaultSHELL" = "/bin/tcsh" ] || [ "$MYDefaultSHELL" = "/bin/csh" ] ; then
-		EXPORT="setenv "
-		EQUAL=" "
-
-	else
-		EXPORT="export "
-		EQUAL="="
-	fi
-
-
-	if [ -f $HOME/$SHELLPreference ] ; then
-		SetEnvSucceed=true
-		echo "" >>$HOME/$SHELLPreference
-		echo "##################" >> $HOME/$SHELLPreference
-		echo "####CLASSV4.1#####" >> $HOME/$SHELLPreference
-		echo "##################" >> $HOME/$SHELLPreference
-
-		echo "$EXPORT CLASS_PATH$EQUAL$CLASS_PATH_To_Set" >> $HOME/$SHELLPreference
-		echo "$EXPORT CLASS_include$EQUAL$CLASS_include_To_Set" >> $HOME/$SHELLPreference
-		echo "$EXPORT CLASS_lib$EQUAL$CLASS_lib_To_Set" >> $HOME/$SHELLPreference
-		echo "#### CLASS Gui ####" >> $HOME/$SHELLPreference
-		echo "$EXPORT PATH$EQUAL\${PATH}:$CLASS_Gui_path_to_set" >> $HOME/$SHELLPreference
-
-		echo "Environnment variables added in $HOME/$SHELLPreference"
-	else
-		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-		echo "!!!!!! WARNING  $HOME/$SHELLPreference NOT FOUND !!!!!!!!!!"
-		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-		
-	fi
-else
-	SetEnvSucceed=true
-	echo "A CLASS_PATH is already defined in your $SHELLPreference: $CLASS_PATH"
-
-	if [ -z "$CLASS_lib" ]; then
-		echo "Path to CLASS libraries is not set "
-		echo "delete the CLASS_PATH set in your $SHELLPreference, source $SHELLPreference, and rerun this script"
-		SetEnvSucceed=false
-
-	else
-		echo "CLASS_lib is: $CLASS_lib"
-
-	fi
-
-	if [ -z "$CLASS_include" ]; then
-		echo "Path to CLASS includes is not set "
-		echo "delete the CLASS_PATH set in your $SHELLPreference, source $SHELLPreference, and rerun this script"
-		SetEnvSucceed=false
-	else
-		echo "CLASS_include is : $CLASS_include"
-	fi
-
-fi	
- 
-if [ "$SetEnvSucceed" = true ] ; then 
-	echo "LOADING $HOME/$SHELLPreference ... done"
-	echo
-	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-	echo " Congratulations you are now able to compile your first     "
-	echo "               CLASS .cxx input.                            "
-	echo " Please read $CLASS_PATH_To_Set/documentation/Manual/USEGUIDE.pdf"  
-	echo " (Check if echo \$CLASS_PATH gives you the correct path)    "                                   
-	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-	$MYDefaultSHELL #LOAD THE DEFAULT SHELL WITH THE NEW ENV VAR
-else
-	echo " I CAN'T MANAGE TO SET THE CLASS ENVIRONEMENT VARIABLE 	  "    
-	echo " ADD THE FOLLOWING IN YOUR SHELL PREFERENCE FILE (RC FILE) :" 
-	echo                    
-	echo "$EXPORT CLASS_PATH$EQUAL$CLASS_PATH_To_Set      " 
-	echo "$EXPORT CLASS_include$EQUAL$CLASS_include_To_Set" 
-	echo "$EXPORT CLASS_lib$EQUAL$CLASS_lib_To_Set        "		
-	echo "$EXPORT PATH$EQUAL\${PATH}:$CLASS_Gui_path_to_set"
-
-	echo
-fi	
-
-
-
+* `404` : *Not Found*, a test find a file which doesn't exist.
+* `418` : *I'm a teapot*, if only return help (I don't find a correct exit status for this).
+* `501` : *Not Implemented*, test a feature which doesn't implemented on OS.
+* `505` : *HTTP Version not supported*, the version of a library is not the one is expected.
+* `507` : *Insufficient storage*, an error on making a directory, maybe because of the insufficient storage.
 
