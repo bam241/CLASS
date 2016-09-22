@@ -158,7 +158,7 @@ public :
 	using CLASSObject::GetName;
 
 
-	void SetInsideIV(IsotopicVector isotopicvector)	{ fInsideIV = isotopicvector; }	//!< Set the IV inside the Facility
+	void SetInsideIV(IsotopicVector const& isotopicvector)	{ fInsideIV = isotopicvector; }	//!< Set the IV inside the Facility
 
 	void SetCreationTime(cSecond CTtime)	{ fCreationTime = CTtime;}		//!< Set the creation Time
 	void SetLifeTime(cSecond Ltime)		{ fLifeTime = Ltime; }			//!< Set the life time of the facility
@@ -176,8 +176,8 @@ public :
 	 */
 	//@{
 	virtual void ApplyZAIThreshold(int z = 90);						//!< Put all nuclei below the threshold in -2 -2 -2 ZAI...
-	void AddCumulativeIVIn(IsotopicVector IV) { fCumulativeIVIn += IV;}		//!< Add the Input IsotopicVector in the cumulative IV IN
-	void AddCumulativeIVOut(IsotopicVector IV) { fCumulativeIVOut += IV;}		//!< Add the Input IsotopicVector in the cumulative IV OUT
+	void AddCumulativeIVIn(IsotopicVector const& IV) { fCumulativeIVIn += IV;}		//!< Add the Input IsotopicVector in the cumulative IV IN
+	void AddCumulativeIVOut(IsotopicVector const& IV) { fCumulativeIVOut += IV;}		//!< Add the Input IsotopicVector in the cumulative IV OUT
 	virtual void Evolution(cSecond t) = 0;	//!< Performs the Evolution to time t
 	virtual void Dump()			{ }	//!< Write Modification (IV In/Out, filling the TF...)
 		

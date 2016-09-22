@@ -74,12 +74,12 @@ public:
 	vector<ZAI> GetZAIList() const;			//!< Return the list of mother ZAI present in the filiation list
 	int size() const{return (int)fNucleiFiliation.size();}	//!< Return the number of mother ZAI (then filiation path)
 	
-	IsotopicVector GetFiliation(ZAI Mother);	//!< Return the filiation isotopic vector of the ZAI mother
+	IsotopicVector GetFiliation(ZAI Mother) const;	//!< Return the filiation isotopic vector of the ZAI mother
 	
 	ZAI GetArtificialDecay(ZAI Mother);			//!< Make an artificial and instantaneus decay of the ZAI, (desexcitation, or Beta decay)
 	
 	
-	void SetNucleiFIliation(map<ZAI, IsotopicVector> Fiiliation) { fNucleiFiliation = Fiiliation;}	//!< Set the full filiation list
+	void SetNucleiFIliation(map<ZAI, IsotopicVector> const& Fiiliation) { fNucleiFiliation = Fiiliation;}	//!< Set the full filiation list
 
 	//}
 	
@@ -89,7 +89,7 @@ public:
 	 \name Adding Method
 	 */
 	//@{
-	void Add(ZAI Mother, IsotopicVector Daughter );		//!< Add A ZAI and its IsotopicVector of daughter(s) to the filiation
+	void Add(ZAI Mother, IsotopicVector const& Daughter );		//!< Add A ZAI and its IsotopicVector of daughter(s) to the filiation
 	//}
 	
 	
@@ -101,9 +101,9 @@ public:
 	//@{
 	
 	
-	void FiliationCleanUp(map<ZAI, int> GoodNuclei, CLASSNucleiFiliation CuttedNuclei);	//!< Cutting all pathway until each path ends on a nuclei in the GoodList following the CuttedNuclei. If nuclei are neither in the GoodNuclei list or in CuttedNuclei, then artificial decay are performed
+	void FiliationCleanUp(map<ZAI, int> const& GoodNuclei, CLASSNucleiFiliation const& CuttedNuclei);	//!< Cutting all pathway until each path ends on a nuclei in the GoodList following the CuttedNuclei. If nuclei are neither in the GoodNuclei list or in CuttedNuclei, then artificial decay are performed
 	
-	void SelfFiliationCleanUp(map<ZAI, int> GoodNuclei);	//!< Cutting all the pathway ending on a nuclei not present as a mother nuclei
+	void SelfFiliationCleanUp(map<ZAI, int> const& GoodNuclei);	//!< Cutting all the pathway ending on a nuclei not present as a mother nuclei
 	
 	void NormalizeBranchingRatio(double Value = 1);		//!< Normalization of all the branching ratio to 1
 	

@@ -1,7 +1,8 @@
 #include "EquivalenceModel.hxx"
 #include "EQM_MLP_PWR_MOxEUS.hxx"
 #include "CLASSLogger.hxx"
-#include "StringLine.hxx"
+#include "CLASSReader.hxx"
+#include "external/StringLine.hxx"
 
 #include <string>
 #include <iostream>
@@ -128,7 +129,7 @@ map <string , vector<double> > EQM_MLP_PWR_MOxEUS::BuildFuel(double BurnUp, doub
 	
 	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
 	{	
-		for(int i=0; i<StreamArray[(*it_s_vIV).first].size(); i++)
+		for( size_t i=0; i<StreamArray[(*it_s_vIV).first].size(); i++)
 		{
 			lambda[(*it_s_vIV).first].push_back(0);
 		}
@@ -223,7 +224,7 @@ map <string , vector<double> > EQM_MLP_PWR_MOxEUS::BuildFuel(double BurnUp, doub
 
 		for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
 		{	
-			for(int i=0; i<StreamArray[(*it_s_vIV).first].size(); i++)
+			for(size_t i=0; i<StreamArray[(*it_s_vIV).first].size(); i++)
 				IVStream[(*it_s_vIV).first]  +=  lambda[(*it_s_vIV).first][i] * StreamArray[(*it_s_vIV).first][i];	
 		}
 
@@ -287,7 +288,7 @@ map <string , vector<double> > EQM_MLP_PWR_MOxEUS::BuildFuel(double BurnUp, doub
 	{
 		for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
 		{
-			for(int i=0; i<lambda[(*it_s_vD).first].size(); i++)
+			for(size_t i=0; i<lambda[(*it_s_vD).first].size(); i++)
 			{
 				lambda[(*it_s_vD).first][i] = 0;
 			}
@@ -373,7 +374,7 @@ map <string , vector<double> > EQM_MLP_PWR_MOxEUS::BuildFuel(double BurnUp, doub
 	{	
 		DBGV( "Lambda vector : "<<(*it_s_vD).first );
 
-		for(int i=0; i<lambda[(*it_s_vD).first].size(); i++)
+		for(size_t i=0; i<lambda[(*it_s_vD).first].size(); i++)
 		{
 			DBGV(lambda[(*it_s_vD).first][i]); 
 		}
@@ -482,11 +483,26 @@ double EQM_MLP_PWR_MOxEUS::GetMaximumBurnUp(IsotopicVector TheFuel, double Targe
 	double k_av 			= 0; //average kinf
 	double OldPredictedk_av 	= 0;
  
+	CLASSReader * reader = new CLASSReader();
+	reader->AddVariable( "U5"   );
+	reader->AddVariable( "U8"   );
+	reader->AddVariable( "Pu8"  );
+	reader->AddVariable( "Pu9"  );
+	reader->AddVariable( "Pu10" );
+	reader->AddVariable( "Pu11" );
+	reader->AddVariable( "Pu12" );
+	reader->AddVariable( "Am1"  );
+	reader->AddVariable( "Time" );
+	reader->BookMVA( "MLP method" , fTMVAWeightPath[0] );
+	
  	for(int b=0;b<fNumberOfBatch;b++)
  	{
  		float TheTime 		= (b+1)*TheFinalTime/fNumberOfBatch;
  		TTree* InputTree 	= CreateTMVAInputTree(TheFuel,TheTime);
- 		OldPredictedk_av        += ExecuteTMVA(InputTree,fTMVAWeightPath[0]);
+ 		reader->SetInputData( InputTree );
+ 		
+ 		OldPredictedk_av   += reader->EvaluateRegression( "MLP method" )[0];
+ 		
  		delete InputTree;
  	}
  	OldPredictedk_av/=fNumberOfBatch;	
@@ -508,7 +524,7 @@ double EQM_MLP_PWR_MOxEUS::GetMaximumBurnUp(IsotopicVector TheFuel, double Targe
  			TheFinalTime = TheFinalTime + fabs(OldFinalTimePlus - TheFinalTime)/2.;
 
  			if(SecondToBurnup(TheFinalTime) >= (MaximumBU-MaximumBU*GetBurnUpPrecision() ) )	
- 				return MaximumBU;	
+ 				{ delete reader; return MaximumBU; }
  		}
 
  		else if( (OldPredictedk_av-fKThreshold)  < 0)//The burnup is too high
@@ -516,7 +532,7 @@ double EQM_MLP_PWR_MOxEUS::GetMaximumBurnUp(IsotopicVector TheFuel, double Targe
  			OldFinalTimePlus = TheFinalTime;
  			TheFinalTime = TheFinalTime - fabs(OldFinalTimeMinus - TheFinalTime)/2.;	
  			if( SecondToBurnup(TheFinalTime) < TargetBU*GetBurnUpPrecision() )
- 				return 0;
+ 				{ delete reader; return 0; }
  		}
  		
  		k_av = 0;
@@ -524,7 +540,9 @@ double EQM_MLP_PWR_MOxEUS::GetMaximumBurnUp(IsotopicVector TheFuel, double Targe
  		{
  			float TheTime = (b+1)*TheFinalTime/fNumberOfBatch;
  			TTree* InputTree = CreateTMVAInputTree(TheFuel,TheTime);
- 			k_av +=	ExecuteTMVA(InputTree,fTMVAWeightPath[0]);
+ 			reader->SetInputData( InputTree );
+ 			
+ 			k_av +=	reader->EvaluateRegression("MLP method")[0];
  			delete InputTree;
  		}
  		k_av/=fNumberOfBatch;	
@@ -533,6 +551,8 @@ double EQM_MLP_PWR_MOxEUS::GetMaximumBurnUp(IsotopicVector TheFuel, double Targe
  		count++;
  	}	while( fabs(OldPredictedk_av-fKThreshold) > GetPCMPrecision() )  ;
 
+
+	delete reader;
  	return SecondToBurnup(TheFinalTime);
 }
 

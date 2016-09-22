@@ -7,7 +7,7 @@
 //
 
 #include "XSModel.hxx"
-#include "StringLine.hxx"
+#include "external/StringLine.hxx"
 #include "CLASSMethod.hxx"
 #include "ZAI.hxx"
 

@@ -9,7 +9,7 @@
 #include "IrradiationModel.hxx"
 
 #include "CLASSLogger.hxx"
-#include "StringLine.hxx"
+#include "external/StringLine.hxx"
 
 #include <TGraph.h>
 #include <TString.h>
@@ -677,18 +677,10 @@ void IrradiationModel::SetSpectrumType(string type)
 //________________________________________________________________________
 double IrradiationModel::GetDecayConstant(const ZAI& zai) const
 {
-	map<ZAI ,double> DecayConstante = fDecayConstante.GetIsotopicQuantity();
+	IsotopicVector::const_iterator it  = fDecayConstante.find(zai);
 
-	map<ZAI ,double>::iterator it;
-	it = DecayConstante.find(zai);
-
-
-	if ( it != DecayConstante.end() )
-	{
-		return it->second;
-	}
+	if ( it != fDecayConstante.end() )
+		{ return it->second; }
 	else
-	{
-		return 0;
-	}
+		{ return 0; }
 }

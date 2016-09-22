@@ -1,5 +1,5 @@
 #include "EquivalenceModel.hxx"
-#include "StringLine.hxx"
+#include "external/StringLine.hxx"
 #include "CLASSMethod.hxx"
 
 //________________________________________________________________________
@@ -222,30 +222,29 @@ void EquivalenceModel::ReadSpecificPower(const string &line)
 }
 
 //________________________________________________________________________
-void EquivalenceModel::StocksTotalMassCalculation(map < string , vector <IsotopicVector> >  Stocks)
+void EquivalenceModel::StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks)
 {
 	// Calculating total mass of stock once and for all
 	
 	
 	double TotalMassInStocks = 0;
-	map < string , vector <IsotopicVector> >::iterator it_s_vIV;
+	map < string , vector <IsotopicVector> >::const_iterator it_s_vIV;
 
 	for( it_s_vIV = Stocks.begin();  it_s_vIV != Stocks.end(); it_s_vIV++)
 	{
-		fTotalMassInStocks[(*it_s_vIV).first] = 0;
-		fLambdaMax[(*it_s_vIV).first] = 0;
-
+		fTotalMassInStocks[ it_s_vIV->first ] = 0;
+		fLambdaMax[ it_s_vIV->first ] = 0;
 	}
 
 	for(  it_s_vIV = Stocks.begin();   it_s_vIV != Stocks.end();  it_s_vIV++)
 	{	
 		TotalMassInStocks = 0;
-		for(int i=0; i < (int)Stocks[(* it_s_vIV).first].size(); i++)
+		for(int i=0; i < (int)Stocks.at((* it_s_vIV).first).size(); i++)
 		{
-			TotalMassInStocks  +=  Stocks[(* it_s_vIV).first][i].GetTotalMass();
+			TotalMassInStocks  +=  Stocks.at( it_s_vIV->first )[i].GetTotalMass();
 		}
-		fLambdaMax[(*it_s_vIV).first] = Stocks[(* it_s_vIV).first].size();	
-		fTotalMassInStocks[(* it_s_vIV).first] = TotalMassInStocks * 1e6; // in grams
+		fLambdaMax[(*it_s_vIV).first] = Stocks.at( it_s_vIV->first ).size();	
+		fTotalMassInStocks[ it_s_vIV->first ] = TotalMassInStocks * 1e6; // in grams
 	}
 }
 

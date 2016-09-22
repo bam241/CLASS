@@ -1,7 +1,7 @@
 #include "EQM_MLP_Kinf.hxx"
 #include "CLASSLogger.hxx"
 #include "CLASSMethod.hxx"
-#include "StringLine.hxx"
+#include "external/StringLine.hxx"
 
 #include <string>
 #include <iostream>
@@ -14,6 +14,8 @@
 #include "TMVA/Reader.h"
 #include "TMVA/Tools.h"
 #include "TMVA/MethodCuts.h"
+
+#include "CLASSReader.hxx"
 
 
 //________________________________________________________________________
@@ -430,14 +432,23 @@ double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetB
 	double OldFinalTimePlus = BurnupToSecond(MaximumBU);
 	double k_av = 0; //average kinf
 	double OldPredictedk_av = 0;
+	
+	CLASSReader * reader = new CLASSReader( fMapOfTMVAVariableNames );
+	reader->AddVariable( "Time" );
+	reader->BookMVA( "MLP method" , fTMVAWeightPath[0] );
+	
 	for(int b = 0;b<fNumberOfBatch;b++)
 	{
 		float TheTime = (b+1)*TheFinalTime/fNumberOfBatch;
+
 		TTree* InputTree = CreateTMVAInputTree(TheFuel,TheTime);
-		OldPredictedk_av += ExecuteTMVA(InputTree,fTMVAWeightPath[0],true);
+		reader->SetInputData( InputTree );
+		
+		OldPredictedk_av += reader->EvaluateRegression( "MLP method" )[0];
+		
 		delete InputTree;
 	}
-	OldPredictedk_av/= fNumberOfBatch;
+	OldPredictedk_av /= fNumberOfBatch;
 	
 	//Algorithm control
 	int count = 0;
@@ -456,7 +467,7 @@ double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetB
 			TheFinalTime = TheFinalTime + fabs(OldFinalTimePlus - TheFinalTime)/2.;
 			
 			if(SecondToBurnup(TheFinalTime) >= (MaximumBU-MaximumBU*GetBurnUpPrecision() ) )
-				return MaximumBU;
+				{ delete reader; return MaximumBU; }
 		}
 		
 		else if( (OldPredictedk_av-fKThreshold)  < 0)//The burnup is too high
@@ -464,7 +475,7 @@ double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetB
 			OldFinalTimePlus = TheFinalTime;
 			TheFinalTime = TheFinalTime - fabs(OldFinalTimeMinus-TheFinalTime)/2.;
 			if( SecondToBurnup(TheFinalTime) < TargetBU*GetBurnUpPrecision() )
-				return 0;
+				{ delete reader; return 0; }
 		}
 		
 		k_av = 0;
@@ -472,15 +483,20 @@ double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetB
 		{
 			float TheTime = (b+1)*TheFinalTime/fNumberOfBatch;
 			TTree* InputTree = CreateTMVAInputTree(TheFuel,TheTime);
-			k_av += ExecuteTMVA(InputTree,fTMVAWeightPath[0],true);
+			reader->SetInputData( InputTree );
+			
+			k_av += reader->EvaluateRegression("MLP method")[0];
+			
 			delete InputTree;
 		}
 		k_av/= fNumberOfBatch;
 		//cout<<SecondToBurnup(TheFinalTime)<<" ";
 		OldPredictedk_av = k_av;
 		count++;
+//std::clog << "-> " << k_av << "\t\t(" << count << ") \t [" << TheFinalTime << "]" << "\t" << OldPredictedk_av-fKThreshold << "\t" << GetPCMPrecision() << std::endl; 
 	}	while( fabs(OldPredictedk_av-fKThreshold) > GetPCMPrecision() )  ;
 	
+	delete reader;
 	//cout<<endl;
 	return SecondToBurnup(TheFinalTime);
 }

@@ -3,7 +3,8 @@
 #include "XSM_MLP.hxx"
 #include "CLASSLogger.hxx"
 #include "CLASSMethod.hxx"
-#include "StringLine.hxx"
+#include "CLASSReader.hxx"
+#include "external/StringLine.hxx"
 
 #include "TMVA/Reader.h"
 #include "TMVA/Tools.h"
@@ -332,6 +333,9 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 {
 	DBGL
 	
+	string dir = fTMVAWeightFolder;
+	if(dir[dir.size()-1] != '/') { dir+= "/"; }
+	
 	EvolutionData EvolutionDataFromMLP = EvolutionData();
 	
 	map<ZAI,TGraph*> ExtrapolatedXS[3];
@@ -350,15 +354,19 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 		ReadWeightFile( fWeightFiles[i], Z, A, I, Reaction);
 		if( Z >= GetZAIThreshold() )
 		{
+			CLASSReader * reader = new CLASSReader( fMapOfTMVAVariableNames );
+			if(!fIsStepTime) { reader->AddVariable( "Time" ); }
+			
+			reader->BookMVA( "MLP method" , dir + fWeightFiles[i] );
+		
 			for(int TimeStep = 0;TimeStep<int(fMLP_Time.size());TimeStep++)
 			{
 				TTree* InputTree = CreateTMVAInputTree(IV,TimeStep);
+				reader->SetInputData( InputTree );
+				double XSValue = reader->EvaluateRegression( "MLP method" )[0];
 				
-				pair< map<ZAI, TGraph*>::iterator, bool> IResult;
+				pair< map<ZAI, TGraph*>::iterator, bool> IResult = ExtrapolatedXS[Reaction].insert( pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph()) );
 				
-				IResult = ExtrapolatedXS[Reaction].insert( pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph()) );
-				
-				double XSValue = ExecuteTMVA(fWeightFiles[i],InputTree );
 				if(IResult.second )
 				{
 					(IResult.first)->second->SetPoint(0, (double)fMLP_Time[TimeStep], XSValue );
@@ -371,6 +379,8 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 				
 				delete InputTree;
 			}
+			
+			delete reader;
 		}
 	}
 	
@@ -449,7 +459,7 @@ EvolutionData XSM_MLP::GetCrossSectionsStep(IsotopicVector IV)
 	
 	/************* The Cross sections***********/
 	
-	for(int i = 0;i<int(fWeightFiles.size());i++)
+	for(int i = 0;i<int(fWeightFiles.size());i++) // JM2016 : besoin de booker le reader à chaque itération car le fichier est différent à chaque fois, donc pas utilisation du CLASSReader (on pourrait mais on le fait pas)
 	{
 		int Z = -2;
 		int A = -2;

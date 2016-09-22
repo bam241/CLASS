@@ -58,7 +58,7 @@ public:
 	double GetMass(const int Z, const int A )    const { return GetMass( ZAI(Z, A, 0) ); } //!< Get with Z, A
 	//@}
 	
-	double GetMass(const IsotopicVector IV)    const; //return Mass of IV [t]
+	double GetMass(const IsotopicVector & IV)    const; //return Mass of IV [t]
 
 private:
 	map<ZAI, double> fZAIMass; //! ZAI mass list
