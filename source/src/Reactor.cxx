@@ -34,7 +34,7 @@ Reactor::Reactor():CLASSFacility(4)
 	fOutBackEndFacility = 0;
 	fStorage = 0;
 	fFabricationPlant = 0;
-	fFuelPlan = 0;
+	fReactorScheduler = 0;
 	
 }
 //________________________________________________________________________
@@ -45,7 +45,7 @@ Reactor::Reactor(CLASSLogger* log):CLASSFacility(log, 4)
 	fOutBackEndFacility = 0;
 	fStorage = 0;
 	fFabricationPlant = 0;
-	fFuelPlan = 0;
+	fReactorScheduler = 0;
 	SetName("R_Reactor.");
 	
 	DBGL
@@ -73,7 +73,8 @@ Reactor::Reactor(CLASSLogger* log,
 	
 	fOutBackEndFacility = Pool;
 	
-	fPower = power * CapacityFactor;
+	fCapacityFactor = CapacityFactor;
+	fPower = power * fCapacityFactor;
 	fEfficiencyFactor = 0.33;
 	fElectricPower = fEfficiencyFactor*fPower;
 	
@@ -88,7 +89,7 @@ Reactor::Reactor(CLASSLogger* log,
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 	
 	
-	fFuelPlan = 0;
+	fReactorScheduler = 0;
 	
 	INFO << " A Reactor has been define :" << endl;
 	INFO << "\t Fuel Composition is fixed (for now)! " <<  endl;
@@ -122,13 +123,14 @@ Reactor::Reactor(CLASSLogger* log,
 	
 	fBurnUp = -1;
 	fHeavyMetalMass = HMMass;
-	fPower = Power*CapacityFactor;
+	fCapacityFactor = CapacityFactor;
+	fPower = Power * fCapacityFactor;
 	fEfficiencyFactor = 0.33;
 	fElectricPower = fEfficiencyFactor*fPower;
 	
 	fCycleTime = -1;	 //BU in GWd/t
 	
-	fFuelPlan = 0;
+	fReactorScheduler = 0;
 	
 	
 	
@@ -165,13 +167,14 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels* fueltypeDB, FabricationPlant* 
 	
 	fBurnUp = BurnUp;
 	fHeavyMetalMass = HMMass;
-	fPower = Power*CapacityFactor;
+	fCapacityFactor = CapacityFactor;
+	fPower = Power * fCapacityFactor;
 	fEfficiencyFactor = 0.33;
 	fElectricPower = fEfficiencyFactor*fPower;
 	fCycleTime = (cSecond) (fBurnUp*1e9 / (fPower) * fHeavyMetalMass  *3600*24);	 //BU in GWd/t
 	
-	fFuelPlan = new CLASSFuelPlan(log);
-	fFuelPlan->AddFuel(creationtime, CLASSFuel(fueltypeDB), fBurnUp);
+	fReactorScheduler = new ReactorScheduler(log);
+	fReactorScheduler->AddEntry(creationtime, new ReactorModel(fueltypeDB), fBurnUp, fPower, fHeavyMetalMass);
 	
 	CheckListConsistency(fueltypeDB, fabricationplant);
 	
@@ -215,8 +218,8 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels* 	fueltypeDB,
 	fEfficiencyFactor = 0.33;
 	fElectricPower = fEfficiencyFactor*fPower;
 	
-	fFuelPlan = new CLASSFuelPlan(log);
-	fFuelPlan->AddFuel(creationtime, CLASSFuel(fueltypeDB), fBurnUp);
+	fReactorScheduler = new ReactorScheduler(log);
+	fReactorScheduler->AddEntry(creationtime, new ReactorModel(fueltypeDB), fBurnUp, fPower, fHeavyMetalMass);
 
 	CheckListConsistency(fueltypeDB, fabricationplant);
 
@@ -257,7 +260,8 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	
 	fOutBackEndFacility = Pool;
 	
-	fPower = power * CapacityFactor;
+	fCapacityFactor = CapacityFactor;
+	fPower = power * fCapacityFactor;
 	fEfficiencyFactor = 0.33;
 	fElectricPower = fEfficiencyFactor*fPower;
 	
@@ -274,9 +278,9 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	fIVInCycle = fEvolutionDB.GetIsotopicVectorAt(0);
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 	
-	fFuelPlan = new CLASSFuelPlan(log);
-	fFuelPlan->AddFuel(creationtime, CLASSFuel(evolutivedb), fBurnUp);
-	
+	fReactorScheduler = new ReactorScheduler(log);
+	fReactorScheduler->AddEntry(creationtime, new ReactorModel(evolutivedb), fBurnUp, fPower, fHeavyMetalMass);
+
 	INFO << " A Reactor has been define :" << endl;
 	INFO << "\t Fuel Composition is fixed ! " <<  endl;
 	INFO << "\t Creation time set at \t " << (double)(GetCreationTime()/cYear) << " year" << endl;
@@ -310,6 +314,7 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	fOutBackEndFacility = Pool;
 	
 	fPower = BurnUp*3600.*24. / (fCycleTime) * HMMass *1e9; //BU in GWd/t
+	fCapacityFactor = 1;
 	fEfficiencyFactor = 0.33;
 	fElectricPower = fEfficiencyFactor*fPower;
 	
@@ -326,8 +331,8 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
 	
 	
-	fFuelPlan = new CLASSFuelPlan(log);
-	fFuelPlan->AddFuel(creationtime, CLASSFuel(evolutivedb), fBurnUp);
+	fReactorScheduler = new ReactorScheduler(log);
+	fReactorScheduler->AddEntry(creationtime, new ReactorModel(evolutivedb), fBurnUp, fPower, fHeavyMetalMass);
 	
 	INFO << " A Reactor has been define :" << endl;
 	INFO << "\t Fuel Composition is fixed ! " <<  endl;
@@ -466,8 +471,8 @@ void Reactor::Evolution(cSecond t)
 		fInternalTime += EvolutionTime; 				// Update Internal Time
 		fInCycleTime += EvolutionTime;					// Update InCycleTime
 		
-		if(t >=  GetCreationTime() + GetLifeTime())				// if the Next Cycle don't 'Exist...
-			fIsShutDown = true;
+		fInsideIV = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fInCycleTime/fEvolutionDB.GetPower()*fPower) );	// update the fuel composition
+		if(t >=  GetCreationTime() + GetLifeTime())	fIsShutDown = true;		// if the Next Cycle don't 'Exist...
 		
 		
 	}
@@ -538,16 +543,19 @@ void Reactor::Dump()
 	
 	
 	// Get the new Fuel !
-	pair<CLASSFuel, double> NextFuel = fFuelPlan->GetFuelAt(fInternalTime);
-	SetBurnUp((NextFuel).second);
+	ScheduleEntry* NextFuel = fReactorScheduler->GetEntryAt(fInternalTime);
+	fPower          = NextFuel->GetPower();
+    fHeavyMetalMass = NextFuel->GetHeavyMetalMass();
+    fElectricPower  = fPower * fEfficiencyFactor;
+	SetBurnUp( NextFuel->GetBurnUp() );
 	
-	if( NextFuel.first.GetPhysicsModels() )
+	if( NextFuel->GetReactorModel()->GetPhysicsModels() )
 		fFixedFuel = false;
-	else if( NextFuel.first.GetEvolutionData() )
+	else if( NextFuel->GetReactorModel()->GetEvolutionData() )
 		fFixedFuel = true;
 	else
 	{
-		ERROR << typeid(NextFuel.first).name() << endl;
+		ERROR << typeid(NextFuel->GetReactorModel()).name() << endl;
 		ERROR << "WRONG Fuel Format Correct it !! " << endl;
 		exit(1);
 	}
@@ -558,7 +566,7 @@ void Reactor::Dump()
 		DBGL
 		if(fIsAtEndOfCycle  && !fIsShutDown )
 		{
-			SetEvolutionDB( *(NextFuel.first.GetEvolutionData()) );
+			SetEvolutionDB( *(NextFuel->GetReactorModel()->GetEvolutionData()) );
 			fIsAtEndOfCycle = false;
 			
 			
@@ -596,6 +604,7 @@ void Reactor::Dump()
 		if(!GetParc()->GetStockManagement())
 		{
 			ERROR << " Can't have unfixedFuel without stock management" << endl;
+			ERROR << " Add in your input : gCLASS->SetStockManagement(true);"<<endl;
 			exit(1);
 		}
 		
@@ -620,8 +629,6 @@ void Reactor::Dump()
 	DBGL
 }
 
-
-
 //________________________________________________________________________
 cSecond Reactor::GetNextCycleTime(cSecond time)
 {
@@ -630,7 +637,13 @@ cSecond Reactor::GetNextCycleTime(cSecond time)
 	
 	while ( LastCycle < time)
 	{
-		cSecond cycletime = (cSecond)(fFuelPlan->GetFuelAt(LastCycle).second*1e9 / (fPower) * fHeavyMetalMass  *3600*24);
+		
+		ScheduleEntry* entry = fReactorScheduler->GetEntryAt(LastCycle);
+		double BU     = entry->GetBurnUp();
+		double Power  = entry->GetPower();
+		double HMMass = entry->GetHeavyMetalMass();
+
+		cSecond cycletime = (cSecond)(BU *1e9 / (Power) * HMMass  *3600*24);
 		LastCycle += cycletime;
 	}
 	
@@ -638,6 +651,7 @@ cSecond Reactor::GetNextCycleTime(cSecond time)
 	return LastCycle;
 }
 
+//________________________________________________________________________
 void Reactor::CheckListConsistency(PhysicsModels* fueltypeDB, FabricationPlant* fabricationplant)
 {
 	//Get Lists containers defined in EqM and FP

@@ -357,12 +357,15 @@ void Scenario::BuildTimeVector(cSecond t)
 		cSecond R_StartingTime = fReactor[i]->GetCreationTime();
 		cSecond R_ShutDownTime = fReactor[i]->GetCreationTime() + fReactor[i]->GetLifeTime();
 
-		double  R_Power = fReactor[i]->GetPower();
-		double  R_HMMass = fReactor[i]->GetHeavyMetalMass();
-		pair<CLASSFuel, double> R_Fuel = fReactor[i]->GetFuelPlan()->GetFuelAt(R_StartingTime);
+		ScheduleEntry* R_Entry = fReactor[i]->GetScheduler()->GetEntryAt(R_StartingTime);
+		double  R_BU     = R_Entry->GetBurnUp();
+		double  R_Power  = R_Entry->GetPower();
+		double  R_HMMass = R_Entry->GetHeavyMetalMass();
 
-		double  R_BU = R_Fuel.second;
 		cSecond	R_CycleTime = (cSecond) (R_BU*1e9  / R_Power * R_HMMass *3600*24);
+		
+		DBGV("BU : " << R_BU <<" R_Power : "<< R_Power << " R_R_HMMass : "<<R_HMMass<<" R_CycleTime : "<<R_CycleTime);
+
 		if(R_CycleTime ==  0)
 		{
 			ERROR << " Be carefull a reactor cycletime is set to 0 second....\"\n" << endl;
@@ -379,7 +382,7 @@ void Scenario::BuildTimeVector(cSecond t)
 
 		map< cSecond, int > R_BackEndTimePath = fReactor[i]->GetOutBackEndFacility()->GetTheBackEndTimePath();
 
-		if( R_Fuel.first.GetPhysicsModels() )
+		if( R_Entry->GetReactorModel()->GetPhysicsModels() )
 			F_CycleTime = fReactor[i]->GetFabricationPlant()->GetCycleTime();
 
 
@@ -431,7 +434,7 @@ void Scenario::BuildTimeVector(cSecond t)
 		//********* FabricationPlant Evolution Step *********//
 
 
-		if( R_Fuel.first.GetPhysicsModels() )
+		if( R_Entry->GetReactorModel()->GetPhysicsModels() )
 		{
 
 			fReactor[i]->GetFabricationPlant()->AddReactor( i, step );
@@ -454,11 +457,13 @@ void Scenario::BuildTimeVector(cSecond t)
 
 		step += R_CycleTime;
 		//Prepare the first Cycle
-		R_Fuel = fReactor[i]->GetFuelPlan()->GetFuelAt(step);
-
-		R_BU = fReactor[i]->GetFuelPlan()->GetFuelAt(step).second;
+		R_Entry = fReactor[i]->GetScheduler()->GetEntryAt(step);
+		R_BU     = R_Entry->GetBurnUp();
+		R_Power  = R_Entry->GetPower();
+		R_HMMass = R_Entry->GetHeavyMetalMass();
 		R_CycleTime = (cSecond) (R_BU*1e9 / R_Power * R_HMMass *3600*24);
 
+		DBGV("BU : " << R_BU <<" R_Power : "<< R_Power << " R_R_HMMass : "<<R_HMMass<<" R_CycleTime : "<<R_CycleTime);
 		if(R_CycleTime ==  0)
 		{
 			ERROR << " Be carefull a reactor cycletime is set to 0 second....\"\n" << endl;
@@ -471,7 +476,7 @@ void Scenario::BuildTimeVector(cSecond t)
 			DBGL
 
 			// FabricationPlant Evolution Step
-			if( R_Fuel.first.GetPhysicsModels() )
+			if( R_Entry->GetReactorModel()->GetPhysicsModels() )
 			{
 				fReactor[i]->GetFabricationPlant()->AddReactor( i, step );
 
@@ -516,10 +521,12 @@ void Scenario::BuildTimeVector(cSecond t)
 			step += R_CycleTime;
 
 			// Update to the next fuel
-			R_Fuel = fReactor[i]->GetFuelPlan()->GetFuelAt(step);
+		    R_Entry = fReactor[i]->GetScheduler()->GetEntryAt(step);
+		    double  R_BU     = R_Entry->GetBurnUp();
+		    double  R_Power  = R_Entry->GetPower();
+		    double  R_HMMass = R_Entry->GetHeavyMetalMass();
+		    R_CycleTime = (cSecond) (R_BU*1e9 / R_Power * R_HMMass *3600*24);
 
-			R_BU = fReactor[i]->GetFuelPlan()->GetFuelAt(step).second;
-			R_CycleTime = (cSecond) (R_BU*1e9 / R_Power * R_HMMass *3600*24);
 			if(R_CycleTime ==  0)
 			{
 				ERROR << " Be carefull a reactor cycletime is set to 0 second....\"\n" << endl;
@@ -806,7 +813,7 @@ void Scenario::PrintClover(int i)
 		cout<<"╰───────────────────────────────────────────────╯        @@@            "<<endl;
 		cout<<"                                                                        "<<endl;
 	}	                                       
-	    if(i == 1)   
+	if(i == 1)   
     {	cout<<"╭───────────────────────────────────────────────╮                       "<<endl;
 		cout<<"│   ██████╗██╗      █████╗ ███████╗███████╗     │      @ @@@@@@@@      "<<endl;
 		cout<<"│  ██╔════╝██║     ██╔══██╗██╔════╝██╔════╝     │       @@@@@@@@       "<<endl;
@@ -828,7 +835,6 @@ void Scenario::PrintClover(int i)
 		cout<<"╰───────────────────────────────────────────────╯                      "<<endl;
 		cout<<"                                                                        "<<endl;
 	}
-
     if(i == 2)   
     {	cout<<"╭───────────────────────────────────────────────╮                      "<<endl;
 		cout<<"│   ██████╗██╗      █████╗ ███████╗███████╗     │           @@@        "<<endl;
@@ -852,7 +858,6 @@ void Scenario::PrintClover(int i)
 		cout<<"                                                                        "<<endl;
 
 	}
-
     if(i == 3)   
     {	cout<<"╭───────────────────────────────────────────────╮                       "<<endl;
 		cout<<"│   ██████╗██╗      █████╗ ███████╗███████╗     │                      "<<endl;
@@ -867,7 +872,7 @@ void Scenario::PrintClover(int i)
 		cout<<"│                                               │          @@          "<<endl; 
 		cout<<"│ A dynamical nuclear fuel cycle code developed │          @@          "<<endl; 
 		cout<<"│           by the CNRS/IN2P3 & IRSN            │         @@@@         "<<endl; 
-		cout<<"│      https://gitlab.in2p3.fr/sens/CLASS       │ @@@@@        "<<endl; 
+		cout<<"│      https://gitlab.in2p3.fr/sens/CLASS       │         @@@@@        "<<endl; 
 		cout<<"├───────────────────────────────────────────────┤        @@@@@@        "<<endl; 
 		cout<<"│ Authors :                                     │        @@@@@@@       "<<endl; 
 		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │       @@@@@@@@       "<<endl;

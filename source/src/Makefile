@@ -31,10 +31,9 @@ OBJS	 = CLASSLogger.o \
 			IrradiationModel.o \
 			EquivalenceModel.o \
 			XSModel.o \
-			CLASSFuel.o\
 			PhysicsModels.o \
 			EvolutionData.o EvolutionDataDict.o \
-			CLASSFuelPlan.o\
+			ReactorScheduler.o\
 			Scenario.o
 
 OBJMODEL = 	$(EQMINC)/EQM_PWR_MLP_MOX.o $(EQMINC)/EQM_PWR_MLP_MOX_Am.o \
@@ -61,9 +60,8 @@ ROOTOBJS = 	CLASSLogger.o \
 			SeparationPlant.o SeparationPlantDict.o\
 			DecayDataBank.o \
 			IrradiationModel.o \
-			CLASSFuel.o\
 			EvolutionData.o EvolutionDataDict.o \
-			CLASSFuelPlan.o\
+			ReactorScheduler.o\
 			PhysicsModels.o
 
 
