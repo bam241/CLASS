@@ -60,7 +60,7 @@ Some influential environment variables:
   CPPFLAGS    C++ preprocessor flags, e.g. -D<special flag>
 
 
-Report bugs to <leniau@subatech.in2p3.fr>.
+Report bugs to <nicolas.thiolliere@subatech.in2p3.fr>.
 (special thanks to PTO)
 MANUAL_EOF
 
