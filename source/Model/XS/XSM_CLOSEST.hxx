@@ -85,7 +85,7 @@ class XSM_CLOSEST : public XSModel
 	 \name Get Method
 	 */
 	//@{
- 	virtual EvolutionData GetCrossSections( const IsotopicVector & isotopicvector,double t = 0) ;	//!< Reason to live of this CLASS : Return the closest Evolutiondata
+ 	virtual EvolutionData GetCrossSections(IsotopicVector isotopicvector,double t = 0) ;	//!< Reason to live of this CLASS : Return the closest Evolutiondata
 	vector< EvolutionData >	GetFuelDataBank()	const	{ return fFuelDataBank; }	//!< Return the FuelDataBank
 	string 			GetDataBaseIndex()	const	{ return fDataBaseIndex; }	//!< Return the index Name
 	string			GetFuelType()		const	{ return fFuelType; }		//!< Return the fuel type of the DB
@@ -93,7 +93,7 @@ class XSM_CLOSEST : public XSModel
 	pair<double,double>	GetBurnUpRange()	const	{ return fBurnUpRange;}		//!< Return the Burnup range of the DB
 	bool 			IsDefine(IsotopicVector IV)	const;				//!< True if the key is define, false instead
 
-	map<double, int>	GetDistancesTo( const IsotopicVector & isotopicvector, double t = 0);	//! Return a map containing the distance of each EvolutionData in the DataBase to the set IV at the time t
+	map<double, int>	GetDistancesTo(IsotopicVector isotopicvector, double t = 0);	//! Return a map containing the distance of each EvolutionData in the DataBase to the set IV at the time t
 	//@}
 
 	//********* Set Method *********//
@@ -112,7 +112,7 @@ class XSM_CLOSEST : public XSModel
 
 	void SetWeightedDistanceCalculation(bool val = true) { fWeightedDistance = val;}		//!< Set weighted distance calculation
 	void SetInventoryEvolutionInterpolation(bool val = true) { fEvolutionDataInterpolation = val;}	//!< \deprecated The 64 closest EvolutionData (ED) are used to build a new ED. The cross section from each ED are weighted according to their distance
-	void SetDistanceParameter( const IsotopicVector & DistanceParameter);					//!< Define mannually the weight for each ZAI in the distance calculation
+	void SetDistanceParameter(IsotopicVector DistanceParameter);					//!< Define mannually the weight for each ZAI in the distance calculation
 	//@}
 
 	//{

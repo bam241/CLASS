@@ -89,8 +89,6 @@ public :
 	FabricationPlant(CLASSLogger* log, double fabricationtime = cYear*2);
 	//}
 
-	//FabricationPlant ( const FabricationPlant & );
-
 	~FabricationPlant(); 	///< Normal Destructor.
 
 	//@}

@@ -3,606 +3,585 @@
 #include "CLASSLogger.hxx"
 #include "CLASSConstante.hxx"
 
+
+#include <cmath>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <algorithm>
+//________________________________________________________________________
+//________________________________________________________________________
+//
+//
+//
+//				IsotopicVector
+//
+//
+//________________________________________________________________________
+//________________________________________________________________________
+
 ClassImp(IsotopicVector)
 
-///// CONSTRUCTOR ////////////////////////////////////////////////////////////
-IsotopicVector::IsotopicVector () 
-{ ; }
-//____________________________________________________________________________
-IsotopicVector::IsotopicVector ( const IsotopicVector & a ) :
-	fdata(a.fdata)
+//________________________________________________________________________
+//________________________Constructor & Destructor________________________
+//________________________________________________________________________
+IsotopicVector::IsotopicVector ()
 { ; }
 
-///// DESTRUCTOR /////////////////////////////////////////////////////////////
+IsotopicVector::IsotopicVector ( IsotopicVector const& IVa ) :
+	fIsotopicQuantity(IVa.fIsotopicQuantity) , fIsotopicQuantityNeeded(IVa.fIsotopicQuantityNeeded)
+{ ; }
+
+//_____________________________________________________GetSpeciesComposition___________________
 IsotopicVector::~IsotopicVector ()
-{ ; }
-
-///// OPERATOR ///////////////////////////////////////////////////////////////
-IsotopicVector & IsotopicVector::operator = ( const IsotopicVector & a )
 {
-	if ( this != &a )
-	{
-		fdata = a.fdata;
-		fIsotopicQuantityNeeded = a.fIsotopicQuantityNeeded;
-	}
-	return *this;
+	//fIsotopicQuantity.clear();
+	//fIsotopicQuantityNeeded.clear();
 }
 
-//____________________________________________________________________________
-double IsotopicVector::operator [] ( const ZAI & zai ) const
-{
-	const_iterator it = fdata.find(zai);
-	if ( it != fdata.end() )
-		{ return it->second; }
 
-	return 0;
-}
-//____________________________________________________________________________
-double & IsotopicVector::operator [] ( const ZAI & zai )
-	{ return fdata[zai]; }
+//____________________________InClass Operator____________________________
 
-//____________________________________________________________________________
-IsotopicVector & IsotopicVector::operator += ( const IsotopicVector & a )
+//________________________________________________________________________
+IsotopicVector& IsotopicVector::operator+= (const IsotopicVector& IVa)
 {
-	const_iterator end = a.end();
-	for ( const_iterator it=a.begin() ; it!=end ; ++it )
+	const_iterator end = IVa.end();
+	for ( const_iterator it=IVa.begin() ; it!=end ; ++it )
 		{ Add( *it ); }
 
 	return *this;
 }
-//____________________________________________________________________________
-IsotopicVector & IsotopicVector::operator -= ( const IsotopicVector & a )
+
+//________________________________________________________________________
+IsotopicVector& IsotopicVector::operator-= (const IsotopicVector& IVa)
 {
-	const_iterator end = a.end();
-	for ( const_iterator it=a.begin() ; it!=end ; ++it )
+	const_iterator end = IVa.end();
+	for ( const_iterator it=IVa.begin() ; it!=end ; ++it )
 		{ Remove( *it ); }
 
 	return *this;
 }
-//____________________________________________________________________________
-IsotopicVector & IsotopicVector::operator *= ( const IsotopicVector & a )
+//________________________________________________________________________
+IsotopicVector& IsotopicVector::operator*= (const IsotopicVector& IVa)
 {
-	const_iterator a_end = a.end(); // just to prevent to much call of a function
-	const_iterator f_end = fdata.end(); // just to prevent to much call of a function
+	iterator f_end = fIsotopicQuantity.end();
 
-	iterator tmp;
-	for ( const_iterator it=a.begin() ; it!=a_end ; ++it )
-	{
-		tmp = fdata.find(it->first);
-		if ( tmp != f_end )
-			{ tmp->second *= it->second; }
-	}
+	const_iterator IVa_end = IVa.end();
+	const_iterator jt;
 
-	return *this;
-}
-//____________________________________________________________________________
-IsotopicVector & IsotopicVector::operator *= ( double f )
-{
-	const_iterator end = fdata.end();
-	for ( iterator it=fdata.begin() ; it!=end ; ++it )
+	for( iterator it = fIsotopicQuantity.begin() ; it != f_end ; ++it )
 	{
-		it->second *= f;
+		jt = IVa.find( it->first );
+
+		if ( jt != IVa_end )
+			{ it->second *=  jt->second; }
+		else
+			{ it->second = 0; }
 	}
 
 	return *this;
 }
 
-///// GETTER /////////////////////////////////////////////////////////////////
-std::map<ZAI,double> IsotopicVector::GetIsotopicQuantity() const
-	{ return fdata; }
-//____________________________________________________________________________
-IsotopicVector IsotopicVector::GetSpeciesComposition ( const int a ) const
+//________________________________________________________________________
+IsotopicVector& IsotopicVector::operator*= (const double& factor)
+{
+	Multiply(factor);
+	
+	return *this;
+}
+
+//________________________________________________________________________
+bool IsotopicVector::operator < ( const IsotopicVector& isotopicvector ) const
+{
+	if ( Norme(*this) != Norme(isotopicvector) )
+		{ return Norme(*this) < Norme(isotopicvector); }
+	else if ( (*this).GetIsotopicQuantity().size() != isotopicvector.GetIsotopicQuantity().size() )
+		{ return (*this).GetIsotopicQuantity().size() < isotopicvector.GetIsotopicQuantity().size(); }
+	else
+	{
+		map<ZAI ,double>::iterator it;
+		map<ZAI ,double>::iterator it2 = isotopicvector.GetIsotopicQuantity().begin();
+		map<ZAI ,double> IsotopicQuantity = (*this).GetIsotopicQuantity();
+		for( it = IsotopicQuantity.begin(); it != IsotopicQuantity.end(); it++ )
+		{
+			if( (*it).first != (*it2).first )
+			return (*it).first < (*it2).first;
+			else it2++;
+		}
+		return false;
+	}
+}
+
+//________________________________________________________________________
+//_____________________________General Method_____________________________
+//________________________________________________________________________
+void IsotopicVector::Clear()
+{
+	fIsotopicQuantityNeeded.clear();
+	fIsotopicQuantity.clear();
+}
+//________________________________________________________________________
+void IsotopicVector::ClearNeed()
+{
+	fIsotopicQuantityNeeded.clear();
+}
+
+//________________________________________________________________________
+void IsotopicVector::Multiply(double factor)
+{
+	iterator it;
+
+	for( it = fIsotopicQuantity.begin(); it != fIsotopicQuantity.end(); it++)
+		{ (*it).second = (*it).second * factor; }
+
+	for( it = fIsotopicQuantityNeeded.begin(); it != fIsotopicQuantityNeeded.end(); it++)
+		{ (*it).second = (*it).second * factor; }
+}
+
+//________________________________________________________________________
+double IsotopicVector::GetSumOfAll () const
+{
+	return std::accumulate(
+			fIsotopicQuantity.begin() , fIsotopicQuantity.end() , // input iterator
+			0.0 ,                         // first value for the sum
+			[]( const double sum , const std::pair<ZAI,double> & zaiQ ) { return zaiQ.second + sum; }
+		);
+}
+
+//________________________________________________________________________
+void IsotopicVector::Add(const ZAI& zai, double q)
+{
+	if( ceil(q*1e50) - q*1e50 >  q*1e50 - floor(q*1e50) )
+		{ q = floor(q*1e50)*1/1e50; }
+	else
+		{ q = ceil(q*1e50)*1/1e50; }
+
+	if ( q > 0 )
+		{ fIsotopicQuantity[zai] += q; }
+}
+
+//________________________________________________________________________
+void IsotopicVector::Add(const IsotopicVector& isotopicvector)
+{
+	Add( isotopicvector.fIsotopicQuantity );
+}
+//________________________________________________________________________
+void IsotopicVector::Add(const map<ZAI ,double>& quantity)
+{
+	const_iterator end = quantity.end();
+	for ( const_iterator it = quantity.begin() ; it!=end ; ++it )
+	{
+		Add( it->first , it->second );
+	}
+}
+
+
+//________________________________________________________________________
+void IsotopicVector::Remove(const ZAI& zai, double quantity)
+{
+	iterator it = fIsotopicQuantity.find(zai);
+
+	if ( quantity > 0 )
+	{
+		if ( it != fIsotopicQuantity.end() )
+		{
+			if ( it->second > quantity )
+				{ it->second = it->second - quantity; }
+			else
+			{
+				if( (it->second - quantity)/it->second > 1e-16 ) // to fit with double precision : 16 digits
+					{ Need( zai , quantity - it->second ); }
+				it->second = 0;
+			}
+		}
+		else
+		{
+			Need(zai, quantity);
+		}
+	}
+
+	if ( it->second ==  0 )
+		{ fIsotopicQuantity.erase(it); }
+}
+
+//________________________________________________________________________
+void IsotopicVector::Remove(const IsotopicVector& IVa)
+{
+	const_iterator IVa_end = IVa.end();
+	
+	iterator f_end = fIsotopicQuantity.end();
+	iterator jt;
+	for ( const_iterator it=IVa.begin() ; it!=IVa_end ; ++it )
+	{
+		jt = fIsotopicQuantity.find( it->first );
+		if ( jt != f_end )
+		{
+			jt->second -= it->second;
+			if ( jt->second <= 0 )
+			{
+				fIsotopicQuantity.erase(jt);
+				f_end = fIsotopicQuantity.end();
+			}
+		}
+	}
+}
+
+//________________________________________________________________________
+
+void IsotopicVector::ApplyZAIThreshold(int z)
+{
+	double quantity = 0.0;
+	iterator it = fIsotopicQuantity.begin();
+
+	while ( it != fIsotopicQuantity.end() )
+	{
+		if ( it->first.Z() < z )
+		{
+			quantity += it->second;
+			it = fIsotopicQuantity.erase(it++); //becarefull of postcrement incrementation
+		}
+		else
+		{
+			++it;
+		}
+	}
+	fIsotopicQuantity.insert( std::pair<ZAI,double>( ZAI(-2,-2,-2) , quantity ) );
+}
+
+
+
+
+//________________________________________________________________________
+void IsotopicVector::Need(const ZAI& zai, double quantity)
+{
+	if(quantity < 0.5) quantity = 0;
+
+	pair<map<ZAI, double>::iterator, bool> IResult;
+	if(quantity > 0)
+	{	cout << "Negative quantity : " << quantity  << " for ZAI " << zai.Z() << " " << zai.A() << " " << zai.I() << " in this IsotopicVector" << endl;
+		exit(0);
+		IResult = fIsotopicQuantityNeeded.insert( pair<ZAI ,double>(zai, quantity));
+		if(!IResult.second)
+		IResult.first->second += quantity;
+	}
+
+
+}
+
+//________________________________________________________________________
+void IsotopicVector::Need(const IsotopicVector& isotopicvector)
+{
+
+	map<ZAI ,double> isotopicquantity = isotopicvector.GetIsotopicQuantity();
+	map<ZAI ,double >::iterator it;
+	for( it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
+	Need( (*it).first, (*it).second);
+
+}
+
+
+//________________________________________________________________________
+double	IsotopicVector::GetZAIIsotopicQuantity(const ZAI& zai) const
+{
+	const_iterator it = fIsotopicQuantity.find(zai);
+	if ( it != fIsotopicQuantity.end() )
+		{ return it->second; }
+
+	return 0;
+}
+
+//________________________________________________________________________
+double	IsotopicVector::GetZAIIsotopicQuantity(const int z, const int a, const int i) const
+	{ return GetZAIIsotopicQuantity(ZAI(z,a,i)); }
+
+//________________________________________________________________________
+IsotopicVector	IsotopicVector::GetSpeciesComposition ( const int z ) const
 {
 	IsotopicVector tmp;
-	const_iterator end = fdata.end();
+	const_iterator end = fIsotopicQuantity.end();
 
-	for ( const_iterator it=fdata.begin() ; it!=end ; ++it )
+	for ( const_iterator it=fIsotopicQuantity.begin() ; it!=end ; ++it )
 	{
-		if ( it->first.Z() == a )
+		if ( it->first.Z() == z )
 		{
-			tmp.fdata.insert( *it );
+			tmp.fIsotopicQuantity.insert( *it );
 		}
 	}
 
 	return tmp;
 }
-//____________________________________________________________________________
-IsotopicVector IsotopicVector::GetThisComposition ( const IsotopicVector & a ) const
+
+//________________________________________________________________________
+IsotopicVector	IsotopicVector::GetThisComposition(IsotopicVector IVa) const
 {
 	IsotopicVector tmp;
 
-	const_iterator a_end = a.end();
-	const_iterator f_end = fdata.end();
+	const_iterator IVa_end = IVa.end();
+	const_iterator f_end = fIsotopicQuantity.end();
 
 	const_iterator jt;
-	for ( const_iterator it = a.begin() ; it != a_end ; ++it )
+	for ( const_iterator it = IVa.begin() ; it != IVa_end ; ++it )
 	{
-		jt = fdata.find( it->first );
-		tmp.fdata.insert( *jt );
+		jt = fIsotopicQuantity.find( it->first );
+		if ( jt != f_end )
+			{ tmp.fIsotopicQuantity.insert( *jt ); }
 	}
 
 	return tmp;
 }
-//____________________________________________________________________________
-std::vector< ZAI > IsotopicVector::GetZAIList () const
+//________________________________________________________________________
+double IsotopicVector::GetTotalMass() const
 {
-	std::vector< ZAI > tmp( fdata.size() );
+	return cZAIMass.GetMass(*this);//in tons
+}
+//________________________________________________________________________
+
+double IsotopicVector::GetMeanMolarMass() const
+{
+	return GetTotalMass() * 1e6 * AVOGADRO / GetActinidesComposition().GetSumOfAll();
+}
+
+//________________________________________________________________________
+vector<ZAI> IsotopicVector::GetZAIList() const
+{
+	std::vector< ZAI > tmp( fIsotopicQuantity.size() );
 
 	std::transform (
-			fdata.begin() , fdata.end() , // input iterator
+			fIsotopicQuantity.begin() , fIsotopicQuantity.end() , // input iterator
 			tmp.begin()                 , // output iterator
 			[]( const std::pair<ZAI,double> & zaiQ ) { return zaiQ.first; }
 		);
 
 	return tmp;
 }
-//____________________________________________________________________________
-IsotopicVector IsotopicVector::GetActinidesComposition () const
+//________________________________________________________________________
+void IsotopicVector::Initiatlize(double val)
+{
+	if ( val == 0 ) { fIsotopicQuantity.clear(); }
+	else
+	{	
+		iterator end = fIsotopicQuantity.end();
+		for ( iterator it=fIsotopicQuantity.begin() ; it!=end ; ++it )
+			{ it->second = val; }
+	}
+}
+
+//________________________________________________________________________
+IsotopicVector	IsotopicVector::GetActinidesComposition() const
 {
 	IsotopicVector tmp;
-	const_iterator end = fdata.end();
+	const_iterator end = fIsotopicQuantity.end();
 
-	for ( const_iterator it=fdata.begin() ; it!=end ; ++it )
+	for ( const_iterator it=fIsotopicQuantity.begin() ; it!=end ; ++it )
 	{
 		if ( it->first.Z() >= 89 && it->first.Z() <= 103 )
 		{
-			tmp.fdata.insert( *it );
+			tmp.fIsotopicQuantity.insert( *it );
 		}
 	}
 
 	return tmp;
 }
 
-//____________________________________________________________________________
-double IsotopicVector::GetZAIIsotopicQuantity ( const short int z , const short int a , const short int i ) const
+vector<int> IsotopicVector::GetChemicalSpecies() const
 {
-	const_iterator it = fdata.find(ZAI(z,a,i));
-	if ( it != fdata.end() )
-		{ return it->second; }
-
-	return 0;
-}
-//____________________________________________________________________________
-double IsotopicVector::GetZAIIsotopicQuantity ( const ZAI & zai ) const
-{
-	const_iterator it = fdata.find(zai);
-	if ( it != fdata.end() )
-		{ return it->second; }
-
-	return 0;
-}
-//____________________________________________________________________________
-double IsotopicVector::GetQuantity ( const short int z , const short int a , const short int i ) const
-{
-	const_iterator it = fdata.find(ZAI(z,a,i));
-	if ( it != fdata.end() )
-		{ return it->second; }
-
-	return 0;
-}
-//____________________________________________________________________________
-double IsotopicVector::GetQuantity ( const ZAI & zai ) const
-{
-	const_iterator it = fdata.find(zai);
-	if ( it != fdata.end() )
-		{ return it->second; }
-
-	return 0;
-}
-
-//____________________________________________________________________________
-double IsotopicVector::GetTotalMass () const
-{
-	return cZAIMass.GetMass(*this);
-}
-//____________________________________________________________________________
-double IsotopicVector::GetMeanMolarMass () const
-{
-	return GetTotalMass() * 1e6 * AVOGADRO / GetActinidesComposition().GetSumOfAll();
-}
-
-//____________________________________________________________________________
-std::vector< int > IsotopicVector::GetChemicalSpecies () const
-{
-	std::vector< int > tmp( fdata.size() );
+	std::vector< int > tmp( fIsotopicQuantity.size() );
 
 	std::transform (
-			fdata.begin() , fdata.end() , // input iterator
+			fIsotopicQuantity.begin() , fIsotopicQuantity.end() , // input iterator
 			tmp.begin()                 , // output iterator
 			[]( const std::pair<ZAI,double> & zaiQ ) { return zaiQ.first.Z(); }
 		);
 
-	std::vector<int>::iterator end = std::unique ( tmp.begin() , tmp.end() );
+	std::vector<int>::iterator end = std::unique( tmp.begin() , tmp.end() );
 	tmp.resize( end - tmp.begin() );
 
 	return tmp;
 }
 
-//____________________________________________________________________________
-double IsotopicVector::GetSumOfAll () const
-{
-	return std::accumulate(
-			fdata.begin() , fdata.end() , // input iterator
-			0.0 ,                         // first value for the sum
-			[]( const double sum , const std::pair<ZAI,double> & zaiQ ) { return zaiQ.second + sum; }
-		);
-}
 
-		
-//____________________________________________________________________________
-std::size_t IsotopicVector::size () const
-	{ return fdata.size(); }
-//____________________________________________________________________________
-IsotopicVector::const_iterator IsotopicVector::begin () const
-	{ return fdata.begin(); }
-//____________________________________________________________________________
-IsotopicVector::iterator IsotopicVector::begin ()
-	{ return fdata.begin(); }
-//____________________________________________________________________________
-IsotopicVector::const_iterator IsotopicVector::end   () const
-	{ return fdata.end(); }
-//____________________________________________________________________________
-IsotopicVector::iterator IsotopicVector::end   ()
-	{ return fdata.end(); }
-//____________________________________________________________________________
-IsotopicVector::const_iterator IsotopicVector::find ( const ZAI & zai ) const
-	{ return fdata.find(zai); }
-//____________________________________________________________________________
-IsotopicVector::iterator IsotopicVector::find ( const ZAI & zai )
-	{ return fdata.find(zai); }
+//________________________________________________________________________
+void IsotopicVector::Write(string filename, cSecond time) const
+{
+	ofstream IVfile(filename.c_str(), ios_base::app);		// Open the File
+	if(!IVfile)
+	cout << "!!Warning!! !!!IsotopicVector!!! \n Can't open \"" << filename << "\"\n" << endl;
 
+	if(time != -1)
+	IVfile << "Time " <<  time/cYear << endl;
 
-///// SETTER /////////////////////////////////////////////////////////////////
-void IsotopicVector::Initialize ( double v )
-{
-	if ( v == 0 )
+	map<ZAI ,double> IsotopicQuantity = GetIsotopicQuantity();
+	map<ZAI ,double >::iterator it;
+	for(it = IsotopicQuantity.begin(); it != IsotopicQuantity.end(); it++)
 	{
-		fdata.clear();
+		IVfile << (*it).first.Z() << " ";
+		IVfile << (*it).first.A() << " ";
+		IVfile << (*it).first.I() << " ";
+		IVfile << (*it).second << " " << endl;
 	}
-	else
-	{	
-		iterator end = fdata.end();
-		for ( iterator it=fdata.begin() ; it!=end ; ++it )
-			{ it->second = v; }
-	}
+	IVfile << endl;
 }
-//____________________________________________________________________________
-void IsotopicVector::Clear ()
-	{ fdata.clear(); }
-//____________________________________________________________________________
-void IsotopicVector::Add ( const short int z , const short int a , const short int i , double q )
-	{ fdata[ ZAI(z,a,i) ] += q; }
-//____________________________________________________________________________
-void IsotopicVector::Add ( const ZAI & zai , double q )
-	{ fdata[zai] += q; }
-//____________________________________________________________________________
-void IsotopicVector::Add ( const std::pair<ZAI,double> & zaiQ )
-	{ fdata.insert(zaiQ); }
-//____________________________________________________________________________
-void IsotopicVector::Add ( const IsotopicVector & a )
-	{ fdata.insert( a.fdata.begin() , a.fdata.end() ); }
-//____________________________________________________________________________
-void IsotopicVector::Add ( const std::map<ZAI,double> & a )
-	{ fdata.insert( a.begin() , a.end() ); }
+//________________________________________________________________________
+void IsotopicVector::Print(string option) const
+{
 
-//____________________________________________________________________________
-void IsotopicVector::Remove ( const short int z , const short int a , const short int i , double q )
-	{ Remove( ZAI(z,a,i) , q ); }
-//____________________________________________________________________________
-void IsotopicVector::Remove ( const ZAI & zai , double q )
-{
-	iterator it = fdata.find( zai );
-	if ( it != fdata.end() )
-	{
-		it->second -= q;
-		if ( it->second == 0 ) { fdata.erase(it); }
-	}
+	cout << sPrint();
+
 }
-//____________________________________________________________________________
-void IsotopicVector::Remove ( const std::pair<ZAI,double> & zaiQ )
+//________________________________________________________________________
+string IsotopicVector::sPrint() const
 {
-	iterator it = fdata.find(zaiQ.first);
-	if ( it!= fdata.end() )
+	stringstream ss;
+	ss << "**************************" << endl;
+	ss << "*Isotopic Vector Property*" << endl;
+	ss << "**************************" << endl << endl;
+
+	bool QuantityPrint = false;
+	bool DBPrint = false;
+
+	QuantityPrint = true;
+
+	if(QuantityPrint)
 	{
-		it->second -= zaiQ.second;
-		if ( it->second == 0 ) { fdata.erase(it); }
-	}
-}
-//____________________________________________________________________________
-void IsotopicVector::Remove ( const IsotopicVector & a )
-{
-	const_iterator a_end = a.end();
-	
-	iterator f_end = fdata.end();
-	iterator jt;
-	for ( const_iterator it=a.begin() ; it!=a_end ; ++it )
-	{
-		jt = fdata.find( it->first );
-		if ( jt != f_end )
+		ss << "*Isotopic Vector Quantity*" << endl;
+		map<ZAI ,double> IsotopicQuantity = GetIsotopicQuantity();
+		map<ZAI ,double >::iterator it;
+		for(it = IsotopicQuantity.begin();it != IsotopicQuantity.end(); it++)
 		{
-			jt->second -= it->second;
-			if ( jt->second == 0 ) { fdata.erase(jt); }
+			ss << (*it).first.Z() << " ";
+			ss << (*it).first.A() << " ";
+			ss << (*it).first.I() << " ";
+			ss << ": " << (*it).second;
+			ss << endl;
 		}
-	}
-}
-
-//____________________________________________________________________________
-void IsotopicVector::Multiply ( double f )
-{
-	iterator end = fdata.end();
-
-	if ( f == 0 ) { fdata.clear(); }
-	else
-	{
-		for ( iterator it=fdata.begin() ; it!=end ; ++it )
-			{ it->second *= f; }
-	}
-}
-
-//____________________________________________________________________________
-void IsotopicVector::ApplyZAIThreshold ( int a )
-{
-	double quantity = 0.0;
-
-	for ( iterator it = begin() ; it!=end() ; ++it )
-	{
-		if ( it->first.Z() < a )
+		ss << endl;
+		ss << "*Isotopic Vector Quantity Needed*" << endl;
+		map<ZAI ,double> IsotopicQuantityNeeded = GetIsotopicQuantityNeeded();
+		for(it = IsotopicQuantityNeeded.begin(); it != IsotopicQuantityNeeded.end(); it++)
 		{
-			quantity += it->second;
-			it = fdata.erase(it);
+			ss << (*it).first.Z() << " ";
+			ss << (*it).first.A() << " ";
+			ss << (*it).first.I() << " ";
+			ss << ": " << (*it).second;
+			ss << endl;
 		}
+		ss << endl;
 	}
-	fdata.insert( std::pair<ZAI,double>( ZAI(0,0,0) , quantity ) );
-}
-
-// IO Methods
-void IsotopicVector::Write ( std::string filename , cSecond time ) const
-{
-	std::ofstream f( filename.c_str() , std::ios::app );
-	if ( !f.good() )
-		{ std::cerr << "!!Warning!! !!!IsotopicVector!!! \n Can't open \"" << filename << "\"\n" << std::endl; }
-
-	if ( time != -1 )
+	if(DBPrint)
 	{
-		f << "Time" << time/cYear << std::endl;
+		ss << "****Isotopic Vector DB****" << endl;
 	}
-	std::transform(
-			fdata.begin() , fdata.end() , // input iterator
-			std::ostream_iterator<std::string>( f , "\n" ) , // output iterator
-			[]( const std::pair<ZAI,double> & zaiQ ) {
-				std::stringstream ss;
-				ss << zaiQ.first.Z() << " " << zaiQ.first.A() << " " << zaiQ.first.I() << " ";
-				ss << zaiQ.second;
-				return ss.str();
-			}
-		);
+return ss.str();
 }
-//____________________________________________________________________________
-void IsotopicVector::Print ( std::string o ) const
+//________________________________________________________________________
+void IsotopicVector::PrintList(string option) const
 {
-	std::cout << sPrint();
-}
-//____________________________________________________________________________
-std::string IsotopicVector::sPrint() const
-{
-	std::stringstream ss;
-	ss << "**************************\n";
-	ss << "*Isotopic Vector Property*\n";
-	ss << "**************************\n" << std::endl;
+	bool QuantityPrint = false;
+	bool DBPrint = false;
 
-	ss << "*Isotopic Vector Quantity*" << std::endl;
+	QuantityPrint = true;
 
-	const_iterator end = fdata.end();
-	for( const_iterator it = fdata.begin() ; it != end ; ++it )
+	if(QuantityPrint)
 	{
-		ss << it->first.Z() << " ";
-		ss << it->first.A() << " ";
-		ss << it->first.I() << " ";
-		ss << ": " << it->second;
-		ss << "\n";
-	}
-	ss << endl;
+		map<ZAI ,double> IsotopicQuantity = GetIsotopicQuantity();
+		map<ZAI ,double >::iterator it;
+		for(it = IsotopicQuantity.begin();it != IsotopicQuantity.end(); it++)
+		{
+			cout << (*it).first.Z() << " ";
+			cout << (*it).first.A() << " ";
+			cout << (*it).first.I() << " ";
+			cout << endl;
+		}
+		cout << endl;
 
-	return ss.str();
-}
-//____________________________________________________________________________
-void IsotopicVector::PrintList( std::string o ) const
-{
-	const_iterator end = fdata.end();
-	for( const_iterator it = fdata.begin() ; it != end ; ++it )
+	}
+	if(DBPrint)
 	{
-		std::cout << it->first.Z() << " ";
-		std::cout << it->first.A() << " ";
-		std::cout << it->first.I() << " ";
-		std::cout << ": " << it->second;
-		std::cout << "\n";
+		cout << "****Isotopic Vector DB****" << endl;
 	}
-	std::cout << endl;
-}
-//____________________________________________________________________________
-
-
-///// EXTERN OPERATOR ////////////////////////////////////////////////////////
-bool operator == ( const IsotopicVector & a , const IsotopicVector & b )
-{
-	bool r = true;
-	
-	IsotopicVector::const_iterator end = a.end();
-	IsotopicVector::const_iterator it  = a.end();
-	while ( it != end && r )
-	{
-		r = b[ it->first ] == it->second;
-		++it; 
-	}
-
-	return r;
-}
-//____________________________________________________________________________
-bool operator != ( const IsotopicVector & a , const IsotopicVector & b )
-{
-	bool r = true;
-	
-	IsotopicVector::const_iterator end = a.end();
-	IsotopicVector::const_iterator it  = a.end();
-	while ( it != end && r )
-	{
-		r = b[ it->first ] != it->second;
-		++it; 
-	}
-
-	return r;
-}
-//____________________________________________________________________________
-bool operator <  ( const IsotopicVector & a , const IsotopicVector & b )
-{
-	bool r = true;
-	
-	IsotopicVector::const_iterator end = a.end();
-	IsotopicVector::const_iterator it  = a.end();
-	while ( it != end && r )
-	{
-		r = b[ it->first ] <  it->second;
-		++it; 
-	}
-
-	return r;
-}
-//____________________________________________________________________________
-bool operator >  ( const IsotopicVector & a , const IsotopicVector & b )
-{
-	bool r = true;
-	
-	IsotopicVector::const_iterator end = a.end();
-	IsotopicVector::const_iterator it  = a.end();
-	while ( it != end && r )
-	{
-		r = b[ it->first ] >  it->second;
-		++it; 
-	}
-
-	return r;
-}
-//____________________________________________________________________________
-bool operator <= ( const IsotopicVector & a , const IsotopicVector & b )
-{
-	bool r = true;
-	
-	IsotopicVector::const_iterator end = a.end();
-	IsotopicVector::const_iterator it  = a.end();
-	while ( it != end && r )
-	{
-		r = b[ it->first ] <= it->second;
-		++it; 
-	}
-
-	return r;
-}
-//____________________________________________________________________________
-bool operator >= ( const IsotopicVector & a , const IsotopicVector & b )
-{
-	bool r = true;
-	
-	IsotopicVector::const_iterator end = a.end();
-	IsotopicVector::const_iterator it  = a.end();
-	while ( it != end && r )
-	{
-		r = b[ it->first ] >= it->second;
-		++it; 
-	}
-
-	return r;
-}
-//____________________________________________________________________________
-IsotopicVector operator / ( const IsotopicVector & a , double f )
-{
-	IsotopicVector tmp = a;
-	IsotopicVector::iterator end = tmp.end();
-	for ( IsotopicVector::iterator it=tmp.begin() ; it!=end ; ++it )
-		{ it->second /= f; }
-
-	return tmp;
-}
-//____________________________________________________________________________
-IsotopicVector operator / ( const ZAI & a , double f )
-{
-	IsotopicVector tmp;
-	tmp.Add(a,1/f);
-	return tmp;
-}
-//____________________________________________________________________________
-IsotopicVector operator * ( const IsotopicVector & a , double f )
-{
-	IsotopicVector tmp = a;
-	IsotopicVector::iterator end = tmp.end();
-	for ( IsotopicVector::iterator it=tmp.begin() ; it!=end ; ++it )
-		{ it->second *= f; }
-
-	return tmp;
-}
-//____________________________________________________________________________
-IsotopicVector operator * ( const ZAI & a , double f )
-{
-	IsotopicVector tmp;
-	tmp.Add(a,f);
-	return tmp;
-}
-//____________________________________________________________________________
-IsotopicVector operator * ( double f , const IsotopicVector & a )
-{
-	IsotopicVector tmp = a;
-	IsotopicVector::iterator end = tmp.end();
-	for ( IsotopicVector::iterator it=tmp.begin() ; it!=end ; ++it )
-		{ it->second *= f; }
-
-	return tmp;
-}
-//____________________________________________________________________________
-IsotopicVector operator * ( double f , const ZAI & a )
-{
-	IsotopicVector tmp;
-	tmp.Add(a,f);
-	return tmp;
-}
-//____________________________________________________________________________
-IsotopicVector operator + ( const IsotopicVector & a , const IsotopicVector & b )
-{
-	IsotopicVector tmp = a;
-	tmp += b;
-	return tmp;
-}
-//____________________________________________________________________________
-IsotopicVector operator - ( const IsotopicVector & a , const IsotopicVector & b )
-{
-	IsotopicVector tmp = a;
-	tmp -= b;
-	return tmp;
-}
-//____________________________________________________________________________
-IsotopicVector operator * ( const IsotopicVector & a , const IsotopicVector & b )
-{
-	IsotopicVector tmp = a;
-	tmp *= b;
-	return tmp;
 }
 
-//____________________________________________________________________________
-std::ostream & operator << ( std::ostream & os , const IsotopicVector & a )
-{
-	std::transform(
-			a.begin() , a.end() ,                         // input iterator
-			std::ostream_iterator<std::string>(os,"\n") , // output iterator
-			[]( const std::pair<ZAI,double> & zaiQ )
-				{
-					std::stringstream ss; ss << zaiQ.first.Z() << " " << zaiQ.first.A() << " " << zaiQ.first.I();
-					ss << " " << zaiQ.second;
-					return ss.str();
-				}
-		);
+//________________________________________________________________________
+//__________________________Operator Overlaoding__________________________
+//________________________________________________________________________
 
-	return os;
+
+IsotopicVector operator+(IsotopicVector const& IVa, IsotopicVector const& IVb)
+{
+	IsotopicVector IVtmp = IVa;
+	return IVtmp += IVb;
 }
 
-///// FUNCTIONS //////////////////////////////////////////////////////////////
+//________________________________________________________________________
+IsotopicVector operator-(IsotopicVector const& IVa, IsotopicVector const& IVb)
+{
+
+	IsotopicVector IVtmp = IVa;
+	return IVtmp -= IVb;
+}
+
+
+//________________________________________________________________________
+IsotopicVector operator*(ZAI const& zai, double F)
+{
+	IsotopicVector IVtmp;
+
+	IVtmp.Add( zai, F);
+	return IVtmp;
+}
+
+
+//________________________________________________________________________
+IsotopicVector operator/(ZAI const& zai, double F)
+{
+	IsotopicVector IVtmp;
+
+	IVtmp.Add( zai, 1./F);
+
+	return IVtmp;
+}
+
+
+//________________________________________________________________________
+IsotopicVector operator*(double F, IsotopicVector const& IVa)
+	{return IVa*F;}
+
+//________________________________________________________________________
+IsotopicVector operator*(IsotopicVector const& IVa, double F)
+{
+	IsotopicVector IV = IVa;
+	IV.Multiply(F);
+	return IV;
+}
+
+//________________________________________________________________________
+IsotopicVector operator*(double F, ZAI const& zai)
+{
+	return zai*F;
+}
+
+//________________________________________________________________________
+IsotopicVector operator*(IsotopicVector const& IVa, IsotopicVector const& IVb)
+{
+
+	IsotopicVector IVtmp;
+	IVtmp = IVa;
+	IVtmp *=  IVb;
+	return IVtmp;
+}
+
+//________________________________________________________________________
+IsotopicVector operator/(IsotopicVector const& IVa, double F)
+{
+
+	IsotopicVector IV = IVa;
+	IV.Multiply(1./F);
+	return IV;
+}
+
+
+//____________________________General Operator____________________________
+//________________________________________________________________________
 double 	RelativDistance ( const IsotopicVector & a, const IsotopicVector & b )
 {
 	double d2 = 0;
@@ -682,9 +661,4 @@ double 	Norme( const IsotopicVector & a , int DistanceType , const IsotopicVecto
 	return Distance(a, zero, DistanceType,DistanceParameter);
 }
 
-///// NEEDED /////////////////////////////////////////////////////////////////
-void IsotopicVector::ClearNeed() { fIsotopicQuantityNeeded.clear(); }
-std::map<ZAI ,double> IsotopicVector::GetIsotopicQuantityNeeded () const
-{
-	return fIsotopicQuantityNeeded;
-}
+

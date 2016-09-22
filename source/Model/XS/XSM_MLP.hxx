@@ -114,14 +114,14 @@ class XSM_MLP : public XSModel
 	//@}
 	
 	
-	EvolutionData GetCrossSections( const IsotopicVector & IV,double t = 0);	//!< Return calculated cross section by the MLP regression
+	EvolutionData GetCrossSections(IsotopicVector IV,double t = 0);	//!< Return calculated cross section by the MLP regression
 	
 	
 	private :
 	
 	void GetMLPWeightFiles();				//!< Find all .xml file in TMVA_Weight_Directory
-	EvolutionData GetCrossSectionsStep( const IsotopicVector & IV);	//!< Return calculated cross section by the MLP regression when fIsTimeStep == true
-	EvolutionData GetCrossSectionsTime( const IsotopicVector & IV);	//!< Return calculated cross section by the MLP regression when fIsTimeStep == false
+	EvolutionData GetCrossSectionsStep(IsotopicVector IV);	//!< Return calculated cross section by the MLP regression when fIsTimeStep == true
+	EvolutionData GetCrossSectionsTime(IsotopicVector IV);	//!< Return calculated cross section by the MLP regression when fIsTimeStep == false
 	
 	void ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction) ;				//!<  Select the reaction according to the weight file name
 	void ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &Reaction, int &TimeStep);; 	//!<  Select the reaction according to the weight file name

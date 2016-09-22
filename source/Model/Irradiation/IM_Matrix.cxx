@@ -12,7 +12,6 @@
 #include "CLASSConstante.hxx"
 #include "CLASSLogger.hxx"
 #include "external/StringLine.hxx"
-#include "external/Graph.hxx"
 
 #include <TGraph.h>
 #include <TString.h>
@@ -241,7 +240,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 
 	Flux[NStep-1] = Power/ESigmaN;
 
-	GeneratedDB.SetFlux( new Graph(NStep, timevector, Flux) );
+	GeneratedDB.SetFlux( new TGraph(NStep, timevector, Flux) );
 
 	for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
 	{
@@ -259,10 +258,10 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 			n2nXS[j] = n2nXSMatrix[j][i][i];
 		}
 
-		GeneratedDB.NucleiInsert(pair<ZAI, Graph*> (fReverseMatrixIndex[i], new Graph(NMatrix.size(), timevector, ZAIQuantity)));
-/*		GeneratedDB.FissionXSInsert(pair<ZAI, Graph*> (fReverseMatrixIndex[i], new Graph(NStep, timevector, FissionXS)));
-		GeneratedDB.CaptureXSInsert(pair<ZAI, Graph*> (fReverseMatrixIndex[i], new Graph(NStep, timevector, CaptureXS)));
-		GeneratedDB.n2nXSInsert(pair<ZAI, Graph*> (fReverseMatrixIndex[i], new Graph(NStep, timevector, n2nXS)));
+		GeneratedDB.NucleiInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NMatrix.size(), timevector, ZAIQuantity)));
+/*		GeneratedDB.FissionXSInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NStep, timevector, FissionXS)));
+		GeneratedDB.CaptureXSInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NStep, timevector, CaptureXS)));
+		GeneratedDB.n2nXSInsert(pair<ZAI, TGraph*> (fReverseMatrixIndex[i], new TGraph(NStep, timevector, n2nXS)));
 */	}
 
 	GeneratedDB.SetPower(Power );

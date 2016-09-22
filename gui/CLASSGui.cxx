@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 	DataRead->ReadName();
 	DataRead->ReadZAI();
 	DataRead->ReadTime();
-	cout << "Bienvenue dans le GUI" <<  endl;
+	cout << "Welcome to the CLASS Gui" <<  endl;
 
 	
 	argc = 1; //avoid to change directory by root TApplication...

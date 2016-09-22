@@ -1072,8 +1072,9 @@ void MainWin::FillReactorTab()
 	
 	for (int p = 0;p<fNumberOfParc;p++)
 	{
-		string TabName[NTab[p]];
-		
+		vector <string> TabName;
+		TabName.resize(NTab[p]);
+
 		for(int l = 0; l<NTab[p] ; l++)
 		{
 			stringstream tmp;
@@ -1135,7 +1136,9 @@ void MainWin::FillStockTab()
 	
 	for (int p = 0;p<fNumberOfParc;p++)
 	{
-		string TabName[NTab[p]];
+		vector <string> TabName;
+		TabName.resize(NTab[p]);
+
 		for(int l = 0; l<NTab[p] ; l++)
 		{
 			stringstream tmp;
@@ -1197,7 +1200,9 @@ void MainWin::FillPoolTab()
 	for (int p = 0;p<fNumberOfParc;p++)
 	{
 		
-		string TabName[NTab[p]];
+		vector <string> TabName;
+		TabName.resize(NTab[p]);
+
 		for(int l = 0; l<NTab[p] ; l++)
 		{
 			stringstream tmp;
@@ -1259,7 +1264,9 @@ void MainWin::FillFabricationTab()
 	for (int p = 0;p<fNumberOfParc;p++)
 	{
 		
-		string TabName[NTab[p]];
+		vector <string> TabName;
+		TabName.resize(NTab[p]);
+		
 		for(int l = 0; l<NTab[p] ; l++)
 		{
 			stringstream tmp;

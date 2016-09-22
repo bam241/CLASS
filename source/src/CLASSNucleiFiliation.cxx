@@ -37,7 +37,7 @@ CLASSNucleiFiliation::~CLASSNucleiFiliation()
 	fNucleiFiliation.clear() ;
 }
 //________________________________________________________________________
-void CLASSNucleiFiliation::Add( ZAI Mother, IsotopicVector Daughter )
+void CLASSNucleiFiliation::Add( ZAI Mother, IsotopicVector const& Daughter )
 {
 	DBGL
 	
@@ -55,12 +55,10 @@ void CLASSNucleiFiliation::Add( ZAI Mother, IsotopicVector Daughter )
 
 
 //________________________________________________________________________
-IsotopicVector CLASSNucleiFiliation::GetFiliation(ZAI Mother)
+IsotopicVector CLASSNucleiFiliation::GetFiliation(ZAI Mother) const
 {
 	DBGV(Mother.Z() << " " << Mother.A() << " " << Mother.I());
-	map<ZAI, IsotopicVector>::iterator it_Filiation;
-	
-	it_Filiation = fNucleiFiliation.find(Mother);	// search for the ZAI in the map
+	map<ZAI, IsotopicVector>::const_iterator it_Filiation = fNucleiFiliation.find(Mother);	// search for the ZAI in the map
 
 	DBGL
 	if(it_Filiation != fNucleiFiliation.end())	// test if it is present in the map
@@ -71,7 +69,7 @@ IsotopicVector CLASSNucleiFiliation::GetFiliation(ZAI Mother)
 }
 
 //________________________________________________________________________
-void CLASSNucleiFiliation::FiliationCleanUp(map<ZAI, int> GoodNuclei, CLASSNucleiFiliation CuttedNuclei)
+void CLASSNucleiFiliation::FiliationCleanUp(map<ZAI, int> const& GoodNuclei, CLASSNucleiFiliation const& CuttedNuclei)
 {
 	DBGL
 	map<ZAI, IsotopicVector>::iterator it_Filiation;
@@ -154,7 +152,7 @@ ZAI CLASSNucleiFiliation::GetArtificialDecay(ZAI Mother)
 
 
 //________________________________________________________________________
-void CLASSNucleiFiliation::SelfFiliationCleanUp(map<ZAI, int> GoodNuclei)
+void CLASSNucleiFiliation::SelfFiliationCleanUp(map<ZAI, int> const& GoodNuclei)
 {
 	DBGL
 

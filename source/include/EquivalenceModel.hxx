@@ -171,7 +171,7 @@ class EquivalenceModel : public CLASSObject
 	double LambdaCalculation(string MaterialDenomination, double LambdaPreviousStep, double MaterialMassNeeded, double DeltaMass, vector <IsotopicVector>  Stocks); //!< Calculate the proportion of each stocks in StockArray to take in oder to get a mass of MassNeeded (can be Fer(fertile) or Fis(Fissile))
 	void SetLambda(vector<double>& lambda , double Lambda_tot);	//!< Set individual lambda according to the LAMBDA_TOT (lambda of all stocks)	
 	void SetLambdaToErrorCode(vector<double>& lambda);
-	void StocksTotalMassCalculation(map < string , vector <IsotopicVector> >  Stocks);
+	void StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks);
 	double fRelativMassPrecision;				//!< Mass precision
 	int fMaxInterration;					//!< Max iterration in build fueld algorythm
 

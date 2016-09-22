@@ -675,8 +675,8 @@ void Scenario::Evolution(cSecond t)
 //________________________________________________________________________
 void Scenario::OldProgressPrintout(cSecond t)
 {
-	double Time = (fAbsoluteTime-fStartingTime)/cYear ;
-	double Total = (t-fStartingTime)/cYear;
+	double Time = (fAbsoluteTime-fStartingTime)/(double)cYear ;
+	double Total = (t-fStartingTime)/(double)cYear;
 
 	// Reset the line
 	for(int i = 0; i < 10; i++)
@@ -701,17 +701,15 @@ void Scenario::OldProgressPrintout(cSecond t)
 //________________________________________________________________________
 void Scenario::ProgressPrintout(cSecond t)
 {
-	double Time = (fAbsoluteTime-fStartingTime)/cYear ;
-	double Total = (t-fStartingTime)/cYear;
-
-	int sys;
+	double Time = (fAbsoluteTime-fStartingTime)/(double)cYear ;
+	double Total = (t-fStartingTime)/(double)cYear;
 
 	if(fOldProgressBar)
 		OldProgressPrintout(t);
 
 	else
 	{
-		sys = system("clear");
+		int system_out = system("clear");
 		/****Printing CLASS  info + nuclear clover****/
 		if(fCloverCount>3)
 			fCloverCount=0;
@@ -733,7 +731,7 @@ void Scenario::ProgressPrintout(cSecond t)
 
 		Completed << "\033[0m";
 
-		for(int i = ProgressBarlength; i >= (int)(Time/Total*ProgressBarlength); i--)
+		for(int i = ProgressBarlength; i > (int)(Time/Total*ProgressBarlength); i--)
 			Completed << " ";
 
 		cout<<Completed.str();
@@ -771,7 +769,7 @@ void Scenario::PrintCLASSPresentation()
 	cout<<"│                                               │"<<endl;
 	cout<<"│ A dynamical nuclear fuel cycle code developed │"<<endl; 
 	cout<<"│           by the CNRS/IN2P3 & IRSN            │"<<endl;
-	cout<<"│ https://forge.in2p3.fr/projects/classforge    │"<<endl;
+	cout<<"│ https://gitlab.in2p3.fr/sens/CLASS            │"<<endl;
 	cout<<"├───────────────────────────────────────────────┤"<<endl;
 	cout<<"│ Authors :                                     │"<<endl;
 	cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │"<<endl;
@@ -800,7 +798,7 @@ void Scenario::PrintClover(int i)
 		cout<<"│                                               │          @@ @@@@@@@   "<<endl;
 		cout<<"│ A dynamical nuclear fuel cycle code developed │         @    @@@@@@   "<<endl;
 		cout<<"│           by the CNRS/IN2P3 & IRSN            │       @@@@    @@@@@   "<<endl;
-		cout<<"│ https://forge.in2p3.fr/projects/classforge    │      @@@@@      @@@@  "<<endl;
+		cout<<"│ https://gitlab.in2p3.fr/sens/CLASS            │      @@@@@      @@@@  "<<endl;
 		cout<<"├───────────────────────────────────────────────┤    @@@@@@@            "<<endl;
 		cout<<"│ Authors :                                     │    @@@@@@@            "<<endl;
 		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │     @@@@@@            "<<endl;
@@ -822,7 +820,7 @@ void Scenario::PrintClover(int i)
 		cout<<"│                                               │  @@@@@@@ @@ @@@@@@@  "<<endl;
 		cout<<"│ A dynamical nuclear fuel cycle code developed │  @@@@@@@@  @@@@@@@@  "<<endl;
 		cout<<"│           by the CNRS/IN2P3 & IRSN            │  @@@@@@@@   @@@@@@@  "<<endl;
-		cout<<"│ https://forge.in2p3.fr/projects/classforge    │   @@@@@@    @@@@@@   "<<endl;
+		cout<<"│ https://gitlab.in2p3.fr/sens/CLASS            │   @@@@@@    @@@@@@   "<<endl;
 		cout<<"├───────────────────────────────────────────────┤   @@@@@      @@@@@   "<<endl;
 		cout<<"│ Authors :                                     │    @@@@      @@@@    "<<endl;
 		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │     @@        @@@    "<<endl;
@@ -845,7 +843,7 @@ void Scenario::PrintClover(int i)
 		cout<<"│                                               │  @@@@@@@ @@          "<<endl;
 		cout<<"│ A dynamical nuclear fuel cycle code developed │  @@@@@@    @         "<<endl;
 		cout<<"│           by the CNRS/IN2P3 & IRSN            │  @@@@@    @@@@       "<<endl;
-		cout<<"│ https://forge.in2p3.fr/projects/classforge    │  @@       @@@@@@     "<<endl;
+		cout<<"│ https://gitlab.in2p3.fr/sens/CLASS            │  @@       @@@@@@     "<<endl;
 		cout<<"├───────────────────────────────────────────────┤           @@@@@@@    "<<endl;
 		cout<<"│ Authors :                                     │           @@@@@@@    "<<endl;
 		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │           @@@@@@@    "<<endl;
@@ -869,7 +867,7 @@ void Scenario::PrintClover(int i)
 		cout<<"│                                               │          @@          "<<endl; 
 		cout<<"│ A dynamical nuclear fuel cycle code developed │          @@          "<<endl; 
 		cout<<"│           by the CNRS/IN2P3 & IRSN            │         @@@@         "<<endl; 
-		cout<<"│ https://forge.in2p3.fr/projects/classforge    │         @@@@@        "<<endl; 
+		cout<<"│ https://gitlab.in2p3.fr/sens/CLASS            │         @@@@@        "<<endl; 
 		cout<<"├───────────────────────────────────────────────┤        @@@@@@        "<<endl; 
 		cout<<"│ Authors :                                     │        @@@@@@@       "<<endl; 
 		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │       @@@@@@@@       "<<endl;

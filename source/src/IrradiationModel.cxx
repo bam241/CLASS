@@ -10,7 +10,6 @@
 
 #include "CLASSLogger.hxx"
 #include "external/StringLine.hxx"
-#include "external/Graph.hxx"
 
 #include <TGraph.h>
 #include <TString.h>
@@ -565,8 +564,8 @@ TMatrixT<double> IrradiationModel::GetFissionXsMatrix(EvolutionData EvolutionDat
 	
 	// ----------------  A(n,.) X+Y
 	
-	map<ZAI ,Graph* > FissionXS = EvolutionDataStep.GetFissionXS();
-	map<ZAI ,Graph* >::iterator it_XS;
+	map<ZAI ,TGraph* > FissionXS = EvolutionDataStep.GetFissionXS();
+	map<ZAI ,TGraph* >::iterator it_XS;
 	
 	for(it_XS = FissionXS.begin() ; it_XS != FissionXS.end(); it_XS++)	//loop on fissionable nuclei
 	{
@@ -603,8 +602,8 @@ TMatrixT<double> IrradiationModel::GetCaptureXsMatrix(EvolutionData EvolutionDat
 	
 	// ----------------  A(n,Gamma) A+1
 	
-	map<ZAI ,Graph* > CaptureXS = EvolutionDataStep.GetCaptureXS();
-	map<ZAI ,Graph* >::iterator it_XS;
+	map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.GetCaptureXS();
+	map<ZAI ,TGraph* >::iterator it_XS;
 	
 	for(it_XS = CaptureXS.begin() ; it_XS != CaptureXS.end(); it_XS++)	//loop on nuclei
 	{
@@ -641,8 +640,8 @@ TMatrixT<double> IrradiationModel::Getn2nXsMatrix(EvolutionData EvolutionDataSte
 	
 	// ----------------  A(n,2n) A-1
 	
-	map<ZAI ,Graph* > CaptureXS = EvolutionDataStep.Getn2nXS();
-	map<ZAI ,Graph* >::iterator it_XS;
+	map<ZAI ,TGraph* > CaptureXS = EvolutionDataStep.Getn2nXS();
+	map<ZAI ,TGraph* >::iterator it_XS;
 	
 	for(it_XS = CaptureXS.begin() ; it_XS != CaptureXS.end(); it_XS++)	//loop on nuclei
 	{
@@ -678,14 +677,10 @@ void IrradiationModel::SetSpectrumType(string type)
 //________________________________________________________________________
 double IrradiationModel::GetDecayConstant(const ZAI& zai) const
 {
-	IsotopicVector::const_iterator it = fDecayConstante.find(zai);
+	IsotopicVector::const_iterator it  = fDecayConstante.find(zai);
 
 	if ( it != fDecayConstante.end() )
-	{
-		return it->second;
-	}
+		{ return it->second; }
 	else
-	{
-		return 0;
-	}
+		{ return 0; }
 }

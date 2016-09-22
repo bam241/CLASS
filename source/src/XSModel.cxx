@@ -162,7 +162,7 @@ void XSModel::ReadZAIlimits(const string &line)
 }
 
 //________________________________________________________________________
-bool XSModel::isIVInDomain(const IsotopicVector & IV)
+bool XSModel::isIVInDomain(IsotopicVector IV)
 {
 	DBGL
 	bool IsInDomain = true;

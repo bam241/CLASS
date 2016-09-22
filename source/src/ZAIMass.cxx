@@ -51,10 +51,9 @@ ZAIMass::~ZAIMass()
 }
 
 
-double ZAIMass::GetMass(ZAI zai ) const
+double ZAIMass::GetMass( ZAI zai ) const
 {
-	map<ZAI,double> ZAIMasscpy = fZAIMass ;
-	map<ZAI,double>::iterator  MassIT = ZAIMasscpy.find( ZAI(zai.Z(), zai.A(), 0) );
+	map<ZAI,double>::const_iterator  MassIT = fZAIMass.find( ZAI(zai.Z(), zai.A(), 0) );
 
 	if(MassIT == fZAIMass.end())
 		return zai.A();

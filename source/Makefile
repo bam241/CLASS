@@ -1,10 +1,18 @@
 #################### CLASS main Makefile #########################
 # include config file
-
 include ../config/Makefile.config
-# Directory containing includes for CLASS
-SRC_dir = src
+
+# configuration :
+	# INC_dir : directory containing includes for CLASS
+	# SRC_dir : directory containing sources of majorities classes of CLASS
+	# EQM_dir : directory containing sources of Equivalence Models
+	# IM_dir  : directory containing sources of Irradiation Models
+	# XQM_dir : directory containing sources of XS Models
+	# EXT_dir : directory containing sources of external classes of CLASS (e.g. Graph, StringLines)
+	# OBJ_dir : directory containing object files (*.o) after compilation of sources
+
 INC_dir = include
+SRC_dir = src
 
 EQM_dir = Model/Equivalence
 IM_dir  = Model/Irradiation
@@ -12,16 +20,16 @@ XSM_dir = Model/XS
 
 EXT_dir = external
 
+######################## nothing to change from here #########################
 OBJ_dir = obj
+LIBNAME = CLASSpkg
 
-######### nothing to change from here #########
-LIBNAME  = CLASSpkg
-
+# files in $SRC_dir and $INC_dir
 SRC_files = $(wildcard $(SRC_dir)/*.cxx)
 INC_files = $(wildcard $(INC_dir)/*.hxx)
 
 # files need a dictionary by ROOT
-OBJ_Dict = GraphDict.o ZAIDict.o \
+OBJ_Dict  = ZAIDict.o \
 			IsotopicVectorDict.o \
 			CLASSObjectDict.o \
 			FabricationPlantDict.o \
@@ -33,7 +41,7 @@ OBJ_Dict = GraphDict.o ZAIDict.o \
 			PoolDict.o \
 			EvolutionDataDict.o
 
-# all object files in $(OBJ_dir)
+# all object files of CLASS (build from source and dictionry list)
 OBJ  = $(SRC_files:$(SRC_dir)/%.cxx=$(OBJ_dir)/%.o)
 OBJ += $(OBJ_Dict:%.o=$(OBJ_dir)/%.o)
 
@@ -51,7 +59,7 @@ OBJ_model = $(EQM_files:$(EQM_dir)/%.cxx=$(OBJ_dir)/%.o) \
 EXT_files = $(wildcard $(EXT_dir)/*.cxx)
 
 # all object external files
-OBJ_ext = $(EXT_files:$(EXT_dir)/%.cxx=$(OBJ_dir)/%.o)
+OBJ_ext   = $(EXT_files:$(EXT_dir)/%.cxx=$(OBJ_dir)/%.o)
 
 # root object files, I don't understand this one
 ROOTOBJS_ = CLASSLogger.o \
@@ -59,27 +67,27 @@ ROOTOBJS_ = CLASSLogger.o \
 			IsotopicVector.o IsotopicVectorDict.o \
 			ZAIMass.o ZAIHeat.o ZAITox.o \
 			CLASSNucleiFiliation.o \
-			CLASSObject.o CLASSObjectDict.o\
-			CLASSFacility.o CLASSFacilityDict.o\
+			CLASSObject.o CLASSObjectDict.o \
+			CLASSFacility.o CLASSFacilityDict.o \
 			Reactor.o ReactorDict.o \
 			FabricationPlant.o FabricationPlantDict.o \
-			CLASSBackEnd.o CLASSBackEndDict.o\
-			Storage.o StorageDict.o\
-			Pool.o PoolDict.o\
-			SeparationPlant.o SeparationPlantDict.o\
+			CLASSBackEnd.o CLASSBackEndDict.o \
+			Storage.o StorageDict.o \
+			Pool.o PoolDict.o \
+			SeparationPlant.o SeparationPlantDict.o \
 			DecayDataBank.o \
 			IrradiationModel.o \
-			CLASSFuel.o\
+			CLASSFuel.o \
 			EvolutionData.o EvolutionDataDict.o \
-			CLASSFuelPlan.o\
+			CLASSFuelPlan.o \
 			PhysicsModels.o
 
-ROOTOBJS = $(ROOTOBJS_:%.o=$(OBJ_dir)/%.o)
+ROOTOBJS  = $(ROOTOBJS_:%.o=$(OBJ_dir)/%.o)
 
-CXXFLAGS      += -I$(INC_dir) $(ROOTCFLAGS)
-LD             = $(CXX)
-LIBS           = -L$(LIBDIR) $(ROOTLIBS) -lTMVA $(OMPLIB)
-LDFLAGS       += -shared
+CXXFLAGS += -I$(INC_dir) $(ROOTCFLAGS)
+LD        = $(CXX)
+LIBS      = -L$(LIBDIR) $(ROOTLIBS) -lTMVA $(OMPLIB)
+LDFLAGS  += -shared
 
 all: $(OBJ) $(OBJ_model) $(OBJ_ext)
 	@/bin/echo -ne "\033[33m"lib$(LIBNAME).so : "\033[0m"
@@ -91,12 +99,13 @@ all: $(OBJ) $(OBJ_model) $(OBJ_ext)
 
 clean:
 	@/bin/echo -e "\033[41;97;1mclean\033[0m"
-	@rm -f $(OBJ) $(OBJ_model) $(OBJ_ext) $(SRC_dir)/*~ core $(SRC_dir)/*Dict.cxx $(SRC_dir)/*Dict.h $(EXT_dir)/*Dict.cxx $(EXT_dir)/*Dict.h $(SRC_dir)/G__auto*LinkDef.h
+	rm -f $(OBJ) $(OBJ_model) $(OBJ_ext) $(SRC_dir)/*~ $(SRC_dir)/*Dict.cxx $(SRC_dir)/*Dict.h $(EXT_dir)/*Dict.cxx $(EXT_dir)/*Dict.h
 
+external:
+	@ln -sf $$(pwd)/external/ $(INC_dir)/
 
 install:	
 	@ln -sf $$(pwd)/Model/* $(INC_dir)/
-	@ln -sf $$(pwd)/external/ $(INC_dir)/
 
 # build all dictionnary
 $(SRC_dir)/%Dict.cxx: $(INC_dir)/%.hxx
@@ -122,7 +131,7 @@ $(OBJ_dir)/%.o:		$(EQM_dir)/%.cxx $(EQM_dir)/%.hxx $(INC_files)
 
 # build IM sources
 $(OBJ_dir)/%.o:		$(IM_dir)/%.cxx $(IM_dir)/%.hxx $(INC_files)
-	@/bin/echo -ne "\033[91m"$(notdir $@) : "\033[0m"
+	@/bin/echo -ne "\033[92m"$(notdir $@) : "\033[0m"
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
 # build XSM sources
@@ -132,10 +141,9 @@ $(OBJ_dir)/%.o:		$(XSM_dir)/%.cxx $(XSM_dir)/%.hxx $(INC_files)
 
 # build external sources
 $(OBJ_dir)/%.o:		$(EXT_dir)/%.cxx $(EXT_dir)/%.hxx $(INC_files)
-	@/bin/echo -ne "\033[92m"$(notdir $@) : "\033[0m"
+	@/bin/echo -ne "\033[91m"$(notdir $@) : "\033[0m"
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
-$(OBJ_dir)/GraphDict.o:	$(EXT_dir)/GraphDict.cxx $(EXT_dir)/Graph.hxx $(INC_dir)
-	@/bin/echo -ne "\033[92m"$(notdir $@) : "\033[0m"
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
-
+#$(OBJ_dir)/GraphDict.o:	$(EXT_dir)/GraphDict.cxx $(EXT_dir)/Graph.hxx $(INC_dir)
+#	@/bin/echo -ne "\033[92m"$(notdir $@) : "\033[0m"
+#	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
