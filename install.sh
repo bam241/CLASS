@@ -151,9 +151,9 @@ function write_OMP_test () {
 # if OpenMP is enable, test the OMP feature by compiling the small test
 function test_OMP () {
 	write_OMP_test > test_conf_OMP.cxx
-	local isOMPenable=$(g++ -fopenmp  test_conf_OMP.cxx -lgomp 2>&1 | wc -l)
+	local isOMPenable=$(g++ -fopenmp  test_conf_OMP.cxx -lgomp  2>&1 | wc -l | awk '{ print $1 }')
 
-	rm a.out test_conf_OMP.cxx
+	rm a.out test_conf_OMP.cxx 
 	
 	if [[ $isOMPenable == 0 ]]; then
 		echo -e "[OMP]   enable                             [ ${c_green}ok${c_default} ]"
@@ -275,7 +275,7 @@ function compile_class_lib () {
 	make -C source clean   && echo -e "[CLASS] clean source directory             [ ${c_green}ok${c_default} ]" || (echo -e "[CLASS] clean source directory             [${c_red}fail${c_default}]"; exit 418)
 
 	# links
-	make -C source external && echo -e "[CLASS] create external link               [ ${c_green}ok${c_default} ]" || (echo -e "[CLASS] create external link               [${c_red}fail${c_default}]"; exit 418)
+	make -C source external_link && echo -e "[CLASS] create external link               [ ${c_green}ok${c_default} ]" || (echo -e "[CLASS] create external link               [${c_red}fail${c_default}]"; exit 418)
 	
 	# make dir for *.o files
 	mkdir -p source/obj
