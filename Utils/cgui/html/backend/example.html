@@ -1,0 +1,99 @@
+<!-- Example ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<div class="row" ><!-- une ligne dans le formulaire -->
+	<div class="col-sm-12" ><!-- le framework css fonctionne avec des lignes 1 ligne = 12 colonnes -->
+
+		<div class="input-group " >
+			<!-- champ pour une chaîne de caractères -->
+			<label class="input-group-addon" >Ma description</label> <!-- label du champ -->
+			<input class="form-control" type="text" placeholder="description de ce qu'il faut mettre ici..." ng-model="unity.monChamp" /> <!-- champ du formulaire, la variable est stockée dans l'objet unity dans l'attribut monChamp -->
+		</div>
+
+	</div>
+</div>
+
+<div class="row" ><!-- une nouvelle ligne avec 2 champs -->
+	<div class="col-sm-6" ><!-- premier champ utilise 6 colonnes -->
+
+		<div class="input-group " >
+			<!-- champ pour un nombre -->
+			<label class="input-group-addon" >Ma description</label> <!-- label du champ -->
+			<input class="form-control" type="number" min="-5" max="4.2" step="0.1" ng-model="unity.var1" /> <!-- champ du formulaire, la variable est stockée dans l'objet unity dans l'attribut var1 -->
+			<span class="input-group-addon" >$kg.m.s^{-2}$</span> <!-- untié -->
+
+		</div>
+	</div>
+	<div class="col-sm-6" ><!-- deuxième champ utilise 6 colonnes -->
+
+		<div class="input-group " >
+			<!-- champ pour une slide bar -->
+			<label class="input-group-addon" >Ma description</label> <!-- label du champ -->
+			<input class="form-control" type="range" min="-5" max="4.2" step="0.1" ng-model="unity.var2" /> <!-- slide bar, la variable est stockée dans l'objet untiy dans l'attribut var2 -->
+			<span class="input-group-addon" >{{ unity.var1 | number:2 }}$10^3 Pa$</span> <!-- on affiche la valeur avec 2 décimales, suivi de son unité -->
+		</div>
+
+	</div>
+</div>
+
+<div class="row" >
+	<div class="col-sm-12" >
+
+		<div class="input-group " >
+			<!-- champ pour une liste déroulante -->
+			<label class="input-group-addon" >Ma description</label> <!-- label du champ -->
+			<select class="form-control" ng-model="unity.choix" >
+				<option value="choix1" >Mon choix 1</option>
+				<option value="choix2" >Mon deuxième choix</option>
+				<option value="choix3" >Mon troisième choix</option>
+			</select><!-- champ du formulaire, la variable est stockée dans l'objet unity dans l'attribut choix -->
+		</div>
+
+	</div>
+</div>
+
+<div class="row" ng-show="unity.choix == 'choix3'" ><!-- condition de visibilité du prochain champ -->
+
+	<div class="col-sm-6" >
+
+		<p class="help-bloc" >Petit texte expliquant le choix cornélien à faire...</p>
+		<!-- champ avec des radio button -->
+		<div class="radio">
+			<label>
+				<input type="radio" ng-model="unity.radio" value="option1" /> Option 1
+			</label>
+			<label>
+				<input type="radio" ng-model="unity.radio" value="option2" /> Option 2
+			</label>
+		</div>
+
+	</div>
+	<div class="col-sm-6" >
+
+		<!-- champ avec une checkbox -->
+		<div class="checkbox" >
+			<label>
+				<input type="checkbox" ng-model="unity.check" /> Check or not check ? that is the question.
+			</label>
+		</div>
+
+	</div>
+
+</div>
+
+<hr /><!-- horizontal rule, ligne horizontale permettant de séparer des parties du formulaire -->
+
+<div class="row" >
+	<div class="col-sm-12" >
+		<div class="input-group" >
+			<!-- exemple un peu plus poussé avec la liste des backend facilities -->
+			<label class="input-group-addon" >Backend Facility : </label>
+			<select class="form-control" ng-options="u.id as u.id group by u.type for u in backend" ng-model="unity.backendFacility" ></select><!-- AngularJS liste lui-même les éléments de la liste backend contenant les backend facilities -->
+		</div>
+	</div>
+</div>
+
+<div class="row" >
+	<p class="col-sm-12" >Voici comment AngularJS stock les informations de votre unité</p>
+	<pre><code class="col-sm-12" >
+		{{ unity | json:4 }}
+	</code></pre>
+</div>

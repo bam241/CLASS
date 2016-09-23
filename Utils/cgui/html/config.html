@@ -1,0 +1,99 @@
+<!-- CONFIGURATION DE LA SIMULATION ====================================== -->
+<section class="panel panel-primary" name="config" >
+	<header class="panel-heading panel-title" >
+		Simulation configuration
+	</header>
+	<div class="panel-body" >
+		<div class="row" >
+			<aside class="col-sm-4" >
+				<div class="input-group" ng-class="{'has-error':config.timeStart.$valid}" >
+					<label class="input-group-addon" >Start year :</label>
+					<input class="form-control" type="number" step="1" ng-model="config.timeStart" required /><span class="input-group-addon" >$y$</span>
+				</div>
+			</aside>
+			<aside class="col-sm-4" >
+				<div class="input-group" ng-class="{'has-error':config.timeEnd.$valid}" >
+					<label class="input-group-addon" >End year :</label>
+					<input class="form-control" type="number" step="1" ng-model="config.timeEnd" required /><span class="input-group-addon" >$y$</span>
+				</div>
+			</aside>
+			<aside class="col-sm-4" >
+				<div class="input-group" ng-class="{'has-error':config.timeStep.$valid}" >
+					<label class="input-group-addon" >Time step :</label>
+					<input class="form-control" type="number" step="0.01" ng-model="config.timeStep" required /><span class="input-group-addon" >$y$</span>
+				</div>
+			</aside>
+		</div>
+		
+		<div class="row" >
+			<aside class="col-sm-12" >
+				<div class="input-group" >
+					<label class="input-group-addon">Input File</label>
+					<input class="form-control" type="text" placeholder="CLASS_MyAwesomeParc.cxx" ng-model="config.inputFile" />
+				</div>
+			</aside>
+			<aside class="col-sm-12" >
+				<div class="input-group" >
+					<label class="input-group-addon">Output File</label>
+					<input class="form-control" type="text" placeholder="MyAwesomeParc.root" ng-model="config.outputFile" />
+				</div>
+			</aside>
+		</div>
+		<hr />
+		<div class="row" ng-init="logLevel=[{value:0,class:'bg-danger',log:'error'},{value:1,class:'bg-warning',log:'warning'},{value:2,class:'bg-info',log:'info'},{value:3,class:'bg-success',log:'debug'}]" >
+			<aside class="col-sm-3" >
+				<div class="input-group" >
+					<label class="input-group-addon">TermLevel</label>
+					<select class="form-control" ng-model="config.log.termLevel" >
+						<option ng-repeat="log in logLevel" value="{{ log.value }}" class="{{ log.class }}" >{{ log.value }} - {{ log.log }}</option>
+					</select>
+				</div>
+			</aside>
+			<aside class="col-sm-3" >
+				<div class="input-group" >
+					<label class="input-group-addon">FileLevel</label>
+					<select class="form-control" ng-model="config.log.fileLevel" >
+						<option ng-repeat="log in logLevel" value="{{ log.value }}" class="{{ log.class }}" >{{ log.value }} - {{ log.log }}</option>
+					</select>
+				</div>
+			</aside>
+
+			<aside class="col-sm-6" >
+				<div class="input-group" >
+					<label class="input-group-addon">Log File</label>
+					<input class="form-control" type="text" placeholder="IHaveNoBug.log" ng-model="config.log.file" />
+				</div>
+			</aside>
+
+			<aside style="margin: 0 2em;" >
+				<div class="row" >
+					<label class="col-sm-12 checkbox" >
+						<input type="checkbox" ng-model="moreOptions" /> More options
+					</label>
+				</div>
+				<div ng-show="moreOptions" class="list-group-item row input-group" >
+					<div class="checkbox col-sm-6" >
+						<label>
+							<input type="checkbox" ng-model="config.log.SetSoberTerminalOutput" > Set sober terminal output
+						</label>
+						<div class="alert alert-danger" ng-show="config.log.SetSoberTerminalOutput" >
+							<strong>Attention !</strong> Pour des conditions optimales d'utilisation il est conseillé de ne pas utiliser cette option.<br />
+							#SoutientBLGdanssesconneries
+						</div>
+					</div>
+					<div class="checkbox col-sm-6" style="margin-top: 0.75em" >
+						<label>
+							<input type="checkbox" ng-model="config.SetStockManagement"  > Set stock management
+						</label>
+					</div>
+					<div class="col-sm-6" >
+						<div class="input-group" >
+							<label class="input-group-addon" >$ZAI_{Threshold}$ :</label>
+							<input class="form-control" type="number" min="0" step="1" ng-model="config.SetZAIThreshold" />
+						</div>
+					</div>
+				</div>
+			</aside>
+		</div>
+	</div>
+</section>
