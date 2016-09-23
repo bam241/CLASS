@@ -1,0 +1,101 @@
+<!-- Reactor list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<ul class="list-group" ng-show="m.type" >
+	<li class="list-group-item active" >
+		Reactor list
+		
+		<button class="label btn btn-warning btn-right" ng-click="m.reaclist.push({power:0,burnup:0,hmmass:0,loadFactor:0.8,efficency:0.33,tstart:0,tlife:0})" >Add reactor</button>
+
+		<label class="label btn btn-info btn-right" ng-class="m.display" >
+			<input type="checkbox" ng-model="m.display" style="display: none;" ng-true-value="'btn-info'" ng-false-value="'btn-danger'" /><span ng-show="m.display == 'btn-danger'" >Show</span><span ng-show="m.display == 'btn-info'">Hide</span>
+		</label>
+
+		<span class="badge" >{{ m.reaclist.length }}</span>
+
+	</li>
+	<li class="list-group-item" ng-repeat="reactor in m.reaclist" >
+
+<!-- ~~~~~ start Reactor unity ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<header class="input-group col-sm-12" >
+	<input type="text" class="form-control" placeholder="Name" ng-model="reactor.id" />
+	<span class="input-group-btn" >
+		<button class="btn btn-default" ng-click="m.reaclist.splice($index, 1)" aria-label="Remove" ><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+	</span>
+</header>
+
+<div ng-show="m.display == 'btn-info'" >
+	<div class="input-group" style="margin-top: 0.5em;" >
+		<label class="input-group-addon" >Backend Facility : </label>
+		<select class="form-control" ng-options="u.id as u.id group by u.type for u in backend" ng-model="reactor.backendFacility" ></select>
+	</div>
+
+	<div class="row" >
+		<div class="col-sm-6" >
+			<div class="input-group" >
+				<label class="input-group-addon">Power</label>
+				<input class="form-control" type="number" step="0.01" min="0" ng-model="reactor.power" />
+				<span class="input-group-addon">$GW_{th}$</span>
+			</div>
+		</div>
+
+		<div class="col-sm-6" >
+			<div class="input-group" >
+				<label class="input-group-addon">Burn-up</label>
+				<input class="form-control" type="number" step="0.01" min="0" ng-model="reactor.burnup" />
+				<span class="input-group-addon">$GW \cdot d/t_{HM}$</span>
+			</div>
+		</div>
+	</div>
+	<div class="row" >
+		<div class="col-sm-6" >
+			<div class="input-group" >
+				<label class="input-group-addon">Heavy metal mass</label>
+				<input class="form-control" type="number" step="0.01" min="0" ng-model="reactor.hmmass" />
+				<span class="input-group-addon">$t$</span>
+			</div>
+		</div>
+
+		<div class="col-sm-6" >
+			<div class="input-group" >
+				<label class="input-group-addon">Load factor</label>
+				<input class="form-control" type="range" step="0.01" min="0" max="1" ng-model="reactor.loadFactor" />
+				<span class="input-group-addon" ><span>{{ reactor.loadFactor*100 }}</span>$\%$</span>
+			</div>
+		</div>
+	</div>
+	<div class="row" >
+		<div class="col-sm-6" >
+			<div class="input-group" >
+				<label class="input-group-addon">Efficency</label>
+				<input class="form-control" type="range" step="0.01" min="0" max="1" ng-model="reactor.efficency" />
+				<span class="input-group-addon" ><span>{{ reactor.efficency*100 }}</span>$\%$</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="row" >
+		<div class="col-sm-6" >	
+			<div class="input-group" >
+				<label class="input-group-addon">Start</label>
+				<input class="form-control" type="number" step="0.1" ng-model="reactor.tstart" aria-describedby="helpBlock" />
+				<span class="input-group-addon" >$y$</span>
+			</div>
+		</div>
+		<div class="col-sm-6" >	
+			<div class="input-group" >
+				<label class="input-group-addon" >Life time :</label>
+				<input class="form-control" type="number" step="0.1" ng-model="reactor.tlife" />
+				<span class="input-group-addon" >$y$</span>
+			</div>
+		</div>
+	</div>
+	<div class="row" >
+		<p id="reacStart" class="col-sm-6"></p>
+		<aside class="col-sm-6" style="margin-top:0.5em" >
+			<button class="btn btn-default btn-block" ng-click="m.reaclist.push( { id:reactor.id+'_copy',backendFacility:reactor.backendFacility,power:reactor.power,burnup:reactor.burnup,hmmass:reactor.hmmass,loadFactor:reactor.loadFactor,efficency:reactor.efficency,tstart:reactor.tstart,tlife:reactor.tlife } )" >Copy reactor</button>
+		</aside>
+	</div>
+</div>
+<!-- ~~~~~ end Reactor unity ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+	</li>
+</ul>

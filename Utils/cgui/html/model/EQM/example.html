@@ -1,0 +1,39 @@
+<!-- Example ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!--
+Pour plus d'exmeple vous pouvez regarder le fichier backend/example.html
+-->
+<div class="row" ><!-- première ligne du formulaire -->
+	<div class="col-sm-6" >
+		<div class="input-group" >
+			<label class="input-group-addon">Nombre de noyaux $^{235}U$</label>
+			<input class="form-control" type="number" step="0.000005" data-ng-model="m.nbU235" />
+		</div>
+	</div>
+	<div class="col-sm-6" >
+		<div class="input-group" >
+			<label class="input-group-addon">Voulez-vous du $^{239}Pu$ ?</label>
+			<select class="form-control" ng-model="m.isPu239" >
+				<option value="bof" >Oui</option>
+				<option value="no" >Non</option>
+			</select>
+		</div>
+	</div>
+</div>
+<div class="row" ><!-- deuxième ligne du formulaire -->
+	<div class="col-sm-12" >
+		<div class="input-group" >
+			<label class="input-group-addon" >$\int_{-\infty}^{+\infty} \mathrm e^{-\alpha\, x^2}\mathrm d x = $</label>
+			<input class="form-control input-lg" type="number" step="0.000005" data-ng-model="m.calculus" />
+		</div>
+	</div>
+</div>
+
+<div class="row" ><!-- dernière ligne de l'exemple, choix d'un réseau de neuronnes -->
+	<div class="col-sm-12" >
+		<div class="input-group" >
+			<label class="input-group-addon">Artificial neural network weights</label>
+			<select class="form-control" data-ng-model="m.tmvaWeightPath" data-ng-options="w as w for w in MLPWeight" ></select><!-- génération automatique de la liste des réseaux, la liste MLPWeight est généré par la fonction htmlHelper.listMLPWeight() -->
+		</div>
+	</div>
+</div>
+

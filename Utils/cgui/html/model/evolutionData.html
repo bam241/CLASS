@@ -1,0 +1,15 @@
+<!-- EvolutionData ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<li class="list-group-item" >
+
+	<!-- list evolution data from ng-init:EvolutionDataList -->
+	<select class="form-control" ng-model="m.ed" ng-options="ed as ed for ed in EvolutionDataList" ></select>
+	
+	<!-- if this is a file -->
+	<div ng-if="m.ed == 'file'" class="non-collapse" >
+		<div ngf-drop ngf-select ng-model="m.file" class="drop-box" ngf-drag-over-class="'dragover'" ngf-multiple="false" >Drop EvolutionData file here</div>
+			<div ngf-no-file-drop >File Drag/Drop is not supported for this browser</div>
+		
+		<span ng-show="m.file" class="file" >{{ m.file.name }} {{ m.file.content }}</span>
+	</div>
+
+</li>

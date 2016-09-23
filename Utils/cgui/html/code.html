@@ -1,0 +1,185 @@
+<!-- Le code ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<pre><code class="col-sm-12 cpp" id="code" >#include "CLASSHeaders.hxx"
+
+#include &lt;sstream&gt;
+#include &lt;iomanip&gt;
+#include &lt;math.h&gt;
+#include &lt;string&gt;
+
+<span ng-repeat="m in models | filter:{type:'Equivalence_Model'}" >
+// includes for model {{ m.id }}
+#include "XS/XSM_MLP.hxx"
+#include "Equivalence/{{ m.em }}.hxx"
+#include "Irradiation/{{ m.im.model }}.hxx"
+</span>
+
+using namespace std;
+
+int main(int argc, char** argv)
+{
+	cSecond year = 3600*24.*365.25; //< seconds in one year
+
+/* ----- LOG MANAGEMENT --------------------------------------------------- */
+	//Definition of the Log file : CLASS messages output
+	int Std_output_level  = {{ config.log.termLevel }};
+	int File_output_level = {{ config.log.fileLevel }};
+	CLASSLogger *Logger   = new CLASSLogger("{{ config.log.file }}",Std_output_level,File_output_level);
+
+/* ----- CONFIGURATION PATH ----------------------------------------------- */
+	string CLASS_PATH = getenv("CLASS_PATH");
+	if ( CLASS_PATH == "" )
+	{
+		cout << "Please setenv CLASS_PATH to your CLASS installation folder in your .bashs or .tcshrc" << endl;
+		exit(1);
+	}
+	string PATH_TO_DATA = CLASS_PATH + "/DATA_BASES/";
+	
+/* ----- Define the Scenario ---------------------------------------------- */
+	Scenario *gCLASS=new Scenario( {{ config.timeStart }}*year , Logger );
+	gCLASS->SetStockManagement( {{config.SetStockManagement}} );
+	gCLASS->SetTimeStep( {{ config.timeStep }}*year );
+	gCLASS->SetOutputFileName( "{{ config.outputFile}}" );
+	<span ng-show="config.log.SetSoberTerminalOutput" >gCLASS->SetSoberTerminalOutput(); // Pour des conditions optimales d'utilisation il est conseillé de supprimer cette ligne</span>
+	gCLASS->SetZAIThreshold( {{ config.SetZAIThreshold }} );
+
+// Decay data base -----------------------------------------------------------
+	// The decay data base is taken from the file Decay.idx
+	// This decay data base will be used for all the decay calculations in this Scenario
+	DecayDataBank* DecayDB = new DecayDataBank( gCLASS->GetLog() , PATH_TO_DATA + "DECAY/ALL/Decay.idx" );
+	gCLASS->SetDecayDataBase(DecayDB);
+
+
+// Backend Facilities --------------------------------------------------------
+	// Stock/Pool/SP<span ng-repeat="unity in backend | filter:{type:'Stock'}" ><!-- storages are display before to prevent some bugs -->
+	Storage * {{ unity.id }} = new Storage( gCLASS->GetLog() );
+	{{ unity.id }}->SetName("{{ unity.id }}");<span ng-show="unity.addIV" ng-repeat="zai in unity.iv | ZAIQuantity" >
+	{{ unity.id }}->AddToStock( {{ zai }} );</span>
+	gCLASS->Add({{ unity.id }});
+</span>
+<span ng-repeat="unity in backend | filter:{type:'!Stock'}" ng-switch on="unity.type" ><span ng-switch-when="Pool" >
+	Pool * {{ unity.id }} = new Pool( gCLASS->GetLog() , {{ unity.backendFacility }} , {{ unity.tcooling }}*year );
+	{{ unity.id }}->SetName("{{ unity.id }}");
+	gCLASS->Add({{ unity.id }});
+		</span><span ng-switch-when="SeparationPlant" >
+	SeparationPlant * {{ unity.id }} = new SeparationPlant( gCLASS->GetLog() );
+		<span ng-repeat="iv in unity.ivlist" >{
+			IsotopicVector {{ iv.id }};<span ng-repeat="zai in iv.vector | ZAIEfficacity" >
+			{{ iv.id }}.Add( {{ zai }} );</span>
+			{{ unity.id }}->SetBackEndDestination( {{ iv.out }} , {{ iv.id }} , 0*year );
+		}</span>
+	gCLASS->AddSeparationPlant( {{ unity.id }} );
+		</span>
+</span><!-- end switch unity.type and repeat-->
+
+// Reactor data base ---------------------------------------------------------
+<span ng-repeat="m in models" >
+	// {{ m.id }} ------------------------------------------------------------
+<span ng-switch on="m.type" ><span ng-switch-when="Evolution_Data">
+	EvolutionData * {{ m.id }} = new EvolutionData(gCLASS->GetLog(), PATH_TO_DATA + "{{ m.ed }}");
+</span><span ng-switch-when="Equivalence_Model" ng-switch on="m.em" ><span ng-switch-when="EQM_FBR_BakerRoss_MOX" >
+	EQM_FBR_BakerRoss_MOX * eqm_{{ m.id }} = new EQM_FBR_BakerRoss_MOX (
+			gCLASS->GetLog() , //log
+			{{ m.weightU235  }} , // weight U235 
+			{{ m.weightPu238 }} , // weight Pu238
+			{{ m.weightPu240 }} , // weight Pu240
+			{{ m.weightPu241 }} , // weight Pu241
+			{{ m.weightPu242 }} , // weight Pu242
+			{{ m.weightAm241 }} , // weight Am241
+			{{ m.equivalentFissile/100 | number:6 }} // equivalent fissile
+		);</span><span ng-switch-when="EQM_FBR_MLP_Keff" >
+	EQM_FBR_MLP_Keff * eqm_{{ m.id }} = new EQM_FBR_MLP_Keff (
+			gCLASS->GetLog() , // log
+			PATH_TO_DATA + "{{ m.tmvaWeightPath }}" , // TMVA weight path
+			{{ m.keffTarget }} , // keff target
+		);</span><span ng-switch-when="EQM_MLP_Kinf" >
+	EQM_MLP_Kinf * eqm_{{ m.id }} = new EQM_MLP_Kinf (
+			gCLASS->GetLog() , // log
+			PATH_TO_DATA + "{{ m.tmvaWeightPath }}" , // TMVA weight path
+			{{ m.nbBatches }} , // number of batches
+			"" , // information file
+			{{ m.kThreshold }} // k_threshold
+		);
+		</span><span ng-switch-when="EQM_MLP_PWR_MOxEUS" >
+	EQM_MLP_PWR_MOxEUS * eqm_{{ m.id }} = new EQM_MLP_PWR_MOxEUS (
+			gCLASS->GetLog() , // log
+			PATH_TO_DATA + "{{ m.tmvaWeightPath }}" , // TMVA weight path
+			{{ m.nbBatches }} , // number of batches
+			{{ m.kThreshold }} , // k_threshold
+			{{ m.maximalPuMassContent/100 | number:4 }} // maximal Pu mass content
+		);
+		</span><span ng-switch-when="EQM_PWR_FixedContent" >
+	EQM_PWR_FixedContent * eqm_{{ m.id }} = new EQM_PWR_FixedContent (
+			gCLASS->GetLog() , // log
+			PATH_TO_DATA + "{{ m.tmvaWeightPath }}" , // TMVA weight path
+			{{ m.nbBatches }} , // number of batches
+			"" , // information file
+			{{ m.kThreshold }} // k_threshold
+		);
+		</span><span ng-switch-when="EQM_PWR_MLP_MOX" >
+	EQM_PWR_MLP_MOX * eqm_{{ m.id }} = new EQM_PWR_MLP_MOX (
+			gCLASS->GetLog() , // log
+			PATH_TO_DATA + "{{ m.tmvaWeightPath }}" , // TMVA weight path
+		);
+		</span><span ng-switch-when="EQM_PWR_MLP_MOX_Am" >
+	EQM_PWR_MLP_MOX_AM * eqm_{{ m.id }} = new EQM_PWR_MLP_MOX_AM (
+			gCLASS->GetLog() , // log
+			PATH_TO_DATA + "{{ m.tmvaWeightPath }}" , // TMVA weight path
+		);
+		</span><span ng-switch-when="EQM_PWR_POL_UO2" >
+	EQM_PWR_POL_UO2 * eqm_{{ m.id }} = new EQM_PWR_POL_UO2 (
+			gCLASS->GetLog() , // log
+			PATH_TO_DATA + "{{ m.tmvaWeightPath }}" , // TMVA weight path
+		);
+		</span>
+	
+	XSM_MLP * xsm_{{ m.id }} = new XSM_MLP( gCLASS->GetLog() , PATH_TO_DATA + "{{ m.xsModel }}" );
+
+	{{ m.im.model }} * im_{{ m.id }} = new {{ m.im.model }}( gCLASS->GetLog() );
+	im_{{ m.id }}->SetSpectrumType("{{ m.im.spectrumType }}");
+	<span ng-show="m.im.fp" >im_{{ m.id }}->LoadFPYield("",CLASS_PATH + "/data/FPyield_<span ng-switch on="m.im.spectrumType" ><span ng-switch-when="fast" >Fast</span><span ng-switch-when="thermal" >Thermal</span></span>_JEFF3.1.dat");</span>
+	PhysicsModels * {{ m.id }} = new PhysicsModels( xsm_{{ m.id }} , eqm_{{ m.id }} , im_{{ m.id }} );
+
+	FabricationPlant * fp_{{ m.id }} = new FabricationPlant(gCLASS->GetLog(), {{ m.fp.time }}*year);
+	fp_{{ m.id }}->SetName("fp_{{ m.id }}");
+
+	fp_{{ m.id }}->SetStorageManagement( kp{{ m.fp.storageManagement }} );
+	<span ng-repeat="store in m.fp.storageList" ><span ng-show="!store.infinit" ><span ng-repeat="unity in store.backendFacility" >fp_{{ m.id }}->AddStorage("{{ store.key }}",{{ unity.id }});</span>
+	</span><span ng-show="store.infinit" >fp_{{ m.id }}->AddInfiniteStorage("{{ store.key }}");</span>
+	</span>
+
+	gCLASS->AddFabricationPlant(fp_{{ m.id }});
+
+	</span>
+</span></span></span>
+
+// Reactors ------------------------------------------------------------------
+<span ng-repeat="m in models" ><span ng-repeat="reactor in m.reaclist" >
+	// {{ reactor.id }} ------------------------------------------------------
+	Reactor * {{ reactor.id }} = new Reactor( gCLASS->GetLog() , // log
+		{{ m.id }} , // data base<span ng-show="m.type == 'Equivalence_Model'" >
+		fp_{{ m.id }} , // fabrication plant </span>
+		{{ reactor.backendFacility }} , // connected backend facility
+		(cSecond) {{ reactor.tstart }}*year , // starting time
+		(cSecond) {{ reactor.tlife }}*year , // time of reactor life time
+		(double) {{ reactor.power }}e9 , // power
+		(double) {{ reactor.hmmass }} , // HM mass
+		(double) {{ reactor.burnup }} , // burnup
+		(double) {{ reactor.loadFactor }} ); // load factor
+	{{ reactor.id }}->SetName("{{ reactor.id }}");
+	gCLASS->AddReactor({{ reactor.id }});
+</span></span>
+
+/* ----- Start simulation ------------------------------------------------- */
+	gCLASS->Evolution( (double)year*{{ config.timeEnd }} );
+
+	delete gCLASS;
+	return 0;
+}
+
+//============================================================================
+// Compilation
+//============================================================================
+/*
+ rm CLASS* ; g++ -o CLASS_Exec {{ config.inputFile }} -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -lTMVA -fopenmp -lgomp -Wunused-result
+ */
+</code></pre>

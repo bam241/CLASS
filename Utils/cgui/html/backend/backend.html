@@ -1,0 +1,33 @@
+<!-- ===== start unity =================================================== -->
+<div class="col-sm-12" ng-repeat="unity in backend" >
+	<section class="panel panel-default" ng-switch on="unity.type" >
+
+		<header class="panel-heading panel-title input-group" >
+
+			<select class="form-control" ng-options="unityType for unityType in backendType" ng-model="unity.type" ></select>
+		
+			<span class="input-group-btn" style="width: 60%;" >
+				<input type="text" class="form-control" placeholder="Name" ng-model="unity.id" />
+			</span>
+		
+			<!-- btn to remove this unity -->
+			<span class="input-group-btn" >
+				<button class="btn btn-warning" ng-click="backend.splice($index, 1)" aria-label="Remove" ><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+			</span>
+		
+		</header>
+<!-- ~~~~~ Backend List ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		{0}
+<!-- ~~~~~ Default ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		<div class="panel-body" ng-switch-default >
+			<p>Choose your unity type</p>
+			<div class="alert alert-info" >
+				<strong>Be careful :</strong> The order of unities in the generated code is the same as here.
+			</div>
+		</div>
+	</section>
+
+</div>
+<!-- ===== end unity ===================================================== -->
+
+&nbsp;
