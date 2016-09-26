@@ -9,7 +9,7 @@ separation plant, disposal and so on.
 CLASS main asset is its ability to include any kind of reactor, either the 
 system is innovative or standard. Indeed, the opportunity is given to each 
 user to build his own reactor data bases and models. CLASS aims to be a useful
-tool for scenarios studies involving **Generation IV** reactors transitions as
+tool for fuel cycle studies involving **Generation IV** reactors transitions as
 well as innovative fuel cycles, such as the **Thorium cycle**.
 
 ## Version
