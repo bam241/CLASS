@@ -1,6 +1,6 @@
 # CLASS : **C**ore **L**ibrary for **A**dvanced **S**cenario **S**imulation #
 CLASS is developed from a **CNRS/IRSN** collaboration started in 2012.
-It is an **open source** package of C++ libraries.
+It's an **open source** package of C++ libraries.
 
 CLASS is a **dynamical fuel cycle simulation tool**. It allows to *simulate* 
 the evolution of an entire **nuclear reactor fleet** and its associated 
