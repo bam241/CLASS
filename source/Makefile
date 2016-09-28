@@ -97,7 +97,7 @@ all: $(OBJ) $(OBJ_model) $(OBJ_ext)
 	@echo "\033[1m    lib$(LIBNAME)_root.so done\033[0m"
 
 clean:
-	@echo -e "\033[41;97;1mclean\033[0m"
+	@echo "\033[41;97;1mclean\033[0m"
 	rm -f $(OBJ) $(OBJ_model) $(OBJ_ext) $(SRC_dir)/*~ $(SRC_dir)/*Dict.cxx $(SRC_dir)/*Dict.h $(EXT_dir)/*Dict.cxx $(EXT_dir)/*Dict.h
 
 external_link:
