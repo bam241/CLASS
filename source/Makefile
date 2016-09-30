@@ -99,6 +99,7 @@ all: $(OBJ) $(OBJ_model) $(OBJ_ext)
 clean:
 	@echo -e "\033[41;97;1mclean\033[0m"
 	rm -f $(OBJ) $(OBJ_model) $(OBJ_ext) $(SRC_dir)/*~ $(SRC_dir)/*Dict.cxx $(SRC_dir)/*Dict.h $(EXT_dir)/*Dict.cxx $(EXT_dir)/*Dict.h
+	rm -f $(INC_dir)/$(EQM_dir) $(INC_dir)/$(IM_dir) $(INC_dir)/$(XSM_dir) $(INC_dir)/$(EXT_dir)
 
 external_link:
 	@ln -sf $$(pwd)/external/ $(INC_dir)/
