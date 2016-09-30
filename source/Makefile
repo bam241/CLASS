@@ -91,13 +91,13 @@ LDFLAGS  += -shared
 all: $(OBJ) $(OBJ_model) $(OBJ_ext)
 	@echo "\033[33m"lib$(LIBNAME).so : "\033[0m"
 	$(LD) $(LDFLAGS) $(OBJ) $(OBJ_model) $(OBJ_ext) $(LIBS) -o $(LIBDIR)/lib$(LIBNAME).so
-	@echo -e "\033[1m    lib$(LIBNAME).so done\033[0m"
+	@echo "\033[1m    lib$(LIBNAME).so done\033[0m"
 	@echo "\033[33m"lib$(LIBNAME)_root.so : "\033[0m"
 	$(LD) $(LDFLAGS) $(ROOTOBJS) $(LIBS) -o $(LIBDIR)/lib$(LIBNAME)_root.so
-	@echo -e "\033[1m    lib$(LIBNAME)_root.so done\033[0m"
+	@echo "\033[1m    lib$(LIBNAME)_root.so done\033[0m"
 
 clean:
-	@echo -e "\033[41;97;1mclean\033[0m"
+	@echo "\033[41;97;1mclean\033[0m"
 	rm -f $(OBJ) $(OBJ_model) $(OBJ_ext) $(SRC_dir)/*~ $(SRC_dir)/*Dict.cxx $(SRC_dir)/*Dict.h $(EXT_dir)/*Dict.cxx $(EXT_dir)/*Dict.h
 	rm -f $(INC_dir)/$(EQM_dir) $(INC_dir)/$(IM_dir) $(INC_dir)/$(XSM_dir) $(INC_dir)/$(EXT_dir)
 
