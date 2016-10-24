@@ -1,7 +1,7 @@
 #include "EquivalenceModel.hxx"
 #include "EQM_ADS_MLP_RatioPuAM.hxx"
 #include "CLASSLogger.hxx"
-#include "StringLine.hxx"
+#include "external/StringLine.hxx"
 
 #include <string>
 #include <iostream>
