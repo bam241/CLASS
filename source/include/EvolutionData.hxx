@@ -138,6 +138,8 @@ public :
 	void	SetFuelType(string fueltype)		{ fFuelType = fueltype; }		///< Set the fuel type (e.g MOX,UOX,...)
 	void 	SetPower(double power)			{ fPower = power; }			///< Set the power of the EvolutionData [W]
 	void	SetFlux(TGraph* flux )			{ fFlux = flux; }			///< Set the neutron flux of the EvolutionData [cm^{-2}.s^{-1}]
+	void	SetKeff(TGraph* keff )			{ fKeff = keff; }			///< Set the keff evolution for the EvolutionData
+	
 	void	SetCycleTime(cSecond cycletime)		{ fCycleTime = cycletime; }		///< Set cycletime of the EvolutionData [s]
 
 

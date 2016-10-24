@@ -180,6 +180,7 @@ class IsotopicVector : public TObject
 };
 
 IsotopicVector operator/(IsotopicVector const& IVA, double F);
+IsotopicVector operator/(IsotopicVector const& IVA, IsotopicVector const& IVB);
 IsotopicVector operator/(ZAI const& zai, double F);
 IsotopicVector operator*(IsotopicVector const& IVA, double F);
 IsotopicVector operator*(ZAI const& zai, double F);

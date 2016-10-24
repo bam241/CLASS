@@ -540,7 +540,34 @@ IsotopicVector operator/(ZAI const& zai, double F)
 
 	return IVtmp;
 }
+//________________________________________________________________________
+IsotopicVector operator/(IsotopicVector const& IVA, IsotopicVector const& IVB)
+{
+	IsotopicVector IVAFromB  = IVA.GetThisComposition(IVB);
+	unsigned int IVAFromB_Size = IVAFromB.GetZAIList().size();
+	unsigned int IVA_Size      = IVA.GetZAIList().size();
+	unsigned int IVB_Size      = IVB.GetZAIList().size();
 
+	if( IVAFromB_Size < IVA_Size)
+	{
+		cout << "Something try to divide by zero" << endl;
+		cout << "IVA / IVB All ZAI in IVA have to be present in IVB  " << endl;
+		exit(0);
+	}
+	else if ( IVB_Size > IVAFromB_Size )
+		cout << " IVA / IVB : Size of IVB is bigger than IVA. Non commun nuclei will not be present in IVresult" << endl;
+	
+	IsotopicVector IVresult;
+	map<ZAI,double>::const_iterator end   = IVAFromB.end();
+	map<ZAI,double>::const_iterator begin = IVAFromB.begin();
+	map<ZAI,double>::const_iterator it;
+
+	for ( it=begin ; it!=end ; ++it )
+		IVresult.Add(it->first,it->second/IVB.GetIsotopicQuantity()[it->first]);
+
+	return IVresult;
+
+}
 
 //________________________________________________________________________
 IsotopicVector operator*(double F, IsotopicVector const& IVa)
