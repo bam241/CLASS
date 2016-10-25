@@ -25,8 +25,25 @@
 #include <algorithm>
 #include <map>
 #include <sstream>
+#include <numeric>
+#include <functional>
+#include <algorithm>    
+#include <ctime>
 
 using namespace std;
+
+const ZAIMass cZAIMass; //atomic masses
+
+string ElNames[110]={"  ","H","He","Li","Be",
+						"B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar",
+						"K","Ca","Sc","Ti","V ","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge",
+						"As","Se","Br","Kr","Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd",
+						"Ag","Cd","In","Sn","Sb","Te","I","Xe","Cs","Ba","La","Ce","Pr","Nd",
+						"Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta","W",
+						"Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn","Fr","Ra",
+						"Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No",
+						"Lr","Rf","Db","Sg","Bh","Hs","Mt"};
+
 //--------------------------------------------------------------------------------------------------
 /*************************
  		MAIN
@@ -43,7 +60,6 @@ int main(int argc, char ** argv){
 
 	fEvolutionDataFolder = argv[1];
 
-	InitMass();	//Load nuclei masses
 	CheckJob();	// looks fot the .dat files in the fEvolutionDataFolder
 
 	FilePath = "DB_TMP/";
@@ -90,28 +106,302 @@ string NameXS(ZAI act,string xs)
 
 	return Name.str();
 }
+
+//--------------------------------------------------------------------------------------------------
+void  FillMapName()
+{
+	cout<<endl;
+	cout<< "============================================="<<endl;
+	cout<< "Looking for fresh fuel composition @ t=0 ..."<<endl;
+	cout<< "-> It will be the input variables of the MLPs"<<endl;
+	cout<<endl;
+
+	vector<ZAI> ZAI_T0 =  fActinideCompoInit[0].GetNonZeroZAIList();
+
+	for(int zai = 0 ; zai < ZAI_T0.size() ; zai++ )
+	{	stringstream ssname;
+		int Z = ZAI_T0[zai].Z;
+		int A = ZAI_T0[zai].A;
+		int I = ZAI_T0[zai].I;
+		string sI="";
+		if(I == 1)
+			sI = "m";
+		else if(I == 2) 
+			sI = "2m";
+		else if(I == 3) 
+			sI = "3m";
+
+		ssname<<A<<ElNames[Z]<<sI;
+
+		cout<< "Add this nuclei with this name [y/n] ?  (if you don't know say yes to all)  "<<endl;
+		cout<< "[Z\tA\tI\tName]"<<endl;
+		cout<<"\033[36m"<<Z<<"\t"<<A<<"\t"<<I<<"\t"<<ssname.str()<<"\033[0m"<<endl;
+
+		if (UserSayYes())
+			fMapName.insert(pair<ZAI,string> ( ZAI(Z,A,I) , ssname.str()) );
+
+	}
+
+	bool UserWantToAdd = true;
+	while(UserWantToAdd)
+	{
+		cout<< "Do you want to add additional nuclei  [y/n] ? (if you don't know say no) "<<endl;
+		if(UserSayYes())
+		{	
+			int Z = 0;
+			int A = 0;
+			int I = 0;
+			string Name;
+			cout << "Z -> "; cin >> Z ; cout <<" A -> "; cin >> A ; cout <<" I -> "; cin >> I ;cout <<" Name -> "; cin >> Name;
+			fMapName.insert(pair<ZAI,string> ( ZAI(Z,A,I) ,Name) );
+		}
+
+		else
+			UserWantToAdd = false;
+	}	
+
+	cout<< "============================================="<<endl;
+
+
+}
+//--------------------------------------------------------------------------------------------------
+bool UserSayYes()
+{
+		bool AnswerIsNotGiven = true;
+		bool isYES = false;
+		while(AnswerIsNotGiven)
+		{
+			string answer;
+			cin>>answer;
+	
+			if(answer == "y" || answer == "yes" || answer == "Yes" || answer == "Y")
+			{
+				isYES = true;
+				AnswerIsNotGiven = false;
+			}
+			else if (answer == "n" || answer == "no" || answer == "No" || answer == "N")
+			{
+				isYES = false;
+				AnswerIsNotGiven = false;
+			}
+
+			else{
+				cout << "Yes OR No ???!"<<endl;
+			}
+		}
+	return isYES;	
+}
+
+//--------------------------------------------------------------------------------------------------
+void CreateInfoFile()
+{
+
+	/**************************************************/
+	// GETTING USER INFO
+	/**************************************************/
+    double MeanHMMass = std::accumulate(fHMMass.begin(), fHMMass.end(), 0) / fHMMass.size();
+    string ReactorType, FuelType, Author,Mail,XSBase,HLCut,EnergyDisc,FPYBase,SABase,Geom,AddInfo,DepCode ;
+    double Power = 0;
+    ReadInfo(StringLine::ReplaceAll(JobName[0],".dat",".info" ), ReactorType,FuelType,Power);
+
+	cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+"<endl;
+	cout<<"Data_Base_Info.nfo FILE GENERATOR"<<endl;
+	cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+"<endl;
+	cout<<endl;
+
+	cout<<"-> Author name : "<<endl;
+	cin>> Author;
+	cout<<endl;
+
+	cout<<"-> email adress : "<<endl;
+	cin>> Mail;
+	cout<<endl;
+
+	cout<<"-> Depletion code used : "<<endl;
+	cin>> DepCode;
+	cout<<endl;
+
+	cout<<"-> Cross section data base (e.g ENSDF7.1) : "<<endl;
+	cin>> XSBase;
+	cout<<endl;
+
+	cout<<"-> Fission Yield data base (e.g ENSDF7.1) : "<<endl;
+	cin>> FPYBase;
+	cout<<endl;
+
+	cout<<"-> S(alpha,beta) data base (e.g ENSDF7.1) : "<<endl;
+	cin>> SABase;
+	cout<<endl;
+
+	cout<<"-> Geometry simulated  (e.g Cubic Assembly with mirror boundary) : "<<endl;
+	cin>> Geom;
+	cout<<endl;
+
+	cout<<"-> Half life cut [s] (if any) : "<<endl;
+	cin>> HLCut;
+	cout<<endl;
+
+	cout<<"-> Multi group treatment (yes/no if yes number of groups) : "<<endl;
+	cin>> EnergyDisc;
+	cout<<endl;	
+
+	cout<<"-> Additional informations : "<<endl;
+	cin>> AddInfo;
+	cout<<endl;	
+
+
+	cout<<"-> Reactor type (e.g PWR, FBR,...) : "<<endl;
+	cout<<"Found in a .info file :"<<endl;
+	cout<<"\033[36m"<<ReactorType<<"\033[0m"<<endl;
+	cout<< "Is that corect ? [y/n] "
+	if(!UserSayYes())
+	{	cout<<"\t So what it is ?"<<endl;
+		cin>> ReactorType;
+	}	
+	cout<<endl;
+
+	cout<<"-> Fuel type (e.g UOX, MOX,...) : "<<endl;
+	cout<<"Found in a .info file :"<<endl;
+	cout<<"\033[36m"<<FuelType<<"\033[0m"<<endl;
+	cout<< "Is that corect ? [y/n] "
+	if(!UserSayYes())
+	{	cout<<"\t So what it is ?"<<endl;
+		cin>> FuelType;
+	}	
+	cout<<endl;
+
+	cout<<"-> Simulated heavy metal mass (tons) : "<<endl;
+	cout<< "\t Calculated from your evolution datas the AVERAGE heavy metal mass is : "
+	cout<<"\033[36m"<<MeanHMMass<<"\033[0m"<<" tons"<<endl;
+	cout<< "Is that corect ? [y/n] "
+	if(!UserSayYes())
+	{	cout<<"\t So what it is ?"<<endl;
+		cin>> MeanHMMass;
+	}
+	cout<<endl;
+
+	cout<<"-> Simulated thermal power (W) : "<<endl;
+	cout<<"Found in a .info file :"<<endl;
+	cout<<"\033[36m"<<Power<<"\033[0m"<<endl;
+	cout<< "Is that corect ? [y/n] "
+	if(!UserSayYes())
+	{	cout<<"\t So what it is ?"<<endl;
+		cin>> Power;
+	}	
+	cout<<endl;
+
+	/**************************************************/
+	// BUILDING FILE
+	/**************************************************/
+	ofstream InfoFile("Data_Base_Info.nfo");
+
+	InfoFile << "To be used with : XSM_MLP.cxx"<<endl;
+	InfoFile << endl;
+	InfoFile << "Reactor Type :"<<endl;
+	InfoFile << "K_REACTOR "<< ReactorType <<endl;
+	InfoFile << endl;
+	InfoFile << "Fuel Type :"<<endl;
+	InfoFile << "K_FUEL "<< FuelType <<endl;
+	InfoFile << endl;
+	InfoFile << "Heavy Metal [t] :"<<endl;
+	InfoFile << "K_MASS  "<< MeanHMMass <<endl;
+	InfoFile << endl;
+	InfoFile << "Thermal Power [W] :"<<endl;
+	InfoFile << "K_POWER  "<< Power <<endl;
+	InfoFile << "Irradiation time steps [s] :"<<endl;
+	InfoFile << "K_TIMESTEP";
+		for( int t = 0 ; t < fNOfTimeStep ; t++ )
+			InfoFile <<" "<<fTime[t];
+	InfoFile << endl<<endl;
+	InfoFile << "Z A I Name (input MLP) :"<<endl;
+	for(map<ZAI,string> it = fMapName.begin() ; it != fMapName.end() ; it++ )
+			InfoFile <<"K_ZAINAME "<<it->first.Z <<" " <<it->first.A <<" " <<it->first.I<<" " << it->second <<endl ;
+	InfoFile <<endl;
+	InfoFile << "Fuel range (Z A I min max) :"<<endl;
+	for(map<ZAI,string> it = fMapName.begin() ; it != fMapName.end() ; it++ )
+			InfoFile <<"K_ZAIL "<<it->first.Z <<" " <<it->first.A <<" " <<it->first.I<<" " << std::min_element(GetAllCompoOf(it->first))  << " "  <<std::max_element(GetAllCompoOf(it->first)) <<endl ;
+  
+  	InfoFile << endl;
+    time_t t = time(0);   // get time now
+    struct tm * now = localtime( & t ); 
+    InfoFile <<" Date : "<< now->tm_mday<< '/'<<  (now->tm_mon + 1) << '/'  <<(now->tm_year + 1900)<< endl;
+
+    string , FuelType, Author,Mail,XSBase,HLCut,EnergyDisc,FPYBase,SABase,Geom,AddInfo, DepCode ;
+
+
+
+}
+//--------------------------------------------------------------------------------------------------
+vector<double> GetAllCompoOf(ZAI zai)
+{
+	vector<double> AllCompoOfZAI;
+
+		for( int b = 0 ; b < fActinideCompoInit.size() ; b++ )
+			AllCompoOfZAI.push_back(fActinideCompoInit[b].GetZAIIsotopicQuantity(zai)); 
+
+return AllCompoOfZAI;
+}
+
+//--------------------------------------------------------------------------------------------------
+void EvolutionData::ReadInfo(string InfoDBFile,string &ReactorType,string &FuelType,double &Power,)
+{	
+	ifstream InfoDB(InfoDBFile.c_str());				// Open the File
+	if(!InfoDB)
+	{
+		cout << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
+	}
+	else
+	{
+		int start = 0;
+		string line;
+		getline(InfoDB, line);
+		if ( tlc(StringLine::NextWord(line, start, ' ')) ==  "reactor")
+			ReactorType = StringLine::NextWord(line, start, ' ');
+		
+		start = 0;
+		getline(InfoDB, line);
+		if (tlc(StringLine::NextWord(line, start, ' ')) ==  "fueltype")
+			FuelType = StringLine::NextWord(line, start, ' ');
+	
+		start = 0;
+		getline(InfoDB, line);
+		if ( tlc(StringLine::NextWord(line, start, ' ')) ==  "cycletime")
+			fCycleTime = atof(StringLine::NextWord(line, start, ' ').c_str());
+	
+		getline(InfoDB, line); // Assembly HM Mass DONT TRUST THIS ONE CALCULATED WITH A instead of real atomic mass
+	
+		start = 0;
+		getline(InfoDB, line);
+		if ( tlc(StringLine::NextWord(line, start, ' ')) ==  "constantpower")
+			Power = atof(StringLine::NextWord(line, start, ' ').c_str());
+		InfoDB.close();
+	}
+
+}
+
+
 //--------------------------------------------------------------------------------------------------
 void DumpInputNeuron(string filename)
 {
 	TFile*   fOutFile = new TFile(filename.c_str(),"RECREATE");
 	TTree*   fOutT = new TTree("Data", "Data");
 
-/**********************INITIALISATIONNN********************/
-	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
-	//@@Change the input value according to your fresh fuel compo 
-	//-> here MOX FUEL
-	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
-	double U5   			 = 0;
-	double U8   			 = 0;
-	double Pu8 				 = 0;
-	double Pu9 				 = 0;
-	double Pu10 			 = 0;
-	double Pu11				 = 0;
-	double Pu12 	    	 = 0;
-	double Am1 	    		 = 0;
 
-	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
+/**********************INITIALISATIONNN********************/
+	FillMapName();
+
+	////////////////////////////////////////////////////////
+	// INIT FRESH FUEL COMPOSITION and TIME
+	////////////////////////////////////////////////////////
+
+	double *FreshCompo = new double[fMapName.size()]; 
+
+	for(int i = 0 ; i < fMapName.size() ; i++ )
+		FreshCompo[i] = 0;
+
+	////////////////////////////////////////////////////////
 	double Time 		     = 0;	
+
 /**********************init map********************/
 	map < ZAI,vector<double> > mAllXS;
 	map < ZAI, vector<double>  > mAllInventories;
@@ -138,20 +428,19 @@ void DumpInputNeuron(string filename)
 		mAllXS.insert(pair<ZAI,vector< double> >(fAllNuclei[act], InitVect) );
 	}
 
+
 /**********************BRANCHING**************************************************/
 /**********************Fresh fuel**************************************************/
-	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
-	//@@Change the input value according to your fresh fuel compo 
-	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
-	fOutT->Branch(	"U5"			,&U5			,"U5/D"				);
-	fOutT->Branch(	"U8"			,&U8			,"U8/D"				);
-	fOutT->Branch(	"Pu8"			,&Pu8			,"Pu8/D"			);
-	fOutT->Branch(	"Pu9"			,&Pu9			,"Pu9/D"			);
-	fOutT->Branch(	"Pu10"			,&Pu10			,"Pu10/D"			);
-	fOutT->Branch(	"Pu11"			,&Pu11			,"Pu11/D"			);
-	fOutT->Branch(	"Pu12"			,&Pu12			,"Pu12/D"			);
-	fOutT->Branch(	"Am1"			,&Am1			,"Am1/D"			);
-	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
+
+	map<ZAI,string>::iterator it;
+	int index = 0;
+	for(it = fMapName.begin() ; it != fMapName.end() ; it++ )
+	{	string Name = it->second + "/D"; 
+		fOutT->Branch( it->second.c_str() , &FreshCompo[index] , Name.c_str());
+		index++;
+	}
+
+	////////////////////////////////////////////////////////
 	fOutT->Branch(	"Time"			,&Time			,"Time/D"			);
 
 
@@ -189,19 +478,19 @@ void DumpInputNeuron(string filename)
 	 int NumOfBase=fActinideCompoInit.size();
 	for(int b=0;b<NumOfBase;b++) 
 	{ 
-	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
-	//@@@Change the input value according to your fresh fuel compo 
-	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
-															//   (Z , A ,I)
-		U5 			=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(92,235,0));
-		U8 			=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(92,238,0));
-		Pu8  	  	=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,238,0));
-		Pu9  	  	=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,239,0));
-		Pu10 	  	=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,240,0));
-		Pu11 	  	=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,241,0));
-		Pu12 	  	=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(94,242,0));
-		Am1 	  	=  fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(95,241,0));
-	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//				
+		///////////////////////////////////////////////////////
+		int index =0;
+		for(it = fMapName.begin() ; it != fMapName.end() ; it++ )
+		{	
+			int Z = it->first.Z;
+			int A = it->first.Z;
+			int I = it->first.Z;
+			FreshCompo[index] = fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(Z,A,I));
+
+			index++;
+		}	
+		///////////////////////////////////////////////////////
+	
 			for(int Tstep=0 ;Tstep<fNOfTimeStep;Tstep++ )	
 			{	
 	 			Time=fTime[Tstep];
@@ -244,47 +533,7 @@ void DumpInputNeuron(string filename)
 	delete fOutFile;
 
 }
-//--------------------------------------------------------------------------------------------------
-void InitMass()
-{
-//Set tghe mass of the nuceli
 
-//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
-//@@Change : ADD THE MASS OF THE NUCLEI PRESENT IN YOUR FRESH FUEL
-//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
-	
-	ZAI U238  = ZAI(92,238,0);
-	ZAImass.insert(pair<ZAI,double>(U238, 238050788.247e-6));
-	
-	ZAI U234  = ZAI(92,234,0);
-	ZAImass.insert(pair<ZAI,double>(U234, 234041000.000e-6));
-
-	ZAI U235  = ZAI(92,235,0);
-	ZAImass.insert(pair<ZAI,double>(U235, 235043929.918e-6));
-	
-	ZAI Pu238 = ZAI(94,238,0);
-	ZAImass.insert(pair<ZAI,double>(Pu238,238049559.894e-6));
-	
-	ZAI Pu239 = ZAI(94,239,0);
-	ZAImass.insert(pair<ZAI,double>(Pu239,239052163.381e-6));
-	
-	ZAI Pu240 = ZAI(94,240,0);
-	ZAImass.insert(pair<ZAI,double>(Pu240,240053813.545e-6));
-	
-	ZAI Pu241 = ZAI(94,241,0);
-	ZAImass.insert(pair<ZAI,double>(Pu241,241056851.456e-6));
-	
-	ZAI Pu242 = ZAI(94,242,0);
-	ZAImass.insert(pair<ZAI,double>(Pu242,242058742.611e-6));
-	
-	ZAI Am241 = ZAI(95,241,0);
-	ZAImass.insert(pair<ZAI,double>(Am241,241056829.144e-6));
-	
-	ZAI O16 = ZAI(8,16,0);
-	ZAImass.insert(pair<ZAI,double>(O16, 0.));
-	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
-	
-}
 //--------------------------------------------------------------------------------------------------
 void CheckJob()
 {	//LOAD THE LIST OF EvolutionData
@@ -474,6 +723,7 @@ void ReadAndFill(string jobname)
 	
 
 	IsotopicVector CompoBasei; 
+	IsotopicVector CompoBaseiUnormalize;
 
 	for(int i=0; i < (int)Z.size()-2; i++)
 	{
@@ -481,10 +731,12 @@ void ReadAndFill(string jobname)
 		{
 			ZAI zai = ZAI(Z[i], A[i], I[i]);
 			CompoBasei.IVquantity.insert(pair<ZAI,double>(zai,Q[i]/N));
+			CompoBaseiUnormalize.IVquantity.insert(pair<ZAI,double>(zai,Q[i]));
 		}	
 	}
 	
 	fActinideCompoInit.push_back(CompoBasei);
+	fHMMass.push_back(cZAIMass(CompoBaseiUnormalize));
 
 GoodJobName.push_back(jobname);
 

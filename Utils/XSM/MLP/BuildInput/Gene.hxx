@@ -9,12 +9,12 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <vector>
 #include <sstream>
 #include <cmath>
 #include <map>
 #include <iostream>
 #include <iomanip>
+
 using namespace std;
 
 string dtoa(double num)
@@ -27,7 +27,6 @@ string dtoa(double num)
 string FilePath;
 string DataPath;
 
-map<ZAI, double> ZAImass;
 vector<string> JobName;
 vector<string> GoodJobName;
 
@@ -38,16 +37,23 @@ vector< map < ZAI, vector<double> > > fXSFis;	// map of fission cross section fX
 vector< map < ZAI, vector<double> > > fXSCap;
 vector< map < ZAI, vector<double> > > fXSN2N;
 
-vector<IsotopicVector> fActinideCompoInit;	//Fresh fuel composition
+vector<IsotopicVector> fActinideCompoInit;	//Fresh fuel composition in atomic prop.
+
+vector<double> fHMMass; //Vector of initial Heavy metal mass (every element should be egual or very very close !!)
 
 int fNOfTimeStep=0; //number of time step in the Evolution
 
 string fEvolutionDataFolder = "";
 
+map<ZAI,string> fMapName; // List of ZAI and their name to consider for model parametrization (must of the time Fuel composition @ t=0)
+
+
 bool fIsAllNucleiAlreadyFill=false;			
 
-void	InitMass();
 void	CheckJob();
 void	ReadAndFill(string jobname);
 void    DumpForTestingNeuron(string filename);
 void    DumpInputNeuron(string filename);
+void 	FillMapName();
+bool	UserSayYes();
+vector<double> GetAllCompoOf(ZAI zai);
