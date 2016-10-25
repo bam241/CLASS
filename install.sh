@@ -23,10 +23,10 @@ guiDir="bin"
 #_____________________________________________________________________________
 # compilator and options
 if [[ -z "$CXX" ]]; then
-	CXX="g++ -std=c++11" # default compiler is g++ with C++11
+	CXX="g++" # default compiler is g++ with C++11
 fi
 if [[ -z "$CXXFLAGS" ]]; then
-	CXXFLAGS="-O2 -g -fPIC -finline-functions" # some optimization flags for GCC, -fPIC and -finline-functions are not avalable for clang
+	CXXFLAGS=" -std=c++11 -O2 -g -fPIC -finline-functions" # some optimization flags for GCC, -fPIC and -finline-functions are not avalable for clang
 fi
 if [[ -z "$CPPFLAGS" ]]; then
 	CPPFLAGS=$OMPFLAGS
