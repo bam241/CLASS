@@ -56,4 +56,8 @@ void    DumpForTestingNeuron(string filename);
 void    DumpInputNeuron(string filename);
 void 	FillMapName();
 bool	UserSayYes();
+void 	CreateInfoFile();
+void 	ReadInfo(string InfoDBFile,string &ReactorType,string &FuelType,double &Power);
+
 vector<double> GetAllCompoOf(ZAI zai);
+

@@ -32,7 +32,7 @@
 
 using namespace std;
 
-const ZAIMass cZAIMass; //atomic masses
+ZAIMass cZAIMass; //atomic masses
 
 string ElNames[110]={"  ","H","He","Li","Be",
 						"B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar",
@@ -78,6 +78,9 @@ int main(int argc, char ** argv){
 	DumpInputNeuron("TrainingInput.root");
 	cout << "Training input generated in file : TrainingInput.root " << endl;
 	cout << "Names of MLP outputs in file : TrainingInput.cxx " << endl;
+
+	CreateInfoFile();
+
 	system("rm -r DB_TMP");
 
 }
@@ -199,61 +202,73 @@ void CreateInfoFile()
 	/**************************************************/
 	// GETTING USER INFO
 	/**************************************************/
-    double MeanHMMass = std::accumulate(fHMMass.begin(), fHMMass.end(), 0) / fHMMass.size();
+	double sum = 0 ;
+	for (int i=0 ; i < fHMMass.size() ; i++)
+			sum+=fHMMass[i];
+
+    double MeanHMMass = sum / (double)fHMMass.size();
     string ReactorType, FuelType, Author,Mail,XSBase,HLCut,EnergyDisc,FPYBase,SABase,Geom,AddInfo,DepCode ;
     double Power = 0;
-    ReadInfo(StringLine::ReplaceAll(JobName[0],".dat",".info" ), ReactorType,FuelType,Power);
 
-	cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+"<endl;
+
+	int start=0;
+	string AnInfoFile = JobName[0];
+	int pos=AnInfoFile.find(".dat",start);
+	AnInfoFile.replace(pos,4,".info");
+
+    ReadInfo(AnInfoFile,ReactorType,FuelType,Power);
+
+	cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+"<<endl;
 	cout<<"Data_Base_Info.nfo FILE GENERATOR"<<endl;
-	cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+"<endl;
+	cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+"<<endl;
 	cout<<endl;
 
-	cout<<"-> Author name : "<<endl;
-	cin>> Author;
+	cout<<"-> Author(s) name(s) : "<<endl;
+	std::getline(std::cin, Author);
 	cout<<endl;
 
-	cout<<"-> email adress : "<<endl;
-	cin>> Mail;
+	cout<<"-> email adress(es) : "<<endl;
+	std::getline(std::cin, Mail);	
 	cout<<endl;
 
 	cout<<"-> Depletion code used : "<<endl;
-	cin>> DepCode;
+	std::getline(std::cin, DepCode);
 	cout<<endl;
 
 	cout<<"-> Cross section data base (e.g ENSDF7.1) : "<<endl;
-	cin>> XSBase;
+	std::getline(std::cin, XSBase);
 	cout<<endl;
 
-	cout<<"-> Fission Yield data base (e.g ENSDF7.1) : "<<endl;
-	cin>> FPYBase;
+	cout<<"-> Fission yield data base (e.g ENSDF7.1) : "<<endl;
+	std::getline(std::cin, FPYBase);
 	cout<<endl;
 
 	cout<<"-> S(alpha,beta) data base (e.g ENSDF7.1) : "<<endl;
-	cin>> SABase;
+	std::getline(std::cin, SABase);
 	cout<<endl;
 
 	cout<<"-> Geometry simulated  (e.g Cubic Assembly with mirror boundary) : "<<endl;
-	cin>> Geom;
+	std::getline(std::cin, Geom);
+
 	cout<<endl;
 
 	cout<<"-> Half life cut [s] (if any) : "<<endl;
-	cin>> HLCut;
+	std::getline(std::cin, HLCut);	
 	cout<<endl;
 
-	cout<<"-> Multi group treatment (yes/no if yes number of groups) : "<<endl;
-	cin>> EnergyDisc;
+	cout<<"-> Multi group treatment (yes/no if yes give the number of groups) : "<<endl;
+	std::getline(std::cin, EnergyDisc);
 	cout<<endl;	
 
 	cout<<"-> Additional informations : "<<endl;
-	cin>> AddInfo;
+	std::getline(std::cin, AddInfo);	
 	cout<<endl;	
 
 
 	cout<<"-> Reactor type (e.g PWR, FBR,...) : "<<endl;
 	cout<<"Found in a .info file :"<<endl;
 	cout<<"\033[36m"<<ReactorType<<"\033[0m"<<endl;
-	cout<< "Is that corect ? [y/n] "
+	cout<< "Is that corect ? [y/n] "<<endl;
 	if(!UserSayYes())
 	{	cout<<"\t So what it is ?"<<endl;
 		cin>> ReactorType;
@@ -263,7 +278,7 @@ void CreateInfoFile()
 	cout<<"-> Fuel type (e.g UOX, MOX,...) : "<<endl;
 	cout<<"Found in a .info file :"<<endl;
 	cout<<"\033[36m"<<FuelType<<"\033[0m"<<endl;
-	cout<< "Is that corect ? [y/n] "
+	cout<< "Is that corect ? [y/n] "<<endl;
 	if(!UserSayYes())
 	{	cout<<"\t So what it is ?"<<endl;
 		cin>> FuelType;
@@ -271,9 +286,9 @@ void CreateInfoFile()
 	cout<<endl;
 
 	cout<<"-> Simulated heavy metal mass (tons) : "<<endl;
-	cout<< "\t Calculated from your evolution datas the AVERAGE heavy metal mass is : "
+	cout<< "\t Calculated from your evolution datas the AVERAGE heavy metal mass is : "<<endl;
 	cout<<"\033[36m"<<MeanHMMass<<"\033[0m"<<" tons"<<endl;
-	cout<< "Is that corect ? [y/n] "
+	cout<< "Is that corect ? [y/n] "<<endl;
 	if(!UserSayYes())
 	{	cout<<"\t So what it is ?"<<endl;
 		cin>> MeanHMMass;
@@ -283,7 +298,7 @@ void CreateInfoFile()
 	cout<<"-> Simulated thermal power (W) : "<<endl;
 	cout<<"Found in a .info file :"<<endl;
 	cout<<"\033[36m"<<Power<<"\033[0m"<<endl;
-	cout<< "Is that corect ? [y/n] "
+	cout<< "Is that corect ? [y/n] "<<endl;
 	if(!UserSayYes())
 	{	cout<<"\t So what it is ?"<<endl;
 		cin>> Power;
@@ -295,7 +310,9 @@ void CreateInfoFile()
 	/**************************************************/
 	ofstream InfoFile("Data_Base_Info.nfo");
 
-	InfoFile << "To be used with : XSM_MLP.cxx"<<endl;
+  	InfoFile <<"============================================" << endl;
+  	InfoFile <<"    Informations needed by XSM_MLP model    " <<endl;
+  	InfoFile <<"============================================" << endl;
 	InfoFile << endl;
 	InfoFile << "Reactor Type :"<<endl;
 	InfoFile << "K_REACTOR "<< ReactorType <<endl;
@@ -308,26 +325,42 @@ void CreateInfoFile()
 	InfoFile << endl;
 	InfoFile << "Thermal Power [W] :"<<endl;
 	InfoFile << "K_POWER  "<< Power <<endl;
+	InfoFile << endl;
 	InfoFile << "Irradiation time steps [s] :"<<endl;
 	InfoFile << "K_TIMESTEP";
 		for( int t = 0 ; t < fNOfTimeStep ; t++ )
 			InfoFile <<" "<<fTime[t];
 	InfoFile << endl<<endl;
 	InfoFile << "Z A I Name (input MLP) :"<<endl;
-	for(map<ZAI,string> it = fMapName.begin() ; it != fMapName.end() ; it++ )
+	for(map<ZAI,string>::iterator it = fMapName.begin() ; it != fMapName.end() ; it++ )
 			InfoFile <<"K_ZAINAME "<<it->first.Z <<" " <<it->first.A <<" " <<it->first.I<<" " << it->second <<endl ;
 	InfoFile <<endl;
 	InfoFile << "Fuel range (Z A I min max) :"<<endl;
-	for(map<ZAI,string> it = fMapName.begin() ; it != fMapName.end() ; it++ )
-			InfoFile <<"K_ZAIL "<<it->first.Z <<" " <<it->first.A <<" " <<it->first.I<<" " << std::min_element(GetAllCompoOf(it->first))  << " "  <<std::max_element(GetAllCompoOf(it->first)) <<endl ;
-  
+	for(map<ZAI,string>::iterator it = fMapName.begin() ; it != fMapName.end() ; it++ )
+	{	vector <double> AllCompoOfZAI = GetAllCompoOf(it->first);
+		vector <double>::iterator Min = std::min_element(AllCompoOfZAI.begin(),AllCompoOfZAI.end()); 
+		vector <double>::iterator Max = std::max_element(AllCompoOfZAI.begin(),AllCompoOfZAI.end());
+		InfoFile <<"K_ZAIL "<<it->first.Z <<" " <<it->first.A <<" " <<it->first.I<<" " << *Min << " "  << *Max <<endl ;
+  	}
+    InfoFile << endl;
+  	InfoFile <<"============================================" << endl;
+  	InfoFile <<"     Data base generation informations      " <<endl;
+  	InfoFile <<"============================================" << endl;
   	InfoFile << endl;
     time_t t = time(0);   // get time now
     struct tm * now = localtime( & t ); 
-    InfoFile <<" Date : "<< now->tm_mday<< '/'<<  (now->tm_mon + 1) << '/'  <<(now->tm_year + 1900)<< endl;
-
-    string , FuelType, Author,Mail,XSBase,HLCut,EnergyDisc,FPYBase,SABase,Geom,AddInfo, DepCode ;
-
+    InfoFile <<" Date: "<< now->tm_mday<< '/'<<  (now->tm_mon + 1) << '/'  <<(now->tm_year + 1900)<< endl;
+	InfoFile <<" Author(s): "<< Author <<endl;
+	InfoFile <<" Author(s) contact: "<< Mail <<endl;
+	InfoFile <<" Depletion code: "<< DepCode <<endl;
+	InfoFile <<" Simulated geometry: "<<  Geom <<endl;
+	InfoFile <<" Nuclear data used "<< DepCode <<endl;
+	InfoFile <<"\tCross section library: "<< XSBase <<endl;
+	InfoFile <<"\tFission yield library: "<< FPYBase <<endl;
+	InfoFile <<"\tS(alpha,beta) library: "<< SABase <<endl;
+	InfoFile <<" Half life cut [s] : "<<  HLCut <<endl;
+	InfoFile <<" Multi-group treatment: "<<  EnergyDisc <<endl;
+	InfoFile <<" Additional informations: "<< endl << AddInfo <<endl;
 
 
 }
@@ -343,7 +376,7 @@ return AllCompoOfZAI;
 }
 
 //--------------------------------------------------------------------------------------------------
-void EvolutionData::ReadInfo(string InfoDBFile,string &ReactorType,string &FuelType,double &Power,)
+void ReadInfo(string InfoDBFile,string &ReactorType,string &FuelType,double &Power)
 {	
 	ifstream InfoDB(InfoDBFile.c_str());				// Open the File
 	if(!InfoDB)
@@ -355,24 +388,32 @@ void EvolutionData::ReadInfo(string InfoDBFile,string &ReactorType,string &FuelT
 		int start = 0;
 		string line;
 		getline(InfoDB, line);
-		if ( tlc(StringLine::NextWord(line, start, ' ')) ==  "reactor")
+		string Next = StringLine::NextWord(line, start, ' ');
+		StringLine::ToLower(Next) ;
+		if ( Next ==  "reactor")
 			ReactorType = StringLine::NextWord(line, start, ' ');
 		
 		start = 0;
 		getline(InfoDB, line);
-		if (tlc(StringLine::NextWord(line, start, ' ')) ==  "fueltype")
+		Next = StringLine::NextWord(line, start, ' ');
+		StringLine::ToLower(Next) ;
+		if ( Next ==  "fueltype")
 			FuelType = StringLine::NextWord(line, start, ' ');
 	
 		start = 0;
 		getline(InfoDB, line);
-		if ( tlc(StringLine::NextWord(line, start, ' ')) ==  "cycletime")
-			fCycleTime = atof(StringLine::NextWord(line, start, ' ').c_str());
+		Next = StringLine::NextWord(line, start, ' ');
+		StringLine::ToLower(Next) ;
+		if ( Next  ==  "cycletime")
+			double cycletime = atof(StringLine::NextWord(line, start, ' ').c_str());
 	
 		getline(InfoDB, line); // Assembly HM Mass DONT TRUST THIS ONE CALCULATED WITH A instead of real atomic mass
 	
 		start = 0;
 		getline(InfoDB, line);
-		if ( tlc(StringLine::NextWord(line, start, ' ')) ==  "constantpower")
+		Next = StringLine::NextWord(line, start, ' ');
+		StringLine::ToLower(Next) ;
+		if ( Next ==  "constantpower")
 			Power = atof(StringLine::NextWord(line, start, ' ').c_str());
 		InfoDB.close();
 	}
@@ -526,6 +567,7 @@ void DumpInputNeuron(string filename)
 				 fOutT->Fill();	
 			}		
 	}
+
 
 	fOutFile->Write();
 	delete fOutT;
@@ -736,7 +778,9 @@ void ReadAndFill(string jobname)
 	}
 	
 	fActinideCompoInit.push_back(CompoBasei);
-	fHMMass.push_back(cZAIMass(CompoBaseiUnormalize));
+	double MassOfThisFuel = cZAIMass.GetMass(CompoBaseiUnormalize);
+	//cout<<MassOfThisFuel<<endl;
+	fHMMass.push_back(MassOfThisFuel);
 
 GoodJobName.push_back(jobname);
 

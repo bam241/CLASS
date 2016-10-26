@@ -3,6 +3,9 @@
 
 #include <map>
 #include <vector>
+#include <fstream>
+#include <iostream>
+
 using namespace std;
 
 class ZAI {
@@ -64,7 +67,7 @@ class ZAIMass
 	
 		if(!infile.good())
 		{	
-			cout << " ZAIMass Error.\n can't find/open file " << MassDataFile << endl;
+			std::cout << " ZAIMass Error.\n can't find/open file " << MassDataFile << std::endl;
 			exit(1);
 		}
 	
@@ -84,23 +87,23 @@ class ZAIMass
 	fZAIMass.clear();
 	}
 
-	double GetMass(ZAI zai ) const //!< get with ZAI
+	double GetMass(ZAI zai )  //!< get with ZAI
 	{
-		map<ZAI,double>::const_iterator  MassIT = fZAIMass.find( ZAI(zai.Z(), zai.A(), 0) );
+		map<ZAI,double>::iterator  MassIT = fZAIMass.find( ZAI(zai.Z, zai.A, 0) );
 
 		if(MassIT == fZAIMass.end())
-			return zai.A();
+			return zai.A;
 		else
 		   return MassIT->second;
 
 	}
 	
-	double GetMass(const IsotopicVector & IV)    const //return Mass of IV [t]
+	double GetMass(IsotopicVector & IV)     //return Mass of IV [t]
 	{
 		double AVOGADRO = 6.02214129e23;
 		double TotalMass = 0;
 
-		for( IsotopicVector::const_iterator it = IV.begin(); it != IV.end(); it++)
+		for( map<ZAI,double>::iterator it = IV.IVquantity.begin(); it != IV.IVquantity.end(); it++)
 		{
 			TotalMass += it->second/AVOGADRO * GetMass( it->first ) ;
 		}
