@@ -11,12 +11,12 @@
 //
 //@author BaM, BaL
 /**********************************************************/
-#include "Gene.hxx"
+#include "TMVAInputGenerator.hxx"
 #include <TH1F.h>
 #include <TH2D.h>
 #include <TFile.h>
 #include <TTree.h>
-#include "StringLine.hxx"
+#include "../../../../source/external/StringLine.hxx"
 #include <TString.h>
 #include <string>
 #include <cmath>
@@ -52,7 +52,7 @@ int main(int argc, char ** argv){
 	
 	if(argc!=2)
 	{
-		cout << "Usage : BuildInputTree Path" << endl;
+		cout << "Usage : TMVAInputGenerator Path" << endl;
 		cout << " Where Path is the path to the folder containing the Evolution Datas" << endl;
 		cout << " i.e the (.dat) files" << endl;
 		exit(0);
@@ -62,26 +62,55 @@ int main(int argc, char ** argv){
 
 	CheckJob();	// looks fot the .dat files in the fEvolutionDataFolder
 
-	FilePath = "DB_TMP/";
-	DataPath = FilePath + "Data/";
-	string Command = "mkdir -p " + DataPath;
-	system(Command.c_str());
+	cout << "Load your EvolutionDatas to R.A.M" << endl;
+	cout<<endl;
 
-	cout << "Reading .dat files ..." << endl;
 	for(int i = 0; i < (int)JobName.size(); i++)
 	{
 		ReadAndFill(JobName[i]);
-		if (i%100 == 0)
-			cout << "\r" << i << " .dat files read" <<flush;
+		ProgressBar(i,JobName.size());
 	}
-	cout << "Filling the TTree ..." << endl;
-	DumpInputNeuron("TrainingInput.root");
-	cout << "Training input generated in file : TrainingInput.root " << endl;
-	cout << "Names of MLP outputs in file : TrainingInput.cxx " << endl;
 
+	FillMapName();
+	DumpInputNeuron("TrainingInput.root");
 	CreateInfoFile();
 
-	system("rm -r DB_TMP");
+	cout << "╭───────────────────────────────────────────────╮" << endl; 
+	cout << "│                GENERATED FILES:               │" << endl; 
+	cout << "├───────────────────────────────────────────────┤" << endl; 
+	cout << "│#1 Input for TMVA training: \033[36mTrainingInput.root\033[0m │" << endl; 
+	cout << "│#2 Target names for TMVA:   \033[36mTrainingInput.cxx\033[0m  │" << endl; 
+	cout << "│#3 Model Information for CLASS:                │" << endl; 
+	cout << "│                           \033[36mData_Base_Info.nfo\033[0m  │" << endl; 
+	cout << "╰───────────────────────────────────────────────╯" << endl; 
+	cout << endl;
+	cout << "╭───────────────────────────────────────────────╮" << endl; 
+	cout << "│                NEXT STEPS:                    │" << endl; 
+	cout << "├───────────────────────────────────────────────┤" << endl; 
+	cout << "│1. Train your MLPs with ../Train/Train_XS.cxx  │" << endl; 
+	cout << "│2. Test MLPs performance using information in: │" << endl; 
+	cout << "│	     ../Train/EvaluateTrainingCommands.dat   │" << endl; 
+	cout << "│3. Put the file #3 in ../Train/weights then    │" << endl; 
+    cout << "│ mouve this folder to $CLASS_PATH/DATA_BASES   │" << endl; 
+	cout << "╰───────────────────────────────────────────────╯" << endl; 
+
+	cout << "=> Do you want me to train the MLPs on your local machine on one cpu ? It can take a (huge) while.  [y/n]" << endl; 
+
+	if(UserSayYes())
+	{
+
+	}
+	else
+	{
+		cout<<" Ok , I suggest you run on a grid " <<endl;
+		cout << "You can proceed like so and run this script on  as many  NumberOfProcessor that you want:"<<endl;
+		cout << "#bin/bash"<<endl;
+		cout<< " for ((i=0 ; NumberOfReaction/NumberOfProcessor  ; i++)) "<<endl;
+		cout<<"    do Train_XS($i)  "<<endl;
+		cout<<"  done"
+
+	}
+
 
 }
 //--------------------------------------------------------------------------------------------------
@@ -114,9 +143,10 @@ string NameXS(ZAI act,string xs)
 void  FillMapName()
 {
 	cout<<endl;
-	cout<< "============================================="<<endl;
-	cout<< "Looking for fresh fuel composition @ t=0 ..."<<endl;
-	cout<< "-> It will be the input variables of the MLPs"<<endl;
+	cout<< "╭───────────────────────────────────────────────╮"<<endl;
+	cout<< "│  Looking for fresh fuel composition @ t=0  to │"<<endl;
+	cout<< "│  set up TMVA MLPs inputs                      │"<<endl;
+	cout<< "╰───────────────────────────────────────────────╯"<<endl;
 	cout<<endl;
 
 	vector<ZAI> ZAI_T0 =  fActinideCompoInit[0].GetNonZeroZAIList();
@@ -135,8 +165,11 @@ void  FillMapName()
 			sI = "3m";
 
 		ssname<<A<<ElNames[Z]<<sI;
+		if(zai == 0)
+			cout<< "Add this nuclei with this name [y/n] ?  (if you don't know say yes to all)  "<<endl;
+		else
+			cout<< "Add [y/n] ?  "<<endl;
 
-		cout<< "Add this nuclei with this name [y/n] ?  (if you don't know say yes to all)  "<<endl;
 		cout<< "[Z\tA\tI\tName]"<<endl;
 		cout<<"\033[36m"<<Z<<"\t"<<A<<"\t"<<I<<"\t"<<ssname.str()<<"\033[0m"<<endl;
 
@@ -163,9 +196,6 @@ void  FillMapName()
 			UserWantToAdd = false;
 	}	
 
-	cout<< "============================================="<<endl;
-
-
 }
 //--------------------------------------------------------------------------------------------------
 bool UserSayYes()
@@ -175,7 +205,8 @@ bool UserSayYes()
 		while(AnswerIsNotGiven)
 		{
 			string answer;
-			cin>>answer;
+			std::getline(std::cin, answer);
+
 	
 			if(answer == "y" || answer == "yes" || answer == "Yes" || answer == "Y")
 			{
@@ -207,7 +238,7 @@ void CreateInfoFile()
 			sum+=fHMMass[i];
 
     double MeanHMMass = sum / (double)fHMMass.size();
-    string ReactorType, FuelType, Author,Mail,XSBase,HLCut,EnergyDisc,FPYBase,SABase,Geom,AddInfo,DepCode ;
+    string ReactorType,FuelType,Author,Mail,XSBase,HLCut,EnergyDisc,FPYBase,SABase,Geom,AddInfo,DepCode ;
     double Power = 0;
 
 
@@ -218,11 +249,12 @@ void CreateInfoFile()
 
     ReadInfo(AnInfoFile,ReactorType,FuelType,Power);
 
-	cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+"<<endl;
-	cout<<"Data_Base_Info.nfo FILE GENERATOR"<<endl;
-	cout<<"+-+-+-+-+-+-+-+-+-+-+-+-+-++-+-+-+"<<endl;
 	cout<<endl;
-
+	cout<<endl;
+	cout<<"╭───────────────────────────────────────────────╮"<<endl;
+	cout<<"│        XSM_MLP .NFO FILE GENERATOR            │"<<endl;
+	cout<<"╰───────────────────────────────────────────────╯"<<endl;
+	cout<<" Answer following questions "<<endl;
 	cout<<"-> Author(s) name(s) : "<<endl;
 	std::getline(std::cin, Author);
 	cout<<endl;
@@ -249,7 +281,6 @@ void CreateInfoFile()
 
 	cout<<"-> Geometry simulated  (e.g Cubic Assembly with mirror boundary) : "<<endl;
 	std::getline(std::cin, Geom);
-
 	cout<<endl;
 
 	cout<<"-> Half life cut [s] (if any) : "<<endl;
@@ -286,7 +317,7 @@ void CreateInfoFile()
 	cout<<endl;
 
 	cout<<"-> Simulated heavy metal mass (tons) : "<<endl;
-	cout<< "\t Calculated from your evolution datas the AVERAGE heavy metal mass is : "<<endl;
+	cout<< "\t According your evolution datas the AVERAGE heavy metal mass is : "<<endl;
 	cout<<"\033[36m"<<MeanHMMass<<"\033[0m"<<" tons"<<endl;
 	cout<< "Is that corect ? [y/n] "<<endl;
 	if(!UserSayYes())
@@ -354,7 +385,7 @@ void CreateInfoFile()
 	InfoFile <<" Author(s) contact: "<< Mail <<endl;
 	InfoFile <<" Depletion code: "<< DepCode <<endl;
 	InfoFile <<" Simulated geometry: "<<  Geom <<endl;
-	InfoFile <<" Nuclear data used "<< DepCode <<endl;
+	InfoFile <<" Nuclear data used in "<< DepCode <<endl;
 	InfoFile <<"\tCross section library: "<< XSBase <<endl;
 	InfoFile <<"\tFission yield library: "<< FPYBase <<endl;
 	InfoFile <<"\tS(alpha,beta) library: "<< SABase <<endl;
@@ -374,7 +405,27 @@ vector<double> GetAllCompoOf(ZAI zai)
 
 return AllCompoOfZAI;
 }
+//--------------------------------------------------------------------------------------------------
+void ProgressBar(double loopindex, double totalindex)
+{
+	// Reset the line
+	for(int i = 0; i < 10; i++)
+		cout << "  ";
+	cout << flush ;
 
+	cout << "\r[\033[42m";
+	for(int i = 0; i < (int)(loopindex/totalindex*20.0); i++)
+		cout << " ";
+	cout<<"\033[0m";
+	for(int i = 20; i >= (int)(loopindex/totalindex*20.0); i--)
+		cout << " ";
+	cout << "] ";
+
+	cout << (int)(loopindex/totalindex*100) << "%\r";
+	cout << flush;
+	//cout << endl;
+
+}
 //--------------------------------------------------------------------------------------------------
 void ReadInfo(string InfoDBFile,string &ReactorType,string &FuelType,double &Power)
 {	
@@ -429,7 +480,6 @@ void DumpInputNeuron(string filename)
 
 
 /**********************INITIALISATIONNN********************/
-	FillMapName();
 
 	////////////////////////////////////////////////////////
 	// INIT FRESH FUEL COMPOSITION and TIME
@@ -512,26 +562,35 @@ void DumpInputNeuron(string filename)
 		}
 	}
 /**********************FILLING THE TTREE**************************************************/
-
-	//Fill containing all the output of the networks to train
+		cout<<endl;
+		cout<<endl;
+		cout<<"╭───────────────────────────────────────────────╮"<<endl;
+		cout<<"│                 FILLING TTREE                 │"<<endl;
+		cout<<"│         (building TrainingInput.root)         │"<<endl;		         
+		cout<<"╰───────────────────────────────────────────────╯"<<endl;
+		cout<<endl;
+	//File containing all the output of the networks to train
 	 ofstream  InputNetwork("TrainingInput.cxx");
 
 	 int NumOfBase=fActinideCompoInit.size();
 	for(int b=0;b<NumOfBase;b++) 
 	{ 
+
+		ProgressBar(b,NumOfBase);
+
 		///////////////////////////////////////////////////////
 		int index =0;
 		for(it = fMapName.begin() ; it != fMapName.end() ; it++ )
 		{	
 			int Z = it->first.Z;
-			int A = it->first.Z;
-			int I = it->first.Z;
+			int A = it->first.A;
+			int I = it->first.I;
 			FreshCompo[index] = fActinideCompoInit[b].GetZAIIsotopicQuantity(ZAI(Z,A,I));
 
 			index++;
 		}	
 		///////////////////////////////////////////////////////
-	
+
 			for(int Tstep=0 ;Tstep<fNOfTimeStep;Tstep++ )	
 			{	
 	 			Time=fTime[Tstep];
@@ -579,8 +638,13 @@ void DumpInputNeuron(string filename)
 //--------------------------------------------------------------------------------------------------
 void CheckJob()
 {	//LOAD THE LIST OF EvolutionData
-	cout << "Scanning " << fEvolutionDataFolder << " for .dat files ..." << endl;
-	cout << "Please wait ..."<< endl;
+
+		cout<<endl;
+		cout<<"╭───────────────────────────────────────────────╮"<<endl;
+		cout<<"    Scanning :                                   "<<endl;
+		cout<< "  " << fEvolutionDataFolder                     <<endl;	
+		cout<<"          for EvolutionData (.dat files)         "<<endl;
+		cout<<"╰───────────────────────────────────────────────╯"<<endl;
 
 	string Command = "find "+ fEvolutionDataFolder + " -name \"*.dat\" > JOB.tmp";
 	system(Command.c_str());
@@ -788,6 +852,6 @@ GoodJobName.push_back(jobname);
 /*-------------------------------------------------------------------------------------------------
 COMPILATION :
 
-g++ -o Gene Gene.cxx `root-config --cflags` `root-config --libs`
+g++ -o TMVAInputGenerator TMVAInputGenerator.cxx `root-config --cflags` `root-config --libs`
 
 */

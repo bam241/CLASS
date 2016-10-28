@@ -58,6 +58,6 @@ void 	FillMapName();
 bool	UserSayYes();
 void 	CreateInfoFile();
 void 	ReadInfo(string InfoDBFile,string &ReactorType,string &FuelType,double &Power);
-
+void 	ProgressBar(double loopindex, double totalindex);
 vector<double> GetAllCompoOf(ZAI zai);
 
