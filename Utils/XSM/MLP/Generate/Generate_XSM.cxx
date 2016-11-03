@@ -90,10 +90,10 @@ int main(int argc, char ** argv){
 	cout << "│      Load your EvolutionDatas to R.A.M        │" << endl; 
 	cout << "╰───────────────────────────────────────────────╯" << endl; 
 	cout<<endl;
-	for(int i = 0; i < 10/*(int)JobName.size()*/; i++)
+	for(int i = 0; i < (int)JobName.size(); i++)
 	{
 		ReadAndFill(JobName[i]);
-		ProgressBar(i,10 /*JobName.size()*/);
+		ProgressBar(i,JobName.size());
 	}
 	ProgressBar(1,1);
 
