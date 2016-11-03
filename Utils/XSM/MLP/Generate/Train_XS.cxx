@@ -31,7 +31,7 @@ std::vector<std::string>OUTPUT;
 void LOAD_OUTPUT() 
 {
 
-   #include  "../BuildInput/TrainingInput.cxx"
+   #include  "_tmp/include_Train_XS/TrainingInput.cxx"
 
 }
 void Train_XS_Time(int INDICE) 
@@ -70,20 +70,8 @@ void Train_XS_Time(int INDICE)
    TMVA::Factory *factory = new TMVA::Factory( "TMVARegression",    OUTPUTFile, 
                                                "!V:!Silent:Color:DrawProgressBar" );
 
-//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-//@@Change : change the  each first arguments with the name used in your training sample
- //   factory->AddVariable( "TheNameOfYourNucleusInTheTrainingFile"           , "whatever"    , "whatever", 'F' ); 
-   factory->AddVariable( "U5"           , "U 235"    , "FractionIsotopic", 'F' ); 
-   factory->AddVariable( "U8"           , "U 238"    , "FractionIsotopic", 'F' ); 
-   factory->AddVariable( "Pu8"          , "Pu 238"   , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu9"          , "Pu 239"   , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu10"         , "Pu 240"   , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu11"         , "Pu 241"   , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu12"         , "Pu 242"   , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Am1"          , "Am 241"   , "FractionIsotopic", 'F' );
-//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-   factory->AddVariable( "Time"         , "Time"     , "seconds"         , 'F' );
 
+   #include "_tmp/include_Train_XS/InputVariables.cxx"
    // Add the variable carrying the regression target
    factory->AddTarget(   OUTPUT[INDICE].c_str() ); //The name of the MLP output
 
@@ -95,7 +83,7 @@ void Train_XS_Time(int INDICE)
    // load the signal and background event samples from ROOT trees
    TFile *input(0);
 
-   TString fname = "../BuildInput/TrainingInput.root";
+   TString fname = "_tmp/include_Train_XS/TrainingInput.root";
    if (!gSystem->AccessPathName( fname )) 
       input = TFile::Open( fname ); // check if file in local directory exists 
    
@@ -169,7 +157,7 @@ int  main(int argc, char const *argv[])
      {
       std::cout << "Usage : TrainXS i"<< std::endl;
       std::cout << "With i the cross section index " << std::endl;
-      std::cout << "File ../BuildInput/TrainingInput.cxx indicates\n indice ranging from 0 to "<< OUTPUT.size()-1 << std::endl;
+      std::cout << "File _tmp/include_Train_XS/TrainingInput.cxx indicates\n indice ranging from 0 to "<< OUTPUT.size()-1 << std::endl;
       exit(0);
      } 
 

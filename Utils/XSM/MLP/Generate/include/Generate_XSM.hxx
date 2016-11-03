@@ -42,11 +42,12 @@ vector<IsotopicVector> fActinideCompoInit;	//Fresh fuel composition in atomic pr
 vector<double> fHMMass; //Vector of initial Heavy metal mass (every element should be egual or very very close !!)
 
 int fNOfTimeStep=0; //number of time step in the Evolution
-
+int fReactionCounter=0;//number of nuclear reactions to train
 string fEvolutionDataFolder = "";
 
 map<ZAI,string> fMapName; // List of ZAI and their name to consider for model parametrization (must of the time Fuel composition @ t=0)
 
+string fReactorType,fFuelType;
 
 bool fIsAllNucleiAlreadyFill=false;			
 
@@ -61,3 +62,15 @@ void 	ReadInfo(string InfoDBFile,string &ReactorType,string &FuelType,double &Po
 void 	ProgressBar(double loopindex, double totalindex);
 vector<double> GetAllCompoOf(ZAI zai);
 
+bool is_file_exist(const char *fileName);
+void CompileTraining();
+void Run_Sequential();
+
+/* PRINT INFO */
+void PrintFinalSteps();
+void Generate_tmva_factory_input();
+
+/* SCRIPT GENERATION */
+void GenerateScript_Parallel(int threads);
+void GenerateScript_Sequential(int begin, int end, string filepath, bool print=true );
+void GenrateZubaScript(int threads);

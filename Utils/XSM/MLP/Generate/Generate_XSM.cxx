@@ -6,12 +6,16 @@
 //  looks for XS_CLOSEST). From the reading it fills a 
 //  TTree (Data) and write it in a file named
 //	TrainingInput.root . 
-//	The file TrainingInput.cxx is the list of MLP outputs 
-// (cross sections)
+// OUTPUTS :
+// 1- File TrainingInput.cxx is the list of MLP outputs 
+//    (cross sections)
+// 2- File TrainingInput.root input datas (as a Root TTREE) for MLP training 
+// 3- File Data_Base_Info.nfo Information file to be red by XSM_MLP 
+//    (to be place in the weight folder which is build by MLP training)
 //
 //@author BaM, BaL
 /**********************************************************/
-#include "TMVAInputGenerator.hxx"
+#include "include/Generate_XSM.hxx"
 #include <TH1F.h>
 #include <TH2D.h>
 #include <TFile.h>
@@ -20,6 +24,7 @@
 #include <TString.h>
 #include <string>
 #include <cmath>
+#include <math.h>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -52,69 +57,303 @@ int main(int argc, char ** argv){
 	
 	if(argc!=2)
 	{
-		cout << "Usage : TMVAInputGenerator Path" << endl;
-		cout << " Where Path is the path to the folder containing the Evolution Datas" << endl;
+		cout << "Usage : Generate_XSM Path" << endl;
+		cout << " Where Path is the path to the folder containing Evolution Datas" << endl;
 		cout << " i.e the (.dat) files" << endl;
 		exit(0);
 	}	
 
-	fEvolutionDataFolder = argv[1];
-
-	CheckJob();	// looks fot the .dat files in the fEvolutionDataFolder
-
-	cout << "Load your EvolutionDatas to R.A.M" << endl;
-	cout<<endl;
-
-	for(int i = 0; i < (int)JobName.size(); i++)
+	/*****************Preparation of working folders*************************/
+	if(is_file_exist("Training_output_0.root" ))
 	{
-		ReadAndFill(JobName[i]);
-		ProgressBar(i,JobName.size());
+		cout<< "Trainining_output* detected. Delete these files and weights folder ? [y/n]"<<endl;
+		if(UserSayYes())
+			system( "rm -rf Training_output* weights"  );
+		else
+		{	cout << "Move this files elsewhere and run this program again"<<endl;
+			exit(0);
+		}
 	}
 
-	FillMapName();
-	DumpInputNeuron("TrainingInput.root");
-	CreateInfoFile();
+	if(is_file_exist("_tmp/include_Train_XS/TrainingInput.cxx" ))
+		system( "rm -rf _tmp"  );
 
-	cout << "╭───────────────────────────────────────────────╮" << endl; 
-	cout << "│                GENERATED FILES:               │" << endl; 
-	cout << "├───────────────────────────────────────────────┤" << endl; 
-	cout << "│#1 Input for TMVA training: \033[36mTrainingInput.root\033[0m │" << endl; 
-	cout << "│#2 Target names for TMVA:   \033[36mTrainingInput.cxx\033[0m  │" << endl; 
-	cout << "│#3 Model Information for CLASS:                │" << endl; 
-	cout << "│                           \033[36mData_Base_Info.nfo\033[0m  │" << endl; 
-	cout << "╰───────────────────────────────────────────────╯" << endl; 
+	system("mkdir -p _tmp/scripts/subatech");
+	system("mkdir -p _tmp/include_Train_XS");
+	/**********************************************************************/
+
+	fEvolutionDataFolder = argv[1];
+	CheckJob();	// looks fot the .dat files in the fEvolutionDataFolder
+
 	cout << endl;
 	cout << "╭───────────────────────────────────────────────╮" << endl; 
-	cout << "│                NEXT STEPS:                    │" << endl; 
-	cout << "├───────────────────────────────────────────────┤" << endl; 
-	cout << "│1. Train your MLPs with ../Train/Train_XS.cxx  │" << endl; 
-	cout << "│2. Test MLPs performance using information in: │" << endl; 
-	cout << "│	     ../Train/EvaluateTrainingCommands.dat   │" << endl; 
-	cout << "│3. Put the file #3 in ../Train/weights then    │" << endl; 
-    cout << "│ mouve this folder to $CLASS_PATH/DATA_BASES   │" << endl; 
+	cout << "│      Load your EvolutionDatas to R.A.M        │" << endl; 
 	cout << "╰───────────────────────────────────────────────╯" << endl; 
+	cout<<endl;
+	for(int i = 0; i < 10/*(int)JobName.size()*/; i++)
+	{
+		ReadAndFill(JobName[i]);
+		ProgressBar(i,10 /*JobName.size()*/);
+	}
+	ProgressBar(1,1);
 
-	cout << "=> Do you want me to train the MLPs on your local machine on one cpu ? It can take a (huge) while.  [y/n]" << endl; 
+
+	FillMapName();
+	DumpInputNeuron("_tmp/include_Train_XS/TrainingInput.root");
+	Generate_tmva_factory_input();
+	CreateInfoFile();
+
+	cout << "╭─────────────────────────────────────────────────────────────────────╮" << endl; 
+	cout << "│                            GENERATED FILES:                         │" << endl; 
+	cout << "├─────────────────────────────────────────────────────────────────────┤" << endl; 
+	cout << "│#1 Input for TMVA training: \033[36m_tmp/include_Train_XS/TrainingInput.root\033[0m │" << endl; 
+	cout << "│#2 Target names for TMVA:   \033[36m_tmp/include_Train_XS/TrainingInput.cxx\033[0m  │" << endl; 
+	cout << "│#3 Model Information for CLASS: \033[36mData_Base_Info.nfo\033[0m                   │" << endl; 
+	cout << "╰─────────────────────────────────────────────────────────────────────╯" << endl; 
+	cout << endl;
+	cout << "╭────────────────────────────────────────────────╮" << endl; 
+	cout << "│                  NEXT STEPS:                   │" << endl; 
+	cout << "├────────────────────────────────────────────────┤" << endl; 
+	cout << "│1. Train your MLPs with \033[36mTrain_XS.cxx\033[0m            │" << endl; 
+	cout << "│2. Test MLPs performances using informations in:│" << endl; 
+	cout << "│	     \033[36m../Test/EvaluateTrainingCommands.dat\033[0m│" << endl; 
+	cout << "│3. Put the file #3 in \033[36mweights\033[0m folder then       │" << endl; 
+    cout << "│ move this folder to $CLASS_PATH/DATA_BASES     │" << endl; 
+	cout << "╰────────────────────────────────────────────────╯" << endl; 
+	cout << endl; 
+	cout << "=> Doing this steps for you. Do you want to train the MLPs on your local machine on one cpu ? It can take a while.  [y/n]" << endl; 
 
 	if(UserSayYes())
 	{
-
+		GenerateScript_Sequential(0,fReactionCounter,"_tmp/scripts/Run_Sequential.sh");
+		CompileTraining();
+		Run_Sequential();
 	}
 	else
 	{
-		cout<<" Ok , I suggest you run on a grid " <<endl;
-		cout << "You can proceed like so and run this script on  as many  NumberOfProcessor that you want:"<<endl;
-		cout << "#bin/bash"<<endl;
-		cout<< " for ((i=0 ; NumberOfReaction/NumberOfProcessor  ; i++)) "<<endl;
-		cout<<"    do Train_XS($i)  "<<endl;
-		cout<<"  done"
+		cout << "Ok so you want to run on a grid ?  [y/n]" << endl;
+		if(UserSayYes())
+		{
 
+			int Threads = 4;
+			cout << "On how many threads you want to run training ?" <<endl;
+			cin >> Threads;
+			GenerateScript_Parallel(Threads);
+			cout << "Are you a Researcher from Subatech ? [y/n] " << endl;
+			if(UserSayYes())
+			{
+				GenrateZubaScript(Threads);
+				PrintFinalSteps();
+			}
+			else 
+			{
+				cout << "Nobody is perfect ... RUN THE SCRIPTS located in folder \"_tmp/scripts\" using your job submission program (e.g qsub)" << endl;
+				cout << "Once training are finished follow the following steps :" << endl;
+				PrintFinalSteps();
+			}	
+
+
+		}
+		else
+			cout <<" Ok , so follow advices in \"NEXT STEPS:\" " <<endl;
+	
 	}
+
 
 
 }
 //--------------------------------------------------------------------------------------------------
-// Function definitions
+void GenrateZubaScript(int threads)
+{
+	cout << "╭────────────────────────────────────────────────╮" << endl; 
+	cout << "│   GENERATE QSUB SCRIPT FOR SUBATECH NANSL      │" << endl; 
+	cout << "╰────────────────────────────────────────────────╯" << endl; 
+
+	string filepath = "_tmp/scripts/subatech/RunOnSubaGrid.sh";
+
+	if(is_file_exist(filepath.c_str()))
+		system( ("rm " + filepath).c_str()   );
+
+	ofstream Script(filepath.c_str());
+	Script << "#!/bin/bash"                                                                                                      << endl;
+	Script << "cd .."                                                                                                            << endl;
+	Script << "max_job=$((40))"                                                                                                  << endl;
+	Script << "user=$(whoami)"                                                                                                   << endl;
+	Script << "job=$((0))"                                                                                                       << endl;
+	Script << "launchedjob=$((0))"                                                                                               << endl;
+	Script << "currentJob=$((0))"                                                                                                << endl;
+	Script << " for ((file=$((0)); file<$(("<< threads  <<")); file=file+1 )) ;"                                                 << endl;
+	Script << " do "                                                                                                             << endl;
+	Script << " 		Job_Launched=$((0))"                                                                                     << endl;
+	Script << " 		while [ $Job_Launched -lt 1 ]"                                                                           << endl;
+	Script << " 		do"                                                                                                      << endl;
+	Script << "			launchedjob=$(( `qstat -u ${user} | grep \" R \" |grep \"XSM_MLP_Training_\"  | wc -l `))"               << endl;
+	Script << " 			jobinactive=$(( `qstat | grep ${user} | grep  \" Q \" | wc -l `))"                                   << endl;
+	Script << "			if [ $jobinactive -lt 5 ] ; then"                                                                        << endl;
+	Script << "			   	../../include/QSUB -n \"XSM_MLP_Training_${currentJob}\" -c \"./Run_Parallel_${currentJob}.sh\""  << endl;
+	Script << "				Job_Launched=$(( $Job_Launched +1 ))"                                                                << endl;
+	Script << "				currentJob=$(( $currentJob + 1 ))"                                                                   << endl;
+	Script << "				sleep 5s"                                                                                            << endl;
+	Script << "			else"                                                                                                    << endl;
+	Script << "				if [ $launchedjob -lt $max_job ]; then"                                                              << endl;
+	Script << "					sleep 1m"                                                                                        << endl;
+	Script << "				else"                                                                                                << endl;
+	Script << "					sleep 5m"                                                                                        << endl;
+	Script << "				fi"                                                                                                  << endl;
+	Script << "			fi"	                                                                                                     << endl;
+	Script << "		done"                                                                                                        << endl;
+	Script << "done"                                                                                                             << endl;
+	Script << "cd -"                                                                                                             << endl;
+	Script.close();
+
+	string CMD = "chmod u+x " + filepath ;
+	cout << CMD <<endl;
+	system(CMD.c_str());
+
+	cout << "╭──────────────────────────────────────────────────────────────────╮" << endl; 
+	cout << "│                        RUN ON NANSL GRID                         │" << endl; 
+	cout << "│1.Syncrhonise your Utils folder and ssh to nansl3                 │" << endl; 
+	cout << "│2. type : cd _tmp/scripts/subatech/                               │" << endl; 
+	cout << "│3. then  nohup ./RunOnSubaGrid.sh > LogFile.log &                 │" << endl; 
+	cout << "│3. wait                                                           │" << endl; 
+	cout << "╰──────────────────────────────────────────────────────────────────╯" << endl; 
+
+
+
+}
+
+//--------------------------------------------------------------------------------------------------
+void PrintFinalSteps()
+{
+	cout << "╭───────────────────────────────────────────────────────╮" << endl; 
+	cout << "│                  NEXT STEPS:                          │" << endl; 
+	cout << "├───────────────────────────────────────────────────────┤" << endl; 
+	cout << "│1.(optional) Test MLPs performances using              │" << endl;
+	cout << "│ informations in:                                      │" << endl; 
+	cout << "│       \033[36m../Test/EvaluateTrainingCommands.dat\033[0m            │" << endl;
+	cout << "│2. Put the file \033[36mData_Base_Info.nfo\033[0m in \033[36mweights\033[0m then     │" << endl;
+    cout << "│ mkdir -p $CLASS_PATH/DATA_BASES/"<<fReactorType<<"/"<<fFuelType << "/ChooseAName   │" << endl; 
+    cout << "│ mv  weights $CLASS_PATH/DATA_BASES/"<<fReactorType<<"/"<<fFuelType << "/ChooseAName│" << endl; 
+	cout << "╰───────────────────────────────────────────────────────╯" << endl; 
+}
+
+//--------------------------------------------------------------------------------------------------
+void Run_Sequential()
+{
+	cout << "╭────────────────────────────────────────────────╮" << endl; 
+	cout << "│  RUNNING TRAINING ON ONE CPU (Please wait)     │" << endl; 
+	cout << "╰────────────────────────────────────────────────╯" << endl; 
+
+	system("cd _tmp/scripts/ ; ./Run_Sequential.sh ; cd -");
+
+	cout << "╭────────────────────────────────────────────────╮" << endl; 
+	cout << "│              TRAINING FINISHED                 │" << endl; 
+	cout << "╰────────────────────────────────────────────────╯" << endl; 
+
+
+}
+//--------------------------------------------------------------------------------------------------
+bool is_file_exist(const char *fileName)
+{
+    std::ifstream infile(fileName);
+    return infile.good();
+}
+//--------------------------------------------------------------------------------------------------
+void CompileTraining()
+{
+	cout << "╭────────────────────────────────────────────────╮" << endl; 
+	cout << "│     COMPLILING TMVA TRAINING PROGRAM           │" << endl; 
+	cout << "╰────────────────────────────────────────────────╯" << endl; 
+	if(is_file_exist("Train_XS"))
+		system("rm Train_XS ");
+
+	string CMD = "g++ -o Train_XS  `root-config --cflags` Train_XS.cxx `root-config --glibs` -lTMVA";
+	cout << CMD <<endl;
+	system(CMD.c_str());
+
+	if(!is_file_exist("Train_XS"))
+	{
+		cout <<"\033[31m  COMPILATION FAILED !!! May be not the good compilator name nor the good path of file to compile ? \033[0m " << endl;
+		exit(1);
+	}
+	else
+		cout <<"\t \033[32m Done \033[0m " << endl;
+	
+
+}
+
+//--------------------------------------------------------------------------------------------------
+void GenerateScript_Parallel(int threads)
+{
+	cout << "╭────────────────────────────────────────────────╮" << endl; 
+	cout << "│  GENERATE BASH SCRIPTS FOR PARALLEL TRAINING   │" << endl; 
+	cout << "╰────────────────────────────────────────────────╯" << endl; 
+
+	double JobPerProcessor = double (fReactionCounter) / double (threads);
+	int    JobPerProcessor_IntegerPart = floor(JobPerProcessor);
+	double Rest = (JobPerProcessor - JobPerProcessor_IntegerPart) * threads;
+
+	for (int proc = 0 ; proc < threads -1 ; proc++)
+	{
+		stringstream ssScriptName ;
+		ssScriptName<< "_tmp/scripts/Run_Parallel_" <<proc <<".sh";
+		GenerateScript_Sequential( proc * JobPerProcessor_IntegerPart , (proc + 1) * JobPerProcessor_IntegerPart - 1 ,ssScriptName.str().c_str(),false);
+	}
+
+	stringstream ssScriptName ;
+	ssScriptName<< "_tmp/scripts/Run_Parallel_" << threads-1 <<".sh";
+	if (Rest > 0)
+		GenerateScript_Sequential( (threads-1) * JobPerProcessor_IntegerPart , threads * JobPerProcessor_IntegerPart + Rest , ssScriptName.str().c_str(),false);
+
+	else
+		GenerateScript_Sequential( (threads-1) * JobPerProcessor_IntegerPart , threads * JobPerProcessor_IntegerPart + Rest , ssScriptName.str().c_str(),false);
+
+	cout << "\t \033[32m => Scripts buit in _tmp/scripts \033[0m " << endl; 
+
+}
+
+//--------------------------------------------------------------------------------------------------
+void GenerateScript_Sequential(int begin, int end, string filepath ,bool print)
+{
+
+	if(print)
+	{
+		cout << "╭────────────────────────────────────────────────╮" << endl; 
+		cout << "│ GENERATE BASH SCRIPT FOR SEQUENTIAL TRAINING   │" << endl; 
+		cout << "╰────────────────────────────────────────────────╯" << endl; 
+	}
+
+	ofstream Script(filepath.c_str());
+	Script << "#!/bin/bash" << endl;
+	Script <<endl;
+	Script << "# Script to train MLPs" << endl;
+	Script << "#@author BaL" << endl;
+	Script << "#" << endl;
+	Script <<  endl;
+	Script << "cd ../.."<<endl;
+	Script << "echo \"----------------------------------\"" << endl;
+	Script << "echo \"--- Run Training from MLP " << begin<< " to " << end << "---\"" << endl;
+	Script << "echo \"----------------------------------\"" << endl;
+	Script << endl;
+	Script << "Start=$(("<<  begin  << "))" << endl;
+	Script << "End=$(("  << end+1 << "))" << endl;
+	Script << endl;
+	Script << "for ((reaction=$Start; reaction<$End; reaction=reaction+1 )) ;"<< endl;
+	Script << "do"<<endl;
+	Script << "     ./Train_XS $reaction"<< endl;
+	Script << "done" << endl;
+	Script << "cd -"<<endl;
+
+	Script.close();
+
+	stringstream ssCMD ;
+	ssCMD << "chmod u+x "<< filepath  <<endl;
+	cout << ssCMD.str() << endl;
+
+	system(ssCMD.str().c_str());
+
+}
+
 //--------------------------------------------------------------------------------------------------
 //Convert int to string
 string itoa(int num)
@@ -144,8 +383,8 @@ void  FillMapName()
 {
 	cout<<endl;
 	cout<< "╭───────────────────────────────────────────────╮"<<endl;
-	cout<< "│  Looking for fresh fuel composition @ t=0  to │"<<endl;
-	cout<< "│  set up TMVA MLPs inputs                      │"<<endl;
+	cout<< "│               SET UP MLPs INPUT               │"<<endl;
+	cout<< "│default : composition @ t=0 + Irradiation time │"<<endl;
 	cout<< "╰───────────────────────────────────────────────╯"<<endl;
 	cout<<endl;
 
@@ -166,7 +405,7 @@ void  FillMapName()
 
 		ssname<<A<<ElNames[Z]<<sI;
 		if(zai == 0)
-			cout<< "Add this nuclei with this name [y/n] ?  (if you don't know say yes to all)  "<<endl;
+			cout<< "Add this nuclei with this name [y/n] ?  (if you don't know type yes to all)  "<<endl;
 		else
 			cout<< "Add [y/n] ?  "<<endl;
 
@@ -181,7 +420,7 @@ void  FillMapName()
 	bool UserWantToAdd = true;
 	while(UserWantToAdd)
 	{
-		cout<< "Do you want to add additional nuclei  [y/n] ? (if you don't know say no) "<<endl;
+		cout<< "Do you want to add additional nuclei  [y/n] ? (if you don't know type no) "<<endl;
 		if(UserSayYes())
 		{	
 			int Z = 0;
@@ -196,7 +435,19 @@ void  FillMapName()
 			UserWantToAdd = false;
 	}	
 
+
 }
+//--------------------------------------------------------------------------------------------------
+void Generate_tmva_factory_input()
+{
+	ofstream  InputNetwork("_tmp/include_Train_XS/InputVariables.cxx");
+	for(map<ZAI,string>::iterator it = fMapName.begin() ; it != fMapName.end() ; it++ )
+		InputNetwork <<"factory->AddVariable( \"" << it->second  << "\" , \"" << it->second << "\", \"IsotopicFraction\", 'F' );"<<endl; 
+    InputNetwork <<"factory->AddVariable( \"Time\" , \"Time\"     , \"seconds\", 'F' );"<<endl;
+    InputNetwork.close();
+
+}
+
 //--------------------------------------------------------------------------------------------------
 bool UserSayYes()
 {
@@ -220,7 +471,7 @@ bool UserSayYes()
 			}
 
 			else{
-				cout << "Yes OR No ???!"<<endl;
+				cout << "Yes OR No ? "<<endl;
 			}
 		}
 	return isYES;	
@@ -238,7 +489,7 @@ void CreateInfoFile()
 			sum+=fHMMass[i];
 
     double MeanHMMass = sum / (double)fHMMass.size();
-    string ReactorType,FuelType,Author,Mail,XSBase,HLCut,EnergyDisc,FPYBase,SABase,Geom,AddInfo,DepCode ;
+    string Author,Mail,XSBase,HLCut,EnergyDisc,FPYBase,SABase,Geom,AddInfo,DepCode ;
     double Power = 0;
 
 
@@ -247,7 +498,7 @@ void CreateInfoFile()
 	int pos=AnInfoFile.find(".dat",start);
 	AnInfoFile.replace(pos,4,".info");
 
-    ReadInfo(AnInfoFile,ReactorType,FuelType,Power);
+    ReadInfo(AnInfoFile,fReactorType,fFuelType,Power);
 
 	cout<<endl;
 	cout<<endl;
@@ -298,21 +549,21 @@ void CreateInfoFile()
 
 	cout<<"-> Reactor type (e.g PWR, FBR,...) : "<<endl;
 	cout<<"Found in a .info file :"<<endl;
-	cout<<"\033[36m"<<ReactorType<<"\033[0m"<<endl;
+	cout<<"\033[36m"<<fReactorType<<"\033[0m"<<endl;
 	cout<< "Is that corect ? [y/n] "<<endl;
 	if(!UserSayYes())
 	{	cout<<"\t So what it is ?"<<endl;
-		cin>> ReactorType;
+		cin>> fReactorType;
 	}	
 	cout<<endl;
 
 	cout<<"-> Fuel type (e.g UOX, MOX,...) : "<<endl;
 	cout<<"Found in a .info file :"<<endl;
-	cout<<"\033[36m"<<FuelType<<"\033[0m"<<endl;
+	cout<<"\033[36m"<<fFuelType<<"\033[0m"<<endl;
 	cout<< "Is that corect ? [y/n] "<<endl;
 	if(!UserSayYes())
 	{	cout<<"\t So what it is ?"<<endl;
-		cin>> FuelType;
+		cin>> fFuelType;
 	}	
 	cout<<endl;
 
@@ -346,10 +597,10 @@ void CreateInfoFile()
   	InfoFile <<"============================================" << endl;
 	InfoFile << endl;
 	InfoFile << "Reactor Type :"<<endl;
-	InfoFile << "K_REACTOR "<< ReactorType <<endl;
+	InfoFile << "K_REACTOR "<< fReactorType <<endl;
 	InfoFile << endl;
 	InfoFile << "Fuel Type :"<<endl;
-	InfoFile << "K_FUEL "<< FuelType <<endl;
+	InfoFile << "K_FUEL "<< fFuelType <<endl;
 	InfoFile << endl;
 	InfoFile << "Heavy Metal [t] :"<<endl;
 	InfoFile << "K_MASS  "<< MeanHMMass <<endl;
@@ -409,22 +660,21 @@ return AllCompoOfZAI;
 void ProgressBar(double loopindex, double totalindex)
 {
 	// Reset the line
-	for(int i = 0; i < 10; i++)
+	for(int i = 0; i < 22; i++)
 		cout << "  ";
 	cout << flush ;
 
-	cout << "\r[\033[42m";
-	for(int i = 0; i < (int)(loopindex/totalindex*20.0); i++)
+	cout << "\r\033[47m \033[0m\033[42m";
+	for(int i = 0; i < (int)(loopindex/totalindex*44.0); i++)
 		cout << " ";
-	cout<<"\033[0m";
-	for(int i = 20; i >= (int)(loopindex/totalindex*20.0); i--)
+	cout<<" \033[0m";
+	for(int i = 44; i >= (int)(loopindex/totalindex*44.0); i--)
 		cout << " ";
-	cout << "] ";
+	cout << "\033[47m \033[0m ";
 
 	cout << (int)(loopindex/totalindex*100) << "%\r";
 	cout << flush;
 	//cout << endl;
-
 }
 //--------------------------------------------------------------------------------------------------
 void ReadInfo(string InfoDBFile,string &ReactorType,string &FuelType,double &Power)
@@ -432,7 +682,7 @@ void ReadInfo(string InfoDBFile,string &ReactorType,string &FuelType,double &Pow
 	ifstream InfoDB(InfoDBFile.c_str());				// Open the File
 	if(!InfoDB)
 	{
-		cout << "!!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\n" << endl;
+		cout << "\033[31m !!ERROR!! !!!EvolutionData!!! \n Can't open \"" << InfoDBFile << "\"\033[0m \n" << endl;
 	}
 	else
 	{
@@ -570,7 +820,7 @@ void DumpInputNeuron(string filename)
 		cout<<"╰───────────────────────────────────────────────╯"<<endl;
 		cout<<endl;
 	//File containing all the output of the networks to train
-	 ofstream  InputNetwork("TrainingInput.cxx");
+	 ofstream  InputNetwork("_tmp/include_Train_XS/TrainingInput.cxx");
 
 	 int NumOfBase=fActinideCompoInit.size();
 	for(int b=0;b<NumOfBase;b++) 
@@ -601,24 +851,30 @@ void DumpInputNeuron(string filename)
 					{	
 						if(fXSFis[b][fAllNuclei[act]][Tstep] !=0 )
 						{	mAllXS[fAllNuclei[act]][0]   = 	fXSFis[b][fAllNuclei[act]][Tstep];
-							if(b==0 && Tstep==0)
+							if(b==0 && Tstep==0){
 								InputNetwork<<"OUTPUT.push_back(\""<<NameXS(fAllNuclei[act],XSType[0])<<"\");"<<endl;
+								fReactionCounter++;
+							}
 						}
 					}		
 					if(fXSCap[b][fAllNuclei[act]].size()!=0)
 				 	{	
 				 		if(fXSCap[b][fAllNuclei[act]][Tstep] !=0) 
 				 		{	mAllXS[fAllNuclei[act]][1]   = 	fXSCap[b][fAllNuclei[act]][Tstep];
-							if(b==0 && Tstep==0)		 			
+							if(b==0 && Tstep==0){		 			
 				 				InputNetwork<<"OUTPUT.push_back(\""<<NameXS(fAllNuclei[act],XSType[1])<<"\");"<<endl;
+								fReactionCounter++;
+							}
 						}
 				 	}	
 				 	if( fXSN2N[b][fAllNuclei[act]].size()!=0)
 				 	{	
 				 		if(fXSN2N[b][fAllNuclei[act]][Tstep] !=0)
 				 		{	mAllXS[fAllNuclei[act]][2]   = 	fXSN2N[b][fAllNuclei[act]][Tstep];
-							if(b==0 && Tstep==0)
+							if(b==0 && Tstep==0){
 				 				InputNetwork<<"OUTPUT.push_back(\""<<NameXS(fAllNuclei[act],XSType[2])<<"\");"<<endl;
+								fReactionCounter++;
+							}
 						}
 				 	}
 				 	
@@ -626,7 +882,7 @@ void DumpInputNeuron(string filename)
 				 fOutT->Fill();	
 			}		
 	}
-
+	ProgressBar(1,1);
 
 	fOutFile->Write();
 	delete fOutT;
@@ -642,14 +898,20 @@ void CheckJob()
 		cout<<endl;
 		cout<<"╭───────────────────────────────────────────────╮"<<endl;
 		cout<<"    Scanning :                                   "<<endl;
-		cout<< "  " << fEvolutionDataFolder                     <<endl;	
+		cout<<  fEvolutionDataFolder                             <<endl;	
 		cout<<"          for EvolutionData (.dat files)         "<<endl;
 		cout<<"╰───────────────────────────────────────────────╯"<<endl;
 
 	string Command = "find "+ fEvolutionDataFolder + " -name \"*.dat\" > JOB.tmp";
 	system(Command.c_str());
-	
+
 	ifstream JOB("JOB.tmp");
+
+	if(JOB.peek() == std::ifstream::traits_type::eof()) // if file is empty 
+	{	cout << endl <<  "\033[31mERROR: No .dat found in folder : " << fEvolutionDataFolder << "\033[0m" << endl;
+		exit(1);
+	}
+
 	if (JOB.is_open())
 	{
 		while (!JOB.eof())
@@ -664,7 +926,7 @@ void CheckJob()
 	Command = "\\rm -f JOB.tmp";
 	system(Command.c_str());
 	random_shuffle(JobName.begin(), JobName.end());
-	cout << "Scan complete" <<endl; 
+	cout << "\033[32m Scan complete \033[0m" <<endl; 
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -680,7 +942,7 @@ void ReadAndFill(string jobname)
 	ifstream DecayDB(jobname.c_str());							// Open the File
 	if(!DecayDB)
 	{
-		cout << "!!Warning!! !!!EvolutiveProduct!!! \n Can't open \"" << jobname << "\"\n" << endl;
+		cout << "\033[33m !!Warning!! !!!EvolutiveProduct!!! \n Can't open \"" << jobname << "\"\033[0m\n" << endl;
 	}
 	
 	string line;
@@ -691,7 +953,7 @@ void ReadAndFill(string jobname)
 	/******Getting Time vecotr ....******/
 	if( StringLine::NextWord(line, start, ' ') != "time")
 	{
-		cout << "!!Bad Trouble!! !!!EvolutiveProduct!!! Bad Database file : " <<  jobname << endl;
+		cout << "\033[31m!!Bad Trouble!! !!!EvolutiveProduct!!! Bad Database file : " <<  jobname << "\033[0m" << endl;
 		exit (1);
 	}
 	
@@ -852,6 +1114,7 @@ GoodJobName.push_back(jobname);
 /*-------------------------------------------------------------------------------------------------
 COMPILATION :
 
-g++ -o TMVAInputGenerator TMVAInputGenerator.cxx `root-config --cflags` `root-config --libs`
+g++ -o Generate_XSM Generate_XSM.cxx `root-config --cflags` `root-config --libs`
+
 
 */
