@@ -30,7 +30,7 @@ string DataPath;
 vector<string> JobName;
 vector<string> GoodJobName;
 
-vector<double> fTime;						//Time vector of the depletion calculation (second)
+vector< vector<double> > fTime;						//Time vector of each depletion calculation (second)
 vector<ZAI> fAllNuclei;						//All the nuclei present in the fuel
 
 vector< map < ZAI, vector<double> > > fXSFis;	// map of fission cross section fXSFis[NumberOfTheEvolution][ZAI][TimeStep]
@@ -41,7 +41,7 @@ vector<IsotopicVector> fActinideCompoInit;	//Fresh fuel composition in atomic pr
 
 vector<double> fHMMass; //Vector of initial Heavy metal mass (every element should be egual or very very close !!)
 
-int fNOfTimeStep=0; //number of time step in the Evolution
+vector<int> fNOfTimeStep; //number of time step in each Evolution data
 int fReactionCounter=0;//number of nuclear reactions to train
 string fEvolutionDataFolder = "";
 

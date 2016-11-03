@@ -427,7 +427,7 @@ void  FillMapName()
 			int A = 0;
 			int I = 0;
 			string Name;
-			cout << "Z -> "; cin >> Z ; cout <<" A -> "; cin >> A ; cout <<" I -> "; cin >> I ;cout <<" Name -> "; cin >> Name;
+			cout << " Z -> "; cin >> Z ; cout <<" A -> "; cin >> A ; cout <<" I -> "; cin >> I ;cout <<" Name -> "; cin >> Name;
 			fMapName.insert(pair<ZAI,string> ( ZAI(Z,A,I) ,Name) );
 		}
 
@@ -610,8 +610,8 @@ void CreateInfoFile()
 	InfoFile << endl;
 	InfoFile << "Irradiation time steps [s] :"<<endl;
 	InfoFile << "K_TIMESTEP";
-		for( int t = 0 ; t < fNOfTimeStep ; t++ )
-			InfoFile <<" "<<fTime[t];
+		for( int t = 0 ; t < fNOfTimeStep[0] ; t++ ) /// DANGER IF NOT THE SAME TIME BINNING FOR EACH EVOLUTION DATA => Futher work : get the vector with the shortest irrariaiton time to avoid extrapolation in CLASS
+			InfoFile <<" "<<fTime[0][t];
 	InfoFile << endl<<endl;
 	InfoFile << "Z A I Name (input MLP) :"<<endl;
 	for(map<ZAI,string>::iterator it = fMapName.begin() ; it != fMapName.end() ; it++ )
@@ -660,18 +660,17 @@ return AllCompoOfZAI;
 void ProgressBar(double loopindex, double totalindex)
 {
 	// Reset the line
-	for(int i = 0; i < 22; i++)
-		cout << "  ";
+	//for(int i = 0; i < 22; i++)
+	//	cout << "  ";
 	cout << flush ;
 
-	cout << "\r\033[47m \033[0m\033[42m";
+	cout << "\033[42m";
 	for(int i = 0; i < (int)(loopindex/totalindex*44.0); i++)
 		cout << " ";
-	cout<<" \033[0m";
+	cout<<" \033[41m";
 	for(int i = 44; i >= (int)(loopindex/totalindex*44.0); i--)
 		cout << " ";
-	cout << "\033[47m \033[0m ";
-
+	cout<<"\033[0m";
 	cout << (int)(loopindex/totalindex*100) << "%\r";
 	cout << flush;
 	//cout << endl;
@@ -745,16 +744,16 @@ void DumpInputNeuron(string filename)
 
 /**********************init map********************/
 	map < ZAI,vector<double> > mAllXS;
-	map < ZAI, vector<double>  > mAllInventories;
-	for(int act=0;act<int(fAllNuclei.size());act++ )	
-	{	 
-		vector<double>  InitVect;
-		for(int Tstep=0 ;Tstep<fNOfTimeStep;Tstep++)
-		{
-			InitVect.push_back(0);
-		}
-		mAllInventories.insert( pair<ZAI,vector<double> >(fAllNuclei[act],InitVect) );
-	}
+	//map < ZAI, vector<double>  > mAllInventories;
+	//for(int act=0;act<int(fAllNuclei.size());act++ )	
+	//{	 
+	//	vector<double>  InitVect;
+	//	for(int Tstep=0 ;Tstep<fNOfTimeStep;Tstep++)
+	//	{
+	//		InitVect.push_back(0);
+	//	}
+	//	mAllInventories.insert( pair<ZAI,vector<double> >(fAllNuclei[act],InitVect) );
+	//}
 
 	for(int act=0;act<int(fAllNuclei.size());act++ )	
 	{	
@@ -841,9 +840,9 @@ void DumpInputNeuron(string filename)
 		}	
 		///////////////////////////////////////////////////////
 
-			for(int Tstep=0 ;Tstep<fNOfTimeStep;Tstep++ )	
+			for(int Tstep=0 ;Tstep<fNOfTimeStep[b];Tstep++ )	
 			{	
-	 			Time=fTime[Tstep];
+	 			Time=fTime[b][Tstep];
 				for(int act=0;act<int(fAllNuclei.size());act++)
 				{
 	
@@ -960,8 +959,9 @@ void ReadAndFill(string jobname)
 	while(start < (int)line.size())
 		vT.push_back(atof(StringLine::NextWord(line, start, ' ').c_str()));
 
-	fNOfTimeStep=int(vT.size());
+	fTime.push_back(vT);
 
+	fNOfTimeStep.push_back(int(vT.size()));
 	/****Getting Inventories***/	
 	getline(DecayDB, line);
 	do
@@ -986,7 +986,6 @@ void ReadAndFill(string jobname)
 			if(!fIsAllNucleiAlreadyFill)
 			{	
 				fAllNuclei.push_back(zaitmp);
-				fTime=vT;	
 			}	
 
 			long double q = atof(StringLine::NextWord(line, start, ' ').c_str());
