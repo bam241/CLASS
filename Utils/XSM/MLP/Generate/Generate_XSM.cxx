@@ -127,7 +127,15 @@ int main(int argc, char ** argv){
 	{
 		GenerateScript_Sequential(0,fReactionCounter,"_tmp/scripts/Run_Sequential.sh");
 		CompileTraining();
-		Run_Sequential();
+		cout << "Let's train locally ? [y/n]" <<endl;
+		if(UserSayYes())
+			Run_Sequential();
+		else
+		{
+			cout << "You can run _tmp/scripts/Run_Sequential.sh later. Then read the following : "<<endl;
+			PrintFinalSteps();
+			exit(0);
+		}
 	}
 	else
 	{
@@ -232,8 +240,8 @@ void PrintFinalSteps()
 	cout << "│ informations in:                                      │" << endl; 
 	cout << "│       \033[36m../Test/EvaluateTrainingCommands.dat\033[0m            │" << endl;
 	cout << "│2. Put the file \033[36mData_Base_Info.nfo\033[0m in \033[36mweights\033[0m then     │" << endl;
-    cout << "│ mkdir -p $CLASS_PATH/DATA_BASES/"<<fReactorType<<"/"<<fFuelType << "/ChooseAName   │" << endl; 
-    cout << "│ mv  weights $CLASS_PATH/DATA_BASES/"<<fReactorType<<"/"<<fFuelType << "/ChooseAName│" << endl; 
+    cout << "│ mkdir -p $CLASS_PATH/DATA_BASES/"<<fReactorType<<"/"<<fFuelType << "/XSModel/ChooseAName   │" << endl; 
+    cout << "│ mv  weights $CLASS_PATH/DATA_BASES/"<<fReactorType<<"/"<<fFuelType << "/XSModel/ChooseAName│" << endl; 
 	cout << "╰───────────────────────────────────────────────────────╯" << endl; 
 }
 
