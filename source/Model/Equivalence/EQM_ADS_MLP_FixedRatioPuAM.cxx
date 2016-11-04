@@ -1,5 +1,5 @@
 #include "EquivalenceModel.hxx"
-#include "EQM_ADS_MLP_RatioPuAM.hxx"
+#include "EQM_ADS_MLP_FixedRatioPuAM.hxx"
 #include "CLASSLogger.hxx"
 #include "external/StringLine.hxx"
 
@@ -18,13 +18,13 @@
 
 //________________________________________________________________________
 //
-//		EQM_ADS_MLP_RatioPuAM
+//		EQM_ADS_MLP_FixedRatioPuAM
 //
 // The aim of these class is to constuct a fuel from a Multi layer perceptron (MLP).
 //
 //________________________________________________________________________
 
-EQM_ADS_MLP_RatioPuAM::EQM_ADS_MLP_RatioPuAM(string TMVAWeightPath, double KeffAtBOC):EquivalenceModel(new CLASSLogger("EQM_ADS_MLP_RatioPuAM.log"))
+EQM_ADS_MLP_FixedRatioPuAM::EQM_ADS_MLP_FixedRatioPuAM(string TMVAWeightPath, double MA_Fraction, double KeffAtBOC):EquivalenceModel(new CLASSLogger("EQM_ADS_MLP_FixedRatioPuAM.log"))
 {
 	fKeffAtBOC 			= KeffAtBOC ;
 	
@@ -59,7 +59,7 @@ EQM_ADS_MLP_RatioPuAM::EQM_ADS_MLP_RatioPuAM(string TMVAWeightPath, double KeffA
 }
 
 //________________________________________________________________________
-EQM_ADS_MLP_RatioPuAM::EQM_ADS_MLP_RatioPuAM(CLASSLogger* log, string TMVAWeightPath, double KeffAtBOC):EquivalenceModel(log)
+EQM_ADS_MLP_FixedRatioPuAM::EQM_ADS_MLP_FixedRatioPuAM(CLASSLogger* log, string TMVAWeightPath, double MA_Fraction, double KeffAtBOC):EquivalenceModel(log)
 {
 	
 	fKeffAtBOC 			= KeffAtBOC ;
@@ -100,7 +100,7 @@ EQM_ADS_MLP_RatioPuAM::EQM_ADS_MLP_RatioPuAM(CLASSLogger* log, string TMVAWeight
 }
 
 //________________________________________________________________________
-map <string , vector<double> > EQM_ADS_MLP_RatioPuAM::BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray)
+map <string , vector<double> > EQM_ADS_MLP_FixedRatioPuAM::BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray)
 {
 	DBGL
 
@@ -159,23 +159,25 @@ map <string , vector<double> > EQM_ADS_MLP_RatioPuAM::BuildFuel(double BurnUp, d
 	// map <string , double > fLambdaMax; = Maximum possible lambda of available stocks
 	StocksTotalMassCalculation(StreamArray);
 
-	// Provide list fraction guessed in the Fuel
-	// Defined in the Model constructor
-	// ex: "MA" = 0.5 and "Pu" = 0.5
-	fActualMassContentInFuel	= GetBuildFuelFirstGuess();
-	fActualMolarContentInFuel	= GetBuildFuelFirstGuess();
-
 	// Check if there is enough mass in stock
-/*	double TotalMassInAllStocks = 0;
+	double TotalMassInAllStocks = 0;
+
 	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++) TotalMassInAllStocks += fTotalMassInStocks[it_s_vIV->first];
-	if{HMMass > TotalMassInAllStocks}
+	
+	if(HMMass > TotalMassInAllStocks)
 	{
 		WARNING << " Not enough mass available in stocks for Reactor : Fuel not build." << endl;
 		SetLambdaToErrorCode(lambda[it_s_vIV->first]);
 		return lambda;
 	}
+
+	cout<<HMMass<<" "<<TotalMassInAllStocks<<endl;
 	
-*/	
+
+
+exit(1);
+
+
 /*
 
 	TTree* InputTree 	= CreateTMVAInputTree(TheFuel,TheTime);
@@ -360,7 +362,7 @@ map <string , vector<double> > EQM_ADS_MLP_RatioPuAM::BuildFuel(double BurnUp, d
 	return lambda;
 }
 //________________________________________________________________________
-TTree* EQM_ADS_MLP_RatioPuAM::CreateTMVAInputTree(IsotopicVector TheFuel)
+TTree* EQM_ADS_MLP_FixedRatioPuAM::CreateTMVAInputTree(IsotopicVector TheFuel)
 {
 	TTree*   InputTree = new TTree("EQTMP", "EQTMP");
 	
@@ -398,7 +400,7 @@ TTree* EQM_ADS_MLP_RatioPuAM::CreateTMVAInputTree(IsotopicVector TheFuel)
 	return InputTree;
 }
 //________________________________________________________________________
-double EQM_ADS_MLP_RatioPuAM::ExecuteTMVA(TTree* TheTree, string WeightPath)
+double EQM_ADS_MLP_FixedRatioPuAM::ExecuteTMVA(TTree* TheTree, string WeightPath)
 {
 	// --- Create the Reader object
 	TMVA::Reader *reader = new TMVA::Reader( "Silent" );
@@ -450,7 +452,7 @@ double EQM_ADS_MLP_RatioPuAM::ExecuteTMVA(TTree* TheTree, string WeightPath)
 }
 
 //________________________________________________________________________
-map < string , double>  EQM_ADS_MLP_RatioPuAM::GetMolarFraction(map <string , IsotopicVector > IVStream, double TargetBU)
+map < string , double>  EQM_ADS_MLP_FixedRatioPuAM::GetMolarFraction(map <string , IsotopicVector > IVStream, double TargetBU)
 {
 	
 	cout<<"HERE..."<<endl;
