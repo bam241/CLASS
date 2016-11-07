@@ -106,9 +106,15 @@ void Train_XS_Time(int INDICE)
    // Apply additional cuts on the signal and background samples (can be different)
    TCut mycut = ""; // for example: TCut mycut = "abs(var1)<0.5 && abs(var2-0.5)<1";
 
+   Long64_t NEvents   = regTree->GetEntries();
+   Long64_t NTraining = PropTraining * NEvents ; 
+   Long64_t NTesting  = NEvents - NTraining ; 
+
+   std::stringstream Samples_Parameters ;
+   Samples_Parameters <<  "nTrain_Regression=" << NTraining <<":"<< "nTest_Regression=" << NTesting <<":SplitMode=Random:NormMode=NumEvents:!V";
+
    // tell the factory to use all remaining events in the trees after training for testing:
-   factory->PrepareTrainingAndTestTree( mycut, 
-                                        "nTrain_Regression=0:nTest_Regression=0:SplitMode=Random:NormMode=NumEvents:!V" );
+   factory->PrepareTrainingAndTestTree( mycut, Samples_Parameter.str() );
 
    // If no numbers of events are given, half of the events in the tree are used 
    // for training, and the other half for testing:
@@ -122,7 +128,7 @@ void Train_XS_Time(int INDICE)
    // "...:CutRangeMin[2]=-1:CutRangeMax[2]=1"...", where [2] is the third input variable
 
    std::stringstream Name;
-   Name<<   OUTPUT[INDICE];
+   Name <<  OUTPUT[INDICE];
    // Neural network (MLP)                                                                                    
       factory->BookMethod( TMVA::Types::kMLP, Name.str().c_str(), "!H:!V:VarTransform=Norm:NeuronType=tanh:NCycles=20000:HiddenLayers=N,N:TestRate=6:TrainingMethod=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests=15:!UseRegulator" );
 

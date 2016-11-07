@@ -68,7 +68,7 @@ void Run_Sequential();
 
 /* PRINT INFO */
 void PrintFinalSteps();
-void Generate_tmva_factory_input();
+void Generate_tmva_factory_input(double ProportionOfTraining);
 
 /* SCRIPT GENERATION */
 void GenerateScript_Parallel(int threads);
