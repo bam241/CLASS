@@ -65,7 +65,12 @@ vector<double> GetAllCompoOf(ZAI zai);
 
 bool is_file_exist(const char *fileName);
 void CompileTraining();
-
+void FissileOrFertileList(int Z,int A,int I);
 /* PRINT INFO */
 void Generate_tmva_factory_input(double ProportionOfTraining);
+
+void GetUserValue(int &Value);
+void GetUserValue(double &Value);
+void GetUserValue(string &Value);
+
 

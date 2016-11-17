@@ -76,7 +76,7 @@ int main(int argc, char ** argv)
 		}
 	}
 
-	if(is_file_exist("_tmp/include_Train/TrainingInput.cxx" ))
+	if(is_file_exist("_tmp/include_Train/TrainingInput.root" ))
 		system( "rm -rf _tmp"  );
 
 	system("mkdir -p _tmp/include_Train");
@@ -101,7 +101,8 @@ int main(int argc, char ** argv)
 
 	cout << "Proportion of data to be used for training ? ]0-100[" <<endl;
 	double ProportionOfTraining = 0 ;
-	cin >> ProportionOfTraining ;
+
+	GetUserValue( ProportionOfTraining);
 		DumpInputNeuron("_tmp/include_Train/TrainingInput.root");
 		Generate_tmva_factory_input(ProportionOfTraining);
 
@@ -143,6 +144,52 @@ int main(int argc, char ** argv)
 
 
 }
+
+//--------------------------------------------------------------------------------------------------
+void GetUserValue(int &Value)
+{
+	string sValue ;
+	std::getline(std::cin, sValue);
+
+	if(StringLine::IsDouble(sValue))
+	{
+		double dValue = atof(sValue.c_str());
+		double iValue = floor(dValue);
+
+		if( dValue != iValue )
+		{
+			cout << "It must be an INTEGER" <<endl;
+			GetUserValue(Value);
+
+		}
+		else
+			Value = iValue;
+	}
+	
+	else
+	{
+		cout << "It must be an INTEGER" <<endl;
+		GetUserValue(Value);
+	}
+
+}
+void GetUserValue(double &Value)
+{
+	string sValue ;
+	std::getline(std::cin, sValue);
+
+	if(StringLine::IsDouble(sValue))
+		Value = atof(sValue.c_str());
+	else
+	{
+		cout << "It must be a DOUBLE" <<endl;
+		GetUserValue(Value);
+	}
+}
+void GetUserValue(string &Value)
+{
+	std::getline(std::cin, Value);
+}
 //--------------------------------------------------------------------------------------------------
 bool is_file_exist(const char *fileName)
 {
@@ -155,14 +202,14 @@ void CompileTraining()
 	cout << "╭────────────────────────────────────────────────╮" << endl; 
 	cout << "│     COMPLILING TMVA TRAINING PROGRAM           │" << endl; 
 	cout << "╰────────────────────────────────────────────────╯" << endl; 
-	if(is_file_exist("Train_XS"))
-		system("rm Train_XS ");
+	if(is_file_exist("Train"))
+		system("rm Train");
 
 	string CMD = "g++ -o Train  `root-config --cflags` Train.cxx `root-config --glibs` -lTMVA";
 	cout << CMD <<endl;
 	system(CMD.c_str());
 
-	if(!is_file_exist("Train_XS"))
+	if(!is_file_exist("Train"))
 	{
 		cout <<"\033[31m  COMPILATION FAILED !!! May be not the good compilator name nor the good path of file to compile ? \033[0m " << endl;
 		exit(1);
@@ -230,21 +277,10 @@ void  FillMapName()
 
 		cout<< "[Z\tA\tI\tName]"<<endl;
 		cout<<"\033[36m"<<Z<<"\t"<<A<<"\t"<<I<<"\t"<<ssname.str()<<"\033[0m"<<endl;
-
 		if (UserSayYes())
 		{	
 			fMapName.insert(pair<ZAI,string> ( ZAI(Z,A,I) , ssname.str()) );
-			cout << "Is this nuclei is considered to be a part of a fissile element ? [y/n]" <<endl;
-
-			if (UserSayYes())	
-				fStreamList.push_back( ZAIStreamList(Z,A,I,"Fissile",1) );
-			else
-			{
-				cout<<"So it is considered as fertile\n What is the default proportion of this nucleus in the fertile vector ? [0-1] " <<endl;					double Default_Proportion = 0;
-				cin >> Default_Proportion;
-				fStreamList.push_back( ZAIStreamList(Z,A,I,"Fertile",Default_Proportion) );
-			}
-			cout<<endl;
+			FissileOrFertileList(Z,A,I);
 		}	
 	}
 
@@ -258,8 +294,18 @@ void  FillMapName()
 			int A = 0;
 			int I = 0;
 			string Name;
-			cout << " Z -> "; cin >> Z ; cout <<" A -> "; cin >> A ; cout <<" I -> "; cin >> I ;cout <<" Name -> "; cin >> Name;
+			cout << " Z -> "; 
+			GetUserValue( Z);
+			cout <<" A -> ";
+			GetUserValue( A);
+			cout <<" I -> ";
+			GetUserValue( I);
+			cout <<" Name -> ";
+			GetUserValue( Name);
+
 			fMapName.insert(pair<ZAI,string> ( ZAI(Z,A,I) ,Name) );
+
+			FissileOrFertileList(Z,A,I);
 		}
 
 		else
@@ -268,6 +314,25 @@ void  FillMapName()
 
 
 }
+
+//--------------------------------------------------------------------------------------------------
+void FissileOrFertileList(int Z,int A,int I)
+{
+
+			cout << "Is this nuclei is considered to be a part of a fissile element ? [y/n]" <<endl;
+
+			if (UserSayYes())	
+				fStreamList.push_back( ZAIStreamList(Z,A,I,"Fissile",1) );
+			else
+			{
+				cout<<"So it is considered as fertile\n What is the default proportion of this nucleus in the fertile vector ? [0-1] " <<endl;
+				double Default_Proportion = 0;
+				GetUserValue( Default_Proportion);
+				fStreamList.push_back( ZAIStreamList(Z,A,I,"Fertile",Default_Proportion) );
+			}
+			cout<<endl;
+}
+
 //--------------------------------------------------------------------------------------------------
 void Generate_tmva_factory_input(double ProportionOfTraining)
 {
@@ -291,7 +356,7 @@ bool UserSayYes()
 		while(AnswerIsNotGiven)
 		{
 			string answer;
-			std::getline(std::cin, answer);
+			GetUserValue( answer);
 
 	
 			if(answer == "y" || answer == "yes" || answer == "Yes" || answer == "Y")
@@ -342,43 +407,43 @@ string CreateInfoFile()
 	cout<<"╰───────────────────────────────────────────────╯"<<endl;
 	cout<<" Answer following questions "<<endl;
 	cout<<"-> Author(s) name(s) : "<<endl;
-	std::getline(std::cin, Author);
+	GetUserValue( Author);
 	cout<<endl;
 
 	cout<<"-> email adress(es) : "<<endl;
-	std::getline(std::cin, Mail);	
+	GetUserValue( Mail);	
 	cout<<endl;
 
 	cout<<"-> Depletion code used : "<<endl;
-	std::getline(std::cin, DepCode);
+	GetUserValue( DepCode);
 	cout<<endl;
 
 	cout<<"-> Cross section data base (e.g ENSDF7.1) : "<<endl;
-	std::getline(std::cin, XSBase);
+	GetUserValue( XSBase);
 	cout<<endl;
 
 	cout<<"-> Fission yield data base (e.g ENSDF7.1) : "<<endl;
-	std::getline(std::cin, FPYBase);
+	GetUserValue( FPYBase);
 	cout<<endl;
 
 	cout<<"-> S(alpha,beta) data base (e.g ENSDF7.1) : "<<endl;
-	std::getline(std::cin, SABase);
+	GetUserValue( SABase);
 	cout<<endl;
 
 	cout<<"-> Geometry simulated  (e.g Cubic Assembly with mirror boundary) : "<<endl;
-	std::getline(std::cin, Geom);
+	GetUserValue( Geom);
 	cout<<endl;
 
 	cout<<"-> Half life cut [s] (if any) : "<<endl;
-	std::getline(std::cin, HLCut);	
+	GetUserValue( HLCut);	
 	cout<<endl;
 
 	cout<<"-> Multi group treatment (yes/no if yes give the number of groups) : "<<endl;
-	std::getline(std::cin, EnergyDisc);
+	GetUserValue( EnergyDisc);
 	cout<<endl;	
 
 	cout<<"-> Additional informations : "<<endl;
-	std::getline(std::cin, AddInfo);	
+	GetUserValue( AddInfo);	
 	cout<<endl;	
 
 
@@ -388,7 +453,7 @@ string CreateInfoFile()
 	cout<< "Is that corect ? [y/n] "<<endl;
 	if(!UserSayYes())
 	{	cout<<"\t So what it is ?"<<endl;
-		cin>> fReactorType;
+		GetUserValue( fReactorType);
 	}	
 	cout<<endl;
 
@@ -398,7 +463,8 @@ string CreateInfoFile()
 	cout<< "Is that corect ? [y/n] "<<endl;
 	if(!UserSayYes())
 	{	cout<<"\t So what it is ?"<<endl;
-		cin>> fFuelType;
+		GetUserValue( fFuelType);
+
 	}	
 	cout<<endl;
 
@@ -408,7 +474,7 @@ string CreateInfoFile()
 	cout<< "Is that corect ? [y/n] "<<endl;
 	if(!UserSayYes())
 	{	cout<<"\t So what it is ?"<<endl;
-		cin>> MeanHMMass;
+		GetUserValue( MeanHMMass);		
 	}
 	cout<<endl;
 
@@ -418,12 +484,12 @@ string CreateInfoFile()
 	cout<< "Is that corect ? [y/n] "<<endl;
 	if(!UserSayYes())
 	{	cout<<"\t So what it is ?"<<endl;
-		cin>> Power;
+		GetUserValue( Power);		
 	}	
 	cout<<endl;
 
 	cout<<"-> First guess of fissile content in fresh fuel (for algorithm initialization): ]0-1[ "<<endl;
-	cin>> FissileFirstGuess;
+	GetUserValue( FissileFirstGuess);		
 
 	cout<<endl;
 
