@@ -764,12 +764,6 @@ int main(int argc, char** argv)
 			double N_f  = GetPropOf( zai3[0][c], zai_FS_3[0][c][nuc] );
 
 			Power +=   EnergyPerFisison_f * N_f * XS_f * vFlux1[0][c]; //eV.s-1
-
-			cout << "Z " <<zai_FS_3[0][c][nuc].Z() << " A " << zai_FS_3[0][c][nuc].A() <<" I " << zai_FS_3[0][c][nuc].I() <<endl;
-			cout << "\t "<< EnergyPerFisison_f <<" eV " <<endl;
-			cout << "\t "<< XS_f << "cm^2"<<endl;
-			cout << "\t "<< N_f << " at"<<endl;
-
 		}
 	}
 	Power *= 1.60218e-19 ; //W
