@@ -158,7 +158,10 @@ public :
 	 \name Fabrication & Evolution Method
 	 */
 	//@{
-	void SetSeparartionEfficiencyIV(ZAI zai, double factor);					//!< Set the extraction efficiency of zai to factor (0<=factor<=1)
+	void SetSeparationEfficiency(IsotopicVector IV,  cSecond TimeOfSep);	//!< Set the extraction efficiency of IsotopicVector IV.This separation efficiency is effectove at time TimeOfSep
+	IsotopicVector GetSeparationEfficiencyAt(cSecond time);
+
+
 	void Evolution(cSecond t);									//!< Perform the FabricationPlant evolution
 	void DumpStock(map <string , vector<double> > LambdaArray);				//!< Update the Stock status after building process
 	void TakeReactorFuel(int ReactorId) ;								//!< Remove the fuel of reactor ReactorId from stock
@@ -189,6 +192,9 @@ protected:
 
 //********* Internal Parameter *********//
 	IsotopicVector	 fSeparationLostFraction;	///< The lost fraction table during separation (1- efficiency)
+
+	map<cSecond, IsotopicVector> fSeparationStrategy;
+
 	map<int, cSecond >	fReactorNextStep;	///< Next time step to build a new fuel
 
 #ifndef __CINT__
