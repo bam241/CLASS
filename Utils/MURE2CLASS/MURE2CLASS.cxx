@@ -66,11 +66,25 @@ int ReadCommentVersion(ifstream& in, string filename)
 	return MureDataVersion;
 }
 
+double GetPropOf( vector <ZAI> vZAI , ZAI zai)
+{
+
+	for(int nuc = 0 ; nuc < vZAI.size() ; nuc++ )
+	{
+		if( vZAI[nuc].Z() == zai.Z() &&  vZAI[nuc].A() == zai.A() && vZAI[nuc].I() == zai.I() )
+			return vZAI[nuc].Prop();
+	}
+
+return 0.0;
+}
+
 //----------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------
 //------------------------------------- MAIN ---------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------
+
+
 
 int main(int argc, char** argv)
 {
@@ -129,25 +143,37 @@ int main(int argc, char** argv)
 	// =========================================================================================
 
 	// MURE output path
-	if(argc != 9)
+	if(argc < 4)
 	{
-		cout << "Argument problem for MURE2CLASS... EXIT!" << endl;
-		cout << "Arg should be :" << endl << "\t1 Path," << endl << "\t2 OutName," << endl << "\t3 ReactorType," << endl << "\t4 FuelType," << endl;
-		cout << "\t5 Power," << endl << endl << "\t6 NormalizationFactor(Before Normalization)," << endl << "\t7 WantedCell (by default should be 0)" <<  endl << "\t8 Step to Skip," << endl;
-		exit(1);}
+		cout << "MURE2CLASS usage: " << endl;
+		cout << "Arguments should be :" << endl;
+		cout << "\t1 Path," << endl;
+		cout << "\t2 ReactorType," << endl;
+		cout << "\t3 FuelType," << endl;
+		cout << "Optional : "<<endl ;
+		cout << "\t4 WantedCell [Default :0]" <<  endl;
+		cout << "\t5 Step to Skip [Default :0]" << endl;
+		exit(1);
+	}
 	string DBPath 			= argv[1];
-	string OutName			= argv[2];
-	string ReactorType		= argv[3];
-	string FuelType			= argv[4];
+	string ReactorType		= argv[2];
+	string FuelType			= argv[3];
+	int WantedCell = 0;
+	int StepToSkip = 0;
+	if(argc == 5)
+		WantedCell = atoi(argv[4]);
+	if(argc == 6)
+		StepToSkip = atoi(argv[5]);
 
-	string Power			= argv[5];
-	double NormalizationFactor	= atof(argv[6]);
-	int WantedCell 			= atoi(argv[7]);
-	int StepToSkip          = atoi(argv[8]);
 	// Name of the output file
-	OutDataFile 	= "./" + OutName + ".dat";
+	if (DBPath.back() == '/')
+		DBPath.pop_back();
+
+ 	size_t found = DBPath.find_last_of("/");
+  	string OutName = DBPath.substr(found+1);
+	OutDataFile     = "./" + OutName + ".dat";
 	OutDataFileInfo = "./" + OutName + ".info";
-	OutLOG 		= "./" + OutName + ".log";
+	OutLOG          = "./" + OutName + ".log";
 
 	ofstream OutputLog(OutLOG.c_str());
 
@@ -482,7 +508,8 @@ int main(int argc, char** argv)
 
 	if (vCellNumber.size()>=2)
 	{
-		OutputLog << endl << "===================================================" << endl;
+		OutputLog << endl;
+		OutputLog << "===================================================" << endl;
 		OutputLog << "-------------- WARNING ----------------------------" << endl;
 		OutputLog << "===================================================" << endl << endl;
 		OutputLog << "THERE IS MORE THAN ONE CELL... Cells are : " << endl << endl; /*sleep(1)*/;
@@ -546,7 +573,8 @@ int main(int argc, char** argv)
 			zai_SN_1.clear();
 
 		}
-		OutputLog << endl << "---------------------------------------------------" << endl;
+		OutputLog << endl;
+		OutputLog << "---------------------------------------------------" << endl;
 		OutputLog << "-------------- Sum of cells done ------------------" << endl;
 		OutputLog << "---------------------------------------------------" << endl << endl;
 	}
@@ -612,7 +640,7 @@ int main(int argc, char** argv)
 				Output << "Inv " << zai2[0][i].Z() << " " << zai2[0][i].A() << " " << zai2[0][i].I() << " ";
 				for (int t=StepToSkip; t<vTime.size(); t++)
 				{
-					double Val = zai2[t][i].Prop() * NormalizationFactor;
+					double Val = zai2[t][i].Prop() ;
 					Output << Val << " ";
 					if (t==StepToSkip) NPrinted++;
 
@@ -627,7 +655,7 @@ int main(int argc, char** argv)
 				Output << "Inv " << zai3[0][0][i].Z() << " " << zai3[0][0][i].A() << " " << zai3[0][0][i].I() << " ";
 				for (int t=StepToSkip; t<vTime.size(); t++)
 				{
-					double Val = zai3[t][WantedCell][i].Prop() * NormalizationFactor;
+					double Val = zai3[t][WantedCell][i].Prop() ;
 					Output << Val << " ";
 					if (t==StepToSkip) NPrinted++;
 				}
@@ -638,6 +666,7 @@ int main(int argc, char** argv)
 
 	if (SumOfCell)
 	{
+
 		for(int i=0; i< (int)zai_FS_2[0].size(); i++)
 		{
 
@@ -723,6 +752,22 @@ int main(int argc, char** argv)
 	}
 	Output.close();
 
+
+	double Power = 0 ;//Calculated Power @ t = 0 (as we supposed it is constant)
+	for(int c = 0 ; c < NumberOfCells ; c++)
+	{
+		for(int nuc = 0 ; nuc < zai_FS_3[0][c].size() ; nuc++)		//ef * Nf * sigma_f *phi
+		{
+
+			double EnergyPerFisison_f = 1.9679e6*zai_FS_3[0][c][nuc].A()-2.601e8; //eV
+			double XS_f = zai_FS_3[0][c][nuc].Prop() * 1e-24;
+			double N_f  = GetPropOf( zai3[0][c], zai_FS_3[0][c][nuc] );
+
+			Power +=   EnergyPerFisison_f * N_f * XS_f * vFlux1[0][c]; //eV.s-1
+		}
+	}
+	Power *= 1.60218e-19 ; //W
+
 	ofstream OutputInfo(OutDataFileInfo.c_str());
 	OutputInfo << "Reactor " << ReactorType << endl;
 	OutputInfo << "Fueltype " << FuelType << endl;
@@ -731,8 +776,6 @@ int main(int argc, char** argv)
 	OutputInfo << "ConstantPower " << Power << " W" << endl;
 
 	OutputInfo << "Nnuclei " << NPrinted << endl;
-	OutputInfo << "NormalizationFactor " << NormalizationFactor << endl;
-	OutputInfo << "FinalHeavyMetalMass " << MTotalFissile*NormalizationFactor << " g" << endl;
 
 	OutputInfo.close();
 
@@ -754,5 +797,5 @@ int main(int argc, char** argv)
 
 
 /*
- g++ -o MURE2CLASS MURE2CLASS.cxx
+ g++ -std=c++11 -o MURE2CLASS MURE2CLASS.cxx
  */

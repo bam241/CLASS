@@ -14,7 +14,6 @@
 #include "TSystem.h"
 #include "TROOT.h"
 
-#include "TMVARegGui.C"
 
 #if not defined(__CINT__) || defined(__MAKECINT__)
 #include "TMVA/Tools.h"
@@ -25,23 +24,13 @@ using namespace TMVA;
    
 int main(int argc, char const *argv[])
 {
-   if(argc!=2)
-   {
-      std::cout << "TrainMLP Usage :" << std::endl;
-      std::cout << "\tTrainMLP YourTrainingData.root" << std::endl;
-   }   
+
    //---------------------------------------------------------------
    // This loads the library
    TMVA::Tools::Instance();
    // ---------------------------------------------------------------
- // if(argc !=3)
- // {
- //    cout<<"error : "<<endl;
- //    cout<<"Usage : Train_MLP rootfile.root targetname : "<<endl;
- //    cout<<"\t targetname : keff or k_0 or k_1 ..."<<endl;
- //    exit(1);
- // }
-   std::string TargetName = "k_eff";//argv[2];
+
+   std::string TargetName = "k_eff";
 
 
    std::cout << std::endl;
@@ -49,7 +38,7 @@ int main(int argc, char const *argv[])
 
 
    // Create a new root output file
-   TString outfileName( "TMVA_"+TargetName+".root" );
+   TString outfileName( "Training_output_"+TargetName+".root" );
    TFile* outputFile = TFile::Open( outfileName, "RECREATE" );//UPDATE
 
 
@@ -63,37 +52,10 @@ int main(int argc, char const *argv[])
    TMVA::Factory *factory = new TMVA::Factory( "TMVARegression", outputFile, 
                                                "!V:!Silent:Color:DrawProgressBar" );
 
-   // If you wish to modify default settings 
-   // (please check "src/Config.h" to see all available global options)
-   //    (TMVA::gConfig().GetVariablePlotting()).fTimesRMS = 8.0;
-   //    (TMVA::gConfig().GetIONames()).fWeightFileDir = "myWeightDirectory";
 
-   // Define the input variables that shall be used for the TMVA training
-   // note that you may also use variable expressions, such as: "3*var1/var2*abs(var3)"
-   // [all types of expressions that can also be parsed by TTree::Draw( "expression" )]
-
-   //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
-   //@@@Change/add variables if needed
-   //@@@ the variable name are the one you use in GenerateRootFile.cxx
-   //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//  
-   factory->AddVariable( "U8"   , "U 238 "         , "FractionIsotopic", 'F' );
-   factory->AddVariable( "U5"   , "U 235 "         , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu8"  , "Pu 238 "         , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu9"  , "Pu 239 "         , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu10" , "Pu 240 "         , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu11" , "Pu 241 "         , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu12" , "Pu 242 "         , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Am1"  , "Am 241 "         , "FractionIsotopic", 'F' );
-
-
-   // You can add so-called "Spectator variables", which are not used in the MVA training, 
-   // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the 
-   // input variables, the response values of all trained MVAs, and the spectator variables
-   //factory->AddSpectator( "spec1:=var1*2",  "Spectator 1", "units", 'F' );
-   //factory->AddSpectator( "spec2:=var1*3",  "Spectator 2", "units", 'F' );
+   #include "_tmp/include_Train/InputVariables.cxx"
 
    // Add the variable carrying the regression target
-
    factory->AddTarget(TargetName);
 
    // It is also possible to declare additional targets for multi-dimensional regression, ie:
@@ -103,7 +65,7 @@ int main(int argc, char const *argv[])
    // Read training and test data (see TMVAClassification for reading ASCII files)
    // load the signal and background event samples from ROOT trees
    TFile *input(0);
-   TString fname = argv[1]; //Training Data input file
+   TString fname = "_tmp/include_Train/TrainingInput.root"; //Training Data input file
    if (!gSystem->AccessPathName( fname )) 
       input = TFile::Open( fname ); // check if file in local directory exists 
    
@@ -130,6 +92,14 @@ int main(int argc, char const *argv[])
    // Apply additional cuts on the signal and background samples (can be different)
    TCut mycut = ""; // for example: TCut mycut = "abs(var1)<0.5 && abs(var2-0.5)<1";
 
+   Long64_t NEvents   = regTree->GetEntries();
+   Long64_t NTraining = PropTraining * NEvents ; 
+   Long64_t NTesting  = NEvents - NTraining ; 
+
+   std::stringstream Samples_Parameters ;
+   Samples_Parameters <<  "nTrain_Regression=" << NTraining <<":"<< "nTest_Regression=" << NTesting <<":SplitMode=Random:NormMode=NumEvents:!V";
+
+
    // tell the factory to use all remaining events in the trees after training for testing:
    factory->PrepareTrainingAndTestTree( mycut, 
                                         "nTrain_Regression=0:nTest_Regression=0:SplitMode=Random:NormMode=NumEvents:!V" );
@@ -139,12 +109,17 @@ int main(int argc, char const *argv[])
 
    // ---- Book MVA methods
    //
+   TString NType    = "sigmoid";
+   TString Arch     = "18,21,9";
+   TString Sampl    = "0.5";
+   TString LearRate = "0.1";
+   
+   TString ParamNN = "!H:V:VarTransform=Norm:NeuronType=" + NType + ":NCycles=16000:HiddenLayers=" + Arch + ":TestRate=6:TrainingMethod=BFGS:LearningRate=" + LearRate + ":Sampling=" + Sampl + ":SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests=15:!UseRegulator";
+   
    std::stringstream Name;
-   Name<<"MLP_"<<TargetName;
+   Name<<"MLP_"<<TargetName; 
    // Neural network (MLP)                                                                                 
-   factory->BookMethod( TMVA::Types::kMLP, Name.str().c_str(), "!H:V:VarTransform=Norm:NeuronType=tanh:NCycles=16000:HiddenLayers=8,:TestRate=6:TrainingMethod=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests=15:!UseRegulator" );
-
-
+   factory->BookMethod( TMVA::Types::kMLP, Name.str().c_str(), ParamNN );
    // --------------------------------------------------------------------------------------------------
 
    // ---- Now you can tell the factory to train, test, and evaluate the MVAs
@@ -168,10 +143,9 @@ int main(int argc, char const *argv[])
 
    delete factory;
 
-   // Launch the GUI for the root macros
-if (!gROOT->IsBatch()) TMVARegGui( outfileName );
+
 }
 /*
 
-g++ -o Train_MLP `root-config --cflags` Train_MLP.cxx `root-config --glibs` -lTMVA -I$ROOTSYS/tmva/test/
+g++ -o Train `root-config --cflags` Train.cxx `root-config --glibs` -lTMVA -I$ROOTSYS/tmva/test/
 */

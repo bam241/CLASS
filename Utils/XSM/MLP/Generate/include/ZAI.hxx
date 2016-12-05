@@ -16,7 +16,6 @@ class ZAI {
 
 	
 		ZAI(int z, int a, int i=0) { Z=z;A=a; I=i;}
-		ZAI(){;}
 	
 		bool operator <(const ZAI& zai) const	{return (Z != zai.Z)?  
 									(Z < zai.Z) : ( (A != zai.A)?
@@ -115,24 +114,6 @@ class ZAIMass
 
 	private:
 		map<ZAI, double> fZAIMass; //! ZAI mass list
-
-};
-
-class ZAIStreamList {
-	public :
-	
-	ZAI fZAI;
-	string fListName;
-	double fDefaultProportion;
-
-	ZAIStreamList(int Z, int A, int I, string ListName, double DefaultProportion )
-	{
-		fZAI = ZAI(Z,A,I);
-		fListName = ListName;
-		fDefaultProportion = DefaultProportion;
-	}	///< Normal Constructor.
- 	~ZAIStreamList() {};	 ///< Normal Destructor.
-
 
 };
 

@@ -31,7 +31,7 @@ std::vector<std::string>OUTPUT;
 void LOAD_OUTPUT() 
 {
 
-   #include  "../BuildInput/TrainingInput.cxx"
+   #include  "_tmp/include_Train_XS/TrainingInput.cxx"
 
 }
 void Train_XS_Time(int INDICE) 
@@ -70,20 +70,8 @@ void Train_XS_Time(int INDICE)
    TMVA::Factory *factory = new TMVA::Factory( "TMVARegression",    OUTPUTFile, 
                                                "!V:!Silent:Color:DrawProgressBar" );
 
-//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-//@@Change : change the  each first arguments with the name used in your training sample
- //   factory->AddVariable( "TheNameOfYourNucleusInTheTrainingFile"           , "whatever"    , "whatever", 'F' ); 
-   factory->AddVariable( "U5"           , "U 235"    , "FractionIsotopic", 'F' ); 
-   factory->AddVariable( "U8"           , "U 238"    , "FractionIsotopic", 'F' ); 
-   factory->AddVariable( "Pu8"          , "Pu 238"   , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu9"          , "Pu 239"   , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu10"         , "Pu 240"   , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu11"         , "Pu 241"   , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu12"         , "Pu 242"   , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Am1"          , "Am 241"   , "FractionIsotopic", 'F' );
-//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-   factory->AddVariable( "Time"         , "Time"     , "seconds"         , 'F' );
 
+   #include "_tmp/include_Train_XS/InputVariables.cxx"
    // Add the variable carrying the regression target
    factory->AddTarget(   OUTPUT[INDICE].c_str() ); //The name of the MLP output
 
@@ -95,7 +83,7 @@ void Train_XS_Time(int INDICE)
    // load the signal and background event samples from ROOT trees
    TFile *input(0);
 
-   TString fname = "../BuildInput/TrainingInput.root";
+   TString fname = "_tmp/include_Train_XS/TrainingInput.root";
    if (!gSystem->AccessPathName( fname )) 
       input = TFile::Open( fname ); // check if file in local directory exists 
    
@@ -118,9 +106,15 @@ void Train_XS_Time(int INDICE)
    // Apply additional cuts on the signal and background samples (can be different)
    TCut mycut = ""; // for example: TCut mycut = "abs(var1)<0.5 && abs(var2-0.5)<1";
 
+   Long64_t NEvents   = regTree->GetEntries();
+   Long64_t NTraining = PropTraining * NEvents ; 
+   Long64_t NTesting  = NEvents - NTraining ; 
+
+   std::stringstream Samples_Parameters ;
+   Samples_Parameters <<  "nTrain_Regression=" << NTraining <<":"<< "nTest_Regression=" << NTesting <<":SplitMode=Random:NormMode=NumEvents:!V";
+
    // tell the factory to use all remaining events in the trees after training for testing:
-   factory->PrepareTrainingAndTestTree( mycut, 
-                                        "nTrain_Regression=0:nTest_Regression=0:SplitMode=Random:NormMode=NumEvents:!V" );
+   factory->PrepareTrainingAndTestTree( mycut, Samples_Parameter.str() );
 
    // If no numbers of events are given, half of the events in the tree are used 
    // for training, and the other half for testing:
@@ -134,7 +128,7 @@ void Train_XS_Time(int INDICE)
    // "...:CutRangeMin[2]=-1:CutRangeMax[2]=1"...", where [2] is the third input variable
 
    std::stringstream Name;
-   Name<<   OUTPUT[INDICE];
+   Name <<  OUTPUT[INDICE];
    // Neural network (MLP)                                                                                    
       factory->BookMethod( TMVA::Types::kMLP, Name.str().c_str(), "!H:!V:VarTransform=Norm:NeuronType=tanh:NCycles=20000:HiddenLayers=N,N:TestRate=6:TrainingMethod=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests=15:!UseRegulator" );
 
@@ -169,7 +163,7 @@ int  main(int argc, char const *argv[])
      {
       std::cout << "Usage : TrainXS i"<< std::endl;
       std::cout << "With i the cross section index " << std::endl;
-      std::cout << "File ../BuildInput/TrainingInput.cxx indicates\n indice ranging from 0 to "<< OUTPUT.size()-1 << std::endl;
+      std::cout << "File _tmp/include_Train_XS/TrainingInput.cxx indicates\n indice ranging from 0 to "<< OUTPUT.size()-1 << std::endl;
       exit(0);
      } 
 
