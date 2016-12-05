@@ -65,13 +65,13 @@ int main(int argc, char ** argv)
 	}	
 
 	/*****************Preparation of working folders*************************/
-	if(is_file_exist("Training_output_0.root" ))
+	if(is_file_exist("Training_output_k_inf.root" ))
 	{
-		cout<< "Trainining_output* detected. Delete these files and weights folder ? [y/n]"<<endl;
+		cout<< "\033[33m Trainining_output* detected. Delete these files and weights folder ? [y/n]\033[0m"<< endl;
 		if(UserSayYes())
 			system( "rm -rf Training_output* weights"  );
 		else
-		{	cout << "Move this files elsewhere and run this program again"<<endl;
+		{	cout << "Move this files elsewhere and run this program again"<< endl;
 			exit(0);
 		}
 	}
@@ -89,7 +89,7 @@ int main(int argc, char ** argv)
 	cout << "╭───────────────────────────────────────────────╮" << endl; 
 	cout << "│      Load your EvolutionDatas to R.A.M        │" << endl; 
 	cout << "╰───────────────────────────────────────────────╯" << endl; 
-	cout<<endl;
+	cout<< endl;
 	for(int i = 0; i < (int)JobName.size(); i++)
 	{
 		ReadAndFill(JobName[i]);
@@ -99,7 +99,7 @@ int main(int argc, char ** argv)
 
 	FillMapName();
 
-	cout << "Proportion of data to be used for training ? ]0-100[" <<endl;
+	cout << "Proportion of data to be used for training ? ]0-100[" << endl;
 	double ProportionOfTraining = 0 ;
 
 	GetUserValue( ProportionOfTraining);
@@ -130,12 +130,12 @@ int main(int argc, char ** argv)
 	if(UserSayYes())
 	{
 		CompileTraining();
-		cout << "Let's train locally ? [y/n]" <<endl;
+		cout << "Let's train locally ? [y/n]" << endl;
 		if(UserSayYes())
 			system("./train");
 		else
 		{
-			cout << "You can run it latter with  ./Train" <<endl;
+			cout << "You can run it latter with  ./Train" << endl;
 			exit(0);
 		}
 	}	
@@ -158,7 +158,7 @@ void GetUserValue(int &Value)
 
 		if( dValue != iValue )
 		{
-			cout << "It must be an INTEGER" <<endl;
+			cout << "It must be an INTEGER" << endl;
 			GetUserValue(Value);
 
 		}
@@ -168,7 +168,7 @@ void GetUserValue(int &Value)
 	
 	else
 	{
-		cout << "It must be an INTEGER" <<endl;
+		cout << "It must be an INTEGER" << endl;
 		GetUserValue(Value);
 	}
 
@@ -182,7 +182,7 @@ void GetUserValue(double &Value)
 		Value = atof(sValue.c_str());
 	else
 	{
-		cout << "It must be a DOUBLE" <<endl;
+		cout << "It must be a DOUBLE" << endl;
 		GetUserValue(Value);
 	}
 }
@@ -206,7 +206,7 @@ void CompileTraining()
 		system("rm Train");
 
 	string CMD = "g++ -o Train  `root-config --cflags` Train.cxx `root-config --glibs` -lTMVA";
-	cout << CMD <<endl;
+	cout << CMD << endl;
 	system(CMD.c_str());
 
 	if(!is_file_exist("Train"))
@@ -247,12 +247,12 @@ string NameXS(ZAI act,string xs)
 //--------------------------------------------------------------------------------------------------
 void  FillMapName()
 {
-	cout<<endl;
-	cout<< "╭───────────────────────────────────────────────╮"<<endl;
-	cout<< "│               SET UP MLPs INPUT               │"<<endl;
-	cout<< "│default : composition @ t=0 + Irradiation time │"<<endl;
-	cout<< "╰───────────────────────────────────────────────╯"<<endl;
-	cout<<endl;
+	cout<< endl;
+	cout<< "╭───────────────────────────────────────────────╮"<< endl;
+	cout<< "│               SET UP MLPs INPUT               │"<< endl;
+	cout<< "│default : composition @ t=0 + Irradiation time │"<< endl;
+	cout<< "╰───────────────────────────────────────────────╯"<< endl;
+	cout<< endl;
 
 	vector<ZAI> ZAI_T0 =  fActinideCompoInit[0].GetNonZeroZAIList();
 
@@ -271,12 +271,12 @@ void  FillMapName()
 
 		ssname<<A<<ElNames[Z]<<sI;
 		if(zai == 0)
-			cout<< "Add this nuclei with this name [y/n] ?  (if you don't know type yes to all)  "<<endl;
+			cout<< "Add this nuclei with this name [y/n] ?  (if you don't know type yes to all)  "<< endl;
 		else
-			cout<< "Add [y/n] ?  "<<endl;
+			cout<< "Add [y/n] ?  "<< endl;
 
-		cout<< "[Z\tA\tI\tName]"<<endl;
-		cout<<"\033[36m"<<Z<<"\t"<<A<<"\t"<<I<<"\t"<<ssname.str()<<"\033[0m"<<endl;
+		cout<< "[Z\tA\tI\tName]"<< endl;
+		cout<<"\033[36m"<<Z<<"\t"<<A<<"\t"<<I<<"\t"<<ssname.str()<<"\033[0m"<< endl;
 		if (UserSayYes())
 		{	
 			fMapName.insert(pair<ZAI,string> ( ZAI(Z,A,I) , ssname.str()) );
@@ -287,7 +287,7 @@ void  FillMapName()
 	bool UserWantToAdd = true;
 	while(UserWantToAdd)
 	{
-		cout<< "Do you want to add additional nuclei  [y/n] ? (if you don't know type no) "<<endl;
+		cout<< "Do you want to add additional nuclei  [y/n] ? (if you don't know type no) "<< endl;
 		if(UserSayYes())
 		{	
 			int Z = 0;
@@ -319,18 +319,18 @@ void  FillMapName()
 void FissileOrFertileList(int Z,int A,int I)
 {
 
-			cout << "Is this nuclei is considered to be a part of a fissile element ? [y/n]" <<endl;
+			cout << "Is this nuclei is considered to be a part of a fissile element ? [y/n]" << endl;
 
 			if (UserSayYes())	
 				fStreamList.push_back( ZAIStreamList(Z,A,I,"Fissile",1) );
 			else
 			{
-				cout<<"So it is considered as fertile\n What is the default proportion of this nucleus in the fertile vector ? [0-1] " <<endl;
+				cout<<"So it is considered as fertile\n What is the default proportion of this nucleus in the fertile vector ? [0-1] " << endl;
 				double Default_Proportion = 0;
 				GetUserValue( Default_Proportion);
 				fStreamList.push_back( ZAIStreamList(Z,A,I,"Fertile",Default_Proportion) );
 			}
-			cout<<endl;
+			cout<< endl;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -339,8 +339,8 @@ void Generate_tmva_factory_input(double ProportionOfTraining)
 
 	ofstream  InputNetwork("_tmp/include_Train/InputVariables.cxx");
 	for(map<ZAI,string>::iterator it = fMapName.begin() ; it != fMapName.end() ; it++ )
-		InputNetwork <<"factory->AddVariable( \"" << it->second  << "\" , \"" << it->second << "\", \"IsotopicFraction\", 'F' );"<<endl; 
-    InputNetwork <<"factory->AddVariable( \"Time\" , \"Time\"     , \"seconds\", 'F' );"<<endl<<endl;
+		InputNetwork <<"factory->AddVariable( \"" << it->second  << "\" , \"" << it->second << "\", \"IsotopicFraction\", 'F' );"<< endl; 
+    InputNetwork <<"factory->AddVariable( \"Time\" , \"Time\"     , \"seconds\", 'F' );"<< endl<< endl;
 
 	ProportionOfTraining /=100;
     InputNetwork <<"double PropTraining = "<< ProportionOfTraining <<";"<< endl;
@@ -371,7 +371,7 @@ bool UserSayYes()
 			}
 
 			else{
-				cout << "Yes OR No ? "<<endl;
+				cout << "Yes OR No ? "<< endl;
 			}
 		}
 	return isYES;	
@@ -390,7 +390,7 @@ string CreateInfoFile()
 
     double MeanHMMass = sum / (double)fHMMass.size();
     string Author,Mail,XSBase,HLCut,EnergyDisc,FPYBase,SABase,Geom,AddInfo,DepCode ;
-    double Power = 0, FissileFirstGuess = 0;
+    double Power = 0, FissileFirstGuess = 0 , MaxFisisle = 0;
 
 
 	int start=0;
@@ -400,98 +400,101 @@ string CreateInfoFile()
 
     ReadInfo(AnInfoFile,fReactorType,fFuelType,Power);
 
-	cout<<endl;
-	cout<<endl;
-	cout<<"╭───────────────────────────────────────────────╮"<<endl;
-	cout<<"│        XSM_MLP .NFO FILE GENERATOR            │"<<endl;
-	cout<<"╰───────────────────────────────────────────────╯"<<endl;
-	cout<<" Answer following questions "<<endl;
-	cout<<"-> Author(s) name(s) : "<<endl;
+	cout<< endl;
+	cout<< endl;
+	cout<<"╭───────────────────────────────────────────────╮"<< endl;
+	cout<<"│        XSM_MLP .NFO FILE GENERATOR            │"<< endl;
+	cout<<"╰───────────────────────────────────────────────╯"<< endl;
+	cout<<" Answer following questions "<< endl;
+	cout<<"-> Author(s) name(s) : "<< endl;
 	GetUserValue( Author);
-	cout<<endl;
+	cout<< endl;
 
-	cout<<"-> email adress(es) : "<<endl;
+	cout<<"-> email adress(es) : "<< endl;
 	GetUserValue( Mail);	
-	cout<<endl;
+	cout<< endl;
 
-	cout<<"-> Depletion code used : "<<endl;
+	cout<<"-> Depletion code used : "<< endl;
 	GetUserValue( DepCode);
-	cout<<endl;
+	cout<< endl;
 
-	cout<<"-> Cross section data base (e.g ENSDF7.1) : "<<endl;
+	cout<<"-> Cross section data base (e.g ENSDF7.1) : "<< endl;
 	GetUserValue( XSBase);
-	cout<<endl;
+	cout<< endl;
 
-	cout<<"-> Fission yield data base (e.g ENSDF7.1) : "<<endl;
+	cout<<"-> Fission yield data base (e.g ENSDF7.1) : "<< endl;
 	GetUserValue( FPYBase);
-	cout<<endl;
+	cout<< endl;
 
-	cout<<"-> S(alpha,beta) data base (e.g ENSDF7.1) : "<<endl;
+	cout<<"-> S(alpha,beta) data base (e.g ENSDF7.1) : "<< endl;
 	GetUserValue( SABase);
-	cout<<endl;
+	cout<< endl;
 
-	cout<<"-> Geometry simulated  (e.g Cubic Assembly with mirror boundary) : "<<endl;
+	cout<<"-> Geometry simulated  (e.g Cubic Assembly with mirror boundary) : "<< endl;
 	GetUserValue( Geom);
-	cout<<endl;
+	cout<< endl;
 
-	cout<<"-> Half life cut [s] (if any) : "<<endl;
+	cout<<"-> Half life cut [s] (if any) : "<< endl;
 	GetUserValue( HLCut);	
-	cout<<endl;
+	cout<< endl;
 
-	cout<<"-> Multi group treatment (yes/no if yes give the number of groups) : "<<endl;
+	cout<<"-> Multi group treatment (yes/no if yes give the number of groups) : "<< endl;
 	GetUserValue( EnergyDisc);
-	cout<<endl;	
+	cout<< endl;	
 
-	cout<<"-> Additional informations : "<<endl;
+	cout<<"-> Additional informations : "<< endl;
 	GetUserValue( AddInfo);	
-	cout<<endl;	
+	cout<< endl;	
 
 
-	cout<<"-> Reactor type (e.g PWR, FBR,...) : "<<endl;
-	cout<<"Found in a .info file :"<<endl;
-	cout<<"\033[36m"<<fReactorType<<"\033[0m"<<endl;
-	cout<< "Is that corect ? [y/n] "<<endl;
+	cout<<"-> Reactor type (e.g PWR, FBR,...) : "<< endl;
+	cout<<"Found in a .info file :"<< endl;
+	cout<<"\033[36m"<<fReactorType<<"\033[0m"<< endl;
+	cout<< "Is that corect ? [y/n] "<< endl;
 	if(!UserSayYes())
-	{	cout<<"\t So what it is ?"<<endl;
+	{	cout<<"\t So what it is ?"<< endl;
 		GetUserValue( fReactorType);
 	}	
-	cout<<endl;
+	cout<< endl;
 
-	cout<<"-> Fuel type (e.g UOX, MOX,...) : "<<endl;
-	cout<<"Found in a .info file :"<<endl;
-	cout<<"\033[36m"<<fFuelType<<"\033[0m"<<endl;
-	cout<< "Is that corect ? [y/n] "<<endl;
+	cout<<"-> Fuel type (e.g UOX, MOX,...) : "<< endl;
+	cout<<"Found in a .info file :"<< endl;
+	cout<<"\033[36m"<<fFuelType<<"\033[0m"<< endl;
+	cout<< "Is that corect ? [y/n] "<< endl;
 	if(!UserSayYes())
-	{	cout<<"\t So what it is ?"<<endl;
+	{	cout<<"\t So what it is ?"<< endl;
 		GetUserValue( fFuelType);
 
 	}	
-	cout<<endl;
+	cout<< endl;
 
-	cout<<"-> Simulated heavy metal mass (tons) : "<<endl;
-	cout<< "\t According your evolution datas the AVERAGE heavy metal mass is : "<<endl;
-	cout<<"\033[36m"<<MeanHMMass<<"\033[0m"<<" tons"<<endl;
-	cout<< "Is that corect ? [y/n] "<<endl;
+	cout<<"-> Simulated heavy metal mass (tons) : "<< endl;
+	cout<< "\t According your evolution datas the AVERAGE heavy metal mass is : "<< endl;
+	cout<<"\033[36m"<<MeanHMMass<<"\033[0m"<<" tons"<< endl;
+	cout<< "Is that corect ? [y/n] "<< endl;
 	if(!UserSayYes())
-	{	cout<<"\t So what it is ?"<<endl;
+	{	cout<<"\t So what it is ?"<< endl;
 		GetUserValue( MeanHMMass);		
 	}
-	cout<<endl;
+	cout<< endl;
 
-	cout<<"-> Simulated thermal power (W) : "<<endl;
-	cout<<"Found in a .info file :"<<endl;
-	cout<<"\033[36m"<<Power<<"\033[0m"<<endl;
-	cout<< "Is that corect ? [y/n] "<<endl;
+	cout<<"-> Simulated thermal power (W) : "<< endl;
+	cout<<"Found in a .info file :"<< endl;
+	cout<<"\033[36m"<<Power<<"\033[0m"<< endl;
+	cout<< "Is that corect ? [y/n] "<< endl;
 	if(!UserSayYes())
-	{	cout<<"\t So what it is ?"<<endl;
+	{	cout<<"\t So what it is ?"<< endl;
 		GetUserValue( Power);		
 	}	
-	cout<<endl;
+	cout<< endl;
 
-	cout<<"-> First guess of fissile content in fresh fuel (for algorithm initialization): ]0-1[ "<<endl;
+	cout<<"-> First guess of fissile content in fresh fuel (for algorithm initialization): ]0-1[ "<< endl;
 	GetUserValue( FissileFirstGuess);		
 
-	cout<<endl;
+	cout<<"-> Maximal fissile content in the fresh fuel  (for algorithm max range): ]0-1[ "<< endl;
+	GetUserValue( MaxFisisle );		
+
+	cout<< endl;
 
 
 	/**************************************************/
@@ -506,17 +509,17 @@ string CreateInfoFile()
 	InfoFile << "To be used with : EQM_PWR_MLP_Kinf.cxx "    << endl;
 	InfoFile << "with constructor : EQM_PWR_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, string InformationFile, double CriticalityThreshold)" << endl;
   	InfoFile <<"============================================" << endl;
-  	InfoFile <<"    Informations needed by EQM_MLP_Kinf model    " <<endl;
+  	InfoFile <<"    Informations needed by EQM_MLP_Kinf model    " << endl;
   	InfoFile <<"============================================" << endl;
   	InfoFile << endl;
-	InfoFile << "Reactor Type :"<<endl;
-	InfoFile << "K_REACTOR "<< fReactorType <<endl;
+	InfoFile << "Reactor Type :"<< endl;
+	InfoFile << "K_REACTOR "<< fReactorType << endl;
 	InfoFile << endl;
-	InfoFile << "Fuel Type :"<<endl;
-	InfoFile << "K_FUEL "<< fFuelType <<endl;
+	InfoFile << "Fuel Type :"<< endl;
+	InfoFile << "K_FUEL "<< fFuelType << endl;
 	InfoFile << endl;
-	InfoFile << "Specific Power (W/gHM) :"<<endl;
-	InfoFile << "K_SPECPOWER  "<<  Power/(MeanHMMass*1e6) <<endl;
+	InfoFile << "Specific Power (W/gHM) :"<< endl;
+	InfoFile << "K_SPECPOWER  "<<  Power/(MeanHMMass*1e6) << endl;
 	InfoFile << endl;
 
 	double IrrTimeMax = 0;
@@ -526,53 +529,57 @@ string CreateInfoFile()
 			IrrTimeMax = fTime[i].back();
 	}
 	double Bu_Max = Power*1e-9 * (IrrTimeMax/3600./24.) / MeanHMMass;
-	InfoFile << "Maximal Burnup:"<<endl;
-	InfoFile << "K_MAXFISCONTENT "<<  Bu_Max*1.2 <<endl;
+	InfoFile << "Maximal Burnup:"<< endl;
+	InfoFile << "K_MAXBURNUP "<< Bu_Max * 1.3 << endl;
+	cout << endl;
+	
+	InfoFile << "Maximal fissile content (algo use) :" << endl;
+	InfoFile << "K_MAXFISCONTENT "<< MaxFisisle  << endl;
 	InfoFile << endl;
 
 
-	InfoFile << "Z A I Name (input MLP) :"<<endl;
+	InfoFile << "Z A I Name (input MLP) :"<< endl;
 	for(map<ZAI,string>::iterator it = fMapName.begin() ; it != fMapName.end() ; it++ )
-			InfoFile <<"K_ZAINAME "<<it->first.Z <<" " <<it->first.A <<" " <<it->first.I<<" " << it->second <<endl ;
-	InfoFile <<endl;
+			InfoFile <<"K_ZAINAME "<<it->first.Z <<" " <<it->first.A <<" " <<it->first.I<<" " << it->second << endl ;
+	InfoFile << endl;
 
-	InfoFile << "Name of stream for fabrication (fissile or fertile):"<<endl;
-	InfoFile << "Z A I Default_Proportion" <<endl;
+	InfoFile << "Name of stream for fabrication (fissile or fertile):" << endl;
+	InfoFile << "Z A I Default_Proportion" << endl;
 	for( int l = 0 ; l < (int) fStreamList.size() ; l++ )
 			InfoFile <<"K_LIST "<<fStreamList[l].fZAI.Z <<" " << fStreamList[l].fZAI.A <<" " <<fStreamList[l].fZAI.I<<" " << fStreamList[l].fListName <<" "<< fStreamList[l].fDefaultProportion<< endl ;
-	InfoFile <<endl;
-
-	InfoFile << "Starting fissile content in fuel for equivalence model calculation :"<<endl;
-	InfoFile << "k_firstguesscontent Fissile " << FissileFirstGuess << endl;
-	InfoFile << "k_firstguesscontent Fertile " << 1 - FissileFirstGuess <<endl;
 	InfoFile << endl;
 
-	InfoFile << "Fuel range (Z A I min max) :"<<endl;
+	InfoFile << "Starting fissile content in fuel for equivalence model calculation :"<< endl;
+	InfoFile << "k_firstguesscontent Fissile " << FissileFirstGuess << endl;
+	InfoFile << "k_firstguesscontent Fertile " << 1 - FissileFirstGuess << endl;
+	InfoFile << endl;
+
+	InfoFile << "Fuel range (Z A I min max) :"<< endl;
 	for(map<ZAI,string>::iterator it = fMapName.begin() ; it != fMapName.end() ; it++ )
 	{	vector <double> AllCompoOfZAI = GetAllCompoOf(it->first);
 		vector <double>::iterator Min = std::min_element(AllCompoOfZAI.begin(),AllCompoOfZAI.end()); 
 		vector <double>::iterator Max = std::max_element(AllCompoOfZAI.begin(),AllCompoOfZAI.end());
-		InfoFile <<"K_ZAIL "<<it->first.Z <<" " <<it->first.A <<" " <<it->first.I<<" " << *Min << " "  << *Max <<endl ;
+		InfoFile <<"K_ZAIL "<<it->first.Z <<" " <<it->first.A <<" " <<it->first.I<<" " << *Min << " "  << *Max << endl ;
   	}
     InfoFile << endl;
   	InfoFile <<"============================================" << endl;
-  	InfoFile <<"     Data base generation informations      " <<endl;
+  	InfoFile <<"     Data base generation informations      " << endl;
   	InfoFile <<"============================================" << endl;
   	InfoFile << endl;
     time_t t = time(0);   // get time now
     struct tm * now = localtime( & t ); 
     InfoFile <<" Date: "<< now->tm_mday<< '/'<<  (now->tm_mon + 1) << '/'  <<(now->tm_year + 1900)<< endl;
-	InfoFile <<" Author(s): "<< Author <<endl;
-	InfoFile <<" Author(s) contact: "<< Mail <<endl;
-	InfoFile <<" Depletion code: "<< DepCode <<endl;
-	InfoFile <<" Simulated geometry: "<<  Geom <<endl;
-	InfoFile <<" Nuclear data used in "<< DepCode <<endl;
-	InfoFile <<"\tCross section library: "<< XSBase <<endl;
-	InfoFile <<"\tFission yield library: "<< FPYBase <<endl;
-	InfoFile <<"\tS(alpha,beta) library: "<< SABase <<endl;
-	InfoFile <<" Half life cut [s] : "<<  HLCut <<endl;
-	InfoFile <<" Multi-group treatment: "<<  EnergyDisc <<endl;
-	InfoFile <<" Additional informations: "<< endl << AddInfo <<endl;
+	InfoFile <<" Author(s): "<< Author << endl;
+	InfoFile <<" Author(s) contact: "<< Mail << endl;
+	InfoFile <<" Depletion code: "<< DepCode << endl;
+	InfoFile <<" Simulated geometry: "<<  Geom << endl;
+	InfoFile <<" Nuclear data used in "<< DepCode << endl;
+	InfoFile <<"\tCross section library: "<< XSBase << endl;
+	InfoFile <<"\tFission yield library: "<< FPYBase << endl;
+	InfoFile <<"\tS(alpha,beta) library: "<< SABase << endl;
+	InfoFile <<" Half life cut [s] : "<<  HLCut << endl;
+	InfoFile <<" Multi-group treatment: "<<  EnergyDisc << endl;
+	InfoFile <<" Additional informations: "<< endl << AddInfo << endl;
 
 return ssModelName.str();
 
@@ -692,13 +699,13 @@ void DumpInputNeuron(string filename)
 
 
 /**********************FILLING THE TTREE**************************************************/
-		cout<<endl;
-		cout<<endl;
-		cout<<"╭───────────────────────────────────────────────╮"<<endl;
-		cout<<"│                 FILLING TTREE                 │"<<endl;
-		cout<<"│         (building TrainingInput.root)         │"<<endl;		         
-		cout<<"╰───────────────────────────────────────────────╯"<<endl;
-		cout<<endl;
+		cout<< endl;
+		cout<< endl;
+		cout<<"╭───────────────────────────────────────────────╮"<< endl;
+		cout<<"│                 FILLING TTREE                 │"<< endl;
+		cout<<"│         (building TrainingInput.root)         │"<< endl;		         
+		cout<<"╰───────────────────────────────────────────────╯"<< endl;
+		cout<< endl;
 
 	 int NumOfBase=fActinideCompoInit.size();
 	for(int b=0;b<NumOfBase;b++) 
@@ -739,12 +746,12 @@ void DumpInputNeuron(string filename)
 void CheckJob()
 {	//LOAD THE LIST OF EvolutionData
 
-		cout<<endl;
-		cout<<"╭───────────────────────────────────────────────╮"<<endl;
-		cout<<"    Scanning :                                   "<<endl;
-		cout<<  fEvolutionDataFolder                             <<endl;	
-		cout<<"          for EvolutionData (.dat files)         "<<endl;
-		cout<<"╰───────────────────────────────────────────────╯"<<endl;
+		cout<< endl;
+		cout<<"╭───────────────────────────────────────────────╮"<< endl;
+		cout<<"    Scanning :                                   "<< endl;
+		cout<<  fEvolutionDataFolder                             << endl;	
+		cout<<"          for EvolutionData (.dat files)         "<< endl;
+		cout<<"╰───────────────────────────────────────────────╯"<< endl;
 
 	string Command = "find "+ fEvolutionDataFolder + " -name \"*.dat\" > JOB.tmp";
 	system(Command.c_str());
@@ -770,7 +777,7 @@ void CheckJob()
 	Command = "\\rm -f JOB.tmp";
 	system(Command.c_str());
 	random_shuffle(JobName.begin(), JobName.end());
-	cout << "\033[32m Scan complete \033[0m" <<endl; 
+	cout << "\033[32m Scan complete \033[0m" << endl; 
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -886,7 +893,7 @@ void ReadAndFill(string jobname)
 	
 	fActinideCompoInit.push_back(CompoBasei);
 	double MassOfThisFuel = cZAIMass.GetMass(CompoBaseiUnormalize);
-	//cout<<MassOfThisFuel<<endl;
+	//cout<<MassOfThisFuel<< endl;
 	fHMMass.push_back(MassOfThisFuel);
 
 GoodJobName.push_back(jobname);
