@@ -79,7 +79,6 @@ DecayDataBank::~DecayDataBank()
 //________________________________________________________________________
 IsotopicVector	DecayDataBank::Evolution(const ZAI& zai, double dt)
 {
-DBGL
 	IsotopicVector	returnIV;
 	
 	map<ZAI ,EvolutionData >::iterator it = fDecayDataBank.find(zai);
@@ -135,7 +134,6 @@ DBGL
 	}
 	else	returnIV = (*it).second.GetIsotopicVectorAt(dt);
 
-DBGL
 	return returnIV;
 }
 
