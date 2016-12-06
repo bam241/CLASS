@@ -38,6 +38,9 @@ FabricationPlant::FabricationPlant():CLASSFacility(16)
     
     fReUsable = 0;
     fIsReusable = false;
+
+    IsotopicVector MaxEfficiency;
+    SetSeparationEfficiency(MaxEfficiency,  -1e300);
 }
 
 //________________________________________________________________________
@@ -52,7 +55,10 @@ FabricationPlant::FabricationPlant(CLASSLogger* log, double fabricationtime):CLA
     
     fReUsable = 0;
     fIsReusable = false;
-    
+
+    IsotopicVector MaxEfficiency;
+    SetSeparationEfficiency(MaxEfficiency,  -1e300);
+
     INFO	<< " A FabricationPlant has been define :" << endl;
     INFO	<< "\t Chronological Stock Priority has been set! "<< endl;
     INFO	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/cYear) << " year" << endl << endl;
@@ -67,20 +73,74 @@ FabricationPlant::~FabricationPlant()
 }
 
 //________________________________________________________________________
-void	FabricationPlant::SetSeparartionEfficiencyIV(ZAI zai, double factor)
+void    FabricationPlant::SetSeparationEfficiency(IsotopicVector IV,  cSecond TimeOfSep)
 {
-    
-    pair<map<ZAI, double>::iterator, bool> IResult;
-    if(factor > 1) factor = 1;
-    
-    if(factor > 0)
-    {
-        IResult =  fSeparationLostFraction.GetIsotopicQuantity().insert( pair<ZAI ,double>(zai, 1 - factor));
-        if(!IResult.second)
-            IResult.first->second = 1 - factor;
-    }
-    
+    DBGL
+    IsotopicVector SeparationEfficiency;
+    IsotopicVector UnityVector;
+
+    map<ZAI, double>::iterator it;
+    map<ZAI, double> IVb = IV.GetIsotopicQuantity();
+
+    for(it = IVb.begin() ; it != IVb.end() ; it++ )
+    {   
+        if(it->second > 1 )
+        {
+            ERROR << " Efficiency must be below one";
+            exit(1);
+        }
+        else if (it->second < 0)
+        {
+            ERROR << " Efficiency must be positive ";
+            exit(1);
+        }
+
+        UnityVector.Add(it->first,1);
+    } 
+
+
+
+    SeparationEfficiency = UnityVector - IV ;
+
+    fSeparationStrategy.insert( pair <cSecond, IsotopicVector>(TimeOfSep, SeparationEfficiency )  );
+
 }
+
+//________________________________________________________________________
+IsotopicVector  FabricationPlant::GetSeparationEfficiencyAt(cSecond time)
+{
+
+    DBGV("Getting Separation Efficiency at time : "<< (time/3600/24./365.25) <<" y")
+    map<cSecond , IsotopicVector>::iterator itlow;
+
+    itlow = fSeparationStrategy.lower_bound(time);
+    DBGV("Wanted time : " << itlow->first /3600/24./365.25 <<" y" )
+
+    if(itlow->first == time){
+
+        IsotopicVector IV =  itlow->second;
+        DBGV(IV.sPrint())
+        return IV;
+    }
+    else if(itlow != fSeparationStrategy.begin()){
+        
+        IsotopicVector IV =   (--itlow)->second;
+         DBGV(IV.sPrint());
+        return IV ;
+    }
+    else {
+        
+        IsotopicVector IV =  fSeparationStrategy.begin()->second;
+         DBGV(IV.sPrint())
+
+        return IV;
+
+    }
+
+}
+
+
+
 
 //________________________________________________________________________
 //_______________________________ Evolution ______________________________
@@ -179,6 +239,9 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
     PhysicsModels* FuelType = R_Entry->GetReactorModel()->GetPhysicsModels();
     cSecond R_CycleTime     = (cSecond) (R_BU*1e9 / (R_Power) * R_HM_Mass * 3600 * 24);
 
+    if( !fSeparationStrategy.empty() )
+      fSeparationLostFraction = GetSeparationEfficiencyAt(t);
+
     map < string , vector <IsotopicVector> >::iterator it_s_vIV;
     map < string , vector <double> >::iterator it_s_vD;
     map < string , bool >::iterator it_s_B;
@@ -227,7 +290,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
         IsotopicVector LoadedIV 	= GetDecay(IV,fCycleTime);
         
         EvolutionData EvolDB = FuelType->GenerateEvolutionData(GetDecay(IV,fCycleTime), R_CycleTime, R_Power);
-        
+
         {
             pair<map<int, IsotopicVector>::iterator, bool> IResult;
             IResult = fReactorFuturIV.insert( pair<int, IsotopicVector>(ReactorId, IV) );
@@ -361,7 +424,8 @@ void FabricationPlant::BuildArray(int ReactorId, cSecond ReactorLoadingTime)
     DBGL
     ScheduleEntry* R_Entry  = GetParc()->GetReactor()[ ReactorId ]->GetScheduler()->GetEntryAt(ReactorLoadingTime);
     double R_HM_Mass         = R_Entry->GetHeavyMetalMass();
-    
+
+   
     vector <IsotopicVector>  StreamArray;
     vector <cSecond> 	   StreamArrayTime;
     vector < pair<int,int> >  StreamArrayAdress;
@@ -758,13 +822,13 @@ void FabricationPlant::ResetArrays()
 //________________________________________________________________________
 pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector isotopicvector, IsotopicVector ExtractedList)
 {
-    DBGL
     IsotopicVector SeparatedPart;
     IsotopicVector LostPart;
     
     if(fIsSeparationManagement)
     {
         //[0] = re-use ; [1] = waste
+        
         IsotopicVector LostInReprocessing  = isotopicvector.GetThisComposition(ExtractedList) * fSeparationLostFraction;
         SeparatedPart  = isotopicvector.GetThisComposition(ExtractedList) - LostInReprocessing;
         LostPart = isotopicvector - SeparatedPart;
@@ -772,11 +836,9 @@ pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector
     else
     {
         //[0] = re-use ; [1] = waste
-        //IsotopicVector LostInReprocessing  = isotopicvector.GetThisComposition(ExtractedList) * fSeparationLostFraction;
         SeparatedPart  = isotopicvector;
         LostPart = isotopicvector - SeparatedPart;
     }
-    DBGL
     return pair<IsotopicVector, IsotopicVector> (SeparatedPart, LostPart);
 }
 
