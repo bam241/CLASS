@@ -158,14 +158,16 @@ class EquivalenceModel : public CLASSObject
 	
 	protected :
 	
-	map < string, IsotopicVector> fStreamList;		//!< contains all lists of zai needed to build a fuel (example : 2 -> fissileList+fertileList)
-								//!< each list is identified by a keyword (example : -> "Fissile" & "Fertile")
+	map < string, IsotopicVector> fStreamList;					//!< contains all lists of zai needed to build a fuel (example : 2 -> fissileList+fertileList)
+											//!< each list is identified by a keyword (example : -> "Fissile" & "Fertile")
+	map < string , double>	fStreamListEqMMassFractionMax;		//!< Map that contains lists of stream according to the EqModel with mass maximum fraction
+	map < string , double>	fStreamListEqMMassFractionMin;		//!< Map that contains lists of stream according to the EqModel with mass minimum fraction
 								
-	map < string, double> fFirstGuessContent;		//!< fissile content for BuildFuel initialization (in weight proportion)
-	map < string, double> fActualMolarContentInFuel; 	//!< Molar Content in fuel of each list at this step of the calculation
-	map < string, double> fActualMassContentInFuel; 	//!< Mass  Content in fuel of each list at this step of the calculation
-	double 	fSpecificPower; 				//!< The specific power in W/gHM (HM: heavy Metal)
-	double  fMaximalContent;				//!< The approx. maximum fissile content reachable by the model
+	map < string, double> fFirstGuessContent;					//!< fissile content for BuildFuel initialization (in weight proportion)
+	map < string, double> fActualMolarContentInFuel; 				//!< Molar Content in fuel of each list at this step of the calculation
+	map < string, double> fActualMassContentInFuel; 				//!< Mass  Content in fuel of each list at this step of the calculation
+	double 	fSpecificPower; 							//!< The specific power in W/gHM (HM: heavy Metal)
+	double  fMaximalContent;							//!< The approx. maximum fissile content reachable by the model
 
 	
 	double LambdaCalculation(string MaterialDenomination, double LambdaPreviousStep, double MaterialMassNeeded, double DeltaMass, vector <IsotopicVector>  Stocks); //!< Calculate the proportion of each stocks in StockArray to take in oder to get a mass of MassNeeded (can be Fer(fertile) or Fis(Fissile))

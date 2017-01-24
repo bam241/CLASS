@@ -254,7 +254,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
     // Construit les stocks de matière infini (=taille du réacteur)
     
     // string="MA, .." LambdaArray = tableau sur les IV
-    map < string , vector <double> > LambdaArray =  FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray, fStreamListMassFractionMin, fStreamListMassFractionMax, fStreamListPriority, fStreamListIsBuffer);
+    map < string , vector <double> > LambdaArray =  FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray, fStreamListFPMassFractionMin, fStreamListFPMassFractionMax, fStreamListFPPriority, fStreamListFPIsBuffer);
     
      fFuelCanBeBuilt 	  = true;
     double  LambdaSum  = 0;
@@ -347,7 +347,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
             for( it_s_vD = LambdaArray.begin();  it_s_vD != LambdaArray.end(); it_s_vD++)
                 LambdaArray[(*it_s_vD).first].clear();
             
-            LambdaArray 			= FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray, fStreamListMassFractionMin, fStreamListMassFractionMax, fStreamListPriority, fStreamListIsBuffer);
+            LambdaArray 			= FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray, fStreamListFPMassFractionMin, fStreamListFPMassFractionMax, fStreamListFPPriority, fStreamListFPIsBuffer);
             IsotopicVector IV 		= BuildFuelFromEqModel(LambdaArray);
             
             //Generating the EvolutionData
@@ -870,10 +870,10 @@ void FabricationPlant::AddStorage(string keyword, Storage* Stock, double MassFra
 {
     fStorage[keyword].push_back(Stock);
 
-    fStreamListMassFractionMin[keyword] = MassFractionMin;
-    fStreamListMassFractionMax[keyword] = MassFractionMax;
-    fStreamListPriority[keyword]        = Priority;
-    fStreamListIsBuffer[keyword]        = 0;
+    fStreamListFPMassFractionMin[keyword] = MassFractionMin;
+    fStreamListFPMassFractionMax[keyword] = MassFractionMax;
+    fStreamListFPPriority[keyword]        = Priority;
+    fStreamListFPIsBuffer[keyword]        = 0;
 
 } 
 //________________________________________________________________________
@@ -882,10 +882,10 @@ void FabricationPlant::AddInfiniteStorage(string keyword, double MassFractionMin
     Storage* Stock;
     fStorage[keyword].push_back(Stock);
 
-    fStreamListMassFractionMin[keyword] = MassFractionMin;
-    fStreamListMassFractionMax[keyword] = MassFractionMax;
-    fStreamListPriority[keyword]        = Priority;
-    fStreamListIsBuffer[keyword]        = 0;
+    fStreamListFPMassFractionMin[keyword] = MassFractionMin;
+    fStreamListFPMassFractionMax[keyword] = MassFractionMax;
+    fStreamListFPPriority[keyword]        = Priority;
+    fStreamListFPIsBuffer[keyword]        = 0;
 
     fInfiniteMaterialFromList[keyword] = true;
 } 
@@ -895,7 +895,7 @@ void FabricationPlant::AddFuelBuffer(string keyword)
     Storage* Stock;
     fStorage[keyword].push_back(Stock);
 
-    fStreamListIsBuffer[keyword]        = 1;
+    fStreamListFPIsBuffer[keyword]        = 1;
 
     fInfiniteMaterialFromList[keyword] = true;
 
@@ -905,7 +905,7 @@ void FabricationPlant::AddFuelBuffer(string keyword, Storage* Stock)
 {
     fStorage[keyword].push_back(Stock);
 
-    fStreamListIsBuffer[keyword]        = 1;
+    fStreamListFPIsBuffer[keyword]        = 1;
 
     fInfiniteMaterialFromList[keyword] = true;
 } 
