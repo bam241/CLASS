@@ -80,7 +80,7 @@ class EquivalenceModel : public CLASSObject
 	 \param double HMMass, Heavy metal mass needed
      \param map < string , vector <IsotopicVector> > StreamArray, the string is the stream code (fissile fertile ,...) the IsotopicVector the fraction of each IV to take in the (fissile, fertile,..) stock .
      */
-	virtual	 map <string , vector<double> > BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray);
+	virtual	 map <string , vector<double> > BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListMassFractionMin, map < string , double> StreamListMassFractionMax, map < string , int> StreamListPriority, map < string , bool> StreamListIsBuffer);
 	//}
 		
 	//@}
@@ -183,7 +183,7 @@ class EquivalenceModel : public CLASSObject
 #endif
 	
 	bool freaded;
-	map< ZAI, pair<double,double> > fZAILimits; 		//!< Fresh fuel range : map<ZAI<min edge ,max edge >>
+	map< ZAI, pair<double,double> > fZAILimits; 	//!< Fresh fuel range : map<ZAI<min edge ,max edge >>
 
 	string fInformationFile;					//!<  file containing Reactor Type, Fuel type, HM mass, Power, time vector, and TMVA input variables names (looks the manual for format details)
 	string fDBFType;					//!<  Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
@@ -194,12 +194,9 @@ class EquivalenceModel : public CLASSObject
 	 */
 	//@{
 	map <string , double > fTotalMassInStocks;  		//!< Total mass in each vector of stock
-	map <string , double > fLambdaMax;  			//!< Total lambda of available stocks
+	map <string , double > fLambdaMax;  		//!< Total lambda of available stocks
 
 	//@}
-
-
-
 };
 
 #endif

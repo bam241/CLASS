@@ -254,10 +254,10 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
     // Construit les stocks de matière infini (=taille du réacteur)
     
     // string="MA, .." LambdaArray = tableau sur les IV
-    map < string , vector <double> > LambdaArray =  FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray);
+    map < string , vector <double> > LambdaArray =  FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray, fStreamListMassFractionMin, fStreamListMassFractionMax, fStreamListPriority, fStreamListIsBuffer);
     
-     fFuelCanBeBuilt 	= true;
-    double  LambdaSum 		= 0;
+     fFuelCanBeBuilt 	  = true;
+    double  LambdaSum  = 0;
     
      map < string, IsotopicVector>::iterator it_s_IV;
 
@@ -347,7 +347,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
             for( it_s_vD = LambdaArray.begin();  it_s_vD != LambdaArray.end(); it_s_vD++)
                 LambdaArray[(*it_s_vD).first].clear();
             
-            LambdaArray 			= FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray);
+            LambdaArray 			= FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray, fStreamListMassFractionMin, fStreamListMassFractionMax, fStreamListPriority, fStreamListIsBuffer);
             IsotopicVector IV 		= BuildFuelFromEqModel(LambdaArray);
             
             //Generating the EvolutionData

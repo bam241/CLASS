@@ -322,7 +322,7 @@ void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
 		lambda.push_back(-1);
 	}	
 
-	else // other errors (no enought material or too many steps)
+	else // other errors (no enough material or too many steps)
 	{
 		for( int i=0; i < (int)lambda.size(); i++)
 		{	
@@ -333,7 +333,7 @@ void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
 }
 
 //________________________________________________________________________
-map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray)
+map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListMassFractionMin, map < string , double> StreamListMassFractionMax, map < string , int> StreamListPriority, map < string , bool> StreamListIsBuffer)
 {
 DBGL
 
