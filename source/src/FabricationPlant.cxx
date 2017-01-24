@@ -459,7 +459,7 @@ void FabricationPlant::BuildArray(int ReactorId, cSecond ReactorLoadingTime)
             }
         }
 
-        fStreamArray[(*it).first] 	= StreamArray;			StreamArray.clear();
+        fStreamArray[(*it).first] 	         = StreamArray;			StreamArray.clear();
         fStreamArrayAdress[(*it).first]	= StreamArrayAdress;		StreamArrayAdress.clear();
         fStreamArrayTime[(*it).first]	= StreamArrayTime; 		StreamArrayTime.clear();
     }
@@ -656,8 +656,8 @@ void FabricationPlant::SortRandom(vector<IsotopicVector>	&IVArray, vector<cSecon
     random_shuffle(RandomPosition.begin(), RandomPosition.end());
     
     /*******Store old vectors ******/
-    vector<IsotopicVector>		Saved_IVArray		= IVArray	 ;
-    vector<cSecond> 			Saved_TimeArray		= TimeArray	 ;
+    vector<IsotopicVector>	Saved_IVArray		= IVArray	 ;
+    vector<cSecond> 		Saved_TimeArray	= TimeArray	 ;
     vector< pair<int,int> > 	Saved_AdressArray	= AdressArray;
     
     /*******Asign values ******/
@@ -866,9 +866,47 @@ IsotopicVector FabricationPlant::GetDecay(IsotopicVector isotopicvector, cSecond
 }
 
 //________________________________________________________________________
-void FabricationPlant::AddInfiniteStorage(string keyword)
+void FabricationPlant::AddStorage(string keyword, Storage* Stock, double MassFractionMin, double MassFractionMax, int Priority)
+{
+    fStorage[keyword].push_back(Stock);
+
+    fStreamListMassFractionMin[keyword] = MassFractionMin;
+    fStreamListMassFractionMax[keyword] = MassFractionMax;
+    fStreamListPriority[keyword]        = Priority;
+    fStreamListIsBuffer[keyword]        = 0;
+
+} 
+//________________________________________________________________________
+void FabricationPlant::AddInfiniteStorage(string keyword, double MassFractionMin, double MassFractionMax, int Priority)
 {
     Storage* Stock;
     fStorage[keyword].push_back(Stock);
+
+    fStreamListMassFractionMin[keyword] = MassFractionMin;
+    fStreamListMassFractionMax[keyword] = MassFractionMax;
+    fStreamListPriority[keyword]        = Priority;
+    fStreamListIsBuffer[keyword]        = 0;
+
     fInfiniteMaterialFromList[keyword] = true;
 } 
+//________________________________________________________________________
+void FabricationPlant::AddFuelBuffer(string keyword)
+{
+    Storage* Stock;
+    fStorage[keyword].push_back(Stock);
+
+    fStreamListIsBuffer[keyword]        = 1;
+
+    fInfiniteMaterialFromList[keyword] = true;
+
+} 
+//________________________________________________________________________
+void FabricationPlant::AddFuelBuffer(string keyword, Storage* Stock)
+{
+    fStorage[keyword].push_back(Stock);
+
+    fStreamListIsBuffer[keyword]        = 1;
+
+    fInfiniteMaterialFromList[keyword] = true;
+} 
+

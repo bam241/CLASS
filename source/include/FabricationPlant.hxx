@@ -125,8 +125,11 @@ public :
 
 #ifndef __CINT__
 		
-	void AddStorage(string keyword, Storage* Stock) {fStorage[keyword].push_back(Stock);};	//!< Fill the storage vector for a list
-	void AddInfiniteStorage(string keyword);							//!< Creates an infinite stock of this material according to the list defined in the EqM
+	void AddStorage(string keyword, Storage* Stock, double MassFractionMin = 0, double MassFractionMax = 1., int Priority = 0) ;	//!< Fill the storage vector for a list
+	void AddInfiniteStorage(string keyword, double MassFractionMin = 0, double MassFractionMax = 1., int Priority = 0);		//!< Creates an infinite stock of this material according to the list defined in the EqM
+	void AddFuelBuffer(string keyword);													//!< Tell the buffer for this fuel. Creates an infinite stock of this material according to the list defined in the EqM
+	void AddFuelBuffer(string keyword, Storage* Stock);											//!< Tell the buffer for this fuel taken from the storage
+
 
 #endif
 	
@@ -208,7 +211,7 @@ protected:
 
     bool	fIsSeparationManagement; //!< Separation managment
 
-    bool	fSubstitutionFuel;									//!< True if a substitution fuel as been set
+    bool	fSubstitutionFuel;										//!< True if a substitution fuel as been set
 
 	void	FabricationPlantEvolution(cSecond t);							//!< Deal the FabricationPlant evolution
 	void 	ResetArrays();										//!< Empty Arrays
@@ -216,14 +219,17 @@ protected:
 
 #ifndef __CINT__
 
-	map < string , IsotopicVector>			fStreamList;					//!< contains all lists of zai needed to build a fuel (example : 2 -> fissileList+fertileList)
-																			//!< each list is identified by a keyword (example : -> "Fissil" & "Fertil") 
+	map < string , IsotopicVector>	fStreamList;						//!< Map that contains lists of stream according to the EqModel with corresponding isotopes list
+	map < string , double>		fStreamListMassFractionMax;				//!< Map that contains lists of stream according to the EqModel with mass maximum fraction
+	map < string , double>		fStreamListMassFractionMin;				//!< Map that contains lists of stream according to the EqModel with mass minimum fraction
+	map < string , int>			fStreamListPriority;					//!< Map that contains lists of stream according to the EqModel with priority (1 = first, 2 = second, etc...)
+	map < string , bool>			fStreamListIsBuffer;					//!< Map that contains lists of stream according to the EqModel saying if fuel buffer
 
-	map < string , vector <Storage*> >			fStorage;					//!< Pointer to the Storages defined for each list
-	map < string , vector <IsotopicVector> >  	fStreamArray;				//!< The vector of isotopicVector of each material and each stock
-	map < string , vector <cSecond> >	  		fStreamArrayTime;			//!< Time when a IsotopicVector arrives in its storage
+	map < string , vector <Storage*> >		fStorage;					//!< Pointer to the Storages defined for each list
+	map < string , vector <IsotopicVector> >  	fStreamArray;					//!< The vector of isotopicVector of each material and each stock
+	map < string , vector <cSecond> >	  	fStreamArrayTime;				//!< Time when a IsotopicVector arrives in its storage
 	map < string , vector < pair<int,int> > >  	fStreamArrayAdress;
-	map < string , IsotopicVector>				fSubstitutionIV;			//!< contains the susbstitution IV defined by the user 
+	map < string , IsotopicVector>		fSubstitutionIV;					//!< contains the susbstitution IV defined by the user 
 
 	map < string , bool > fSubstitutionMaterialFromIV;						//!< True = a substitution IV is set for this material in case of failure in fuel building 
 	map < string , bool > fInfiniteMaterialFromList;						//!< True = an infinite stock of this material is created according to the list defined in the EqM
@@ -234,7 +240,7 @@ protected:
 
 	Storage*	fReUsable;									//!< Pointer to the Storage used to storing unused material
 	bool		fIsReusable;									//!< Sets a storage used to storing unused material
-	bool		fFuelCanBeBuilt;							//!< Default fuel fabrication process has failed
+	bool		fFuelCanBeBuilt;								//!< Default fuel fabrication process has failed
 	DecayDataBank*	fDecayDataBase;							//!< Pointer to the DecayDataBank
 
 
