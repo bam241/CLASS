@@ -6,7 +6,7 @@
 EquivalenceModel::EquivalenceModel():CLASSObject()
 {
 	fRelativMassPrecision 	= 5/10000.; 	//Mass precision
-	fMaxInterration 	= 10000; 	// Max iterration in build fueld algorythum
+	fMaxIterration 		= 500; 		// Max iterration in build fueld algorythum
 	freaded 		= false;
 	
 	EquivalenceModel::LoadKeyword();
@@ -15,7 +15,7 @@ EquivalenceModel::EquivalenceModel():CLASSObject()
 EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 {
 	fRelativMassPrecision 	= 5/10000.; 	//Mass precision
-	fMaxInterration 	= 10000; 	// Max iterration in build fueld algorythm
+	fMaxIterration 		= 500; 		// Max iterration in build fueld algorythm
 	freaded 		= false;
 	
 	EquivalenceModel::LoadKeyword();
@@ -354,13 +354,13 @@ DBGL
 		}
 	}	
 
-	/*** Test if there is stocks **/
+	/*** Test if there is at least one stock available in each list, otherwise fuel is not built ***/
 	bool BreakReturnLambda = false; 
 	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
 	{
 		if(StreamArray[(*it_s_vIV).first].size() == 0)
 		{
-			WARNING << " No stock available for stream : "<< (*it_s_vIV).first <<".  Fuel not build." << endl;
+			WARNING << " No stock available for stream : "<< (*it_s_vIV).first <<".  Fuel not built." << endl;
 			SetLambdaToErrorCode(lambda[(*it_s_vIV).first]);
 			BreakReturnLambda = true; 	
 		}
@@ -368,140 +368,107 @@ DBGL
 	if(BreakReturnLambda) { return lambda;}
 	HMMass *=  1e6; //Unit onversion : tons to gram
 	
-	/**** Some initializations **/
+	/**** Build a stream array containing IVs of each material in the limits imposed by the user, the model or the available stocks ***/
 
-	StocksTotalMassCalculation(StreamArray);
+	map <string, vector < IsotopicVector > > SortedStreamArray = BuildSortedStreamArray (StreamArray, StreamListMassFractionMin,  StreamListMassFractionMax,  StreamListPriority,  StreamListIsBuffer) ; 
 
-	fActualMassContentInFuel	= GetBuildFuelFirstGuess();
-	fActualMolarContentInFuel	= GetBuildFuelFirstGuess();	
-	int loopCount 			= 0;
-	bool FuelBuiltCorrectly	 	= false ; 
+	vector < double > BurnUpAsAFonctionOfMass; 
+	vector < double > MassOfAvailableMaterial ; 
 
-	map <string , IsotopicVector > IVStream;
-	map < string , double > MaterialMassNeeded ;
-	map < string , double > LambdaNeeded;
-	map < string , double > DeltaMass;
-	
-	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
-		LambdaNeeded[(*it_s_vIV).first] = 0;
+	bool BurnUpExceeded 		= false ;
+	int BurnUpExceededPosition 	= 0;
+	double HigherLimitOnBurnUp	= 0;
+	int StreamListNumber = 0;
 
-	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
-	{
-		MaterialMassNeeded[(*it_s_vIV).first] = HMMass*fActualMassContentInFuel[(*it_s_vIV).first]; 
-		DeltaMass[(*it_s_vIV).first] =  - MaterialMassNeeded[(*it_s_vIV).first];
-	}
-	do
+	/**** Search in the sorted stream array the point where calculated BU is higher than targeted BU***/
+	IsotopicVector FuelToTestWithoutBuffer = IsotopicVector();
+	IsotopicVector PreviousFuelToTestWithoutBuffer = IsotopicVector();
+	for( it_s_vIV = SortedStreamArray.begin();  it_s_vIV != SortedStreamArray.end(); it_s_vIV++)
 	{	
-		map < string , double >  LambdaPreviousStep;
-
-		for( it_s_D = LambdaNeeded.begin();  it_s_D != LambdaNeeded.end(); it_s_D++)
-			LambdaPreviousStep[(*it_s_D).first] =LambdaNeeded[(*it_s_D).first]; 
-		
-		BreakReturnLambda = false;
-		for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
-			LambdaNeeded[(*it_s_vIV).first] = LambdaCalculation((*it_s_vIV).first, LambdaPreviousStep[(*it_s_vIV).first], MaterialMassNeeded[(*it_s_vIV).first], DeltaMass[(*it_s_vIV).first], StreamArray[(*it_s_vIV).first]);
-
-		for( it_s_D = LambdaNeeded.begin();  it_s_D != LambdaNeeded.end(); it_s_D++)
-		{		
-			if( LambdaNeeded[(*it_s_D).first] == -1 )
-			{
-				SetLambdaToErrorCode(lambda[(*it_s_D).first]);
-				WARNING << "Not enough : "<< (*it_s_D).first <<" to build fuel." << endl;	
-				BreakReturnLambda = true; 				
-			}
-		}
-		
-		if(BreakReturnLambda) { return lambda;}
-		
-		BreakReturnLambda = false; 
-		
-		for( it_s_D = LambdaNeeded.begin();  it_s_D != LambdaNeeded.end(); it_s_D++)
-			SetLambda(lambda[(*it_s_D).first], LambdaNeeded[(*it_s_D).first]); 
-	
-		for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
-			IVStream[(*it_s_vIV).first].Clear();
-
-		for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
-		{	
-			for(int i=0; i < (int)StreamArray[(*it_s_vIV).first].size(); i++)
-			{
-				IVStream[(*it_s_vIV).first]  +=  lambda[(*it_s_vIV).first][i] * StreamArray[(*it_s_vIV).first][i];	
-			}
-		}
-		
-		if (loopCount > fMaxInterration)
+		if(!BurnUpExceeded)
 		{
-			ERROR << "Too much iterration in BuildFuel Method !";
-			ERROR << "Need improvement in fuel fabrication ! Ask for it or D.I.Y. !!" << endl;
+			if(!StreamListIsBuffer[(*it_s_vIV).first])
+			{	
+				for(int i=0; i < (int)SortedStreamArray[(*it_s_vIV).first].size(); i++)
+				{
+					PreviousFuelToTestWithoutBuffer = FuelToTestWithoutBuffer ; //keep in memory fuel test during last step. When Burn-up is exceeded it will be the starting point.
+					FuelToTestWithoutBuffer      +	= SortedStreamArray[(*it_s_vIV).first][i] ;
+					IsotopicVector Buffer 		= BuildBuffer(FuelToTestWithoutBuffer , HMMass, SortedStreamArray) ;
+					IsotopicVector FuelToTest 	= FuelToTestWithoutBuffer + Buffer ; 
+					FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
+					double EqMMaximumBurnUp	= GetMaximumBurnUp (FuelToTest, BurnUp) ;
+	
+					BurnUpAsAFonctionOfMass.push_back(EqMMaximumBurnUp);
+					MassOfAvailableMaterial.push_back(FuelToTestWithoutBuffer.GetTotalMass());
+					if(EqMMaximumBurnUp>BurnUp)
+					{
+						BurnUpExceeded 		= true;
+						BurnUpExceededPosition	= i;
+						HigherLimitOnBurnUp		= EqMMaximumBurnUp;
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			break;
+		}
+		StreamListNumber ++;
+	}
+	if (StreamListNumber == 0 && BurnUpExceededPosition==0)
+	{
+		WARNING << " Lower limit of first priority material is already to high for the target Burn-Up. Lower limit should be decreased.  Fuel not built." << endl;
+		SetLambdaToErrorCode(lambda[(*it_s_vIV).first]);
+		return lambda;	
+	}
+	double FractionOfLastIVToAdd 		= 1.0; //Start with 100% of the last IV in the fuel
+	double MaxFractionOfLastIVToAdd 		= 1.0;
+	double MinFractionOfLastIVToAdd 		= 0.0;
+	
+	FuelToTestWithoutBuffer  			= PreviousFuelToTestWithoutBuffer ; // Fuel tested at the step before Burn-up targeted is exceeded.
+	double CalculatedBurnUp 			= HigherLimitOnBurnUp ; 
+
+	double LastFractionOfLastIVToAddMinus 	= 0.0;
+	double LastFractionOfLastIVToAddPlus	= 0.0;	
+
+	int count = 0;
+	
+	/**** Search in the fraction of last IV to add to the fuel to reach BU***/
+
+	do
+	{
+		if(count > fMaxIterration)
+		{
+			ERROR << "CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on burnup using :\nYourEquivalenceModel->SetBurnUpPrecision(Precision); " << endl;
+			ERROR << "Targeted Burnup :" <<BurnUp<<endl;
+			ERROR << "Last calculated Burnup :" <<CalculatedBurnUp<<endl;
+			ERROR << "Last Fresh fuel composition without buffer:" <<endl;
+			ERROR << FuelToTestWithoutBuffer .sPrint()<<endl;
+			
 			exit(1);
 		}
-		
-		/* Calcul the quantity of this composition needed to reach the burnup */
 
-		map < string , double>  MaterialMolarContent = GetMolarFraction(IVStream, BurnUp);
-		
-		for( it_s_D = MaterialMolarContent.begin();  it_s_D != MaterialMolarContent.end(); it_s_D++)
-		{	
-			if( MaterialMolarContent[(*it_s_D).first] < 0 || MaterialMolarContent[(*it_s_D).first] > 1 )
-			{
-				SetLambdaToErrorCode(lambda[(*it_s_D).first]);
-				WARNING << "GetFissileMolarFraction return negative or greater than one value, at least for one material : "<<(*it_s_D).first;
-				BreakReturnLambda = true; 				
-			}
-		}
-		if(BreakReturnLambda) { return lambda;}
-		
-		map < string , double >  MaterialMassContent;
-		map < string , double >  MaterialMeanMolar;
-		map < string , double >  MaterialMassAvailable;
-		map < string , bool > 	  CheckOnMass;
-
-		double FuelMeanMolar   = 0;
-
-		for( it_s_IV = IVStream.begin();  it_s_IV != IVStream.end(); it_s_IV++)
-			MaterialMassAvailable[(*it_s_IV).first] = IVStream[(*it_s_IV).first].GetTotalMass()*1e06; 
-		
-		for( it_s_D = MaterialMolarContent.begin();  it_s_D != MaterialMolarContent.end(); it_s_D++)
+		if( (CalculatedBurnUp - BurnUp) < 0 ) //Need to add more of last IV in fuel
 		{
-			MaterialMeanMolar[(*it_s_D).first] = IVStream[(*it_s_D).first].GetMeanMolarMass();
-			FuelMeanMolar +=  MaterialMolarContent[(*it_s_D).first] * MaterialMeanMolar[(*it_s_D).first];
+			LastFractionOfLastIVToAddMinus 	= 
+			FractionOfLastIVToAdd 		= FractionOfLastIVToAdd + fabs(LastFractionOfLastIVToAddPlus - FractionOfLastIVToAdd)/2.;
 		}
-		
-		for( it_s_D = MaterialMolarContent.begin();  it_s_D != MaterialMolarContent.end(); it_s_D++)
-			MaterialMassContent [(*it_s_D).first] =  MaterialMolarContent[(*it_s_D).first] * MaterialMeanMolar[(*it_s_D).first] / FuelMeanMolar; 
-
-		fActualMolarContentInFuel = MaterialMolarContent; //fActualContent can be accessed by a derivated EquivalenModel to accelerate GetFissileMolarFraction function (exemple in EQM_MLP_Kinf)
-		
-		for( it_s_D = MaterialMassContent.begin();  it_s_D != MaterialMassContent.end(); it_s_D++)
-		{	
-			MaterialMassNeeded[(*it_s_D).first] = HMMass*MaterialMassContent[(*it_s_D).first]; 
-			DeltaMass[(*it_s_D).first] = MaterialMassAvailable[(*it_s_D).first] - MaterialMassNeeded[(*it_s_D).first];
-		}
-		
-		for( it_s_D = MaterialMassNeeded.begin();  it_s_D != MaterialMassNeeded.end(); it_s_D++)
+		else if( (CalculatedBurnUp - BurnUp) > 0) //Need to add less of last IV in fuel
 		{
-			double DeltaM = fabs(MaterialMassNeeded[(*it_s_D).first] - MaterialMassAvailable[(*it_s_D).first]) / HMMass ;
-			
-			if(DeltaM<fRelativMassPrecision) {CheckOnMass[(*it_s_D).first] = true;}
-			else{CheckOnMass[(*it_s_D).first] = false;}
-		}
-	
-		FuelBuiltCorrectly = true; 
-		for( it_s_B = CheckOnMass.begin();  it_s_B != CheckOnMass.end(); it_s_B++)
-		{
-			if(!CheckOnMass[(*it_s_B).first]) {FuelBuiltCorrectly = false;}
+			LastFractionOfLastIVToAddPlus 	=
+			FractionOfLastIVToAdd 		= FractionOfLastIVToAdd - fabs(LastFractionOfLastIVToAddMinus - FractionOfLastIVToAdd)/2.;
 		}
 
-		loopCount++;
-		
-	}while(!FuelBuiltCorrectly);
+		count ++;
+
+	}while(fabs(BurnUp - CalculatedBurnUp) > GetBurnUpPrecision()*BurnUp);
+
+	lambda = FromSortedArrayToInitialStreamArray();
 
 	for( it_s_IV = IVStream.begin();  it_s_IV != IVStream.end(); it_s_IV++)
 		(*this).isIVInDomain(IVStream[(*it_s_IV).first]);
-	
-	for( it_s_D = MaterialMassNeeded.begin();  it_s_D != MaterialMassNeeded.end(); it_s_D++)
-		DBGV( "Weight percent : "<<(*it_s_D).first<<" "<< MaterialMassNeeded[(*it_s_D).first]/HMMass);
-	
+		
 	for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
 	{	
 		DBGV( "Lambda vector : "<<(*it_s_vD).first );

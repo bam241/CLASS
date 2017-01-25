@@ -104,6 +104,8 @@ class EquivalenceModel : public CLASSObject
 	double GetRelativMassPrecision() const	{ return fRelativMassPrecision; }	//!< Mass precision
 	int GetMaxInterration()		 const	{ return fMaxInterration; }		//!< Max iterration in build fueld algorythm
 	
+	double GetBurnUpPrecision(){return fBurnUpPrecision;}//!< Get the precision on Burnup : proportion of the targeted burnup
+	
 	void SetBuildFuelFirstGuess(map < string, double> FirstGuess){fFirstGuessContent = FirstGuess;} //!<set the initialization value for BuildFuel algorithm (one FistGuess for each component of the fresh fuel
 	void SetRelativMassPrecision( double val)	{ fRelativMassPrecision = val; }	//!< Mass precision
 	void SetMaxInterration(int val)			{ fMaxInterration = val; }	//!< Max iteration in build fuel algorithm
@@ -174,8 +176,9 @@ class EquivalenceModel : public CLASSObject
 	void SetLambda(vector<double>& lambda , double Lambda_tot);	//!< Set individual lambda according to the LAMBDA_TOT (lambda of all stocks)	
 	void SetLambdaToErrorCode(vector<double>& lambda);
 	void StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks);
-	double fRelativMassPrecision;				//!< Mass precision
-	int fMaxInterration;					//!< Max iterration in build fueld algorythm
+	double fRelativMassPrecision;		//!< Mass precision
+	double 	fBurnUpPrecision;		//!< precision on Burnup 
+	int fMaxIterration;			//!< Max iterration in build fueld algorythm
 
 	
 	//@}
@@ -197,6 +200,9 @@ class EquivalenceModel : public CLASSObject
 	//@{
 	map <string , double > fTotalMassInStocks;  		//!< Total mass in each vector of stock
 	map <string , double > fLambdaMax;  		//!< Total lambda of available stocks
+
+
+
 
 	//@}
 };

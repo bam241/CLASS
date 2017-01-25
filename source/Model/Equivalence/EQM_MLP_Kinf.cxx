@@ -604,12 +604,12 @@ map < string , double>  EQM_MLP_Kinf::GetMolarFraction(map <string , IsotopicVec
 	map < string , double> MolarFraction ;
 
 	double FissileContent 		= fActualMolarContentInFuel["Fissile"];
-	double OldFissileContentMinus  	= 0;
+	double OldFissileContentMinus = 0;
 	double OldFissileContentPlus 	= fMaximalContent;
 
 	double PredictedBU 		= 0 ;
 	IsotopicVector FreshFuel 	= (1-FissileContent)*(Fertil/Fertil.GetSumOfAll()) + FissileContent*(Fissil/Fissil.GetSumOfAll());
-	double OldPredictedBU 		= GetMaximumBurnUp(FreshFuel,TargetBU);
+	double OldPredictedBU 	= GetMaximumBurnUp(FreshFuel,TargetBU);
 	
 	double Precision 		= GetBurnUpPrecision()*TargetBU; //1 % of the targeted burnup
 	int count 			= 0;
