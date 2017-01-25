@@ -222,98 +222,6 @@ void EquivalenceModel::ReadSpecificPower(const string &line)
 }
 
 //________________________________________________________________________
-void EquivalenceModel::StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks)
-{
-	// Calculating total mass of stock once and for all
-	
-	
-	double TotalMassInStocks = 0;
-	map < string , vector <IsotopicVector> >::const_iterator it_s_vIV;
-
-	for( it_s_vIV = Stocks.begin();  it_s_vIV != Stocks.end(); it_s_vIV++)
-	{
-		fTotalMassInStocks[ it_s_vIV->first ] = 0;
-		fLambdaMax[ it_s_vIV->first ] = 0;
-	}
-
-	for(  it_s_vIV = Stocks.begin();   it_s_vIV != Stocks.end();  it_s_vIV++)
-	{	
-		TotalMassInStocks = 0;
-		for(int i=0; i < (int)Stocks.at((* it_s_vIV).first).size(); i++)
-		{
-			TotalMassInStocks  +=  Stocks.at( it_s_vIV->first )[i].GetTotalMass();
-		}
-		fLambdaMax[(*it_s_vIV).first] = Stocks.at( it_s_vIV->first ).size();	
-		fTotalMassInStocks[ it_s_vIV->first ] = TotalMassInStocks * 1e6; // in grams
-	}
-}
-
-//________________________________________________________________________
-double EquivalenceModel::LambdaCalculation(string MaterialDenomination, double LambdaPreviousStep, double MaterialMassNeeded, double DeltaMass, vector <IsotopicVector>  Stocks)
-{
-	double Lambda_tot = 0; 
-
-	// If there is not enough matter in stocks construction fails
-	if( MaterialMassNeeded > fTotalMassInStocks[MaterialDenomination] )
-	{
-		if(DeltaMass > 0)
-			Lambda_tot = LambdaPreviousStep - (fLambdaMax[MaterialDenomination] - LambdaPreviousStep)/2 ; 
-		
-		if(DeltaMass < 0)
-			Lambda_tot = LambdaPreviousStep + (fLambdaMax[MaterialDenomination] - LambdaPreviousStep)/2 ; 
-		
-		if( (fLambdaMax[MaterialDenomination] - Lambda_tot)<1 && (fLambdaMax[MaterialDenomination]-Lambda_tot)*Stocks.back().GetTotalMass()*1e6<MaterialMassNeeded*fRelativMassPrecision/2.)
-		{
-			WARNING << "Not enough " << MaterialDenomination << " material to build fuel" << endl;
-			WARNING << "Mass available "<<fTotalMassInStocks[MaterialDenomination] << endl;
-			WARNING << "Mass needed "<<MaterialMassNeeded<< endl;
-			Lambda_tot = -1;
-		}
-	}
-	
-	// Lambda calculation
-	else
-	{
-		for( int i=0; i < (int)Stocks.size(); i++)
-		{	
-			if( MaterialMassNeeded >= (Stocks[i].GetTotalMass()*1e6))
-			{
-				Lambda_tot +=  1;
-				MaterialMassNeeded -=  (Stocks[i].GetTotalMass()*1e6);
-			}
-			else
-			{
-				Lambda_tot +=  MaterialMassNeeded/(Stocks[i].GetTotalMass()*1e6);
-				break;
-			}
-		}
-	}
-
-	return Lambda_tot;
-}
-//________________________________________________________________________
-void EquivalenceModel::SetLambda(vector<double>& lambda, double Lambda_tot)
-{
-	if(Lambda_tot > (int)lambda.size() )
-	{
-		cout<<Lambda_tot<<"  "<<lambda.size()<<endl;
-		ERROR << " FATAL ERROR " <<endl;
-		exit(0);
-	}
-
-	for(int i = 0 ; i < (int)lambda.size() ; i++) //set to 0 all non touched value (to be sure)
-		lambda[i] = 0  ;
-
-	int IntegerPart 		= floor( Lambda_tot );
-	double DecimalPart 	= Lambda_tot - IntegerPart;
-
-	for(int i=0  ; i < IntegerPart; i++ )
-		lambda[i]=1;
-
-	lambda[IntegerPart] = DecimalPart;
-}
-
-//________________________________________________________________________
 void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
 {
 
@@ -369,20 +277,23 @@ DBGL
 	HMMass *=  1e6; //Unit onversion : tons to gram
 	
 	/**** Build a stream array containing IVs of each material in the limits imposed by the user, the model or the available stocks ***/
-
 	map <string, vector < IsotopicVector > > SortedStreamArray = BuildSortedStreamArray (StreamArray, StreamListMassFractionMin,  StreamListMassFractionMax,  StreamListPriority,  StreamListIsBuffer) ; 
 
+
+	/**** Search in the sorted stream array the point where calculated BU is higher than targeted BU***/
+	
 	vector < double > BurnUpAsAFonctionOfMass; 
 	vector < double > MassOfAvailableMaterial ; 
 
 	bool BurnUpExceeded 		= false ;
 	int BurnUpExceededPosition 	= 0;
+	string BurnUpExceededList	= "";
 	double HigherLimitOnBurnUp	= 0;
-	int StreamListNumber = 0;
+	int StreamListNumber 		= 0;	
 
-	/**** Search in the sorted stream array the point where calculated BU is higher than targeted BU***/
-	IsotopicVector FuelToTestWithoutBuffer = IsotopicVector();
-	IsotopicVector PreviousFuelToTestWithoutBuffer = IsotopicVector();
+	IsotopicVector FuelToTestWithoutBuffer  		= IsotopicVector();
+	IsotopicVector PreviousFuelToTestWithoutBuffer 	= IsotopicVector();
+
 	for( it_s_vIV = SortedStreamArray.begin();  it_s_vIV != SortedStreamArray.end(); it_s_vIV++)
 	{	
 		if(!BurnUpExceeded)
@@ -400,11 +311,12 @@ DBGL
 	
 					BurnUpAsAFonctionOfMass.push_back(EqMMaximumBurnUp);
 					MassOfAvailableMaterial.push_back(FuelToTestWithoutBuffer.GetTotalMass());
-					if(EqMMaximumBurnUp>BurnUp)
+					if(EqMMaximumBurnUp=>BurnUp)
 					{
 						BurnUpExceeded 		= true;
 						BurnUpExceededPosition	= i;
 						HigherLimitOnBurnUp		= EqMMaximumBurnUp;
+						BurnUpExceededList 		= (*it_s_vIV).first;
 						break;
 					}
 				}
@@ -416,26 +328,34 @@ DBGL
 		}
 		StreamListNumber ++;
 	}
+
+	//No enough material to reach target burnup. Burnup never exceeded in loop.
+	if (BurnUpExceeded==false)
+	{
+		WARNING << " Available material are not enough to reach the atrgeted BU.  Fuel not built." << endl;
+		SetLambdaToErrorCode(lambda[(*it_s_vIV).first]);
+		return lambda;	
+	}
+
+	//Lower limit leads to an higher burn-up than targeted burn-up 
 	if (StreamListNumber == 0 && BurnUpExceededPosition==0)
 	{
 		WARNING << " Lower limit of first priority material is already to high for the target Burn-Up. Lower limit should be decreased.  Fuel not built." << endl;
 		SetLambdaToErrorCode(lambda[(*it_s_vIV).first]);
 		return lambda;	
 	}
+
 	double FractionOfLastIVToAdd 		= 1.0; //Start with 100% of the last IV in the fuel
-	double MaxFractionOfLastIVToAdd 		= 1.0;
-	double MinFractionOfLastIVToAdd 		= 0.0;
+	double LastFractionOfLastIVToAddMinus 	= 0.0; //Used in bissection method 
+	double LastFractionOfLastIVToAddPlus	= 0.0; //Used in bissection method 	
+
 	
-	FuelToTestWithoutBuffer  			= PreviousFuelToTestWithoutBuffer ; // Fuel tested at the step before Burn-up targeted is exceeded.
 	double CalculatedBurnUp 			= HigherLimitOnBurnUp ; 
 
-	double LastFractionOfLastIVToAddMinus 	= 0.0;
-	double LastFractionOfLastIVToAddPlus	= 0.0;	
 
 	int count = 0;
 	
 	/**** Search in the fraction of last IV to add to the fuel to reach BU***/
-
 	do
 	{
 		if(count > fMaxIterration)
@@ -451,15 +371,18 @@ DBGL
 
 		if( (CalculatedBurnUp - BurnUp) < 0 ) //Need to add more of last IV in fuel
 		{
-			LastFractionOfLastIVToAddMinus 	= 
+			LastFractionOfLastIVToAddMinus 	= FractionOfLastIVToAdd;
 			FractionOfLastIVToAdd 		= FractionOfLastIVToAdd + fabs(LastFractionOfLastIVToAddPlus - FractionOfLastIVToAdd)/2.;
 		}
 		else if( (CalculatedBurnUp - BurnUp) > 0) //Need to add less of last IV in fuel
 		{
-			LastFractionOfLastIVToAddPlus 	=
+			LastFractionOfLastIVToAddPlus 	= FractionOfLastIVToAdd;
 			FractionOfLastIVToAdd 		= FractionOfLastIVToAdd - fabs(LastFractionOfLastIVToAddMinus - FractionOfLastIVToAdd)/2.;
 		}
-
+		FuelToTestWithoutBuffer  	= PreviousFuelToTestWithoutBuffer + FractionOfLastIVToAdd*SortedStreamArray[BurnUpExceededList][i]; // Fuel tested at the step before Burn-up targeted is exceeded +  a fraction of last IV.
+		IsotopicVector Buffer 		= BuildBuffer(FuelToTestWithoutBuffer , HMMass, SortedStreamArray) ;
+		IsotopicVector FuelToTest 	= FuelToTestWithoutBuffer + Buffer ; 
+		CalculatedBurnUp 		= GetMaximumBurnUp(FuelToTest, BurnUp);
 		count ++;
 
 	}while(fabs(BurnUp - CalculatedBurnUp) > GetBurnUpPrecision()*BurnUp);
@@ -480,7 +403,6 @@ DBGL
 	}		
 	return lambda;
 }
-
 //________________________________________________________________________
 bool EquivalenceModel::isIVInDomain(IsotopicVector IV)
 {

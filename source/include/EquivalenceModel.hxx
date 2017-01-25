@@ -94,19 +94,9 @@ class EquivalenceModel : public CLASSObject
 	map < string, IsotopicVector> GetAllStreamList() {return fStreamList;}	 	//!<return all the lists
 
 	int GetStreamListNumber(){return fStreamList.size();};
-	
-	map < string, double> GetBuildFuelFirstGuess(){return fFirstGuessContent;} 	//!<Get the initialization value for BuildFuel algorithm
-	map < string, double> GetActualMassContent() const  { return  fActualMassContentInFuel ; }
-	map < string, double> GetActualMolarContent() const { return fActualMolarContentInFuel ; }
-
-	virtual map < string , double> GetMolarFraction(map < string , IsotopicVector> IVStream, double BurnUp) = 0; //!< Return the molar fractions of each element in the fuel according to the burnup, and a given fuel composition (this is the heart of the equivalence model)
-
-	double GetRelativMassPrecision() const	{ return fRelativMassPrecision; }	//!< Mass precision
-	int GetMaxInterration()		 const	{ return fMaxInterration; }		//!< Max iterration in build fueld algorythm
-	
+	int GetMaxInterration()		 const	{ return fMaxInterration; }		//!< Max iterration in build fueld algorythm	
 	double GetBurnUpPrecision(){return fBurnUpPrecision;}//!< Get the precision on Burnup : proportion of the targeted burnup
 	
-	void SetBuildFuelFirstGuess(map < string, double> FirstGuess){fFirstGuessContent = FirstGuess;} //!<set the initialization value for BuildFuel algorithm (one FistGuess for each component of the fresh fuel
 	void SetRelativMassPrecision( double val)	{ fRelativMassPrecision = val; }	//!< Mass precision
 	void SetMaxInterration(int val)			{ fMaxInterration = val; }	//!< Max iteration in build fuel algorithm
 
@@ -162,8 +152,8 @@ class EquivalenceModel : public CLASSObject
 	
 	map < string, IsotopicVector> fStreamList;					//!< contains all lists of zai needed to build a fuel (example : 2 -> fissileList+fertileList)
 											//!< each list is identified by a keyword (example : -> "Fissile" & "Fertile")
-	map < string , double>	fStreamListEqMMassFractionMax;		//!< Map that contains lists of stream according to the EqModel with mass maximum fraction
-	map < string , double>	fStreamListEqMMassFractionMin;		//!< Map that contains lists of stream according to the EqModel with mass minimum fraction
+	map < string , double> fStreamListEqMMassFractionMax;			//!< Map that contains lists of stream according to the EqModel with mass maximum fraction
+	map < string , double> fStreamListEqMMassFractionMin;			//!< Map that contains lists of stream according to the EqModel with mass minimum fraction
 								
 	map < string, double> fFirstGuessContent;					//!< fissile content for BuildFuel initialization (in weight proportion)
 	map < string, double> fActualMolarContentInFuel; 				//!< Molar Content in fuel of each list at this step of the calculation
@@ -172,10 +162,8 @@ class EquivalenceModel : public CLASSObject
 	double  fMaximalContent;							//!< The approx. maximum fissile content reachable by the model
 
 	
-	double LambdaCalculation(string MaterialDenomination, double LambdaPreviousStep, double MaterialMassNeeded, double DeltaMass, vector <IsotopicVector>  Stocks); //!< Calculate the proportion of each stocks in StockArray to take in oder to get a mass of MassNeeded (can be Fer(fertile) or Fis(Fissile))
-	void SetLambda(vector<double>& lambda , double Lambda_tot);	//!< Set individual lambda according to the LAMBDA_TOT (lambda of all stocks)	
 	void SetLambdaToErrorCode(vector<double>& lambda);
-	void StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks);
+
 	double fRelativMassPrecision;		//!< Mass precision
 	double 	fBurnUpPrecision;		//!< precision on Burnup 
 	int fMaxIterration;			//!< Max iterration in build fueld algorythm

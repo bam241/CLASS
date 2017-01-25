@@ -97,17 +97,7 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	EQM_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath, int NumOfBatch, string InformationFile = "", double CriticalityThreshold = 1.01);
 	//}
 	//@}
-	
-	//{
-	/// Return the molar fissile fraction according fissile & ferile content 
-	/*!
-	 \param Fissil : The composition of the fissile matter
-	 \param Fertil : The composition of the Fertil matter
-	 \param BurnUp : Maximum achievable burn up envisaged
-	 */
-	map < string , double> GetMolarFraction(map < string , IsotopicVector> IVStream, double BurnUp);
-	//}
-	
+		
 	/*!
 	 \name Get/Set methods
 	 */
