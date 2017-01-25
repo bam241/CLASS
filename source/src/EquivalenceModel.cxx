@@ -5,7 +5,6 @@
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel():CLASSObject()
 {
-	fRelativMassPrecision 	= 5/10000.; 	//Mass precision
 	fMaxIterration 		= 500; 		// Max iterration in build fueld algorythum
 	freaded 		= false;
 	
@@ -14,7 +13,6 @@ EquivalenceModel::EquivalenceModel():CLASSObject()
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 {
-	fRelativMassPrecision 	= 5/10000.; 	//Mass precision
 	fMaxIterration 		= 500; 		// Max iterration in build fueld algorythm
 	freaded 		= false;
 	
@@ -188,22 +186,41 @@ void EquivalenceModel::ReadList(const string &line)
 	DBGL
 }
 //________________________________________________________________________
-void EquivalenceModel::ReadFirstGuessContent(const string &line)
+void EquivalenceModel::ReadEqMinFraction(const string &line)
 {
 	DBGL
 	int pos = 0;
 	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_firstguesscontent" )	// Check the keyword
+	if( keyword != "k_MassFractionMin" )	// Check the keyword
 	{
-		ERROR << " Bad keyword : \"k_firstguesscontent\" not found !" << endl;
+		ERROR << " Bad keyword : \"k_MassFractionMin\" not found !" << endl;
 		exit(1);
 	}
-	string ListName	= StringLine::NextWord(line, pos, ' ');
-	double Q 	= atof(StringLine::NextWord(line, pos, ' ').c_str());
-	fFirstGuessContent[ListName] = Q;
-	
+	string ListName= StringLine::NextWord(line, pos, ' ');
+	double Q 	 = atof(StringLine::NextWord(line, pos, ' ').c_str());
+	fStreamListEqMMassFractionMin[ListName] = Q;
+
 	DBGL
 }
+
+//________________________________________________________________________
+void EquivalenceModel::ReadEqMaxFraction(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_MassFractionMax" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_MassFractionMax\" not found !" << endl;
+		exit(1);
+	}
+	string ListName= StringLine::NextWord(line, pos, ' ');
+	double Q 	 = atof(StringLine::NextWord(line, pos, ' ').c_str());
+	fStreamListEqMMassFractionMax[ListName] = Q;
+
+	DBGL
+}
+
 //________________________________________________________________________
 void EquivalenceModel::ReadSpecificPower(const string &line)
 {

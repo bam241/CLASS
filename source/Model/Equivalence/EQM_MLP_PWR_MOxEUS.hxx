@@ -22,21 +22,14 @@ class EQM_MLP_PWR_MOxEUS : public EquivalenceModel
 	virtual	 map <string , vector<double> > BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray);
 
 	void SetSpecificPower(double SpecificPower) {fSpecificPower = SpecificPower;}
-	void SetMinimalU5Enrichment(double MinEU5) {fMinimalU5Enrichment= MinEU5;}
-	void SetMaximalU5Enrichment(double MaxEU5){fMaximalU5Enrichment= MaxEU5;}
-	void SetBurnUpPrecision(double precision) {fBurnUpPrecision= precision;}
 	void SetPCMPrecision(double prop) {fPCMPrecision= prop;}	
 
-	double GetBurnUpPrecision(){return fBurnUpPrecision;}
 	double GetPCMPrecision(){return fPCMPrecision/1e5;}
 	double GetMinimalU5Enrichment(){return fMinimalU5Enrichment;};
 
 	TTree* CreateTMVAInputTree(IsotopicVector TheFuel, double ThisTime);
 	double ExecuteTMVA(TTree* theTree, string WeightPath);
 	double GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU);
-	double GetU5Enrichment(map <string , IsotopicVector > IVStream, double TargetBU);
-
-	map < string , double> GetMolarFraction(map < string , IsotopicVector> IVStream, double BurnUp);
 
 	private:
 
@@ -47,15 +40,7 @@ class EQM_MLP_PWR_MOxEUS : public EquivalenceModel
 	double fKThreshold  ;
 	double fSpecificPower ;	
 	double fMaximalBU;
-	double fBurnUpPrecision;
 	double 	fPCMPrecision;		
-	
-	double fActualPuMolarContent;
-	double fActualPuMassContent;		
-	double fMaximalPuMassContent ;
-	double fMaximalPuMolarContent;
-	double fMinimalU5Enrichment;
-	double fMaximalU5Enrichment;
 
 	vector <string> fTMVAWeightPath;		//!<The weight needed by TMVA to construct and execute the multilayer perceptron
 
