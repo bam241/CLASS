@@ -75,10 +75,11 @@ void EquivalenceModel::LoadKeyword()
 {
 	DBGL
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",			& EquivalenceModel::ReadZAIlimits)	 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",			& EquivalenceModel::ReadType)	 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",		& EquivalenceModel::ReadType)	 	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel",			& EquivalenceModel::ReadType)	 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_firstguesscontent",	& EquivalenceModel::ReadFirstGuessContent) 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_list",			& EquivalenceModel::ReadList) 	 		 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_MassFractionMin",	& EquivalenceModel::k_MassFractionMin) 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_MassFractionMax",	& EquivalenceModel::k_MassFractionMax) 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_list",			& EquivalenceModel::ReadList) 	 	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower",		& EquivalenceModel::ReadSpecificPower)	 );
 	DBGL
 }
@@ -100,11 +101,18 @@ void EquivalenceModel::PrintInfo()
 		for(it1 = fMap1.begin()  ; it1 != fMap1.end() ; it1++)
 			INFO << (*it1).first.Z() <<" "<< (*it1).first.A() <<" "<< (*it1).first.I() << endl;
 	}
-	INFO<<"First guess content in fuel : "<<endl;
-	for(  it_s_D = fFirstGuessContent.begin();   it_s_D != fFirstGuessContent.end();  it_s_D++)
+	INFO<<"Minimum fraction in the fuel for each material : "<<endl;
+	for(  it_s_D = fStreamListEqMMassFractionMin.begin();   it_s_D != fStreamListEqMMassFractionMin.end();  it_s_D++)
 	{
-		INFO <<(* it_s_D).first<<" "<<fFirstGuessContent[(* it_s_D).first]<<endl;
+		INFO <<(* it_s_D).first<<" "<<fStreamListEqMMassFractionMin[(* it_s_D).first]<<endl;
 	}	
+
+	INFO<<"Maximum fraction in the fuel for each material : "<<endl;
+	for(  it_s_D = fStreamListEqMMassFractionMax.begin();   it_s_D != fStreamListEqMMassFractionMax.end();  it_s_D++)
+	{
+		INFO <<(* it_s_D).first<<" "<<fStreamListEqMMassFractionMax[(* it_s_D).first]<<endl;
+	}	
+
 
 	INFO<<"ZAI limits (validity domain)[prop in fresh fuel] (Z A I min max) :"<<endl;
 	for (map< ZAI,pair<double,double> >::iterator Domain_it = fZAILimits.begin(); Domain_it != fZAILimits.end(); Domain_it++)
@@ -176,7 +184,7 @@ void EquivalenceModel::ReadList(const string &line)
 		ERROR << " Bad keyword : \"k_list\" not found !" << endl;
 		exit(1);
 	}
-	string ListName	= StringLine::NextWord(line, pos, ' ');
+	string ListName= StringLine::NextWord(line, pos, ' ');
 	int Z 		= atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	int A 		= atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	int I 		= atoi(StringLine::NextWord(line, pos, ' ').c_str());
@@ -258,7 +266,7 @@ void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
 }
 
 //________________________________________________________________________
-map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListMassFractionMin, map < string , double> StreamListMassFractionMax, map < string , int> StreamListPriority, map < string , bool> StreamListIsBuffer)
+map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListFPMassFractionMin, map < string , double> StreamListFPMassFractionMax, map < string , int> StreamListPriority, map < string , bool> StreamListIsBuffer)
 {
 DBGL
 
@@ -269,7 +277,7 @@ DBGL
 	map < string , vector  <double> >::iterator it_s_vD;
 	map < string , IsotopicVector >::iterator it_s_IV;
 	map < string , double >::iterator it_s_D;
-	map < string , bool >::iterator it_s_B;
+	map < int , string >::iterator it_i_s;
 	
 	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
 	{	
@@ -291,16 +299,52 @@ DBGL
 		}
 	}
 	if(BreakReturnLambda) { return lambda;}
-	HMMass *=  1e6; //Unit onversion : tons to gram
 	
-	/**** Build a stream array containing IVs of each material in the limits imposed by the user, the model or the available stocks ***/
-	map <string, vector < IsotopicVector > > SortedStreamArray = BuildSortedStreamArray (StreamArray, StreamListMassFractionMin,  StreamListMassFractionMax,  StreamListPriority,  StreamListIsBuffer) ; 
+	/**** Search for the minimum and maximum fraction of each material in fuel ***/
+	map < string, double >   StreamListMassFractionMin ; 
+	map < string, double >   StreamListMassFractionMax ; 
+	for( it_s_D = StreamListFPMassFractionMin.begin();  it_s_D != StreamListFPMassFractionMin.end(); it_s_D++)
+	{	
+		if(StreamListFPMassFractionMin[(*it_s_D).first] < fStreamListEqMMassFractionMin[(*it_s_D).first]) // if limits FP are lower than limits EqM => limits Eqm are applied
+		{
+			StreamListMassFractionMin[(*it_s_D).first] = fStreamListEqMMassFractionMin[(*it_s_D).first];
+		}
+		else
+		{
+			StreamListMassFractionMin[(*it_s_D).first] = StreamListFPMassFractionMin[(*it_s_D).first];
+		}
+	}	
 
+	for( it_s_D = StreamListFPMassFractionMax.begin();  it_s_D != StreamListFPMassFractionMax.end(); it_s_D++)
+	{	
+		if(StreamListFPMassFractionMax[(*it_s_D).first] > fStreamListEqMMassFractionMax[(*it_s_D).first]) // if limits FP are higher than limits EqM => limits Eqm are applied
+		{
+			StreamListMassFractionMax[(*it_s_D).first] = StreamListFPMassFractionMax[(*it_s_D).first];
+		}
+		else
+		{
+			StreamListMassFractionMax[(*it_s_D).first] = StreamListFPMassFractionMax[(*it_s_D).first];
+		}
+
+	}	
+	bool BreakReturnLambda = false; 
+	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
+	{
+		if(StreamArray[(*it_s_vIV).first].size() == 0)
+		{
+			WARNING << " No stock available for stream : "<< (*it_s_vIV).first <<".  Fuel not built." << endl;
+			SetLambdaToErrorCode(lambda[(*it_s_vIV).first]);
+			BreakReturnLambda = true; 	
+		}
+	}
+	if(BreakReturnLambda) { return lambda;}
 
 	/**** Search in the sorted stream array the point where calculated BU is higher than targeted BU***/
 	
 	vector < double > BurnUpAsAFonctionOfMass; 
 	vector < double > MassOfAvailableMaterial ; 
+	
+	HMMass *=  1e6; //Unit onversion : tons to gram
 
 	bool BurnUpExceeded 		= false ;
 	int BurnUpExceededPosition 	= 0;
@@ -311,17 +355,17 @@ DBGL
 	IsotopicVector FuelToTestWithoutBuffer  		= IsotopicVector();
 	IsotopicVector PreviousFuelToTestWithoutBuffer 	= IsotopicVector();
 
-	for( it_s_vIV = SortedStreamArray.begin();  it_s_vIV != SortedStreamArray.end(); it_s_vIV++)
+	for( it_i_s = StreamListPriority.begin();  it_i_s != StreamArray.end(); it_i_s++)
 	{	
 		if(!BurnUpExceeded)
 		{
-			if(!StreamListIsBuffer[(*it_s_vIV).first])
+			if(!StreamListIsBuffer[(*it_i_s).second])
 			{	
-				for(int i=0; i < (int)SortedStreamArray[(*it_s_vIV).first].size(); i++)
+				for(int i=0; i < (int)StreamArray[(*it_i_s).second].size(); i++)
 				{
 					PreviousFuelToTestWithoutBuffer = FuelToTestWithoutBuffer ; //keep in memory fuel test during last step. When Burn-up is exceeded it will be the starting point.
-					FuelToTestWithoutBuffer      +	= SortedStreamArray[(*it_s_vIV).first][i] ;
-					IsotopicVector Buffer 		= BuildBuffer(FuelToTestWithoutBuffer , HMMass, SortedStreamArray) ;
+					FuelToTestWithoutBuffer      +	= StreamArray[(*it_i_s).second][i] ;
+					IsotopicVector Buffer 		= BuildBuffer(FuelToTestWithoutBuffer , HMMass, StreamArray) ;
 					IsotopicVector FuelToTest 	= FuelToTestWithoutBuffer + Buffer ; 
 					FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
 					double EqMMaximumBurnUp	= GetMaximumBurnUp (FuelToTest, BurnUp) ;
@@ -333,7 +377,7 @@ DBGL
 						BurnUpExceeded 		= true;
 						BurnUpExceededPosition	= i;
 						HigherLimitOnBurnUp		= EqMMaximumBurnUp;
-						BurnUpExceededList 		= (*it_s_vIV).first;
+						BurnUpExceededList 		= (*it_i_s).second;
 						break;
 					}
 				}
@@ -365,10 +409,8 @@ DBGL
 	double FractionOfLastIVToAdd 		= 1.0; //Start with 100% of the last IV in the fuel
 	double LastFractionOfLastIVToAddMinus 	= 0.0; //Used in bissection method 
 	double LastFractionOfLastIVToAddPlus	= 0.0; //Used in bissection method 	
-
 	
 	double CalculatedBurnUp 			= HigherLimitOnBurnUp ; 
-
 
 	int count = 0;
 	
@@ -396,15 +438,13 @@ DBGL
 			LastFractionOfLastIVToAddPlus 	= FractionOfLastIVToAdd;
 			FractionOfLastIVToAdd 		= FractionOfLastIVToAdd - fabs(LastFractionOfLastIVToAddMinus - FractionOfLastIVToAdd)/2.;
 		}
-		FuelToTestWithoutBuffer  	= PreviousFuelToTestWithoutBuffer + FractionOfLastIVToAdd*SortedStreamArray[BurnUpExceededList][i]; // Fuel tested at the step before Burn-up targeted is exceeded +  a fraction of last IV.
-		IsotopicVector Buffer 		= BuildBuffer(FuelToTestWithoutBuffer , HMMass, SortedStreamArray) ;
+		FuelToTestWithoutBuffer  	= PreviousFuelToTestWithoutBuffer + FractionOfLastIVToAdd*StreamArray[BurnUpExceededList][i]; // Fuel tested at the step before Burn-up targeted is exceeded +  a fraction of last IV.
+		IsotopicVector Buffer 		= BuildBuffer(FuelToTestWithoutBuffer , HMMass, StreamArray) ;
 		IsotopicVector FuelToTest 	= FuelToTestWithoutBuffer + Buffer ; 
 		CalculatedBurnUp 		= GetMaximumBurnUp(FuelToTest, BurnUp);
 		count ++;
 
 	}while(fabs(BurnUp - CalculatedBurnUp) > GetBurnUpPrecision()*BurnUp);
-
-	lambda = FromSortedArrayToInitialStreamArray();
 
 	for( it_s_IV = IVStream.begin();  it_s_IV != IVStream.end(); it_s_IV++)
 		(*this).isIVInDomain(IVStream[(*it_s_IV).first]);
@@ -420,6 +460,12 @@ DBGL
 	}		
 	return lambda;
 }
+//________________________________________________________________________
+IsotopicVector EquivalenceModel::BuildBuffer(IsotopicVector FuelToTestWithoutBuffer, double HMMass, map < string, vector < IsotopicVector > > StreamArray)
+{
+
+}
+
 //________________________________________________________________________
 bool EquivalenceModel::isIVInDomain(IsotopicVector IV)
 {

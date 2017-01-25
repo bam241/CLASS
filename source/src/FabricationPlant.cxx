@@ -872,7 +872,7 @@ void FabricationPlant::AddStorage(string keyword, Storage* Stock, double MassFra
 
     fStreamListFPMassFractionMin[keyword] = MassFractionMin;
     fStreamListFPMassFractionMax[keyword] = MassFractionMax;
-    fStreamListFPPriority[keyword]        = Priority;
+    fStreamListFPPriority[Priority]        = keyword;
     fStreamListFPIsBuffer[keyword]        = 0;
 
 } 
@@ -884,7 +884,7 @@ void FabricationPlant::AddInfiniteStorage(string keyword, double MassFractionMin
 
     fStreamListFPMassFractionMin[keyword] = MassFractionMin;
     fStreamListFPMassFractionMax[keyword] = MassFractionMax;
-    fStreamListFPPriority[keyword]        = Priority;
+   fStreamListFPPriority[Priority]        = keyword;
     fStreamListFPIsBuffer[keyword]        = 0;
 
     fInfiniteMaterialFromList[keyword] = true;

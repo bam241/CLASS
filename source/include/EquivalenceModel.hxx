@@ -145,8 +145,9 @@ class EquivalenceModel : public CLASSObject
 	void ReadEqMinFraction(const string &line);
 	
 	bool isIVInDomain(IsotopicVector IV);
+	void StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks);
 
-	
+	IsotopicVector BuildBuffer(IsotopicVector FuelToTestWithoutBuffer, double HMMass, map < string, vector < IsotopicVector > > SortedStreamArray) ;
 	
 	
 	protected :
@@ -176,6 +177,15 @@ class EquivalenceModel : public CLASSObject
 	string fInformationFile;					//!<  file containing Reactor Type, Fuel type, HM mass, Power, time vector, and TMVA input variables names (looks the manual for format details)
 	string fDBFType;					//!<  Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
 	string fDBRType;					//!<  Reactor Type (e.g PWR, FBR-Na, ADS..)
+
+	/*!
+	 \name Others 
+	 */
+	//@{
+	map <string , double > fTotalMassInStocks;  		//!< Total mass in each vector of stock
+	map <string , double > fLambdaMax;  			//!< Total lambda of available stocks
+
+	//@}
 	
 };
 
