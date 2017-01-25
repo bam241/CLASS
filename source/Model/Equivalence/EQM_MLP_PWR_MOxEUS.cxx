@@ -58,7 +58,6 @@ EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(string TMVAWeightPath, int NumOfBatch, do
 	fSpecificPower 				= 34.24;
 	fMaximalBU 				= 75;
 
-	SetRelativMassPrecision(0.0008);
 	SetBurnUpPrecision(0.008);//1 % of the targeted burnup
 	SetPCMPrecision(10);
 
@@ -99,7 +98,6 @@ EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(CLASSLogger* log, string TMVAWeightPath, 
 	fSpecificPower 				= 34.24;
 	fMaximalBU 				= 75;
 
-	SetRelativMassPrecision(0.0008);
 	SetBurnUpPrecision(0.008);//1 % of the targeted burnup
 	SetPCMPrecision(10);
 

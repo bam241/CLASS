@@ -264,6 +264,33 @@ void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
 	}	
 
 }
+//________________________________________________________________________
+void EquivalenceModel::StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks)
+{
+	// Calculating total mass of stock once and for all
+	
+	
+	double TotalMassInStocks = 0;
+	map < string , vector <IsotopicVector> >::const_iterator it_s_vIV;
+
+	for( it_s_vIV = Stocks.begin();  it_s_vIV != Stocks.end(); it_s_vIV++)
+	{
+		fTotalMassInStocks[ it_s_vIV->first ] = 0;
+		fLambdaMax[ it_s_vIV->first ] = 0;
+	}
+
+	for(  it_s_vIV = Stocks.begin();   it_s_vIV != Stocks.end();  it_s_vIV++)
+	{	
+		TotalMassInStocks = 0;
+		for(int i=0; i < (int)Stocks.at((* it_s_vIV).first).size(); i++)
+		{
+			TotalMassInStocks  +=  Stocks.at( it_s_vIV->first )[i].GetTotalMass();
+		}
+		fLambdaMax[(*it_s_vIV).first] = Stocks.at( it_s_vIV->first ).size();	
+		fTotalMassInStocks[ it_s_vIV->first ] = TotalMassInStocks * 1e6; // in grams
+	}
+}
+
 
 //________________________________________________________________________
 map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListFPMassFractionMin, map < string , double> StreamListFPMassFractionMax, map < string , int> StreamListPriority, map < string , bool> StreamListIsBuffer)
@@ -328,22 +355,20 @@ DBGL
 
 	}	
 	bool BreakReturnLambda = false; 
-	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
+	StocksTotalMassCalculation(StreamArray);
+	for( it_s_D = StreamListMassFractionMin.begin();  it_s_D != StreamListMassFractionMin.end(); it_s_D++)
 	{
-		if(StreamArray[(*it_s_vIV).first].size() == 0)
+		if(fTotalMassInStocks[(*it_s_D).first].GetTotalMass()< HMMass*StreamListMassFractionMin[(*it_s_D).first])
 		{
-			WARNING << " No stock available for stream : "<< (*it_s_vIV).first <<".  Fuel not built." << endl;
-			SetLambdaToErrorCode(lambda[(*it_s_vIV).first]);
+			WARNING << " Not enough material  : "<< (*it_s_vIV).first << " in stocks to reach the build fuel lower limit of "<<StreamListMassFractionMin[(*it_s_D).first]<<" reactor mass.  Fuel not built." << endl;
+			SetLambdaToErrorCode(lambda[(*it_s_D).first]);
 			BreakReturnLambda = true; 	
 		}
 	}
 	if(BreakReturnLambda) { return lambda;}
 
 	/**** Search in the sorted stream array the point where calculated BU is higher than targeted BU***/
-	
-	vector < double > BurnUpAsAFonctionOfMass; 
-	vector < double > MassOfAvailableMaterial ; 
-	
+		
 	HMMass *=  1e6; //Unit onversion : tons to gram
 
 	bool BurnUpExceeded 		= false ;
@@ -352,34 +377,71 @@ DBGL
 	double HigherLimitOnBurnUp	= 0;
 	int StreamListNumber 		= 0;	
 
+	int j=0;
+
 	IsotopicVector FuelToTestWithoutBuffer  		= IsotopicVector();
 	IsotopicVector PreviousFuelToTestWithoutBuffer 	= IsotopicVector();
 
 	for( it_i_s = StreamListPriority.begin();  it_i_s != StreamArray.end(); it_i_s++)
 	{	
-		if(!BurnUpExceeded)
-		{
-			if(!StreamListIsBuffer[(*it_i_s).second])
-			{	
-				for(int i=0; i < (int)StreamArray[(*it_i_s).second].size(); i++)
+		if(!BurnUpExceeded && !StreamListIsBuffer[(*it_i_s).second])
+		{	
+			while(FractionMassToReachMin[(*it_i_s).second][j] != 0.0)
+			{
+				FuelToTestWithoutBuffer += StreamArray[(*it_i_s).second][j] *  FractionMassToReachMin[(*it_i_s).second][j];
+				j++;
+			}
+			IsotopicVector Buffer 		= BuildBuffer(FuelToTestWithoutBuffer , HMMass, StreamArray) ;
+			IsotopicVector FuelToTest 	= FuelToTestWithoutBuffer + Buffer ; 
+			FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
+				
+			double EqMMaximumBurnUp	= GetMaximumBurnUp (FuelToTest, BurnUp) ;
+			
+			if(EqMMaximumBurnUp=>BurnUp)
+			{
+				BurnUpExceeded 		= true;
+				BurnUpExceededPosition	= j;
+				HigherLimitOnBurnUp		= EqMMaximumBurnUp;
+				BurnUpExceededList 		= (*it_i_s).second;
+				break;
+			}
+			
+			if(FractionMassToReachMin[(*it_i_s).second][j-1] < 1.0)
+			{
+				FuelToTestWithoutBuffer += StreamArray[(*it_i_s).second][j-1] *  (1-FractionMassToReachMin[(*it_i_s).second][j-1]);
+				Buffer 				= BuildBuffer(FuelToTestWithoutBuffer , HMMass, StreamArray) ;
+				FuelToTest 			= FuelToTestWithoutBuffer + Buffer ; 
+				FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
+				
+				EqMMaximumBurnUp		= GetMaximumBurnUp (FuelToTest, BurnUp) ;
+
+				if(EqMMaximumBurnUp=>BurnUp)
 				{
-					PreviousFuelToTestWithoutBuffer = FuelToTestWithoutBuffer ; //keep in memory fuel test during last step. When Burn-up is exceeded it will be the starting point.
-					FuelToTestWithoutBuffer      +	= StreamArray[(*it_i_s).second][i] ;
-					IsotopicVector Buffer 		= BuildBuffer(FuelToTestWithoutBuffer , HMMass, StreamArray) ;
-					IsotopicVector FuelToTest 	= FuelToTestWithoutBuffer + Buffer ; 
-					FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
-					double EqMMaximumBurnUp	= GetMaximumBurnUp (FuelToTest, BurnUp) ;
-	
-					BurnUpAsAFonctionOfMass.push_back(EqMMaximumBurnUp);
-					MassOfAvailableMaterial.push_back(FuelToTestWithoutBuffer.GetTotalMass());
-					if(EqMMaximumBurnUp=>BurnUp)
-					{
-						BurnUpExceeded 		= true;
-						BurnUpExceededPosition	= i;
-						HigherLimitOnBurnUp		= EqMMaximumBurnUp;
-						BurnUpExceededList 		= (*it_i_s).second;
-						break;
-					}
+					BurnUpExceeded 		= true;
+					BurnUpExceededPosition	= i;
+					HigherLimitOnBurnUp		= EqMMaximumBurnUp;
+					BurnUpExceededList 		= (*it_i_s).second;
+					break;
+				}
+			}
+
+			for(int i=j; i < (int)StreamArray[(*it_i_s).second].size(); i++)
+			{
+				PreviousFuelToTestWithoutBuffer = FuelToTestWithoutBuffer ; //keep in memory fuel test during last step. When Burn-up is exceeded it will be the starting point.
+				FuelToTestWithoutBuffer      +	= StreamArray[(*it_i_s).second][i] ;
+				Buffer 				= BuildBuffer(FuelToTestWithoutBuffer , HMMass, StreamArray) ;
+				FuelToTest 			= FuelToTestWithoutBuffer + Buffer ; 
+				FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
+				
+				EqMMaximumBurnUp		= GetMaximumBurnUp (FuelToTest, BurnUp) ;
+
+				if(EqMMaximumBurnUp=>BurnUp)
+				{
+					BurnUpExceeded 		= true;
+					BurnUpExceededPosition	= i;
+					HigherLimitOnBurnUp		= EqMMaximumBurnUp;
+					BurnUpExceededList 		= (*it_i_s).second;
+					break;
 				}
 			}
 		}
@@ -393,7 +455,7 @@ DBGL
 	//No enough material to reach target burnup. Burnup never exceeded in loop.
 	if (BurnUpExceeded==false)
 	{
-		WARNING << " Available material are not enough to reach the atrgeted BU.  Fuel not built." << endl;
+		WARNING << " Available material are not enough to reach the targeted BU.  Fuel not built." << endl;
 		SetLambdaToErrorCode(lambda[(*it_s_vIV).first]);
 		return lambda;	
 	}

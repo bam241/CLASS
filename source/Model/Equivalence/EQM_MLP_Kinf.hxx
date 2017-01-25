@@ -103,9 +103,7 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	 */
 	//@{
 
-	void SetBurnUpPrecision(double prop){fBurnUpPrecision = prop;} //!< Set the precision on Burnup : proportion of the targeted burnup
 	void SetPCMPrecision(double pcm){fPCMprecision = pcm;}		  //!< Set the precision on @f$\langle k \rangle@f$ prediction [pcm]. Neural network predictor constructors
-	double GetBurnUpPrecision(){return fBurnUpPrecision;}//!< Get the precision on Burnup : proportion of the targeted burnup
 	double GetPCMPrecision(){return fPCMprecision/1e5;}//!< Get the precision on @f$\langle k \rangle@f$ prediction []. Neural network predictor constructors
 	
 	double GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU);//!<Get the maximum reachable burnup according the freshfuel composition
@@ -200,7 +198,6 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	int 	fNumberOfBatch;		//!< The number of batches for the loading plan
 	double 	fKThreshold;			//!< The @f$k_{Threshold}@f$
 	double 	fMaximalBU;			//!< The approx. maximum burnup reachable by the MLP model		
-	double  fMaximalContent;		//!< The approx. maximum fissile content reachable by the MLP model
 	double 	fBurnUpPrecision;		//!< precision on Burnup 
 	double 	fPCMprecision;			//!< precision on @f$\langle k \rangle@f$ prediction [pcm]
 			
