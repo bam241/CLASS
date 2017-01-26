@@ -77,8 +77,8 @@ void EquivalenceModel::LoadKeyword()
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",			& EquivalenceModel::ReadZAIlimits)	 	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",		& EquivalenceModel::ReadType)	 	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel",			& EquivalenceModel::ReadType)	 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_MassFractionMin",	& EquivalenceModel::k_MassFractionMin) 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_MassFractionMax",	& EquivalenceModel::k_MassFractionMax) 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmin",	& EquivalenceModel::ReadEqMinFraction) 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmax",	& EquivalenceModel::ReadEqMaxFraction) 	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_list",			& EquivalenceModel::ReadList) 	 	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower",		& EquivalenceModel::ReadSpecificPower)	 );
 	DBGL
@@ -199,9 +199,9 @@ void EquivalenceModel::ReadEqMinFraction(const string &line)
 	DBGL
 	int pos = 0;
 	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_MassFractionMin" )	// Check the keyword
+	if( keyword != "k_massfractionmin" )	// Check the keyword
 	{
-		ERROR << " Bad keyword : \"k_MassFractionMin\" not found !" << endl;
+		ERROR << " Bad keyword : \"k_massfractionmin\" not found !" << endl;
 		exit(1);
 	}
 	string ListName= StringLine::NextWord(line, pos, ' ');
@@ -217,9 +217,9 @@ void EquivalenceModel::ReadEqMaxFraction(const string &line)
 	DBGL
 	int pos = 0;
 	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_MassFractionMax" )	// Check the keyword
+	if( keyword != "k_massfractionmax" )	// Check the keyword
 	{
-		ERROR << " Bad keyword : \"k_MassFractionMax\" not found !" << endl;
+		ERROR << " Bad keyword : \"k_massfractionmax\" not found !" << endl;
 		exit(1);
 	}
 	string ListName= StringLine::NextWord(line, pos, ' ');
@@ -293,7 +293,7 @@ void EquivalenceModel::StocksTotalMassCalculation(map < string , vector <Isotopi
 
 
 //________________________________________________________________________
-map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListFPMassFractionMin, map < string , double> StreamListFPMassFractionMax, map < string , int> StreamListPriority, map < string , bool> StreamListIsBuffer)
+map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListFPMassFractionMin, map < string , double> StreamListFPMassFractionMax, map < int , string > StreamListPriority, map < string , bool> StreamListIsBuffer)
 {
 DBGL
 
@@ -336,7 +336,7 @@ DBGL
 		{
 			ERROR << " User mass fraction min requirement is lower than the model mass fraction min for list  : "<<(*it_s_D).first << endl;
 			ERROR << " User mass fraction min requirement : "<<StreamListFPMassFractionMin[(*it_s_D).first]<<endl;
-			ERROR << " Model mass fraction min requirement : "<<fStreamListEqMMassFractionMin[(*it_s_D).first]<<endl			
+			ERROR << " Model mass fraction min requirement : "<<fStreamListEqMMassFractionMin[(*it_s_D).first]<<endl;			
 			exit(1);
 		}
 		else
@@ -351,7 +351,7 @@ DBGL
 		{
 			ERROR << " User mass fraction max requirement is higher than the model mass fraction max for list  : "<<(*it_s_D).first << endl;
 			ERROR << " User mass fraction max requirement : "<<StreamListFPMassFractionMax[(*it_s_D).first]<<endl;
-			ERROR << " Model mass fraction max requirement : "<<fStreamListEqMMassFractionMax[(*it_s_D).first]<<endl			
+			ERROR << " Model mass fraction max requirement : "<<fStreamListEqMMassFractionMax[(*it_s_D).first]<<endl;			
 			exit(1);
 		}
 		else
@@ -362,7 +362,7 @@ DBGL
 	}
 
 	/**** Check if there is enough material in stock to satisfy mass fraction min ****/
-	bool BreakReturnLambda = false; 
+	BreakReturnLambda = false; 
 	StocksTotalMassCalculation(StreamArray);
 	for( it_s_D = StreamListMassFractionMin.begin();  it_s_D != StreamListMassFractionMin.end(); it_s_D++)
 	{
@@ -375,9 +375,10 @@ DBGL
 	}
 	if(BreakReturnLambda) { return lambda;}
 
-
-
-	/**** Search in the sorted stream array the point where calculated BU is higher than targeted BU***/
+	cout<<"Ca fonctionne !!! "<<endl;
+	exit(1);
+/*
+	//Search in the sorted stream array the point where calculated BU is higher than targeted BU//
 		
 	HMMass *=  1e6; //Unit onversion : tons to gram
 
@@ -486,7 +487,7 @@ DBGL
 
 	int count = 0;
 	
-	/**** Search in the fraction of last IV to add to the fuel to reach BU***/
+	//Search in the fraction of last IV to add to the fuel to reach BU//
 	do
 	{
 		if(count > fMaxIterration)
@@ -530,7 +531,7 @@ DBGL
 			DBGV(lambda[(*it_s_vD).first][i]); 
 		}
 	}
-
+*/
 	return lambda;
 }
 //________________________________________________________________________

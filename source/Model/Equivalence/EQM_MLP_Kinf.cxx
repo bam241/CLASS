@@ -65,7 +65,7 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(string WeightPathAlpha0, string WeightPathAlpha1, str
 		if(fStreamList[(* it_s_IV).first].GetIsotopicQuantity().empty()){EmptyList=true;}
 	}
 
-	if(fMapOfTMVAVariableNames.empty() || EmptyList==true || fMaximalBU == 0 |)	
+	if(fMapOfTMVAVariableNames.empty() || EmptyList==true || fMaximalBU == 0 )	
 	{
 		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
 		exit(1);
@@ -190,7 +190,6 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,  int NumOfBa
 	INFO << "\tThis model is based on the prediction of kinf" << endl;
 	INFO << "\tThe TMVA (weight | information) files are :" << endl;
 	INFO << "\t" << "( " << fTMVAWeightPath[0] << " | " << fInformationFile << " )" << endl;
-	INFO << "Maximal fissile content (molar proportion) : " << fMaximalContent << endl;
 	INFO << "Maximal burnup (GWd/tHM) : " <<  fMaximalBU << endl;
 
 	EquivalenceModel::PrintInfo();
@@ -221,7 +220,6 @@ void EQM_MLP_Kinf::LoadKeyword()
 	
 	fDKeyword.insert( pair<string, PWR_MLP_KINF_DMthPtr>( "k_zainame", &EQM_MLP_Kinf::ReadZAIName) );
 	fDKeyword.insert( pair<string, PWR_MLP_KINF_DMthPtr>( "k_maxburnup", &EQM_MLP_Kinf::ReadMaxBurnUp) );
-	fDKeyword.insert( pair<string, PWR_MLP_KINF_DMthPtr>( "k_maxfiscontent", &EQM_MLP_Kinf::ReadMaxFisContent) );
 	DBGL
 }
 //________________________________________________________________________

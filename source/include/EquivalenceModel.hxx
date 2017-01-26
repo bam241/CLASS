@@ -80,7 +80,7 @@ class EquivalenceModel : public CLASSObject
 	 \param double HMMass, Heavy metal mass needed
      \param map < string , vector <IsotopicVector> > StreamArray, the string is the stream code (fissile fertile ,...) the IsotopicVector the fraction of each IV to take in the (fissile, fertile,..) stock .
      */
-	virtual	 map <string , vector<double> > BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListMassFractionMin, map < string , double> StreamListMassFractionMax, map < string , int> StreamListPriority, map < string , bool> StreamListIsBuffer);
+	virtual	 map <string , vector<double> > BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListMassFractionMin, map < string , double> StreamListMassFractionMax, map < int , string> StreamListPriority, map < string , bool> StreamListIsBuffer);
 	//}
 		
 	//@}
@@ -94,10 +94,10 @@ class EquivalenceModel : public CLASSObject
 	map < string, IsotopicVector> GetAllStreamList() {return fStreamList;}	 	//!<return all the lists
 
 	int GetStreamListNumber(){return fStreamList.size();};
-	int GetMaxIterration()		 const	{ return fMaxInterration; }		//!< Max iterration in build fueld algorythm	
+	int GetMaxIterration()		 const	{ return fMaxIterration; }		//!< Max iterration in build fueld algorythm	
 	double GetBurnUpPrecision(){return fBurnUpPrecision;}//!< Get the precision on Burnup : proportion of the targeted burnup
 	
-	void SetMaxIterration(int val)			{ fMaxInterration = val; }	//!< Max iteration in build fuel algorithm
+	void SetMaxIterration(int val)			{ fMaxIterration = val; }	//!< Max iteration in build fuel algorithm
 	void SetBurnUpPrecision(double prop){fBurnUpPrecision = prop;} //!< Set the precision on Burnup : proportion of the targeted burnup
 
 	
@@ -139,7 +139,7 @@ class EquivalenceModel : public CLASSObject
 	bool isIVInDomain(IsotopicVector IV);
 	void StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks);
 
-	IsotopicVector BuildBuffer(IsotopicVector FuelToTestWithoutBuffer, double HMMass, map < string, vector < IsotopicVector > > SortedStreamArray) ;
+	IsotopicVector BuildBuffer(IsotopicVector FuelToTestWithoutBuffer, double HMMass, map < string, vector < IsotopicVector > > SortedStreamArray) ;
 	
 	
 	protected :

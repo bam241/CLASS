@@ -29,11 +29,10 @@
 //
 //________________________________________________________________________
 
-EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(string TMVAWeightPath, int NumOfBatch, double CriticalityThreshold, double MaximalPuMassContent):EquivalenceModel(new CLASSLogger("EQM_MLP_PWR_MOxEUS.log"))
+EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(string TMVAWeightPath, int NumOfBatch, double CriticalityThreshold):EquivalenceModel(new CLASSLogger("EQM_MLP_PWR_MOxEUS.log"))
 {
 	fNumberOfBatch 		= NumOfBatch;
 	fKThreshold 			= CriticalityThreshold ;
-	fMaximalPuMassContent 	= MaximalPuMassContent;
 
 	fTMVAWeightPath.push_back(TMVAWeightPath);
 
@@ -69,11 +68,10 @@ EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(string TMVAWeightPath, int NumOfBatch, do
 }
 
 //________________________________________________________________________
-EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(CLASSLogger* log, string TMVAWeightPath, int NumOfBatch, double CriticalityThreshold, double MaximalPuMassContent):EquivalenceModel(log)
+EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(CLASSLogger* log, string TMVAWeightPath, int NumOfBatch, double CriticalityThreshold):EquivalenceModel(log)
 {
 	fNumberOfBatch 		= NumOfBatch;
 	fKThreshold 			= CriticalityThreshold ;
-	fMaximalPuMassContent 	= MaximalPuMassContent;
 
 	fTMVAWeightPath.push_back(TMVAWeightPath);
 
