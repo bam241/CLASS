@@ -334,7 +334,10 @@ DBGL
 	{	
 		if(StreamListFPMassFractionMin[(*it_s_D).first] < fStreamListEqMMassFractionMin[(*it_s_D).first]) // if limits FP are lower than limits EqM => limits Eqm are applied
 		{
-			StreamListMassFractionMin[(*it_s_D).first] = fStreamListEqMMassFractionMin[(*it_s_D).first];
+			ERROR << " User mass fraction min requirement is lower than the model mass fraction min for list  : "<<(*it_s_D).first << endl;
+			ERROR << " User mass fraction min requirement : "<<StreamListFPMassFractionMin[(*it_s_D).first]<<endl;
+			ERROR << " Model mass fraction min requirement : "<<fStreamListEqMMassFractionMin[(*it_s_D).first]<<endl			
+			exit(1);
 		}
 		else
 		{
@@ -346,26 +349,33 @@ DBGL
 	{	
 		if(StreamListFPMassFractionMax[(*it_s_D).first] > fStreamListEqMMassFractionMax[(*it_s_D).first]) // if limits FP are higher than limits EqM => limits Eqm are applied
 		{
-			StreamListMassFractionMax[(*it_s_D).first] = StreamListFPMassFractionMax[(*it_s_D).first];
+			ERROR << " User mass fraction max requirement is higher than the model mass fraction max for list  : "<<(*it_s_D).first << endl;
+			ERROR << " User mass fraction max requirement : "<<StreamListFPMassFractionMax[(*it_s_D).first]<<endl;
+			ERROR << " Model mass fraction max requirement : "<<fStreamListEqMMassFractionMax[(*it_s_D).first]<<endl			
+			exit(1);
 		}
 		else
 		{
 			StreamListMassFractionMax[(*it_s_D).first] = StreamListFPMassFractionMax[(*it_s_D).first];
 		}
 
-	}	
+	}
+
+	/**** Check if there is enough material in stock to satisfy mass fraction min ****/
 	bool BreakReturnLambda = false; 
 	StocksTotalMassCalculation(StreamArray);
 	for( it_s_D = StreamListMassFractionMin.begin();  it_s_D != StreamListMassFractionMin.end(); it_s_D++)
 	{
-		if(fTotalMassInStocks[(*it_s_D).first].GetTotalMass()< HMMass*StreamListMassFractionMin[(*it_s_D).first])
+		if(fTotalMassInStocks[(*it_s_D).first]< HMMass*StreamListMassFractionMin[(*it_s_D).first])
 		{
-			WARNING << " Not enough material  : "<< (*it_s_vIV).first << " in stocks to reach the build fuel lower limit of "<<StreamListMassFractionMin[(*it_s_D).first]<<" reactor mass.  Fuel not built." << endl;
+			WARNING << " Not enough material  : "<< (*it_s_D).first << " in stocks to reach the build fuel lower limit of "<<StreamListMassFractionMin[(*it_s_D).first]<<" reactor mass.  Fuel not built." << endl;
 			SetLambdaToErrorCode(lambda[(*it_s_D).first]);
 			BreakReturnLambda = true; 	
 		}
 	}
 	if(BreakReturnLambda) { return lambda;}
+
+
 
 	/**** Search in the sorted stream array the point where calculated BU is higher than targeted BU***/
 		
@@ -519,7 +529,8 @@ DBGL
 		{
 			DBGV(lambda[(*it_s_vD).first][i]); 
 		}
-	}		
+	}
+
 	return lambda;
 }
 //________________________________________________________________________
