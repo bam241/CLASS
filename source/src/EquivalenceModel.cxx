@@ -314,7 +314,7 @@ DBGL
 		}
 	}	
 
-	/*** Test if there is at least one stock available in each list, otherwise fuel is not built ***/
+	// Test if there is at least one stock available in each list, otherwise fuel is not built //
 	bool BreakReturnLambda = false; 
 	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
 	{
@@ -327,7 +327,7 @@ DBGL
 	}
 	if(BreakReturnLambda) { return lambda;}
 	
-	/**** Search for the minimum and maximum fraction of each material in fuel ***/
+	/// Search for the minimum and maximum fraction of each material in fuel ///
 	map < string, double >   StreamListMassFractionMin ; 
 	map < string, double >   StreamListMassFractionMax ; 
 	for( it_s_D = StreamListFPMassFractionMin.begin();  it_s_D != StreamListFPMassFractionMin.end(); it_s_D++)
@@ -361,7 +361,7 @@ DBGL
 
 	}
 
-	/**** Check if there is enough material in stock to satisfy mass fraction min ****/
+	// Check if there is enough material in stock to satisfy mass fraction min //
 	BreakReturnLambda = false; 
 	StocksTotalMassCalculation(StreamArray);
 	for( it_s_D = StreamListMassFractionMin.begin();  it_s_D != StreamListMassFractionMin.end(); it_s_D++)
@@ -375,12 +375,15 @@ DBGL
 	}
 	if(BreakReturnLambda) { return lambda;}
 
+	//Check if Mass Fractions Min/Max lead to target BU//
+
+	HMMass *=  1e6; //Unit onversion : tons to gram
+	
+
 	cout<<"Ca fonctionne !!! "<<endl;
 	exit(1);
-/*
-	//Search in the sorted stream array the point where calculated BU is higher than targeted BU//
-		
-	HMMass *=  1e6; //Unit onversion : tons to gram
+
+/*	//Search in the sorted stream array the point where calculated BU is higher than targeted BU//
 
 	bool BurnUpExceeded 		= false ;
 	int BurnUpExceededPosition 	= 0;
