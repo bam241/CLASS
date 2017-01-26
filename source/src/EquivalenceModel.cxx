@@ -377,7 +377,7 @@ DBGL
 
 	//Check if Mass Fractions Min/Max lead to target BU//
 
-	HMMass *=  1e6; //Unit onversion : tons to gram
+	HMMass *=  1e6; //Unit conversion : tons to gram
 	
 
 	cout<<"Ca fonctionne !!! "<<endl;
