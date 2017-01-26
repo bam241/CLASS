@@ -49,7 +49,7 @@ EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(string TMVAWeightPath, int NumOfBatch, do
 	fStreamList["FertileList"] 		= U8*1;
 
 	fStreamListEqMMassFractionMin["PuList"]		= 0.0;				
-	fStreamListEqMMassFractionMin["EnrichmentList"]	= 0.025;					
+	fStreamListEqMMassFractionMin["EnrichmentList"]	= 0.0025;					
 
 	fStreamListEqMMassFractionMax["PuList"]		= 0.16; 
 	fStreamListEqMMassFractionMax["EnrichmentList"]	= 0.05;
@@ -88,7 +88,7 @@ EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(CLASSLogger* log, string TMVAWeightPath, 
 	fStreamList["FertileList"] 		= U8*1;
 
 	fStreamListEqMMassFractionMin["PuList"]		= 0.0;				
-	fStreamListEqMMassFractionMin["EnrichmentList"]	= 0.025;					
+	fStreamListEqMMassFractionMin["EnrichmentList"]	= 0.0025;					
 
 	fStreamListEqMMassFractionMax["PuList"]		= 0.16; 
 	fStreamListEqMMassFractionMax["EnrichmentList"]	= 0.05;

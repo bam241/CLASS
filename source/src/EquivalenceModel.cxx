@@ -291,6 +291,45 @@ void EquivalenceModel::StocksTotalMassCalculation(map < string , vector <Isotopi
 	}
 }
 
+//________________________________________________________________________
+void EquivalenceModel::ConvertMassToLambdaVector(string MaterialDenomination, vector<double>& lambda, double MaterialMassNeeded, vector <IsotopicVector>  Stocks)
+{
+	double Lambda_tot = 0; 
+
+	// Calculation of Lambda tot associated to the required mass MaterialMassNeeded
+	for( int i=0; i < (int)Stocks.size(); i++)
+	{	
+		if( MaterialMassNeeded >= (Stocks[i].GetTotalMass()*1e6))
+		{
+			Lambda_tot +=  1;
+			MaterialMassNeeded -=  (Stocks[i].GetTotalMass()*1e6);
+		}
+		else
+		{
+			Lambda_tot +=  MaterialMassNeeded/(Stocks[i].GetTotalMass()*1e6);
+			break;
+		}
+	}
+	
+	// Calculate lambda vector associated to the lambda tot 
+	if(Lambda_tot > (int)lambda.size() )
+	{
+		cout<<Lambda_tot<<"  "<<lambda.size()<<endl;
+		ERROR << " FATAL ERROR " <<endl;
+		exit(0);
+	}
+
+	for(int i = 0 ; i < (int)lambda.size() ; i++) //set to 0 all non touched value (to be sure)
+		lambda[i] = 0  ;
+
+	int IntegerPart 		= floor( Lambda_tot );
+	double DecimalPart 	= Lambda_tot - IntegerPart;
+
+	for(int i=0  ; i < IntegerPart; i++ )
+		lambda[i]=1;
+
+	lambda[IntegerPart] = DecimalPart;
+}
 
 //________________________________________________________________________
 map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListFPMassFractionMin, map < string , double> StreamListFPMassFractionMax, map < int , string > StreamListPriority, map < string , bool> StreamListIsBuffer)
@@ -361,9 +400,10 @@ DBGL
 
 	}
 
+	StocksTotalMassCalculation(StreamArray);
+	
 	// Check if there is enough material in stock to satisfy mass fraction min //
 	BreakReturnLambda = false; 
-	StocksTotalMassCalculation(StreamArray);
 	for( it_s_D = StreamListMassFractionMin.begin();  it_s_D != StreamListMassFractionMin.end(); it_s_D++)
 	{
 		if(fTotalMassInStocks[(*it_s_D).first]< HMMass*StreamListMassFractionMin[(*it_s_D).first])
@@ -375,10 +415,30 @@ DBGL
 	}
 	if(BreakReturnLambda) { return lambda;}
 
-	//Check if Mass Fractions Min/Max lead to target BU//
+	// Check if there is enough material in stock to satisfy mass fraction max, if not mass fraction max is set to  MassINStock/MassReactor//
+	for( it_s_D = StreamListMassFractionMax.begin();  it_s_D != StreamListMassFractionMax.end(); it_s_D++)
+	{
+		if(fTotalMassInStocks[(*it_s_D).first]< HMMass*StreamListMassFractionMax[(*it_s_D).first])
+		{			
+			StreamListMassFractionMax[(*it_s_D).first] = fTotalMassInStocks[(*it_s_D).first]/HMMass;
+			WARNING << " Not enough material  : "<< (*it_s_D).first << " in stocks to reach the build fuel higher limit of "<<StreamListMassFractionMax[(*it_s_D).first]<<" reactor mass. " << endl;
+			WARNING << " Mass fraction max of material :  "<< (*it_s_D).first << " is set to MassInStock/HMMassReactor : "<< StreamListMassFractionMax[(*it_s_D).first]<< endl;
+		}
+	}
 
+	//Check targeted BU is inside [BUMin, BUMax] associated to fraction Min et Max//
 	HMMass *=  1e6; //Unit conversion : tons to gram
+
+	map < string , double > MassMin; 
+	map < string , double > MassMax; 
 	
+	for( it_s_D = StreamListMassFractionMin.begin();  it_s_D != StreamListMassFractionMin.end(); it_s_D++)
+	{	
+		MassMin[(*it_s_D).first] = HMMass * StreamListMassFractionMin[(*it_s_D).first];
+		MassMax[(*it_s_D).first] = HMMass * StreamListMassFractionMax[(*it_s_D).first];		
+	}
+
+
 
 	cout<<"Ca fonctionne !!! "<<endl;
 	exit(1);
@@ -536,11 +596,6 @@ DBGL
 	}
 */
 	return lambda;
-}
-//________________________________________________________________________
-IsotopicVector EquivalenceModel::BuildBuffer(IsotopicVector FuelToTestWithoutBuffer, double HMMass, map < string, vector < IsotopicVector > > StreamArray)
-{
-
 }
 
 //________________________________________________________________________

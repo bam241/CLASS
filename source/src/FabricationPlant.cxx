@@ -870,9 +870,25 @@ void FabricationPlant::AddStorage(string keyword, Storage* Stock, double MassFra
 {
     fStorage[keyword].push_back(Stock);
 
+    if (MassFractionMin>MassFractionMax)
+    {
+            ERROR << " Mass fraction min of material : "<<keyword<<"has to be lower than mass fraction max." <<endl;
+            exit(1);
+    }
+    if (MassFractionMin<0.0)
+    {
+            ERROR << " Mass fraction min of material : "<<keyword <<"has to be higher than zero." <<endl;
+            exit(1);
+    }
+   if (MassFractionMax>1.0)
+    {
+            ERROR << " Mass fraction max of material : "<<keyword <<"has to be lower than one." <<endl;
+            exit(1);
+    }
+
     fStreamListFPMassFractionMin[keyword] = MassFractionMin;
     fStreamListFPMassFractionMax[keyword] = MassFractionMax;
-    fStreamListFPPriority[Priority]        = keyword;
+    fStreamListFPPriority[Priority]         = keyword;
     fStreamListFPIsBuffer[keyword]        = 0;
 
 } 
@@ -882,9 +898,25 @@ void FabricationPlant::AddInfiniteStorage(string keyword, double MassFractionMin
     Storage* Stock;
     fStorage[keyword].push_back(Stock);
 
+    if (MassFractionMin>MassFractionMax)
+    {
+            ERROR << " Mass fraction min of material : "<<keyword<<"has to be lower than mass fraction max." <<endl;
+            exit(1);
+    }
+    if (MassFractionMin<0.0)
+    {
+            ERROR << " Mass fraction min of material : "<<keyword <<"has to be higher than zero." <<endl;
+            exit(1);
+    }
+   if (MassFractionMax>1.0)
+    {
+            ERROR << " Mass fraction max of material : "<<keyword <<"has to be lower than one." <<endl;
+            exit(1);
+    }
+
     fStreamListFPMassFractionMin[keyword] = MassFractionMin;
     fStreamListFPMassFractionMax[keyword] = MassFractionMax;
-   fStreamListFPPriority[Priority]        = keyword;
+    fStreamListFPPriority[Priority]        = keyword;
     fStreamListFPIsBuffer[keyword]        = 0;
 
     fInfiniteMaterialFromList[keyword] = true;

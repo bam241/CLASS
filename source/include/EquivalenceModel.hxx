@@ -100,6 +100,7 @@ class EquivalenceModel : public CLASSObject
 	void SetMaxIterration(int val)			{ fMaxIterration = val; }	//!< Max iteration in build fuel algorithm
 	void SetBurnUpPrecision(double prop){fBurnUpPrecision = prop;} //!< Set the precision on Burnup : proportion of the targeted burnup
 
+	virtual double GetMaximumBurnUp(IsotopicVector FuelToTest, double BurnUp) = 0; //!< Return the molar fractions of each element in the fuel according to the burnup, and a given fuel composition (this is the heart of the equivalence model)
 	
 	//@}
 	
@@ -138,9 +139,7 @@ class EquivalenceModel : public CLASSObject
 	
 	bool isIVInDomain(IsotopicVector IV);
 	void StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks);
-
-	IsotopicVector BuildBuffer(IsotopicVector FuelToTestWithoutBuffer, double HMMass, map < string, vector < IsotopicVector > > SortedStreamArray) ;
-	
+	void ConvertMassToLambdaVector(string MaterialDenomination, vector<double>& lambda, double MaterialMassNeeded, vector <IsotopicVector>  Stocks);	
 	
 	protected :
 	
