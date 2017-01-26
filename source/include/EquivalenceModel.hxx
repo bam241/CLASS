@@ -124,14 +124,6 @@ class EquivalenceModel : public CLASSObject
 	void ReadSpecificPower(const string &line);
 	//}
 	
-	//{
-	/// ReadMaximalContent : read the approx. maximum fissile content reachable by the MLP model
-	/*!
-	 \param line : line suppossed to contain the maximal content information starts with "k_contentmax" keyword
-	 */
-	void ReadMaximalContent(const string &line);
-	//}
-
 	void PrintInfo(); //Print the information red in the INFO stream	
 	
 	//{
