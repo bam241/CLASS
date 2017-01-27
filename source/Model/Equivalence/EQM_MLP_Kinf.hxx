@@ -158,14 +158,6 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	//}
 	
 	//{
-	/// ReadMaxFisContent  : read a guessed (very overestimated) maximum fissile content (purpose : algorithm initialization)
-	/*!
-	 \param line : line suppossed to contain the ZAI name  starts with "k_maxfiscontent" keyword
-	 */
-	void ReadMaxFisContent(const string &line);
-	//}
-	
-	//{
 	/// ReadLine : read a line
 	/*!
 	 \param line : line to read
