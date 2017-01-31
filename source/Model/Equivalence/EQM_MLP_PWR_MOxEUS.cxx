@@ -46,16 +46,16 @@ EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(string TMVAWeightPath, int NumOfBatch, do
 
 	fStreamList["PuList"] 			= Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
 	fStreamList["EnrichmentList"] 		= U5*1;
-	fStreamList["FertileList"] 		= U8*1;
+	fStreamList["FertileList"] 		= U8*0.9975 + U5*0.0025;
 
 	fStreamListEqMMassFractionMin["PuList"]		= 0.0;				
-	fStreamListEqMMassFractionMin["EnrichmentList"]	= 0.0025;					
+	fStreamListEqMMassFractionMin["EnrichmentList"]	= 0.0;					
 
 	fStreamListEqMMassFractionMax["PuList"]		= 0.16; 
 	fStreamListEqMMassFractionMax["EnrichmentList"]	= 0.05;
 
-	fSpecificPower 				= 34.24;
-	fMaximalBU 				= 75;
+	fSpecificPower 						= 34.24;
+	fMaximalBU 						= 75;
 
 	SetBurnUpPrecision(0.008);//1 % of the targeted burnup
 	SetPCMPrecision(10);
@@ -85,10 +85,10 @@ EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(CLASSLogger* log, string TMVAWeightPath, 
 
 	fStreamList["PuList"] 			= Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
 	fStreamList["EnrichmentList"] 		= U5*1;
-	fStreamList["FertileList"] 		= U8*1;
+	fStreamList["FertileList"] 		= U8*0.9975 + U5*0.0025;
 
 	fStreamListEqMMassFractionMin["PuList"]		= 0.0;				
-	fStreamListEqMMassFractionMin["EnrichmentList"]	= 0.0025;					
+	fStreamListEqMMassFractionMin["EnrichmentList"]	= 0.0;					
 
 	fStreamListEqMMassFractionMax["PuList"]		= 0.16; 
 	fStreamListEqMMassFractionMax["EnrichmentList"]	= 0.05;

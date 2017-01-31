@@ -332,10 +332,53 @@ void EquivalenceModel::ConvertMassToLambdaVector(string MaterialDenomination, ve
 }
 
 //________________________________________________________________________
-IsotopicVector EquivalenceModel::BuilFuelToTest(map < string, double> lambda, map < string , vector <IsotopicVector> > const& StreamArray, double HMMass, map <string, bool> StreamListIsBuffer)
+IsotopicVector EquivalenceModel::BuildFuelToTest(map < string, vector<double> > lambda, map < string , vector <IsotopicVector> > const& StreamArray, double HMMass, map <string, bool> StreamListIsBuffer)
 {
-	//Set the buffer lambda to 0
+	//Iterators declaration
+	map < string , vector  <IsotopicVector> >::const_iterator it_s_vIV;
+	map < string , bool >::iterator it_s_B;
+
+	//Find the buffer and set its lambda to 0
+	string BufferDenomination ="";
+	for( it_s_B = StreamListIsBuffer.begin();  it_s_B != StreamListIsBuffer.end(); it_s_B++)
+	{
+		if((*it_s_B ).second==true){ BufferDenomination = (*it_s_B).first; }	
+	}
+
+	for(int i = 0; i< lambda[BufferDenomination].size(); i++)
+	{
+		lambda[BufferDenomination][i]=0;
+	}
 	
+	//Build an IV with all materials besides buffer to get the total mass of others materials
+	IsotopicVector IV;
+	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
+	{	
+		for(int i=0; i < (int)StreamArray.at( it_s_vIV->first ).size(); i++)
+		{
+			IV  +=  lambda[(*it_s_vIV).first][i] * StreamArray.at( it_s_vIV->first )[i];	
+		}
+	}
+
+	//Calculate MassBuffer
+	double MassBuffer = HMMass - IV.GetTotalMass();
+
+	//Set buffer lambda according to MassBuffer
+	ConvertMassToLambdaVector(BufferDenomination, lambda[BufferDenomination], MassBuffer, StreamArray.at(BufferDenomination));
+
+	IV.Clear();
+
+	//Build fuel with all materials
+	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
+	{	
+		for(int i=0; i < (int)StreamArray.at( it_s_vIV->first ).size(); i++)
+		{
+			IV  +=  lambda[(*it_s_vIV).first][i] * StreamArray.at( it_s_vIV->first )[i];	
+		}
+	}
+
+	return IV; 
+
 }
 
 //________________________________________________________________________
@@ -436,22 +479,67 @@ DBGL
 	//Check targeted BU is inside [BUMin, BUMax] associated to fraction Min et Max//
 	HMMass *=  1e6; //Unit conversion : tons to gram
 
-	map < string , double > MassMin; 
-	map < string , double > MassMax;
+	map < string , double > MassMin; 	
+	map < string , double > MassMax;	 
 
 	map < string , double > BUMin; 
 	map < string , double > BUMax; 
 
 	for( it_i_s = StreamListPriority.begin();  it_i_s != StreamListPriority.end(); it_i_s++)
 	{	
+		//Calculate BU min for each possibility : min1 ; max1 + min2 ;  max1 + max2 + min3 ....
 		MassMin[(*it_i_s ).second] 	=  HMMass * StreamListMassFractionMin[(*it_i_s).second];
-		MassMax[(*it_i_s ).second] 	=  HMMass * StreamListMassFractionMax[(*it_i_s).second];	
-
 		ConvertMassToLambdaVector((*it_i_s ).second, lambda[(*it_i_s ).second], MassMin[(*it_i_s ).second], StreamArray[(*it_i_s ).second]);
-
-		IsotopicVector FuelToTest 	= BuilFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+		IsotopicVector FuelToTest 	= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
 		BUMin[(*it_i_s ).second] 	=  CalculateTargetParameter(FuelToTest);
+
+		//Check is BUMin < BUTarget
+		if(BUMin[(*it_i_s ).second]>BurnUp)
+		{
+			if((*it_i_s).first ==1) //Minimum of first material is too high
+			{
+				ERROR << "CRITICAL ! Minimum burn-up associated to the first priority material ( "<<(*it_i_s ).second <<" ) is higher than targeted burn-up."<< endl;
+				ERROR << "Targeted Burn-up : " <<BurnUp<<endl;
+				ERROR << "Minimum Burn-up : " <<BUMin[(*it_i_s ).second]<<endl;
+				ERROR << "Try to increase targeted burn-up" <<endl;
+				exit(1);
+			}
+			else if ((*it_i_s).first >1) //BU target is located between max n-1 and min n
+			{
+				ERROR << "CRITICAL ! Targeted burn-up is located between 2 materials. "<<endl;
+				it_i_s --;
+				ERROR << "Maximum Burn-up of : "<< (*it_i_s).second<<" ---> "<<BUMax[(*it_i_s ).second]<<endl;
+				it_i_s ++;
+				ERROR << "Minimum Burn-up of : "<< (*it_i_s ).second<<" ---> "<<BUMin[(*it_i_s ).second]<<endl;
+				ERROR << "Targeted Burn-up : " <<BurnUp<<endl;					
+				ERROR << "Try to decrease mimim fraction of : "<< (*it_i_s ).second<<endl;
+				exit(1);
+			}
+		}
+		cout<<(*it_i_s ).second<<" "<<MassMin[(*it_i_s ).second]<<" "<<BUMin[(*it_i_s ).second]<<endl;
+		for(int i=0; i<lambda[(*it_i_s).second].size(); i++) cout<<lambda[(*it_i_s).second].size()<<" "<<lambda[(*it_i_s).second][i]<<endl;
+
+		FuelToTest.Clear();
+		
+		//Calculate BU max for each possibility : max1 ; max1 + max2 ;  max1 + max2 + max3 ....
+		MassMax[(*it_i_s ).second] 	=  HMMass * StreamListMassFractionMax[(*it_i_s).second];	
+		ConvertMassToLambdaVector((*it_i_s ).second, lambda[(*it_i_s ).second], MassMax[(*it_i_s ).second], StreamArray[(*it_i_s ).second]);
+		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
+		BUMax[(*it_i_s ).second] 	=  CalculateTargetParameter(FuelToTest);
+
+		cout<<(*it_i_s ).second<<" "<<MassMax[(*it_i_s ).second]<<" "<<BUMax[(*it_i_s ).second]<<endl;
+		for(int i=0; i<lambda[(*it_i_s).second].size(); i++) cout<<lambda[(*it_i_s).second].size()<<" "<<lambda[(*it_i_s).second][i]<<endl;
+
+		if(BUMax[(*it_i_s ).second]>BurnUp)
+		{
+			break;
+		}
+
 	}
+
+	
 
 	cout<<"Ca fonctionne !!! "<<endl;
 	exit(1);
@@ -495,7 +583,7 @@ DBGL
 			
 			if(FractionMassToReachMin[(*it_i_s).second][j-1] < 1.0)
 			{
-				FuelToTestWithoutBuffer += StreamArray[(*it_i_s).second][j-1] *  (1-FractionMassToReachMin[(*it_i_s).second][j-1]);
+				FuelToTestWithoutBuffer      += StreamArray[(*it_i_s).second][j-1] *  (1-FractionMassToReachMin[(*it_i_s).second][j-1]);
 				Buffer 				= BuildBuffer(FuelToTestWithoutBuffer , HMMass, StreamArray) ;
 				FuelToTest 			= FuelToTestWithoutBuffer + Buffer ; 
 				FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
@@ -587,10 +675,10 @@ DBGL
 			LastFractionOfLastIVToAddPlus 	= FractionOfLastIVToAdd;
 			FractionOfLastIVToAdd 		= FractionOfLastIVToAdd - fabs(LastFractionOfLastIVToAddMinus - FractionOfLastIVToAdd)/2.;
 		}
-		FuelToTestWithoutBuffer  	= PreviousFuelToTestWithoutBuffer + FractionOfLastIVToAdd*StreamArray[BurnUpExceededList][i]; // Fuel tested at the step before Burn-up targeted is exceeded +  a fraction of last IV.
-		IsotopicVector Buffer 		= BuildBuffer(FuelToTestWithoutBuffer , HMMass, StreamArray) ;
-		IsotopicVector FuelToTest 	= FuelToTestWithoutBuffer + Buffer ; 
-		CalculatedBurnUp 		= GetMaximumBurnUp(FuelToTest, BurnUp);
+		FuelToTestWithoutBuffer  			= PreviousFuelToTestWithoutBuffer + FractionOfLastIVToAdd*StreamArray[BurnUpExceededList][i]; // Fuel tested at the step before Burn-up targeted is exceeded +  a fraction of last IV.
+		IsotopicVector Buffer 				= BuildBuffer(FuelToTestWithoutBuffer , HMMass, StreamArray) ;
+		IsotopicVector FuelToTest 			= FuelToTestWithoutBuffer + Buffer ; 
+		CalculatedBurnUp 				= GetMaximumBurnUp(FuelToTest, BurnUp);
 		count ++;
 
 	}while(fabs(BurnUp - CalculatedBurnUp) > GetBurnUpPrecision()*BurnUp);
