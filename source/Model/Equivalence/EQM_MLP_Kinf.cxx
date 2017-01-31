@@ -373,7 +373,7 @@ double EQM_MLP_Kinf::ExecuteTMVA(TTree* InputTree,string WeightPath, bool IsTime
 	return (double)val;//retourn k_{inf}(t = Time)
 }
 //________________________________________________________________________
-double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetBU)
+double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel)
 {
 	/**************************************************************************/
 	//With a dichotomy, the maximal irradiation time (TheFinalTime) is calculated
@@ -381,9 +381,10 @@ double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetB
 	//then the corresponding irradiation time is convert in burnup and returned
 	/**************************************************************************/
 	//Algorithm initialization
-	double TheFinalTime = BurnupToSecond(TargetBU);
 	double OldFinalTimeMinus = 0;
 	double MaximumBU = fMaximalBU;
+	double MinimumBU  = 0 ;
+	double TheFinalTime = BurnupToSecond((MaximumBU-MinimumBU)/2.);
 	double OldFinalTimePlus = BurnupToSecond(MaximumBU);
 	double k_av = 0; //average kinf
 	double OldPredictedk_av = 0;
@@ -429,7 +430,7 @@ double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetB
 		{
 			OldFinalTimePlus = TheFinalTime;
 			TheFinalTime = TheFinalTime - fabs(OldFinalTimeMinus-TheFinalTime)/2.;
-			if( SecondToBurnup(TheFinalTime) < TargetBU*GetBurnUpPrecision() )
+			if( SecondToBurnup(TheFinalTime) < (MaximumBU-MinimumBU)/2.*GetBurnUpPrecision() )
 				{ delete reader; return 0; }
 		}
 		
@@ -533,14 +534,11 @@ double EQM_MLP_Kinf::GetMaximumBurnUp_Pol2(IsotopicVector TheFuel,double TargetB
 	return SecondToBurnup(T);
 }
 //________________________________________________________________________
-double EQM_MLP_Kinf::GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU)
+double EQM_MLP_Kinf::CalculateTargetParameter(IsotopicVector TheFuel)
 {
 	double TheBurnUp = -1;
 	if(fTMVAWeightPath.size() == 1)
-		TheBurnUp  = 	GetMaximumBurnUp_MLP(TheFuel,TargetBU);
-	else if(fTMVAWeightPath.size() == 3)
-		TheBurnUp = GetMaximumBurnUp_Pol2(TheFuel,TargetBU);
-	
+		TheBurnUp  = 	GetMaximumBurnUp_MLP(TheFuel);
 	else
 	{
 		ERROR << "This method is not yet set up" << endl;

@@ -26,7 +26,7 @@ class EQM_MLP_PWR_MOxEUS : public EquivalenceModel
 
 	TTree* CreateTMVAInputTree(IsotopicVector TheFuel, double ThisTime);
 	double ExecuteTMVA(TTree* theTree, string WeightPath);
-	double GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU);
+	double CalculateTargetParameter(IsotopicVector FuelToTest);
 
 	private:
 

@@ -332,6 +332,13 @@ void EquivalenceModel::ConvertMassToLambdaVector(string MaterialDenomination, ve
 }
 
 //________________________________________________________________________
+IsotopicVector EquivalenceModel::BuilFuelToTest(map < string, double> lambda, map < string , vector <IsotopicVector> > const& StreamArray, double HMMass, map <string, bool> StreamListIsBuffer)
+{
+	//Set the buffer lambda to 0
+	
+}
+
+//________________________________________________________________________
 map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListFPMassFractionMin, map < string , double> StreamListFPMassFractionMax, map < int , string > StreamListPriority, map < string , bool> StreamListIsBuffer)
 {
 DBGL
@@ -430,15 +437,21 @@ DBGL
 	HMMass *=  1e6; //Unit conversion : tons to gram
 
 	map < string , double > MassMin; 
-	map < string , double > MassMax; 
-	
-	for( it_s_D = StreamListMassFractionMin.begin();  it_s_D != StreamListMassFractionMin.end(); it_s_D++)
+	map < string , double > MassMax;
+
+	map < string , double > BUMin; 
+	map < string , double > BUMax; 
+
+	for( it_i_s = StreamListPriority.begin();  it_i_s != StreamListPriority.end(); it_i_s++)
 	{	
-		MassMin[(*it_s_D).first] = HMMass * StreamListMassFractionMin[(*it_s_D).first];
-		MassMax[(*it_s_D).first] = HMMass * StreamListMassFractionMax[(*it_s_D).first];		
+		MassMin[(*it_i_s ).second] 	=  HMMass * StreamListMassFractionMin[(*it_i_s).second];
+		MassMax[(*it_i_s ).second] 	=  HMMass * StreamListMassFractionMax[(*it_i_s).second];	
+
+		ConvertMassToLambdaVector((*it_i_s ).second, lambda[(*it_i_s ).second], MassMin[(*it_i_s ).second], StreamArray[(*it_i_s ).second]);
+
+		IsotopicVector FuelToTest 	= BuilFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+		BUMin[(*it_i_s ).second] 	=  CalculateTargetParameter(FuelToTest);
 	}
-
-
 
 	cout<<"Ca fonctionne !!! "<<endl;
 	exit(1);

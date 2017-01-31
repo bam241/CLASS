@@ -100,7 +100,7 @@ class EquivalenceModel : public CLASSObject
 	void SetMaxIterration(int val)			{ fMaxIterration = val; }	//!< Max iteration in build fuel algorithm
 	void SetBurnUpPrecision(double prop){fBurnUpPrecision = prop;} //!< Set the precision on Burnup : proportion of the targeted burnup
 
-	virtual double GetMaximumBurnUp(IsotopicVector FuelToTest, double BurnUp) = 0; //!< Return the molar fractions of each element in the fuel according to the burnup, and a given fuel composition (this is the heart of the equivalence model)
+	virtual double CalculateTargetParameter(IsotopicVector FuelToTest) = 0; //!< Calculate a parameter (BU, keff, ...) associated to the fuel 
 	
 	//@}
 	
@@ -140,7 +140,8 @@ class EquivalenceModel : public CLASSObject
 	bool isIVInDomain(IsotopicVector IV);
 	void StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks);
 	void ConvertMassToLambdaVector(string MaterialDenomination, vector<double>& lambda, double MaterialMassNeeded, vector <IsotopicVector>  Stocks);	
-	
+	IsotopicVector BuilFuelToTest(map < string, double> lambda, map < string , vector <IsotopicVector> > const& StreamArray, double HMMass, map <string, bool> StreamListIsBuffer); //Build a fuel with the buffer according to fissile lambda
+
 	protected :
 	
 	map < string, IsotopicVector> fStreamList;					//!< contains all lists of zai needed to build a fuel (example : 2 -> fissileList+fertileList)

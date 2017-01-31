@@ -189,7 +189,7 @@ double EQM_MLP_PWR_MOxEUS::ExecuteTMVA(TTree* theTree, string WeightPath)
 }
 
 //________________________________________________________________________
-double EQM_MLP_PWR_MOxEUS::GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU)
+double EQM_MLP_PWR_MOxEUS::CalculateTargetParameter(IsotopicVector TheFuel)
 {
 	/**************************************************************************/
 	//With a dichotomy, the maximal irradiation time (TheFinalTime) is calculated
@@ -198,9 +198,11 @@ double EQM_MLP_PWR_MOxEUS::GetMaximumBurnUp(IsotopicVector TheFuel, double Targe
 	/**************************************************************************/
 	//Algorithm initialization
 
-	double TheFinalTime 		= BurnupToSecond(TargetBU); 
+
 	double OldFinalTimeMinus 	= 0;
+	double MinimumBU 		= 0; 	
 	double MaximumBU 		= fMaximalBU; 
+	double TheFinalTime 		= BurnupToSecond((MaximumBU-MinimumBU)/2.); 	
 	double OldFinalTimePlus 	= BurnupToSecond(MaximumBU);
 	double k_av 			= 0; //average kinf
 	double OldPredictedk_av 	= 0;
@@ -253,7 +255,7 @@ double EQM_MLP_PWR_MOxEUS::GetMaximumBurnUp(IsotopicVector TheFuel, double Targe
  		{	
  			OldFinalTimePlus = TheFinalTime;
  			TheFinalTime = TheFinalTime - fabs(OldFinalTimeMinus - TheFinalTime)/2.;	
- 			if( SecondToBurnup(TheFinalTime) < TargetBU*GetBurnUpPrecision() )
+ 			if( SecondToBurnup(TheFinalTime) < (MaximumBU-MinimumBU)/2.*GetBurnUpPrecision() )
  				{ delete reader; return 0; }
  		}
  		

@@ -106,7 +106,7 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	void SetPCMPrecision(double pcm){fPCMprecision = pcm;}		  //!< Set the precision on @f$\langle k \rangle@f$ prediction [pcm]. Neural network predictor constructors
 	double GetPCMPrecision(){return fPCMprecision/1e5;}//!< Get the precision on @f$\langle k \rangle@f$ prediction []. Neural network predictor constructors
 	
-	double GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU);//!<Get the maximum reachable burnup according the freshfuel composition
+	double CalculateTargetParameter(IsotopicVector FuelToTest);//!<Get the a fuel parameter associated to the fuel ---> here the parameter is the BU
 	void   GetModelInformation();//!<Read the fMLPInformationFile and fill containers and variables
 	
 	//@}
@@ -165,7 +165,7 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	void ReadLine(string line);
 	//}
 	
-	double GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetBU);
+	double GetMaximumBurnUp_MLP(IsotopicVector TheFuel);
 	double GetMaximumBurnUp_Pol2(IsotopicVector TheFuel, double TargetBU);
 
 	//@}
