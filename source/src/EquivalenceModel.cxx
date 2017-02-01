@@ -485,12 +485,14 @@ DBGL
 	map < string , double > BUMin; 
 	map < string , double > BUMax; 
 
+	IsotopicVector FuelToTest;
+
 	for( it_i_s = StreamListPriority.begin();  it_i_s != StreamListPriority.end(); it_i_s++)
 	{	
 		//Calculate BU min for each possibility : min1 ; max1 + min2 ;  max1 + max2 + min3 ....
 		MassMin[(*it_i_s ).second] 	=  HMMass * StreamListMassFractionMin[(*it_i_s).second];
 		ConvertMassToLambdaVector((*it_i_s ).second, lambda[(*it_i_s ).second], MassMin[(*it_i_s ).second], StreamArray[(*it_i_s ).second]);
-		IsotopicVector FuelToTest 	= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
 		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
 		BUMin[(*it_i_s ).second] 	=  CalculateTargetParameter(FuelToTest);
 
@@ -539,12 +541,59 @@ DBGL
 
 	}
 
+
+	//Search the BU max //	
+	int count = 0;
+
+	string MaterialToSearch 	= (*it_i_s ).second;
+	double CalculatedBurnUp 	= BUMax[MaterialToSearch] ;   //Algo start with maximum point
+	double MassToAdd 		= MassMax[MaterialToSearch]; //Algo start with maximum point
 	
+	double LastMassMinus 	= 0.0; //Used in bissection method 
+	double LastMassPlus		= 0.0; //Used in bissection method 	
+
+	FuelToTest.Clear();
+
+	do
+	{
+		if(count > fMaxIterration)
+		{
+			ERROR << "CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on burnup using :\nYourEquivalenceModel->SetBurnUpPrecision(Precision); " << endl;
+			ERROR << "Targeted Burnup : "  <<BurnUp<<endl;
+			ERROR << "Last calculated Burnup : " <<CalculatedBurnUp<<endl;
+			ERROR << "Last Fresh fuel normalized composition : " <<endl;
+			ERROR << FuelToTest.sPrint()<<endl;	
+			exit(1);
+		}
+
+		if( (CalculatedBurnUp - BurnUp) < 0 ) //Need to add more fissile material in fuel
+		{
+			LastMassMinus = MassToAdd;
+			MassToAdd 	= MassToAdd + fabs(LastMassPlus - MassToAdd)/2.;
+		}
+		else if( (CalculatedBurnUp - BurnUp) > 0) //Need to add less fissile material in fuel
+		{
+			LastMassPlus 	= MassToAdd;
+			MassToAdd 	= MassToAdd - fabs(LastMassMinus - MassToAdd)/2.;
+		}
+		ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassToAdd, StreamArray[MaterialToSearch]);
+		
+		FuelToTest 		= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+		FuelToTest 		= FuelToTest/FuelToTest.GetSumOfAll();
+		CalculatedBurnUp 	= CalculateTargetParameter(FuelToTest);
+		
+		count ++;
+		cout<<CalculatedBurnUp<<endl;
+
+	}while(fabs(BurnUp - CalculatedBurnUp) > GetBurnUpPrecision()*BurnUp);
+
+	cout<<CalculatedBurnUp<<endl;
 
 	cout<<"Ca fonctionne !!! "<<endl;
 	exit(1);
 
-/*	//Search in the sorted stream array the point where calculated BU is higher than targeted BU//
+/*
+	//Search in the sorted stream array the point where calculated BU is higher than targeted BU//
 
 	bool BurnUpExceeded 		= false ;
 	int BurnUpExceededPosition 	= 0;
