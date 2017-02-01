@@ -96,9 +96,13 @@ class EquivalenceModel : public CLASSObject
 	int GetStreamListNumber(){return fStreamList.size();};
 	int GetMaxIterration()		 const	{ return fMaxIterration; }		//!< Max iterration in build fueld algorythm	
 	double GetBurnUpPrecision(){return fBurnUpPrecision;}//!< Get the precision on Burnup : proportion of the targeted burnup
+	double GetStreamListEqMMassFractionMax(string keyword){return fStreamListEqMMassFractionMax[keyword] ;}
+	double GetStreamListEqMMassFractionMin(string keyword){return fStreamListEqMMassFractionMin[keyword] ;}
 	
 	void SetMaxIterration(int val)			{ fMaxIterration = val; }	//!< Max iteration in build fuel algorithm
 	void SetBurnUpPrecision(double prop){fBurnUpPrecision = prop;} //!< Set the precision on Burnup : proportion of the targeted burnup
+	void SetStreamListEqMMassFractionMax(string keyword, double value){fStreamListEqMMassFractionMax[keyword] = value;}
+	void SetStreamListEqMMassFractionMin(string keyword, double value){fStreamListEqMMassFractionMin[keyword] = value;}
 
 	virtual double CalculateTargetParameter(IsotopicVector FuelToTest) = 0; //!< Calculate a parameter (BU, keff, ...) associated to the fuel 
 	

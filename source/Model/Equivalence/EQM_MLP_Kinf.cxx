@@ -26,99 +26,7 @@
 //	For REP MOX use
 //
 //________________________________________________________________________
-EQM_MLP_Kinf::EQM_MLP_Kinf(string WeightPathAlpha0, string WeightPathAlpha1, string WeightPathAlpha2, string InformationFile,  int NumOfBatch, double CriticalityThreshold):EquivalenceModel(new CLASSLogger("EQM_MLP_Kinf.log"))
-{
-	/**The information file and tmva weight*/
-	fTMVAWeightPath.push_back(WeightPathAlpha0);
-	fTMVAWeightPath.push_back(WeightPathAlpha1);
-	fTMVAWeightPath.push_back(WeightPathAlpha2);
-	
-	fMaximalBU 		= 0;
-	fNumberOfBatch 	= NumOfBatch;
-	fKThreshold 		= CriticalityThreshold ;
 
-	fInformationFile 	= InformationFile;
-	LoadKeyword();
-	ReadNFO();//Getting information from fInformationFile
-	
-	SetBurnUpPrecision(0.008);//0.8 % of the targeted burnup
-	SetPCMPrecision(10);
-
-	INFO << "__An equivalence model has been define__" << endl;
-	INFO << "\tThis model is based on the prediction of kinf" << endl;
-	INFO << "\tThe TMVA weight  files are :" << endl;
-	INFO << "\t" << fTMVAWeightPath[0] << endl;
-	INFO << "\t" << fTMVAWeightPath[1] << endl;
-	INFO << "\t" << fTMVAWeightPath[2] << endl;
-	INFO << "\tThe Information file is :" << endl;
-	INFO << "\t" << fInformationFile << endl;
-	INFO << "Maximal burnup (GWd/tHM) : " <<  fMaximalBU << endl;
-	EquivalenceModel::PrintInfo();
-
-	map < string , IsotopicVector >::iterator it_s_IV;
-	map < string , double >::iterator it_s_D;
-	bool EmptyList = false;
-	bool FirstContentNULL = false;
-
-	for(  it_s_IV = fStreamList.begin();   it_s_IV != fStreamList.end();  it_s_IV++)
-	{	
-		if(fStreamList[(* it_s_IV).first].GetIsotopicQuantity().empty()){EmptyList=true;}
-	}
-
-	if(fMapOfTMVAVariableNames.empty() || EmptyList==true || fMaximalBU == 0 )	
-	{
-		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
-		exit(1);
-	}
-
-}
-//________________________________________________________________________
-EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string WeightPathAlpha0, string WeightPathAlpha1, string WeightPathAlpha2, string InformationFile,  int NumOfBatch, double CriticalityThreshold):EquivalenceModel(log)
-{
-	/**The information file and tmva weight*/
-	fTMVAWeightPath.push_back(WeightPathAlpha0);
-	fTMVAWeightPath.push_back(WeightPathAlpha1);
-	fTMVAWeightPath.push_back(WeightPathAlpha2);
-	
-	fMaximalBU 		= 0;
-	fNumberOfBatch 	= NumOfBatch;
-	fKThreshold 		= CriticalityThreshold ;
-	
-	fInformationFile 	= InformationFile;
-	LoadKeyword();
-	ReadNFO();//Getting information from fInformationFile
-	
-	SetBurnUpPrecision(0.008);//0.8 % of the targeted burnup
-	SetPCMPrecision(10);
-	
-	INFO << "__An equivalence model has been define__" << endl;
-	INFO << "\tThis model is based on the prediction of kinf" << endl;
-	INFO << "\tThe TMVA weight  files are :" << endl;
-	INFO << "\t" << fTMVAWeightPath[0] << endl;
-	INFO << "\t" << fTMVAWeightPath[1] << endl;
-	INFO << "\t" << fTMVAWeightPath[2] << endl;
-	INFO << "\tThe Information file is :" << endl;
-	INFO << "\t" << fInformationFile << endl;
-	INFO << "Maximal burnup (GWd/tHM) : " <<  fMaximalBU << endl;
-	EquivalenceModel::PrintInfo();
-
-	map < string , IsotopicVector >::iterator it_s_IV;
-	map < string , double >::iterator it_s_D;
-	bool EmptyList = false;
-	bool FirstContentNULL = false;
-
-	for(  it_s_IV = fStreamList.begin();   it_s_IV != fStreamList.end();  it_s_IV++)
-	{	
-		if(fStreamList[(* it_s_IV).first].GetIsotopicQuantity().empty()){EmptyList=true;}
-	}
-
-	if(fMapOfTMVAVariableNames.empty() || EmptyList==true || fMaximalBU == 0)	
-	{
-		ERROR<<"Missing information file in : "<<fInformationFile<<endl;
-		exit(1);
-	}
-
-}
 //________________________________________________________________________
 EQM_MLP_Kinf::EQM_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, string InformationFile, double CriticalityThreshold):EquivalenceModel(new CLASSLogger("EQM_MLP_Kinf.log"))
 {
@@ -373,7 +281,7 @@ double EQM_MLP_Kinf::ExecuteTMVA(TTree* InputTree,string WeightPath, bool IsTime
 	return (double)val;//retourn k_{inf}(t = Time)
 }
 //________________________________________________________________________
-double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel)
+double EQM_MLP_Kinf::CalculateTargetParameter(IsotopicVector TheFuel)
 {
 	/**************************************************************************/
 	//With a dichotomy, the maximal irradiation time (TheFinalTime) is calculated
@@ -455,95 +363,4 @@ double EQM_MLP_Kinf::GetMaximumBurnUp_MLP(IsotopicVector TheFuel)
 	delete reader;
 	//cout<<endl;
 	return SecondToBurnup(TheFinalTime);
-}
-//________________________________________________________________________
-double EQM_MLP_Kinf::GetMaximumBurnUp_Pol2(IsotopicVector TheFuel,double TargetBU)
-{
-	
-	TTree* InputTree = CreateTMVAInputTree(TheFuel,-1);
-	double Alpha_0 = ExecuteTMVA(InputTree,fTMVAWeightPath[0],false);
-	double Alpha_1 = ExecuteTMVA(InputTree,fTMVAWeightPath[1],false);
-	double Alpha_2 = ExecuteTMVA(InputTree,fTMVAWeightPath[2],false);
-	delete InputTree;
-	
-	if(Alpha_0 < fKThreshold) //not enought fissile for sure !!
-		return 0;
-	
-	double Sum = 0;
-	double SumSquare = 0;
-	
-	for(int i = 1 ; i<=   fNumberOfBatch; i++)
-	{	Sum+= double(i)/double(fNumberOfBatch);
-		SumSquare+= double(i*i)/double(fNumberOfBatch*fNumberOfBatch);
-	}
-	
-	double C = (Alpha_0-fKThreshold)*fNumberOfBatch;
-	double B = Alpha_1*Sum;
-	double A = Alpha_2*SumSquare;
-	
-	double Delta = B*B-4*A*C;
-	
-	double T = 0;
-	if( Delta > 0)
-	{
-		double T_1 = (-B + sqrt(Delta))/(2*A);
-		double T_2 = (-B - sqrt(Delta))/(2*A);
-		
-		if(T_1 < 0 && T_2 > 0)
-			T = T_2;
-		else if(T_1 > 0 && T_2 < 0)
-			T = T_1;
-		
-		else if( T_1 > 0 && T_2 > 0 )
-		{
-			if(T_2 < T_1)
-				T = T_2;
-			else
-				T = T_1;
-		}
-		else
-		{
-			ERROR << "No positive solution" << endl;
-			exit(1);
-		}
-	}
-	else if(Delta == 0)
-	{	T = -B/(2*A);
-		if(T<0)
-		{	ERROR << "No positive solution" << endl;
-			exit(1);
-		}
-	}
-	else
-	{
-		WARNING << "No real solution" << endl;
-		double K_LongTime = Alpha_0+BurnupToSecond(10*TargetBU)*Alpha_1+Alpha_2*BurnupToSecond(10*TargetBU)*BurnupToSecond(10*TargetBU);
-		DBGV("K_LongTime " << K_LongTime)
-		
-		if(K_LongTime > fKThreshold)
-			return 10000;
-		else
-		{
-			ERROR << " CRITICAL ! Can't find a physical solution ! \n Should not happening please contact BLG :" << endl;
-			ERROR << "mail to baptiste.leniau@subatech.in2p2.fr\nor nicolas.thiolliere@subatech.in2p3.fr " << endl;
-			exit(1);
-		}
-		
-	}
-	
-	return SecondToBurnup(T);
-}
-//________________________________________________________________________
-double EQM_MLP_Kinf::CalculateTargetParameter(IsotopicVector TheFuel)
-{
-	double TheBurnUp = -1;
-	if(fTMVAWeightPath.size() == 1)
-		TheBurnUp  = 	GetMaximumBurnUp_MLP(TheFuel);
-	else
-	{
-		ERROR << "This method is not yet set up" << endl;
-		exit(0);
-	}
-	
-	return TheBurnUp;
 }

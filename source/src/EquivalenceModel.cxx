@@ -249,7 +249,7 @@ void EquivalenceModel::ReadSpecificPower(const string &line)
 //________________________________________________________________________
 void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
 {
-DBGL
+	DBGL
 	if(lambda.size() == 0) //then we have to add an element to send the error code to the fab (case for no storage in stream)
 	{
 		lambda.push_back(-1);
@@ -262,12 +262,12 @@ DBGL
 			lambda[i] = -1;	
 		}
 	}	
-DBGL
+	DBGL
 }
 //________________________________________________________________________
 void EquivalenceModel::StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks)
 {
-DBGL	
+	DBGL	
 	// Calculating total mass of stock once and for all
 	double TotalMassInStocks = 0;
 	map < string , vector <IsotopicVector> >::const_iterator it_s_vIV;
@@ -288,13 +288,13 @@ DBGL
 		fLambdaMax[(*it_s_vIV).first] = Stocks.at( it_s_vIV->first ).size();	
 		fTotalMassInStocks[ it_s_vIV->first ] = TotalMassInStocks * 1e6; // in grams
 	}
-DBGL
+	DBGL
 }
 
 //________________________________________________________________________
 void EquivalenceModel::ConvertMassToLambdaVector(string MaterialDenomination, vector<double>& lambda, double MaterialMassNeeded, vector <IsotopicVector>  Stocks)
 {
-DBGL
+	DBGL
 	double Lambda_tot = 0; 
 
 	// Calculation of Lambda tot associated to the required mass MaterialMassNeeded
@@ -330,13 +330,13 @@ DBGL
 		lambda[i]=1;
 
 	lambda[IntegerPart] = DecimalPart;
-DBGL	
+	DBGL	
 }
 
 //________________________________________________________________________
 IsotopicVector EquivalenceModel::BuildFuelToTest(map < string, vector<double> >& lambda, map < string , vector <IsotopicVector> > const& StreamArray, double HMMass, map <string, bool> StreamListIsBuffer)
 {
-DBGL
+	DBGL
 	//Iterators declaration
 	map < string , vector  <IsotopicVector> >::const_iterator it_s_vIV;
 	map < string , bool >::iterator it_s_B;
@@ -379,7 +379,7 @@ DBGL
 			IV  +=  lambda[(*it_s_vIV).first][i] * StreamArray.at( it_s_vIV->first )[i];	
 		}
 	}
-DBGL
+	DBGL
 	return IV; 
 
 }
@@ -387,7 +387,7 @@ DBGL
 //________________________________________________________________________
 map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListFPMassFractionMin, map < string , double> StreamListFPMassFractionMax, map < int , string > StreamListPriority, map < string , bool> StreamListIsBuffer)
 {
-DBGL
+	DBGL
 
 	map <string , vector<double> > lambda ; // map containing name of the list and associated vector of proportions taken from stocks
 	
@@ -397,7 +397,8 @@ DBGL
 	map < string , IsotopicVector >::iterator it_s_IV;
 	map < string , double >::iterator it_s_D;
 	map < int , string >::iterator it_i_s;
-	
+
+	// Initialize lambda to 0 //
 	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
 	{	
 		for(int i=0; i < (int)StreamArray[(*it_s_vIV).first].size(); i++)
@@ -418,7 +419,7 @@ DBGL
 		}
 	}
 	if(BreakReturnLambda) { return lambda;}
-	
+
 	/// Search for the minimum and maximum fraction of each material in fuel ///
 	map < string, double >   StreamListMassFractionMin ; 
 	map < string, double >   StreamListMassFractionMax ; 
@@ -592,19 +593,19 @@ DBGL
 		count ++;
 
 	}while(fabs(BurnUp - CalculatedBurnUp) > GetBurnUpPrecision()*BurnUp);
-
-	//cout<<CalculatedBurnUp<<endl;
-
-//	for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
-//	{
-//		for(int i=0; i<lambda[(*it_s_vD).first].size(); i++) 
-//		{
-//			cout<<(*it_s_vD).first<<" "<<lambda[(*it_s_vD).first].size()<<" "<<lambda[(*it_s_vD).first][i]<<endl;
-//		}
-//	}	
-
-//	for( it_s_IV = IVStream.begin();  it_s_IV != IVStream.end(); it_s_IV++)
-//		(*this).isIVInDomain(IVStream[(*it_s_IV).first]);
+	
+	//Final builded fuel 
+	IsotopicVector IVStream;
+	for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
+	{
+		for(int i=0; i<(int)lambda[(*it_s_vD).first].size(); i++) 
+		{
+			IVStream +=lambda[(*it_s_vIV).first][i] * StreamArray.at( it_s_vIV->first )[i];
+		}
+	}	
+	
+	//Check if BuildedFuel is in Model isotopic bounds 
+	(*this).isIVInDomain(IVStream);
 		
 	for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
 	{	
@@ -615,7 +616,7 @@ DBGL
 			DBGV(lambda[(*it_s_vD).first][i]); 
 		}
 	}
-DBGL
+	DBGL
 	return lambda;
 }
 
