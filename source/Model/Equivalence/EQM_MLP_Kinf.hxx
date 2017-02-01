@@ -76,6 +76,7 @@ class EQM_MLP_Kinf : public EquivalenceModel
 
 	void SetPCMPrecision(double pcm){fPCMprecision = pcm;}		  //!< Set the precision on @f$\langle k \rangle@f$ prediction [pcm]. Neural network predictor constructors
 	double GetPCMPrecision(){return fPCMprecision/1e5;}//!< Get the precision on @f$\langle k \rangle@f$ prediction []. Neural network predictor constructors
+	double GetEqMHigherLimitOnBU(){return fMaximalBU;} //!< Get EqM higher limit on burn-up
 	
 	double CalculateTargetParameter(IsotopicVector FuelToTest);//!<Get the a fuel parameter associated to the fuel ---> here the parameter is the BU
 	void   GetModelInformation();//!<Read the fMLPInformationFile and fill containers and variables
@@ -156,8 +157,7 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	//@}
 
 	int 	fNumberOfBatch;		//!< The number of batches for the loading plan
-	double 	fKThreshold;			//!< The @f$k_{Threshold}@f$
-	double 	fMaximalBU;			//!< The approx. maximum burnup reachable by the MLP model		
+	double 	fKThreshold;			//!< The @f$k_{Threshold}@f$	
 	double 	fBurnUpPrecision;		//!< precision on Burnup 
 	double 	fPCMprecision;			//!< precision on @f$\langle k \rangle@f$ prediction [pcm]
 			
