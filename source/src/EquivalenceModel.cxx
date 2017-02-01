@@ -406,7 +406,15 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 			lambda[(*it_s_vIV).first].push_back(0);
 		}
 	}	
-
+	// Check if the targeted burn-up is lower than maximum burn-up of model //
+	if(BurnUp > fMaximalBU)
+	{
+		ERROR << " Targeted burn-up is lower than maximum burn-up handles by EqM."<< endl;
+		ERROR << " Targeted burn-up : "<<BurnUp<<" GWd/t"<<endl;
+		ERROR << " Maximum burn-up : "<<fMaximalBU<<" GWd/t"<<endl;			
+		exit(1);	
+	}
+	
 	// Test if there is at least one stock available in each list, otherwise fuel is not built //
 	bool BreakReturnLambda = false; 
 	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
@@ -600,7 +608,7 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	{
 		for(int i=0; i<(int)lambda[(*it_s_vD).first].size(); i++) 
 		{
-			IVStream +=lambda[(*it_s_vIV).first][i] * StreamArray.at( it_s_vIV->first )[i];
+			IVStream +=lambda[(*it_s_vD).first][i] * StreamArray[(*it_s_vD).first][i];
 		}
 	}	
 	

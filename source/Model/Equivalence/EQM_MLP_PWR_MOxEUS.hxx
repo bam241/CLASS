@@ -36,7 +36,6 @@ class EQM_MLP_PWR_MOxEUS : public EquivalenceModel
 	int fNumberOfBatch ;		
 	double fKThreshold  ;
 	double fSpecificPower ;	
-	double fMaximalBU;
 	double 	fPCMPrecision;		
 
 	vector <string> fTMVAWeightPath;		//!<The weight needed by TMVA to construct and execute the multilayer perceptron

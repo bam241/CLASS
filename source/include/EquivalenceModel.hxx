@@ -154,6 +154,7 @@ class EquivalenceModel : public CLASSObject
 	map < string , double> fStreamListEqMMassFractionMin;			//!< Map that contains lists of stream according to the EqModel with mass minimum fraction
 
 	double 	fSpecificPower; 							//!< The specific power in W/gHM (HM: heavy Metal)
+	double 	fMaximalBU; 								//!< The Maximum burn-up of the model in GWd/t
 	
 	double fRelativMassPrecision;		//!< Mass precision
 	double 	fBurnUpPrecision;		//!< precision on Burnup 

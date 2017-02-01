@@ -338,7 +338,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
         double w_mPu = (m_Pu8 + m_Pu9 + m_Pu10 + m_Pu11 + m_Pu12 + m_Am1); 
 
        //cout<<"Frac "<<IV.GetTotalMass()<<" "<<t/3600./24./365.25<<" "<<w_mPu<<"   "<<wPu<<"   "<<U5<<"   "<<"    "<<U8<<"    "<<Pu8<<"    "<<Pu9<<"    "<<Pu10<<"    "<<Pu11<<"    "<<Pu12<<"    "<<Am1<<endl; 
-        cout<<"Masse "<<IV.GetTotalMass()<<" "<<t/3600./24./365.25<<" "<<m_Pu<<" "<<w_mPu<<" "<<m_U5<<" "<<m_U8<<"   "<<M_Pu8<<"   "<<M_Pu9<<"   "<<M_Pu10<<"    "<<M_Pu11<<"    "<<M_Pu12<<"    "<<M_Am1<<endl; 
+        cout<<"Masse "<<IV.GetTotalMass()<<" "<<t/3600./24./365.25<<" "<<m_Pu<<" "<<w_mPu<<" "<<m_U5<<" "<<m_U8<<"   "<<m_Pu8<<"   "<<m_Pu9<<"   "<<m_Pu10<<"    "<<m_Pu11<<"    "<<m_Pu12<<"    "<<m_Am1<<endl; 
         //cout<<endl;
    
         EvolutionData EvolDB = FuelType->GenerateEvolutionData(GetDecay(IV,fCycleTime), R_CycleTime, R_Power);
