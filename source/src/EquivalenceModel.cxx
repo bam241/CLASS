@@ -411,7 +411,7 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	{
 		ERROR << " Targeted burn-up is higher than maximum burn-up handles by EqM."<< endl;
 		ERROR << " Targeted burn-up : "<<BurnUp<<" GWd/t"<<endl;
-		ERROR << " Maximum burn-up : "<<fMaximalBU<<" GWd/t"<<endl;			
+		ERROR << " Maximum burn-up : "<<GetEqMHigherLimitOnBU()<<" GWd/t"<<endl;			
 		exit(1);	
 	}
 

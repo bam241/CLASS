@@ -942,7 +942,7 @@ void FabricationPlant::AddStorage(string keyword, Storage* Stock, double MassFra
     map < string , bool >::iterator it_s_B;
     for( it_i_s = fStreamListFPPriority.begin();  it_i_s != fStreamListFPPriority.end(); it_i_s++)
     { 
-            if ((*it_i_s).first == Priority)
+            if ((*it_i_s).first == Priority && (*it_i_s).second != keyword)
             {
                     ERROR << "2 materials have the same position in priority order : "<<(*it_i_s).second<<" and "<<keyword<< endl;
                     exit(1);
@@ -993,7 +993,7 @@ void FabricationPlant::AddInfiniteStorage(string keyword, double MassFractionMin
     map < string , bool >::iterator it_s_B;
     for( it_i_s = fStreamListFPPriority.begin();  it_i_s != fStreamListFPPriority.end(); it_i_s++)
     { 
-            if ((*it_i_s).first == Priority)
+            if ((*it_i_s).first == Priority && (*it_i_s).second != keyword)
             {
                     ERROR << "2 materials have the same position in priority order : "<<(*it_i_s).second<<" and "<<keyword<< endl;
                     exit(1);

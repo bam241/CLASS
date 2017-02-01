@@ -98,6 +98,7 @@ class EquivalenceModel : public CLASSObject
 	double GetBurnUpPrecision(){return fBurnUpPrecision;}//!< Get the precision on Burnup : proportion of the targeted burnup
 	double GetStreamListEqMMassFractionMax(string keyword){return fStreamListEqMMassFractionMax[keyword] ;}
 	double GetStreamListEqMMassFractionMin(string keyword){return fStreamListEqMMassFractionMin[keyword] ;}
+	double GetEqMHigherLimitOnBU(){return fMaximalBU;}
 	
 	void SetMaxIterration(int val)			{ fMaxIterration = val; }	//!< Max iteration in build fuel algorithm
 	void SetBurnUpPrecision(double prop){fBurnUpPrecision = prop;} //!< Set the precision on Burnup : proportion of the targeted burnup

@@ -18,16 +18,16 @@
 #include "CLASSReader.hxx"
 
 
-//________________________________________________________________________
+//_________________________________________________________________________________
 //
 //		EQM_MLP_Kinf
 //
 //	Equivalenve Model based on multi layer perceptron from TMVA (root cern)
 //	For REP MOX use
 //
-//________________________________________________________________________
+//_________________________________________________________________________________
 
-//________________________________________________________________________
+//_________________________________________________________________________________
 EQM_MLP_Kinf::EQM_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, string InformationFile, double CriticalityThreshold):EquivalenceModel(new CLASSLogger("EQM_MLP_Kinf.log"))
 {
 	/**The information file and tmva weight*/
@@ -42,7 +42,7 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, string Inform
 	fNumberOfBatch 	= NumOfBatch;
 	fKThreshold 		= CriticalityThreshold ;
 
-	SetBurnUpPrecision(0.008);//0.8 % of the targeted burnup
+	SetBurnUpPrecision(0.005);//0.8 % of the targeted burnup
 	SetPCMPrecision(10);
 	
 	fInformationFile 	= InformationFile;
@@ -91,7 +91,7 @@ EQM_MLP_Kinf::EQM_MLP_Kinf(CLASSLogger* log, string TMVAWeightPath,  int NumOfBa
 	fNumberOfBatch 	= NumOfBatch;
 	fKThreshold 		= CriticalityThreshold ;
 
-	SetBurnUpPrecision(0.008);//0.8 % of the targeted burnup
+	SetBurnUpPrecision(0.005);//0.8 % of the targeted burnup
 	SetPCMPrecision(10);
 	
 	INFO << "__An equivalence model has been define__" << endl;
@@ -202,7 +202,7 @@ TTree* EQM_MLP_Kinf::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double Thi
 	
 	for( it = fMapOfTMVAVariableNames.begin()  ; it != fMapOfTMVAVariableNames.end() ; it++)
 	{
-		InputTree->Branch( ((*it).second).c_str()	,&InputTMVA[j], ((*it).second + "/F").c_str());
+		InputTree->Branch( ((*it).second).c_str(), &InputTMVA[j], ((*it).second + "/F").c_str());
 		IVInputTMVA+=  ((*it).first)*1;
 		j++;
 	}
