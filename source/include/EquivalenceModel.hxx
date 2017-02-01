@@ -140,7 +140,7 @@ class EquivalenceModel : public CLASSObject
 	bool isIVInDomain(IsotopicVector IV);
 	void StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks);
 	void ConvertMassToLambdaVector(string MaterialDenomination, vector<double>& lambda, double MaterialMassNeeded, vector <IsotopicVector>  Stocks);	
-	IsotopicVector BuildFuelToTest(map < string, vector<double> > lambda, map < string , vector <IsotopicVector> > const& StreamArray, double HMMass, map <string, bool> StreamListIsBuffer); //Build a fuel with the buffer according to fissile lambda
+	IsotopicVector BuildFuelToTest(map < string, vector<double> >& lambda, map < string , vector <IsotopicVector> > const& StreamArray, double HMMass, map <string, bool> StreamListIsBuffer); //Build a fuel with the buffer according to fissile lambda
 
 	protected :
 	

@@ -287,8 +287,59 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
     {
         DBGV("Building process from initial stocks has succeeded : ")
         IsotopicVector IV 		= BuildFuelFromEqModel(LambdaArray);
-        IsotopicVector LoadedIV 	= GetDecay(IV,fCycleTime);
+        IsotopicVector LoadedIV 	           = GetDecay(IV,fCycleTime);
         
+        double Pu8   = LoadedIV.GetZAIIsotopicQuantity(94,238,0);
+        double Pu9   = LoadedIV.GetZAIIsotopicQuantity(94,239,0);
+        double Pu10 = LoadedIV.GetZAIIsotopicQuantity(94,240,0);
+        double Pu11 = LoadedIV.GetZAIIsotopicQuantity(94,241,0);
+        double Pu12 = LoadedIV.GetZAIIsotopicQuantity(94,242,0);
+        double Am1 = LoadedIV.GetZAIIsotopicQuantity(95,241,0);
+        double U5    = LoadedIV.GetZAIIsotopicQuantity(92,235,0);
+        double U8    = LoadedIV.GetZAIIsotopicQuantity(92,238,0);
+        double Ntot  = Pu8 + Pu9 + Pu10 + Pu11 + Pu12 +Am1 + U5 +U8;
+        
+        Pu8         = Pu8/Ntot;
+        Pu9         = Pu9/Ntot;
+        Pu10       = Pu10/Ntot;
+        Pu11       = Pu11/Ntot;
+        Pu12       = Pu12/Ntot;
+        Am1        = Am1/Ntot;
+        U5          = U5/Ntot;
+        U8          = U8/Ntot;
+
+        double eU5      = U5/(1-(Pu8 + Pu9 + Pu10 + Pu11 + Pu12 +Am1));
+        double wPu      = Pu8 + Pu9 + Pu10 + Pu11 + Pu12 +Am1;
+
+        Pu8         = Pu8/wPu;
+        Pu9         = Pu9/wPu;
+        Pu10       = Pu10/wPu;
+        Pu11       = Pu11/wPu;
+        Pu12       = Pu12/wPu;
+        Am1        = Am1/wPu;
+        
+        double m_Pu8    = LoadedIV.GetZAIIsotopicQuantity(94,238,0)*238e-06/6.023e23/LoadedIV.GetTotalMass();
+        double m_Pu9    = LoadedIV.GetZAIIsotopicQuantity(94,239,0)*239e-06/6.023e23/LoadedIV.GetTotalMass();
+        double m_Pu10   = LoadedIV.GetZAIIsotopicQuantity(94,240,0)*240e-06/6.023e23/LoadedIV.GetTotalMass();
+        double m_Pu11   = LoadedIV.GetZAIIsotopicQuantity(94,241,0)*241e-06/6.023e23/LoadedIV.GetTotalMass();
+        double m_Pu12   = LoadedIV.GetZAIIsotopicQuantity(94,242,0)*242e-06/6.023e23/LoadedIV.GetTotalMass();
+        double m_Am1    = LoadedIV.GetZAIIsotopicQuantity(95,241,0)*241e-06/6.023e23/LoadedIV.GetTotalMass();
+
+        double M_Pu8    = LoadedIV.GetZAIIsotopicQuantity(94,238,0)*238e-06/6.023e23;
+        double M_Pu9    = LoadedIV.GetZAIIsotopicQuantity(94,239,0)*239e-06/6.023e23;
+        double M_Pu10  = LoadedIV.GetZAIIsotopicQuantity(94,240,0)*240e-06/6.023e23;
+        double M_Pu11  = LoadedIV.GetZAIIsotopicQuantity(94,241,0)*241e-06/6.023e23;
+        double M_Pu12  = LoadedIV.GetZAIIsotopicQuantity(94,242,0)*242e-06/6.023e23;
+        double M_Am1   = LoadedIV.GetZAIIsotopicQuantity(95,241,0)*241e-06/6.023e23;
+
+
+        double m_Pu = M_Pu8 + M_Pu9 + M_Pu10 + M_Pu11 + M_Pu12 + M_Am1;
+        double w_mPu = (m_Pu8 + m_Pu9 + m_Pu10 + m_Pu11 + m_Pu12 + m_Am1); 
+
+       cout<<"Frac "<<IV.GetTotalMass()<<" "<<t/3600./24./365.25<<" "<<w_mPu<<"   "<<wPu<<"   "<<eU5<<"   "<<"    "<<U8<<"    "<<Pu8<<"    "<<Pu9<<"    "<<Pu10<<"    "<<Pu11<<"    "<<Pu12<<"    "<<Am1<<endl; 
+        //cout<<"Masse "<<IV.GetTotalMass()<<" "<<t/3600./24./365.25<<" "<<m_Pu<<"   "<<M_Pu8<<"   "<<M_Pu9<<"   "<<M_Pu10<<"    "<<M_Pu11<<"    "<<M_Pu12<<"    "<<M_Am1<<endl; 
+        //cout<<endl;
+   
         EvolutionData EvolDB = FuelType->GenerateEvolutionData(GetDecay(IV,fCycleTime), R_CycleTime, R_Power);
 
         {
