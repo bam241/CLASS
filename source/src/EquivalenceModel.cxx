@@ -71,7 +71,7 @@ void EquivalenceModel::ReadLine(string line)
 	DBGL
 }
 //________________________________________________________________________
-void EquivalenceModel::LoadKeyword()
+void EquivalenceModel::LoadKeyword() 
 {
 	DBGL
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",			& EquivalenceModel::ReadZAIlimits)	 	 );
