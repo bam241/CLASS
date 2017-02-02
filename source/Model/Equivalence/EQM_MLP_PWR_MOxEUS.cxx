@@ -141,7 +141,7 @@ TTree* EQM_MLP_PWR_MOxEUS::CreateTMVAInputTree(IsotopicVector TheFuel, double Th
 	Pu12   	= TheFuel.GetZAIIsotopicQuantity(94,242,0)/Ntot;
 	Am1    	= TheFuel.GetZAIIsotopicQuantity(95,241,0)/Ntot;
 
-	Time=ThisTime;
+	Time = ThisTime;
 
 	InputTree->Fill();
 	return InputTree;

@@ -5,7 +5,6 @@
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel():CLASSObject()
 {
-	fMaxIterration 		= 500; 		// Max iterration in build fueld algorythum
 	freaded 		= false;
 	
 	EquivalenceModel::LoadKeyword();
@@ -13,7 +12,6 @@ EquivalenceModel::EquivalenceModel():CLASSObject()
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 {
-	fMaxIterration 		= 500; 		// Max iterration in build fueld algorythm
 	freaded 		= false;
 	
 	EquivalenceModel::LoadKeyword();
@@ -81,51 +79,15 @@ void EquivalenceModel::LoadKeyword()
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmax",	& EquivalenceModel::ReadEqMaxFraction) 	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_list",			& EquivalenceModel::ReadList) 	 	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower",		& EquivalenceModel::ReadSpecificPower)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zainame", 		& EquivalenceModel::ReadZAIName) 		 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_maxburnup", 		& EquivalenceModel::ReadMaxBurnUp) 	 );	
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_targetparameter",	& EquivalenceModel::ReadTargetParameter) 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_maxiterration",	& EquivalenceModel::ReadMaxIterration) 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_predictortype",	& EquivalenceModel::ReadPredictorType)	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_output", 		& EquivalenceModel::ReadOutput) 		 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_buffer", 		& EquivalenceModel::ReadBuffer)	 	 );	
+
 	DBGL
-}
-//________________________________________________________________________
-void EquivalenceModel::PrintInfo()
-{
-	INFO << "Reactor Type : "<< fDBRType << endl;
-	INFO << "Fuel Type : "<< fDBFType << endl;
-	INFO << "Specific Power [W/g]: "<< fSpecificPower << endl;
-	
-	map < string , IsotopicVector >::iterator it_s_IV;
-	map < string , double >::iterator it_s_D;
-
-	for(  it_s_IV = fStreamList.begin();   it_s_IV != fStreamList.end();  it_s_IV++)
-	{	
-		INFO <<(* it_s_IV).first<<"  (Z A I) :" << endl;
-		map<ZAI ,double >::iterator it1;
-		map<ZAI ,double > fMap1 = fStreamList[(* it_s_IV).first].GetIsotopicQuantity();
-		for(it1 = fMap1.begin()  ; it1 != fMap1.end() ; it1++)
-			INFO << (*it1).first.Z() <<" "<< (*it1).first.A() <<" "<< (*it1).first.I() << endl;
-	}
-	INFO<<"Minimum fraction in the fuel for each material : "<<endl;
-	for(  it_s_D = fStreamListEqMMassFractionMin.begin();   it_s_D != fStreamListEqMMassFractionMin.end();  it_s_D++)
-	{
-		INFO <<(* it_s_D).first<<" "<<fStreamListEqMMassFractionMin[(* it_s_D).first]<<endl;
-	}	
-
-	INFO<<"Maximum fraction in the fuel for each material : "<<endl;
-	for(  it_s_D = fStreamListEqMMassFractionMax.begin();   it_s_D != fStreamListEqMMassFractionMax.end();  it_s_D++)
-	{
-		INFO <<(* it_s_D).first<<" "<<fStreamListEqMMassFractionMax[(* it_s_D).first]<<endl;
-	}	
-
-
-	INFO<<"ZAI limits (validity domain)[prop in fresh fuel] (Z A I min max) :"<<endl;
-	for (map< ZAI,pair<double,double> >::iterator Domain_it = fZAILimits.begin(); Domain_it != fZAILimits.end(); Domain_it++)
-	{	
-		double ThatZAIMin  = Domain_it->second.first;
-		double ThatZAIMax  = Domain_it->second.second;
-		int Z = Domain_it->first.Z();
-		int A = Domain_it->first.A();
-		int I = Domain_it->first.I();
-
-		INFO <<ThatZAIMin<<" < ZAI ("<< Z<< " " << A << " " << I<<")"<<" < "<<ThatZAIMax<< endl;
-	}
-
 }
 //________________________________________________________________________
 void EquivalenceModel::ReadType(const string &line)
@@ -162,7 +124,7 @@ void EquivalenceModel::ReadZAIlimits(const string &line)
 	int I 	= atoi(StringLine::NextWord(line, pos, ' ').c_str());
 	
 	double downLimit 	= atof(StringLine::NextWord(line, pos, ' ').c_str());
-	double upLimit 		= atof(StringLine::NextWord(line, pos, ' ').c_str());
+	double upLimit 	= atof(StringLine::NextWord(line, pos, ' ').c_str());
 	
 	if (upLimit < downLimit)
 	{
@@ -245,6 +207,175 @@ void EquivalenceModel::ReadSpecificPower(const string &line)
 	
 	DBGL
 }
+//________________________________________________________________________
+void EquivalenceModel::ReadZAIName(const string &line)
+{
+	DBGL
+	
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_zainame" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_zainame\" not found !" << endl;
+		exit(1);
+	}
+	
+	int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	int I  = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+	
+	string name = StringLine::NextWord(line, pos, ' ');
+	
+	fMapOfTMVAVariableNames.insert( pair<ZAI,string>( ZAI(Z, A, I), name ) );
+
+	DBGL	
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadMaxBurnUp(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_maxburnup" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_maxburnup\" not found !" << endl;
+		exit(1);
+	}
+	
+	fMaximalBU = atof(StringLine::NextWord(line, pos, ' ').c_str());
+
+	DBGL
+}
+
+//________________________________________________________________________
+void EquivalenceModel::ReadTargetParameter(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_targetparameter" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_targetparameter\" not found !" << endl;
+		exit(1);
+	}
+	
+	fTargetParameter = atof(StringLine::NextWord(line, pos, ' ').c_str());
+
+	DBGL
+}
+
+//________________________________________________________________________
+void EquivalenceModel::ReadMaxIterration(const string &line)
+{
+	DBGL
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_maxiterration" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_maxiterration\" not found !" << endl;
+		exit(1);
+	}
+	
+	fMaxIterration = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+
+	DBGL
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadPredictorType(const string &line)
+{
+	DBGL
+	
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_predictortype" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_predictortype\" not found !" << endl;
+		exit(1);
+	}
+		
+	fPredictorType = StringLine::NextWord(line, pos, ' ');
+	
+	DBGL	
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadOutput(const string &line)
+{
+	DBGL
+	
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_output" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_output\" not found !" << endl;
+		exit(1);
+	}
+		
+	fOutput = StringLine::NextWord(line, pos, ' ');
+	
+	DBGL	
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadBuffer(const string &line)
+{
+	DBGL
+	
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_buffer" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_buffer\" not found !" << endl;
+		exit(1);
+	}
+		
+	fBuffer = StringLine::NextWord(line, pos, ' ');
+	
+	DBGL	
+}
+//________________________________________________________________________
+void EquivalenceModel::PrintInfo()
+{
+	INFO << "Reactor Type : "<< fDBRType << endl;
+	INFO << "Fuel Type : "<< fDBFType << endl;
+	INFO << "Specific Power [W/g]: "<< fSpecificPower << endl;
+	
+	map < string , IsotopicVector >::iterator it_s_IV;
+	map < string , double >::iterator it_s_D;
+
+	for(  it_s_IV = fStreamList.begin();   it_s_IV != fStreamList.end();  it_s_IV++)
+	{	
+		INFO <<(* it_s_IV).first<<"  (Z A I) :" << endl;
+		map<ZAI ,double >::iterator it1;
+		map<ZAI ,double > fMap1 = fStreamList[(* it_s_IV).first].GetIsotopicQuantity();
+		for(it1 = fMap1.begin()  ; it1 != fMap1.end() ; it1++)
+			INFO << (*it1).first.Z() <<" "<< (*it1).first.A() <<" "<< (*it1).first.I() << endl;
+	}
+	INFO<<"Minimum fraction in the fuel for each material : "<<endl;
+	for(  it_s_D = fStreamListEqMMassFractionMin.begin();   it_s_D != fStreamListEqMMassFractionMin.end();  it_s_D++)
+	{
+		INFO <<(* it_s_D).first<<" "<<fStreamListEqMMassFractionMin[(* it_s_D).first]<<endl;
+	}	
+
+	INFO<<"Maximum fraction in the fuel for each material : "<<endl;
+	for(  it_s_D = fStreamListEqMMassFractionMax.begin();   it_s_D != fStreamListEqMMassFractionMax.end();  it_s_D++)
+	{
+		INFO <<(* it_s_D).first<<" "<<fStreamListEqMMassFractionMax[(* it_s_D).first]<<endl;
+	}	
+
+
+	INFO<<"ZAI limits (validity domain)[prop in fresh fuel] (Z A I min max) :"<<endl;
+	for (map< ZAI,pair<double,double> >::iterator Domain_it = fZAILimits.begin(); Domain_it != fZAILimits.end(); Domain_it++)
+	{	
+		double ThatZAIMin  = Domain_it->second.first;
+		double ThatZAIMax  = Domain_it->second.second;
+		int Z = Domain_it->first.Z();
+		int A = Domain_it->first.A();
+		int I = Domain_it->first.I();
+
+		INFO <<ThatZAIMin<<" < ZAI ("<< Z<< " " << A << " " << I<<")"<<" < "<<ThatZAIMax<< endl;
+	}
+
+}
+
 
 //________________________________________________________________________
 void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)

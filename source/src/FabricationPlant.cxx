@@ -635,8 +635,8 @@ void FabricationPlant::SortMix(vector<IsotopicVector>	&IVArray, vector<cSecond> 
     //Sort by anti-chronoligical order (youger first)
     SortLiFo(IVArray, TimeArray, AdressArray);
     /*******Store it ******/
-    vector<IsotopicVector>		Saved_IVArray		= IVArray	 ;
-    vector<cSecond> 			Saved_TimeArray		= TimeArray	 ;
+    vector<IsotopicVector>	Saved_IVArray		= IVArray	 ;
+    vector<cSecond> 		Saved_TimeArray	= TimeArray	 ;
     vector< pair<int,int> > 	Saved_AdressArray	= AdressArray;
     
     int IVsize = (int)IVArray.size();

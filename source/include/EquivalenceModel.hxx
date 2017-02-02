@@ -121,6 +121,21 @@ class EquivalenceModel : public CLASSObject
 	void ReadZAIlimits(const string &line);
 	void ReadType(const string &line);
 	
+	//{
+	/// ReadZAIName : read the zai name in the TMWA MLP model
+	/*!
+	 \param line : line suppossed to contain the ZAI name  starts with "k_zainame" keyword
+	 */
+	void ReadZAIName(const string &line);
+	//}
+	
+	//{
+	/// ReadMaxBurnUp : read a guessed (very overestimated) maximum burnup a fuel can reach (purpose : algorithm initialization)
+	/*!
+	 \param line : line suppossed to contain the ZAI name  starts with "k_maxburnup" keyword
+	 */
+	void ReadMaxBurnUp(const string &line);
+	//}
 	
 	//{
 	/// ReadSpecificPower : read the Specific Power of the DataBase
@@ -156,10 +171,15 @@ class EquivalenceModel : public CLASSObject
 
 	double 	fSpecificPower; 							//!< The specific power in W/gHM (HM: heavy Metal)
 	double 	fMaximalBU; 								//!< The Maximum burn-up of the model in GWd/t
-	
-	double fRelativMassPrecision;		//!< Mass precision
-	double 	fBurnUpPrecision;		//!< precision on Burnup 
-	int fMaxIterration;			//!< Max iterration in build fueld algorythm
+	string fTargetParameter;							//!< Type of target parameter optimized in build fuel (ex. BUmax)				
+	int fMaxIterration;								//!< Max iterration in build fueld algorythm
+
+	string fPredictorType ; 								//!< Type of predictor used in Equivalence Model (ex: MLP)
+	string fOutput ; 								//!< Type of output calculated by the predictor
+	string fBuffer ; 									//!< Name of material used as buffer in fuel 
+
+ 		
+	double 	fBurnUpPrecision;							//!< Precision on Burnup calculation 
 
 	void SetLambdaToErrorCode(vector<double>& lambda);
 	
