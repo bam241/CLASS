@@ -144,6 +144,38 @@ class EquivalenceModel : public CLASSObject
 	 */
 	void ReadSpecificPower(const string &line);
 	//}
+
+	//{
+	/// ReadTargetParameter : ype of target parameter optimized in build fuel (ex. BUmax)
+	/*!
+	 \param line : line suppossed to contain the Target Parameter information starts with "k_targetparameter" keyword
+	 */
+	void ReadTargetParameter(const string &line);
+	//}
+
+	//{
+	/// ReadMaxIterration : read the maximum number iterrations in build fueld algorithm
+	/*!
+	 \param line : line suppossed to contain the Max iterration information starts with "k_maxiterration" keyword
+	 */
+	void ReadMaxIterration(const string &line);
+	//}
+
+	//{
+	/// ReadOutput : read the output type of the predictor (ex : kinf)
+	/*!
+	 \param line : line suppossed to contain the Specific Power information starts with "k_output" keyword
+	 */
+	void ReadOutput(const string &line);
+	//}
+
+	//{
+	/// ReadBuffer : read the Buffer material name in the fuel
+	/*!
+	 \param line : line suppossed to contain the Buffer information starts with "k_buffer" keyword
+	 */
+	void ReadBuffer(const string &line);
+	//}
 	
 	void PrintInfo(); //Print the information red in the INFO stream	
 	
@@ -172,7 +204,7 @@ class EquivalenceModel : public CLASSObject
 	double 	fSpecificPower; 							//!< The specific power in W/gHM (HM: heavy Metal)
 	double 	fMaximalBU; 								//!< The Maximum burn-up of the model in GWd/t
 	string fTargetParameter;							//!< Type of target parameter optimized in build fuel (ex. BUmax)				
-	int fMaxIterration;								//!< Max iterration in build fueld algorythm
+	int fMaxIterration;								//!< Max iterrations in build fueld algorithm
 
 	string fPredictorType ; 								//!< Type of predictor used in Equivalence Model (ex: MLP)
 	string fOutput ; 								//!< Type of output calculated by the predictor
