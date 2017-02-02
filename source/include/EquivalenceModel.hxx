@@ -149,7 +149,7 @@ class EquivalenceModel : public CLASSObject
 
 	protected :
 	
-	map < string, IsotopicVector> fStreamList;					//!< contains all lists of zai needed to build a fuel (example : 2 -> fissileList+fertileList)
+	map < string, IsotopicVector> fStreamList; 					//!< contains all lists of zai needed to build a fuel (example : 2 -> fissileList+fertileList)
 											//!< each list is identified by a keyword (example : -> "Fissile" & "Fertile")
 	map < string , double> fStreamListEqMMassFractionMax;			//!< Map that contains lists of stream according to the EqModel with mass maximum fraction
 	map < string , double> fStreamListEqMMassFractionMin;			//!< Map that contains lists of stream according to the EqModel with mass minimum fraction
