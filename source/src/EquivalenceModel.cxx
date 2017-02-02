@@ -5,6 +5,7 @@
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel():CLASSObject()
 {
+	fMaxIterration 		= 500;
 	freaded 		= false;
 	
 	EquivalenceModel::LoadKeyword();
@@ -12,6 +13,7 @@ EquivalenceModel::EquivalenceModel():CLASSObject()
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 {
+	fMaxIterration 		= 500;
 	freaded 		= false;
 	
 	EquivalenceModel::LoadKeyword();
@@ -82,7 +84,6 @@ void EquivalenceModel::LoadKeyword()
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zainame", 		& EquivalenceModel::ReadZAIName) 		 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_maxburnup", 		& EquivalenceModel::ReadMaxBurnUp) 	 );	
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_targetparameter",	& EquivalenceModel::ReadTargetParameter) 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_maxiterration",	& EquivalenceModel::ReadMaxIterration) 	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_predictortype",	& EquivalenceModel::ReadPredictorType)	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_output", 		& EquivalenceModel::ReadOutput) 		 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_buffer", 		& EquivalenceModel::ReadBuffer)	 	 );	
@@ -265,22 +266,6 @@ void EquivalenceModel::ReadTargetParameter(const string &line)
 }
 
 //________________________________________________________________________
-void EquivalenceModel::ReadMaxIterration(const string &line)
-{
-	DBGL
-	int pos = 0;
-	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_maxiterration" )	// Check the keyword
-	{
-		ERROR << " Bad keyword : \"k_maxiterration\" not found !" << endl;
-		exit(1);
-	}
-	
-	fMaxIterration = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-
-	DBGL
-}
-//________________________________________________________________________
 void EquivalenceModel::ReadPredictorType(const string &line)
 {
 	DBGL
@@ -344,7 +329,7 @@ void EquivalenceModel::ReadModelParameter(const string &line)
 		exit(1);
 	}
 		
-	string keyword = StringLine::NextWord(line, pos, ' ');
+	keyword = StringLine::NextWord(line, pos, ' ');
 
 	fModelParameter[keyword] = -1;
 	
@@ -561,7 +546,7 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	{
 		ERROR << " Targeted burn-up is higher than maximum burn-up handles by EqM."<< endl;
 		ERROR << " Targeted burn-up : "<<BurnUp<<" GWd/t"<<endl;
-		ERROR << " Maximum burn-up : "<<GetEqMHigherLimitOnBU()<<" GWd/t"<<endl;			
+		ERROR << " Maximum burn-up : "<<fMaximalBU<<" GWd/t"<<endl;			
 		exit(1);	
 	}
 

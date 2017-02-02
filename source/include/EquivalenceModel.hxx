@@ -98,9 +98,8 @@ class EquivalenceModel : public CLASSObject
 	double GetBurnUpPrecision(){return fBurnUpPrecision;}//!< Get the precision on Burnup : proportion of the targeted burnup
 	double GetStreamListEqMMassFractionMax(string keyword){return fStreamListEqMMassFractionMax[keyword] ;}
 	double GetStreamListEqMMassFractionMin(string keyword){return fStreamListEqMMassFractionMin[keyword] ;}
-	double GetEqMHigherLimitOnBU(){return fMaximalBU;}
 	
-	void SetMaxIterration(int val)			{ fMaxIterration = val; }	//!< Max iteration in build fuel algorithm
+	void SetMaxIterration(int val)	{ fMaxIterration = val; }	//!< Max iteration in build fuel algorithm
 	void SetBurnUpPrecision(double prop){fBurnUpPrecision = prop;} //!< Set the precision on Burnup : proportion of the targeted burnup
 	void SetStreamListEqMMassFractionMax(string keyword, double value){fStreamListEqMMassFractionMax[keyword] = value;}
 	void SetStreamListEqMMassFractionMin(string keyword, double value){fStreamListEqMMassFractionMin[keyword] = value;}
@@ -146,19 +145,11 @@ class EquivalenceModel : public CLASSObject
 	//}
 
 	//{
-	/// ReadTargetParameter : ype of target parameter optimized in build fuel (ex. BUmax)
+	/// ReadTargetParameter : type of target parameter optimized in build fuel (ex. BUmax)
 	/*!
 	 \param line : line suppossed to contain the Target Parameter information starts with "k_targetparameter" keyword
 	 */
 	void ReadTargetParameter(const string &line);
-	//}
-
-	//{
-	/// ReadMaxIterration : read the maximum number iterrations in build fueld algorithm
-	/*!
-	 \param line : line suppossed to contain the Max iterration information starts with "k_maxiterration" keyword
-	 */
-	void ReadMaxIterration(const string &line);
 	//}
 
 	//{
@@ -177,7 +168,6 @@ class EquivalenceModel : public CLASSObject
 	void ReadBuffer(const string &line);
 	//}
 
-
 	//{
 	/// ReadModelParameter : read the name of equivalence model parameter
 	/*!
@@ -185,6 +175,14 @@ class EquivalenceModel : public CLASSObject
 	 */
 	void ReadModelParameter(const string &line);
 	//}	
+
+	//{
+	/// ReadPredictorType: read the type of predictor used (ex : MLP)
+	/*!
+	 \param line : line suppossed to contain the Buffer information starts with "k_predictortype" keyword
+	 */
+	void ReadPredictorType(const string &line);
+	//}
 
 	void PrintInfo(); //Print the information red in the INFO stream	
 	
@@ -220,7 +218,10 @@ class EquivalenceModel : public CLASSObject
 	string fBuffer ; 									//!< Name of material used as buffer in fuel 
 
 	map<string, double> fModelParameter ; 					//!< Map of equivalence model parameter 
- 		
+ 
+ 	map<ZAI,string> fMapOfTMVAVariableNames;				//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
+
+
 	double 	fBurnUpPrecision;							//!< Precision on Burnup calculation 
 
 	void SetLambdaToErrorCode(vector<double>& lambda);
