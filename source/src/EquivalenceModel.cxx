@@ -86,7 +86,7 @@ void EquivalenceModel::LoadKeyword()
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_predictortype",	& EquivalenceModel::ReadPredictorType)	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_output", 		& EquivalenceModel::ReadOutput) 		 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_buffer", 		& EquivalenceModel::ReadBuffer)	 	 );	
-
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_modelparameter", 	& EquivalenceModel::ReadModelParameter) 	 );	
 	DBGL
 }
 //________________________________________________________________________
@@ -328,6 +328,25 @@ void EquivalenceModel::ReadBuffer(const string &line)
 	}
 		
 	fBuffer = StringLine::NextWord(line, pos, ' ');
+	
+	DBGL	
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadModelParameter(const string &line)
+{
+	DBGL
+	
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_modelparameter" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_modelparameter\" not found !" << endl;
+		exit(1);
+	}
+		
+	string keyword = StringLine::NextWord(line, pos, ' ');
+
+	fModelParameter[keyword] = -1;
 	
 	DBGL	
 }

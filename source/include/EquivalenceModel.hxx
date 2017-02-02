@@ -176,7 +176,16 @@ class EquivalenceModel : public CLASSObject
 	 */
 	void ReadBuffer(const string &line);
 	//}
-	
+
+
+	//{
+	/// ReadModelParameter : read the name of equivalence model parameter
+	/*!
+	 \param line : line suppossed to contain the Buffer information starts with "k_modelparameter" keyword
+	 */
+	void ReadModelParameter(const string &line);
+	//}	
+
 	void PrintInfo(); //Print the information red in the INFO stream	
 	
 	//{
@@ -210,6 +219,7 @@ class EquivalenceModel : public CLASSObject
 	string fOutput ; 								//!< Type of output calculated by the predictor
 	string fBuffer ; 									//!< Name of material used as buffer in fuel 
 
+	map<string, double> fModelParameter ; 					//!< Map of equivalence model parameter 
  		
 	double 	fBurnUpPrecision;							//!< Precision on Burnup calculation 
 
