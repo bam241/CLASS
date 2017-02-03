@@ -289,13 +289,13 @@ double EQM_MLP_Kinf::CalculateTargetParameter(IsotopicVector TheFuel)
 	//then the corresponding irradiation time is convert in burnup and returned
 	/**************************************************************************/
 	//Algorithm initialization
-	double OldFinalTimeMinus = 0;
-	double MaximumBU = fMaximalBU;
-	double MinimumBU  = 0 ;
-	double TheFinalTime = BurnupToSecond((MaximumBU-MinimumBU)/2.);
-	double OldFinalTimePlus = BurnupToSecond(MaximumBU);
-	double k_av = 0; //average kinf
-	double OldPredictedk_av = 0;
+	double OldFinalTimeMinus 	= 0;
+	double MaximumBU 		= fMaximalBU;
+	double MinimumBU  		= 0 ;
+	double TheFinalTime 		= BurnupToSecond((MaximumBU-MinimumBU)/2.);
+	double OldFinalTimePlus 	= BurnupToSecond(MaximumBU);
+	double k_av 			= 0; //average kinf
+	double OldPredictedk_av 	= 0;
 	
 	CLASSReader * reader = new CLASSReader( fMapOfTMVAVariableNames );
 	reader->AddVariable( "Time" );

@@ -1,3 +1,5 @@
+
+
 #ifndef _EQUIVALENCEMODEL_
 #define _EQUIVALENCEMODEL_
 
@@ -89,7 +91,13 @@ class EquivalenceModel : public CLASSObject
 	double CalculateTargetParameter(IsotopicVector TheFuel, string TargetParameterName); //!<Get a fuel parameter associated to the fuel ---> ex : BurnUpMax, keffBOC, keffEOC, ... 
 	double CalculateBurnUpMax(IsotopicVector TheFuel, map<string, double> ModelParameter);//!<Calculate the BU max associated to a fuel composition based on MLP prediction (suitable for PWR)
 	double CalculateKeffAtBOC(IsotopicVector TheFuel); //!<Calculate the keff at BOC associated to a fuel composition based on MLP prediction (suitable for SFR)
-	/*!
+
+    	void GetTMVAXMLFilePath() {return fTMVAXMLFilePath}; // Return the path to TMVA XML File path
+    	void GetTMVANFOFilePath() {return fTMVANFOFilePath}; // Return the path to TMVA NFO File path
+    	void SetTMVAXMLFilePath(string TMVAXMLFilePath) {fTMVAXMLFilePath = TMVAXMLFilePath}; // Set the path to TMVA XML File path
+    	void SetTMVANFOFilePath(string TMVANFOFilePath) {fTMVANFOFilePath = TMVANFOFilePath}; // Set the path to TMVA NFO File path
+
+    /*!
 	 \name Get/Set Method
 	 */
 	//@{
@@ -99,12 +107,12 @@ class EquivalenceModel : public CLASSObject
 
 	int GetStreamListNumber(){return fStreamList.size();};
 	int GetMaxIterration()		 const	{ return fMaxIterration; }		//!< Max iterration in build fueld algorythm	
-	double GetBurnUpPrecision(){return fBurnUpPrecision;}//!< Get the precision on Burnup : proportion of the targeted burnup
+	double GetTargetParameterStDev(){return fTargetParameterStDev;}//!< Get the precision on fTargetParameterStDev
 	double GetStreamListEqMMassFractionMax(string keyword){return fStreamListEqMMassFractionMax[keyword] ;}
 	double GetStreamListEqMMassFractionMin(string keyword){return fStreamListEqMMassFractionMin[keyword] ;}
 	
 	void SetMaxIterration(int val)	{ fMaxIterration = val; }	//!< Max iteration in build fuel algorithm
-	void SetBurnUpPrecision(double prop){fBurnUpPrecision = prop;} //!< Set the precision on Burnup : proportion of the targeted burnup
+	void SetTargetParameterStDev(double TPSD){fTargetParameterStDev = TPSD;} //!< Set the precision on Target Parameter
 	void SetStreamListEqMMassFractionMax(string keyword, double value){fStreamListEqMMassFractionMax[keyword] = value;}
 	void SetStreamListEqMMassFractionMin(string keyword, double value){fStreamListEqMMassFractionMin[keyword] = value;}
 
@@ -212,6 +220,7 @@ class EquivalenceModel : public CLASSObject
 	void StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks);
 	void ConvertMassToLambdaVector(string MaterialDenomination, vector<double>& lambda, double MaterialMassNeeded, vector <IsotopicVector>  Stocks);	
 	IsotopicVector BuildFuelToTest(map < string, vector<double> >& lambda, map < string , vector <IsotopicVector> > const& StreamArray, double HMMass, map <string, bool> StreamListIsBuffer); //Build a fuel with the buffer according to fissile lambda
+	void CheckTargetParameterConsistency(map < int , string >  StreamListPriority, map < string , double >  TargetParameterMin, map < string , double > TargetParameterMax);
 
 	protected :
 	
@@ -233,12 +242,17 @@ class EquivalenceModel : public CLASSObject
  
  	map<ZAI,string> fMapOfTMVAVariableNames;				//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 
-
-	double 	fBurnUpPrecision;							//!< Precision on Burnup calculation 
+	double 	fTargetParameterStDev;							//!< Precision on target parameter calculation 
 
 	void SetLambdaToErrorCode(vector<double>& lambda);
 	
 	//@}
+
+    vector <string> fTMVAXMLFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
+    vector <string> fTMVANFOFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
+
+
+
 
 #ifndef __CINT__
 	map<string, EQM_MthPtr> fKeyword;
@@ -259,7 +273,11 @@ class EquivalenceModel : public CLASSObject
 	map <string , double > fLambdaMax;  			//!< Total lambda of available stocks
 
 	//@}
-	
+
+    private :
+
+    double fPCMprecision;          //!< precision on @f$\langle k \rangle@f$ prediction [pcm]
+
 };
 
 #endif

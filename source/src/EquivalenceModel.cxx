@@ -2,22 +2,163 @@
 #include "external/StringLine.hxx"
 #include "CLASSMethod.hxx"
 
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <cmath>
+#include <cassert>
+
+#include "TSystem.h"
+#include "TMVA/Reader.h"
+#include "TMVA/Tools.h"
+#include "TMVA/MethodCuts.h"
+
+//________________________________________________________________________
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel():CLASSObject()
 {
-	fMaxIterration 		= 500;
-	freaded 		= false;		
-	
-	EquivalenceModel::LoadKeyword();
+	fMaxIterration 	= 500;
+	freaded 	= false;		
+	fPCMprecision  = 10;
+
+    // Check if EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() have been defined
+    if (fTMVAXMLFilePath.empty() || fTMVANFOFilePath.empty())
+    {
+        ERROR << " TMVA XML and/or NFO File path are not defined..."<< endl;
+        ERROR << " You have to use EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() methods."<<endl;
+        exit(1);
+    }
+
+    LoadKeyword();  // Load Key words defineds in NFO file
+    ReadNFO();      //Getting information from file NFO
+
+    //Check if k_targetparameter is defined in file NFO
+    if(fTargetParameter.empty())  
+    {
+        ERROR<<"Missing information for k_targetparameter in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if k_modelparameter is defined in file NFO
+    if(fModelParameter.empty())  
+    {
+        ERROR<<"Missing information for k_modelparameter in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if k_predictortype is defined in file NFO
+    if(fPredictorType.empty())  
+    {
+        ERROR<<"Missing information for k_predictortype in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if k_output is defined in file NFO
+    if(fOutput.empty())  
+    {
+        ERROR<<"Missing information for k_output in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if k_buffer is defined in file NFO
+    if(fBuffer.empty())  
+    {
+        ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if k_massfractionmin and k_massfractionmax are defined in file NFO
+    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty())  
+    {
+        ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if k_zainame are defined in file NFO
+    if(fMapOfTMVAVariableNames.empty())  
+    {
+        ERROR<<"Missing information for k_zainame in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if k_list are defined in file NFO
+    if(fStreamList.empty())  
+    {
+        ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+
+    INFO << "__An equivalence model has been define__" << endl;
+    INFO << "\tThe TMVA weights file is :" << fTMVAXMLFilePath << endl;
+    INFO << "\tThe TMVA NFO file is :" << fTMVANFOFilePath << endl;
+    PrintInfo();
+
 }
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 {
-	fMaxIterration 		= 500;
-	freaded 		= false;
-	
-	EquivalenceModel::LoadKeyword();
-}
+	fMaxIterration 	= 500;
+	freaded 	= false;		
+	fPCMprecision  = 10;
+
+    // Check if EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() have been defined
+    if (fTMVAXMLFilePath.empty() || fTMVANFOFilePath.empty())
+    {
+        ERROR << " TMVA XML and/or NFO File path are not defined..."<< endl;
+        ERROR << " You have to use EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() methods."<<endl;
+        exit(1);
+    }
+
+    LoadKeyword();  // Load Key words defineds in NFO file
+    ReadNFO();      //Getting information from file NFO
+
+    //Check if k_targetparameter is defined in file NFO
+    if(fTargetParameter.empty())  
+    {
+        ERROR<<"Missing information for k_targetparameter in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if k_modelparameter is defined in file NFO
+    if(fModelParameter.empty())  
+    {
+        ERROR<<"Missing information for k_modelparameter in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if k_predictortype is defined in file NFO
+    if(fPredictorType.empty())  
+    {
+        ERROR<<"Missing information for k_predictortype in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if k_output is defined in file NFO
+    if(fOutput.empty())  
+    {
+        ERROR<<"Missing information for k_output in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if k_buffer is defined in file NFO
+    if(fBuffer.empty())  
+    {
+        ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if k_massfractionmin and k_massfractionmax are defined in file NFO
+    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty())  
+    {
+        ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if k_zainame are defined in file NFO
+    if(fMapOfTMVAVariableNames.empty())  
+    {
+        ERROR<<"Missing information for k_zainame in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if k_list are defined in file NFO
+    if(fStreamList.empty())  
+    {
+        ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+
+    INFO << "__An equivalence model has been define__" << endl;
+    INFO << "\tThe TMVA weights file is :" << fTMVAXMLFilePath << endl;
+    INFO << "\tThe TMVA NFO file is :" << fTMVANFOFilePath << endl;
+    PrintInfo();}
 //________________________________________________________________________
 EquivalenceModel::~EquivalenceModel()
 {
@@ -167,8 +308,6 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 {
 	DBGL
 
-	map <string , vector<double> > lambda ; // map containing name of the list and associated vector of proportions taken from stocks
-	
 	//Iterators declaration
 	map < string , vector  <IsotopicVector> >::iterator it_s_vIV;
 	map < string , vector  <double> >::iterator it_s_vD;
@@ -176,6 +315,29 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	map < string , double >::iterator it_s_D;
 	map < int , string >::iterator it_i_s;
 
+	double TargetParameterValue = 0;
+
+	for( it_s_D = fModelParameter.begin();  it_s_D != fModelParameter.end(); it_s_D++)
+	{	
+		if(fModelParameter[(*it_s_D).first] == -1)
+		{
+			ERROR<< "Model parameter ( "<<fModelParameter[(*it_s_D).first] << " ) value is not defined in the input." <<endl;
+			ERROR<< "Use EqM->SetModelParameter( \" "<<(*it_s_D).first<<" \", value) to define it." <<endl;
+			exit(1);			
+		}
+	}
+
+	if(fTargetParameter=="BurnUpMax") {TargetParameterValue  = BurnUp;}
+	else if (fTargetParameter=="keffBOC") {TargetParameterValue = fModelParameter["keffBOC"];}
+	else
+	{
+		ERROR<< "Target parameter defined in InformationFile ( "<<fTargetParameter<<" ) doesn't exist." <<endl;
+		ERROR<< "Possible target parameters for the moment are : BurnUpMax and keffBOC." <<endl;
+		exit(1);			
+	}
+
+	map <string , vector<double> > lambda ; // map containing name of the list and associated vector of proportions taken from stocks
+	
 	// Initialize lambda to 0 //
 	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
 	{	
@@ -267,8 +429,8 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 			WARNING << " Mass fraction max of material :  "<< (*it_s_D).first << " is set to MassInStock/HMMassReactor : "<< StreamListMassFractionMax[(*it_s_D).first]<< endl;
 		}
 	}
-
-	//Check targeted BU is inside [TargetParameterMin, TargetParameterMax] associated to fraction Min et Max//
+	
+	//Check if TargetParameter is inside [TargetParameterMin, TargetParameterMax] associated to fraction Min et Max//
 	HMMass *=  1e6; //Unit conversion : tons to gram
 
 	map < string , double > MassMin; 	
@@ -291,31 +453,31 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		TargetParameterMin[(*it_i_s ).second] =  CalculateTargetParameter(FuelToTest);
 
 		//Check is TargetParameterMin < TargetParameter
-		if(TargetParameterMin[(*it_i_s ).second]>BurnUp)
+		if(TargetParameterMin[(*it_i_s ).second]>TargetParameterValue)
 		{
 			if((*it_i_s).first ==1) //Minimum of first material is too high
 			{
-				ERROR << "CRITICAL ! Minimum burn-up associated to the first priority material ( "<<(*it_i_s ).second <<" ) is higher than targeted burn-up."<< endl;
-				ERROR << "Targeted Burn-up : " <<BurnUp<<endl;
-				ERROR << "Minimum Burn-up : " <<TargetParameterMin[(*it_i_s ).second]<<endl;
+				ERROR << "CRITICAL ! Minimum parameter value associated to the first priority material ( "<<(*it_i_s ).second <<" ) is higher than targeted parameter."<< endl;
+				ERROR << "Targeted parameter : "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
+				ERROR << "Minimum parameter value : " <<TargetParameterMin[(*it_i_s ).second]<<endl;
 				ERROR << "Try to increase targeted burn-up" <<endl;
 				exit(1);
 			}
 			else if ((*it_i_s).first >1) //TargetParameter is located between max n-1 and min n
 			{
-				ERROR << "CRITICAL ! Targeted burn-up is located between 2 materials. "<<endl;
+				ERROR << "CRITICAL ! Targeted parameter value ( "<<fTargetParameter<<" ) is located between 2 materials. "<<endl;
 				it_i_s --;
-				ERROR << "Maximum Burn-up of : "<< (*it_i_s).second<<" ---> "<<TargetParameterMax[(*it_i_s ).second]<<endl;
+				ERROR << fTargetParameter <<" of max fraction of material : "<< (*it_i_s).second<<" ---> "<<TargetParameterMax[(*it_i_s ).second]<<endl;
 				it_i_s ++;
-				ERROR << "Minimum Burn-up of : "<< (*it_i_s ).second<<" ---> "<<TargetParameterMin[(*it_i_s ).second]<<endl;
-				ERROR << "Targeted Burn-up : " <<BurnUp<<endl;					
-				ERROR << "Try to decrease mimim fraction of : "<< (*it_i_s ).second<<endl;
+				ERROR << fTargetParameter<<  " of min fraction of material : "<< (*it_i_s ).second<<" ---> "<<TargetParameterMin[(*it_i_s ).second]<<endl;
+				ERROR << "Targeted "<<fTargetParameter<<" : " <<TargetParameterValue<<endl;					
+				ERROR << "Try to decrease mimimum fraction of : "<< (*it_i_s ).second<<endl;
 				exit(1);
 			}
 		}
 		FuelToTest.Clear();
 
-		//Calculate BU max for each possibility : max1 ; max1 + max2 ;  max1 + max2 + max3 ....
+		//Calculate TargetParameter max for each possibility : max1 ; max1 + max2 ;  max1 + max2 + max3 ....
 		MassMax[(*it_i_s ).second] 	=  HMMass * StreamListMassFractionMax[(*it_i_s).second];	
 		ConvertMassToLambdaVector((*it_i_s ).second, lambda[(*it_i_s ).second], MassMax[(*it_i_s ).second], StreamArray[(*it_i_s ).second]);
 		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
@@ -329,25 +491,25 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		}
 	}
 
-	//Check if value of TargetParameter
+	//Check if target parameter increases monotously with the material mass
 	CheckTargetParameterConsistency(StreamListPriority, TargetParameterMin, TargetParameterMax);
 
 	if(!TargetParameterIncluded) 
 	{
-		ERROR << "CRITICAL ! Maximum reachable burn-up is lower than target BU. "<< endl;
-		ERROR << "Targeted Burn-up : " <<BurnUp<<endl;
-		ERROR << "Maximum reachable burn-up : " <<TargetParameterMax[(*--StreamListPriority.end()).second]<<endl;
-		ERROR << "Try to increase maximum fraction of materials, or decrease burn-up. " <<endl;
+		ERROR << "CRITICAL ! Maximum reachable "<<fTargetParameter<<" is lower than targeted "<< fTargetParameter<<". "<< endl;
+		ERROR << "Targeted "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
+		ERROR << "Maximum reachable "<<fTargetParameter<<" : "<<TargetParameterMax[(*--StreamListPriority.end()).second]<<endl;
+		ERROR << "Try to increase maximum fraction of materials, or decrease "<< fTargetParameter<<" ." <<endl;
 		exit(1);
 	}
 
-	//Search the BU max //	
-	string MaterialToSearch 	= (*it_i_s ).second;
-	double CalculatedBurnUp 	= TargetParameterMax[MaterialToSearch] ;   //Algo start with maximum point
-	double MassToAdd 		= MassMax[MaterialToSearch]; //Algo start with maximum point
+	//Search the TargetParameterValue location in the mass damain //	
+	string MaterialToSearch 		= (*it_i_s ).second;
+	double CalculatedTargetParameter 	= TargetParameterMax[MaterialToSearch] ;   //Algo start with maximum point
+	double MassToAdd 			= MassMax[MaterialToSearch]; //Algo start with maximum point
 	
-	double LastMassMinus 	= MassMin[MaterialToSearch]; //Used in bissection method 
-	double LastMassPlus		= MassMax[MaterialToSearch]; //Used in bissection method 	
+	double LastMassMinus 		= MassMin[MaterialToSearch]; //Used in bissection method 
+	double LastMassPlus			= MassMax[MaterialToSearch]; //Used in bissection method 	
 
 	int count = 0;
 	
@@ -357,33 +519,33 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	{
 		if(count > fMaxIterration)
 		{
-			ERROR << "CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on burnup using :\nYourEquivalenceModel->SetBurnUpPrecision(Precision); " << endl;
-			ERROR << "Targeted Burnup : "  <<BurnUp<<endl;
-			ERROR << "Last calculated Burnup : " <<CalculatedBurnUp<<endl;
+			ERROR << "CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on the target parameter using :\nYourEquivalenceModel->SetTargetParameterStDev(Precision); " << endl;
+			ERROR << "Targeted "<<fTargetParameter<<" : "<<TargetParameterValue<<endl;
+			ERROR << "Last calculated "<<fTargetParameter<<" : "<<CalculatedTargetParameter<<endl;
 			ERROR << "Last Fresh fuel normalized composition : " <<endl;
 			ERROR << FuelToTest.sPrint()<<endl;	
 			exit(1);
 		}
 
-		if( (CalculatedBurnUp - BurnUp) < 0 ) //Need to add more fissile material in fuel
+		if( (CalculatedTargetParameter - TargetParameterValue) < 0 ) //Need to add more fissile material in fuel
 		{
 			LastMassMinus = MassToAdd;
 			MassToAdd 	= MassToAdd + fabs(LastMassPlus - MassToAdd)/2.;
 		}
-		else if( (CalculatedBurnUp - BurnUp) > 0) //Need to add less fissile material in fuel
+		else if( (CalculatedTargetParameter - TargetParameterValue) > 0) //Need to add less fissile material in fuel
 		{
 			LastMassPlus 	= MassToAdd;
 			MassToAdd 	= MassToAdd - fabs(LastMassMinus - MassToAdd)/2.;
 		}
 		ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassToAdd, StreamArray[MaterialToSearch]);
 		
-		FuelToTest 		= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
-		FuelToTest 		= FuelToTest/FuelToTest.GetSumOfAll();
-		CalculatedBurnUp 	= CalculateTargetParameter(FuelToTest);
+		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
+		CalculatedTargetParameter 	= CalculateTargetParameter(FuelToTest);
 		
 		count ++;
 
-	}while(fabs(BurnUp - CalculatedBurnUp) > GetBurnUpPrecision()*BurnUp);
+	}while(fabs(TargetParameterValue - CalculatedTargetParameter) > GetTargetParameterStDev()*TargetParameterValue);
 	
 	//Final builded fuel 
 	IsotopicVector IVStream;
@@ -454,6 +616,35 @@ TTree* EquivalenceModel::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 	
 	return InputTree;
 	
+}
+//________________________________________________________________________
+void EquivalenceModel::CheckTargetParameterConsistency(map < int , string >  StreamListPriority, map < string , double >  TargetParameterMin, map < string , double > TargetParameterMax)
+{
+	map < int , string >::iterator it_i_s;
+	
+	double TargetParameterUp 		= 0;
+	double TargetParameterDown 		= 0;
+
+	//Loop on priority order to check if target parameter increases monotously with the material mass
+	for( it_i_s = StreamListPriority.begin();  it_i_s != StreamListPriority.end(); it_i_s++)
+	{	
+		TargetParameterDown = TargetParameterMin[(*it_i_s ).second];
+		if (TargetParameterDown < TargetParameterUp )
+		{
+			ERROR<< "Target parameter evolution as a function of material mass is not monotonous." <<endl;
+			ERROR<< "Check the its evolution." <<endl;
+			exit(1);			
+
+		}
+		
+		TargetParameterUp 	= TargetParameterMax[(*it_i_s ).second];
+		if (TargetParameterDown > TargetParameterUp )
+		{			
+			ERROR<< "Target parameter evolution as a function of material mass is not monotonous." <<endl;
+			ERROR<< "Check the its evolution." <<endl;
+			exit(1);			
+		}
+	}
 }
 //________________________________________________________________________
 void EquivalenceModel::CalculateTargetParameter(IsotopicVector TheFuel, string TargetParameterName)
@@ -667,20 +858,22 @@ void EquivalenceModel::ReadLine(string line)
 void EquivalenceModel::LoadKeyword() 
 {
 	DBGL
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",			& EquivalenceModel::ReadZAIlimits)	 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",		& EquivalenceModel::ReadType)	 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel",			& EquivalenceModel::ReadType)	 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmin",	& EquivalenceModel::ReadEqMinFraction) 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmax",	& EquivalenceModel::ReadEqMaxFraction) 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_list",			& EquivalenceModel::ReadList) 	 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower",		& EquivalenceModel::ReadSpecificPower)	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zainame", 		& EquivalenceModel::ReadZAIName) 		 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_maxburnup", 		& EquivalenceModel::ReadMaxBurnUp) 	 );	
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_targetparameter",	& EquivalenceModel::ReadTargetParameter) 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_predictortype",	& EquivalenceModel::ReadPredictorType)	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_output", 		& EquivalenceModel::ReadOutput) 		 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_buffer", 		& EquivalenceModel::ReadBuffer)	 	 );	
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_modelparameter", 	& EquivalenceModel::ReadModelParameter) 	 );	
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",				& EquivalenceModel::ReadZAIlimits)	 	 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",			& EquivalenceModel::ReadType)	 	 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel",				& EquivalenceModel::ReadType)	 	 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmin",		& EquivalenceModel::ReadEqMinFraction) 	 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmax",		& EquivalenceModel::ReadEqMaxFraction) 	 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_list",				& EquivalenceModel::ReadList) 	 	 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower",			& EquivalenceModel::ReadSpecificPower)	 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zainame", 			& EquivalenceModel::ReadZAIName) 		 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_maxburnup", 			& EquivalenceModel::ReadMaxBurnUp) 	 	 );	
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_targetparameter",		& EquivalenceModel::ReadTargetParameter) 	 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_predictortype",		& EquivalenceModel::ReadPredictorType)	 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_output", 			& EquivalenceModel::ReadOutput) 		 	 );
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_buffer", 			& EquivalenceModel::ReadBuffer)	 	 	 );	
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_modelparameter", 		& EquivalenceModel::ReadModelParameter) 	 	 );	
+	fKeyword.insert( pair<string, EQM_MthPtr>( "k_targetparameterstdev", 	& EquivalenceModel::ReadTargetParameterStDev) 	 );	
+
 	DBGL
 }
 //________________________________________________________________________
@@ -928,6 +1121,25 @@ void EquivalenceModel::ReadModelParameter(const string &line)
 	
 	DBGL	
 }
+
+//________________________________________________________________________
+void EquivalenceModel::ReadTargetParameterStDev(const string &line)
+{
+	DBGL
+	
+	int pos = 0;
+	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+	if( keyword != "k_targetparameterstdev" )	// Check the keyword
+	{
+		ERROR << " Bad keyword : \"k_targetparameterstdev\" not found !" << endl;
+		exit(1);
+	}
+		
+	fTargetParameterStDev = atof(StringLine::NextWord(line, pos, ' ').c_str());;
+	
+	DBGL	
+}
+
 //________________________________________________________________________
 void EquivalenceModel::PrintInfo()
 {
