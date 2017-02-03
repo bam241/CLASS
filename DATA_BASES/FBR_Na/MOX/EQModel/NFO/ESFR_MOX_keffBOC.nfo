@@ -1,4 +1,7 @@
-To be used with : EQM_FBR_MLP_Keff.cxx
+************************
+HOW TO USE IN CLASS
+************************
+To be used with : EquilavenceModel.cxx
 
 **********************
 REACTOR FEATURES
@@ -28,10 +31,15 @@ k_modelparameter keffBOC
 EquivalenceModel parameters standard deviation 
 k_targetparameterstdev 0.00001
 
+**********************
+PREDICTOR 
+**********************
+k_predictortype MLP
+
+INPUT
 Z A I Name (input MLP) :
 k_zainame 92 235 0 U5
 k_zainame 92 238 0 U8
-
 k_zainame 94 238 0 Pu8
 k_zainame 94 239 0 Pu9
 k_zainame 94 240 0 Pu10
@@ -39,8 +47,16 @@ k_zainame 94 241 0 Pu11
 k_zainame 94 242 0 Pu12
 k_zainame 95 241 0 Am1
 
+OUTPUT
+k_output keff
 
-Fissile Liste (Z A I) :
+**********************
+ FUEL INFOS
+**********************
+*******************************
+Lists and IVs for FP separation
+*******************************
+Fissile Liste (Z A I Default Proportion) :
 k_list Fissile 94 238 0 1
 k_list Fissile 94 239 0 1
 k_list Fissile 94 240 0 1
@@ -51,14 +67,44 @@ Fertile Liste (Z A I Default Proportion) :
 k_list Fertile 92 235 0 0.0025
 k_list Fertile 92 238 0 0.9975
 
-Starting fissile content in fuel for equivalence model calculation :  
-k_firstguesscontent Fissile 0.10
-k_firstguesscontent Fertile 0.90
+*************************
+Buffer material for this fuel
+*************************
+k_buffer Fertile
 
+**************************************
+Min and Max fraction of lists in model
+**************************************
+Minimum Fraction of each list in the fuel (%mass) :  
+k_massfractionmin Fissile 0.12
+
+Maximun Fraction of each list in the fuel (%mass) : 
+k_massfractionmax Fissile 0.22
+
+**************************************
+ZAI Limits in this model
+**************************************
+Z A I Min Max  :
+k_zail 92 235 0 1.59425277e-03 3.50834662e-03
+k_zail 92 238 0 7.78020501e-01 8.76677811e-01
+k_zail 94 238 0 4.44956415e-04 1.72082800e-02
+k_zail 94 239 0 3.48302349e-02 1.40554562e-01
+k_zail 94 240 0 1.44723896e-02 9.44605246e-02
+k_zail 94 241 0 4.65907215e-04 4.12031189e-02
+k_zail 94 242 0 1.29944948e-03 6.04115427e-02
+k_zail 95 241 0 1.45008133e-04 2.91441493e-02
+
+************************
+AUTHOR
+************************
 
 Date : 02/2015
 Author : BaL
-Mail address : leniau@subatech.in2p3.fr
+Mail address : thiollie@subatech.in2p3.fr
+
+*******************************
+DEPLETION SIMULATION INFOS
+*******************************
 Depletion Code : MURE
 NuclearData
 XS : JEFF 3.1.1
