@@ -1,5 +1,5 @@
-#ifndef _EQUIVALENCEMODEL_
-#define _EQUIVALENCEMODEL_
+#ifndef _FUELLOADINGMODEL_
+#define _FUELLOADINGMODEL_
 
 
 /*!
