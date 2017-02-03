@@ -78,13 +78,17 @@ class EquivalenceModel : public CLASSObject
 	 Build the fuel following the equivalance model with the proper requierment in term of mass, burnup....
 	 \param double burnup reached by the fuel at the end of irradiation
 	 \param double HMMass, Heavy metal mass needed
-     \param map < string , vector <IsotopicVector> > StreamArray, the string is the stream code (fissile fertile ,...) the IsotopicVector the fraction of each IV to take in the (fissile, fertile,..) stock .
+    	 \param map < string , vector <IsotopicVector> > StreamArray, the string is the stream code (fissile fertile ,...) the IsotopicVector the fraction of each IV to take in the (fissile, fertile,..) stock .
      */
 	virtual	 map <string , vector<double> > BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListMassFractionMin, map < string , double> StreamListMassFractionMax, map < int , string> StreamListPriority, map < string , bool> StreamListIsBuffer);
 	//}
-		
+
+
 	//@}
-	
+	TTree* CreateTMVAInputTree(IsotopicVector TheFreshfuel, double ThisTime)	; //!<Create input tmva tree to be read by ExecuteTMVA
+	double CalculateTargetParameter(IsotopicVector TheFuel, string TargetParameterName); //!<Get a fuel parameter associated to the fuel ---> ex : BurnUpMax, keffBOC, keffEOC, ... 
+	double CalculateBurnUpMax(IsotopicVector TheFuel, map<string, double> ModelParameter);//!<Calculate the BU max associated to a fuel composition based on MLP prediction (suitable for PWR)
+	double CalculateKeffAtBOC(IsotopicVector TheFuel); //!<Calculate the keff at BOC associated to a fuel composition based on MLP prediction (suitable for SFR)
 	/*!
 	 \name Get/Set Method
 	 */
@@ -104,8 +108,16 @@ class EquivalenceModel : public CLASSObject
 	void SetStreamListEqMMassFractionMax(string keyword, double value){fStreamListEqMMassFractionMax[keyword] = value;}
 	void SetStreamListEqMMassFractionMin(string keyword, double value){fStreamListEqMMassFractionMin[keyword] = value;}
 
-	virtual double CalculateTargetParameter(IsotopicVector FuelToTest) = 0; //!< Calculate a parameter (BU, keff, ...) associated to the fuel 
-	
+	/*!
+	 \name Time <-> Burnup conversion
+	 */
+	//@{
+
+	double SecondToBurnup(double Second){return Second*fSpecificPower/(24*3.6e6);}
+	double BurnupToSecond(double BurnUp){return BurnUp/fSpecificPower*(24*3.6e6);}
+
+	//@}
+
 	//@}
 	
 	/*!
