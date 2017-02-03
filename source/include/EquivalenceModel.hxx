@@ -1,5 +1,3 @@
-
-
 #ifndef _EQUIVALENCEMODEL_
 #define _EQUIVALENCEMODEL_
 
@@ -17,6 +15,8 @@
 
 #include "IsotopicVector.hxx"
 #include <math.h>
+#include "TTree.h"
+#include <map>
 #include "CLASSObject.hxx"
 
 
@@ -92,10 +92,10 @@ class EquivalenceModel : public CLASSObject
 	double CalculateBurnUpMax(IsotopicVector TheFuel, map<string, double> ModelParameter);//!<Calculate the BU max associated to a fuel composition based on MLP prediction (suitable for PWR)
 	double CalculateKeffAtBOC(IsotopicVector TheFuel); //!<Calculate the keff at BOC associated to a fuel composition based on MLP prediction (suitable for SFR)
 
-    	void GetTMVAXMLFilePath() {return fTMVAXMLFilePath}; // Return the path to TMVA XML File path
-    	void GetTMVANFOFilePath() {return fTMVANFOFilePath}; // Return the path to TMVA NFO File path
-    	void SetTMVAXMLFilePath(string TMVAXMLFilePath) {fTMVAXMLFilePath = TMVAXMLFilePath}; // Set the path to TMVA XML File path
-    	void SetTMVANFOFilePath(string TMVANFOFilePath) {fTMVANFOFilePath = TMVANFOFilePath}; // Set the path to TMVA NFO File path
+    	string GetTMVAXMLFilePath() {return fTMVAXMLFilePath;} // Return the path to TMVA XML File path
+    	string GetTMVANFOFilePath() {return fTMVANFOFilePath;} // Return the path to TMVA NFO File path
+    	void SetTMVAXMLFilePath(string TMVAXMLFilePath) {fTMVAXMLFilePath = TMVAXMLFilePath;} // Set the path to TMVA XML File path
+    	void SetTMVANFOFilePath(string TMVANFOFilePath) {fTMVANFOFilePath = TMVANFOFilePath;} // Set the path to TMVA NFO File path
 
     /*!
 	 \name Get/Set Method
@@ -110,11 +110,14 @@ class EquivalenceModel : public CLASSObject
 	double GetTargetParameterStDev(){return fTargetParameterStDev;}//!< Get the precision on fTargetParameterStDev
 	double GetStreamListEqMMassFractionMax(string keyword){return fStreamListEqMMassFractionMax[keyword] ;}
 	double GetStreamListEqMMassFractionMin(string keyword){return fStreamListEqMMassFractionMin[keyword] ;}
+	double GetPCMPrecision(){return fPCMprecision/1e5;}//!< Get the precision on @f$\langle k \rangle@f$ prediction []. Neural network predictor constructors
 	
 	void SetMaxIterration(int val)	{ fMaxIterration = val; }	//!< Max iteration in build fuel algorithm
 	void SetTargetParameterStDev(double TPSD){fTargetParameterStDev = TPSD;} //!< Set the precision on Target Parameter
 	void SetStreamListEqMMassFractionMax(string keyword, double value){fStreamListEqMMassFractionMax[keyword] = value;}
 	void SetStreamListEqMMassFractionMin(string keyword, double value){fStreamListEqMMassFractionMin[keyword] = value;}
+
+	void SetPCMPrecision(double pcm){fPCMprecision = pcm;}		  //!< Set the precision on @f$\langle k \rangle@f$ prediction [pcm]. Neural network predictor constructors
 
 	/*!
 	 \name Time <-> Burnup conversion
@@ -204,6 +207,14 @@ class EquivalenceModel : public CLASSObject
 	void ReadPredictorType(const string &line);
 	//}
 
+	//{
+	/// ReadTargetParameterStDev: read the target parameter standard deviation
+	/*!
+	 \param line : line suppossed to contain the Buffer information starts with "k_targetparameterstdev" keyword
+	 */
+	void ReadTargetParameterStDev(const string &line);
+	//}
+
 	void PrintInfo(); //Print the information red in the INFO stream	
 	
 	//{
@@ -248,8 +259,8 @@ class EquivalenceModel : public CLASSObject
 	
 	//@}
 
-    vector <string> fTMVAXMLFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
-    vector <string> fTMVANFOFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
+    	string fTMVAXMLFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
+    	string fTMVANFOFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
 
 
 

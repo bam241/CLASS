@@ -29,11 +29,10 @@
 //
 //________________________________________________________________________
 
-EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(string TMVAWeightPath, int NumOfBatch, double CriticalityThreshold, double MaximalPuMassContent):EquivalenceModel(new CLASSLogger("EQM_MLP_PWR_MOxEUS.log"))
+EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(string TMVAWeightPath, int NumOfBatch, double CriticalityThreshold):EquivalenceModel(new CLASSLogger("EQM_MLP_PWR_MOxEUS.log"))
 {
 	fNumberOfBatch 		= NumOfBatch;
 	fKThreshold 			= CriticalityThreshold ;
-	fMaximalPuMassContent 	= MaximalPuMassContent;
 
 	fTMVAWeightPath.push_back(TMVAWeightPath);
 
@@ -47,18 +46,18 @@ EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(string TMVAWeightPath, int NumOfBatch, do
 
 	fStreamList["PuList"] 			= Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
 	fStreamList["EnrichmentList"] 		= U5*1;
-	fStreamList["FertileList"] 		= U8*1;
+	fStreamList["FertileList"] 		= U8*0.9975 + U5*0.0025;
 
 	fStreamListEqMMassFractionMin["PuList"]		= 0.0;				
-	fStreamListEqMMassFractionMin["EnrichmentList"]	= 0.025;					
+	fStreamListEqMMassFractionMin["EnrichmentList"]	= 0.0;					
 
 	fStreamListEqMMassFractionMax["PuList"]		= 0.16; 
 	fStreamListEqMMassFractionMax["EnrichmentList"]	= 0.05;
 
-	fSpecificPower 				= 34.24;
-	fMaximalBU 				= 75;
+	fSpecificPower 						= 34.24;
+	fMaximalBU 						= 75;
 
-	SetBurnUpPrecision(0.008);//1 % of the targeted burnup
+	SetBurnUpPrecision(0.005);//1 % of the targeted burnup
 	SetPCMPrecision(10);
 
 	INFO<<"__An equivalence model of PWR MOxEUS has been define__"<<endl;
@@ -69,11 +68,10 @@ EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(string TMVAWeightPath, int NumOfBatch, do
 }
 
 //________________________________________________________________________
-EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(CLASSLogger* log, string TMVAWeightPath, int NumOfBatch, double CriticalityThreshold, double MaximalPuMassContent):EquivalenceModel(log)
+EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(CLASSLogger* log, string TMVAWeightPath, int NumOfBatch, double CriticalityThreshold):EquivalenceModel(log)
 {
 	fNumberOfBatch 		= NumOfBatch;
 	fKThreshold 			= CriticalityThreshold ;
-	fMaximalPuMassContent 	= MaximalPuMassContent;
 
 	fTMVAWeightPath.push_back(TMVAWeightPath);
 
@@ -87,10 +85,10 @@ EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(CLASSLogger* log, string TMVAWeightPath, 
 
 	fStreamList["PuList"] 			= Pu8*1+Pu9*1+Pu0*1+Pu1*1+Pu2*1;
 	fStreamList["EnrichmentList"] 		= U5*1;
-	fStreamList["FertileList"] 		= U8*1;
+	fStreamList["FertileList"] 		= U8*0.9975 + U5*0.0025;
 
 	fStreamListEqMMassFractionMin["PuList"]		= 0.0;				
-	fStreamListEqMMassFractionMin["EnrichmentList"]	= 0.025;					
+	fStreamListEqMMassFractionMin["EnrichmentList"]	= 0.0;					
 
 	fStreamListEqMMassFractionMax["PuList"]		= 0.16; 
 	fStreamListEqMMassFractionMax["EnrichmentList"]	= 0.05;
@@ -98,7 +96,7 @@ EQM_MLP_PWR_MOxEUS::EQM_MLP_PWR_MOxEUS(CLASSLogger* log, string TMVAWeightPath, 
 	fSpecificPower 				= 34.24;
 	fMaximalBU 				= 75;
 
-	SetBurnUpPrecision(0.008);//1 % of the targeted burnup
+	SetBurnUpPrecision(0.005);//1 % of the targeted burnup
 	SetPCMPrecision(10);
 
 	INFO<<"__An equivalence model of PWR MOxEUS has been define__"<<endl;
@@ -143,7 +141,7 @@ TTree* EQM_MLP_PWR_MOxEUS::CreateTMVAInputTree(IsotopicVector TheFuel, double Th
 	Pu12   	= TheFuel.GetZAIIsotopicQuantity(94,242,0)/Ntot;
 	Am1    	= TheFuel.GetZAIIsotopicQuantity(95,241,0)/Ntot;
 
-	Time=ThisTime;
+	Time = ThisTime;
 
 	InputTree->Fill();
 	return InputTree;
@@ -191,7 +189,7 @@ double EQM_MLP_PWR_MOxEUS::ExecuteTMVA(TTree* theTree, string WeightPath)
 }
 
 //________________________________________________________________________
-double EQM_MLP_PWR_MOxEUS::GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU)
+double EQM_MLP_PWR_MOxEUS::CalculateTargetParameter(IsotopicVector TheFuel)
 {
 	/**************************************************************************/
 	//With a dichotomy, the maximal irradiation time (TheFinalTime) is calculated
@@ -200,9 +198,11 @@ double EQM_MLP_PWR_MOxEUS::GetMaximumBurnUp(IsotopicVector TheFuel, double Targe
 	/**************************************************************************/
 	//Algorithm initialization
 
-	double TheFinalTime 		= BurnupToSecond(TargetBU); 
+
 	double OldFinalTimeMinus 	= 0;
+	double MinimumBU 		= 0; 	
 	double MaximumBU 		= fMaximalBU; 
+	double TheFinalTime 		= BurnupToSecond((MaximumBU-MinimumBU)/2.); 	
 	double OldFinalTimePlus 	= BurnupToSecond(MaximumBU);
 	double k_av 			= 0; //average kinf
 	double OldPredictedk_av 	= 0;
@@ -255,7 +255,7 @@ double EQM_MLP_PWR_MOxEUS::GetMaximumBurnUp(IsotopicVector TheFuel, double Targe
  		{	
  			OldFinalTimePlus = TheFinalTime;
  			TheFinalTime = TheFinalTime - fabs(OldFinalTimeMinus - TheFinalTime)/2.;	
- 			if( SecondToBurnup(TheFinalTime) < TargetBU*GetBurnUpPrecision() )
+ 			if( SecondToBurnup(TheFinalTime) < (MaximumBU-MinimumBU)/2.*GetBurnUpPrecision() )
  				{ delete reader; return 0; }
  		}
  		

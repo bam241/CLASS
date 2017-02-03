@@ -16,20 +16,17 @@ class EQM_MLP_PWR_MOxEUS : public EquivalenceModel
 {
 	public :
 
-	EQM_MLP_PWR_MOxEUS(string TMVAWeightPath, int NumOfBatch, double CriticalityThreshold, double MaximalPuMassContent);
-	EQM_MLP_PWR_MOxEUS(CLASSLogger* log, string TMVAWeightPath, int NumOfBatch, double CriticalityThreshold, double MaximalPuMassContent);
-
-	virtual	 map <string , vector<double> > BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray);
+	EQM_MLP_PWR_MOxEUS(string TMVAWeightPath, int NumOfBatch, double CriticalityThreshold);
+	EQM_MLP_PWR_MOxEUS(CLASSLogger* log, string TMVAWeightPath, int NumOfBatch, double CriticalityThreshold);
 
 	void SetSpecificPower(double SpecificPower) {fSpecificPower = SpecificPower;}
 	void SetPCMPrecision(double prop) {fPCMPrecision= prop;}	
 
 	double GetPCMPrecision(){return fPCMPrecision/1e5;}
-	double GetMinimalU5Enrichment(){return fMinimalU5Enrichment;};
 
 	TTree* CreateTMVAInputTree(IsotopicVector TheFuel, double ThisTime);
 	double ExecuteTMVA(TTree* theTree, string WeightPath);
-	double GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU);
+	double CalculateTargetParameter(IsotopicVector FuelToTest);
 
 	private:
 
@@ -39,7 +36,6 @@ class EQM_MLP_PWR_MOxEUS : public EquivalenceModel
 	int fNumberOfBatch ;		
 	double fKThreshold  ;
 	double fSpecificPower ;	
-	double fMaximalBU;
 	double 	fPCMPrecision;		
 
 	vector <string> fTMVAWeightPath;		//!<The weight needed by TMVA to construct and execute the multilayer perceptron

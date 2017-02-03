@@ -14,6 +14,8 @@
 #include "TMVA/Tools.h"
 #include "TMVA/MethodCuts.h"
 
+#include "CLASSReader.hxx"
+
 //________________________________________________________________________
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel():CLASSObject()
@@ -450,7 +452,7 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		ConvertMassToLambdaVector((*it_i_s ).second, lambda[(*it_i_s ).second], MassMin[(*it_i_s ).second], StreamArray[(*it_i_s ).second]);
 		FuelToTest 				= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
 		FuelToTest 				= FuelToTest/FuelToTest.GetSumOfAll();
-		TargetParameterMin[(*it_i_s ).second] =  CalculateTargetParameter(FuelToTest);
+		TargetParameterMin[(*it_i_s ).second] =  CalculateTargetParameter(FuelToTest, fTargetParameter);
 
 		//Check is TargetParameterMin < TargetParameter
 		if(TargetParameterMin[(*it_i_s ).second]>TargetParameterValue)
@@ -482,7 +484,7 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		ConvertMassToLambdaVector((*it_i_s ).second, lambda[(*it_i_s ).second], MassMax[(*it_i_s ).second], StreamArray[(*it_i_s ).second]);
 		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
 		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
-		TargetParameterMax[(*it_i_s ).second] 	=  CalculateTargetParameter(FuelToTest);
+		TargetParameterMax[(*it_i_s ).second] 	=  CalculateTargetParameter(FuelToTest, fTargetParameter);
 		
 		if(TargetParameterMax[(*it_i_s ).second]>BurnUp)
 		{
@@ -541,7 +543,7 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		
 		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
 		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
-		CalculatedTargetParameter 	= CalculateTargetParameter(FuelToTest);
+		CalculatedTargetParameter 	= CalculateTargetParameter(FuelToTest, fTargetParameter);
 		
 		count ++;
 
@@ -647,7 +649,7 @@ void EquivalenceModel::CheckTargetParameterConsistency(map < int , string >  Str
 	}
 }
 //________________________________________________________________________
-void EquivalenceModel::CalculateTargetParameter(IsotopicVector TheFuel, string TargetParameterName)
+double EquivalenceModel::CalculateTargetParameter(IsotopicVector TheFuel, string TargetParameterName)
 {
 	double ParameterToCalculate = 0; 
 	if(TargetParameterName=="BurnUpMax") ParameterToCalculate 	= CalculateBurnUpMax(TheFuel, fModelParameter);
@@ -682,7 +684,7 @@ double EquivalenceModel::CalculateBurnUpMax(IsotopicVector TheFuel, map<string, 
 	
 	CLASSReader * reader = new CLASSReader( fMapOfTMVAVariableNames );
 	reader->AddVariable( "Time" );
-	reader->BookMVA( "MLP method" , fTMVAWeightPath[0] );
+	reader->BookMVA( "MLP method" , fTMVAXMLFilePath );
 	
 	for(int b = 0;b<NumberOfBatch;b++)
 	{
@@ -713,7 +715,7 @@ double EquivalenceModel::CalculateBurnUpMax(IsotopicVector TheFuel, map<string, 
 			OldFinalTimeMinus = TheFinalTime;
 			TheFinalTime = TheFinalTime + fabs(OldFinalTimePlus - TheFinalTime)/2.;
 			
-			if(SecondToBurnup(TheFinalTime) >= (MaximumBU-MaximumBU*GetBurnUpPrecision() ) )
+			if(SecondToBurnup(TheFinalTime) >= (MaximumBU-MaximumBU*GetTargetParameterStDev() ) )
 				{ delete reader; return MaximumBU; }
 		}
 		
@@ -721,7 +723,7 @@ double EquivalenceModel::CalculateBurnUpMax(IsotopicVector TheFuel, map<string, 
 		{
 			OldFinalTimePlus = TheFinalTime;
 			TheFinalTime = TheFinalTime - fabs(OldFinalTimeMinus-TheFinalTime)/2.;
-			if( SecondToBurnup(TheFinalTime) < (MaximumBU-MinimumBU)/2.*GetBurnUpPrecision() )
+			if( SecondToBurnup(TheFinalTime) < (MaximumBU-MinimumBU)/2.*GetTargetParameterStDev() )
 				{ delete reader; return 0; }
 		}
 		
@@ -752,7 +754,7 @@ double EquivalenceModel::CalculateBurnUpMax(IsotopicVector TheFuel, map<string, 
 double 	EquivalenceModel::CalculateKeffAtBOC(IsotopicVector FreshFuel)
 { 
 	CLASSReader * reader = new CLASSReader( fMapOfTMVAVariableNames );
-	reader->BookMVA( "MLP method" , fTMVAWeightPath[0] );
+	reader->BookMVA( "MLP method" , fTMVAXMLFilePath );
 
 	TTree* InputTree = CreateTMVAInputTree(FreshFuel,-1) ; 
 	reader->SetInputData( InputTree );

@@ -44,35 +44,6 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	//@{
 
 	//{
-	/// Polynnomial 2nd order constructor @f$k_{\infty} = \alpha_{0} + \alpha_{1}t + \alpha_{2}t^{2}@f$
- 	/// @f$\alpha_{0}@f$, @f$\alpha_{1}@f$, @f$\alpha_{2}@f$ are predict by 3 MLP (one for each)
- 	/*!
-	 Create a EQM_MLP_Kinf 
-	 \param  TMVAWeightPath0 :  PAth to the .xml file containing neural network informations for @f$\alpha_{0}@f$ prediction : PATH/TMVAWeight.xml (total path to tmva weight)
-	 \param  TMVAWeightPath1 :  PAth to the .xml file containing neural network informations for @f$\alpha_{1}@f$ prediction: PATH/TMVAWeight.xml (total path to tmva weight)
-	 \param  TMVAWeightPath2 :  PAth to the .xml file containing neural network informations for @f$\alpha_{2}@f$ prediction: PATH/TMVAWeight.xml (total path to tmva weight)
-	 \param  InformationFile : Total path to the file containing time steps, fissile and ferile list (ante and post fabrication time cooling). Default is the same total path as TMVAWeightPath but extension is replaced by .nfo
-	 \param  NumOfBatch : Number of batch for the loading plan (often 3 or 4 for PWR)
-	 \param  CriticalityThreshold : Threshold for the @f$k_{\infty}@f$ (see detailed description)
-	 */
-	EQM_MLP_Kinf(string WeightPathAlpha0, string WeightPathAlpha1, string WeightPathAlpha2, string InformationFile,  int NumOfBatch, double CriticalityThreshold = 1.01);
-	//}
-	//{
-	/// Polynnomial 2nd order constructor @f$k_{\infty} = \alpha_{0} + \alpha_{1}t + \alpha_{2}t^{2}@f$
- 	/// @f$\alpha_{0}@f$, @f$\alpha_{1}@f$, @f$\alpha_{2}@f$ are predict by 3 MLP (one for each)
-	 /*!
-	 Create a EQM_MLP_Kinf 
-	 \param log : use for log
-	 \param  TMVAWeightPath0 :  PAth to the .xml file containing neural network informations for @f$\alpha_{0}@f$ prediction : PATH/TMVAWeight.xml (total path to tmva weight)
-	 \param  TMVAWeightPath1 :  PAth to the .xml file containing neural network informations for @f$\alpha_{1}@f$ prediction: PATH/TMVAWeight.xml (total path to tmva weight)
-	 \param  TMVAWeightPath2 :  PAth to the .xml file containing neural network informations for @f$\alpha_{2}@f$ prediction: PATH/TMVAWeight.xml (total path to tmva weight)
-	 \param  InformationFile : Total path to the file containing time steps, fissile and ferile list (ante and post fabrication time cooling). Default is the same total path as TMVAWeightPath but extension is replaced by .nfo
-	 \param  NumOfBatch : Number of batch for the loading plan (often 3 or 4 for PWR)
-	 \param  CriticalityThreshold : Threshold for the @f$k_{\infty}@f$ (see detailed description)
-	 */
-	EQM_MLP_Kinf(CLASSLogger* log, string WeightPathAlpha0, string WeightPathAlpha1, string WeightPathAlpha2, string InformationFile,  int NumOfBatch, double CriticalityThreshold = 1.01 );
-	//}
-	//{
 	/// Neural network predictor. The kinf(t) is predicted with a MLP 
 	/*!
 	 Create a EQM_MLP_Kinf 
@@ -105,8 +76,9 @@ class EQM_MLP_Kinf : public EquivalenceModel
 
 	void SetPCMPrecision(double pcm){fPCMprecision = pcm;}		  //!< Set the precision on @f$\langle k \rangle@f$ prediction [pcm]. Neural network predictor constructors
 	double GetPCMPrecision(){return fPCMprecision/1e5;}//!< Get the precision on @f$\langle k \rangle@f$ prediction []. Neural network predictor constructors
+	double GetEqMHigherLimitOnBU(){return fMaximalBU;} //!< Get EqM higher limit on burn-up
 	
-	double GetMaximumBurnUp(IsotopicVector TheFuel, double TargetBU);//!<Get the maximum reachable burnup according the freshfuel composition
+	double CalculateTargetParameter(IsotopicVector FuelToTest);//!<Get the a fuel parameter associated to the fuel ---> here the parameter is the BU
 	void   GetModelInformation();//!<Read the fMLPInformationFile and fill containers and variables
 	
 	//@}
@@ -158,23 +130,12 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	//}
 	
 	//{
-	/// ReadMaxFisContent  : read a guessed (very overestimated) maximum fissile content (purpose : algorithm initialization)
-	/*!
-	 \param line : line suppossed to contain the ZAI name  starts with "k_maxfiscontent" keyword
-	 */
-	void ReadMaxFisContent(const string &line);
-	//}
-	
-	//{
 	/// ReadLine : read a line
 	/*!
 	 \param line : line to read
 	 */
 	void ReadLine(string line);
 	//}
-	
-	double GetMaximumBurnUp_MLP(IsotopicVector TheFuel, double TargetBU);
-	double GetMaximumBurnUp_Pol2(IsotopicVector TheFuel, double TargetBU);
 
 	//@}
 	
@@ -196,8 +157,7 @@ class EQM_MLP_Kinf : public EquivalenceModel
 	//@}
 
 	int 	fNumberOfBatch;		//!< The number of batches for the loading plan
-	double 	fKThreshold;			//!< The @f$k_{Threshold}@f$
-	double 	fMaximalBU;			//!< The approx. maximum burnup reachable by the MLP model		
+	double 	fKThreshold;			//!< The @f$k_{Threshold}@f$	
 	double 	fBurnUpPrecision;		//!< precision on Burnup 
 	double 	fPCMprecision;			//!< precision on @f$\langle k \rangle@f$ prediction [pcm]
 			
