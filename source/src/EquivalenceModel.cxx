@@ -466,9 +466,37 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	int count = 0;
 	
 	FuelToTest.Clear();
+
+/*
+if (fDBFType == "MOX")
+{
 cout<<"------------------------------------------------------"<<endl;
 cout<<"START ALGO -> BU, Mass   "<<BurnUp<<" "<<HMMass<<endl;
 cout<<"------------------------------------------------------"<<endl;
+double MassTest = MassMin[MaterialToSearch];
+cout<<MaterialToSearch<<" "<<MassMax[MaterialToSearch]<<" "<<MassMin[MaterialToSearch]<<" "<<endl;
+do
+{
+    ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassTest, StreamArray[MaterialToSearch]);    
+    FuelToTest          = BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+    FuelToTest          = FuelToTest/FuelToTest.GetSumOfAll();
+    CalculatedTargetParameter   = CalculateTargetParameter(FuelToTest, fTargetParameter);
+
+    cout<<"Lambda vector : "<<MaterialToSearch<<" - "; for(int i=0; i < (int)lambda[MaterialToSearch].size(); i++) cout<<lambda[MaterialToSearch][i]<<" ";
+    cout<<endl;
+
+
+    MassTest += (MassMax[MaterialToSearch] - MassMin[MaterialToSearch])/100.;
+
+    cout<<MassTest<<" "<<CalculatedTargetParameter<<endl;
+
+} while (MassTest <= MassMax[MaterialToSearch]);
+cout<<"------------------------------------------------------"<<endl;
+cout<<"STOP ALGO EXIT(1)..."<<endl; exit(1);
+cout<<"------------------------------------------------------"<<endl;
+}
+*/
+
 	do
 	{
 		if(count > fMaxIterration)
@@ -491,33 +519,15 @@ cout<<"------------------------------------------------------"<<endl;
 			LastMassPlus 	= MassToAdd;
 			MassToAdd 	= MassToAdd - fabs(LastMassMinus - MassToAdd)/2.;
 		}
-		ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassToAdd, StreamArray[MaterialToSearch]);
-		
+		ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassToAdd, StreamArray[MaterialToSearch]);	
 		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
 		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
 		CalculatedTargetParameter 	= CalculateTargetParameter(FuelToTest, fTargetParameter);
-
-
-for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
-{   
-    cout<<"Lambda vector : "<<(*it_s_vD).first<<endl;
-    for(int i=0; i < (int)lambda[(*it_s_vD).first].size(); i++)
-    {
-        cout<<lambda[(*it_s_vD).first][i]<<" ";
-    }cout<<endl;
-}
-cout<<MaterialToSearch<<" "<<TargetParameterValue<<" "<<CalculatedTargetParameter<<" "<<MassToAdd<<endl;
-
 		
 		count ++;
 
 	}while(fabs(TargetParameterValue - CalculatedTargetParameter) > GetTargetParameterStDev()*TargetParameterValue);
 
-
-cout<<"------------------------------------------------------"<<endl;
-cout<<"STOP ALGO"<<endl;
-cout<<"------------------------------------------------------"<<endl;
-	
 	//Final builded fuel 
 	IsotopicVector IVStream;
 	for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
