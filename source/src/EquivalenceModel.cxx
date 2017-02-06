@@ -27,6 +27,14 @@ EquivalenceModel::EquivalenceModel(string TMVAXMLFilePath, string TMVANFOFilePat
     fTMVAXMLFilePath = TMVAXMLFilePath;
     fTMVANFOFilePath = TMVANFOFilePath;
 
+    fSpecificPower = 0;
+    fMaximalBU = 0;
+    fTargetParameter = "";
+    fPredictorType = "";
+    fOutput = "";
+    fBuffer = ""; 
+    fTargetParameterStDev = 0;
+
     LoadKeyword();  // Load Key words defineds in NFO file
     ReadNFO();      //Getting information from file NFO
 
@@ -34,6 +42,12 @@ EquivalenceModel::EquivalenceModel(string TMVAXMLFilePath, string TMVANFOFilePat
     if(fTargetParameter.empty())  
     {
         ERROR<<"Missing information for k_targetparameter in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if fTargetParameterStDev is defined in file NFO
+    if(!fTargetParameterStDev)  
+    {
+        ERROR<<"Missing information for fTargetParameterStDev in : "<<fTMVANFOFilePath<<endl;
         exit(1);
     }
     //Check if k_modelparameter is defined in file NFO
@@ -95,6 +109,14 @@ EquivalenceModel::EquivalenceModel(CLASSLogger* log, string TMVAXMLFilePath, str
     fTMVAXMLFilePath = TMVAXMLFilePath;
     fTMVANFOFilePath = TMVANFOFilePath;
 
+    fSpecificPower = 0;
+    fMaximalBU = 0;
+    fTargetParameter = "";
+    fPredictorType = "";
+    fOutput = "";
+    fBuffer = ""; 
+    fTargetParameterStDev = 0;
+
     LoadKeyword();  // Load Key words defineds in NFO file
     ReadNFO();      //Getting information from file NFO
 
@@ -102,6 +124,12 @@ EquivalenceModel::EquivalenceModel(CLASSLogger* log, string TMVAXMLFilePath, str
     if(fTargetParameter.empty())  
     {
         ERROR<<"Missing information for k_targetparameter in : "<<fTMVANFOFilePath<<endl;
+        exit(1);
+    }
+    //Check if fTargetParameterStDev is defined in file NFO
+    if(!fTargetParameterStDev)  
+    {
+        ERROR<<"Missing information for fTargetParameterStDev in : "<<fTMVANFOFilePath<<endl;
         exit(1);
     }
     //Check if k_modelparameter is defined in file NFO
@@ -514,7 +542,9 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	int count = 0;
 	
 	FuelToTest.Clear();
-
+cout<<"------------------------------------------------------"<<endl;
+cout<<"START ALGO -> BU, Mass   "<<BurnUp<<" "<<HMMass<<endl;
+cout<<"------------------------------------------------------"<<endl;
 	do
 	{
 		if(count > fMaxIterration)
@@ -542,10 +572,27 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
 		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
 		CalculatedTargetParameter 	= CalculateTargetParameter(FuelToTest, fTargetParameter);
+
+
+for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
+{   
+    cout<<"Lambda vector : "<<(*it_s_vD).first<<endl;
+    for(int i=0; i < (int)lambda[(*it_s_vD).first].size(); i++)
+    {
+        cout<<lambda[(*it_s_vD).first][i]<<" ";
+    }cout<<endl;
+}
+cout<<MaterialToSearch<<" "<<TargetParameterValue<<" "<<CalculatedTargetParameter<<" "<<MassToAdd<<endl;
+
 		
 		count ++;
 
 	}while(fabs(TargetParameterValue - CalculatedTargetParameter) > GetTargetParameterStDev()*TargetParameterValue);
+
+
+cout<<"------------------------------------------------------"<<endl;
+cout<<"STOP ALGO"<<endl;
+cout<<"------------------------------------------------------"<<endl;
 	
 	//Final builded fuel 
 	IsotopicVector IVStream;
