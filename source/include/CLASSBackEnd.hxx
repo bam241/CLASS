@@ -99,6 +99,8 @@ class CLASSBackEnd : public CLASSFacility
 		//@{
 		        void SetIsStorageType ( bool val = true );                              //!< Set the fIsStorage bool
 		virtual	void SetIVArray       ( std::vector< IsotopicVector > const& ivarray ); //!< Set The isotopicVector Array
+		void SetIVArrayArrivalTime ( std::vector< cSecond > const&  IVArrayArrivalTime); //!< Set Arrival Time in Back end
+
 
 #ifndef __CINT__
 		        void SetDecayDataBank      ( DecayDataBank* decayDB   ); //!< Set the Decay DataBank
@@ -163,8 +165,8 @@ inline IsotopicVector CLASSBackEnd::GetIV ( int i ) const
 #endif
 
 inline void CLASSBackEnd::SetIsStorageType ( bool val ) { fIsStorageType = val; }
-inline void CLASSBackEnd::SetIVArray ( std::vector< IsotopicVector > const& ivarray )
-	{ fIVArray = ivarray; }
+inline void CLASSBackEnd::SetIVArrayArrivalTime ( std::vector< cSecond > const&  IVArrayArrivalTime){ fIVArrayArrivalTime = IVArrayArrivalTime; }
+inline void CLASSBackEnd::SetIVArray ( std::vector< IsotopicVector > const& ivarray ){ fIVArray = ivarray; }
 
 #ifndef __CINT__
 	inline void CLASSBackEnd::SetDecayDataBank      ( DecayDataBank* decayDB   )

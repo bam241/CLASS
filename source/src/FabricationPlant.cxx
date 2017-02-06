@@ -254,10 +254,10 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
     // Construit les stocks de matière infini (=taille du réacteur)
     
     // string="MA, .." LambdaArray = tableau sur les IV
-    map < string , vector <double> > LambdaArray =  FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray);
+    map < string , vector <double> > LambdaArray =  FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray, fStreamListFPMassFractionMin, fStreamListFPMassFractionMax, fStreamListFPPriority, fStreamListFPIsBuffer);
     
-     fFuelCanBeBuilt 	= true;
-    double  LambdaSum 		= 0;
+     fFuelCanBeBuilt 	  = true;
+    double  LambdaSum  = 0;
     
      map < string, IsotopicVector>::iterator it_s_IV;
 
@@ -287,8 +287,60 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
     {
         DBGV("Building process from initial stocks has succeeded : ")
         IsotopicVector IV 		= BuildFuelFromEqModel(LambdaArray);
-        IsotopicVector LoadedIV 	= GetDecay(IV,fCycleTime);
+        IsotopicVector LoadedIV 	           = GetDecay(IV,fCycleTime);
         
+        double Pu8   = LoadedIV.GetZAIIsotopicQuantity(94,238,0);
+        double Pu9   = LoadedIV.GetZAIIsotopicQuantity(94,239,0);
+        double Pu10 = LoadedIV.GetZAIIsotopicQuantity(94,240,0);
+        double Pu11 = LoadedIV.GetZAIIsotopicQuantity(94,241,0);
+        double Pu12 = LoadedIV.GetZAIIsotopicQuantity(94,242,0);
+        double Am1 = LoadedIV.GetZAIIsotopicQuantity(95,241,0);
+        double U5    = LoadedIV.GetZAIIsotopicQuantity(92,235,0);
+        double U8    = LoadedIV.GetZAIIsotopicQuantity(92,238,0);
+        double Ntot  = Pu8 + Pu9 + Pu10 + Pu11 + Pu12 +Am1 + U5 +U8;
+        
+        Pu8         = Pu8/Ntot;
+        Pu9         = Pu9/Ntot;
+        Pu10       = Pu10/Ntot;
+        Pu11       = Pu11/Ntot;
+        Pu12       = Pu12/Ntot;
+        Am1        = Am1/Ntot;
+        U5          = U5/Ntot;
+        U8          = U8/Ntot;
+
+        double eU5      = U5/(1-(Pu8 + Pu9 + Pu10 + Pu11 + Pu12 +Am1));
+        double wPu      = Pu8 + Pu9 + Pu10 + Pu11 + Pu12 +Am1;
+
+        Pu8         = Pu8/wPu;
+        Pu9         = Pu9/wPu;
+        Pu10       = Pu10/wPu;
+        Pu11       = Pu11/wPu;
+        Pu12       = Pu12/wPu;
+        Am1        = Am1/wPu;
+        
+        double m_U5         = LoadedIV.GetZAIIsotopicQuantity(92,235,0)*235e-06/6.023e23/LoadedIV.GetTotalMass();
+        double m_U8         = LoadedIV.GetZAIIsotopicQuantity(92,238,0)*238e-06/6.023e23/LoadedIV.GetTotalMass();
+        double m_Pu8        = LoadedIV.GetZAIIsotopicQuantity(94,238,0)*238e-06/6.023e23/LoadedIV.GetTotalMass();
+        double m_Pu9        = LoadedIV.GetZAIIsotopicQuantity(94,239,0)*239e-06/6.023e23/LoadedIV.GetTotalMass();
+        double m_Pu10       = LoadedIV.GetZAIIsotopicQuantity(94,240,0)*240e-06/6.023e23/LoadedIV.GetTotalMass();
+        double m_Pu11       = LoadedIV.GetZAIIsotopicQuantity(94,241,0)*241e-06/6.023e23/LoadedIV.GetTotalMass();
+        double m_Pu12       = LoadedIV.GetZAIIsotopicQuantity(94,242,0)*242e-06/6.023e23/LoadedIV.GetTotalMass();
+        double m_Am1        = LoadedIV.GetZAIIsotopicQuantity(95,241,0)*241e-06/6.023e23/LoadedIV.GetTotalMass();
+
+        double M_Pu8    = LoadedIV.GetZAIIsotopicQuantity(94,238,0)*238e-06/6.023e23;
+        double M_Pu9    = LoadedIV.GetZAIIsotopicQuantity(94,239,0)*239e-06/6.023e23;
+        double M_Pu10  = LoadedIV.GetZAIIsotopicQuantity(94,240,0)*240e-06/6.023e23;
+        double M_Pu11  = LoadedIV.GetZAIIsotopicQuantity(94,241,0)*241e-06/6.023e23;
+        double M_Pu12  = LoadedIV.GetZAIIsotopicQuantity(94,242,0)*242e-06/6.023e23;
+        double M_Am1   = LoadedIV.GetZAIIsotopicQuantity(95,241,0)*241e-06/6.023e23;
+
+        double m_Pu = M_Pu8 + M_Pu9 + M_Pu10 + M_Pu11 + M_Pu12 + M_Am1;
+        double w_mPu = (m_Pu8 + m_Pu9 + m_Pu10 + m_Pu11 + m_Pu12 + m_Am1); 
+
+        cout<<"Frac "<<IV.GetTotalMass()<<" "<<t/3600./24./365.25<<" "<<w_mPu<<"   "<<wPu<<"   "<<U5<<"   "<<"    "<<U8<<"    "<<Pu8<<"    "<<Pu9<<"    "<<Pu10<<"    "<<Pu11<<"    "<<Pu12<<"    "<<Am1<<endl; 
+        //cout<<"Masse "<<IV.GetTotalMass()<<" "<<t/3600./24./365.25<<" "<<m_Pu<<" "<<w_mPu<<" "<<m_U5<<" "<<m_U8<<"   "<<m_Pu8<<"   "<<m_Pu9<<"   "<<m_Pu10<<"    "<<m_Pu11<<"    "<<m_Pu12<<"    "<<m_Am1<<endl; 
+        //cout<<endl;
+   
         EvolutionData EvolDB = FuelType->GenerateEvolutionData(GetDecay(IV,fCycleTime), R_CycleTime, R_Power);
 
         {
@@ -347,7 +399,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
             for( it_s_vD = LambdaArray.begin();  it_s_vD != LambdaArray.end(); it_s_vD++)
                 LambdaArray[(*it_s_vD).first].clear();
             
-            LambdaArray 			= FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray);
+            LambdaArray 			= FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray, fStreamListFPMassFractionMin, fStreamListFPMassFractionMax, fStreamListFPPriority, fStreamListFPIsBuffer);
             IsotopicVector IV 		= BuildFuelFromEqModel(LambdaArray);
             
             //Generating the EvolutionData
@@ -459,7 +511,7 @@ void FabricationPlant::BuildArray(int ReactorId, cSecond ReactorLoadingTime)
             }
         }
 
-        fStreamArray[(*it).first] 	= StreamArray;			StreamArray.clear();
+        fStreamArray[(*it).first] 	         = StreamArray;			StreamArray.clear();
         fStreamArrayAdress[(*it).first]	= StreamArrayAdress;		StreamArrayAdress.clear();
         fStreamArrayTime[(*it).first]	= StreamArrayTime; 		StreamArrayTime.clear();
     }
@@ -583,8 +635,8 @@ void FabricationPlant::SortMix(vector<IsotopicVector>	&IVArray, vector<cSecond> 
     //Sort by anti-chronoligical order (youger first)
     SortLiFo(IVArray, TimeArray, AdressArray);
     /*******Store it ******/
-    vector<IsotopicVector>		Saved_IVArray		= IVArray	 ;
-    vector<cSecond> 			Saved_TimeArray		= TimeArray	 ;
+    vector<IsotopicVector>	Saved_IVArray		= IVArray	 ;
+    vector<cSecond> 		Saved_TimeArray	= TimeArray	 ;
     vector< pair<int,int> > 	Saved_AdressArray	= AdressArray;
     
     int IVsize = (int)IVArray.size();
@@ -656,8 +708,8 @@ void FabricationPlant::SortRandom(vector<IsotopicVector>	&IVArray, vector<cSecon
     random_shuffle(RandomPosition.begin(), RandomPosition.end());
     
     /*******Store old vectors ******/
-    vector<IsotopicVector>		Saved_IVArray		= IVArray	 ;
-    vector<cSecond> 			Saved_TimeArray		= TimeArray	 ;
+    vector<IsotopicVector>	Saved_IVArray		= IVArray	 ;
+    vector<cSecond> 		Saved_TimeArray	= TimeArray	 ;
     vector< pair<int,int> > 	Saved_AdressArray	= AdressArray;
     
     /*******Asign values ******/
@@ -866,9 +918,165 @@ IsotopicVector FabricationPlant::GetDecay(IsotopicVector isotopicvector, cSecond
 }
 
 //________________________________________________________________________
-void FabricationPlant::AddInfiniteStorage(string keyword)
+void FabricationPlant::AddStorage(string keyword, Storage* Stock, double MassFractionMin, double MassFractionMax, int Priority)
+{
+    fStorage[keyword].push_back(Stock);
+
+    if (MassFractionMin>MassFractionMax)
+    {
+            ERROR << " Mass fraction min of material : "<<keyword<<"has to be lower than mass fraction max." <<endl;
+            exit(1);
+    }
+    if (MassFractionMin<0.0)
+    {
+            ERROR << " Mass fraction min of material : "<<keyword <<"has to be higher than zero." <<endl;
+            exit(1);
+    }
+   if (MassFractionMax>1.0)
+    {
+            ERROR << " Mass fraction max of material : "<<keyword <<"has to be lower than one." <<endl;
+            exit(1);
+    }
+    
+    map < int , string >::iterator it_i_s;
+    map < string , bool >::iterator it_s_B;
+    for( it_i_s = fStreamListFPPriority.begin();  it_i_s != fStreamListFPPriority.end(); it_i_s++)
+    { 
+            if ((*it_i_s).first == Priority && (*it_i_s).second != keyword)
+            {
+                    ERROR << "2 materials have the same position in priority order : "<<(*it_i_s).second<<" and "<<keyword<< endl;
+                    exit(1);
+
+            }
+    }
+
+    for( it_s_B = fStreamListFPIsBuffer.begin();  it_s_B != fStreamListFPIsBuffer.end(); it_s_B++)
+    { 
+            if ((*it_s_B).first == keyword && fStreamListFPIsBuffer[(*it_s_B).first]==1)
+            {
+                    ERROR << "The material : "<<keyword<<" is already defined as buffer. "<< endl;
+                    exit(1);
+            }
+    }
+    
+    fStreamListFPMassFractionMin[keyword] = MassFractionMin;
+    fStreamListFPMassFractionMax[keyword] = MassFractionMax;
+
+
+    fStreamListFPPriority[Priority]           = keyword;
+    fStreamListFPIsBuffer[keyword]        = 0;
+
+} 
+//________________________________________________________________________
+void FabricationPlant::AddInfiniteStorage(string keyword, double MassFractionMin, double MassFractionMax, int Priority)
 {
     Storage* Stock;
     fStorage[keyword].push_back(Stock);
+
+    if (MassFractionMin>MassFractionMax)
+    {
+            ERROR << " Mass fraction min of material : "<<keyword<<"has to be lower than mass fraction max." <<endl;
+            exit(1);
+    }
+    if (MassFractionMin<0.0)
+    {
+            ERROR << " Mass fraction min of material : "<<keyword <<"has to be higher than zero." <<endl;
+            exit(1);
+    }
+   if (MassFractionMax>1.0)
+    {
+            ERROR << " Mass fraction max of material : "<<keyword <<"has to be lower than one." <<endl;
+            exit(1);
+    }
+
+    map < int , string >::iterator it_i_s;
+    map < string , bool >::iterator it_s_B;
+    for( it_i_s = fStreamListFPPriority.begin();  it_i_s != fStreamListFPPriority.end(); it_i_s++)
+    { 
+            if ((*it_i_s).first == Priority && (*it_i_s).second != keyword)
+            {
+                    ERROR << "2 materials have the same position in priority order : "<<(*it_i_s).second<<" and "<<keyword<< endl;
+                    exit(1);
+
+            }
+    }
+    for( it_s_B = fStreamListFPIsBuffer.begin();  it_s_B != fStreamListFPIsBuffer.end(); it_s_B++)
+    { 
+            if ((*it_s_B).first == keyword && fStreamListFPIsBuffer[(*it_s_B).first]==1)
+            {
+                    ERROR << "The material : "<<keyword<<" is already defined as buffer. "<< endl;
+                    exit(1);
+            }
+    }
+    fStreamListFPMassFractionMin[keyword] = MassFractionMin;
+    fStreamListFPMassFractionMax[keyword] = MassFractionMax;
+
+    fStreamListFPPriority[Priority]         = keyword;
+    fStreamListFPIsBuffer[keyword]      = 0;
+
     fInfiniteMaterialFromList[keyword] = true;
 } 
+//________________________________________________________________________
+void FabricationPlant::AddFuelBuffer(string keyword)
+{
+    Storage* Stock;
+    fStorage[keyword].push_back(Stock);
+
+     //Test if there is no buffer already defined//
+    map < string , bool >::iterator it_s_B;
+    for( it_s_B = fStreamListFPIsBuffer.begin();  it_s_B != fStreamListFPIsBuffer.end(); it_s_B++)
+    { 
+            if ((*it_s_B).second == 1)
+            {
+                    ERROR << (*it_s_B).first<<" is already defined as a buffer. "<< endl;
+                    ERROR << " Fuel can't have more than one buffer in current algorithm. "<< endl;      
+                    exit(1);
+            }
+    }
+    map < int , string >::iterator it_i_s;
+    for( it_i_s = fStreamListFPPriority.begin();  it_i_s != fStreamListFPPriority.end(); it_i_s++)
+    { 
+            if ((*it_i_s).second == keyword)
+            {
+                    ERROR << "The material "<<keyword<<" can't be defined as a material with a priority order and a buffer. "<< endl;
+                    exit(1);
+
+            }
+    }
+
+    fStreamListFPIsBuffer[keyword]        = 1;
+    fInfiniteMaterialFromList[keyword]    = true;
+} 
+
+//________________________________________________________________________
+void FabricationPlant::AddFuelBuffer(string keyword, Storage* Stock)
+{
+    fStorage[keyword].push_back(Stock);
+    
+     //Test if there is no buffer already defined//
+    map < string , bool >::iterator it_s_B;
+    for( it_s_B = fStreamListFPIsBuffer.begin();  it_s_B != fStreamListFPIsBuffer.end(); it_s_B++)
+    { 
+            if ((*it_s_B).second == 1)
+            {
+                    ERROR << (*it_s_B).first<<" is already defined as a buffer. "<< endl;
+                    ERROR << " Fuel can't have more than one buffer in current algorithm. "<< endl;      
+                    exit(1);
+            }
+    }
+    
+    map < int , string >::iterator it_i_s;
+    for( it_i_s = fStreamListFPPriority.begin();  it_i_s != fStreamListFPPriority.end(); it_i_s++)
+    { 
+            if ((*it_i_s).second == keyword)
+            {
+                    ERROR << "The material "<<keyword<<" can't be defined as a material with a priority order and a buffer. "<< endl;
+                    exit(1);
+
+            }
+    }
+
+    fStreamListFPIsBuffer[keyword]          = 1;
+    fInfiniteMaterialFromList[keyword]      = true;
+} 
+
