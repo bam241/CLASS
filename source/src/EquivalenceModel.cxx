@@ -18,19 +18,14 @@
 
 //________________________________________________________________________
 //________________________________________________________________________
-EquivalenceModel::EquivalenceModel():CLASSObject()
+EquivalenceModel::EquivalenceModel(string TMVAXMLFilePath, string TMVANFOFilePath):CLASSObject()
 {
 	fMaxIterration 	= 500;
 	freaded 	= false;		
 	fPCMprecision  = 10;
 
-    // Check if EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() have been defined
-    if (fTMVAXMLFilePath.empty() || fTMVANFOFilePath.empty())
-    {
-        ERROR << " TMVA XML and/or NFO File path are not defined..."<< endl;
-        ERROR << " You have to use EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() methods."<<endl;
-        exit(1);
-    }
+    fTMVAXMLFilePath = TMVAXMLFilePath;
+    fTMVANFOFilePath = TMVANFOFilePath;
 
     LoadKeyword();  // Load Key words defineds in NFO file
     ReadNFO();      //Getting information from file NFO
@@ -91,19 +86,14 @@ EquivalenceModel::EquivalenceModel():CLASSObject()
 
 }
 //________________________________________________________________________
-EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
+EquivalenceModel::EquivalenceModel(CLASSLogger* log, string TMVAXMLFilePath, string TMVANFOFilePath):CLASSObject(log)
 {
 	fMaxIterration 	= 500;
 	freaded 	= false;		
 	fPCMprecision  = 10;
 
-    // Check if EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() have been defined
-    if (fTMVAXMLFilePath.empty() || fTMVANFOFilePath.empty())
-    {
-        ERROR << " TMVA XML and/or NFO File path are not defined..."<< endl;
-        ERROR << " You have to use EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() methods."<<endl;
-        exit(1);
-    }
+    fTMVAXMLFilePath = TMVAXMLFilePath;
+    fTMVANFOFilePath = TMVANFOFilePath;
 
     LoadKeyword();  // Load Key words defineds in NFO file
     ReadNFO();      //Getting information from file NFO
@@ -309,6 +299,14 @@ IsotopicVector EquivalenceModel::BuildFuelToTest(map < string, vector<double> >&
 map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListFPMassFractionMin, map < string , double> StreamListFPMassFractionMax, map < int , string > StreamListPriority, map < string , bool> StreamListIsBuffer)
 {
 	DBGL
+
+    // Check if EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() have been defined
+    if (fTMVAXMLFilePath.empty() || fTMVANFOFilePath.empty())
+    {
+        ERROR << " TMVA XML and/or NFO File path are not defined..."<< endl;
+        ERROR << " You have to use EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() methods."<<endl;
+        exit(1);
+    }
 
 	//Iterators declaration
 	map < string , vector  <IsotopicVector> >::iterator it_s_vIV;
@@ -813,11 +811,11 @@ bool EquivalenceModel::isIVInDomain(IsotopicVector IV)
 void EquivalenceModel::ReadNFO()
 {
 	DBGL
-	ifstream NFO(fInformationFile.c_str());
+	ifstream NFO(fTMVANFOFilePath.c_str());
 	
 	if(!NFO)
 	{
-		ERROR << "Can't find/open file " << fInformationFile << endl;
+		ERROR << "Can't find/open file " << fTMVANFOFilePath << endl;
 		exit(0);
 	}
 	
@@ -1048,7 +1046,7 @@ void EquivalenceModel::ReadTargetParameter(const string &line)
 		exit(1);
 	}
 	
-	fTargetParameter = atof(StringLine::NextWord(line, pos, ' ').c_str());
+	fTargetParameter = StringLine::NextWord(line, pos, ' ');
 
 	DBGL
 }
