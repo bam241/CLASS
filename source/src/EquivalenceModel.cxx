@@ -27,71 +27,33 @@ EquivalenceModel::EquivalenceModel(string TMVAXMLFilePath, string TMVANFOFilePat
     fTMVAXMLFilePath = TMVAXMLFilePath;
     fTMVANFOFilePath = TMVANFOFilePath;
 
+    fDBRType = "";
+    fDBFType = "";
     fSpecificPower = 0;
     fMaximalBU = 0;
     fTargetParameter = "";
+    fTargetParameterStDev = 0;
+    fBuffer = "";
     fPredictorType = "";
     fOutput = "";
-    fBuffer = ""; 
-    fTargetParameterStDev = 0;
 
     LoadKeyword();  // Load Key words defineds in NFO file
     ReadNFO();      //Getting information from file NFO
 
-    //Check if k_targetparameter is defined in file NFO
-    if(fTargetParameter.empty())  
-    {
-        ERROR<<"Missing information for k_targetparameter in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if fTargetParameterStDev is defined in file NFO
-    if(!fTargetParameterStDev)  
-    {
-        ERROR<<"Missing information for fTargetParameterStDev in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if k_modelparameter is defined in file NFO
-    if(fModelParameter.empty())  
-    {
-        ERROR<<"Missing information for k_modelparameter in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if k_predictortype is defined in file NFO
-    if(fPredictorType.empty())  
-    {
-        ERROR<<"Missing information for k_predictortype in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if k_output is defined in file NFO
-    if(fOutput.empty())  
-    {
-        ERROR<<"Missing information for k_output in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if k_buffer is defined in file NFO
-    if(fBuffer.empty())  
-    {
-        ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if k_massfractionmin and k_massfractionmax are defined in file NFO
-    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty())  
-    {
-        ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if k_zainame are defined in file NFO
-    if(fMapOfTMVAVariableNames.empty())  
-    {
-        ERROR<<"Missing information for k_zainame in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if k_list are defined in file NFO
-    if(fStreamList.empty())  
-    {
-        ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
+    if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(!fSpecificPower) {ERROR<<"Missing information for k_specpower in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(!fMaximalBU) {ERROR<<"Missing information for k_maxburnup in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty()) { ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fStreamList.empty()) { ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl; exit(1); }
+    if(fMapOfTMVAVariableNames.empty()) { ERROR<<"Missing information for k_zainame in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fTargetParameter.empty()) { ERROR<<"Missing information for k_targetparameter in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(!fTargetParameterStDev) { ERROR<<"Missing information for fTargetParameterStDev in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fModelParameter.empty()) { ERROR<<"Missing information for k_modelparameter in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fBuffer.empty()) { ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fPredictorType.empty()) { ERROR<<"Missing information for k_predictortype in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fOutput.empty()) { ERROR<<"Missing information for k_output in : "<<fTMVANFOFilePath<<endl; exit(1);}
 
     INFO << "__An equivalence model has been define__" << endl;
     INFO << "\tThe TMVA weights file is :" << fTMVAXMLFilePath << endl;
@@ -109,71 +71,33 @@ EquivalenceModel::EquivalenceModel(CLASSLogger* log, string TMVAXMLFilePath, str
     fTMVAXMLFilePath = TMVAXMLFilePath;
     fTMVANFOFilePath = TMVANFOFilePath;
 
+    fDBRType = "";
+    fDBFType = "";
     fSpecificPower = 0;
     fMaximalBU = 0;
     fTargetParameter = "";
+    fTargetParameterStDev = 0;
+    fBuffer = "";
     fPredictorType = "";
     fOutput = "";
-    fBuffer = ""; 
-    fTargetParameterStDev = 0;
 
     LoadKeyword();  // Load Key words defineds in NFO file
     ReadNFO();      //Getting information from file NFO
 
-    //Check if k_targetparameter is defined in file NFO
-    if(fTargetParameter.empty())  
-    {
-        ERROR<<"Missing information for k_targetparameter in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if fTargetParameterStDev is defined in file NFO
-    if(!fTargetParameterStDev)  
-    {
-        ERROR<<"Missing information for fTargetParameterStDev in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if k_modelparameter is defined in file NFO
-    if(fModelParameter.empty())  
-    {
-        ERROR<<"Missing information for k_modelparameter in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if k_predictortype is defined in file NFO
-    if(fPredictorType.empty())  
-    {
-        ERROR<<"Missing information for k_predictortype in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if k_output is defined in file NFO
-    if(fOutput.empty())  
-    {
-        ERROR<<"Missing information for k_output in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if k_buffer is defined in file NFO
-    if(fBuffer.empty())  
-    {
-        ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if k_massfractionmin and k_massfractionmax are defined in file NFO
-    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty())  
-    {
-        ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if k_zainame are defined in file NFO
-    if(fMapOfTMVAVariableNames.empty())  
-    {
-        ERROR<<"Missing information for k_zainame in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
-    //Check if k_list are defined in file NFO
-    if(fStreamList.empty())  
-    {
-        ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl;
-        exit(1);
-    }
+    if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(!fSpecificPower) {ERROR<<"Missing information for k_specpower in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(!fMaximalBU) {ERROR<<"Missing information for k_maxburnup in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty()) { ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fStreamList.empty()) { ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl; exit(1); }
+    if(fMapOfTMVAVariableNames.empty()) { ERROR<<"Missing information for k_zainame in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fTargetParameter.empty()) { ERROR<<"Missing information for k_targetparameter in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(!fTargetParameterStDev) { ERROR<<"Missing information for fTargetParameterStDev in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fModelParameter.empty()) { ERROR<<"Missing information for k_modelparameter in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fBuffer.empty()) { ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fPredictorType.empty()) { ERROR<<"Missing information for k_predictortype in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fOutput.empty()) { ERROR<<"Missing information for k_output in : "<<fTMVANFOFilePath<<endl; exit(1);}
 
     INFO << "__An equivalence model has been define__" << endl;
     INFO << "\tThe TMVA weights file is :" << fTMVAXMLFilePath << endl;
@@ -542,9 +466,37 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	int count = 0;
 	
 	FuelToTest.Clear();
+
+/*
+if (fDBFType == "MOX")
+{
 cout<<"------------------------------------------------------"<<endl;
 cout<<"START ALGO -> BU, Mass   "<<BurnUp<<" "<<HMMass<<endl;
 cout<<"------------------------------------------------------"<<endl;
+double MassTest = MassMin[MaterialToSearch];
+cout<<MaterialToSearch<<" "<<MassMax[MaterialToSearch]<<" "<<MassMin[MaterialToSearch]<<" "<<endl;
+do
+{
+    ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassTest, StreamArray[MaterialToSearch]);    
+    FuelToTest          = BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+    FuelToTest          = FuelToTest/FuelToTest.GetSumOfAll();
+    CalculatedTargetParameter   = CalculateTargetParameter(FuelToTest, fTargetParameter);
+
+    cout<<"Lambda vector : "<<MaterialToSearch<<" - "; for(int i=0; i < (int)lambda[MaterialToSearch].size(); i++) cout<<lambda[MaterialToSearch][i]<<" ";
+    cout<<endl;
+
+
+    MassTest += (MassMax[MaterialToSearch] - MassMin[MaterialToSearch])/100.;
+
+    cout<<MassTest<<" "<<CalculatedTargetParameter<<endl;
+
+} while (MassTest <= MassMax[MaterialToSearch]);
+cout<<"------------------------------------------------------"<<endl;
+cout<<"STOP ALGO EXIT(1)..."<<endl; exit(1);
+cout<<"------------------------------------------------------"<<endl;
+}
+*/
+
 	do
 	{
 		if(count > fMaxIterration)
@@ -567,33 +519,15 @@ cout<<"------------------------------------------------------"<<endl;
 			LastMassPlus 	= MassToAdd;
 			MassToAdd 	= MassToAdd - fabs(LastMassMinus - MassToAdd)/2.;
 		}
-		ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassToAdd, StreamArray[MaterialToSearch]);
-		
+		ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassToAdd, StreamArray[MaterialToSearch]);	
 		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
 		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
 		CalculatedTargetParameter 	= CalculateTargetParameter(FuelToTest, fTargetParameter);
-
-
-for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
-{   
-    cout<<"Lambda vector : "<<(*it_s_vD).first<<endl;
-    for(int i=0; i < (int)lambda[(*it_s_vD).first].size(); i++)
-    {
-        cout<<lambda[(*it_s_vD).first][i]<<" ";
-    }cout<<endl;
-}
-cout<<MaterialToSearch<<" "<<TargetParameterValue<<" "<<CalculatedTargetParameter<<" "<<MassToAdd<<endl;
-
 		
 		count ++;
 
 	}while(fabs(TargetParameterValue - CalculatedTargetParameter) > GetTargetParameterStDev()*TargetParameterValue);
 
-
-cout<<"------------------------------------------------------"<<endl;
-cout<<"STOP ALGO"<<endl;
-cout<<"------------------------------------------------------"<<endl;
-	
 	//Final builded fuel 
 	IsotopicVector IVStream;
 	for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
