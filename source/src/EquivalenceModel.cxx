@@ -285,8 +285,8 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	{
 		ERROR<< "Target parameter defined in InformationFile ( "<<fTargetParameter<<" ) doesn't exist." <<endl;
 		ERROR<< "Possible target parameters for the moment are : "<< endl;
-        ERROR<< " - BurnUpMax - Used for PWR" <<endl;
-        ERROR<< " - keffBOC - Used for SFR" <<endl;
+                       ERROR<< " - BurnUpMax - Used for PWR" <<endl;
+                       ERROR<< " - keffBOC - Used for SFR" <<endl;
 		exit(1);			
 	}
 
@@ -396,7 +396,6 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	IsotopicVector FuelToTest;
 
 	bool TargetParameterIncluded = false;
-
 	for( it_i_s = StreamListPriority.begin();  it_i_s != StreamListPriority.end(); it_i_s++)
 	{	
 		//Calculate TargetParameterMin for each possibility : min1 ; max1 + min2 ;  max1 + max2 + min3 ....
@@ -405,7 +404,15 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		FuelToTest 				= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
 		FuelToTest 				= FuelToTest/FuelToTest.GetSumOfAll();
 		TargetParameterMin[(*it_i_s ).second] =  CalculateTargetParameter(FuelToTest, fTargetParameter);
-
+                       //for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
+                       // {
+                       //     cout<<"Lambda vector : "<<(*it_s_vD).first<<" - "; 
+                       //     for(int i=0; i < (int)lambda[(*it_s_vD).first].size(); i++) 
+                       //     {
+                       //         cout<<lambda[(*it_s_vD).first][i]<<" ";
+                       //     }
+                       //     cout<<endl;
+                       // }
 		//Check is TargetParameterMin < TargetParameter
 		if(TargetParameterMin[(*it_i_s ).second]>TargetParameterValue)
 		{
@@ -415,8 +422,8 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 				WARNING << "Targeted parameter : "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
 				WARNING << "Minimum parameter value : " <<TargetParameterMin[(*it_i_s ).second]<<endl;
 				WARNING << "Try to increase targeted burn-up" <<endl;
-                SetLambdaToErrorCode(lambda[(*it_s_D).first]);
-                return lambda;
+                                             SetLambdaToErrorCode(lambda[(*it_s_D).first]);
+                                             return lambda;
 			}
 			else if ((*it_i_s).first >1) //TargetParameter is located between max n-1 and min n
 			{
@@ -427,8 +434,8 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 				WARNING << fTargetParameter<<  " of min fraction of material : "<< (*it_i_s ).second<<" ---> "<<TargetParameterMin[(*it_i_s ).second]<<endl;
 				WARNING << "Targeted "<<fTargetParameter<<" : " <<TargetParameterValue<<endl;					
 				WARNING << "Try to decrease mimimum fraction of : "<< (*it_i_s ).second<<endl;
-                SetLambdaToErrorCode(lambda[(*it_s_D).first]);
-                return lambda;
+                                             SetLambdaToErrorCode(lambda[(*it_s_D).first]);
+                                             return lambda;
 			}
 		}
 		FuelToTest.Clear();
@@ -439,8 +446,8 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
 		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
 		TargetParameterMax[(*it_i_s ).second] 	=  CalculateTargetParameter(FuelToTest, fTargetParameter);
-		
-		if(TargetParameterMax[(*it_i_s ).second]>BurnUp)
+	
+                      if(TargetParameterMax[(*it_i_s ).second]>BurnUp)
 		{
 			TargetParameterIncluded = true ; 
 			break;
@@ -456,8 +463,8 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		WARNING << "Targeted "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
 		WARNING << "Maximum reachable "<<fTargetParameter<<" : "<<TargetParameterMax[(*--StreamListPriority.end()).second]<<endl;
 		WARNING << "Try to increase maximum fraction of materials, or decrease "<< fTargetParameter<<" ." <<endl;
-        SetLambdaToErrorCode(lambda[(*it_s_D).first]);
-        return lambda;
+                       SetLambdaToErrorCode(lambda[(*it_s_D).first]);
+                       return lambda;
 	}
 
 	//Search the TargetParameterValue location in the mass damain //	
@@ -604,33 +611,35 @@ TTree* EquivalenceModel::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 	
 }
 //________________________________________________________________________
-void EquivalenceModel::CheckTargetParameterConsistency(map < int , string >  StreamListPriority, map < string , double >  TargetParameterMin, map < string , double > TargetParameterMax)
+void EquivalenceModel::CheckTargetParameterConsistency(map < int , string > StreamListPriority, map < string , double >  TargetParameterMin, map < string , double > TargetParameterMax)
 {
 	map < int , string >::iterator it_i_s;
-	
-	double TargetParameterUp 		= 0;
-	double TargetParameterDown 		= 0;
+	double TargetParameterUp 		= -1.0; //to be sure BUMin is > to BUmax even if BUmin is zero
+	double TargetParameterDown 		= 0.0;
 
 	//Loop on priority order to check if target parameter increases monotously with the material mass
 	for( it_i_s = StreamListPriority.begin();  it_i_s != StreamListPriority.end(); it_i_s++)
 	{	
-		TargetParameterDown = TargetParameterMin[(*it_i_s ).second];
+                      if(TargetParameterMin.find((*it_i_s).second) == TargetParameterMin.end())
+                      {
+                            break; //if material is not in map, break the loop
+                      }
+                      TargetParameterDown = TargetParameterMin[(*it_i_s).second];
 		if (TargetParameterDown < TargetParameterUp )
 		{
 			ERROR<< "Target parameter evolution as a function of material mass is not monotonous." <<endl;
-            ERROR<< "Check the evolution..." <<endl;
-			exit(1);			
-
+                                  ERROR<< "Check the evolution..." <<endl;
+   			exit(1);			
 		}
 		
-		TargetParameterUp 	= TargetParameterMax[(*it_i_s ).second];
+		TargetParameterUp 	= TargetParameterMax[(*it_i_s).second];
 		if (TargetParameterDown > TargetParameterUp )
 		{			
 			ERROR<< "Target parameter evolution as a function of material mass is not monotonous." <<endl;
 			ERROR<< "Check the evolution..." <<endl;
 			exit(1);			
 		}
-	}
+ 	}
 }
 //________________________________________________________________________
 double EquivalenceModel::CalculateTargetParameter(IsotopicVector TheFuel, string TargetParameterName)
