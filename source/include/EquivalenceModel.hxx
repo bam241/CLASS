@@ -112,8 +112,8 @@ class EquivalenceModel : public CLASSObject
 	double GetStreamListEqMMassFractionMin(string keyword){return fStreamListEqMMassFractionMin[keyword] ;}
 	double GetPCMPrecision(){return fPCMprecision/1e5;}//!< Get the precision on @f$\langle k \rangle@f$ prediction []. Neural network predictor constructors
 
-    void SetModelParameter(string sMP, double dMP)  { fModelParameter[sMP] = dMP; }   //!< Set Model Parameters precised in NFO file
-    map<string, double> GetModelParameter()  { return fModelParameter; }   //!< Get Model Parameters precised in NFO file
+    	void SetModelParameter(string sMP, double dMP)  { fModelParameter[sMP] = dMP; }   //!< Set Model Parameters precised in NFO file
+    	map<string, double> GetModelParameter()  { return fModelParameter; }   //!< Get Model Parameters precised in NFO file
 
 	void SetMaxIterration(int val)	{ fMaxIterration = val; }	//!< Max iteration in build fuel algorithm
 	void SetTargetParameterStDev(double TPSD){fTargetParameterStDev = TPSD;} //!< Set the precision on Target Parameter
