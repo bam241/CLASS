@@ -284,7 +284,9 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	else
 	{
 		ERROR<< "Target parameter defined in InformationFile ( "<<fTargetParameter<<" ) doesn't exist." <<endl;
-		ERROR<< "Possible target parameters for the moment are : BurnUpMax and keffBOC." <<endl;
+		ERROR<< "Possible target parameters for the moment are : "<< endl;
+        ERROR<< " - BurnUpMax - Used for PWR" <<endl;
+        ERROR<< " - keffBOC - Used for SFR" <<endl;
 		exit(1);			
 	}
 
@@ -326,7 +328,7 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	map < string, double >   StreamListMassFractionMax ; 
 	for( it_s_D = StreamListFPMassFractionMin.begin();  it_s_D != StreamListFPMassFractionMin.end(); it_s_D++)
 	{	
-		if(StreamListFPMassFractionMin[(*it_s_D).first] < fStreamListEqMMassFractionMin[(*it_s_D).first]) // if limits FP are lower than limits EqM => limits Eqm are applied
+		if(StreamListFPMassFractionMin[(*it_s_D).first] < fStreamListEqMMassFractionMin[(*it_s_D).first]) // if limits FP are lower than limits EqM
 		{
 			ERROR << " User mass fraction min requirement is lower than the model mass fraction min for list  : "<<(*it_s_D).first << endl;
 			ERROR << " User mass fraction min requirement : "<<StreamListFPMassFractionMin[(*it_s_D).first]<<endl;
@@ -341,7 +343,7 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 
 	for( it_s_D = StreamListFPMassFractionMax.begin();  it_s_D != StreamListFPMassFractionMax.end(); it_s_D++)
 	{	
-		if(StreamListFPMassFractionMax[(*it_s_D).first] > fStreamListEqMMassFractionMax[(*it_s_D).first]) // if limits FP are higher than limits EqM => limits Eqm are applied
+		if(StreamListFPMassFractionMax[(*it_s_D).first] > fStreamListEqMMassFractionMax[(*it_s_D).first]) // if limits FP are higher than limits EqM
 		{
 			ERROR << " User mass fraction max requirement is higher than the model mass fraction max for list  : "<<(*it_s_D).first << endl;
 			ERROR << " User mass fraction max requirement : "<<StreamListFPMassFractionMax[(*it_s_D).first]<<endl;
@@ -409,22 +411,24 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		{
 			if((*it_i_s).first ==1) //Minimum of first material is too high
 			{
-				ERROR << "CRITICAL ! Minimum parameter value associated to the first priority material ( "<<(*it_i_s ).second <<" ) is higher than targeted parameter."<< endl;
-				ERROR << "Targeted parameter : "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
-				ERROR << "Minimum parameter value : " <<TargetParameterMin[(*it_i_s ).second]<<endl;
-				ERROR << "Try to increase targeted burn-up" <<endl;
-				exit(1);
+				WARNING << "CRITICAL ! Minimum parameter value associated to the first priority material ( "<<(*it_i_s ).second <<" ) is higher than targeted parameter."<< endl;
+				WARNING << "Targeted parameter : "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
+				WARNING << "Minimum parameter value : " <<TargetParameterMin[(*it_i_s ).second]<<endl;
+				WARNING << "Try to increase targeted burn-up" <<endl;
+                SetLambdaToErrorCode(lambda[(*it_s_D).first]);
+                return lambda;
 			}
 			else if ((*it_i_s).first >1) //TargetParameter is located between max n-1 and min n
 			{
-				ERROR << "CRITICAL ! Targeted parameter value ( "<<fTargetParameter<<" ) is located between 2 materials. "<<endl;
+				WARNING << "CRITICAL ! Targeted parameter value ( "<<fTargetParameter<<" ) is located between 2 materials. "<<endl;
 				it_i_s --;
-				ERROR << fTargetParameter <<" of max fraction of material : "<< (*it_i_s).second<<" ---> "<<TargetParameterMax[(*it_i_s ).second]<<endl;
+				WARNING << fTargetParameter <<" of max fraction of material : "<< (*it_i_s).second<<" ---> "<<TargetParameterMax[(*it_i_s ).second]<<endl;
 				it_i_s ++;
-				ERROR << fTargetParameter<<  " of min fraction of material : "<< (*it_i_s ).second<<" ---> "<<TargetParameterMin[(*it_i_s ).second]<<endl;
-				ERROR << "Targeted "<<fTargetParameter<<" : " <<TargetParameterValue<<endl;					
-				ERROR << "Try to decrease mimimum fraction of : "<< (*it_i_s ).second<<endl;
-				exit(1);
+				WARNING << fTargetParameter<<  " of min fraction of material : "<< (*it_i_s ).second<<" ---> "<<TargetParameterMin[(*it_i_s ).second]<<endl;
+				WARNING << "Targeted "<<fTargetParameter<<" : " <<TargetParameterValue<<endl;					
+				WARNING << "Try to decrease mimimum fraction of : "<< (*it_i_s ).second<<endl;
+                SetLambdaToErrorCode(lambda[(*it_s_D).first]);
+                return lambda;
 			}
 		}
 		FuelToTest.Clear();
@@ -448,11 +452,12 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 
 	if(!TargetParameterIncluded) 
 	{
-		ERROR << "CRITICAL ! Maximum reachable "<<fTargetParameter<<" is lower than targeted "<< fTargetParameter<<". "<< endl;
-		ERROR << "Targeted "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
-		ERROR << "Maximum reachable "<<fTargetParameter<<" : "<<TargetParameterMax[(*--StreamListPriority.end()).second]<<endl;
-		ERROR << "Try to increase maximum fraction of materials, or decrease "<< fTargetParameter<<" ." <<endl;
-		exit(1);
+		WARNING << "CRITICAL ! Maximum reachable "<<fTargetParameter<<" is lower than targeted "<< fTargetParameter<<". "<< endl;
+		WARNING << "Targeted "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
+		WARNING << "Maximum reachable "<<fTargetParameter<<" : "<<TargetParameterMax[(*--StreamListPriority.end()).second]<<endl;
+		WARNING << "Try to increase maximum fraction of materials, or decrease "<< fTargetParameter<<" ." <<endl;
+        SetLambdaToErrorCode(lambda[(*it_s_D).first]);
+        return lambda;
 	}
 
 	//Search the TargetParameterValue location in the mass damain //	
@@ -613,7 +618,7 @@ void EquivalenceModel::CheckTargetParameterConsistency(map < int , string >  Str
 		if (TargetParameterDown < TargetParameterUp )
 		{
 			ERROR<< "Target parameter evolution as a function of material mass is not monotonous." <<endl;
-			ERROR<< "Check the its evolution." <<endl;
+            ERROR<< "Check the evolution..." <<endl;
 			exit(1);			
 
 		}
@@ -622,7 +627,7 @@ void EquivalenceModel::CheckTargetParameterConsistency(map < int , string >  Str
 		if (TargetParameterDown > TargetParameterUp )
 		{			
 			ERROR<< "Target parameter evolution as a function of material mass is not monotonous." <<endl;
-			ERROR<< "Check the its evolution." <<endl;
+			ERROR<< "Check the evolution..." <<endl;
 			exit(1);			
 		}
 	}
