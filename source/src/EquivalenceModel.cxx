@@ -499,15 +499,6 @@ cout<<"------------------------------------------------------"<<endl;
 
 	do
 	{
-                      if(count > fMaxIterration-10)
-                      {
-                          cout << "CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on the target parameter using :\nYourEquivalenceModel->SetTargetParameterStDev(Precision); " << endl;
-                          cout << "Targeted "<<fTargetParameter<<" : "<<TargetParameterValue<<endl;
-                          cout << "Last calculated "<<fTargetParameter<<" : "<<CalculatedTargetParameter<<endl;
-                          cout << "Last Fresh fuel normalized composition : " <<endl;
-                          cout << FuelToTest.sPrint()<<endl; 
-                      }
-
 		if(count > fMaxIterration)
 		{
 			ERROR << "CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on the target parameter using :\nYourEquivalenceModel->SetTargetParameterStDev(Precision); " << endl;
