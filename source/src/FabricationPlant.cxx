@@ -270,7 +270,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
     {
         string StreamName =  it_s_IV->first ;
 
-        if(find(LambdaArray[StreamName].begin(), LambdaArray[StreamName].end(), -1 )!= LambdaArray[StreamName].end()) //There is IV but with  enought material
+        if(find(LambdaArray[StreamName].begin(), LambdaArray[StreamName].end(), -1 )!= LambdaArray[StreamName].end()) 
             fErrorOnLambda[StreamName] = true;
 
         for(int i = 0; i < (int)LambdaArray[StreamName].size();i++)

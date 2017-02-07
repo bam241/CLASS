@@ -39,7 +39,8 @@ EquivalenceModel::EquivalenceModel(string TMVAXMLFilePath, string TMVANFOFilePat
 
     LoadKeyword();  // Load Key words defineds in NFO file
     ReadNFO();      //Getting information from file NFO
-
+   
+    //Check if any information is missing in NFO file
     if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
     if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
     if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
@@ -64,9 +65,9 @@ EquivalenceModel::EquivalenceModel(string TMVAXMLFilePath, string TMVANFOFilePat
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel(CLASSLogger* log, string TMVAXMLFilePath, string TMVANFOFilePath):CLASSObject(log)
 {
-	fMaxIterration 	= 500;
-	freaded 	= false;		
-	fPCMprecision  = 10;
+    fMaxIterration 	= 500;
+    freaded 	           = false;		
+    fPCMprecision         = 10;
 
     fTMVAXMLFilePath = TMVAXMLFilePath;
     fTMVANFOFilePath = TMVANFOFilePath;
@@ -84,6 +85,7 @@ EquivalenceModel::EquivalenceModel(CLASSLogger* log, string TMVAXMLFilePath, str
     LoadKeyword();  // Load Key words defineds in NFO file
     ReadNFO();      //Getting information from file NFO
 
+    //Check if any information is missing in NFO file
     if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
     if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
     if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
@@ -404,26 +406,19 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		FuelToTest 				= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
 		FuelToTest 				= FuelToTest/FuelToTest.GetSumOfAll();
 		TargetParameterMin[(*it_i_s ).second] =  CalculateTargetParameter(FuelToTest, fTargetParameter);
-                       //for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
-                       // {
-                       //     cout<<"Lambda vector : "<<(*it_s_vD).first<<" - "; 
-                       //     for(int i=0; i < (int)lambda[(*it_s_vD).first].size(); i++) 
-                       //     {
-                       //         cout<<lambda[(*it_s_vD).first][i]<<" ";
-                       //     }
-                       //     cout<<endl;
-                       // }
-		//Check is TargetParameterMin < TargetParameter
+
+   		//Check is TargetParameterMin < TargetParameter
 		if(TargetParameterMin[(*it_i_s ).second]>TargetParameterValue)
 		{
 			if((*it_i_s).first ==1) //Minimum of first material is too high
-			{
-				WARNING << "CRITICAL ! Minimum parameter value associated to the first priority material ( "<<(*it_i_s ).second <<" ) is higher than targeted parameter."<< endl;
+			{		
+                                             WARNING << "CRITICAL ! Minimum parameter value associated to the first priority material ( "<<(*it_i_s ).second <<" ) is higher than targeted parameter."<< endl;
 				WARNING << "Targeted parameter : "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
 				WARNING << "Minimum parameter value : " <<TargetParameterMin[(*it_i_s ).second]<<endl;
 				WARNING << "Try to increase targeted burn-up" <<endl;
-                                             SetLambdaToErrorCode(lambda[(*it_s_D).first]);
+                                             SetLambdaToErrorCode(lambda[(*it_i_s).second]);
                                              return lambda;
+                                                DBGL
 			}
 			else if ((*it_i_s).first >1) //TargetParameter is located between max n-1 and min n
 			{
@@ -434,7 +429,7 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 				WARNING << fTargetParameter<<  " of min fraction of material : "<< (*it_i_s ).second<<" ---> "<<TargetParameterMin[(*it_i_s ).second]<<endl;
 				WARNING << "Targeted "<<fTargetParameter<<" : " <<TargetParameterValue<<endl;					
 				WARNING << "Try to decrease mimimum fraction of : "<< (*it_i_s ).second<<endl;
-                                             SetLambdaToErrorCode(lambda[(*it_s_D).first]);
+                                             SetLambdaToErrorCode(lambda[(*it_i_s).second]);
                                              return lambda;
 			}
 		}
@@ -479,35 +474,35 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	
 	FuelToTest.Clear();
 
-/*
-if (fDBFType == "MOX")
-{
-cout<<"------------------------------------------------------"<<endl;
-cout<<"START ALGO -> BU, Mass   "<<BurnUp<<" "<<HMMass<<endl;
-cout<<"------------------------------------------------------"<<endl;
-double MassTest = MassMin[MaterialToSearch];
-cout<<MaterialToSearch<<" "<<MassMax[MaterialToSearch]<<" "<<MassMin[MaterialToSearch]<<" "<<endl;
-do
-{
-    ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassTest, StreamArray[MaterialToSearch]);    
-    FuelToTest          = BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
-    FuelToTest          = FuelToTest/FuelToTest.GetSumOfAll();
-    CalculatedTargetParameter   = CalculateTargetParameter(FuelToTest, fTargetParameter);
-
-    cout<<"Lambda vector : "<<MaterialToSearch<<" - "; for(int i=0; i < (int)lambda[MaterialToSearch].size(); i++) cout<<lambda[MaterialToSearch][i]<<" ";
-    cout<<endl;
-
-
-    MassTest += (MassMax[MaterialToSearch] - MassMin[MaterialToSearch])/100.;
-
-    cout<<MassTest<<" "<<CalculatedTargetParameter<<endl;
-
-} while (MassTest <= MassMax[MaterialToSearch]);
-cout<<"------------------------------------------------------"<<endl;
-cout<<"STOP ALGO EXIT(1)..."<<endl; exit(1);
-cout<<"------------------------------------------------------"<<endl;
-}
-*/
+            /*
+            if (fDBFType == "MOX")
+            {
+            cout<<"------------------------------------------------------"<<endl;
+            cout<<"START ALGO -> BU, Mass   "<<BurnUp<<" "<<HMMass<<endl;
+            cout<<"------------------------------------------------------"<<endl;
+            double MassTest = MassMin[MaterialToSearch];
+            cout<<MaterialToSearch<<" "<<MassMax[MaterialToSearch]<<" "<<MassMin[MaterialToSearch]<<" "<<endl;
+            do
+            {
+                ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassTest, StreamArray[MaterialToSearch]);    
+                FuelToTest          = BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+                FuelToTest          = FuelToTest/FuelToTest.GetSumOfAll();
+                CalculatedTargetParameter   = CalculateTargetParameter(FuelToTest, fTargetParameter);
+            
+                cout<<"Lambda vector : "<<MaterialToSearch<<" - "; for(int i=0; i < (int)lambda[MaterialToSearch].size(); i++) cout<<lambda[MaterialToSearch][i]<<" ";
+                cout<<endl;
+            
+            
+                MassTest += (MassMax[MaterialToSearch] - MassMin[MaterialToSearch])/100.;
+            
+                cout<<MassTest<<" "<<CalculatedTargetParameter<<endl;
+            
+            } while (MassTest <= MassMax[MaterialToSearch]);
+            cout<<"------------------------------------------------------"<<endl;
+            cout<<"STOP ALGO EXIT(1)..."<<endl; exit(1);
+            cout<<"------------------------------------------------------"<<endl;
+            }
+            */
 
 	do
 	{
