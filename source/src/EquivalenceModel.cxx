@@ -458,7 +458,7 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		WARNING << "Targeted "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
 		WARNING << "Maximum reachable "<<fTargetParameter<<" : "<<TargetParameterMax[(*--StreamListPriority.end()).second]<<endl;
 		WARNING << "Try to increase maximum fraction of materials, or decrease "<< fTargetParameter<<" ." <<endl;
-                       SetLambdaToErrorCode(lambda[(*it_s_D).first]);
+                       SetLambdaToErrorCode(lambda[(*--StreamListPriority.end()).second]);
                        return lambda;
 	}
 
