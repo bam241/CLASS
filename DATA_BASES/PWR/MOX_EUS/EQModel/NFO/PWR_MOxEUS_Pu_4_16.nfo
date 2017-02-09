@@ -1,0 +1,127 @@
+************************
+HOW TO USE IN CLASS
+************************
+To be used with : EquilavenceModel.cxx
+
+**********************
+REACTOR FEATURES
+**********************
+Reactor type
+k_reactor PWR 
+
+Fuel type
+k_fuel MOXEUS 
+
+Maximal burnup (GWd/tHM) :
+k_maxburnup 75
+
+Specific Power (W/gHM) :
+k_specpower 34.24
+
+************************
+MODEL  FEATURES
+************************
+
+Parameter used in optimization algo 
+k_targetparameter BurnUpMax
+
+EquivalenceModel parameters name 
+k_modelparameter kThreshold
+k_modelparameter NumberOfBatch
+
+EquivalenceModel parameters standard deviation 
+k_targetparameterstdev 0.01
+
+**********************
+PREDICTOR 
+**********************
+k_predictortype MLP
+
+INPUT
+Z A I Name (input MLP) :
+k_zainame 92 235 0 U5
+k_zainame 92 238 0 U8
+k_zainame 94 238 0 Pu8
+k_zainame 94 239 0 Pu9
+k_zainame 94 240 0 Pu10
+k_zainame 94 241 0 Pu11
+k_zainame 94 242 0 Pu12
+k_zainame 95 241 0 Am1
+
+OUTPUT
+k_output kinf
+
+**********************
+ FUEL INFOS
+**********************
+*******************************
+Lists and IVs for FP separation
+*******************************
+Pu Liste (Z A I Default Proportion) :
+k_list PuList 94 238 0 1
+k_list PuList 94 239 0 1
+k_list PuList 94 240 0 1
+k_list PuList 94 241 0 1
+k_list PuList 94 242 0 1
+
+Enrichment Liste (Z A I Default Proportion) :
+k_list EnrichmentList 92 235 0 1 
+
+Fertile Liste (Z A I Default Proportion) :
+k_list FertileList 92 235 0 0.0025
+k_list FertileList 92 238 0 0.9975
+
+****************************
+Buffer material for this fuel
+****************************
+k_buffer Fertile
+
+**************************************
+Min and Max fraction of lists in model
+**************************************
+Minimum Fraction of each list in the fuel (%mass) :  
+k_massfractionmin PuList 0.04
+k_massfractionmin EnrichmentList 0.0
+
+Maximun Fraction of each list in the fuel (%mass) : 
+k_massfractionmax PuList 0.16
+k_massfractionmax EnrichmentList 0.05
+
+**************************************
+ZAI Limits in this model
+**************************************
+Z A I Min Max  :
+k_zail 92 235 0 2.30270298e-03 5.00135981e-02
+k_zail 92 238 0 8.04198325e-01 9.91633654e-01
+k_zail 94 238 0 2.42847864e-06 1.25759691e-02
+k_zail 94 239 0 2.72685829e-05 1.18448287e-01
+k_zail 94 240 0 1.36823164e-05 6.08281456e-02
+k_zail 94 241 0 5.21284107e-07 3.61828022e-02
+k_zail 94 242 0 1.39559679e-05 5.31211868e-02
+k_zail 95 241 0 1.16816601e-07 1.22549152e-02
+
+************************
+AUTHOR
+************************
+Date : 2015
+Author : FaN
+Mail address : thiollie@subatech.in2p3.fr
+
+*******************************
+DEPLETION SIMULATION INFOS
+*******************************
+Depletion Code : MURE
+NuclearData
+XS : JEFF 3.1.1
+FPY : JEFF 3.1.1
+S(alpha,Beta) : JEFF 3.1.1
+Geometry : Cubic Assembly (mirror boundary)
+
+Material :
+/*In free format , show temperatures, density , isotopic compositions
+unit: K , g.cm-3  and  % mol. */
+Power Density : 34.24/*in W/g of heavy metal */
+Half-life cut : 36000
+Multi group treatment : 17900
+Time vector : 0 86400 172800 259200 345600 432000 2984653 5537306 8089959 10642612 13195265 15747918 18300570 20853224 23405876 25958530 28511182 31063836 33616488 36169140 38721796 41274448 43827100 46379752 48932408 51485060 54037712 56590364 59143020 61695672 64248324 66800976 69353632 71906280 74458936 77011592 79564240 82116896 84669552 87222200 89774856 92327504 94880160 97432816 99985464 102538120 105090768 107643424 110196080 112748728 115301384 117854040 120406688 122959344 125511992 128064648 130617304 133169952 135722608 138275264 140827920 143380560 145933216 148485872 151038528 153591184 156143824 158696480 161249136 163801792 166354448 168907104 171459744 174012400 176565056 179117712 181670368 184223008 186775664 189328320 
+Others :

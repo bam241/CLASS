@@ -39,7 +39,8 @@ EquivalenceModel::EquivalenceModel(string TMVAXMLFilePath, string TMVANFOFilePat
 
     LoadKeyword();  // Load Key words defineds in NFO file
     ReadNFO();      //Getting information from file NFO
-
+   
+    //Check if any information is missing in NFO file
     if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
     if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
     if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
@@ -64,9 +65,9 @@ EquivalenceModel::EquivalenceModel(string TMVAXMLFilePath, string TMVANFOFilePat
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel(CLASSLogger* log, string TMVAXMLFilePath, string TMVANFOFilePath):CLASSObject(log)
 {
-	fMaxIterration 	= 500;
-	freaded 	= false;		
-	fPCMprecision  = 10;
+    fMaxIterration 	= 500;
+    freaded 	           = false;		
+    fPCMprecision         = 10;
 
     fTMVAXMLFilePath = TMVAXMLFilePath;
     fTMVANFOFilePath = TMVANFOFilePath;
@@ -84,6 +85,7 @@ EquivalenceModel::EquivalenceModel(CLASSLogger* log, string TMVAXMLFilePath, str
     LoadKeyword();  // Load Key words defineds in NFO file
     ReadNFO();      //Getting information from file NFO
 
+    //Check if any information is missing in NFO file
     if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
     if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
     if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
@@ -285,8 +287,8 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	{
 		ERROR<< "Target parameter defined in InformationFile ( "<<fTargetParameter<<" ) doesn't exist." <<endl;
 		ERROR<< "Possible target parameters for the moment are : "<< endl;
-        ERROR<< " - BurnUpMax - Used for PWR" <<endl;
-        ERROR<< " - keffBOC - Used for SFR" <<endl;
+                       ERROR<< " - BurnUpMax - Used for PWR" <<endl;
+                       ERROR<< " - keffBOC - Used for SFR" <<endl;
 		exit(1);			
 	}
 
@@ -396,7 +398,6 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	IsotopicVector FuelToTest;
 
 	bool TargetParameterIncluded = false;
-
 	for( it_i_s = StreamListPriority.begin();  it_i_s != StreamListPriority.end(); it_i_s++)
 	{	
 		//Calculate TargetParameterMin for each possibility : min1 ; max1 + min2 ;  max1 + max2 + min3 ....
@@ -406,17 +407,18 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		FuelToTest 				= FuelToTest/FuelToTest.GetSumOfAll();
 		TargetParameterMin[(*it_i_s ).second] =  CalculateTargetParameter(FuelToTest, fTargetParameter);
 
-		//Check is TargetParameterMin < TargetParameter
+   		//Check is TargetParameterMin < TargetParameter
 		if(TargetParameterMin[(*it_i_s ).second]>TargetParameterValue)
 		{
 			if((*it_i_s).first ==1) //Minimum of first material is too high
-			{
-				WARNING << "CRITICAL ! Minimum parameter value associated to the first priority material ( "<<(*it_i_s ).second <<" ) is higher than targeted parameter."<< endl;
+			{		
+                                             WARNING << "CRITICAL ! Minimum parameter value associated to the first priority material ( "<<(*it_i_s ).second <<" ) is higher than targeted parameter."<< endl;
 				WARNING << "Targeted parameter : "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
 				WARNING << "Minimum parameter value : " <<TargetParameterMin[(*it_i_s ).second]<<endl;
 				WARNING << "Try to increase targeted burn-up" <<endl;
-                SetLambdaToErrorCode(lambda[(*it_s_D).first]);
-                return lambda;
+                                             SetLambdaToErrorCode(lambda[(*it_i_s).second]);
+                                             return lambda;
+                                                DBGL
 			}
 			else if ((*it_i_s).first >1) //TargetParameter is located between max n-1 and min n
 			{
@@ -427,8 +429,8 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 				WARNING << fTargetParameter<<  " of min fraction of material : "<< (*it_i_s ).second<<" ---> "<<TargetParameterMin[(*it_i_s ).second]<<endl;
 				WARNING << "Targeted "<<fTargetParameter<<" : " <<TargetParameterValue<<endl;					
 				WARNING << "Try to decrease mimimum fraction of : "<< (*it_i_s ).second<<endl;
-                SetLambdaToErrorCode(lambda[(*it_s_D).first]);
-                return lambda;
+                                             SetLambdaToErrorCode(lambda[(*it_i_s).second]);
+                                             return lambda;
 			}
 		}
 		FuelToTest.Clear();
@@ -439,8 +441,8 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
 		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
 		TargetParameterMax[(*it_i_s ).second] 	=  CalculateTargetParameter(FuelToTest, fTargetParameter);
-		
-		if(TargetParameterMax[(*it_i_s ).second]>BurnUp)
+	
+                      if(TargetParameterMax[(*it_i_s ).second]>BurnUp)
 		{
 			TargetParameterIncluded = true ; 
 			break;
@@ -456,8 +458,8 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		WARNING << "Targeted "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
 		WARNING << "Maximum reachable "<<fTargetParameter<<" : "<<TargetParameterMax[(*--StreamListPriority.end()).second]<<endl;
 		WARNING << "Try to increase maximum fraction of materials, or decrease "<< fTargetParameter<<" ." <<endl;
-        SetLambdaToErrorCode(lambda[(*it_s_D).first]);
-        return lambda;
+                       SetLambdaToErrorCode(lambda[(*--StreamListPriority.end()).second]);
+                       return lambda;
 	}
 
 	//Search the TargetParameterValue location in the mass damain //	
@@ -472,35 +474,35 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 	
 	FuelToTest.Clear();
 
-/*
-if (fDBFType == "MOX")
-{
-cout<<"------------------------------------------------------"<<endl;
-cout<<"START ALGO -> BU, Mass   "<<BurnUp<<" "<<HMMass<<endl;
-cout<<"------------------------------------------------------"<<endl;
-double MassTest = MassMin[MaterialToSearch];
-cout<<MaterialToSearch<<" "<<MassMax[MaterialToSearch]<<" "<<MassMin[MaterialToSearch]<<" "<<endl;
-do
-{
-    ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassTest, StreamArray[MaterialToSearch]);    
-    FuelToTest          = BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
-    FuelToTest          = FuelToTest/FuelToTest.GetSumOfAll();
-    CalculatedTargetParameter   = CalculateTargetParameter(FuelToTest, fTargetParameter);
-
-    cout<<"Lambda vector : "<<MaterialToSearch<<" - "; for(int i=0; i < (int)lambda[MaterialToSearch].size(); i++) cout<<lambda[MaterialToSearch][i]<<" ";
-    cout<<endl;
-
-
-    MassTest += (MassMax[MaterialToSearch] - MassMin[MaterialToSearch])/100.;
-
-    cout<<MassTest<<" "<<CalculatedTargetParameter<<endl;
-
-} while (MassTest <= MassMax[MaterialToSearch]);
-cout<<"------------------------------------------------------"<<endl;
-cout<<"STOP ALGO EXIT(1)..."<<endl; exit(1);
-cout<<"------------------------------------------------------"<<endl;
-}
-*/
+            /*
+            if (fDBFType == "MOX")
+            {
+            cout<<"------------------------------------------------------"<<endl;
+            cout<<"START ALGO -> BU, Mass   "<<BurnUp<<" "<<HMMass<<endl;
+            cout<<"------------------------------------------------------"<<endl;
+            double MassTest = MassMin[MaterialToSearch];
+            cout<<MaterialToSearch<<" "<<MassMax[MaterialToSearch]<<" "<<MassMin[MaterialToSearch]<<" "<<endl;
+            do
+            {
+                ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassTest, StreamArray[MaterialToSearch]);    
+                FuelToTest          = BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+                FuelToTest          = FuelToTest/FuelToTest.GetSumOfAll();
+                CalculatedTargetParameter   = CalculateTargetParameter(FuelToTest, fTargetParameter);
+            
+                cout<<"Lambda vector : "<<MaterialToSearch<<" - "; for(int i=0; i < (int)lambda[MaterialToSearch].size(); i++) cout<<lambda[MaterialToSearch][i]<<" ";
+                cout<<endl;
+            
+            
+                MassTest += (MassMax[MaterialToSearch] - MassMin[MaterialToSearch])/100.;
+            
+                cout<<MassTest<<" "<<CalculatedTargetParameter<<endl;
+            
+            } while (MassTest <= MassMax[MaterialToSearch]);
+            cout<<"------------------------------------------------------"<<endl;
+            cout<<"STOP ALGO EXIT(1)..."<<endl; exit(1);
+            cout<<"------------------------------------------------------"<<endl;
+            }
+            */
 
 	do
 	{
@@ -604,33 +606,35 @@ TTree* EquivalenceModel::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 	
 }
 //________________________________________________________________________
-void EquivalenceModel::CheckTargetParameterConsistency(map < int , string >  StreamListPriority, map < string , double >  TargetParameterMin, map < string , double > TargetParameterMax)
+void EquivalenceModel::CheckTargetParameterConsistency(map < int , string > StreamListPriority, map < string , double >  TargetParameterMin, map < string , double > TargetParameterMax)
 {
 	map < int , string >::iterator it_i_s;
-	
-	double TargetParameterUp 		= 0;
-	double TargetParameterDown 		= 0;
+	double TargetParameterUp 		= -1.0; //to be sure BUMin is > to BUmax even if BUmin is zero
+	double TargetParameterDown 		= 0.0;
 
 	//Loop on priority order to check if target parameter increases monotously with the material mass
 	for( it_i_s = StreamListPriority.begin();  it_i_s != StreamListPriority.end(); it_i_s++)
 	{	
-		TargetParameterDown = TargetParameterMin[(*it_i_s ).second];
+                      if(TargetParameterMin.find((*it_i_s).second) == TargetParameterMin.end())
+                      {
+                            break; //if material is not in map, break the loop
+                      }
+                      TargetParameterDown = TargetParameterMin[(*it_i_s).second];
 		if (TargetParameterDown < TargetParameterUp )
 		{
 			ERROR<< "Target parameter evolution as a function of material mass is not monotonous." <<endl;
-            ERROR<< "Check the evolution..." <<endl;
-			exit(1);			
-
+                                  ERROR<< "Check the evolution..." <<endl;
+   			exit(1);			
 		}
 		
-		TargetParameterUp 	= TargetParameterMax[(*it_i_s ).second];
+		TargetParameterUp 	= TargetParameterMax[(*it_i_s).second];
 		if (TargetParameterDown > TargetParameterUp )
 		{			
 			ERROR<< "Target parameter evolution as a function of material mass is not monotonous." <<endl;
 			ERROR<< "Check the evolution..." <<endl;
 			exit(1);			
 		}
-	}
+ 	}
 }
 //________________________________________________________________________
 double EquivalenceModel::CalculateTargetParameter(IsotopicVector TheFuel, string TargetParameterName)
