@@ -442,7 +442,7 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
 		TargetParameterMax[(*it_i_s ).second] 	=  CalculateTargetParameter(FuelToTest, fTargetParameter);
 	
-                      if(TargetParameterMax[(*it_i_s ).second]>BurnUp)
+                      if(TargetParameterMax[(*it_i_s ).second]>=BurnUp)
 		{
 			TargetParameterIncluded = true ; 
 			break;
