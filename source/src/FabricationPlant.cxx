@@ -183,6 +183,10 @@ void FabricationPlant::FabricationPlantEvolution(cSecond t)
         if( R_CycleTime < GetCycleTime())
         {
             ERROR << "Reactor Cycle Time is shorter than Fabrication Time of the fuel, we cannot deal it upto now!!!"<< endl;
+            ERROR << "Time : "<<t/24./3600./365.25<< endl;
+            ERROR << "Reactor : "<<GetParc()->GetReactor()[ReactorId]->GetName()<< endl;
+            ERROR << "Reactor Cycle Time: "<<R_CycleTime/24./3600./365.25<< endl;
+            ERROR << "Fabrication Plant Cycle Time : "<<GetCycleTime()/24./3600./365.25<< endl;            
             exit(1);
         }
         
