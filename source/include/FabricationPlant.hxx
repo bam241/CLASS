@@ -153,6 +153,9 @@ public :
 						{ return fReactorFuturIV;}				//!< Return the list of the futur fuel IV
 
 
+    StorageManagement GetStorageManagement(){return fStorageManagement;} //!<  The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
+
+
 	//@}
 
 //********* Fabrication & Evolution Method *********//
@@ -204,8 +207,6 @@ protected:
 	map< int,EvolutionData >	fReactorFuturDB; ///< List of the futur EvolutionData use in the reactor
 #endif
 	map< int,IsotopicVector >	fReactorFuturIV; ///< List of the futur fuel IsotopicVector used in the reactor
-
-
 
     StorageManagement fStorageManagement;	//!< The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
 
