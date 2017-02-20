@@ -459,7 +459,7 @@ void Generate_tmva_factory_input(double ProportionOfTraining)
     InputNetwork <<"factory->AddVariable( \"Time\" , \"Time\"     , \"seconds\", 'F' );"<<endl<<endl;
 
 	ProportionOfTraining /=100;
-    InputNetwork <<"double PropTraining = "<< ProportionOfTraining << endl;
+    InputNetwork <<"double PropTraining = "<< ProportionOfTraining << ";" << endl;
 
     InputNetwork.close();
 }
