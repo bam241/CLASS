@@ -201,14 +201,15 @@ class Reactor : public CLASSFacility
     double  GetBurnUp() const   { return fBurnUp; }     //!< Return the Burn Up of the Fuel at the end of the cycle
 	double	GetCapacityFactor()	const	{ return fCapacityFactor; }		//!< Return the capacity factor of the reactor
 	double	GetPower()	const	{ return fPower; } 		//!< Return the cycle time of the Reactor
+
+    PhysicsModels* GetPhysicModel()  const   { return fReactorPhysicModel; }      //!< Return the physic model of the Reactor
 	
 #ifndef __CINT__
 	
 	EvolutionData	GetEvolutionDB()	const	{ return fEvolutionDB; }	//!< Return the Evolution database of the fuel
 	CLASSBackEnd*	GetOutBackEndFacility()	const	{ return fOutBackEndFacility; }	//!< Return the pointer to Associeted BackEnd Facility
 	FabricationPlant*	GetFabricationPlant()	const	{ return fFabricationPlant; }	//!< Return the pointer to the FabricationPlant
-	
-	
+		
 	ReactorScheduler*	GetScheduler()		const	{ return fReactorScheduler; }	//!< return the ReactorScheduler
 	
 #endif
@@ -298,7 +299,9 @@ class Reactor : public CLASSFacility
 	double 		fElectricPower;		///< ElectrocPower (in Watt)
 	double 		fEfficiencyFactor;	///< ElectrocPower (in Watt)
 	double		fCapacityFactor;    ///< Capacity factor  [0-1]
-	
+
+    PhysicsModels* fReactorPhysicModel; ///< Physic Model defined in the reactor
+
 	IsotopicVector	fIVBeginCycle;		///< Fuel IV at the beginning of a cycle
 	IsotopicVector	fIVInCycle;		///< IVBegin add at the beginning of the cycle
 	IsotopicVector	fIVOutCycle;		///< IV wich get out at the end of a cycle
