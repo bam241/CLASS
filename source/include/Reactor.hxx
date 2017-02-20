@@ -198,7 +198,8 @@ class Reactor : public CLASSFacility
 	
 	bool	IsFuelFixed()	const	{ return fFixedFuel; }		//!< True if using fixed fuel, False otherwise
 	double	GetHeavyMetalMass() const { return fHeavyMetalMass; }	//!< Return the HeavyMetal Mass in the Core at the begining of the cycle
-	double	GetBurnUp()	const	{ return fBurnUp; }		//!< Return the Burn Up of the Fuel at the end of the cycle
+    double  GetBurnUp() const   { return fBurnUp; }     //!< Return the Burn Up of the Fuel at the end of the cycle
+	double	GetCapacityFactor()	const	{ return fCapacityFactor; }		//!< Return the capacity factor of the reactor
 	double	GetPower()	const	{ return fPower; } 		//!< Return the cycle time of the Reactor
 	
 #ifndef __CINT__
@@ -226,8 +227,8 @@ class Reactor : public CLASSFacility
 	void SetReactorScheduler(ReactorScheduler* reactorscheduler)	{ fReactorScheduler = reactorscheduler; }	//!< Set the ReactorScheduler
 	void SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}	//!< Set the heavy metal mass in the core at the begining of the cycle
 	void SetCycleTime(double cycletime);				//!< Set the cycle time (Power fixed)
-	void SetPower(double Power);					//!< Set the power (burnup cte)
-	void SetBurnUp(double BU);					//!< Set the burnUp reach at end of cycle (Power cte)
+    void SetPower(double Power);                    //!< Set the power (burnup cte)
+	void SetBurnUp(double BU);					    //!< Set the burnUp reach at end of cycle (Power cte)
 	
 	void SetIVReactor(IsotopicVector isotopicvector) { fInsideIV = isotopicvector; }	//!< Set the IV inside the Reactor core
 	void SetIVBeginCycle(IsotopicVector isotopicvector) { fIVBeginCycle = isotopicvector;}	//!< Set the IV at the beginging of the Reactor cycle
