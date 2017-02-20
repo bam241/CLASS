@@ -415,7 +415,7 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
                                              WARNING << "CRITICAL ! Minimum parameter value associated to the first priority material ( "<<(*it_i_s ).second <<" ) is higher than targeted parameter."<< endl;
 				WARNING << "Targeted parameter : "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
 				WARNING << "Minimum parameter value : " <<TargetParameterMin[(*it_i_s ).second]<<endl;
-				WARNING << "Try to increase targeted burn-up" <<endl;
+				WARNING << "Try to increase targeted parameter." <<endl;
                                              SetLambdaToErrorCode(lambda[(*it_i_s).second]);
                                              return lambda;
                                                 DBGL
@@ -442,7 +442,7 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
 		TargetParameterMax[(*it_i_s ).second] 	=  CalculateTargetParameter(FuelToTest, fTargetParameter);
 	
-                      if(TargetParameterMax[(*it_i_s ).second]>BurnUp)
+                      if(TargetParameterMax[(*it_i_s ).second]>=BurnUp)
 		{
 			TargetParameterIncluded = true ; 
 			break;
@@ -625,8 +625,7 @@ void EquivalenceModel::CheckTargetParameterConsistency(map < int , string > Stre
 			ERROR<< "Target parameter evolution as a function of material mass is not monotonous." <<endl;
                                   ERROR<< "Check the evolution..." <<endl;
    			exit(1);			
-		}
-		
+		}	
 		TargetParameterUp 	= TargetParameterMax[(*it_i_s).second];
 		if (TargetParameterDown > TargetParameterUp )
 		{			
@@ -794,9 +793,6 @@ bool EquivalenceModel::isIVInDomain(IsotopicVector IV)
 	return IsInDomain;
 	
 }
-
-
-
 //________________________________________________________________________
 void EquivalenceModel::ReadNFO()
 {
