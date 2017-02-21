@@ -8,6 +8,7 @@
 #include "CLASSConstante.hxx"
 #include "Scenario.hxx"
 #include "Reactor.hxx"
+#include "ReactorScheduler.hxx"
 #include "Pool.hxx"
 #include "FabricationPlant.hxx"
 #include "SeparationPlant.hxx"

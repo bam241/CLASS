@@ -66,8 +66,8 @@ class ReactorModel : public CLASSObject
 	virtual ReactorModel* Clone()	{ return new ReactorModel(*this); } //!< Correct way to copy a ReactorModel in case of derivation
 	
 	
-	EvolutionData* GetEvolutionData() {return fEvolutionData;}	//!< Return the EvolutionData (NULL if PhysicsModels)
-	PhysicsModels* GetPhysicsModels() {return fPhysicsModels;}	//!< Return the PhysicsModels (NULL if EvolutionData)
+	EvolutionData* GetEvolutionData() {return fEvolutionData;}	///< Return the EvolutionData (NULL if PhysicsModels)
+	PhysicsModels* GetPhysicsModels() {return fPhysicsModels;}	///< Return the PhysicsModels (NULL if EvolutionData)
 	
 	using CLASSObject::SetName;
 	using CLASSObject::GetName;
@@ -76,8 +76,8 @@ class ReactorModel : public CLASSObject
 	
 	private :
 	
-	EvolutionData* fEvolutionData;		//!< the EvolutionData (NULL if PhysicsModels)
-	PhysicsModels* fPhysicsModels;		//!< the PhysicsModels (NULL if EvolutionData)
+	EvolutionData* fEvolutionData;		///< the EvolutionData (NULL if PhysicsModels)
+	PhysicsModels* fPhysicsModels;		///< the PhysicsModels (NULL if EvolutionData)
 
 };
 //----------------------------------------------------------------------------//
@@ -105,18 +105,18 @@ class ScheduleEntry : public CLASSObject
 	 \name Get methods
 	 */
 	//@{
-    ReactorModel* GetReactorModel(){return fReactorModel;}
-    double GetBurnUp(){return fBurnUp;}
-    double GetPower(){return fPower;}
-    double GetHeavyMetalMass(){return fHeavyMetalMass;}
+    ReactorModel* GetReactorModel(){return fReactorModel;}	///< Return the Reactor Model
+    double GetBurnUp(){return fBurnUp;}	///< Return the Reactor BurnUp
+    double GetPower(){return fPower;}	///< Return the Reactor Power
+    double GetHeavyMetalMass(){return fHeavyMetalMass;} ///< Return the Reactor Heavy Metal Mass
 	//@}
 
   private:
 
-  	ReactorModel* fReactorModel ; 
-    double fBurnUp; 
-    double fPower;         
-    double fHeavyMetalMass;
+  	ReactorModel* fReactorModel ; 	///< the Reactor Model
+    double fBurnUp; 	///< the Reactor BurnUp
+    double fPower;       	///< the Reactor Power  
+    double fHeavyMetalMass;	///< the Reactor Heavy Metal Mass
 
 };
 
@@ -172,7 +172,7 @@ class ReactorScheduler : public CLASSObject
 	 \name Get Method
 	 */
 	//@{
-	ScheduleEntry* GetEntryAt(cSecond t); //!< Get Schedule entry at time t
+	ScheduleEntry* GetEntryAt(cSecond t); ///< Get Schedule entry at time t
 	//@}
 
 	using CLASSObject::SetName;
