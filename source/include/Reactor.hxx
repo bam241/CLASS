@@ -198,7 +198,8 @@ class Reactor : public CLASSFacility
 	
 	bool	IsFuelFixed()	const	{ return fFixedFuel; }		//!< True if using fixed fuel, False otherwise
 	double	GetHeavyMetalMass() const { return fHeavyMetalMass; }	//!< Return the HeavyMetal Mass in the Core at the begining of the cycle
-	double	GetBurnUp()	const	{ return fBurnUp; }		//!< Return the Burn Up of the Fuel at the end of the cycle
+    double  GetBurnUp() const   { return fBurnUp; }     //!< Return the Burn Up of the Fuel at the end of the cycle
+	double	GetCapacityFactor()	const	{ return fCapacityFactor; }		//!< Return the capacity factor of the reactor
 	double	GetPower()	const	{ return fPower; } 		//!< Return the cycle time of the Reactor
 	
 #ifndef __CINT__
@@ -206,9 +207,8 @@ class Reactor : public CLASSFacility
 	EvolutionData	GetEvolutionDB()	const	{ return fEvolutionDB; }	//!< Return the Evolution database of the fuel
 	CLASSBackEnd*	GetOutBackEndFacility()	const	{ return fOutBackEndFacility; }	//!< Return the pointer to Associeted BackEnd Facility
 	FabricationPlant*	GetFabricationPlant()	const	{ return fFabricationPlant; }	//!< Return the pointer to the FabricationPlant
-	
-	
-	ReactorScheduler*	GetScheduler()		const	{ return fReactorScheduler; }	//!< return the ReactorScheduler
+		
+	ReactorScheduler*	GetScheduler()		const	{ return fReactorScheduler; }	///< return the ReactorScheduler
 	
 #endif
 	//@}
@@ -226,8 +226,8 @@ class Reactor : public CLASSFacility
 	void SetReactorScheduler(ReactorScheduler* reactorscheduler)	{ fReactorScheduler = reactorscheduler; }	//!< Set the ReactorScheduler
 	void SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}	//!< Set the heavy metal mass in the core at the begining of the cycle
 	void SetCycleTime(double cycletime);				//!< Set the cycle time (Power fixed)
-	void SetPower(double Power);					//!< Set the power (burnup cte)
-	void SetBurnUp(double BU);					//!< Set the burnUp reach at end of cycle (Power cte)
+    void SetPower(double Power);                    //!< Set the power (burnup cte)
+	void SetBurnUp(double BU);					    //!< Set the burnUp reach at end of cycle (Power cte)
 	
 	void SetIVReactor(IsotopicVector isotopicvector) { fInsideIV = isotopicvector; }	//!< Set the IV inside the Reactor core
 	void SetIVBeginCycle(IsotopicVector isotopicvector) { fIVBeginCycle = isotopicvector;}	//!< Set the IV at the beginging of the Reactor cycle
@@ -297,23 +297,21 @@ class Reactor : public CLASSFacility
 	double 		fElectricPower;		///< ElectrocPower (in Watt)
 	double 		fEfficiencyFactor;	///< ElectrocPower (in Watt)
 	double		fCapacityFactor;    ///< Capacity factor  [0-1]
-	
+
 	IsotopicVector	fIVBeginCycle;		///< Fuel IV at the beginning of a cycle
 	IsotopicVector	fIVInCycle;		///< IVBegin add at the beginning of the cycle
 	IsotopicVector	fIVOutCycle;		///< IV wich get out at the end of a cycle
+
+    ReactorScheduler*   fReactorScheduler;      ///< Pointer to the ReactorScheduler
 	
 #ifndef __CINT__
 	EvolutionData	fEvolutionDB;		//!< Pointer to the actual evolution DataBase
 	
 	CLASSBackEnd*	fOutBackEndFacility;	//!< Pointer to the BackEnd Facility which collect the spend fuel
-	
-	
-	ReactorScheduler*	fReactorScheduler;		//!< Pointer to the ReactorScheduler
-	
+		
 	FabricationPlant*	fFabricationPlant;		//!< Pointer to the FabricationPlant
 	
 	Storage*	fStorage;		//!< Pointer to the Stock (only for reprocessing fuel in fixed base...)
-	
 	
 #endif
 	//********* Unfixed Fuel Parameter *********//

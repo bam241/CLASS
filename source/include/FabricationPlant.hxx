@@ -146,11 +146,16 @@ public :
 	vector<Storage*> GetStorage(string keyword) { return fStorage[keyword]; }		//!< Return the Pointer to Storage associated to a StreamList 
 
 	EvolutionData GetReactorEvolutionDB(int ReactorId);						//!< Return the EvolutionData of Reactor ReactorId
+
+    StorageManagement GetStorageManagement(){return fStorageManagement;} ///<  The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
+
 #endif
 	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);				//!< Get IsotopicVector Decay at time t
 
 	map<int, IsotopicVector >	GetReactorFuturIncome() const
 						{ return fReactorFuturIV;}				//!< Return the list of the futur fuel IV
+
+
 
 
 	//@}
@@ -205,10 +210,7 @@ protected:
 #endif
 	map< int,IsotopicVector >	fReactorFuturIV; ///< List of the futur fuel IsotopicVector used in the reactor
 
-
-
-    StorageManagement fStorageManagement;	//!< The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
-
+    StorageManagement fStorageManagement;	///< The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
     bool	fIsSeparationManagement; //!< Separation managment
 
     bool	fSubstitutionFuel;										//!< True if a substitution fuel as been set

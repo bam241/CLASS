@@ -95,11 +95,11 @@ class PhysicsModels : public CLASSObject
 	EvolutionData GenerateEvolutionData(IsotopicVector IV, double cycletime, double Power);
 	//}
 	
-	XSModel*		GetXSModel()   {return fXSModel;} //!< return the mean cross section predictor
-	EquivalenceModel*	GetEquivalenceModel() {return fEquivalenceModel;} //!< return Fissile content predictor
-	IrradiationModel*	GetIrradiationModel()  {return fIrradiationModel;} //!< return the Bateman solver
+	XSModel*		GetXSModel()   {return fXSModel;} ///< return the mean cross section predictor
+	EquivalenceModel*	GetEquivalenceModel() {return fEquivalenceModel;} ///< return Fissile content predictor
+	IrradiationModel*	GetIrradiationModel()  {return fIrradiationModel;} ///< return the Bateman solver
 	
-	PhysicsModels*		GetPhysicsModels()	{return this;}//!< return the PhysicsModels
+	PhysicsModels*		GetPhysicsModels()	{return this;}///< return the PhysicsModels
 
 
 
@@ -108,9 +108,9 @@ class PhysicsModels : public CLASSObject
 
  private :
 
- 	XSModel* 		fXSModel;		//!< The XSModel (mean cross sections prediction)
-	EquivalenceModel*	fEquivalenceModel;	//!< The EquivalenceModel (fresh fissile content prediction)
-	IrradiationModel*	fIrradiationModel;	//!< The IrradiationModel (The Bateman's solver)
+ 	XSModel* 			fXSModel;			///< The XSModel (mean cross sections prediction)
+	EquivalenceModel*	fEquivalenceModel;	///< The EquivalenceModel (fresh fissile content prediction)
+	IrradiationModel*	fIrradiationModel;	///< The IrradiationModel (The Bateman's solver)
 
 
 

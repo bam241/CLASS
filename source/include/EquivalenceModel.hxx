@@ -252,7 +252,7 @@ class EquivalenceModel : public CLASSObject
 	string fOutput ; 								//!< Type of output calculated by the predictor
 	string fBuffer ; 									//!< Name of material used as buffer in fuel 
 
-	map<string, double> fModelParameter ; 					//!< Map of equivalence model parameter 
+	map<string, double> fModelParameter ; 					///< Map of equivalence model parameter 
  
  	map<ZAI,string> fMapOfTMVAVariableNames;				//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 
