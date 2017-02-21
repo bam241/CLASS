@@ -158,8 +158,6 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels* fueltypeDB, FabricationPlant* 
 	fIsStarted = false;
 	fIsShutDown = false;
 	fIsAtEndOfCycle = false;
-
-    fReactorPhysicModel = fueltypeDB;
 	
 	fFabricationPlant = fabricationplant;
 	
@@ -209,8 +207,6 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels* 	fueltypeDB,
 	fIsAtEndOfCycle = false;
 	
 	fStorage = 0;
-
-    fReactorPhysicModel = fueltypeDB;
 	
 	fFabricationPlant = fabricationplant;
 	fFixedFuel = false;
