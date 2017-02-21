@@ -132,7 +132,7 @@ int main(int argc, char ** argv)
 		CompileTraining();
 		cout << "Let's train locally ? [y/n]" << endl;
 		if(UserSayYes())
-			system("./train");
+			system("./Train");
 		else
 		{
 			cout << "You can run it latter with  ./Train" << endl;
