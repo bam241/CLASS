@@ -301,8 +301,6 @@ class Reactor : public CLASSFacility
 	IsotopicVector	fIVBeginCycle;		///< Fuel IV at the beginning of a cycle
 	IsotopicVector	fIVInCycle;		///< IVBegin add at the beginning of the cycle
 	IsotopicVector	fIVOutCycle;		///< IV wich get out at the end of a cycle
-
-    ReactorScheduler*   fReactorScheduler;      ///< Pointer to the ReactorScheduler
 	
 #ifndef __CINT__
 	EvolutionData	fEvolutionDB;		//!< Pointer to the actual evolution DataBase
@@ -312,6 +310,8 @@ class Reactor : public CLASSFacility
 	FabricationPlant*	fFabricationPlant;		//!< Pointer to the FabricationPlant
 	
 	Storage*	fStorage;		//!< Pointer to the Stock (only for reprocessing fuel in fixed base...)
+
+    ReactorScheduler*   fReactorScheduler;      //!< Pointer to the ReactorScheduler
 	
 #endif
 	//********* Unfixed Fuel Parameter *********//
