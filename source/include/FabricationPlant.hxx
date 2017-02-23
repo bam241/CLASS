@@ -259,7 +259,7 @@ protected:
 
 #endif
 
-	ClassDef(FabricationPlant,4);
+	ClassDef(FabricationPlant,5);
 
 };
 
