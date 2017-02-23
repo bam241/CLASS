@@ -102,15 +102,15 @@ public :
 
 	void SetDecayDataBank(DecayDataBank* decayDB) {fDecayDataBase = decayDB;}	//! Set the Decay DataBank
 
-    void SetFiFo(bool bval = true)	{ if(bval) fStorageManagement=kpFiFo; else fStorageManagement=kpLiFo ;}	//!< Set the chronological priority (true for chronological, false instead).Equivalent to SetStorageManagement(kpFiFo) or SetStorageManagement(kpLiFo)
-    void SetStorageManagement(StorageManagement SM){fStorageManagement = SM ;} //!<  The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
+    	void SetFiFo(bool bval = true)	{ if(bval) fStorageManagement=kpFiFo; else fStorageManagement=kpLiFo ;}	//!< Set the chronological priority (true for chronological, false instead).Equivalent to SetStorageManagement(kpFiFo) or SetStorageManagement(kpLiFo)
+    	void SetStorageManagement(StorageManagement SM){fStorageManagement = SM ;} //!<  The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
 
 	void SetSubstitutionMaterialFromIV(string keyword, IsotopicVector SubstitutionIV) 						//!< If the construction fails : it creates a substitution material according to the IV defined by the user
 		{fSubstitutionMaterialFromIV[keyword] = true; fSubstitutionIV[keyword]= SubstitutionIV;} 	
 	
 	void SetSubstitutionFuel(EvolutionData fuel);											//!< To use a substitution fuel if the fabrication fail (not enough material in stock)
 
-    void SetSeparationManagement(bool bval = true)	{ fIsSeparationManagement = bval;}				//!< Set the separation managmeent for the fabrication plant
+    	void SetSeparationManagement(bool bval = true)	{ fIsSeparationManagement = bval;}				//!< Set the separation managmeent for the fabrication plant
 
 	void AddReactor(int reactorid, double creationtime)
 		{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }		//!< Add a new reactor to be filled with the fresh fuel build by the FabricationPlant
@@ -156,7 +156,8 @@ public :
 						{ return fReactorFuturIV;}				//!< Return the list of the futur fuel IV
 
 
-
+	map < string, double> GetfStreamListFPMassFractionMax(){return fStreamListFPMassFractionMax;} //!< Get the map of allowed max fractions
+	map < string, double> GetfStreamListFPMassFractionMin(){return fStreamListFPMassFractionMin;} //!< Get the map of allowed min fractions
 
 	//@}
 
@@ -221,17 +222,17 @@ protected:
 
 #ifndef __CINT__
 
-	map < string , IsotopicVector>	fStreamList;						//!< Map that contains lists of stream according to the EqModel with corresponding isotopes list
-	map < string , double>		fStreamListFPMassFractionMax;			//!< Map that contains lists of stream according to the EqModel with mass maximum fraction
-	map < string , double>		fStreamListFPMassFractionMin;			//!< Map that contains lists of stream according to the EqModel with mass minimum fraction
-	map < int, string>			fStreamListFPPriority;					//!< Map that contains lists of stream according to the EqModel with priority (1 = first, 2 = second, etc...)
-	map < string , bool>			fStreamListFPIsBuffer;					//!< Map that contains lists of stream according to the EqModel saying if fuel buffer
+	map < string , IsotopicVector>	fStreamList;						///< Map that contains lists of stream according to the EqModel with corresponding isotopes list
+	map < string , double>		fStreamListFPMassFractionMax;			///< Map that contains lists of stream according to the EqModel with mass maximum fraction
+	map < string , double>		fStreamListFPMassFractionMin;			///< Map that contains lists of stream according to the EqModel with mass minimum fraction
+	map < int, string>			fStreamListFPPriority;					///< Map that contains lists of stream according to the EqModel with priority (1 = first, 2 = second, etc...)
+	map < string , bool>			fStreamListFPIsBuffer;					///< Map that contains lists of stream according to the EqModel saying if fuel buffer
 
 	map < string , vector <Storage*> >		fStorage;					//!< Pointer to the Storages defined for each list
 	map < string , vector <IsotopicVector> >  	fStreamArray;					//!< The vector of isotopicVector of each material and each stock
 	map < string , vector <cSecond> >	  	fStreamArrayTime;				//!< Time when a IsotopicVector arrives in its storage
 	map < string , vector < pair<int,int> > >  	fStreamArrayAdress;
-	map < string , IsotopicVector>		fSubstitutionIV;					//!< contains the susbstitution IV defined by the user 
+	map < string , IsotopicVector>		fSubstitutionIV;				//!< contains the susbstitution IV defined by the user 
 
 	map < string , bool > fSubstitutionMaterialFromIV;						//!< True = a substitution IV is set for this material in case of failure in fuel building 
 	map < string , bool > fInfiniteMaterialFromList;						//!< True = an infinite stock of this material is created according to the list defined in the EqM
@@ -258,7 +259,7 @@ protected:
 
 #endif
 
-	ClassDef(FabricationPlant,3);
+	ClassDef(FabricationPlant,4);
 
 };
 
