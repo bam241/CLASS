@@ -156,8 +156,8 @@ public :
 						{ return fReactorFuturIV;}				//!< Return the list of the futur fuel IV
 
 
-	map < string, double> GetfStreamListFPMassFractionMax(){return fStreamListFPMassFractionMax;} //!< Get the map of allowed max fractions
-	map < string, double> GetfStreamListFPMassFractionMin(){return fStreamListFPMassFractionMin;} //!< Get the map of allowed min fractions
+	map < string, double> GetStreamListFPMassFractionMax(){return fStreamListFPMassFractionMax;} //!< Get the map of allowed max fractions
+	map < string, double> GetStreamListFPMassFractionMin(){return fStreamListFPMassFractionMin;} //!< Get the map of allowed min fractions
 
 	//@}
 
