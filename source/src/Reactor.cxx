@@ -512,7 +512,7 @@ void Reactor::Dump()
 	// First trash the irradiated fuel
 	if(fIsAtEndOfCycle  && !fIsShutDown )
 	{
-		if(fIsStarted )					// A Cycle has already been done
+		if(fIsStarted )						// A Cycle has already been done
 		{
 			fOutBackEndFacility->AddIV(fInsideIV);
 			AddCumulativeIVOut(fInsideIV);
@@ -541,13 +541,14 @@ void Reactor::Dump()
 	
 	DBGL
 	
-	
 	// Get the new Fuel !
-	ScheduleEntry* NextFuel = fReactorScheduler->GetEntryAt(fInternalTime);
-	fPower          = NextFuel->GetPower();
-    fHeavyMetalMass = NextFuel->GetHeavyMetalMass();
-    fElectricPower  = fPower * fEfficiencyFactor;
+	ScheduleEntry* NextFuel 	= fReactorScheduler->GetEntryAt(fInternalTime);
+	fPower          			= NextFuel->GetPower();
+    	fHeavyMetalMass 		= NextFuel->GetHeavyMetalMass();
+    	fElectricPower  			= fPower * fEfficiencyFactor;
 	SetBurnUp( NextFuel->GetBurnUp() );
+
+	fPowerEvolution.insert( pair<cSecond, double>(fInternalTime, fPower));
 	
 	if( NextFuel->GetReactorModel()->GetPhysicsModels() )
 		fFixedFuel = false;
@@ -620,10 +621,7 @@ void Reactor::Dump()
 			fInCycleTime = 0;
 		}
 		
-		DBGL
-		
-		
-		
+		DBGL	
 	}
 	
 	DBGL

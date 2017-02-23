@@ -34,10 +34,10 @@ ScheduleEntry::ScheduleEntry(ReactorModel* ED_Or_PhysMod, double BurnUp, double 
 {
 	DBGL
 
-    fReactorModel   = ED_Or_PhysMod ;
-    fBurnUp         = BurnUp ;
-    fPower          = Power ;
-    fHeavyMetalMass = HMMass ;
+            fReactorModel       = ED_Or_PhysMod ;
+            fBurnUp                 = BurnUp ;
+            fPower                  = Power ;
+            fHeavyMetalMass = HMMass ;
 
 	DBGL
 }
@@ -85,20 +85,22 @@ ScheduleEntry* ReactorScheduler::GetEntryAt(cSecond t)
 	itlow = fReactorSchedulerMap.lower_bound(t);
 	DBGL
 
-    if(itlow->first == t){
-    	DBGL
-        return itlow->second;
-    }
-    else if(itlow != fReactorSchedulerMap.begin()){
-    	DBGL
-        return (--itlow)->second;
-    }
-    else {
+            if(itlow->first == t)
+            {
+    	        DBGL
+                    return itlow->second;
+            }
+            else if(itlow != fReactorSchedulerMap.begin())
+            {
+    	        DBGL
+                    return (--itlow)->second;
+            }
+            else 
+            {
 		DBGL
-        return fReactorSchedulerMap.begin()->second;
+                        return fReactorSchedulerMap.begin()->second;
 
-    }
-
+            }
 }
 
 

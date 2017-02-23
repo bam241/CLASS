@@ -71,8 +71,8 @@ class ReactorModel : public CLASSObject
 	
 	using CLASSObject::SetName;
 	using CLASSObject::GetName;
+
 	protected :
-	
 	
 	private :
 	
@@ -177,6 +177,7 @@ class ReactorScheduler : public CLASSObject
 
 	using CLASSObject::SetName;
 	using CLASSObject::GetName;
+
 	protected :
 
 

@@ -78,7 +78,6 @@ ROOTOBJS_ = CLASSLogger.o \
 			DecayDataBank.o \
 			IrradiationModel.o \
 			EvolutionData.o EvolutionDataDict.o \
-			ReactorScheduler.o\
 			PhysicsModels.o
 
 ROOTOBJS  = $(ROOTOBJS_:%.o=$(OBJ_dir)/%.o)

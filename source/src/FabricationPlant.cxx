@@ -169,15 +169,15 @@ void FabricationPlant::FabricationPlantEvolution(cSecond t)
     map<int ,cSecond >::iterator it;
     for( it = fReactorNextStep.begin(); it!= fReactorNextStep.end(); it++ )
     {
-        double R_CreactionTime = GetParc()->GetReactor()[ (*it).first ]->GetCreationTime();
+        double R_CreactionTime      = GetParc()->GetReactor()[ (*it).first ]->GetCreationTime();
         double R_LifeTime 	   = GetParc()->GetReactor()[ (*it).first ]->GetLifeTime();
         
         int ReactorId = (*it).first;
-        ScheduleEntry* R_Entry = GetParc()->GetReactor()[ReactorId]->GetScheduler()->GetEntryAt(t + GetCycleTime());
+        ScheduleEntry* R_Entry      = GetParc()->GetReactor()[ReactorId]->GetScheduler()->GetEntryAt(t + GetCycleTime());
         double R_BU 		   = R_Entry->GetBurnUp();
-        double R_Power 	       = R_Entry->GetPower();
+        double R_Power 	               = R_Entry->GetPower();
         double R_HMMass 	   = R_Entry->GetHeavyMetalMass();
-        cSecond R_CycleTime    = (cSecond) (R_BU*1e9 / (R_Power) * R_HMMass * 3600 * 24);
+        cSecond R_CycleTime         = (cSecond) (R_BU*1e9 / (R_Power) * R_HMMass * 3600 * 24);
 
         DBGL
         if( R_CycleTime < GetCycleTime())
