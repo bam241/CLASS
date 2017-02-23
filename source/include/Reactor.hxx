@@ -202,7 +202,11 @@ class Reactor : public CLASSFacility
 	double	GetCapacityFactor()	const	{ return fCapacityFactor; }	//!< Return the capacity factor of the reactor
 	double	GetPower()	const	{ return fPower; } 			//!< Return the cycle time of the Reactor
 	
-	map<cSecond, double> GetPowerEvolution(){return fPowerEvolution;} //!<Get Reactor Evolution
+	map<cSecond, double> GetPowerEvolution(){return fPowerEvolution;} //!<Get Reactor Power Evolution
+	map<cSecond, double> GetHMMassEvolution(){return fHMMassEvolution;} //!<Get Reactor HMMassEvolution
+	map<cSecond, double> GetSchedulePowerEvolution(){return fSchedulePowerEvolution;} //!<Get Reactor theoritical Power evolution following Scheduler
+	map<cSecond, double> GetScheduleHMMassEvolution(){return fScheduleHMMassEvolution;} //!<Get Reactor theoritical HMMass Evolution following Scheduler
+
 
 #ifndef __CINT__
 	
@@ -273,11 +277,16 @@ class Reactor : public CLASSFacility
 			{ERROR<<"You must add a FabicationPlant to Reactor " <<GetName()
 		   <<"\n"<< "Use YourReactor->AddFabricationPlant(YourFP);"<<endl;exit(0);}
 		fReactorScheduler->AddEntry( time, Model, BurnUp, Power*fCapacityFactor, HMMass); 
+		fSchedulePowerEvolution.insert( pair<cSecond, double>(time, Power*fCapacityFactor));
+		fScheduleHMMassEvolution.insert( pair<cSecond, double>(time, HMMass));	
+
 	}
 	//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
 	void AddScheduleEntry(cSecond time,  EvolutionData* Model, double BurnUp, double Power, double HMMass)
 	{  
 		fReactorScheduler->AddEntry( time, new ReactorModel(Model), BurnUp, Power*fCapacityFactor, HMMass); 
+		fSchedulePowerEvolution.insert( pair<cSecond, double>(time, Power*fCapacityFactor));
+		fScheduleHMMassEvolution.insert( pair<cSecond, double>(time, HMMass));	
 	}
 
 	//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
@@ -286,6 +295,8 @@ class Reactor : public CLASSFacility
 			{ERROR<<"You must add a FabicationPlant to Reactor " <<GetName()
 		   <<"\n"<< "Use YourReactor->AddFabricationPlant(YourFP);"<<endl;exit(0);}
 		fReactorScheduler->AddEntry( time, new ReactorModel(Model), BurnUp,  Power*fCapacityFactor, HMMass); 
+		fSchedulePowerEvolution.insert( pair<cSecond, double>(time, Power*fCapacityFactor));
+		fScheduleHMMassEvolution.insert( pair<cSecond, double>(time, HMMass));		
 	}			//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
 #endif
 
@@ -324,10 +335,13 @@ class Reactor : public CLASSFacility
 	//********* Unfixed Fuel Parameter *********//
 	
 	
-	double			fHeavyMetalMass;		///< In tons
-	double			fBurnUp;			///< In GWd/tHM
+	double			fHeavyMetalMass;			///< In tons
+	double			fBurnUp;				///< In GWd/tHM
 
-	map < cSecond, double > fPowerEvolution; 		///<Evolution Of Reactor Power
+	map < cSecond, double > fPowerEvolution; 			///<Evolution Of Reactor Power
+	map < cSecond, double > fHMMassEvolution; 		///<Evolution Of Reactor HM Mass
+	map < cSecond, double > fSchedulePowerEvolution; 		///<Evolution Of theoritical Reactor Power following Scheduler
+	map < cSecond, double > fScheduleHMMassEvolution; 	///<Evolution Of theoritical Reactor HMMass following Scheduler
 	
 	ClassDef(Reactor,4);
 };
