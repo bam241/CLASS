@@ -175,6 +175,8 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels* fueltypeDB, FabricationPlant* 
 	
 	fReactorScheduler = new ReactorScheduler(log);
 	fReactorScheduler->AddEntry(creationtime, new ReactorModel(fueltypeDB), fBurnUp, fPower, fHeavyMetalMass);
+	fSchedulePowerEvolution.insert( pair<cSecond, double>(creationtime, fPower));
+	fScheduleHMMassEvolution.insert( pair<cSecond, double>(creationtime, fHeavyMetalMass));	
 	
 	CheckListConsistency(fueltypeDB, fabricationplant);
 	
@@ -220,6 +222,8 @@ Reactor::Reactor(CLASSLogger* log, PhysicsModels* 	fueltypeDB,
 	
 	fReactorScheduler = new ReactorScheduler(log);
 	fReactorScheduler->AddEntry(creationtime, new ReactorModel(fueltypeDB), fBurnUp, fPower, fHeavyMetalMass);
+	fSchedulePowerEvolution.insert( pair<cSecond, double>(creationtime, fPower));
+	fScheduleHMMassEvolution.insert( pair<cSecond, double>(creationtime, fHeavyMetalMass));	
 
 	CheckListConsistency(fueltypeDB, fabricationplant);
 
@@ -280,6 +284,8 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	
 	fReactorScheduler = new ReactorScheduler(log);
 	fReactorScheduler->AddEntry(creationtime, new ReactorModel(evolutivedb), fBurnUp, fPower, fHeavyMetalMass);
+	fSchedulePowerEvolution.insert( pair<cSecond, double>(creationtime, fPower));
+	fScheduleHMMassEvolution.insert( pair<cSecond, double>(creationtime, fHeavyMetalMass));	
 
 	INFO << " A Reactor has been define :" << endl;
 	INFO << "\t Fuel Composition is fixed ! " <<  endl;
@@ -329,10 +335,12 @@ Reactor::Reactor(CLASSLogger* log, EvolutionData* evolutivedb,
 	fIVBeginCycle = fEvolutionDB.GetIsotopicVectorAt(0);
 	fIVInCycle = fEvolutionDB.GetIsotopicVectorAt(0);
 	fIVOutCycle = fEvolutionDB.GetIsotopicVectorAt( (cSecond)(fCycleTime/fEvolutionDB.GetPower()*fPower) );
-	
-	
+		
 	fReactorScheduler = new ReactorScheduler(log);
 	fReactorScheduler->AddEntry(creationtime, new ReactorModel(evolutivedb), fBurnUp, fPower, fHeavyMetalMass);
+
+	fSchedulePowerEvolution.insert( pair<cSecond, double>(creationtime, fPower));
+	fScheduleHMMassEvolution.insert( pair<cSecond, double>(creationtime, fHeavyMetalMass));	
 	
 	INFO << " A Reactor has been define :" << endl;
 	INFO << "\t Fuel Composition is fixed ! " <<  endl;
@@ -545,10 +553,11 @@ void Reactor::Dump()
 	ScheduleEntry* NextFuel 	= fReactorScheduler->GetEntryAt(fInternalTime);
 	fPower          			= NextFuel->GetPower();
     	fHeavyMetalMass 		= NextFuel->GetHeavyMetalMass();
-    	fElectricPower  			= fPower * fEfficiencyFactor;
+    	fElectricPower  		= fPower * fEfficiencyFactor;
 	SetBurnUp( NextFuel->GetBurnUp() );
 
 	fPowerEvolution.insert( pair<cSecond, double>(fInternalTime, fPower));
+	fHMMassEvolution.insert( pair<cSecond, double>(fInternalTime, fHeavyMetalMass));	
 	
 	if( NextFuel->GetReactorModel()->GetPhysicsModels() )
 		fFixedFuel = false;
