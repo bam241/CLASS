@@ -219,14 +219,14 @@ protected:
 	void	FabricationPlantEvolution(cSecond t);							//!< Deal the FabricationPlant evolution
 	void 	ResetArrays();										//!< Empty Arrays
 
-
-#ifndef __CINT__
-
 	map < string , IsotopicVector>	fStreamList;						///< Map that contains lists of stream according to the EqModel with corresponding isotopes list
 	map < string , double>		fStreamListFPMassFractionMax;			///< Map that contains lists of stream according to the EqModel with mass maximum fraction
 	map < string , double>		fStreamListFPMassFractionMin;			///< Map that contains lists of stream according to the EqModel with mass minimum fraction
 	map < int, string>			fStreamListFPPriority;					///< Map that contains lists of stream according to the EqModel with priority (1 = first, 2 = second, etc...)
 	map < string , bool>			fStreamListFPIsBuffer;					///< Map that contains lists of stream according to the EqModel saying if fuel buffer
+
+
+#ifndef __CINT__
 
 	map < string , vector <Storage*> >		fStorage;					//!< Pointer to the Storages defined for each list
 	map < string , vector <IsotopicVector> >  	fStreamArray;					//!< The vector of isotopicVector of each material and each stock
