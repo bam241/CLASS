@@ -20,6 +20,8 @@
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel(string TMVAXMLFilePath, string TMVANFOFilePath):CLASSObject()
 {
+    fUseTMVAPredictor = true;
+
 	fMaxIterration 	= 500;
 	freaded 	= false;		
 	fPCMprecision  = 10;
@@ -65,6 +67,8 @@ EquivalenceModel::EquivalenceModel(string TMVAXMLFilePath, string TMVANFOFilePat
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel(CLASSLogger* log, string TMVAXMLFilePath, string TMVANFOFilePath):CLASSObject(log)
 {
+    fUseTMVAPredictor = true;
+
     fMaxIterration 	= 500;
     freaded 	           = false;		
     fPCMprecision         = 10;
@@ -100,6 +104,68 @@ EquivalenceModel::EquivalenceModel(CLASSLogger* log, string TMVAXMLFilePath, str
     if(fBuffer.empty()) { ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl; exit(1);}
     if(fPredictorType.empty()) { ERROR<<"Missing information for k_predictortype in : "<<fTMVANFOFilePath<<endl; exit(1);}
     if(fOutput.empty()) { ERROR<<"Missing information for k_output in : "<<fTMVANFOFilePath<<endl; exit(1);}
+
+    INFO << "__An equivalence model has been define__" << endl;
+    INFO << "\tThe TMVA weights file is :" << fTMVAXMLFilePath << endl;
+    INFO << "\tThe TMVA NFO file is :" << fTMVANFOFilePath << endl;
+    PrintInfo();}
+//________________________________________________________________________
+EquivalenceModel::EquivalenceModel(string TMVANFOFilePath):CLASSObject()
+{
+    fUseTMVAPredictor = false;
+
+    fTMVANFOFilePath = TMVANFOFilePath;
+
+    fDBRType = "";
+    fDBFType = "";
+    fSpecificPower = 0;
+    fMaximalBU = 0;
+    fTargetParameter = "";
+    fTargetParameterStDev = 0;
+    fBuffer = "";
+
+    LoadKeyword();  // Load Key words defineds in NFO file
+    ReadNFO();      //Getting information from file NFO
+   
+    //Check if any information is missing in NFO file
+    if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(!fSpecificPower) {ERROR<<"Missing information for k_specpower in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(!fMaximalBU) {ERROR<<"Missing information for k_maxburnup in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty()) { ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fStreamList.empty()) { ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl; exit(1); }
+    if(fBuffer.empty()) { ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl; exit(1);}
+
+    INFO << "__An equivalence model without TMVA data has been define__" << endl;
+    INFO << "\tThe NFO file is :" << fTMVANFOFilePath << endl;
+    PrintInfo();
+}
+//________________________________________________________________________
+EquivalenceModel::EquivalenceModel(CLASSLogger* log, string TMVANFOFilePath):CLASSObject(log)
+{
+    fUseTMVAPredictor = false;
+
+    fTMVANFOFilePath = TMVANFOFilePath;
+
+    fDBRType = "";
+    fDBFType = "";
+    fSpecificPower = 0;
+    fMaximalBU = 0;
+    fBuffer = "";
+
+    LoadKeyword();  // Load Key words defineds in NFO file
+    ReadNFO();      //Getting information from file NFO
+
+    //Check if any information is missing in NFO file
+    if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(!fSpecificPower) {ERROR<<"Missing information for k_specpower in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(!fMaximalBU) {ERROR<<"Missing information for k_maxburnup in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty()) { ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    if(fStreamList.empty()) { ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl; exit(1); }
+    if(fBuffer.empty()) { ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl; exit(1);}
 
     INFO << "__An equivalence model has been define__" << endl;
     INFO << "\tThe TMVA weights file is :" << fTMVAXMLFilePath << endl;
@@ -254,310 +320,377 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 {
 	DBGL
 
-    // Check if EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() have been defined
-    if (fTMVAXMLFilePath.empty() || fTMVANFOFilePath.empty())
-    {
-        ERROR << " TMVA XML and/or NFO File path are not defined..."<< endl;
-        ERROR << " You have to use EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() methods."<<endl;
-        exit(1);
+    HMMass *=  1e6; //Unit conversion : tons to gram
+
+    map <string , vector<double> > lambda ; // map containing name of the list and associated vector of proportions taken from stocks
+    //Iterators declaration
+    map < string , vector  <IsotopicVector> >::iterator it_s_vIV;
+    map < string , vector  <double> >::iterator it_s_vD;
+    map < string , IsotopicVector >::iterator it_s_IV;
+    map < string , double >::iterator it_s_D;
+    map < int , string >::iterator it_i_s;
+
+    // Initialize lambda to 0 //
+    for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
+    {   
+        for(int i=0; i < (int)StreamArray[(*it_s_vIV).first].size(); i++)
+        {
+            lambda[(*it_s_vIV).first].push_back(0);
+        }
     }
 
-	//Iterators declaration
-	map < string , vector  <IsotopicVector> >::iterator it_s_vIV;
-	map < string , vector  <double> >::iterator it_s_vD;
-	map < string , IsotopicVector >::iterator it_s_IV;
-	map < string , double >::iterator it_s_D;
-	map < int , string >::iterator it_i_s;
+    // Test if there is at least one stock available in each list, otherwise fuel is not built //
+    bool BreakReturnLambda = false; 
+    for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
+    {
+        if(StreamArray[(*it_s_vIV).first].size() == 0)
+        {
+            WARNING << " No stock available for stream : "<< (*it_s_vIV).first <<".  Fuel not built." << endl;
+            SetLambdaToErrorCode(lambda[(*it_s_vIV).first]);
+            BreakReturnLambda = true;   
+        }
+    }
+    if(BreakReturnLambda) { return lambda;} 
 
-	double TargetParameterValue = 0;
+    // Check if the targeted burn-up is lower than maximum burn-up of model //
+    if(BurnUp > fMaximalBU)
+    {
+        ERROR << " Targeted burn-up is higher than maximum burn-up defined in NFO file..."<< endl;
+        ERROR << " Targeted burn-up : "<<BurnUp<<" GWd/t"<<endl;
+        ERROR << " Maximum burn-up : "<<fMaximalBU<<" GWd/t"<<endl;         
+        exit(1);    
+    }
 
-	for( it_s_D = fModelParameter.begin();  it_s_D != fModelParameter.end(); it_s_D++)
-	{	
-		if(fModelParameter[(*it_s_D).first] == -1)
-		{
-			ERROR<< "Model parameter ( "<<fModelParameter[(*it_s_D).first] << " ) value is not defined in the input." <<endl;
-			ERROR<< "Use EqM->SetModelParameter( \" "<<(*it_s_D).first<<" \", value) to define it." <<endl;
-			exit(1);			
-		}
-	}
+// Fissile fraction calculation is needed.
+    if (fUseTMVAPredictor)
+    {
+        // Check if EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() have been defined
+        if (fTMVAXMLFilePath.empty() || fTMVANFOFilePath.empty())
+        {
+            ERROR << " TMVA XML and/or NFO File path are not defined..."<< endl;
+            ERROR << " You have to use EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() methods."<<endl;
+            exit(1);
+        }
+    
+    	double TargetParameterValue = 0;
+    
+    	for( it_s_D = fModelParameter.begin();  it_s_D != fModelParameter.end(); it_s_D++)
+    	{	
+    		if(fModelParameter[(*it_s_D).first] == -1)
+    		{
+    			ERROR<< "Model parameter ( "<<fModelParameter[(*it_s_D).first] << " ) value is not defined in the input." <<endl;
+    			ERROR<< "Use EqM->SetModelParameter( \" "<<(*it_s_D).first<<" \", value) to define it." <<endl;
+    			exit(1);			
+    		}
+    	}
+    
+    	if(fTargetParameter=="BurnUpMax") {TargetParameterValue  = BurnUp;}
+    	else if (fTargetParameter=="keffBOC") {TargetParameterValue = fModelParameter["keffBOC"];}
+    	else
+    	{
+    		ERROR<< "Target parameter defined in InformationFile ( "<<fTargetParameter<<" ) doesn't exist." <<endl;
+    		ERROR<< "Possible target parameters for the moment are : "<< endl;
+                           ERROR<< " - BurnUpMax - Used for PWR" <<endl;
+                           ERROR<< " - keffBOC - Used for SFR" <<endl;
+    		exit(1);			
+    	}
+        	
+     	/// Search for the minimum and maximum fraction of each material in fuel ///
+    	map < string, double >   StreamListMassFractionMin ; 
+    	map < string, double >   StreamListMassFractionMax ; 
+    	for( it_s_D = StreamListFPMassFractionMin.begin();  it_s_D != StreamListFPMassFractionMin.end(); it_s_D++)
+    	{	
+    		if(StreamListFPMassFractionMin[(*it_s_D).first] < fStreamListEqMMassFractionMin[(*it_s_D).first]) // if limits FP are lower than limits EqM
+    		{
+    			ERROR << " User mass fraction min requirement is lower than the model mass fraction min for list  : "<<(*it_s_D).first << endl;
+    			ERROR << " User mass fraction min requirement : "<<StreamListFPMassFractionMin[(*it_s_D).first]<<endl;
+    			ERROR << " Model mass fraction min requirement : "<<fStreamListEqMMassFractionMin[(*it_s_D).first]<<endl;			
+    			exit(1);
+    		}
+    		else
+    		{
+    			StreamListMassFractionMin[(*it_s_D).first] = StreamListFPMassFractionMin[(*it_s_D).first];
+    		}
+    	}	
+    
+    	for( it_s_D = StreamListFPMassFractionMax.begin();  it_s_D != StreamListFPMassFractionMax.end(); it_s_D++)
+    	{	
+    		if(StreamListFPMassFractionMax[(*it_s_D).first] > fStreamListEqMMassFractionMax[(*it_s_D).first]) // if limits FP are higher than limits EqM
+    		{
+    			ERROR << " User mass fraction max requirement is higher than the model mass fraction max for list  : "<<(*it_s_D).first << endl;
+    			ERROR << " User mass fraction max requirement : "<<StreamListFPMassFractionMax[(*it_s_D).first]<<endl;
+    			ERROR << " Model mass fraction max requirement : "<<fStreamListEqMMassFractionMax[(*it_s_D).first]<<endl;			
+    			exit(1);
+    		}
+    		else
+    		{
+    			StreamListMassFractionMax[(*it_s_D).first] = StreamListFPMassFractionMax[(*it_s_D).first];
+    		}
+    
+    	}
+    
+    	//Calculate Total mass in stock for each stream and fill fTotalMassInStocks
+    	StocksTotalMassCalculation(StreamArray);
+    	
+    	// Check if there is enough material in stock to satisfy mass fraction min //
+    	BreakReturnLambda = false; 
+    	for( it_s_D = StreamListMassFractionMin.begin();  it_s_D != StreamListMassFractionMin.end(); it_s_D++)
+    	{
+    		if(fTotalMassInStocks[(*it_s_D).first]< HMMass*StreamListMassFractionMin[(*it_s_D).first])
+    		{
+    			WARNING << " Not enough material  : "<< (*it_s_D).first << " in stocks to reach the build fuel lower limit of "<<StreamListMassFractionMin[(*it_s_D).first]<<" reactor mass.  Fuel not built." << endl;
+    			SetLambdaToErrorCode(lambda[(*it_s_D).first]);
+    			BreakReturnLambda = true; 	
+    		}
+    	}
+    	if(BreakReturnLambda) { return lambda;}
+    
+    	// Check if there is enough material in stock to satisfy mass fraction max, if not mass fraction max is set to MassINStock/MassReactor//
+    	for( it_s_D = StreamListMassFractionMax.begin();  it_s_D != StreamListMassFractionMax.end(); it_s_D++)
+    	{
+    		if(fTotalMassInStocks[(*it_s_D).first]< HMMass*StreamListMassFractionMax[(*it_s_D).first])
+    		{			
+    			StreamListMassFractionMax[(*it_s_D).first] = fTotalMassInStocks[(*it_s_D).first]/HMMass;
+    			WARNING << " Not enough material  : "<< (*it_s_D).first << " in stocks to reach the build fuel higher limit of "<<StreamListMassFractionMax[(*it_s_D).first]<<" reactor mass. " << endl;
+    			WARNING << " Mass fraction max of material :  "<< (*it_s_D).first << " is set to MassInStock/HMMassReactor : "<< StreamListMassFractionMax[(*it_s_D).first]<< endl;
+    		}
+    	}
+    	
+    	//Check if TargetParameter is inside [TargetParameterMin, TargetParameterMax] associated to fraction Min et Max//
+    
+    	map < string , double > MassMin; 	
+    	map < string , double > MassMax;	 
+    
+    	map < string , double > TargetParameterMin; 
+    	map < string , double > TargetParameterMax; 
+    
+    	IsotopicVector FuelToTest;
+    
+    	bool TargetParameterIncluded = false;
+    	for( it_i_s = StreamListPriority.begin();  it_i_s != StreamListPriority.end(); it_i_s++)
+    	{	
+    		//Calculate TargetParameterMin for each possibility : min1 ; max1 + min2 ;  max1 + max2 + min3 ....
+    		MassMin[(*it_i_s ).second] 		=  HMMass * StreamListMassFractionMin[(*it_i_s).second];
+    		ConvertMassToLambdaVector((*it_i_s ).second, lambda[(*it_i_s ).second], MassMin[(*it_i_s ).second], StreamArray[(*it_i_s ).second]);
+    		FuelToTest 				= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+    		FuelToTest 				= FuelToTest/FuelToTest.GetSumOfAll();
+    		TargetParameterMin[(*it_i_s ).second] =  CalculateTargetParameter(FuelToTest, fTargetParameter);
+    
+       		//Check is TargetParameterMin < TargetParameter
+    		if(TargetParameterMin[(*it_i_s ).second]>TargetParameterValue)
+    		{
+    			if((*it_i_s).first ==1) //Minimum of first material is too high
+    			{		
+                                                 WARNING << "CRITICAL ! Minimum parameter value associated to the first priority material ( "<<(*it_i_s ).second <<" ) is higher than targeted parameter."<< endl;
+    				WARNING << "Targeted parameter : "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
+    				WARNING << "Minimum parameter value : " <<TargetParameterMin[(*it_i_s ).second]<<endl;
+    				WARNING << "Try to increase targeted parameter." <<endl;
+                                                 SetLambdaToErrorCode(lambda[(*it_i_s).second]);
+                                                 return lambda;
+                                                    DBGL
+    			}
+    			else if ((*it_i_s).first >1) //TargetParameter is located between max n-1 and min n
+    			{
+    				WARNING << "CRITICAL ! Targeted parameter value ( "<<fTargetParameter<<" ) is located between 2 materials. "<<endl;
+    				it_i_s --;
+    				WARNING << fTargetParameter <<" of max fraction of material : "<< (*it_i_s).second<<" ---> "<<TargetParameterMax[(*it_i_s ).second]<<endl;
+    				it_i_s ++;
+    				WARNING << fTargetParameter<<  " of min fraction of material : "<< (*it_i_s ).second<<" ---> "<<TargetParameterMin[(*it_i_s ).second]<<endl;
+    				WARNING << "Targeted "<<fTargetParameter<<" : " <<TargetParameterValue<<endl;					
+    				WARNING << "Try to decrease mimimum fraction of : "<< (*it_i_s ).second<<endl;
+                                                 SetLambdaToErrorCode(lambda[(*it_i_s).second]);
+                                                 return lambda;
+    			}
+    		}
+    		FuelToTest.Clear();
+    
+    		//Calculate TargetParameter max for each possibility : max1 ; max1 + max2 ;  max1 + max2 + max3 ....
+    		MassMax[(*it_i_s ).second] 	=  HMMass * StreamListMassFractionMax[(*it_i_s).second];	
+    		ConvertMassToLambdaVector((*it_i_s ).second, lambda[(*it_i_s ).second], MassMax[(*it_i_s ).second], StreamArray[(*it_i_s ).second]);
+    		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+    		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
+    		TargetParameterMax[(*it_i_s ).second] 	=  CalculateTargetParameter(FuelToTest, fTargetParameter);
+    	
+            if(TargetParameterMax[(*it_i_s ).second]>=TargetParameterValue)
+    		{
+    			TargetParameterIncluded = true ; 
+    			break;
+    		}
+    	}
+    
+    	//Check if target parameter increases monotously with the material mass
+    	CheckTargetParameterConsistency(StreamListPriority, TargetParameterMin, TargetParameterMax);
+    
+    	if(!TargetParameterIncluded) 
+    	{
+    		WARNING << "CRITICAL ! Maximum reachable "<<fTargetParameter<<" is lower than targeted "<< fTargetParameter<<". "<< endl;
+    		WARNING << "Targeted "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
+    		WARNING << "Maximum reachable "<<fTargetParameter<<" : "<<TargetParameterMax[(*--StreamListPriority.end()).second]<<endl;
+    		WARNING << "Try to increase maximum fraction of materials, or decrease "<< fTargetParameter<<" ." <<endl;
+                           SetLambdaToErrorCode(lambda[(*--StreamListPriority.end()).second]);
+                           return lambda;
+    	}
+    
+    	//Search the TargetParameterValue location in the mass damain //	
+    	string MaterialToSearch 		= (*it_i_s ).second;
+    	double CalculatedTargetParameter 	= TargetParameterMax[MaterialToSearch] ;   //Algo start with maximum point
+    	double MassToAdd 			= MassMax[MaterialToSearch]; //Algo start with maximum point
+    	
+    	double LastMassMinus 		= MassMin[MaterialToSearch]; //Used in bissection method 
+    	double LastMassPlus			= MassMax[MaterialToSearch]; //Used in bissection method 	
+    
+    	int count = 0;
+    	
+    	FuelToTest.Clear();
+    
+                /*
+                if (fDBFType == "MOX")
+                {
+                cout<<"------------------------------------------------------"<<endl;
+                cout<<"START ALGO -> BU, Mass   "<<BurnUp<<" "<<HMMass<<endl;
+                cout<<"------------------------------------------------------"<<endl;
+                double MassTest = MassMin[MaterialToSearch];
+                cout<<MaterialToSearch<<" "<<MassMax[MaterialToSearch]<<" "<<MassMin[MaterialToSearch]<<" "<<endl;
+                do
+                {
+                    ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassTest, StreamArray[MaterialToSearch]);    
+                    FuelToTest          = BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+                    FuelToTest          = FuelToTest/FuelToTest.GetSumOfAll();
+                    CalculatedTargetParameter   = CalculateTargetParameter(FuelToTest, fTargetParameter);
+                
+                    cout<<"Lambda vector : "<<MaterialToSearch<<" - "; for(int i=0; i < (int)lambda[MaterialToSearch].size(); i++) cout<<lambda[MaterialToSearch][i]<<" ";
+                    cout<<endl;
+                
+                
+                    MassTest += (MassMax[MaterialToSearch] - MassMin[MaterialToSearch])/100.;
+                
+                    cout<<MassTest<<" "<<CalculatedTargetParameter<<endl;
+                
+                } while (MassTest <= MassMax[MaterialToSearch]);
+                cout<<"------------------------------------------------------"<<endl;
+                cout<<"STOP ALGO EXIT(1)..."<<endl; exit(1);
+                cout<<"------------------------------------------------------"<<endl;
+                }
+                */
+    
+    	do
+    	{
+    		if(count > fMaxIterration)
+    		{
+    			ERROR << "CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on the target parameter using :\nYourEquivalenceModel->SetTargetParameterStDev(Precision); " << endl;
+    			ERROR << "Targeted "<<fTargetParameter<<" : "<<TargetParameterValue<<endl;
+    			ERROR << "Last calculated "<<fTargetParameter<<" : "<<CalculatedTargetParameter<<endl;
+    			ERROR << "Last Fresh fuel normalized composition : " <<endl;
+    			ERROR << FuelToTest.sPrint()<<endl;	
+    			exit(1);
+    		}
+    
+    		if( (CalculatedTargetParameter - TargetParameterValue) < 0 ) //Need to add more fissile material in fuel
+    		{
+    			LastMassMinus = MassToAdd;
+    			MassToAdd 	= MassToAdd + fabs(LastMassPlus - MassToAdd)/2.;
+    		}
+    		else if( (CalculatedTargetParameter - TargetParameterValue) > 0) //Need to add less fissile material in fuel
+    		{
+    			LastMassPlus 	= MassToAdd;
+    			MassToAdd 	= MassToAdd - fabs(LastMassMinus - MassToAdd)/2.;
+    		}
+    		ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassToAdd, StreamArray[MaterialToSearch]);	
+    		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+    		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
+    		CalculatedTargetParameter 	= CalculateTargetParameter(FuelToTest, fTargetParameter);
+    		
+    		count ++;
+    
+    	}while(fabs(TargetParameterValue - CalculatedTargetParameter) > GetTargetParameterStDev()*TargetParameterValue);    
+    }
+// Fissile fraction is imposed by the FP
+// No need to use algo
+// Simplified fuel building
+    else
+    {
+        // Check if EquivalenceModel->SetTMVANFOFilePath() have been defined
+        if (fTMVANFOFilePath.empty())
+        {
+            ERROR << " TMVA NFO File path is not defined..."<< endl;
+            ERROR << " You have to use EquivalenceModel->SetTMVANFOFilePath() methods."<<endl;
+            exit(1);
+        }
 
-	if(fTargetParameter=="BurnUpMax") {TargetParameterValue  = BurnUp;}
-	else if (fTargetParameter=="keffBOC") {TargetParameterValue = fModelParameter["keffBOC"];}
-	else
-	{
-		ERROR<< "Target parameter defined in InformationFile ( "<<fTargetParameter<<" ) doesn't exist." <<endl;
-		ERROR<< "Possible target parameters for the moment are : "<< endl;
-                       ERROR<< " - BurnUpMax - Used for PWR" <<endl;
-                       ERROR<< " - keffBOC - Used for SFR" <<endl;
-		exit(1);			
-	}
-
-	map <string , vector<double> > lambda ; // map containing name of the list and associated vector of proportions taken from stocks
-	
-	// Initialize lambda to 0 //
-	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
-	{	
-		for(int i=0; i < (int)StreamArray[(*it_s_vIV).first].size(); i++)
-		{
-			lambda[(*it_s_vIV).first].push_back(0);
-		}
-	}
-
-	// Test if there is at least one stock available in each list, otherwise fuel is not built //
-	bool BreakReturnLambda = false; 
-	for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
-	{
-		if(StreamArray[(*it_s_vIV).first].size() == 0)
-		{
-			WARNING << " No stock available for stream : "<< (*it_s_vIV).first <<".  Fuel not built." << endl;
-			SetLambdaToErrorCode(lambda[(*it_s_vIV).first]);
-			BreakReturnLambda = true; 	
-		}
-	}
-	if(BreakReturnLambda) { return lambda;}	
-	
-	// Check if the targeted burn-up is lower than maximum burn-up of model //
-	if(BurnUp > fMaximalBU)
-	{
-		ERROR << " Targeted burn-up is higher than maximum burn-up handles by EqM."<< endl;
-		ERROR << " Targeted burn-up : "<<BurnUp<<" GWd/t"<<endl;
-		ERROR << " Maximum burn-up : "<<fMaximalBU<<" GWd/t"<<endl;			
-		exit(1);	
-	}
-
-	/// Search for the minimum and maximum fraction of each material in fuel ///
-	map < string, double >   StreamListMassFractionMin ; 
-	map < string, double >   StreamListMassFractionMax ; 
-	for( it_s_D = StreamListFPMassFractionMin.begin();  it_s_D != StreamListFPMassFractionMin.end(); it_s_D++)
-	{	
-		if(StreamListFPMassFractionMin[(*it_s_D).first] < fStreamListEqMMassFractionMin[(*it_s_D).first]) // if limits FP are lower than limits EqM
-		{
-			ERROR << " User mass fraction min requirement is lower than the model mass fraction min for list  : "<<(*it_s_D).first << endl;
-			ERROR << " User mass fraction min requirement : "<<StreamListFPMassFractionMin[(*it_s_D).first]<<endl;
-			ERROR << " Model mass fraction min requirement : "<<fStreamListEqMMassFractionMin[(*it_s_D).first]<<endl;			
-			exit(1);
-		}
-		else
-		{
-			StreamListMassFractionMin[(*it_s_D).first] = StreamListFPMassFractionMin[(*it_s_D).first];
-		}
-	}	
-
-	for( it_s_D = StreamListFPMassFractionMax.begin();  it_s_D != StreamListFPMassFractionMax.end(); it_s_D++)
-	{	
-		if(StreamListFPMassFractionMax[(*it_s_D).first] > fStreamListEqMMassFractionMax[(*it_s_D).first]) // if limits FP are higher than limits EqM
-		{
-			ERROR << " User mass fraction max requirement is higher than the model mass fraction max for list  : "<<(*it_s_D).first << endl;
-			ERROR << " User mass fraction max requirement : "<<StreamListFPMassFractionMax[(*it_s_D).first]<<endl;
-			ERROR << " Model mass fraction max requirement : "<<fStreamListEqMMassFractionMax[(*it_s_D).first]<<endl;			
-			exit(1);
-		}
-		else
-		{
-			StreamListMassFractionMax[(*it_s_D).first] = StreamListFPMassFractionMax[(*it_s_D).first];
-		}
-
-	}
-
-	//Calculate Total mass in stock for each stream and fill fTotalMassInStocks
-	StocksTotalMassCalculation(StreamArray);
-	
-	// Check if there is enough material in stock to satisfy mass fraction min //
-	BreakReturnLambda = false; 
-	for( it_s_D = StreamListMassFractionMin.begin();  it_s_D != StreamListMassFractionMin.end(); it_s_D++)
-	{
-		if(fTotalMassInStocks[(*it_s_D).first]< HMMass*StreamListMassFractionMin[(*it_s_D).first])
-		{
-			WARNING << " Not enough material  : "<< (*it_s_D).first << " in stocks to reach the build fuel lower limit of "<<StreamListMassFractionMin[(*it_s_D).first]<<" reactor mass.  Fuel not built." << endl;
-			SetLambdaToErrorCode(lambda[(*it_s_D).first]);
-			BreakReturnLambda = true; 	
-		}
-	}
-	if(BreakReturnLambda) { return lambda;}
-
-	// Check if there is enough material in stock to satisfy mass fraction max, if not mass fraction max is set to MassINStock/MassReactor//
-	for( it_s_D = StreamListMassFractionMax.begin();  it_s_D != StreamListMassFractionMax.end(); it_s_D++)
-	{
-		if(fTotalMassInStocks[(*it_s_D).first]< HMMass*StreamListMassFractionMax[(*it_s_D).first])
-		{			
-			StreamListMassFractionMax[(*it_s_D).first] = fTotalMassInStocks[(*it_s_D).first]/HMMass;
-			WARNING << " Not enough material  : "<< (*it_s_D).first << " in stocks to reach the build fuel higher limit of "<<StreamListMassFractionMax[(*it_s_D).first]<<" reactor mass. " << endl;
-			WARNING << " Mass fraction max of material :  "<< (*it_s_D).first << " is set to MassInStock/HMMassReactor : "<< StreamListMassFractionMax[(*it_s_D).first]<< endl;
-		}
-	}
-	
-	//Check if TargetParameter is inside [TargetParameterMin, TargetParameterMax] associated to fraction Min et Max//
-	HMMass *=  1e6; //Unit conversion : tons to gram
-
-	map < string , double > MassMin; 	
-	map < string , double > MassMax;	 
-
-	map < string , double > TargetParameterMin; 
-	map < string , double > TargetParameterMax; 
-
-	IsotopicVector FuelToTest;
-
-	bool TargetParameterIncluded = false;
-	for( it_i_s = StreamListPriority.begin();  it_i_s != StreamListPriority.end(); it_i_s++)
-	{	
-		//Calculate TargetParameterMin for each possibility : min1 ; max1 + min2 ;  max1 + max2 + min3 ....
-		MassMin[(*it_i_s ).second] 		=  HMMass * StreamListMassFractionMin[(*it_i_s).second];
-		ConvertMassToLambdaVector((*it_i_s ).second, lambda[(*it_i_s ).second], MassMin[(*it_i_s ).second], StreamArray[(*it_i_s ).second]);
-		FuelToTest 				= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
-		FuelToTest 				= FuelToTest/FuelToTest.GetSumOfAll();
-		TargetParameterMin[(*it_i_s ).second] =  CalculateTargetParameter(FuelToTest, fTargetParameter);
-
-   		//Check is TargetParameterMin < TargetParameter
-		if(TargetParameterMin[(*it_i_s ).second]>TargetParameterValue)
-		{
-			if((*it_i_s).first ==1) //Minimum of first material is too high
-			{		
-                                             WARNING << "CRITICAL ! Minimum parameter value associated to the first priority material ( "<<(*it_i_s ).second <<" ) is higher than targeted parameter."<< endl;
-				WARNING << "Targeted parameter : "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
-				WARNING << "Minimum parameter value : " <<TargetParameterMin[(*it_i_s ).second]<<endl;
-				WARNING << "Try to increase targeted parameter." <<endl;
-                                             SetLambdaToErrorCode(lambda[(*it_i_s).second]);
-                                             return lambda;
-                                                DBGL
-			}
-			else if ((*it_i_s).first >1) //TargetParameter is located between max n-1 and min n
-			{
-				WARNING << "CRITICAL ! Targeted parameter value ( "<<fTargetParameter<<" ) is located between 2 materials. "<<endl;
-				it_i_s --;
-				WARNING << fTargetParameter <<" of max fraction of material : "<< (*it_i_s).second<<" ---> "<<TargetParameterMax[(*it_i_s ).second]<<endl;
-				it_i_s ++;
-				WARNING << fTargetParameter<<  " of min fraction of material : "<< (*it_i_s ).second<<" ---> "<<TargetParameterMin[(*it_i_s ).second]<<endl;
-				WARNING << "Targeted "<<fTargetParameter<<" : " <<TargetParameterValue<<endl;					
-				WARNING << "Try to decrease mimimum fraction of : "<< (*it_i_s ).second<<endl;
-                                             SetLambdaToErrorCode(lambda[(*it_i_s).second]);
-                                             return lambda;
-			}
-		}
-		FuelToTest.Clear();
-
-		//Calculate TargetParameter max for each possibility : max1 ; max1 + max2 ;  max1 + max2 + max3 ....
-		MassMax[(*it_i_s ).second] 	=  HMMass * StreamListMassFractionMax[(*it_i_s).second];	
-		ConvertMassToLambdaVector((*it_i_s ).second, lambda[(*it_i_s ).second], MassMax[(*it_i_s ).second], StreamArray[(*it_i_s ).second]);
-		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
-		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
-		TargetParameterMax[(*it_i_s ).second] 	=  CalculateTargetParameter(FuelToTest, fTargetParameter);
-	
-        if(TargetParameterMax[(*it_i_s ).second]>=TargetParameterValue)
-		{
-			TargetParameterIncluded = true ; 
-			break;
-		}
-	}
-
-	//Check if target parameter increases monotously with the material mass
-	CheckTargetParameterConsistency(StreamListPriority, TargetParameterMin, TargetParameterMax);
-
-	if(!TargetParameterIncluded) 
-	{
-		WARNING << "CRITICAL ! Maximum reachable "<<fTargetParameter<<" is lower than targeted "<< fTargetParameter<<". "<< endl;
-		WARNING << "Targeted "<<fTargetParameter<<" = "<<TargetParameterValue<<endl;
-		WARNING << "Maximum reachable "<<fTargetParameter<<" : "<<TargetParameterMax[(*--StreamListPriority.end()).second]<<endl;
-		WARNING << "Try to increase maximum fraction of materials, or decrease "<< fTargetParameter<<" ." <<endl;
-                       SetLambdaToErrorCode(lambda[(*--StreamListPriority.end()).second]);
-                       return lambda;
-	}
-
-	//Search the TargetParameterValue location in the mass damain //	
-	string MaterialToSearch 		= (*it_i_s ).second;
-	double CalculatedTargetParameter 	= TargetParameterMax[MaterialToSearch] ;   //Algo start with maximum point
-	double MassToAdd 			= MassMax[MaterialToSearch]; //Algo start with maximum point
-	
-	double LastMassMinus 		= MassMin[MaterialToSearch]; //Used in bissection method 
-	double LastMassPlus			= MassMax[MaterialToSearch]; //Used in bissection method 	
-
-	int count = 0;
-	
-	FuelToTest.Clear();
-
-            /*
-            if (fDBFType == "MOX")
+        /// Search for the  fraction of each material in fuel ///
+        map < string, double >   StreamListMassFraction; 
+        for( it_s_D = StreamListFPMassFractionMin.begin();  it_s_D != StreamListFPMassFractionMin.end(); it_s_D++)
+        {   
+            if(StreamListFPMassFractionMin[(*it_s_D).first] < fStreamListEqMMassFractionMin[(*it_s_D).first]) // if limits FP are lower than limits EqM
             {
-            cout<<"------------------------------------------------------"<<endl;
-            cout<<"START ALGO -> BU, Mass   "<<BurnUp<<" "<<HMMass<<endl;
-            cout<<"------------------------------------------------------"<<endl;
-            double MassTest = MassMin[MaterialToSearch];
-            cout<<MaterialToSearch<<" "<<MassMax[MaterialToSearch]<<" "<<MassMin[MaterialToSearch]<<" "<<endl;
-            do
-            {
-                ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassTest, StreamArray[MaterialToSearch]);    
-                FuelToTest          = BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
-                FuelToTest          = FuelToTest/FuelToTest.GetSumOfAll();
-                CalculatedTargetParameter   = CalculateTargetParameter(FuelToTest, fTargetParameter);
-            
-                cout<<"Lambda vector : "<<MaterialToSearch<<" - "; for(int i=0; i < (int)lambda[MaterialToSearch].size(); i++) cout<<lambda[MaterialToSearch][i]<<" ";
-                cout<<endl;
-            
-            
-                MassTest += (MassMax[MaterialToSearch] - MassMin[MaterialToSearch])/100.;
-            
-                cout<<MassTest<<" "<<CalculatedTargetParameter<<endl;
-            
-            } while (MassTest <= MassMax[MaterialToSearch]);
-            cout<<"------------------------------------------------------"<<endl;
-            cout<<"STOP ALGO EXIT(1)..."<<endl; exit(1);
-            cout<<"------------------------------------------------------"<<endl;
+                ERROR << " User mass fraction requirement is lower than the model mass fraction min for list  : "<<(*it_s_D).first << endl;
+                ERROR << " User mass fraction requirement : "<<StreamListFPMassFractionMin[(*it_s_D).first]<<endl;
+                ERROR << " Model mass fraction min requirement : "<<fStreamListEqMMassFractionMin[(*it_s_D).first]<<endl;           
+                exit(1);
             }
-            */
+            else if(StreamListFPMassFractionMax[(*it_s_D).first] > fStreamListEqMMassFractionMax[(*it_s_D).first]) // if limits FP are higher than limits EqM
+            {
+                ERROR << " User mass fraction requirement is higher than the model mass fraction max for list  : "<<(*it_s_D).first << endl;
+                ERROR << " User mass fraction requirement : "<<StreamListFPMassFractionMax[(*it_s_D).first]<<endl;
+                ERROR << " Model mass fraction max requirement : "<<fStreamListEqMMassFractionMax[(*it_s_D).first]<<endl;           
+                exit(1);
+            }
+            else
+            {
+                StreamListMassFraction[(*it_s_D).first] = StreamListFPMassFractionMin[(*it_s_D).first]; // Because here, min = max
+            }
+        }   
 
-	do
-	{
-		if(count > fMaxIterration)
-		{
-			ERROR << "CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on the target parameter using :\nYourEquivalenceModel->SetTargetParameterStDev(Precision); " << endl;
-			ERROR << "Targeted "<<fTargetParameter<<" : "<<TargetParameterValue<<endl;
-			ERROR << "Last calculated "<<fTargetParameter<<" : "<<CalculatedTargetParameter<<endl;
-			ERROR << "Last Fresh fuel normalized composition : " <<endl;
-			ERROR << FuelToTest.sPrint()<<endl;	
-			exit(1);
-		}
+        //Calculate Total mass in stock for each stream and fill fTotalMassInStocks
+        StocksTotalMassCalculation(StreamArray);
 
-		if( (CalculatedTargetParameter - TargetParameterValue) < 0 ) //Need to add more fissile material in fuel
-		{
-			LastMassMinus = MassToAdd;
-			MassToAdd 	= MassToAdd + fabs(LastMassPlus - MassToAdd)/2.;
-		}
-		else if( (CalculatedTargetParameter - TargetParameterValue) > 0) //Need to add less fissile material in fuel
-		{
-			LastMassPlus 	= MassToAdd;
-			MassToAdd 	= MassToAdd - fabs(LastMassMinus - MassToAdd)/2.;
-		}
-		ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassToAdd, StreamArray[MaterialToSearch]);	
-		FuelToTest 			= BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
-		FuelToTest 			= FuelToTest/FuelToTest.GetSumOfAll();
-		CalculatedTargetParameter 	= CalculateTargetParameter(FuelToTest, fTargetParameter);
-		
-		count ++;
+        // Check if there is enough material in stock to satisfy requested mass fraction //
+        BreakReturnLambda = false; 
+        for( it_s_D = StreamListMassFraction.begin();  it_s_D != StreamListMassFraction.end(); it_s_D++)
+        {
+            if(fTotalMassInStocks[(*it_s_D).first]< HMMass*StreamListMassFraction[(*it_s_D).first])
+            {
+                WARNING << " Not enough material  : "<< (*it_s_D).first << " in stocks to reach the build fuel limit of "<<StreamListMassFraction[(*it_s_D).first]<<" reactor mass.  Fuel not built." << endl;
+                SetLambdaToErrorCode(lambda[(*it_s_D).first]);
+                BreakReturnLambda = true;   
+            }
+        }
+        if(BreakReturnLambda) { return lambda;}
 
-	}while(fabs(TargetParameterValue - CalculatedTargetParameter) > GetTargetParameterStDev()*TargetParameterValue);
+        IsotopicVector FuelToTest;
+        // Build Fuel
+        for( it_i_s = StreamListPriority.begin();  it_i_s != StreamListPriority.end(); it_i_s++)
+        {   
+            FuelToTest.Clear();
+            ConvertMassToLambdaVector((*it_i_s).second, lambda[(*it_i_s).second], HMMass*StreamListMassFraction[(*it_i_s).second], StreamArray[(*it_i_s).second]);
+            FuelToTest = BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
+        }
+    }
 
-	//Final builded fuel 
-	IsotopicVector IVStream;
-	for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
-	{
-		for(int i=0; i<(int)lambda[(*it_s_vD).first].size(); i++) 
-		{
-			IVStream +=lambda[(*it_s_vD).first][i] * StreamArray[(*it_s_vD).first][i];
-		}
-	}	
-	
-	//Check if BuildedFuel is in Model isotopic bounds 
-	(*this).isIVInDomain(IVStream);
-		
-	for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
-	{	
-		DBGV( "Lambda vector : "<<(*it_s_vD).first );
+    //Final builded fuel 
+    IsotopicVector IVStream;
+    for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
+    {
+        for(int i=0; i<(int)lambda[(*it_s_vD).first].size(); i++) 
+        {
+            IVStream +=lambda[(*it_s_vD).first][i] * StreamArray[(*it_s_vD).first][i];
+        }
+    }   
+    
+    //Check if BuildedFuel is in Model isotopic bounds 
+    (*this).isIVInDomain(IVStream);
+        
+    for( it_s_vD = lambda.begin();  it_s_vD != lambda.end(); it_s_vD++)
+    {   
+        DBGV( "Lambda vector : "<<(*it_s_vD).first );
 
-		for(int i=0; i < (int)lambda[(*it_s_vD).first].size(); i++)
-		{
-			DBGV(lambda[(*it_s_vD).first][i]); 
-		}
-	}
-	DBGL
+        for(int i=0; i < (int)lambda[(*it_s_vD).first].size(); i++)
+        {
+            DBGV(lambda[(*it_s_vD).first][i]); 
+        }
+    }
+    
+    DBGL
 	return lambda;
 }
 
@@ -851,14 +984,14 @@ void EquivalenceModel::LoadKeyword()
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmax",		& EquivalenceModel::ReadEqMaxFraction) 	 	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_list",				& EquivalenceModel::ReadList) 	 	 	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower",			& EquivalenceModel::ReadSpecificPower)	 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_zainame", 			& EquivalenceModel::ReadZAIName) 		 	 );
+	if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_zainame", 			& EquivalenceModel::ReadZAIName) 		 	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_maxburnup", 			& EquivalenceModel::ReadMaxBurnUp) 	 	 );	
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_targetparameter",		& EquivalenceModel::ReadTargetParameter) 	 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_predictortype",		& EquivalenceModel::ReadPredictorType)	 	 );
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_output", 			& EquivalenceModel::ReadOutput) 		 	 );
+	if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_targetparameter",		& EquivalenceModel::ReadTargetParameter) 	 	 );
+	if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_predictortype",		& EquivalenceModel::ReadPredictorType)	 	 );
+	if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_output", 			& EquivalenceModel::ReadOutput) 		 	 );
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_buffer", 			& EquivalenceModel::ReadBuffer)	 	 	 );	
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_modelparameter", 		& EquivalenceModel::ReadModelParameter) 	 	 );	
-	fKeyword.insert( pair<string, EQM_MthPtr>( "k_targetparameterstdev", 	& EquivalenceModel::ReadTargetParameterStDev) 	 );	
+	if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_modelparameter", 		& EquivalenceModel::ReadModelParameter) 	 	 );	
+	if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_targetparameterstdev", 	& EquivalenceModel::ReadTargetParameterStDev) 	 );	
 
 	DBGL
 }
