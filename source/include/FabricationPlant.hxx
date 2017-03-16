@@ -127,6 +127,8 @@ public :
 		
 	void AddStorage(string keyword, Storage* Stock, double MassFractionMin = 0, double MassFractionMax = 1., int Priority = 0) ;	//!< Fill the storage vector for a list
 	void AddInfiniteStorage(string keyword, double MassFractionMin = 0, double MassFractionMax = 1., int Priority = 0);		//!< Creates an infinite stock of this material according to the list defined in the EqM
+	void AddStorage(string keyword, Storage* Stock, double MassFraction = 0., int Priority = 0) ;	//!< Fill the storage vector for a list
+	void AddInfiniteStorage(string keyword, double MassFraction = 0., int Priority = 0);		//!< Creates an infinite stock of this material according to the list defined in the EqM
 	void AddFuelBuffer(string keyword);													//!< Tell the buffer for this fuel. Creates an infinite stock of this material according to the list defined in the EqM
 	void AddFuelBuffer(string keyword, Storage* Stock);											//!< Tell the buffer for this fuel taken from the storage
 

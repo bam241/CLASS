@@ -249,6 +249,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
     {
         DBGV("Building process from initial stocks has succeeded : ")
         IsotopicVector IV           = BuildFuelFromEqModel(LambdaArray);
+
         EvolutionData EvolDB    = FuelType->GenerateEvolutionData(GetDecay(IV, fCycleTime), R_CycleTime, R_Power);
         {
             pair<map<int, IsotopicVector>::iterator, bool> IResult;
@@ -833,6 +834,82 @@ void FabricationPlant::AddInfiniteStorage(string keyword, double MassFractionMin
     }
     fStreamListFPMassFractionMin[keyword] = MassFractionMin;
     fStreamListFPMassFractionMax[keyword] = MassFractionMax;
+    fStreamListFPPriority[Priority]         = keyword;
+    fStreamListFPIsBuffer[keyword]      = 0;
+    fInfiniteMaterialFromList[keyword] = true;
+}
+//________________________________________________________________________
+void FabricationPlant::AddStorage(string keyword, Storage* Stock, double MassFraction, int Priority)
+{
+    fStorage[keyword].push_back(Stock);
+    if(MassFraction<0.0)
+    {
+        ERROR << " Mass fraction of material : "<<keyword <<"has to be higher than zero." <<endl;
+        exit(1);
+    }
+    if(MassFraction>1.0)
+    {
+        ERROR << " Mass fraction of material : "<<keyword <<"has to be lower than one." <<endl;
+        exit(1);
+    }
+    map < int, string >::iterator it_i_s;
+    map < string, bool >::iterator it_s_B;
+    for(it_i_s = fStreamListFPPriority.begin();  it_i_s != fStreamListFPPriority.end(); it_i_s++)
+    {
+        if((*it_i_s).first == Priority && (*it_i_s).second != keyword)
+        {
+            ERROR << "2 materials have the same position in priority order : "<<(*it_i_s).second<<" and "<<keyword<< endl;
+            exit(1);
+        }
+    }
+    for(it_s_B = fStreamListFPIsBuffer.begin();  it_s_B != fStreamListFPIsBuffer.end(); it_s_B++)
+    {
+        if((*it_s_B).first == keyword && fStreamListFPIsBuffer[(*it_s_B).first]==1)
+        {
+            ERROR << "The material : "<<keyword<<" is already defined as buffer. "<< endl;
+            exit(1);
+        }
+    }
+    fStreamListFPMassFractionMin[keyword] = MassFraction;
+    fStreamListFPMassFractionMax[keyword] = MassFraction;
+    fStreamListFPPriority[Priority]    = keyword;
+    fStreamListFPIsBuffer[keyword]     = 0;
+}
+//________________________________________________________________________
+void FabricationPlant::AddInfiniteStorage(string keyword, double MassFraction, int Priority)
+{
+    Storage* Stock;
+    fStorage[keyword].push_back(Stock);
+     if(MassFraction<0.0)
+    {
+        ERROR << " Mass fraction of material : "<<keyword <<"has to be higher than zero." <<endl;
+        exit(1);
+    }
+    if(MassFraction>1.0)
+    {
+        ERROR << " Mass fraction  of material : "<<keyword <<"has to be lower than one." <<endl;
+        exit(1);
+    }
+    map < int, string >::iterator it_i_s;
+    map < string, bool >::iterator it_s_B;
+    for(it_i_s = fStreamListFPPriority.begin();  it_i_s != fStreamListFPPriority.end(); it_i_s++)
+    {
+        if((*it_i_s).first == Priority && (*it_i_s).second != keyword)
+        {
+            ERROR << "2 materials have the same position in priority order : "<<(*it_i_s).second<<" and "<<keyword<< endl;
+            exit(1);
+        }
+    }
+    for(it_s_B = fStreamListFPIsBuffer.begin();  it_s_B != fStreamListFPIsBuffer.end(); it_s_B++)
+    {
+        if((*it_s_B).first == keyword && fStreamListFPIsBuffer[(*it_s_B).first]==1)
+        {
+            ERROR << "The material : "<<keyword<<" is already defined as buffer. "<< endl;
+            exit(1);
+        }
+    }
+    fStreamListFPMassFractionMin[keyword] = MassFraction;
+    fStreamListFPMassFractionMax[keyword] = MassFraction;
     fStreamListFPPriority[Priority]         = keyword;
     fStreamListFPIsBuffer[keyword]      = 0;
     fInfiniteMaterialFromList[keyword] = true;

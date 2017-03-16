@@ -63,9 +63,12 @@ class EquivalenceModel : public CLASSObject
 	 \name Constructor/Desctructor
 	 */
 	//@{
-	EquivalenceModel(string TMVAXMLFilePath, string TMVANFOFilePath);			//!< Default constructor
-	EquivalenceModel(CLASSLogger* log, string TMVAXMLFilePath, string TMVANFOFilePath);	//!< Logger constructor
+	EquivalenceModel(string TMVAXMLFilePath, string TMVANFOFilePath);			//!< Default constructor with path
+	EquivalenceModel(CLASSLogger* log, string TMVAXMLFilePath, string TMVANFOFilePath);	//!< Logger constructor with path
 	
+	EquivalenceModel(string TMVANFOFilePath);			//!< Default constructor without Eq Model
+	EquivalenceModel(CLASSLogger* log, string TMVANFOFilePath);	//!< Logger constructor Without Eq Model
+
 	virtual ~EquivalenceModel();		//!< Destructor
 	//@}
 	
@@ -237,6 +240,8 @@ class EquivalenceModel : public CLASSObject
 	void CheckTargetParameterConsistency(map < int , string >  StreamListPriority, map < string , double >  TargetParameterMin, map < string , double > TargetParameterMax);
 
 	protected :
+
+    bool fUseTMVAPredictor; //!< Bool that says if we need a TMVA predictor. If not, fuel fraction isimpoased by the FP.
 	
 	map < string, IsotopicVector> fStreamList; 					//!< contains all lists of zai needed to build a fuel (example : 2 -> fissileList+fertileList)
 											//!< each list is identified by a keyword (example : -> "Fissile" & "Fertile")
