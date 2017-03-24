@@ -1,21 +1,46 @@
-To be used with : EQM_PWR_MLP_Kinf.cxx
-with constructor : EQM_PWR_MLP_Kinf(string TMVAWeightPath,  int NumOfBatch, string InformationFile, double CriticalityThreshold)
+************************
+HOW TO USE IN CLASS
+************************
+To be used with : EquilavenceModel.cxx
 
-k_reactor REP 
+**********************
+REACTOR FEATURES
+**********************
+Reactor type
+k_reactor PWR 
+
+Fuel type
 k_fuel MOX 
 
 Specific Power (W/gHM) :
 k_specpower 34.24
 
 Maximal burnup (GWd/tHM) :
-k_maxburnup 100
+k_maxburnup 80
 
-Maximal fissile content (molar proportion) :
-k_maxfiscontent 0.25
+************************
+MODEL  FEATURES
+************************
 
+Parameter used in optimization algo 
+k_targetparameter BurnUpMax
+
+EquivalenceModel parameters name 
+k_modelparameter kThreshold
+k_modelparameter NumberOfBatch
+
+EquivalenceModel parameters standard deviation 
+k_targetparameterstdev 0.01
+
+**********************
+PREDICTOR 
+**********************
+k_predictortype MLP
+
+INPUT
 Z A I Name (input MLP) :
-k_zainame 92 238 0 U8
 k_zainame 92 235 0 U5
+k_zainame 92 238 0 U8
 k_zainame 94 238 0 Pu8
 k_zainame 94 239 0 Pu9
 k_zainame 94 240 0 Pu10
@@ -25,7 +50,16 @@ k_zainame 95 241 0 Am1
 k_zainame 95 242 1 Am2
 k_zainame 95 243 0 Am3
 
-Fissile Liste (Z A I) :
+OUTPUT
+k_output kinf
+
+**********************
+ FUEL INFOS
+**********************
+*******************************
+Lists and IVs for FP separation
+*******************************
+Fissile Liste (Z A I Default Proportion) :
 k_list Fissile 94 238 0 1
 k_list Fissile 94 239 0 1
 k_list Fissile 94 240 0 1
@@ -36,16 +70,48 @@ k_list Fissile 95 242 1 1
 k_list Fissile 95 243 0 1
 
 Fertile Liste (Z A I Default Proportion) :
-k_list Fertile 92 238 0 0.9975
 k_list Fertile 92 235 0 0.0025
+k_list Fertile 92 238 0 0.9975
 
-Starting fissile content in fuel for equivalence model calculation :  
-k_firstguesscontent Fissile 0.07
-k_firstguesscontent Fertile 0.93
+*************************
+Buffer material for this fuel
+*************************
+k_buffer Fertile
 
-Date : 2014
-Author : BaL, ZaK
-Mail address : leniau@subatech.in2p3.fr
+**************************************
+Min and Max fraction of lists in model
+**************************************
+Minimum Fraction of each list in the fuel (%mass) :  
+k_massfractionmin Fissile 0.03
+
+Maximun Fraction of each list in the fuel (%mass) : 
+k_massfractionmax Fissile 0.17
+
+**************************************
+ZAI Limits in this model
+**************************************
+Z A I Min Max  :
+k_zail 92 235 0 2.0501739345490932e-03  2.3499683011323214e-03
+k_zail 92 238 0 8.1801939010620117e-01  9.3763738870620728e-01
+k_zail 94 238 0 2.6412645820528269e-04  1.4191438443958759e-02
+k_zail 94 239 0 1.9364595413208008e-02  1.2841752171516418e-01
+k_zail 94 240 0 8.0333789810538292e-03  4.9436371773481369e-02
+k_zail 94 241 0 2.7732702437788248e-04  2.1114617586135864e-02
+k_zail 94 242 0 1.7381953075528145e-03  2.5062311440706253e-02
+k_zail 95 241 0 2.8564367312355898e-05  2.1465813741087914e-02
+k_zail 95 242 1 2.7698401936504524e-06  1.7890986055135727e-04
+k_zail 95 243 0 3.8561341352760792e-04  7.0826211012899876e-03
+
+************************
+AUTHOR
+************************
+Date : 2016
+Author : BaL, Hoarau
+Mail address : thiollie@ipno.in2p3.fr
+
+*******************************
+DEPLETION SIMULATION INFOS
+*******************************
 Depletion Code : MURE
 NuclearData
 XS : JEFF 3.1.1
