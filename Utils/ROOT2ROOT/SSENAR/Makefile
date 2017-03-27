@@ -11,5 +11,5 @@ libSsenar.so: Scenar_t_dict.cxx  ZAI.cxx IsotopicVector.cxx Scenar_t.cxx
 	${CC} -o $@  ${LIB} $^
 
 clean:
-	rm libScenar.so *dict*
+	rm libSsenar.so *dict*
                                                                     
