@@ -1,10 +1,7 @@
 /* 
 
-Simple code used to convert root output file produced by CLASS to simple data file
-
-Remains : 
-
-First Cycle Time
+Code to use in Sensitivity Analysis
+Read and store in a TTree N Scenario information (Input and Output)
 
 Authors:
 
@@ -43,33 +40,14 @@ string exec(const char* cmd)
 int main(int argc, char** argv)
 {
 //---------------------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------TO ADAPT----------------------------------------------------------------------
+//---------------------------------------------------------------DATA TO CHANGE----------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------------------
 
     // Size limits for crashed and correct jobs
     string s_SizeLimit = "14M";
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------VARIABLES---------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------------------------------------------------------
-
-    string s_tmp; 
-    Long64_t TimeSecond = 0;
-
-    IsotopicVector v_Pu;
-    v_Pu.Add(94,238,0,1);
-    v_Pu.Add(94,239,0,1);
-    v_Pu.Add(94,240,0,1);
-    v_Pu.Add(94,241,0,1);
-    v_Pu.Add(94,242,0,1);
-    v_Pu.Add(95,241,0,1);
-
-    IsotopicVector v_U;
-    v_U.Add(92,238,0,1);
-    v_U.Add(92,235,0,1);
-
-//---------------------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------BRANCHES ---------------------------------------------------------------------
+//---------------------------------------------------------------INPUT BRANCHES TO CHANGE------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------------------
 
     TFile *FileScenario = new TFile("Scenario.root","RECREATE");
@@ -92,7 +70,62 @@ int main(int argc, char** argv)
     double  Fr_SPu  = 0;    TreeScenario->Branch("Fr_SPu",&Fr_SPu,"Fr_SPu/D");
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------INPUT ------------------------------------------------------------------------
+//---------------------------------------------------------------VARIABLES---------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
+    string s_tmp; 
+    Long64_t TimeSecond = 0;
+
+    Long64_t Time = 0;
+    double Power = 0;
+    vector<IsotopicVector *> IV_Branch;
+    int NStocks=0; int NPools=0; int NReactors=0; int NFabPlants=0;
+
+    vector <string> v_Branches; // vector that will contain all the branches stored in the TTree
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------IV ---------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
+    IsotopicVector v_U;
+    v_U.Add(92,234,0,1);
+    v_U.Add(92,235,0,1);
+    v_U.Add(92,236,0,1);
+    v_U.Add(92,237,0,1);
+    v_U.Add(92,238,0,1);
+    v_U.Add(92,239,0,1);
+
+    IsotopicVector v_Np;
+    v_Np.Add(93,236,0,1);
+    v_Np.Add(93,237,0,1);
+    v_Np.Add(93,238,0,1);
+    v_Np.Add(93,239,0,1);
+
+    IsotopicVector v_Pu;
+    v_Pu.Add(94,238,0,1);
+    v_Pu.Add(94,239,0,1);
+    v_Pu.Add(94,240,0,1);
+    v_Pu.Add(94,241,0,1);
+    v_Pu.Add(94,242,0,1);
+
+    IsotopicVector v_Am;
+    v_Am.Add(95,241,0,1);
+    v_Am.Add(95,242,0,1);
+    v_Am.Add(95,242,1,1);
+    v_Am.Add(95,243,0,1);
+    v_Am.Add(95,244,0,1);
+
+    IsotopicVector v_Cm;
+    v_Cm.Add(96,242,0,1);
+    v_Cm.Add(96,243,0,1);
+    v_Cm.Add(96,244,0,1);
+    v_Cm.Add(96,245,0,1);
+    v_Cm.Add(96,246,0,1);
+    v_Cm.Add(96,247,0,1);
+    v_Cm.Add(96,248,0,1);
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------- BRANCHES INFO ---------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------------------
 
     string PathToROOTFiles = string(argv[1]);
@@ -115,9 +148,79 @@ int main(int argc, char** argv)
     TFile *TFileName = new TFile(s_OneFileForBranches.c_str());
     TTree *fData = new TTree(); 
     fData = (TTree*) gDirectory->Get(TFileName->GetListOfKeys()->At(TFileName->GetNkeys() - 1)->GetName());
+    fData->SetBranchStatus("*", 0); // All branches are unbranched
+    int NBranches = fData->GetListOfBranches()->GetEntries();
+    
+    cout<<endl<<endl<<"################################################"<<endl;
+    cout<<"TTree " << fData->GetName()<<" Loaded "<<endl;
+    cout<<"################################################"<<endl;
+    cout<<"List of existing Branches : "<<endl<<endl;
+    for(int i=0; i<NBranches; i++)
+    {
+        s_tmp = fData->GetListOfBranches()->At(i)->GetName();
+        if(s_tmp[s_tmp.size()-1]=='.') s_tmp = s_tmp.substr(0, s_tmp.size()-1);
+        v_Branches.push_back(s_tmp);
+        cout<<v_Branches[i]<<endl;
+    } 
+    cout<<"################################################"<<endl;
+    cout<<"################################################"<<endl<<endl;
+    
+    // Number of Stocks
+    for(int i=0; i<NBranches; i++) if (v_Branches[i].substr(0,2)=="S_") NStocks++;
+    Storage* B_Stock[NStocks]; int IndiceStock=0;
+    // Number of Pools
+    for(int i=0; i<NBranches; i++) if (v_Branches[i].substr(0,2)=="P_") NPools++;
+    Pool* B_Pool[NPools]; int IndicePool=0;
+    // Number of Reactors
+    for(int i=0; i<NBranches; i++) if (v_Branches[i].substr(0,2)=="R_") NReactors++;
+    Reactor* B_Reactor[NReactors]; int IndiceReactor=0;
+    // Number of Fabrication Plants
+    for(int i=0; i<NBranches; i++) if (v_Branches[i].substr(0,2)=="F_") NFabPlants++;
+    FabricationPlant* B_FabPlant[NFabPlants]; int IndiceFabPlant=0;
+
     //Time Steps
     Long64_t NTime = fData->GetEntries();
     TFileName->Close();
+
+
+
+
+exit(1);
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------- Fill MATRIX In File----------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
+    // Output data ascii file name
+    //size_t SPos = FileName.find(".root");    FileName.replace(SPos, std::string(".root").length(), ".dat");
+    ofstream DataFileName("Scenario.info"); DataFileName<<scientific<<setprecision(5);
+
+    int NumberOfIsotopes = 7; // Number of group to be printed (i.e. MA, U, FP, Unat, etc...)
+    
+    DataFileName<<"C AbsTime        0"<<endl;
+    DataFileName<<"C ParcPower      1"<<endl;
+    DataFileName<<"C ---------------------------------------------------------------------"<<endl;
+    DataFileName<<"C "<<setw(20)<<" "<<setw(5)<<"U"<<setw(5)<<"Np"<<setw(5)<<"Pu"<<setw(5)<<"Am"<<setw(5)<<"Cm"<<setw(5)<<"MA"<<setw(5)<<"PF"<<endl;
+    DataFileName<<"C ---------------------------------------------------------------------"<<endl;
+    for(int i=2; i<NBranches; i++)
+    {
+        DataFileName<<"C "<<setw(20)<<v_Branches[i]; 
+        //DataFileName.seekp((i-1) * 100 + 20);
+        for(int e=0; e<NumberOfIsotopes; e++)
+        {
+            DataFileName<<setw(5)<<2 + NumberOfIsotopes*(i-2) + e;
+        }DataFileName<<endl;
+        if(i%6==0)
+        {
+            DataFileName<<"C ---------------------------------------------------------------------"<<endl;
+            DataFileName<<"C "<<setw(20)<<" "<<setw(5)<<"U"<<setw(5)<<"Np"<<setw(5)<<"Pu"<<setw(5)<<"Am"<<setw(5)<<"Cm"<<setw(5)<<"MA"<<setw(5)<<"PF"<<endl;
+            DataFileName<<"C ---------------------------------------------------------------------"<<endl;
+        }
+    }
+    DataFileName<<"C ---------------------------------------------------------------------"<<endl;
+    DataFileName<<"C"<<endl;
+    DataFileName<<"C"<<endl;
+    DataFileName<<"C"<<endl;
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------WRITING ----------------------------------------------------------------------
@@ -138,9 +241,71 @@ int main(int argc, char** argv)
     cout<<endl;
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
-//---------------------------------------------------------------LOAD BRANCHES-----------------------------------------------------------------
+//---------------------------------------------------------------CONNECT BRANCHES--------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------------------
 
+    // Time
+    fData->SetBranchStatus("AbsTime", 1);       //Branch activation
+    fData->SetBranchAddress("AbsTime", &Time);  //Connection between variable and Branches
+    // Thermal Power
+    fData->SetBranchStatus("ParcPower", 1);
+    fData->SetBranchAddress("ParcPower", &Power);
+
+    for(int i=0; i<NBranches; i++) IV_Branch.push_back(0);
+
+    for(int i=2; i<NBranches; i++)
+    {
+        if (v_Branches[i].substr(0,2)=="S_")
+        {
+            B_Stock[IndiceStock] = new Storage();
+            fData->SetBranchStatus((v_Branches[i] + "*").c_str(), 1);
+            fData->SetBranchAddress((v_Branches[i] + ".").c_str(), &B_Stock[IndiceStock]);
+            IndiceStock++;
+        }
+        else if (v_Branches[i].substr(0,2)=="P_")
+        {
+            B_Pool[IndicePool] = new Pool();
+            fData->SetBranchStatus((v_Branches[i] + "*").c_str(), 1);
+            fData->SetBranchAddress((v_Branches[i] + ".").c_str(), &B_Pool[IndicePool]);
+            IndicePool++;
+        }
+        else if (v_Branches[i].substr(0,2)=="R_")
+        {
+            B_Reactor[IndiceReactor] = new Reactor();
+            fData->SetBranchStatus((v_Branches[i] + "*").c_str(), 1);
+            fData->SetBranchAddress((v_Branches[i] + ".").c_str(), &B_Reactor[IndiceReactor]);
+            IndiceReactor++;
+        }
+        else if (v_Branches[i].substr(0,2)=="F_")
+        {
+            B_FabPlant[IndiceFabPlant] = new FabricationPlant();
+            fData->SetBranchStatus((v_Branches[i] + "*").c_str(), 1);
+            fData->SetBranchAddress((v_Branches[i] + ".").c_str(), &B_FabPlant[IndiceFabPlant]);
+            IndiceFabPlant++;
+        }
+        else
+        {
+            fData->SetBranchStatus((v_Branches[i] + "*").c_str(), 1);                   //Branch activation
+            fData->SetBranchAddress((v_Branches[i] + ".").c_str(), &IV_Branch[i]);      //Connection between variable and Branches
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------LOAD BRANCHES-----------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------------
+/*
     cout<<endl<<"#########################"<<endl;
     cout<<"Number Of ROOT Files : "<<NumberOfElements<<endl;
     cout<<"Number Of Time Step / Files : "<<NTime<<endl<<endl;
@@ -214,37 +379,7 @@ int main(int argc, char** argv)
         fData->SetBranchStatus((Branchname+"*").c_str(), 1);
         fData->SetBranchAddress((Branchname+".").c_str(), &IV_TOTAL);
 
-        Reactor* PWR_UOX = new Reactor();
-        Branchname = "R_PWR_UOx";
-        ActiveBranchName = Branchname + "*"; 
-        fData->SetBranchStatus(ActiveBranchName.c_str(), 1);
-        fData->SetBranchAddress((Branchname+".").c_str(), &PWR_UOX);
-
-        Reactor* PWR_MOX = new Reactor();
-        Branchname = "R_PWR_MOX";
-        ActiveBranchName = Branchname + "*"; 
-        fData->SetBranchStatus(ActiveBranchName.c_str(), 1);
-        fData->SetBranchAddress((Branchname+".").c_str(), &PWR_MOX);
-
-        Reactor* SFR_MOX = new Reactor();
-        Branchname = "R_SFR_MOX";
-        ActiveBranchName = Branchname + "*"; 
-        fData->SetBranchStatus(ActiveBranchName.c_str(), 1);
-        fData->SetBranchAddress((Branchname+".").c_str(), &SFR_MOX);
-
-        Storage* Stock_UOX = new Storage();
-        Branchname = "S_StockUOx"; 
-        ActiveBranchName = Branchname + "*"; 
-        fData->SetBranchStatus(ActiveBranchName.c_str(), 1);
-        fData->SetBranchAddress((Branchname+".").c_str(), &Stock_UOX);
-
-        Storage* Stock_MOX = new Storage();
-        Branchname = "S_StockMOx"; 
-        ActiveBranchName = Branchname + "*"; 
-        fData->SetBranchStatus(ActiveBranchName.c_str(), 1);
-        fData->SetBranchAddress((Branchname+".").c_str(), &Stock_MOX);
-
-        //---------------------------------------------------------------------------------------------------------------------------------------------
+         //---------------------------------------------------------------------------------------------------------------------------------------------
         //---------------------------------------------------------------LOOP ON EVENTS AND FILE WRITING-----------------------------------------------
         //---------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -269,8 +404,9 @@ int main(int argc, char** argv)
 
     FileScenario->Write();
     FileScenario->Close();
+*/
 }
 
 /*
- g++ -std=c++11 -o CLASS_R2D CLASS_ROOT2DAT.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
+ g++ -std=c++11 -o CLASS_R2R CLASS_ROOT2ROOT.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
 */

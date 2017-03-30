@@ -1,14 +1,6 @@
-#include "IsotopicVector.hxx"
+#include <Header.hxx>
+#include <IsotopicVector.hxx>
 
-#include "CLASSLogger.hxx"
-#include "CLASSConstante.hxx"
-
-
-#include <cmath>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <algorithm>
 //________________________________________________________________________
 //________________________________________________________________________
 //
