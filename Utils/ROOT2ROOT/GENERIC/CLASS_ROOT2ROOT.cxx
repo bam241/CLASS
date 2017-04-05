@@ -369,13 +369,13 @@ int main(int argc, char** argv)
             DataFileName<<endl;
             DataFileName<<setw(30)<<v_Branches[b]+string(" Inventory");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
-
+/*
             DataFileName<<setw(30)<<v_Branches[b]+string(" Cumul In");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
 
             DataFileName<<setw(30)<<v_Branches[b]+string(" Cumul Out");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
-
+*/
         }
         //It's a Storage
         else if (v_Branches[b].substr(0,2)=="S_")
@@ -383,13 +383,13 @@ int main(int argc, char** argv)
             DataFileName<<endl;
             DataFileName<<setw(30)<<v_Branches[b]+string(" Inventory");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
-
+/*
             DataFileName<<setw(30)<<v_Branches[b]+string(" Cumul In");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
 
             DataFileName<<setw(30)<<v_Branches[b]+string(" Cumul Out");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
-
+*/
         }
         //It's a FP
         else if (v_Branches[b].substr(0,2)=="F_")
@@ -397,17 +397,17 @@ int main(int argc, char** argv)
             DataFileName<<endl;
             DataFileName<<setw(30)<<v_Branches[b]+string(" Inventory");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
-
+/*
             DataFileName<<setw(30)<<v_Branches[b]+string(" Cumul In");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
 
             DataFileName<<setw(30)<<v_Branches[b]+string(" Cumul Out");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
+*/
         }
         // It's global Observable (TOTAL, WASTE, etc...)
         else 
         {    // TOTAL Inventory
-            DataFileName<<endl;
             DataFileName<<setw(30)<<v_Branches[b]+string(" Inventory");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
         }
@@ -440,7 +440,8 @@ int main(int argc, char** argv)
     // Get the position of the first number...
     int PosFirstData = 0;
     for (int i=0; i<s_OneFileForBranches.length(); i++) if (isdigit(s_OneFileForBranches[i])) {PosFirstData=i; break;}
- 
+    int LengthData = 10;
+
     // Store Bad Scenarios   
     ifstream f_ROOTFileListCrashed("ROOTFileListCrashed.txt"); 
     for (int f=1; f<=NumberOfElementsCrashed; f++)
@@ -448,17 +449,17 @@ int main(int argc, char** argv)
        // Get input arguments
         getline(f_ROOTFileListCrashed, s_ROOTFileName);
         
-        BU_UOX = atof(s_ROOTFileName.substr(PosFirstData,9).c_str());
-        BU_MOX = atof(s_ROOTFileName.substr(PosFirstData+10,9).c_str());
-        BU_SFR = atof(s_ROOTFileName.substr(PosFirstData+20,9).c_str());
-        Fr_UOX = atof(s_ROOTFileName.substr(PosFirstData+30,9).c_str());
-        Fr_MOX = atof(s_ROOTFileName.substr(PosFirstData+40,9).c_str());
-        Fr_SFR = atof(s_ROOTFileName.substr(PosFirstData+50,9).c_str());
-        CT_UOX = atof(s_ROOTFileName.substr(PosFirstData+60,9).c_str());
-        CT_MOX = atof(s_ROOTFileName.substr(PosFirstData+70,9).c_str());
-        CT_SFR = atof(s_ROOTFileName.substr(PosFirstData+80,9).c_str());
-        SM_MOX = atof(s_ROOTFileName.substr(PosFirstData+90,9).c_str());
-        Fr_SPu = atof(s_ROOTFileName.substr(PosFirstData+100,9).c_str());
+        BU_UOX = atof(s_ROOTFileName.substr(PosFirstData+LengthData*0 ,LengthData-1).c_str());
+        BU_MOX = atof(s_ROOTFileName.substr(PosFirstData+LengthData*1 ,LengthData-1).c_str());
+        BU_SFR = atof(s_ROOTFileName.substr(PosFirstData+LengthData*2 ,LengthData-1).c_str());
+        Fr_UOX = atof(s_ROOTFileName.substr(PosFirstData+LengthData*3 ,LengthData-1).c_str());
+        Fr_MOX = atof(s_ROOTFileName.substr(PosFirstData+LengthData*4 ,LengthData-1).c_str());
+        Fr_SFR = atof(s_ROOTFileName.substr(PosFirstData+LengthData*5 ,LengthData-1).c_str());
+        CT_UOX = atof(s_ROOTFileName.substr(PosFirstData+LengthData*6 ,LengthData-1).c_str());
+        CT_MOX = atof(s_ROOTFileName.substr(PosFirstData+LengthData*7 ,LengthData-1).c_str());
+        CT_SFR = atof(s_ROOTFileName.substr(PosFirstData+LengthData*8 ,LengthData-1).c_str());
+        SM_MOX = atof(s_ROOTFileName.substr(PosFirstData+LengthData*9 ,LengthData-1).c_str());
+        Fr_SPu = atof(s_ROOTFileName.substr(PosFirstData+LengthData*10,LengthData-1).c_str());
         SIOK = 0;
         TreeScenario->Fill();
 
@@ -474,17 +475,17 @@ int main(int argc, char** argv)
         // Get input arguments
         getline(f_ROOTFileList, s_ROOTFileName);
 
-        BU_UOX = atof(s_ROOTFileName.substr(PosFirstData,9).c_str());
-        BU_MOX = atof(s_ROOTFileName.substr(PosFirstData+10,9).c_str());
-        BU_SFR = atof(s_ROOTFileName.substr(PosFirstData+20,9).c_str());
-        Fr_UOX = atof(s_ROOTFileName.substr(PosFirstData+30,9).c_str());
-        Fr_MOX = atof(s_ROOTFileName.substr(PosFirstData+40,9).c_str());
-        Fr_SFR = atof(s_ROOTFileName.substr(PosFirstData+50,9).c_str());
-        CT_UOX = atof(s_ROOTFileName.substr(PosFirstData+60,9).c_str());
-        CT_MOX = atof(s_ROOTFileName.substr(PosFirstData+70,9).c_str());
-        CT_SFR = atof(s_ROOTFileName.substr(PosFirstData+80,9).c_str());
-        SM_MOX = atof(s_ROOTFileName.substr(PosFirstData+90,9).c_str());
-        Fr_SPu = atof(s_ROOTFileName.substr(PosFirstData+100,9).c_str());
+        BU_UOX = atof(s_ROOTFileName.substr(PosFirstData+LengthData*0 ,LengthData-1).c_str());
+        BU_MOX = atof(s_ROOTFileName.substr(PosFirstData+LengthData*1 ,LengthData-1).c_str());
+        BU_SFR = atof(s_ROOTFileName.substr(PosFirstData+LengthData*2 ,LengthData-1).c_str());
+        Fr_UOX = atof(s_ROOTFileName.substr(PosFirstData+LengthData*3 ,LengthData-1).c_str());
+        Fr_MOX = atof(s_ROOTFileName.substr(PosFirstData+LengthData*4 ,LengthData-1).c_str());
+        Fr_SFR = atof(s_ROOTFileName.substr(PosFirstData+LengthData*5 ,LengthData-1).c_str());
+        CT_UOX = atof(s_ROOTFileName.substr(PosFirstData+LengthData*6 ,LengthData-1).c_str());
+        CT_MOX = atof(s_ROOTFileName.substr(PosFirstData+LengthData*7 ,LengthData-1).c_str());
+        CT_SFR = atof(s_ROOTFileName.substr(PosFirstData+LengthData*8 ,LengthData-1).c_str());
+        SM_MOX = atof(s_ROOTFileName.substr(PosFirstData+LengthData*9 ,LengthData-1).c_str());
+        Fr_SPu = atof(s_ROOTFileName.substr(PosFirstData+LengthData*10,LengthData-1).c_str());
         SIOK = 1;
 
         // Load ROOT file number f and load TTree
@@ -566,7 +567,8 @@ int main(int argc, char** argv)
                 bool IsNewCycle=false;
                 double R_CT = B_Reactor[IndiceReactor]->GetCycleTime()/double(cYear);
                 double R_ST = B_Reactor[IndiceReactor]->GetCreationTime()/double(cYear);
-                int NLOAD_Theoric= int((Obs[0][t]-R_ST)/R_CT);
+                int NLOAD_Theoric_0 = int((Obs[0][t-1]-R_ST)/R_CT +1);
+                int NLOAD_Theoric_1 = int((Obs[0][t]-R_ST)/R_CT +1);
                 if (v_Branches[b].substr(0,2)=="R_")
                 {
                     // Inventory
@@ -575,10 +577,10 @@ int main(int argc, char** argv)
                     for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Reactor[IndiceReactor]->GetIVBeginCycle().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
                     // N LOAD
 
-                    if() IsNewCycle = true;
-
                     Obs[NumObs][t] = Obs[NumObs][t-1];
                     Obs[NumObs+1][t] = Obs[NumObs+1][t-1];
+
+                    if(Obs[0][t] >= R_ST && (NLOAD_Theoric_0<NLOAD_Theoric_1 || t==1)) IsNewCycle = true;
 
                     if (IsNewCycle)
                     {
@@ -593,10 +595,12 @@ int main(int argc, char** argv)
                 {
                     // Inventory
                     for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Pool[IndicePool]->GetInsideIV().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
+/*
                     // Cumul IN
                     for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Pool[IndicePool]->GetCumulativeIVIn().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
                     // Cumul Out
                     for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Pool[IndicePool]->GetCumulativeIVOut().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
+*/
                     IndicePool++;
                 }
                 //It's a Storage
@@ -604,10 +608,12 @@ int main(int argc, char** argv)
                 {
                     // Inventory
                     for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Stock[IndiceStock]->GetInsideIV().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
+ /*
                     // Cumul IN
                     for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Stock[IndiceStock]->GetCumulativeIVIn().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
                     // Cumul Out
                     for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Stock[IndiceStock]->GetCumulativeIVOut().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
+*/
                     IndiceStock++;
                 }
                 //It's a FP
@@ -615,10 +621,12 @@ int main(int argc, char** argv)
                 {
                     // Inventory
                     for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_FabPlant[IndiceFabPlant]->GetInsideIV().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
+/*
                     // Cumul IN
                     for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_FabPlant[IndiceFabPlant]->GetCumulativeIVIn().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
                     // Cumul Out
                     for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_FabPlant[IndiceFabPlant]->GetCumulativeIVOut().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
+*/    
                     IndiceFabPlant++;
                 }
                 // It's global Observable (TOTAL, WASTE, etc...)
