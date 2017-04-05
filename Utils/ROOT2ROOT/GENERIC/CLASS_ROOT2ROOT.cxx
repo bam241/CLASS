@@ -17,7 +17,7 @@ REMAIN
 
 INPUT VAR NOT GOOD
 NLOAD and MLOAD NOT GOOD
-
+UNAT Not implemented...
 
 Authors:
 BaL
@@ -322,20 +322,20 @@ int main(int argc, char** argv)
     size_t SPos = s_FileScenarioName.find(".root");    s_FileScenarioName.replace(SPos, std::string(".root").length(), ".info");
     ofstream DataFileName(s_FileScenarioName.c_str()); DataFileName<<scientific<<setprecision(5);
 
-    DataFileName<<"C ----------------------------------------------------------------------------------------------------"<<endl;
-    DataFileName<<"C ----------------------------------------------------------------------------------------------------"<<endl;
+    DataFileName<<"C ----------------------------------------------------------------------------------------------------------------------"<<endl;
+    DataFileName<<"C ----------------------------------------------------------------------------------------------------------------------"<<endl;
     DataFileName<<endl;
     DataFileName<<"Structure and Names of Branches Stored in The final TTree"<<endl;
     DataFileName<<"Each Branch is a vector of the time"<<endl<<endl;
-    DataFileName<<"C ----------------------------------------------------------------------------------------------------"<<endl;
-    DataFileName<<"C ----------------------------------------------------------------------------------------------------"<<endl;
+    DataFileName<<"C ----------------------------------------------------------------------------------------------------------------------"<<endl;
+    DataFileName<<"C ----------------------------------------------------------------------------------------------------------------------"<<endl;
     DataFileName<<endl<<endl;
     DataFileName<<setw(30)<<"AbsTime        T"<<endl;
     DataFileName<<setw(30)<<"ParcPower      P"<<endl;
-    DataFileName<<"C ----------------------------------------------------------------------------------------------------"<<endl;
+    DataFileName<<"C ----------------------------------------------------------------------------------------------------------------------"<<endl;
     DataFileName<<setw(30)<<" "<<setw(5);
     for (int i=0; i<NumberOfIsotopes; i++) DataFileName<<v_Isotopes[i]<<setw(5); DataFileName<<endl;
-    DataFileName<<"C ----------------------------------------------------------------------------------------------------"<<endl;
+    DataFileName<<"C ----------------------------------------------------------------------------------------------------------------------"<<endl;
     
     // Initialisation to zero
     for(int t=0; t<NTime; t++) Obs_t.push_back(0.); 
@@ -345,26 +345,28 @@ int main(int argc, char** argv)
     Obs.push_back(Obs_t);
 
     // Fill the Obs Vector with 0, And Fill the info File
-    for(int b=2; b<NBranches; b++)
+    // int NTotalBranches = (NReactors*4 + NPools*3 + NStocks*3 + NFabPlants*3 + 10)*NumberOfIsotopes;
+    // for(int b<=2; b<999; b++) Obs.push_back(Obs_t);
+    for(int b=2; b<NBranches; b++) 
     {
         //It's a reactor
         if (v_Branches[b].substr(0,2)=="R_")
         {
+            DataFileName<<endl;
             DataFileName<<setw(30)<<v_Branches[b]+string(" Inventory");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
 
             DataFileName<<setw(30)<<v_Branches[b]+string(" Inv. BOC");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
             
-            DataFileName<<setw(30)<<v_Branches[b]+string(" N LOAD");
-            for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
+            DataFileName<<setw(30)<<v_Branches[b]+string(" N LOAD"); Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs); DataFileName<<endl;
 
-            DataFileName<<setw(30)<<v_Branches[b]+string(" M LOAD");
-            for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
+            DataFileName<<setw(30)<<v_Branches[b]+string(" M LOAD"); Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs); DataFileName<<endl;
         }
         //It's a Pool
         else if (v_Branches[b].substr(0,2)=="P_")
         {
+            DataFileName<<endl;
             DataFileName<<setw(30)<<v_Branches[b]+string(" Inventory");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
 
@@ -373,10 +375,12 @@ int main(int argc, char** argv)
 
             DataFileName<<setw(30)<<v_Branches[b]+string(" Cumul Out");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
+
         }
         //It's a Storage
         else if (v_Branches[b].substr(0,2)=="S_")
         {
+            DataFileName<<endl;
             DataFileName<<setw(30)<<v_Branches[b]+string(" Inventory");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
 
@@ -385,10 +389,12 @@ int main(int argc, char** argv)
 
             DataFileName<<setw(30)<<v_Branches[b]+string(" Cumul Out");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
+
         }
         //It's a FP
         else if (v_Branches[b].substr(0,2)=="F_")
         {
+            DataFileName<<endl;
             DataFileName<<setw(30)<<v_Branches[b]+string(" Inventory");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
 
@@ -401,16 +407,17 @@ int main(int argc, char** argv)
         // It's global Observable (TOTAL, WASTE, etc...)
         else 
         {    // TOTAL Inventory
+            DataFileName<<endl;
             DataFileName<<setw(30)<<v_Branches[b]+string(" Inventory");
             for(int i=0; i<NumberOfIsotopes; i++) {Obs.push_back(Obs_t); NumObs++; DataFileName<<setw(5)<<string("B")+itoa(NumObs);} DataFileName<<endl;
         }
         // Remind the line definition in the matrix
-        if(b%6==0)
+        if(NumObs%5==0)
         {
-            DataFileName<<"C ----------------------------------------------------------------------------------------------------"<<endl;
+            DataFileName<<"C ----------------------------------------------------------------------------------------------------------------------"<<endl;
             DataFileName<<setw(30)<<" "<<setw(5);
             for (int i=0; i<NumberOfIsotopes; i++) DataFileName<<v_Isotopes[i]<<setw(5); DataFileName<<endl;
-            DataFileName<<"C ----------------------------------------------------------------------------------------------------"<<endl;
+            DataFileName<<"C ----------------------------------------------------------------------------------------------------------------------"<<endl;
         }
     }
 
@@ -418,7 +425,7 @@ int main(int argc, char** argv)
     TreeScenario->Branch("T",&Obs[0]);
     TreeScenario->Branch("P",&Obs[1]);
     for(int i=1; i<=NumObs; i++) TreeScenario->Branch((string("B")+itoa(i)).c_str(),&Obs[i+1]);
-
+    //for(int b<=2; b<999; b++) TreeScenario->Branch((string("B")+itoa(b-1)).c_str(),&Obs[b]);
 //---------------------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------START PROCESSING ROOT FILES --------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------------------
@@ -429,6 +436,10 @@ int main(int argc, char** argv)
     cout<<"Progression : "<<endl;
 
     string s_ROOTFileName;
+
+    // Get the position of the first number...
+    int PosFirstData = 0;
+    for (int i=0; i<s_OneFileForBranches.length(); i++) if (isdigit(s_OneFileForBranches[i])) {PosFirstData=i; break;}
  
     // Store Bad Scenarios   
     ifstream f_ROOTFileListCrashed("ROOTFileListCrashed.txt"); 
@@ -437,17 +448,17 @@ int main(int argc, char** argv)
        // Get input arguments
         getline(f_ROOTFileListCrashed, s_ROOTFileName);
         
-        BU_UOX = atof(s_ROOTFileName.substr(6,9).c_str());
-        BU_MOX = atof(s_ROOTFileName.substr(16,9).c_str());
-        BU_SFR = atof(s_ROOTFileName.substr(26,9).c_str());
-        Fr_UOX = atof(s_ROOTFileName.substr(36,9).c_str());
-        Fr_MOX = atof(s_ROOTFileName.substr(46,9).c_str());
-        Fr_SFR = atof(s_ROOTFileName.substr(56,9).c_str());
-        CT_UOX = atof(s_ROOTFileName.substr(66,9).c_str());
-        CT_MOX = atof(s_ROOTFileName.substr(76,9).c_str());
-        CT_SFR = atof(s_ROOTFileName.substr(86,9).c_str());
-        SM_MOX = atof(s_ROOTFileName.substr(96,9).c_str());
-        Fr_SPu = atof(s_ROOTFileName.substr(106,9).c_str());
+        BU_UOX = atof(s_ROOTFileName.substr(PosFirstData,9).c_str());
+        BU_MOX = atof(s_ROOTFileName.substr(PosFirstData+10,9).c_str());
+        BU_SFR = atof(s_ROOTFileName.substr(PosFirstData+20,9).c_str());
+        Fr_UOX = atof(s_ROOTFileName.substr(PosFirstData+30,9).c_str());
+        Fr_MOX = atof(s_ROOTFileName.substr(PosFirstData+40,9).c_str());
+        Fr_SFR = atof(s_ROOTFileName.substr(PosFirstData+50,9).c_str());
+        CT_UOX = atof(s_ROOTFileName.substr(PosFirstData+60,9).c_str());
+        CT_MOX = atof(s_ROOTFileName.substr(PosFirstData+70,9).c_str());
+        CT_SFR = atof(s_ROOTFileName.substr(PosFirstData+80,9).c_str());
+        SM_MOX = atof(s_ROOTFileName.substr(PosFirstData+90,9).c_str());
+        Fr_SPu = atof(s_ROOTFileName.substr(PosFirstData+100,9).c_str());
         SIOK = 0;
         TreeScenario->Fill();
 
@@ -463,17 +474,17 @@ int main(int argc, char** argv)
         // Get input arguments
         getline(f_ROOTFileList, s_ROOTFileName);
 
-        BU_UOX = atof(s_ROOTFileName.substr(6,9).c_str());
-        BU_MOX = atof(s_ROOTFileName.substr(16,9).c_str());
-        BU_SFR = atof(s_ROOTFileName.substr(26,9).c_str());
-        Fr_UOX = atof(s_ROOTFileName.substr(36,9).c_str());
-        Fr_MOX = atof(s_ROOTFileName.substr(46,9).c_str());
-        Fr_SFR = atof(s_ROOTFileName.substr(56,9).c_str());
-        CT_UOX = atof(s_ROOTFileName.substr(66,9).c_str());
-        CT_MOX = atof(s_ROOTFileName.substr(76,9).c_str());
-        CT_SFR = atof(s_ROOTFileName.substr(86,9).c_str());
-        SM_MOX = atof(s_ROOTFileName.substr(96,9).c_str());
-        Fr_SPu = atof(s_ROOTFileName.substr(106,9).c_str());
+        BU_UOX = atof(s_ROOTFileName.substr(PosFirstData,9).c_str());
+        BU_MOX = atof(s_ROOTFileName.substr(PosFirstData+10,9).c_str());
+        BU_SFR = atof(s_ROOTFileName.substr(PosFirstData+20,9).c_str());
+        Fr_UOX = atof(s_ROOTFileName.substr(PosFirstData+30,9).c_str());
+        Fr_MOX = atof(s_ROOTFileName.substr(PosFirstData+40,9).c_str());
+        Fr_SFR = atof(s_ROOTFileName.substr(PosFirstData+50,9).c_str());
+        CT_UOX = atof(s_ROOTFileName.substr(PosFirstData+60,9).c_str());
+        CT_MOX = atof(s_ROOTFileName.substr(PosFirstData+70,9).c_str());
+        CT_SFR = atof(s_ROOTFileName.substr(PosFirstData+80,9).c_str());
+        SM_MOX = atof(s_ROOTFileName.substr(PosFirstData+90,9).c_str());
+        Fr_SPu = atof(s_ROOTFileName.substr(PosFirstData+100,9).c_str());
         SIOK = 1;
 
         // Load ROOT file number f and load TTree
@@ -541,7 +552,7 @@ int main(int argc, char** argv)
         cout<<"\r =====> "<<(int)((double)f/NumberOfElements*100. +1)<<" % "<<flush;
 
         // Time and Energy
-        for (Long64_t  t = 0; t < NTime; t++)   //loop over scenario time
+        for (Long64_t  t = 1; t < NTime; t++)   //loop over scenario time
         {
             fData->GetEntry(t);     //Update all branched object to the new CLASS time step j
             Obs[0][t] = double(TimeSecond)/double(cYear); //The time (in year) at this time step
@@ -552,81 +563,68 @@ int main(int argc, char** argv)
             for(int b=2; b<NBranches; b++)
             {
                 //It's a reactor
+                bool IsNewCycle=false;
+                double R_CT = B_Reactor[IndiceReactor]->GetCycleTime()/double(cYear);
+                double R_ST = B_Reactor[IndiceReactor]->GetCreationTime()/double(cYear);
+                int NLOAD_Theoric= int((Obs[0][t]-R_ST)/R_CT);
                 if (v_Branches[b].substr(0,2)=="R_")
                 {
-                    int NLOAD_Theoric=0;
-                    for(int i=0; i<NumberOfIsotopes; i++)
+                    // Inventory
+                    for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Reactor[IndiceReactor]->GetInsideIV().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
+                    // Inv. BOC
+                    for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Reactor[IndiceReactor]->GetIVBeginCycle().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
+                    // N LOAD
+
+                    if() IsNewCycle = true;
+
+                    Obs[NumObs][t] = Obs[NumObs][t-1];
+                    Obs[NumObs+1][t] = Obs[NumObs+1][t-1];
+
+                    if (IsNewCycle)
                     {
-                        // Inventory
-                        Obs[NumObs][t] = B_Reactor[IndiceReactor]->GetInsideIV().GetThisComposition(v_IsotopesList[i]).GetTotalMass();
-                        // Inv. BOC
-                        Obs[NumObs+1][t] = B_Reactor[IndiceReactor]->GetIVBeginCycle().GetThisComposition(v_IsotopesList[i]).GetTotalMass();
-                        // N LOAD and M LOAD
-                        if (Obs[0][t] >= B_Reactor[IndiceReactor]->GetCreationTime()/double(cYear) + B_Reactor[IndiceReactor]->GetCycleTime()/double(cYear)*(NLOAD_Theoric))
-                        {
-                            NLOAD_Theoric++;
-                            if (B_Reactor[IndiceReactor]->GetInsideIV().GetThisComposition(v_IsotopesList[0]).GetTotalMass() > 0) Obs[NumObs+2][t] += 1;
-                            else Obs[NumObs+3][t] += 1;
-                        }
-                        NumObs+=4;
+                        if (B_Reactor[IndiceReactor]->GetInsideIV().GetThisComposition(v_IsotopesList[0]).GetTotalMass() > 0) Obs[NumObs][t] = Obs[NumObs][t-1] +1;
+                        else Obs[NumObs+1][t] = Obs[NumObs+1][t-1] +1;
                     }
+                    NumObs+=2;
                     IndiceReactor++;
                 }
                 //It's a Pool
                 else if (v_Branches[b].substr(0,2)=="P_")
                 {
-                    for(int i=0; i<NumberOfIsotopes; i++)
-                    {
-                        // Inventory
-                        Obs[NumObs][t] = B_Pool[IndicePool]->GetInsideIV().GetThisComposition(v_IsotopesList[i]).GetTotalMass();
-                        // Cumul IN
-                        Obs[NumObs+1][t] = B_Pool[IndicePool]->GetCumulativeIVIn().GetThisComposition(v_IsotopesList[i]).GetTotalMass();
-                        // Cumul Out
-                        Obs[NumObs+2][t] = B_Pool[IndicePool]->GetCumulativeIVIn().GetThisComposition(v_IsotopesList[i]).GetTotalMass();
-                        NumObs+=3;
-                    }
+                    // Inventory
+                    for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Pool[IndicePool]->GetInsideIV().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
+                    // Cumul IN
+                    for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Pool[IndicePool]->GetCumulativeIVIn().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
+                    // Cumul Out
+                    for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Pool[IndicePool]->GetCumulativeIVOut().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
                     IndicePool++;
                 }
                 //It's a Storage
                 else if (v_Branches[b].substr(0,2)=="S_")
                 {
-                    for(int i=0; i<NumberOfIsotopes; i++)
-                    {
-                        fData->GetEntry(t);
-                        // Inventory
-                        Obs[NumObs][t] = B_Stock[IndiceStock]->GetInsideIV().GetThisComposition(v_IsotopesList[i]).GetTotalMass();
-                        // Cumul IN
-                        Obs[NumObs+1][t] = B_Stock[IndiceStock]->GetCumulativeIVIn().GetThisComposition(v_IsotopesList[i]).GetTotalMass();
-                        // Cumul Out
-                        Obs[NumObs+2][t] = B_Stock[IndiceStock]->GetCumulativeIVIn().GetThisComposition(v_IsotopesList[i]).GetTotalMass();
-                        NumObs+=3;
-                    }
+                    // Inventory
+                    for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Stock[IndiceStock]->GetInsideIV().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
+                    // Cumul IN
+                    for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Stock[IndiceStock]->GetCumulativeIVIn().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
+                    // Cumul Out
+                    for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_Stock[IndiceStock]->GetCumulativeIVOut().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
                     IndiceStock++;
                 }
                 //It's a FP
                 else if (v_Branches[b].substr(0,2)=="F_")
                 {
-                    for(int i=0; i<NumberOfIsotopes; i++)
-                    {
-                        // Inventory
-                        Obs[NumObs][t] = B_FabPlant[IndiceFabPlant]->GetInsideIV().GetThisComposition(v_IsotopesList[i]).GetTotalMass();
-                        // Cumul IN
-                        Obs[NumObs+1][t] = B_FabPlant[IndiceFabPlant]->GetCumulativeIVIn().GetThisComposition(v_IsotopesList[i]).GetTotalMass();
-                        // Cumul Out
-                        Obs[NumObs+2][t] = B_FabPlant[IndiceFabPlant]->GetCumulativeIVIn().GetThisComposition(v_IsotopesList[i]).GetTotalMass();
-                        NumObs+=3;
-                    }
+                    // Inventory
+                    for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_FabPlant[IndiceFabPlant]->GetInsideIV().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
+                    // Cumul IN
+                    for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_FabPlant[IndiceFabPlant]->GetCumulativeIVIn().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
+                    // Cumul Out
+                    for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_FabPlant[IndiceFabPlant]->GetCumulativeIVOut().GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
                     IndiceFabPlant++;
                 }
                 // It's global Observable (TOTAL, WASTE, etc...)
                 else 
-                {    // Inventory
-                    for(int i=0; i<NumberOfIsotopes; i++)
-                    {
-                        // Inventory
-                        Obs[NumObs][t] = B_GlobalIV[IndiceGlobalIV]->GetThisComposition(v_IsotopesList[i]).GetTotalMass();
-                        NumObs+=1;
-                    }
+                {    
+                    for(int i=0; i<NumberOfIsotopes; i++) {Obs[NumObs][t] = B_GlobalIV[IndiceGlobalIV]->GetThisComposition(v_IsotopesList[i]).GetTotalMass(); NumObs++;}
                     IndiceGlobalIV++;
                 }
             }
@@ -637,9 +635,9 @@ int main(int argc, char** argv)
 
         // Free momory...
         // Delete pointers
-        for(int i=0; i<NStocks; i++)    delete B_Stock[i];
-        for(int i=0; i<NPools; i++)     delete B_Pool[i];
         for(int i=0; i<NReactors; i++)  delete B_Reactor[i];
+        for(int i=0; i<NPools; i++)     delete B_Pool[i];
+        for(int i=0; i<NStocks; i++)    delete B_Stock[i];
         for(int i=0; i<NFabPlants; i++) delete B_FabPlant[i];
         for(int i=0; i<NGlobalIV; i++)  delete B_GlobalIV[i];
         // Indices to zero...
