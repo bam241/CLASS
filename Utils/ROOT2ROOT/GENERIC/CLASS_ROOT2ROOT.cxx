@@ -425,7 +425,7 @@ int main(int argc, char** argv)
     TreeScenario->Branch("T",&Obs[0]);
     TreeScenario->Branch("P",&Obs[1]);
     for(int i=1; i<=NumObs; i++) TreeScenario->Branch((string("B")+itoa(i)).c_str(),&Obs[i+1]);
-    //for(int b<=2; b<999; b++) TreeScenario->Branch((string("B")+itoa(b-1)).c_str(),&Obs[b]);
+
 //---------------------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------START PROCESSING ROOT FILES --------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------------------
@@ -469,9 +469,6 @@ int main(int argc, char** argv)
     ifstream f_ROOTFileList("ROOTFileList.txt");
     for (int f=1; f<=NumberOfElements; f++)
     {
-        // int UOX_NLOAD_Theoric = 0; int MOX_NLOAD_Theoric = 0; int SFR_NLOAD_Theoric = 0;
-        // UOX_NLOAD = 0; MOX_NLOAD = 0; MOX_MLOAD = 0; UNAT = 0;
-
         // Get input arguments
         getline(f_ROOTFileList, s_ROOTFileName);
 

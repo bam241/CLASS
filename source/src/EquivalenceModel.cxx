@@ -867,6 +867,12 @@ double EquivalenceModel::CalculateBurnUpMax(IsotopicVector TheFuel, map<string, 
 	
 	delete reader;
 	//cout<<endl;
+
+
+cout<<SecondToBurnup(TheFinalTime)<<endl;
+
+
+
 	return SecondToBurnup(TheFinalTime);
 }
 
