@@ -53,6 +53,8 @@ ZAIMass::~ZAIMass()
 
 double ZAIMass::GetMass( ZAI zai ) const
 {
+	if (zai.A()<0 || zai.Z()<0) return 0; // If isotopes -1, -2, -3 return 0
+
 	map<ZAI,double>::const_iterator  MassIT = fZAIMass.find( ZAI(zai.Z(), zai.A(), 0) );
 
 	if(MassIT == fZAIMass.end())
