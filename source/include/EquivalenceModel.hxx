@@ -118,6 +118,9 @@ class EquivalenceModel : public CLASSObject
     	void SetModelParameter(string sMP, double dMP)  { fModelParameter[sMP] = dMP; }   //!< Set Model Parameters precised in NFO file
     	map<string, double> GetModelParameter()  { return fModelParameter; }   //!< Get Model Parameters precised in NFO file
 
+    void SetNonZaiTMVAVariable(string snZP, double dnZP);    //!< Set NonZaiTMVAVariables
+	vector< pair<double, string> > GetNonZaiTMVAVariables()  { return fListOfNonZaiTMVAVariables; }   //!< Get NonZaiTMVAVariables
+
 	void SetMaxIterration(int val)	{ fMaxIterration = val; }	//!< Max iteration in build fuel algorithm
 	void SetTargetParameterStDev(double TPSD){fTargetParameterStDev = TPSD;} //!< Set the precision on Target Parameter
 	void SetStreamListEqMMassFractionMax(string keyword, double value){fStreamListEqMMassFractionMax[keyword] = value;}
@@ -179,6 +182,14 @@ class EquivalenceModel : public CLASSObject
 	 \param line : line suppossed to contain the Target Parameter information starts with "k_targetparameter" keyword
 	 */
 	void ReadTargetParameter(const string &line);
+	//}
+
+	//{
+	/// ReadNonZaiTMVAVariables : read the NonZai variables for the predictor (ex : Nbatch, Specific power)
+	/*!
+	 \param line : line suppossed to contain the NonZai variables for TMVA starts with "k_nonZAIforTMVA" keyword
+	 */
+	void ReadNonZaiTMVAVariables(const string &line);
 	//}
 
 	//{
@@ -258,7 +269,8 @@ class EquivalenceModel : public CLASSObject
 	string fBuffer ; 									//!< Name of material used as buffer in fuel 
 
 	map<string, double> fModelParameter ; 					///< Map of equivalence model parameter 
- 
+
+ 	vector< pair<double, string> > fListOfNonZaiTMVAVariables ; 					///!<  List of TMVA input variable names that are not ZAIs
  	map<ZAI,string> fMapOfTMVAVariableNames;				//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 
 	double 	fTargetParameterStDev;							//!< Precision on target parameter calculation 
