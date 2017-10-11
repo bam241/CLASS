@@ -177,7 +177,7 @@ TTree* EquivalenceModel::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 void EquivalenceModel::CheckTargetParameterConsistency(map < int , string > StreamListPriority, map < string , double >  TargetParameterMin, map < string , double > TargetParameterMax)
 {
 	map < int , string >::iterator it_i_s;
-	double TargetParameterUp 		= -60.0; //to be sure BUMin is > to BUmax even if BUmin is zero
+	double TargetParameterUp 		= -1.0; //to be sure BUMin is > to BUmax even if BUmin is zero
 	double TargetParameterDown 		= 0.0;
 
     int IntegerPart         = floor( Lambda_tot );
