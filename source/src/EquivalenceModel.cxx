@@ -137,7 +137,7 @@ TTree* EquivalenceModel::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 	map<ZAI ,string >::iterator it_ZAI_s;
 	int j = 0;
 
-	for( j=0; j<fListOfNonZaiTMVAVariables.size(); j++) {
+	for( j = 0; j<fListOfNonZaiTMVAVariables.size(); j++) {
 		InputTree->Branch( (fListOfNonZaiTMVAVariables[j].second).c_str(),
  &InputTMVA[j], (fListOfNonZaiTMVAVariables[j].second + "/F").c_str());
 	}
@@ -159,7 +159,7 @@ TTree* EquivalenceModel::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 	
 	j = 0;
 
-	for( j=0; j<fListOfNonZaiTMVAVariables.size(); j++) {
+	for( j = 0; j<fListOfNonZaiTMVAVariables.size(); j++) {
 		InputTMVA[j] =fListOfNonZaiTMVAVariables[j].first;
 	}	
 	for( it_ZAI_s = fMapOfTMVAVariableNames.begin() ; it_ZAI_s != fMapOfTMVAVariableNames.end() ; it_ZAI_s++)
