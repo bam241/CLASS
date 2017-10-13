@@ -6,8 +6,7 @@
  \brief Header file for XSM_SFR class.
  
  
- @authors BaM
- @authors BLG
+ @authors Marc
  @version 1.0
  */
 #include <string>

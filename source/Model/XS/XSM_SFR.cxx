@@ -212,40 +212,43 @@ void XSM_SFR::GetMLPWeightFiles()
 //________________________________________________________________________
 void XSM_SFR::ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction)
 {
-	Z = -1;
-	A = -1;
-	I = -1;
-	Reaction = -1;
+	int tempZ = -1;
+	int tempA = -1;
+	int tempI = -1;
+	int tempReaction = -1;
 	
 	size_t found = Filename.find("XS");
-	
 	string NameJOB;
 	NameJOB = Filename.substr(found);
 	int pos = 0;
 	
 	StringLine::NextWord(NameJOB, pos, '_');
-	
-	Z = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
-	A = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
-	I = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
-	
+	tempZ = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
+	tempA = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
+	tempI = atof( (StringLine::NextWord(NameJOB,pos,'_') ).c_str() );
 	string  sReaction = (StringLine::NextWord(NameJOB,pos,'_') ).c_str() ;
 	size_t foundext = sReaction.find(".weights.xml");
 	sReaction = sReaction.substr(0,foundext);
 	
 	if(sReaction == "fis")
-		Reaction = 0;
+		tempReaction = 0;
 	if(sReaction == "cap")
-		Reaction = 1;
+		tempReaction = 1;
 	if(sReaction == "n2n")
-		Reaction = 2;
+		tempReaction = 2;
 	
-	if(Z<= 0 || A<= 0 || I<0 || Reaction == -1)
+	if(tempZ<= 0 || tempA<= 0 || tempI<0 || tempReaction == -1)
 	{
 		ERROR << " wrong TMVA weight format " << endl;
 		exit(0);
 	}
-	
+	else{
+		Z = tempZ;
+		A = tempA;
+		I = tempI;
+		Reaction = tempReaction;
+	}
+
 }
 //________________________________________________________________________
 TTree* XSM_SFR::CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep)
