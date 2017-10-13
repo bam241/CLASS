@@ -293,7 +293,7 @@ TTree* XSM_SFR::CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep)
 		else if(ZAIname=="U"){
 			Z = 92;
 		}
-		if(Z<= 0 || A<= 0)
+		if((Z<= 0 || A<= 0 )&& fTMVAFixedVariable[j]==false)
 		{
 			ERROR << " wrong TMVA weight format " << endl;
 			exit(0);
