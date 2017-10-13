@@ -1,7 +1,5 @@
-
 #ifndef _XSM_SFR_HXX
 #define _XSM_SFR_HXX
-
 
 /*!
  \file
@@ -12,14 +10,15 @@
  @authors BLG
  @version 1.0
  */
-#include "XSModel.hxx"
-#include "TTree.h"
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <vector>
 
+#include "TTree.h"
+
+#include "XSModel.hxx"
 
 typedef long long int cSecond;
 using namespace std;
@@ -37,7 +36,7 @@ typedef void (XSM_SFR::*XS_SFR_DMthPtr)( const string & ) ;
  This is the class to predict cross sections with a
  set of Multi Layer Perceptrons (MLP)
  
- @authors BLG
+ @authors Marc
  @version 1.0
  */
 //________________________________________________________________________
@@ -116,33 +115,22 @@ class XSM_SFR : public XSModel
 
 	void SetFixedVariablesValues(map<string,double> FixedParameters);
 	
-	
 	EvolutionData GetCrossSections(IsotopicVector IV,double t = 0);	//!< Return calculated cross section by the MLP regression
-	
 	
 	private :
 	
 	void GetMLPWeightFiles();				//!< Find all .xml file in TMVA_Weight_Directory
 	EvolutionData GetCrossSectionsStep(IsotopicVector IV);	//!< Return calculated cross section by the MLP regression when fIsTimeStep == true
 	EvolutionData GetCrossSectionsTime(IsotopicVector IV);	//!< Return calculated cross section by the MLP regression when fIsTimeStep == false
-	
 	void ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction) ;				//!<  Select the reaction according to the weight file name
 	void ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &Reaction, int &TimeStep);; 	//!<  Select the reaction according to the weight file name
-	
-	
-	
 	double ExecuteTMVA(string WeightFile, TTree* InputTree);			//!<Execute the MLP according to the input tree created
 	TTree* CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep = 0);	//!<Create input tmva tree to be read by ExecuteTMVA
 	
-	
 	vector<double> 	fMLP_Time;	//!<  Time vector of the data base
 	vector<string> 	fWeightFiles;	//!<  All the weight file contains in fTMVAWeightFolder
-	
 	string fTMVAWeightFolder;	//!<  folder containing all the weight file
-	
-	
 	bool fIsStepTime;		//!<  true if one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
-	
 	vector<string> fTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 	vector<bool> fTMVAFixedVariable;//!< List of value for TMVA that have to be used for all 
 	vector<double> fTMVAFixedVariableValues;//!< List of value for TMVA that have to be used for all 
