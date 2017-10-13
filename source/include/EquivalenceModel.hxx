@@ -115,7 +115,7 @@ public :
     	void SetModelParameter(string sMP, double dMP)  { fModelParameter[sMP] = dMP; }   //!< Set Model Parameters precised in NFO file
     	map<string, double> GetModelParameter()  { return fModelParameter; }   //!< Get Model Parameters precised in NFO file
 
-    void SetNonZaiTMVAVariable(string snZP, double dnZP);    //!< Set NonZaiTMVAVariables
+	void SetNonZaiTMVAVariable(string snZP, double dnZP);    //!< Set NonZaiTMVAVariables
 	vector< pair<double, string> > GetNonZaiTMVAVariables()  { return fListOfNonZaiTMVAVariables; }   //!< Get NonZaiTMVAVariables
 
 	void SetMaxIterration(int val)	{ fMaxIterration = val; }	//!< Max iteration in build fuel algorithm

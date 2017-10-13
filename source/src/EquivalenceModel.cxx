@@ -138,7 +138,8 @@ TTree* EquivalenceModel::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 	int j = 0;
 
 	for( j=0; j<fListOfNonZaiTMVAVariables.size(); j++) {
-		InputTree->Branch( (fListOfNonZaiTMVAVariables[j].second).c_str(), &InputTMVA[j], (fListOfNonZaiTMVAVariables[j].second + "/F").c_str());
+		InputTree->Branch( (fListOfNonZaiTMVAVariables[j].second).c_str(),
+ &InputTMVA[j], (fListOfNonZaiTMVAVariables[j].second + "/F").c_str());
 	}
 
 	
@@ -196,10 +197,10 @@ double 	EquivalenceModel::CalculateKeffAtBOC(IsotopicVector FreshFuel)
 
 	double keff(-1);
 	double TimeOfInterest(-1);
-	CLASSReader * reader;
+	CLASSReader* reader;
 	if(fListOfNonZaiTMVAVariables.size()>0){
 		vector<string> VectorOfAllTMVAVariableNames;
-		for(unsigned int j=0;j<fListOfNonZaiTMVAVariables.size(); j++) {
+		for(unsigned int j = 0; j<fListOfNonZaiTMVAVariables.size(); j++) {
 			VectorOfAllTMVAVariableNames.push_back(fListOfNonZaiTMVAVariables[j].second);
 		}
 		for(map<ZAI,string>::iterator it = fMapOfTMVAVariableNames.begin(); it != fMapOfTMVAVariableNames.end(); it++) {
@@ -334,7 +335,8 @@ void EquivalenceModel::LoadKeyword()
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_buffer", 			& EquivalenceModel::ReadBuffer)	 	 	 );	
 	if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_modelparameter", 		& EquivalenceModel::ReadModelParameter) 	 	 );	
 	if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_targetparameterstdev", 	& EquivalenceModel::ReadTargetParameterStDev) 	 );	
-	if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_nonZAIforTMVA", 	& EquivalenceModel::ReadNonZaiTMVAVariables) 	 );	
+	if (fUseTMVAPredictor)
+		fKeyword.insert( pair<string, EQM_MthPtr>( "k_nonZAIforTMVA", 	& EquivalenceModel::ReadNonZaiTMVAVariables) 	 );	
 
 	DBGL
 }
