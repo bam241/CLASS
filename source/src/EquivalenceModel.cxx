@@ -610,8 +610,8 @@ void EquivalenceModel::SetNonZaiTMVAVariable(string snZP, double dnZP)
 	DBGL
 
 	for(unsigned int j=0;j<fListOfNonZaiTMVAVariables.size();j++){
-		if(fListOfNonZaiTMVAVariables[j].first==snZP){
-			fListOfNonZaiTMVAVariables[j].second=dnZP;
+		if(fListOfNonZaiTMVAVariables[j].second==snZP){
+			fListOfNonZaiTMVAVariables[j].first=dnZP;
 			return;
 		}
 	}
