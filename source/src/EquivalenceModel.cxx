@@ -752,29 +752,34 @@ TTree* EquivalenceModel::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 void EquivalenceModel::CheckTargetParameterConsistency(map < int , string > StreamListPriority, map < string , double >  TargetParameterMin, map < string , double > TargetParameterMax)
 {
 	map < int , string >::iterator it_i_s;
-	double TargetParameterUp 		= -60.0; //to be sure BUMin is > to BUmax even if BUmin is zero
-	double TargetParameterDown 		= 0.0;
 
 	//Loop on priority order to check if target parameter increases monotously with the material mass
 	for( it_i_s = StreamListPriority.begin();  it_i_s != StreamListPriority.end(); it_i_s++)
 	{	
-                      if(TargetParameterMin.find((*it_i_s).second) == TargetParameterMin.end())
-                      {
-                            break; //if material is not in map, break the loop
-                      }
-                      TargetParameterDown = TargetParameterMin[(*it_i_s).second];
-		if (TargetParameterDown < TargetParameterUp )
+		double TargetParameterUp 		= -1.0; //to be sure BUMin is > to BUmax even if BUmin is zero
+		double TargetParameterDown 		= 0.0;
+
+		if(TargetParameterMin.find((*it_i_s).second) == TargetParameterMin.end())
 		{
-			ERROR<< "Target parameter evolution as a function of material mass is not monotonous." <<endl;
-                                  ERROR<< "Check the evolution..." <<endl;
-   			exit(1);			
+		     break; //if material is not in map, break the loop
+		}
+		TargetParameterDown = TargetParameterMin[(*it_i_s).second];
+
+		if (TargetParameterDown < 0.0 )
+		{
+			ERROR<< "Target parameter evolution should always be positive." <<endl;
+			ERROR<< "TargetParameterDown = "<< TargetParameterDown<<" is negative "<<endl;
+			ERROR<< "Check the evolution..." <<endl;
+			exit(1);
 		}	
 		TargetParameterUp 	= TargetParameterMax[(*it_i_s).second];
+
 		if (TargetParameterDown > TargetParameterUp )
 		{			
 			ERROR<< "Target parameter evolution as a function of material mass is not monotonous." <<endl;
+			ERROR<< "TargetParameterDown = "<< TargetParameterDown<<" is greater than  TargetParameterUp = "<< TargetParameterUp<<endl;
 			ERROR<< "Check the evolution..." <<endl;
-			exit(1);			
+			exit(1);
 		}
  	}
 }
