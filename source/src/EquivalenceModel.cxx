@@ -701,8 +701,6 @@ TTree* EquivalenceModel::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 	TTree*   InputTree = new TTree(fOutput.c_str(), fOutput.c_str());
 	
 	vector<float> 	InputTMVA;
-	for(int i = 0 ; i< (int)fListOfNonZaiTMVAVariables.size() ; i++)
-		InputTMVA.push_back(0);
 	for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
 		InputTMVA.push_back(0);
 	
@@ -711,11 +709,6 @@ TTree* EquivalenceModel::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 	IsotopicVector IVInputTMVA;
 	map<ZAI ,string >::iterator it_ZAI_s;
 	int j = 0;
-
-	for( j=0; j<fListOfNonZaiTMVAVariables.size(); j++) {
-		InputTree->Branch( (fListOfNonZaiTMVAVariables[j].second).c_str(), &InputTMVA[j], (fListOfNonZaiTMVAVariables[j].second + "/F").c_str());
-	}
-
 	
 	for( it_ZAI_s = fMapOfTMVAVariableNames.begin()  ; it_ZAI_s != fMapOfTMVAVariableNames.end() ; it_ZAI_s++)
 	{
@@ -732,10 +725,7 @@ TTree* EquivalenceModel::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double
 	IVAccordingToUserInfoFile 			= IVAccordingToUserInfoFile/Ntot;
 	
 	j = 0;
-
-	for( j=0; j<fListOfNonZaiTMVAVariables.size(); j++) {
-		InputTMVA[j] =fListOfNonZaiTMVAVariables[j].first;
-	}	
+	
 	for( it_ZAI_s = fMapOfTMVAVariableNames.begin() ; it_ZAI_s != fMapOfTMVAVariableNames.end() ; it_ZAI_s++)
 	{
 		InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it_ZAI_s).first ) ;
@@ -888,35 +878,13 @@ double EquivalenceModel::CalculateBurnUpMax(IsotopicVector TheFuel, map<string, 
 //________________________________________________________________________
 double 	EquivalenceModel::CalculateKeffAtBOC(IsotopicVector FreshFuel)
 { 
+	CLASSReader * reader = new CLASSReader( fMapOfTMVAVariableNames );
+	reader->BookMVA( "MLP method" , fTMVAXMLFilePath );
 
-	double keff(-1);
-	double TimeOfInterest(-1);
-	CLASSReader * reader;
-	if(fListOfNonZaiTMVAVariables.size()>0){
-		vector<string> VectorOfAllTMVAVariableNames;
-		for(unsigned int j=0;j<fListOfNonZaiTMVAVariables.size(); j++) {
-			VectorOfAllTMVAVariableNames.push_back(fListOfNonZaiTMVAVariables[j].second);
-		}
-		for(map<ZAI,string>::iterator it = fMapOfTMVAVariableNames.begin(); it != fMapOfTMVAVariableNames.end(); it++) {
-			VectorOfAllTMVAVariableNames.push_back(it->second);
-		}
-		reader = new CLASSReader( VectorOfAllTMVAVariableNames );
-		reader->AddVariable("Time");
-
-		reader->BookMVA( "MLP method" , fTMVAXMLFilePath );
-
-		TimeOfInterest=0;//0 because BOC
-	}
-	else{
-		reader = new CLASSReader( fMapOfTMVAVariableNames );
-
-		reader->BookMVA( "MLP method" , fTMVAXMLFilePath );
-		TimeOfInterest=-1;
-	}
-	TTree* InputTree = CreateTMVAInputTree(FreshFuel,TimeOfInterest) ;
+	TTree* InputTree = CreateTMVAInputTree(FreshFuel,-1) ; 
 	reader->SetInputData( InputTree );
 
-	keff =  reader->EvaluateRegression( "MLP method" )[0];
+	double keff =  reader->EvaluateRegression( "MLP method" )[0];
 
 	delete InputTree;
 
@@ -1029,7 +997,6 @@ void EquivalenceModel::LoadKeyword()
 	fKeyword.insert( pair<string, EQM_MthPtr>( "k_buffer", 			& EquivalenceModel::ReadBuffer)	 	 	 );	
 	if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_modelparameter", 		& EquivalenceModel::ReadModelParameter) 	 	 );	
 	if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_targetparameterstdev", 	& EquivalenceModel::ReadTargetParameterStDev) 	 );	
-	if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_nonZAIforTMVA", 	& EquivalenceModel::ReadNonZaiTMVAVariables) 	 );	
 
 	DBGL
 }
@@ -1278,40 +1245,7 @@ void EquivalenceModel::ReadModelParameter(const string &line)
 	
 	DBGL	
 }
-//________________________________________________________________________
-void EquivalenceModel::ReadNonZaiTMVAVariables(const string &line)
-{
-	DBGL
-	
-	int pos = 0;
-	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_nonZAIforTMVA" )	// Check the keyword
-	{
-		ERROR << " Bad keyword : \"k_nonZAIforTMVA\" not found !" << endl;
-		exit(1);
-	}
-		
-	keyword = StringLine::NextWord(line, pos, ' ');
 
-	fListOfNonZaiTMVAVariables.push_back(make_pair(-1.0,keyword));
-	
-	DBGL	
-}
-//________________________________________________________________________
-void EquivalenceModel::SetNonZaiTMVAVariable(string snZP, double dnZP)
-{
-	DBGL
-
-	for(unsigned int j=0;j<fListOfNonZaiTMVAVariables.size();j++){
-		if(fListOfNonZaiTMVAVariables[j].first==snZP){
-			fListOfNonZaiTMVAVariables[j].second=dnZP;
-			return;
-		}
-	}
-	fListOfNonZaiTMVAVariables.push_back(make_pair(dnZP,snZP));
-	
-	DBGL	
-}
 //________________________________________________________________________
 void EquivalenceModel::ReadTargetParameterStDev(const string &line)
 {
