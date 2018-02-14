@@ -16,11 +16,11 @@ ELSE()
 ENDIF()
 # Find ROOT
 # root is required
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -pthread -stdlib=libc++ -std=c++1z -m64  -stdlib=libc++ -std=gnu++11 -I/opt/local/libexec/root6/include/root")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
-FIND_PACKAGE(ROOT REQUIRED COMPONENTS Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread pthread m dl TMVA)
+FIND_PACKAGE(ROOT REQUIRED COMPONENTS TMVA)
 MESSAGE("--    ROOT Root: ${ROOTSYS}")
 MESSAGE("--    ROOT Include directory: ${ROOT_INCLUDE_DIR}")
 MESSAGE("--    ROOT Library directories: ${ROOT_LIBRARY_DIRS}")
