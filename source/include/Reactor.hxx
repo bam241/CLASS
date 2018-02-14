@@ -17,9 +17,7 @@
 
 using namespace std;
 
-
 class CLASSBackEnd;
-class EvolutionData;
 class FabricationPlant;
 class Storage;
 class CLASSLogger;
@@ -60,7 +58,7 @@ class Reactor : public CLASSFacility
 	 */
 	Reactor(CLASSLogger* log);
 	//}
-	
+#ifndef __ROOTCLING__	
 	//{
 	/// Special Constructor for reprocessed fuel using cycletime and Burn-Up.
 	/*!
@@ -172,7 +170,7 @@ class Reactor : public CLASSFacility
 		cSecond creationtime, cSecond lifetime,
 		cSecond cycletime, double HMMass, double BurnUp);
 	//}
-	
+#endif
 	~Reactor();	///< Normal Destructor
 	
 	//@}
@@ -198,17 +196,22 @@ class Reactor : public CLASSFacility
 	
 	bool	IsFuelFixed()	const	{ return fFixedFuel; }		//!< True if using fixed fuel, False otherwise
 	double	GetHeavyMetalMass() const { return fHeavyMetalMass; }	//!< Return the HeavyMetal Mass in the Core at the begining of the cycle
-    double  GetBurnUp() const   { return fBurnUp; }     //!< Return the Burn Up of the Fuel at the end of the cycle
-	double	GetCapacityFactor()	const	{ return fCapacityFactor; }		//!< Return the capacity factor of the reactor
-	double	GetPower()	const	{ return fPower; } 		//!< Return the cycle time of the Reactor
+    double  GetBurnUp() const   { return fBurnUp; }    			 //!< Return the Burn Up of the Fuel at the end of the cycle
+	double	GetCapacityFactor()	const	{ return fCapacityFactor; }	//!< Return the capacity factor of the reactor
+	double	GetPower()	const	{ return fPower; } 			//!< Return the cycle time of the Reactor
 	
-#ifndef __CINT__
+	map<cSecond, double> GetPowerEvolution(){return fPowerEvolution;} //!<Get Reactor Power Evolution
+	map<cSecond, double> GetHMMassEvolution(){return fHMMassEvolution;} //!<Get Reactor HMMassEvolution
+	map<cSecond, double> GetSchedulePowerEvolution(){return fSchedulePowerEvolution;} //!<Get Reactor theoritical Power evolution following Scheduler
+	map<cSecond, double> GetScheduleHMMassEvolution(){return fScheduleHMMassEvolution;} //!<Get Reactor theoritical HMMass Evolution following Scheduler
+
+
+#ifndef __ROOTCLING__
 	
 	EvolutionData	GetEvolutionDB()	const	{ return fEvolutionDB; }	//!< Return the Evolution database of the fuel
 	CLASSBackEnd*	GetOutBackEndFacility()	const	{ return fOutBackEndFacility; }	//!< Return the pointer to Associeted BackEnd Facility
-	FabricationPlant*	GetFabricationPlant()	const	{ return fFabricationPlant; }	//!< Return the pointer to the FabricationPlant
-		
-	ReactorScheduler*	GetScheduler()		const	{ return fReactorScheduler; }	///< return the ReactorScheduler
+	FabricationPlant*	GetFabricationPlant()	const	{ return fFabricationPlant; }			//!< Return the pointer to the FabricationPlant
+	ReactorScheduler*	GetScheduler()		const	{ return fReactorScheduler; }			///< return the ReactorScheduler
 	
 #endif
 	//@}
@@ -223,11 +226,10 @@ class Reactor : public CLASSFacility
 	 */
 	//@{
 	
-	void SetReactorScheduler(ReactorScheduler* reactorscheduler)	{ fReactorScheduler = reactorscheduler; }	//!< Set the ReactorScheduler
-	void SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}	//!< Set the heavy metal mass in the core at the begining of the cycle
-	void SetCycleTime(double cycletime);				//!< Set the cycle time (Power fixed)
-    void SetPower(double Power);                    //!< Set the power (burnup cte)
-	void SetBurnUp(double BU);					    //!< Set the burnUp reach at end of cycle (Power cte)
+	void SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}							//!< Set the heavy metal mass in the core at the begining of the cycle
+	void SetCycleTime(double cycletime);											//!< Set the cycle time (Power fixed)
+  	void SetPower(double Power);                   						 				//!< Set the power (burnup cte)
+	void SetBurnUp(double BU);					   							 //!< Set the burnUp reach at end of cycle (Power cte)
 	
 	void SetIVReactor(IsotopicVector isotopicvector) { fInsideIV = isotopicvector; }	//!< Set the IV inside the Reactor core
 	void SetIVBeginCycle(IsotopicVector isotopicvector) { fIVBeginCycle = isotopicvector;}	//!< Set the IV at the beginging of the Reactor cycle
@@ -237,12 +239,14 @@ class Reactor : public CLASSFacility
 	
 	
 	
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 	
-	void	SetOutBackEndFacility(CLASSBackEnd* pool)	{ fOutBackEndFacility = pool; }	//!< Return the pointer to OutBackEnd Facility
-	void	SetStorage(Storage* storage)			{ fStorage = storage; fIsStorage = true;}	//!< Set the pointer to the Storage
-	void	SetFabricationPlant(FabricationPlant* FP)	{ fFabricationPlant = FP;}	//!< Set the Pointer to the FabricationPlant
-	void	SetEvolutionDB(EvolutionData evolutionDB);			//!< Set the pointer to the DB evolution of the Reactor
+	void SetReactorScheduler(ReactorScheduler* reactorscheduler)	{ fReactorScheduler = reactorscheduler; }	//!< Set the ReactorScheduler
+	void	SetOutBackEndFacility(CLASSBackEnd* pool)	{ fOutBackEndFacility = pool; }				//!< Return the pointer to OutBackEnd Facility
+	void	SetStorage(Storage* storage)			{ fStorage = storage; fIsStorage = true;}			//!< Set the pointer to the Storage
+	void	SetFabricationPlant(FabricationPlant* FP)	{ fFabricationPlant = FP;}					//!< Set the Pointer to the FabricationPlant
+	void	SetEvolutionDB(EvolutionData evolutionDB);									//!< Set the pointer to the DB evolution of the Reactor
+
 #endif
 	
 	using CLASSFacility::SetName;
@@ -264,7 +268,7 @@ class Reactor : public CLASSFacility
 	void Dump();								//!< Write modification (IV In/Out, filling the TF...)
 	void SetNewFuel(EvolutionData ivdb);					//!< Change the Evolutive DB of the Reactor
 	void CheckListConsistency(PhysicsModels* fueltypeDB, FabricationPlant* fabricationplant); //!< Check if FP/EqM lists are identical
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 
 	void AddScheduleEntry(cSecond time,  ReactorModel* Model, double BurnUp, double Power, double HMMass)	//!< Add A new schedule entry 
 	{ 	if(Model->GetPhysicsModels() && !fFabricationPlant )
@@ -302,8 +306,8 @@ class Reactor : public CLASSFacility
 	IsotopicVector	fIVInCycle;		///< IVBegin add at the beginning of the cycle
 	IsotopicVector	fIVOutCycle;		///< IV wich get out at the end of a cycle
 	
-#ifndef __CINT__
-	EvolutionData	fEvolutionDB;		//!< Pointer to the actual evolution DataBase
+#ifndef __ROOTCLING__
+	EvolutionData	fEvolutionDB;			//!< Pointer to the actual evolution DataBase
 	
 	CLASSBackEnd*	fOutBackEndFacility;	//!< Pointer to the BackEnd Facility which collect the spend fuel
 		

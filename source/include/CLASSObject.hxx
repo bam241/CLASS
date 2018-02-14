@@ -79,7 +79,7 @@ public :
 	//@{
 
 
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 	void		SetLog(CLASSLogger* log)	{ fLog = log;}		//!< Set the CLASSLogger
 	CLASSLogger*	GetLog()		{ return fLog; }		//!< Return the Pointer to the Log
 #endif
@@ -88,7 +88,7 @@ public :
 	using TNamed::SetName;
 	using TNamed::GetName;
 protected :
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 	CLASSLogger*	fLog;			//!< Pointer to the Log
 #endif
 

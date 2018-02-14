@@ -99,23 +99,23 @@ public :
 	 \name Set Method
 	 */
 	//@{
-
+#ifndef __ROOTCLING__
 	void SetDecayDataBank(DecayDataBank* decayDB) {fDecayDataBase = decayDB;}	//! Set the Decay DataBank
-
+	void SetSubstitutionMaterialFromIV(string keyword, IsotopicVector SubstitutionIV) 						//!< If the construction fails : it creates a substitution material according to the IV defined by the user
+		{fSubstitutionMaterialFromIV[keyword] = true; fSubstitutionIV[keyword]= SubstitutionIV;} 	
+#endif
     	void SetFiFo(bool bval = true)	{ if(bval) fStorageManagement=kpFiFo; else fStorageManagement=kpLiFo ;}	//!< Set the chronological priority (true for chronological, false instead).Equivalent to SetStorageManagement(kpFiFo) or SetStorageManagement(kpLiFo)
     	void SetStorageManagement(StorageManagement SM){fStorageManagement = SM ;} //!<  The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
 
-	void SetSubstitutionMaterialFromIV(string keyword, IsotopicVector SubstitutionIV) 						//!< If the construction fails : it creates a substitution material according to the IV defined by the user
-		{fSubstitutionMaterialFromIV[keyword] = true; fSubstitutionIV[keyword]= SubstitutionIV;} 	
 	
 	void SetSubstitutionFuel(EvolutionData fuel);											//!< To use a substitution fuel if the fabrication fail (not enough material in stock)
 
     	void SetSeparationManagement(bool bval = true)	{ fIsSeparationManagement = bval;}				//!< Set the separation managmeent for the fabrication plant
 
+#ifndef __ROOTCLING__
 	void AddReactor(int reactorid, double creationtime)
 		{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }		//!< Add a new reactor to be filled with the fresh fuel build by the FabricationPlant
 
-#ifndef __CINT__
 	void SetReUsableStorage(Storage* store) { fReUsable = store; fIsReusable = true;} 					//!< Set the Storage where all the separated matetial not used in the fabrication process will be sent. (if not present it goes to WASTE)
 #endif
 
@@ -123,7 +123,7 @@ public :
 
 	//@}
 
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 		
 	void AddStorage(string keyword, Storage* Stock, double MassFractionMin = 0, double MassFractionMax = 1., int Priority = 0) ;	//!< Fill the storage vector for a list
 	void AddInfiniteStorage(string keyword, double MassFractionMin = 0, double MassFractionMax = 1., int Priority = 0);		//!< Creates an infinite stock of this material according to the list defined in the EqM
@@ -142,7 +142,7 @@ public :
 	 */
 	//@{
 	
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 	map < string , vector <Storage*> > GetAllStorage() {return fStorage;}			//!< Return the map containing all the storage vectors (useful in CLASS Reactor to check list consistency)
 	
 	vector<Storage*> GetStorage(string keyword) { return fStorage[keyword]; }		//!< Return the Pointer to Storage associated to a StreamList 
@@ -151,7 +151,6 @@ public :
 
     StorageManagement GetStorageManagement(){return fStorageManagement;} ///<  The storage management : either kpFiFo, kpLiFo , kpMix or kpRand
 
-#endif
 	IsotopicVector GetDecay(IsotopicVector isotopicvector, cSecond t);				//!< Get IsotopicVector Decay at time t
 
 	map<int, IsotopicVector >	GetReactorFuturIncome() const
@@ -160,6 +159,7 @@ public :
 
 	map < string, double> GetStreamListFPMassFractionMax(){return fStreamListFPMassFractionMax;} //!< Get the map of allowed max fractions
 	map < string, double> GetStreamListFPMassFractionMin(){return fStreamListFPMassFractionMin;} //!< Get the map of allowed min fractions
+#endif
 
 	//@}
 
@@ -173,6 +173,7 @@ public :
 	IsotopicVector GetSeparationEfficiencyAt(cSecond time);
 
 
+#ifndef __ROOTCLING__
 	void Evolution(cSecond t);									//!< Perform the FabricationPlant evolution
 	void DumpStock(map <string , vector<double> > LambdaArray);				//!< Update the Stock status after building process
 	void TakeReactorFuel(int ReactorId) ;								//!< Remove the fuel of reactor ReactorId from stock
@@ -181,9 +182,7 @@ public :
 	IsotopicVector BuildFuelFromEqModel(map <string , vector<double> > LambdaArray); 	//!<Build the fresh fuel for the reactor according the results of the EquivalenceModel (@see  EquivalenceModel)
 	void BuildArray(int ReactorId, cSecond ReactorLoadingTime);									//!< virtualy extract fissile nuclei from Storage according EquivalenceModel fStreamList and make it virtually decay FabricationTime
 
-#ifndef __CINT__
 	void BuildFuelForReactor(int ReactorId, cSecond t);			//!< Build a fuel for the reactor ReactorId
-#endif
 
 	void SortArray(); //!< Sort IsotopicVector array according priority preferences (given by key in YourFabPlant->SetStorageManagement(key);)
 
@@ -192,6 +191,7 @@ public :
 	void SortMix(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray);
 	void SortRandom(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray);
 
+#endif
 	//@}
 
 
@@ -208,7 +208,7 @@ protected:
 
 	map<int, cSecond >	fReactorNextStep;	///< Next time step to build a new fuel
 
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 	map< int,EvolutionData >	fReactorFuturDB; ///< List of the futur EvolutionData use in the reactor
 #endif
 	map< int,IsotopicVector >	fReactorFuturIV; ///< List of the futur fuel IsotopicVector used in the reactor
@@ -218,6 +218,7 @@ protected:
 
     bool	fSubstitutionFuel;										//!< True if a substitution fuel as been set
 
+#ifndef __ROOTCLING__
 	void	FabricationPlantEvolution(cSecond t);							//!< Deal the FabricationPlant evolution
 	void 	ResetArrays();										//!< Empty Arrays
 
@@ -228,7 +229,6 @@ protected:
 	map < string , bool>			fStreamListFPIsBuffer;					///< Map that contains lists of stream according to the EqModel saying if fuel buffer
 
 
-#ifndef __CINT__
 
 	map < string , vector <Storage*> >		fStorage;					//!< Pointer to the Storages defined for each list
 	map < string , vector <IsotopicVector> >  	fStreamArray;					//!< The vector of isotopicVector of each material and each stock

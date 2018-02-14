@@ -135,8 +135,9 @@ public :
 	cSecond		GetCycleTime()		const	{ return fCycleTime; } 		//!< Return the cycle time of the Facility
 	cSecond 	GetCreationTime()	const	{ return fCreationTime; }	//!< Return the creation time of the Facility
 	cSecond 	GetLifeTime()		const	{ return fLifeTime; }		//!< Return the life time of the Facility
+#ifndef __ROOTCLING__
 	Scenario*	GetParc()			{ return fParc; }		//!< return the pointer to the Park
-
+#endif
 
 	IsotopicVector GetCumulativeIVIn() { return fCumulativeIVIn;}			//!< return the cumulative sum of all incoming IV
 	IsotopicVector GetCumulativeIVOut() { return fCumulativeIVOut;}			//!< return the cumulative sum of all outcoming IV
@@ -148,8 +149,10 @@ public :
 	 */
 	//@{
 	void	SetId(int id)			{ fId = id; }				//!< Set The Facility Parc'Id
+#ifndef __ROOTCLING__
 	void	SetParc(Scenario* parc)		{ fParc = parc; }			//!< Set the Pointer to the Parc
-	void	SetFacilityType(int type)	{ fFacilityType = type; }		//!< Set the facility type :
+#endif
+    void	SetFacilityType(int type)	{ fFacilityType = type; }		//!< Set the facility type :
 											/// \li 2 reactor Studown
 											/// \li 4 start/End of reactor cycle,
 											/// \li 8 end of Cooling,
@@ -204,9 +207,9 @@ private :
 						/// \li 8 Pool,
 						/// \li 16 FabricationPlant.
 
-
+#ifndef __ROOTCLING__
 	Scenario*	fParc;			//!< Pointer to the main Scenario
-
+#endif
 	cSecond		fCreationTime;		///< CLASS Universal Time of Creation [s]
 	cSecond		fLifeTime;		///< Time of life Of the Reactor (operating's duration) [s]
 
