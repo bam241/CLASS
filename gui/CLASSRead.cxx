@@ -1554,6 +1554,18 @@ void CLASSRead::PlotTTreePower(vector<CLASSPlotElement> toplot, string opt)
 //________________________________________________________________________
 //________________________________________________________________________
 //________________________________________________________________________
+string ReplaceAll(string sourcestring, const string& from, const string& to) {
+    size_t start_pos = 0;
+    while((start_pos = sourcestring.find(from, start_pos)) != string::npos) {
+        sourcestring.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+    }
+    return sourcestring;
+}
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
+//________________________________________________________________________
 void CLASSRead::Write(string filename, string fileformat, string PadName)
 {
 	if(fileformat ==  "ASCII")
@@ -1575,103 +1587,84 @@ void CLASSRead::ASCIIWrite(string filename, string PadName)
 
 	if ( (int)fGraphInv.size() != 0 && PadName == "c_NucleiInv")
 	{
-		double* X = fGraphInv[0]->GetX();
-		
-		outfile << "time";
-		for(int i =  0; i < fGraphInv[0]->GetN(); i++)
-			outfile << "\t" << X[i];
-		
-		outfile << endl;
-		
-		
+		// First line :: names of the data that are saved
+		outfile << "#Time";
 		if (fGraphInvSumOfSelected) {
-			
-			outfile << fGraphInvSumOfSelected->GetTitle();
-			double* Y = fGraphInvSumOfSelected->GetY();
-			for(int j =  0; j < fGraphInvSumOfSelected->GetN(); j++)
-				outfile << "\t" << Y[j];
-			outfile << endl;
+			outfile <<"\t"<< ReplaceAll(fGraphInvSumOfSelected->GetTitle()," ", "_");
 		}
-		
-		
 		for(int i = 0; i < (int)fGraphInv.size(); i++)
 		{
-			outfile << fGraphInv[i]->GetTitle();
-			double* Y = fGraphInv[i]->GetY();
-			for(int j =  0; j < fGraphInv[i]->GetN(); j++)
-				outfile << "\t" << Y[j];
-			outfile << endl;
+			outfile <<"\t"<< ReplaceAll(fGraphInv[i]->GetTitle()," ", "_");
 		}
-		
+		outfile << endl;
+		// After :: data, 1 line per time step
+		for(int t =  0; t <fGraphInv[0]->GetN(); t++)	{
+			outfile <<  fGraphInv[0]->GetX()[t];
+			if (fGraphInvSumOfSelected) {
+				outfile <<"\t"<< fGraphInvSumOfSelected->GetY()[t];
+			}
+			for(int i = 0; i < (int)fGraphInv.size(); i++)
+			{
+				outfile <<"\t"<< fGraphInv[i]->GetY()[t];
+			}
+			outfile << endl;
+		}	
 	}
 	
 	
 	if ( (int)fGraphTox.size() != 0 && PadName == "c_NucleiTox")
 	{
-		double* X = fGraphTox[0]->GetX();
-		
-		outfile << "time";
-		for(int i =  0; i < fGraphTox[0]->GetN(); i++)
-			outfile << "\t" << X[i];
-		
-		outfile << endl;
-		
-		
+		// First line :: names of the data that are saved
+		outfile << "#Time";
 		if (fGraphToxSumOfSelected) {
-			
-			outfile << fGraphToxSumOfSelected->GetTitle();
-			double* Y = fGraphToxSumOfSelected->GetY();
-			for(int j =  0; j < fGraphToxSumOfSelected->GetN(); j++)
-				outfile << "\t" << Y[j];
-			outfile << endl;
+			outfile <<"\t"<< ReplaceAll(fGraphToxSumOfSelected->GetTitle()," ", "_");
 		}
-		
-		
 		for(int i = 0; i < (int)fGraphTox.size(); i++)
 		{
-			outfile << fGraphTox[i]->GetTitle();
-			double* Y = fGraphTox[i]->GetY();
-			for(int j =  0; j < fGraphTox[i]->GetN(); j++)
-				outfile << "\t" << Y[j];
+			outfile <<"\t"<< ReplaceAll(fGraphTox[i]->GetTitle()," ", "_");
+		}
+		outfile << endl;
+		// After :: data, 1 line per time step
+		for(int t =  0; t <fGraphTox[0]->GetN(); t++)	{
+			outfile <<  fGraphTox[0]->GetX()[t];
+			if (fGraphToxSumOfSelected) {
+				outfile <<"\t"<< fGraphToxSumOfSelected->GetY()[t];
+			}
+			for(int i = 0; i < (int)fGraphTox.size(); i++)
+			{
+				outfile <<"\t"<< fGraphTox[i]->GetY()[t];
+			}
 			outfile << endl;
 		}
-		
 	}
 	
 	if ( (int)fGraphHeat.size() != 0 && PadName == "c_NucleiHeat")
 	{
-		double* X = fGraphHeat[0]->GetX();
-		
-		outfile << "time";
-		for(int i =  0; i < fGraphHeat[0]->GetN(); i++)
-			outfile << "\t" << X[i];
-		
-		outfile << endl;
-		
-		
+		// First line :: names of the data that are saved
+		outfile << "#Time";
 		if (fGraphHeatSumOfSelected) {
-			
-			outfile << fGraphHeatSumOfSelected->GetTitle();
-			double* Y = fGraphHeatSumOfSelected->GetY();
-			for(int j =  0; j < fGraphHeatSumOfSelected->GetN(); j++)
-				outfile << "\t" << Y[j];
-			outfile << endl;
+			outfile <<"\t"<<  ReplaceAll(fGraphHeatSumOfSelected->GetTitle()," ", "_");
 		}
-		
-		
 		for(int i = 0; i < (int)fGraphHeat.size(); i++)
 		{
-			outfile << fGraphHeat[i]->GetTitle();
-			double* Y = fGraphHeat[i]->GetY();
-			for(int j =  0; j < fGraphHeat[i]->GetN(); j++)
-				outfile << "\t" << Y[j];
-			outfile << endl;
+			outfile <<"\t"<<ReplaceAll(fGraphHeat[i]->GetTitle()," ", "_");
 		}
-		
+		outfile << endl;
+		// After :: data, 1 line per time step
+		for(int t =  0; t <fGraphHeat[0]->GetN(); t++)	{
+			outfile <<  fGraphHeat[0]->GetX()[t];
+			if (fGraphHeatSumOfSelected) {
+				outfile <<"\t"<< fGraphHeatSumOfSelected->GetY()[t];
+			}
+			for(int i = 0; i < (int)fGraphHeat.size(); i++)
+			{
+				outfile <<"\t"<< fGraphHeat[i]->GetY()[t];
+			}
+			outfile << endl;
+		}	
 	}
 	
 }
-
 
 
 //________________________________________________________________________
