@@ -22,7 +22,7 @@ using namespace std;
 class IsotopicVector;
 
 class XSModel;
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 typedef void (XSModel::*XSM_MthPtr)( const string & ) ;
 #endif
 
@@ -115,7 +115,7 @@ class XSModel : public CLASSObject
 	
 	map< ZAI, pair<double,double> > fZAILimits; //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
 	
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 	map<string, XSM_MthPtr> fKeyword;
 #endif
 	

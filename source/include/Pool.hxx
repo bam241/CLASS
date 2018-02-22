@@ -46,7 +46,7 @@ public :
 	//@{
 	
 	Pool();				///< Normal Constructor.
-
+#ifndef __ROOTCLING__
 	//{
 	/// Special Constructor.
 	/*!
@@ -69,7 +69,7 @@ public :
 	Pool(CLASSLogger* log, CLASSBackEnd* backend,
 			 cSecond coolingtime = 5*cYear); //!<
 	//}
-
+#endif
 
 	~Pool();	///< Normal Destructor.
 	//@}
@@ -83,12 +83,12 @@ public :
 	 \name Set Method
 	 */
 	//@{
-
+#ifndef __ROOTCLING__
 	void SetOutBackEndFacility(CLASSBackEnd* befacility)
 						{  fOutBackEndFacility = befacility;
 						   SetIsStorageType(false);
 						   fPutToWaste = false; }		//!< Set the pointer to facility at the back end of the pool
-
+#endif
 	void SetPutToWaste(bool val)		{ fPutToWaste = val; }		//!< Set true if IV goes to waste after cooling false instead
 
 	void SetIVArray(vector<IsotopicVector> ivarray);			//! not use there (does nothing)

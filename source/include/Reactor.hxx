@@ -61,6 +61,7 @@ class Reactor : public CLASSFacility
 	Reactor(CLASSLogger* log);
 	//}
 	
+#ifndef __ROOTCLING__
 	//{
 	/// Special Constructor for reprocessed fuel using cycletime and Burn-Up.
 	/*!
@@ -172,7 +173,7 @@ class Reactor : public CLASSFacility
 		cSecond creationtime, cSecond lifetime,
 		cSecond cycletime, double HMMass, double BurnUp);
 	//}
-	
+#endif	
 	~Reactor();	///< Normal Destructor
 	
 	//@}
@@ -190,25 +191,31 @@ class Reactor : public CLASSFacility
 	IsotopicVector 	GetIVReactor()		const	{ return GetInsideIV(); } 	//!< Return the IV contain in the Reactor
 	IsotopicVector	GetIVBeginCycle()	const	{ return fIVBeginCycle; }	//!< Return the Starting Cycle IV
 	//!< (Note : IVBegin != IVIn, only if using ReactorScheduler)
-	IsotopicVector	GetIVOutCycle()		const	{ return fIVOutCycle; }		//!< Return the Out Cycle IV
+	IsotopicVector	GetIVOutCycle()	const	{ return fIVOutCycle; } 	//!< Return the Out Cycle IV
 	IsotopicVector	GetIVInCycle()		const	{ return fIVInCycle; }		//!< Return the In Cycle IV
 	//!< (Note : IVIn != IVBegin, only if using ReactorScheduler)
 	
 	cSecond GetNextCycleTime(cSecond time);
 	
-	bool	IsFuelFixed()	const	{ return fFixedFuel; }		//!< True if using fixed fuel, False otherwise
+	bool	IsFuelFixed()	const	{ return fFixedFuel; }			//!< True if using fixed fuel, False otherwise
 	double	GetHeavyMetalMass() const { return fHeavyMetalMass; }	//!< Return the HeavyMetal Mass in the Core at the begining of the cycle
-    double  GetBurnUp() const   { return fBurnUp; }     //!< Return the Burn Up of the Fuel at the end of the cycle
-	double	GetCapacityFactor()	const	{ return fCapacityFactor; }		//!< Return the capacity factor of the reactor
-	double	GetPower()	const	{ return fPower; } 		//!< Return the cycle time of the Reactor
+    	double  GetBurnUp() const   { return fBurnUp; }    			 //!< Return the Burn Up of the Fuel at the end of the cycle
+	double	GetCapacityFactor()	const	{ return fCapacityFactor; }	//!< Return the capacity factor of the reactor
+	double	GetPower()	const	{ return fPower; } 			//!< Return the cycle time of the Reactor
 	
-#ifndef __CINT__
+#ifndef __ROOTCLING__
+	map<cSecond, double> GetPowerEvolution(){return fPowerEvolution;} //!<Get Reactor Power Evolution
+	map<cSecond, double> GetHMMassEvolution(){return fHMMassEvolution;} //!<Get Reactor HMMassEvolution
+	map<cSecond, double> GetSchedulePowerEvolution(){return fSchedulePowerEvolution;} //!<Get Reactor theoritical Power evolution following Scheduler
+	map<cSecond, double> GetScheduleHMMassEvolution(){return fScheduleHMMassEvolution;} //!<Get Reactor theoritical HMMass Evolution following Scheduler
+
+
 	
-	EvolutionData	GetEvolutionDB()	const	{ return fEvolutionDB; }	//!< Return the Evolution database of the fuel
+	EvolutionData	GetEvolutionDB()	const	{ return fEvolutionDB; }				//!< Return the Evolution database of the fuel
 	CLASSBackEnd*	GetOutBackEndFacility()	const	{ return fOutBackEndFacility; }	//!< Return the pointer to Associeted BackEnd Facility
-	FabricationPlant*	GetFabricationPlant()	const	{ return fFabricationPlant; }	//!< Return the pointer to the FabricationPlant
+	FabricationPlant*	GetFabricationPlant()	const	{ return fFabricationPlant; }			//!< Return the pointer to the FabricationPlant
 		
-	ReactorScheduler*	GetScheduler()		const	{ return fReactorScheduler; }	///< return the ReactorScheduler
+	ReactorScheduler*	GetScheduler()		const	{ return fReactorScheduler; }			///< return the ReactorScheduler
 	
 #endif
 	//@}
@@ -222,27 +229,28 @@ class Reactor : public CLASSFacility
 	 \name Set Method
 	 */
 	//@{
-	
+#ifndef __ROOTCLING__	
 	void SetReactorScheduler(ReactorScheduler* reactorscheduler)	{ fReactorScheduler = reactorscheduler; }	//!< Set the ReactorScheduler
-	void SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}	//!< Set the heavy metal mass in the core at the begining of the cycle
-	void SetCycleTime(double cycletime);				//!< Set the cycle time (Power fixed)
-    void SetPower(double Power);                    //!< Set the power (burnup cte)
-	void SetBurnUp(double BU);					    //!< Set the burnUp reach at end of cycle (Power cte)
+#endif
+    void SetHMMass(double Mass)		{fHeavyMetalMass = Mass;}							//!< Set the heavy metal mass in the core at the begining of the cycle
+	void SetCycleTime(double cycletime);											//!< Set the cycle time (Power fixed)
+  	void SetPower(double Power);                   						 				//!< Set the power (burnup cte)
+	void SetBurnUp(double BU);					   							 //!< Set the burnUp reach at end of cycle (Power cte)
 	
-	void SetIVReactor(IsotopicVector isotopicvector) { fInsideIV = isotopicvector; }	//!< Set the IV inside the Reactor core
-	void SetIVBeginCycle(IsotopicVector isotopicvector) { fIVBeginCycle = isotopicvector;}	//!< Set the IV at the beginging of the Reactor cycle
-	void SetIVOutCycle(IsotopicVector isotopicvector){ fIVOutCycle = isotopicvector;}	//!< Set the IV Going out at the end of the cycle
-	void SetIVInCycle(IsotopicVector isotopicvector) { fIVInCycle = isotopicvector;}	//!< Set the IV coming In at the beginning of the cycle
+	void SetIVReactor(IsotopicVector isotopicvector) { fInsideIV = isotopicvector; }					//!< Set the IV inside the Reactor core
+	void SetIVBeginCycle(IsotopicVector isotopicvector) { fIVBeginCycle = isotopicvector;}				//!< Set the IV at the beginging of the Reactor cycle
+	void SetIVOutCycle(IsotopicVector isotopicvector){ fIVOutCycle = isotopicvector;}					//!< Set the IV Going out at the end of the cycle
+	void SetIVInCycle(IsotopicVector isotopicvector) { fIVInCycle = isotopicvector;}					//!< Set the IV coming In at the beginning of the cycle
 	
 	
 	
 	
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 	
-	void	SetOutBackEndFacility(CLASSBackEnd* pool)	{ fOutBackEndFacility = pool; }	//!< Return the pointer to OutBackEnd Facility
-	void	SetStorage(Storage* storage)			{ fStorage = storage; fIsStorage = true;}	//!< Set the pointer to the Storage
-	void	SetFabricationPlant(FabricationPlant* FP)	{ fFabricationPlant = FP;}	//!< Set the Pointer to the FabricationPlant
-	void	SetEvolutionDB(EvolutionData evolutionDB);			//!< Set the pointer to the DB evolution of the Reactor
+	void	SetOutBackEndFacility(CLASSBackEnd* pool)	{ fOutBackEndFacility = pool; }				//!< Return the pointer to OutBackEnd Facility
+	void	SetStorage(Storage* storage)			{ fStorage = storage; fIsStorage = true;}			//!< Set the pointer to the Storage
+	void	SetFabricationPlant(FabricationPlant* FP)	{ fFabricationPlant = FP;}					//!< Set the Pointer to the FabricationPlant
+	void	SetEvolutionDB(EvolutionData evolutionDB);									//!< Set the pointer to the DB evolution of the Reactor
 #endif
 	
 	using CLASSFacility::SetName;
@@ -264,21 +272,33 @@ class Reactor : public CLASSFacility
 	void Dump();								//!< Write modification (IV In/Out, filling the TF...)
 	void SetNewFuel(EvolutionData ivdb);					//!< Change the Evolutive DB of the Reactor
 	void CheckListConsistency(PhysicsModels* fueltypeDB, FabricationPlant* fabricationplant); //!< Check if FP/EqM lists are identical
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 
 	void AddScheduleEntry(cSecond time,  ReactorModel* Model, double BurnUp, double Power, double HMMass)	//!< Add A new schedule entry 
 	{ 	if(Model->GetPhysicsModels() && !fFabricationPlant )
 			{ERROR<<"You must add a FabicationPlant to Reactor " <<GetName()
 		   <<"\n"<< "Use YourReactor->AddFabricationPlant(YourFP);"<<endl;exit(0);}
 		fReactorScheduler->AddEntry( time, Model, BurnUp, Power*fCapacityFactor, HMMass); 
-	}			//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
+		fSchedulePowerEvolution.insert( pair<cSecond, double>(time, Power*fCapacityFactor));
+		fScheduleHMMassEvolution.insert( pair<cSecond, double>(time, HMMass));	
+
+	}
+	//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
 	void AddScheduleEntry(cSecond time,  EvolutionData* Model, double BurnUp, double Power, double HMMass)
-	{  fReactorScheduler->AddEntry( time, new ReactorModel(Model), BurnUp, Power*fCapacityFactor, HMMass); }			//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
+	{  
+		fReactorScheduler->AddEntry( time, new ReactorModel(Model), BurnUp, Power*fCapacityFactor, HMMass); 
+		fSchedulePowerEvolution.insert( pair<cSecond, double>(time, Power*fCapacityFactor));
+		fScheduleHMMassEvolution.insert( pair<cSecond, double>(time, HMMass));	
+	}
+
+	//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
 	void AddScheduleEntry(cSecond time,  PhysicsModels* Model, double BurnUp, double Power, double HMMass)
 	{	if(!fFabricationPlant) 
 			{ERROR<<"You must add a FabicationPlant to Reactor " <<GetName()
 		   <<"\n"<< "Use YourReactor->AddFabricationPlant(YourFP);"<<endl;exit(0);}
 		fReactorScheduler->AddEntry( time, new ReactorModel(Model), BurnUp,  Power*fCapacityFactor, HMMass); 
+		fSchedulePowerEvolution.insert( pair<cSecond, double>(time, Power*fCapacityFactor));
+		fScheduleHMMassEvolution.insert( pair<cSecond, double>(time, HMMass));		
 	}			//!< Change the Model and/or BurnUp and/or Power and/or HMMass from time time
 #endif
 
@@ -288,39 +308,44 @@ class Reactor : public CLASSFacility
 	
 	protected :
 	
-	bool		fFixedFuel;		//!< true if the fuel is fixed (not reprocessed)
-	bool		fIsStorage;		//!< true if a storage has been define (to approximate the reprocessing using fixed fuel)
+	bool		fFixedFuel;			//!< true if the fuel is fixed (not reprocessed)
+	bool		fIsStorage;			//!< true if a storage has been define (to approximate the reprocessing using fixed fuel)
 	
 	//********* Internal Parameter *********//
 	
-	double 		fPower;			///< Power (in Watt)
-	double 		fElectricPower;		///< ElectrocPower (in Watt)
-	double 		fEfficiencyFactor;	///< ElectrocPower (in Watt)
-	double		fCapacityFactor;    ///< Capacity factor  [0-1]
+	double 		fPower;				///< Power (in Watt)
+	double 		fElectricPower;			///< ElectrocPower (in Watt)
+	double 		fEfficiencyFactor;		///< ElectrocPower (in Watt)
+	double		fCapacityFactor;    		///< Capacity factor  [0-1]
 
-	IsotopicVector	fIVBeginCycle;		///< Fuel IV at the beginning of a cycle
-	IsotopicVector	fIVInCycle;		///< IVBegin add at the beginning of the cycle
-	IsotopicVector	fIVOutCycle;		///< IV wich get out at the end of a cycle
+	IsotopicVector	fIVBeginCycle;			///< Fuel IV at the beginning of a cycle
+	IsotopicVector	fIVInCycle;			///< IVBegin add at the beginning of the cycle
+	IsotopicVector	fIVOutCycle;			///< IV wich get out at the end of a cycle
 	
-#ifndef __CINT__
-	EvolutionData	fEvolutionDB;		//!< Pointer to the actual evolution DataBase
+#ifndef __ROOTCLING__
+	EvolutionData	fEvolutionDB;			//!< Pointer to the actual evolution DataBase
 	
-	CLASSBackEnd*	fOutBackEndFacility;	//!< Pointer to the BackEnd Facility which collect the spend fuel
-		
-	FabricationPlant*	fFabricationPlant;		//!< Pointer to the FabricationPlant
-	
-	Storage*	fStorage;		//!< Pointer to the Stock (only for reprocessing fuel in fixed base...)
+	CLASSBackEnd* fOutBackEndFacility;	//!< Pointer to the BackEnd Facility which collect the spend fuel
 
-    ReactorScheduler*   fReactorScheduler;      //!< Pointer to the ReactorScheduler
+  	ReactorScheduler* fReactorScheduler;      	//!< Pointer to the ReactorScheduler		
+
+	FabricationPlant* fFabricationPlant;	//!< Pointer to the FabricationPlant
+	
+	Storage*	fStorage;			//!< Pointer to the Stock (only for reprocessing fuel in fixed base...)
 	
 #endif
 	//********* Unfixed Fuel Parameter *********//
 	
 	
-	double			fHeavyMetalMass;		///< In tons
-	double			fBurnUp;			///< In GWd/tHM
+	double			fHeavyMetalMass;			///< In tons
+	double			fBurnUp;				///< In GWd/tHM
+
+	map < cSecond, double > fPowerEvolution; 			///<Evolution Of Reactor Power
+	map < cSecond, double > fHMMassEvolution; 		///<Evolution Of Reactor HM Mass
+	map < cSecond, double > fSchedulePowerEvolution; 		//!<Evolution Of theoritical Reactor Power following Scheduler
+	map < cSecond, double > fScheduleHMMassEvolution; 	//!<Evolution Of theoritical Reactor HMMass following Scheduler
 	
-	ClassDef(Reactor,3);
+	ClassDef(Reactor,4);
 };
 
 

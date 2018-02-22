@@ -23,7 +23,7 @@
 using namespace std;
 
 class EquivalenceModel;
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 typedef void (EquivalenceModel::*EQM_MthPtr)( const string & );
 #endif
 
@@ -273,7 +273,7 @@ class EquivalenceModel : public CLASSObject
 
 
 
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 	map<string, EQM_MthPtr> fKeyword;
 #endif
 	

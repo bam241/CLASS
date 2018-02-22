@@ -84,7 +84,7 @@ class CLASSBackEnd : public CLASSFacility
 		bool GetStorageType  () const; //!< Return the storageType : True if it is a Storage
 		IsotopicVector GetIV ( int i ) const;
 
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 		DecayDataBank* GetDecayDataBank      ();               //!< Return the pointer to the decay DataBank
 		CLASSBackEnd*  GetOutBackEndFacility () const;         //!< Return the pointer to the OUtBackEndFacility
 		virtual std::map<cSecond,int> GetTheBackEndTimePath(); //!< Get the full path 
@@ -102,7 +102,7 @@ class CLASSBackEnd : public CLASSFacility
 		void SetIVArrayArrivalTime ( std::vector< cSecond > const&  IVArrayArrivalTime); //!< Set Arrival Time in Back end
 
 
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 		        void SetDecayDataBank      ( DecayDataBank* decayDB   ); //!< Set the Decay DataBank
 		virtual void SetOutBackEndFacility ( CLASSBackEnd* befacility ); //!< Set an out Facility
 #endif
@@ -133,14 +133,14 @@ class CLASSBackEnd : public CLASSFacility
 		std::vector<IsotopicVector> fIVArray;            ///< Vector containning all the fuel stored.
 		std::vector<cSecond>        fIVArrayArrivalTime; ///< Vector containning the arrival time of each fuel in [s]
 	
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 		CLASSBackEnd* fOutBackEndFacility; //!< Facility getting the fuel at the end of the cycle
 #endif
 
 	private :
 		bool fIsStorageType; //!< True if there is no out CLASSBackEnd facility (like a Storage...)
 	
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 		DecayDataBank* fDecayDataBase; //!< Pointer to the DecayDataBank
 #endif
 
@@ -159,7 +159,7 @@ inline IsotopicVector CLASSBackEnd::GetIV ( int i ) const
 	else                            { return IsotopicVector(); }
 }
 
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 	inline DecayDataBank* CLASSBackEnd::GetDecayDataBank      ()       { return fDecayDataBase;      }
 	inline CLASSBackEnd*  CLASSBackEnd::GetOutBackEndFacility () const { return fOutBackEndFacility; }
 #endif
@@ -168,7 +168,7 @@ inline void CLASSBackEnd::SetIsStorageType ( bool val ) { fIsStorageType = val; 
 inline void CLASSBackEnd::SetIVArrayArrivalTime ( std::vector< cSecond > const&  IVArrayArrivalTime){ fIVArrayArrivalTime = IVArrayArrivalTime; }
 inline void CLASSBackEnd::SetIVArray ( std::vector< IsotopicVector > const& ivarray ){ fIVArray = ivarray; }
 
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 	inline void CLASSBackEnd::SetDecayDataBank      ( DecayDataBank* decayDB   )
 		{ fDecayDataBase = decayDB; }
 	inline void CLASSBackEnd::SetOutBackEndFacility ( CLASSBackEnd* befacility )

@@ -62,11 +62,9 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 		map<ZAI, double > isotopicquantity = isotopicvector.GetIsotopicQuantity();
 		TMatrixT<double>  N_0Matrix = TMatrixT<double>( fReverseMatrixIndex.size(),1) ;
 		for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
-			N_0Matrix[i] = 0;
+			N_0Matrix[i][0] = 0;
 
 		map<ZAI, double >::iterator it ;
-		for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
-			N_0Matrix[i] = 0;
 
 		for(it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		{
@@ -113,7 +111,7 @@ EvolutionData IM_Matrix::GenerateEvolutionData(IsotopicVector isotopicvector, Ev
 
 	TMatrixT<double> FissionEnergy = TMatrixT<double>(fReverseMatrixIndex.size(),1);
 	for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
-		FissionEnergy[i] = 0;
+		FissionEnergy[i][0] = 0;
 
 	{
 		map< ZAI, int >::iterator it;
