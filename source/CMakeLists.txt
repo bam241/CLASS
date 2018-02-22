@@ -1,32 +1,43 @@
-MESSAGE( STATUS "IN INCLUDE ")
-ADD_SUBDIRECTORY(include)
-INCLUDE_DIRECTORIES( ${CLASS_HEADERS_DIR} )
-MESSAGE( STATUS "IN EXTERNAL ")
-ADD_SUBDIRECTORY(external)
-MESSAGE( STATUS "IN SRC ")
-ADD_SUBDIRECTORY(src)
-MESSAGE( STATUS "IN MODEL ")
-#ADD_SUBDIRECTORY(Model)
+# ----------------------------------------------------------
+# In include
+# ----------------------------------------------------------
 
-MESSAGE( STATUS "CLASS_SRC_FILE=" ${CLASS_SRC_FILE})
+message( STATUS "in source/include ")
+add_subdirectory(include)
 
+# ----------------------------------------------------------
+# In model
+# ----------------------------------------------------------
 
-#ADD_LIBRARY(CLASSpkg_root STATIC ${CLASS_SRC_FILE} )
+message( STATUS "in source/Model ")
+add_subdirectory(Model/Equivalence)
+add_subdirectory(Model/Irradiation)
+add_subdirectory(Model/XS)
 
+# ----------------------------------------------------------
+# In External
+# ----------------------------------------------------------
 
+message( STATUS "in source/external ")
+add_subdirectory(external)
 
-#ADD_SUBDIRECTORY(Model/Equivalence)
-ADD_SUBDIRECTORY(Model/Irradiation)
-ADD_SUBDIRECTORY(Model/XS)
+# ----------------------------------------------------------
+# Includes
+# ----------------------------------------------------------
 
-MESSAGE( STATUS "CLASS_EQMODEL_SRC_FILE : " ${CLASS_EQMODEL_SRC_FILE})
-MESSAGE( STATUS "CLASS_XSMODEL_SRC_FILE : " ${CLASS_XSMODEL_SRC_FILE})
-MESSAGE( STATUS "CLASS_IRMODEL_SRC_FILE : " ${CLASS_IRMODEL_SRC_FILE})
+INCLUDE_DIRECTORIES( ${CLASS_HEADERS_DIR_EQUIVALENCE} ${CLASS_HEADERS_DIR_IRRADIATION} ${CLASS_HEADERS_DIR_XS} ${CLASS_HEADERS_DIR_INCLUDE} ${CLASS_HEADERS_DIR_EXTERNAL})
 
-INCLUDE_DIRECTORIES( ${CLASS_EQMODEL_HEADER_DIR} ${CLASS_IRMODEL_HEADER_DIR} ${CLASS_XSMODEL_HEADER_DIR} ${CLASS_HEADERS_DIR} )
+# ----------------------------------------------------------
+# In Src
+# ----------------------------------------------------------
 
-MESSAGE( STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY : " ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+message( STATUS "in source/src ")
+add_subdirectory(src)
 
-ADD_LIBRARY(CLASSpkg SHARED ${CLASS_SRC_FILE} ${CLASS_EQMODEL_SRC_FILE} ${CLASS_XSMODEL_SRC_FILE} ${CLASS_IRMODEL_SRC_FILE})
+# ----------------------------------------------------------
+# Compilation
+# ----------------------------------------------------------
+
+message( STATUS "Build Libraries CLASSpkg")
+ADD_LIBRARY(CLASSpkg SHARED ${CLASS_SRC_FILE} ${CLASS_HEADERS_DIR_EQUIVALENCE} ${CLASS_HEADERS_DIR_IRRADIATION} ${CLASS_HEADERS_DIR_XS})
 target_link_libraries(CLASSpkg CLASSpkg_root)
-

@@ -3,7 +3,7 @@
 
 #include "CLASSLogger.hxx"
 #include "CLASSConstante.hxx"
-#include "external/StringLine.hxx"
+#include "StringLine.hxx"
 
 #include <TGraph.h>
 #include <TString.h>
