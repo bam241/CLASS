@@ -1,6 +1,6 @@
-#INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+# ----------------------------------------------------------
+# Define header dir and includes 
+# ----------------------------------------------------------
 
-
-
-SET( CLASS_EXTERN_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
-
+# include directories 
+SET( CLASS_HEADERS_DIR_EXTERNAL ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
