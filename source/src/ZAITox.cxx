@@ -7,7 +7,7 @@
 #include <string>
 
 #include "IsotopicVector.hxx"
-#include "external/StringLine.hxx"
+#include "StringLine.hxx"
 
 #include "IrradiationModel.hxx"
 

@@ -3,4 +3,4 @@
 # ----------------------------------------------------------
 
 # include directories 
-SET( CLASS_HEADERS_DIR_IRRADIATION ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
+SET( CLASS_HEADERS_DIR_EQUIVALENCE ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
