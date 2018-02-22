@@ -62,8 +62,7 @@ INCLUDE(${ROOT_USE_FILE})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
 
 # Build Decay.idx File
-set(decay_dir "${CMAKE_CURRENT_SOURCE_DIR}/DATA_BASES/DECAY/ALL")
-execute_process(COMMAND bash "-c" "sed -e 's:PATHTOBASE:${decay_dir}:g' ${decay_dir}/Decay.in > ${decay_dir}/Decay.idx")
+add_subdirectory(DATA_BASES/DECAY/ALL)
 
 # Add compilation flags
 # add_definitions(${ROOT_CXX_FLAGS})
