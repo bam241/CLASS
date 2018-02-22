@@ -55,9 +55,6 @@ INCLUDE(${ROOT_USE_FILE})
 # Add directories
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
 
-# Add compilation flags
-# add_definitions(${ROOT_CXX_FLAGS})
-
 # ----------------------------------------------------------
 # Variables definitions
 # ----------------------------------------------------------
