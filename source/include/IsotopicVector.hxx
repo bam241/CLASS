@@ -79,7 +79,8 @@ class IsotopicVector : public TObject
 		map<ZAI,double> GetIsotopicQuantityNeeded () const
 							{ return fIsotopicQuantityNeeded; }	//!< Return the needed IsotopicVector as a map 
 		IsotopicVector GetSpeciesComposition ( int z ) const;   //!< Return the Species composition of the "z" atom
-		IsotopicVector GetThisComposition    ( IsotopicVector IV ) const; //!< Return the composition according the IV list...
+		IsotopicVector GetThisComposition    ( IsotopicVector IV ) const; //!< Return the composition according the IV list...	
+		IsotopicVector GetThisChemicalComposition    ( IsotopicVector IV ) const; //!< Return the composition according the IV list...
 		vector<ZAI>    GetZAIList () const; //!< Return the list of ZAI present in the IV
 		IsotopicVector GetActinidesComposition() const; //!< Return the Actinides composition (Z >= 89)
 

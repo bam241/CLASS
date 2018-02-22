@@ -720,11 +720,11 @@ pair<IsotopicVector, IsotopicVector> FabricationPlant::Separation(IsotopicVector
     if(fIsSeparationManagement)
     {
         //[0] = re-use ; [1] = waste
-        IsotopicVector LostInReprocessing  = isotopicvector.GetThisComposition(ExtractedList) * fSeparationLostFraction;
-        SeparatedPart  = isotopicvector.GetThisComposition(ExtractedList) - LostInReprocessing;
+        IsotopicVector LostInReprocessing  = isotopicvector.GetThisChemicalComposition(ExtractedList) * fSeparationLostFraction;
+        SeparatedPart  = isotopicvector.GetThisChemicalComposition(ExtractedList) - LostInReprocessing;
         LostPart = isotopicvector - SeparatedPart;
     }
-    else
+    else //If the FabricationPlant is not allowed to perform separation
     {
         //[0] = re-use ; [1] = waste
         SeparatedPart  = isotopicvector;
