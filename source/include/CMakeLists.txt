@@ -3,7 +3,7 @@
 # ----------------------------------------------------------
 
 # include directories 
-SET( CLASS_HEADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
+SET( CLASS_HEADERS_DIR_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
 
 
 
