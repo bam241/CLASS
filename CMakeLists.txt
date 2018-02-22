@@ -16,7 +16,6 @@ ELSE()
 ENDIF()
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
-
 # Find ROOT
 LIST(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 FIND_PACKAGE(ROOT REQUIRED COMPONENTS TMVA)
@@ -29,8 +28,20 @@ INCLUDE(${ROOT_USE_FILE})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
 ADD_DEFINITIONS(${ROOT_CXX_FLAGS})
 
+# Build Decay.idx File
+
+
+
+function set_decaydata () {
+    local decay_dir="DATA_BASES/DECAY/ALL"
+    local decay_databases_path="$(pwd)/${decay_dir}"
+    sed -e "s%PATHTOBASE%${decay_databases_path}%" ${decay_dir}/.Decay.tmp > ${decay_dir}/Decay.idx && echo -e "[DB]    decay databases pathes             [ ${c_green}ok${c_default} ]" || (echo -e "[DB]    decay databases pathes             [${c_red}fail${c_default}]"; exit 505)
+}
+
+
+
 #Set CLASS variable
-SET(CYCLASS_INCLUDE_DIRS $ROOT_INCLUDE_DIRS )
+# SET(CYCLASS_INCLUDE_DIRS $ROOT_INCLUDE_DIRS )
 SET(LIBS ${LIBS} ${ROOT_LIBRARIES})
 
 # Set install folder (durty to be change?)
