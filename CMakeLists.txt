@@ -8,13 +8,7 @@ project(Class CXX)
 # Minimum Cmake version
 # ----------------------------------------------------------
 
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
-
-# ----------------------------------------------------------
-# Verbose mode for DEBUG only
-# ----------------------------------------------------------
-
-set(CMAKE_VERBOSE_MAKEFILE off)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR)
 
 # ----------------------------------------------------------
 # Test CXX compiler and C++11 comptability
@@ -36,23 +30,23 @@ ENDIF()
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 
 # Defining needed classes
-find_package(ROOT REQUIRED COMPONENTS TMVA)
+FIND_PACKAGE(ROOT REQUIRED COMPONENTS TMVA gui)
 
-message("------- ROOT PATH DETECTION -------")
+MESSAGE("------- ROOT PATH DETECTION -------")
 
-if (ROOT_FOUND)
-  message(STATUS "ROOT has been found")
-else ()
-  message(FATAL_ERROR "ROOT Not found")   
-endif()
+IF (ROOT_FOUND)
+  MESSAGE(STATUS "ROOT has been found")
+ELSE ()
+  MESSAGE(FATAL_ERROR "ROOT Not found")   
+ENDIF()
 
-message("-- Include path   : ${ROOT_INCLUDE_DIRS}")
-message("-- Libraries list : ${ROOT_LIBRARIES}")
-message("-- Libraries DIR  : ${ROOT_LIBRARY_DIR}")
-message("-- Definitions    : ${ROOT_DEFINITIONS}")
-message("-- CXX Flags      : ${ROOT_CXX_FLAGS}")
-message("-- CC Flags       : ${ROOT_CC_FLAGS}")
-message("------------------------------------")
+MESSAGE("-- Include path   : ${ROOT_INCLUDE_DIRS}")
+MESSAGE("-- Libraries list : ${ROOT_LIBRARIES}")
+MESSAGE("-- Libraries DIR  : ${ROOT_LIBRARY_DIR}")
+MESSAGE("-- Definitions    : ${ROOT_DEFINITIONS}")
+MESSAGE("-- CXX Flags      : ${ROOT_CXX_FLAGS}")
+MESSAGE("-- CC Flags       : ${ROOT_CC_FLAGS}")
+MESSAGE("------------------------------------")
 
 # Use ROOT file
 INCLUDE(${ROOT_USE_FILE})
@@ -60,25 +54,21 @@ INCLUDE(${ROOT_USE_FILE})
 # Add directories
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
 
-# Add compilation flags
-# add_definitions(${ROOT_CXX_FLAGS})
-
 # ----------------------------------------------------------
 # Variables definitions
 # ----------------------------------------------------------
 
 SET(CMAKE_INSTALL_LIBDIR ${CMAKE_CURRENT_LIST_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
 
 # print all
 MESSAGE( STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY :" ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 # ----------------------------------------------------------
 # In source
-# ----------------------------------------------------------
 
-message("------------------------------------")
-message( STATUS "in source ")
-add_subdirectory(source)
-message("------------------------------------")
+ADD_SUBDIRECTORY(source)
+
+# In source
+ADD_SUBDIRECTORY(gui)
