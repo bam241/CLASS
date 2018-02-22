@@ -55,9 +55,6 @@ INCLUDE(${ROOT_USE_FILE})
 # Add directories
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
 
-# Build Decay.idx File
-add_subdirectory(DATA_BASES/DECAY/ALL)
-
 # Add compilation flags
 # add_definitions(${ROOT_CXX_FLAGS})
 
@@ -73,9 +70,14 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
 MESSAGE( STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY :" ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 # ----------------------------------------------------------
-# In source
+# Add Directories
+# ----------------------------------------------------------
 
+# Build Decay.idx File
+add_subdirectory(DATA_BASES/DECAY/ALL)
+
+# Add source
 ADD_SUBDIRECTORY(source)
 
-# In source
+# Add gui
 ADD_SUBDIRECTORY(gui)
