@@ -1,6 +1,4 @@
-message("")
 message( STATUS "Building Dict files from root Cint... ")
-message("")
 
 ROOT_GENERATE_DICTIONARY( ${CMAKE_CURRENT_SOURCE_DIR}/CLASSObjectDict ${CLASS_HEADERS_DIR_INCLUDE}/CLASSObject.hxx )
 ROOT_GENERATE_DICTIONARY( ${CMAKE_CURRENT_SOURCE_DIR}/CLASSFacilityDict ${CLASS_HEADERS_DIR_INCLUDE}/CLASSFacility.hxx )
@@ -21,9 +19,7 @@ add_library(CLASSpkg_root STATIC CLASSBackEnd.cxx CLASSBackEndDict.cxx CLASSObje
 
 target_link_libraries(CLASSpkg_root ${ROOT_LIBRARIES})
 
-message("")
 message("------- CLASSpkg_root library DONE... -------")
-message("")
 
 LIST( APPEND CLASS_SRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/CLASSLogger.cxx")
 LIST( APPEND CLASS_SRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ZAI.cxx")
@@ -53,7 +49,5 @@ LIST( APPEND CLASS_SRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/CLASSReader.cxx")
 
 SET( CLASS_SRC_FILE ${CLASS_SRC_FILE} PARENT_SCOPE)
 
-message("")
 message("------- CLASS_SRC_FILE VARIABLE -------")
 MESSAGE( STATUS "CLASS_SRC_FILE=" ${CLASS_SRC_FILE})
-message("")
