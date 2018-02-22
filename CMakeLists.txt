@@ -49,6 +49,7 @@ MESSAGE("-- CC Flags       : ${ROOT_CC_FLAGS}")
 MESSAGE("------------------------------------")
 
 # Use ROOT file
+
 INCLUDE(${ROOT_USE_FILE})
 
 # Add directories
@@ -58,17 +59,22 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
 # Variables definitions
 # ----------------------------------------------------------
 
-SET(CMAKE_INSTALL_LIBDIR ${CMAKE_CURRENT_LIST_DIR}/lib)
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
-SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
+set(CMAKE_INSTALL_LIBDIR ${CMAKE_CURRENT_LIST_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
 
 # print all
 MESSAGE( STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY :" ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 # ----------------------------------------------------------
-# In source
+# Add Directories
+# ----------------------------------------------------------
 
+# Build Decay.idx File
+add_subdirectory(DATA_BASES/DECAY/ALL)
+
+# Add source
 ADD_SUBDIRECTORY(source)
 
-# In source
+# Add gui
 ADD_SUBDIRECTORY(gui)
