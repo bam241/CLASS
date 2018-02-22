@@ -63,17 +63,16 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
 
 # Build Decay.idx File
 
+set(decay_dir "DATA_BASES/DECAY/ALL")
+set(decay_databases_path="$(pwd)/${decay_dir}")
 
+set(Decay_CMD "sed -e \"s:PATHTOBASE:${decay_databases_path}:" ${decay_dir}/Decay.in > ${decay_dir}/Decay.idx")
+MESSAGE("COMMAND: ${Decay_CMD}")
+execute_process(COMMAND ${Decay_CMD} RESULT_VARIABLE CMD_ERROR OUTPUT_FILE CMD_OUTPUT)
+  MESSAGE( STATUS "CMD_ERROR:" ${CMD_ERROR})
+  MESSAGE( STATUS "CMD_OUTPUT:" ${CMD_OUTPUT})
 
-function set_decaydata () {
-    local decay_dir="DATA_BASES/DECAY/ALL"
-    local decay_databases_path="$(pwd)/${decay_dir}"
-    sed -e "s%PATHTOBASE%${decay_databases_path}%" ${decay_dir}/.Decay.tmp > ${decay_dir}/Decay.idx && echo -e "[DB]    decay databases pathes             [ ${c_green}ok${c_default} ]" || (echo -e "[DB]    decay databases pathes             [${c_red}fail${c_default}]"; exit 505)
-}
-
-
-
-#Set CLASS variable
+# Set CLASS variable
 # SET(CYCLASS_INCLUDE_DIRS $ROOT_INCLUDE_DIRS )
 SET(LIBS ${LIBS} ${ROOT_LIBRARIES})
 
@@ -84,7 +83,7 @@ SET(LIBS ${LIBS} ${ROOT_LIBRARIES})
 # Variables definitions
 # ----------------------------------------------------------
 
-SET(CMAKE_INSTALL_LIBDIR ${CMAKE_CURRENT_LIST_DIR}/lib)
+set(CMAKE_INSTALL_LIBDIR ${CMAKE_CURRENT_LIST_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
 
