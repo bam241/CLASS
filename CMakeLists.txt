@@ -63,9 +63,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
 
 # Build Decay.idx File
 set(decay_dir "${CMAKE_CURRENT_SOURCE_DIR}/DATA_BASES/DECAY/ALL")
-set(Decay_CMD "sed -e \"s:PATHTOBASE:${decay_dir}:g\" ${decay_dir}/Decay.in > ${decay_dir}/Decay.idx")
-MESSAGE(STATUS "COMMAND: ${Decay_CMD}")
-execute_process(COMMAND ${Decay_CMD})
+execute_process(COMMAND bash "-c" "sed -e 's:PATHTOBASE:${decay_dir}:g' ${decay_dir}/Decay.in > ${decay_dir}/Decay.idx")
 
 # Set CLASS variable
 # SET(CYCLASS_INCLUDE_DIRS $ROOT_INCLUDE_DIRS )
