@@ -137,6 +137,7 @@ public :
 	void 	SetReactorType(string reactortype)	{ fReactorType = reactortype; }		///< Set the reactor type (e.g PWR, FBR-Na,...)
 	void	SetFuelType(string fueltype)		{ fFuelType = fueltype; }		///< Set the fuel type (e.g MOX,UOX,...)
 	void 	SetPower(double power)			{ fPower = power; }			///< Set the power of the EvolutionData [W]
+#ifndef __ROOTCLING__
 	void	SetFlux(TGraph* flux )			{ fFlux = flux; }			///< Set the neutron flux of the EvolutionData [cm^{-2}.s^{-1}]
 	void	SetKeff(TGraph* keff )			{ fKeff = keff; }			///< Set the keff evolution for the EvolutionData
 	
@@ -148,7 +149,7 @@ public :
 	void	SetCaptureXS(map<ZAI, TGraph*> maptoinsert)	{ fCaptureXS = maptoinsert;}	///< Set capture cross section map
 	void	Setn2nXS(map<ZAI, TGraph*> maptoinsert)		{ fn2nXS = maptoinsert;}	///< Set (n,2n) cross section map
 
-
+#endif
 	void 	Print(string filename); //!< Print EvolutionData in a .dat format in a file of Name filename
 
 	//@}
@@ -163,7 +164,7 @@ public :
 	 */
 	//@{
 
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 	map<ZAI ,TGraph* >	GetInventoryEvolution()	const { return fInventoryEvolution; }	//!< return the EvolutionData map
 	map<ZAI ,TGraph* >	GetFissionXS()		const { return fFissionXS; }		//!< return the fission cross section map
 	map<ZAI ,TGraph* >	GetCaptureXS()		const { return fCaptureXS; }		//!< return the capture cross section map
@@ -228,7 +229,7 @@ protected :
 	string	fDB_file;			///!< path to the DataBase file
 	
 	
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 	map<ZAI ,TGraph* >	fInventoryEvolution;	//!< evolution map
 	map<ZAI ,TGraph* >	fFissionXS;		//!< fission cross section map
 	map<ZAI ,TGraph* >	fCaptureXS;		//!< capture cross section map

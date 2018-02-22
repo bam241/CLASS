@@ -21,7 +21,7 @@
 using namespace std;
 
 
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 
 #define ERROR		if(fLog)if(fLog->GetMaxOutPutLVL() >= 0) fLog->E() << "!!!ERROR!!! " << "[" << __FILE__ << ":" << __FUNCTION__ << "] "
 #define WARNING		if(fLog)if(fLog->GetMaxOutPutLVL() >= 1) fLog->W() << "!!WARNING!! " << "[" << __FILE__ << ":" << __FUNCTION__ << "] "

@@ -57,6 +57,8 @@ IM_RK4::IM_RK4(CLASSLogger* log):IrradiationModel(log), DynamicalSystem()
 EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, EvolutionData XSSet, double Power, double cycletime)
 {
 	DBGL
+
+
 	if(fFastDecay.size() ==  0)
 	{
 		NuclearDataInitialization();
@@ -74,11 +76,9 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 		map<ZAI, double > isotopicquantity = isotopicvector.GetIsotopicQuantity();
 		TMatrixT<double>  N_0Matrix = TMatrixT<double>( fReverseMatrixIndex.size(),1) ;
 		for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
-			N_0Matrix[i] = 0;
+			N_0Matrix[i][0] = 0;
 
 		map<ZAI, double >::iterator it ;
-		for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
-			N_0Matrix[i] = 0;
 
 		for(it = isotopicquantity.begin(); it != isotopicquantity.end(); it++)
 		{
@@ -127,7 +127,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 
 	TMatrixT<double> FissionEnergy = TMatrixT<double>(fReverseMatrixIndex.size(),1);
 	for(int i = 0; i < (int)fReverseMatrixIndex.size(); i++)
-		FissionEnergy[i] = 0;
+		FissionEnergy[i][0] = 0;
 
 	{
 		map< ZAI, int >::iterator it;
@@ -191,7 +191,7 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 			SetTheNucleiVectorToZero();
 
 			SetTheMatrix(BatemanMatrix);
-			SetTheNucleiVector(NEvolutionMatrix);
+            SetTheNucleiVector(NEvolutionMatrix);
 
 
 			RungeKutta(fTheNucleiVector, timevector[i]+TStepMax/InsideStep*k, timevector[i]+TStepMax/InsideStep*(k+1),  fNVar);
@@ -265,7 +265,15 @@ EvolutionData IM_RK4::GenerateEvolutionData(IsotopicVector isotopicvector, Evolu
 	CaptureXSMatrix.clear();
 	n2nXSMatrix.clear();
 	DBGL
-	return GeneratedDB;
+
+     
+    //IsotopicVector IV_ = isotopicvector/isotopicvector.GetSumOfAll();
+    
+    //double nucs_ = isotopicvector.GetSumOfAll();
+    //EvolutionData EV_ = GeneratedDB/nucs_;
+    //fKnownEvolution.insert(pair<IsotopicVector, EvolutionData> ( IV_, EV_));
+    //cout << fKnownEvolution.size() << std::endl;
+    return GeneratedDB;
 
 }
 
