@@ -716,7 +716,7 @@ void Scenario::ProgressPrintout(cSecond t)
 
 	else
 	{
-		system("clear");
+		int system_out = system("clear");
 		/****Printing CLASS  info + nuclear clover****/
 		if(fCloverCount>3)
 			fCloverCount=0;
@@ -738,7 +738,7 @@ void Scenario::ProgressPrintout(cSecond t)
 
 		Completed << "\033[0m";
 
-		for(int i = ProgressBarlength; i >= (int)(Time/Total*ProgressBarlength); i--)
+		for(int i = ProgressBarlength; i > (int)(Time/Total*ProgressBarlength); i--)
 			Completed << " ";
 
 		cout<<Completed.str();

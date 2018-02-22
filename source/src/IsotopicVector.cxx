@@ -311,6 +311,26 @@ IsotopicVector	IsotopicVector::GetSpeciesComposition ( const int z ) const
 
 	return tmp;
 }
+//________________________________________________________________________
+IsotopicVector	IsotopicVector::GetThisChemicalComposition(IsotopicVector IVa) const
+{
+	IsotopicVector tmp;
+	vector<int> ZList;
+	
+	ZList = IVa.GetChemicalSpecies();
+	
+	for ( int i = 0 ; i<ZList.size() ; i++)
+	{		
+		for( const_iterator jt = fIsotopicQuantity.begin() ; jt != fIsotopicQuantity.end() ; jt ++)
+		if (jt->first.Z() == ZList[i])
+		{
+			tmp.fIsotopicQuantity.insert(*jt);
+		}
+		
+	}
+
+	return tmp;
+}
 
 //________________________________________________________________________
 IsotopicVector	IsotopicVector::GetThisComposition(IsotopicVector IVa) const
