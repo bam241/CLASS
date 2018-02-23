@@ -52,7 +52,6 @@ Scenario::Scenario(CLASSLogger* log, cSecond abstime):CLASSObject(log)
 	fParcPower = 0;
 
 	fZAIThreshold = -1;
-	fOldProgressBar = false;
 
 	// Warning
 
@@ -87,7 +86,6 @@ Scenario::Scenario( cSecond abstime, CLASSLogger* log):CLASSObject(log)
 	fParcPower = 0;
 	
 	fZAIThreshold = -1;
-	fOldProgressBar = false;
 
 	// Warning
 	
@@ -122,7 +120,6 @@ Scenario::Scenario( cSecond abstime):CLASSObject(new CLASSLogger("CLASS_OUTPUT.l
 	fParcPower = 0;
 	
 	fZAIThreshold = -1;
-	fOldProgressBar = false;
 	
 	// Warning
 	
@@ -706,60 +703,6 @@ void Scenario::ProgressPrintout(cSecond t)
 
 }
 //________________________________________________________________________
-void Scenario::BalProgressPrintout(cSecond t) // Obsolete...
-{
-	double Time = (fAbsoluteTime-fStartingTime)/(double)cYear ;
-	double Total = (t-fStartingTime)/(double)cYear;
-
-	if(fOldProgressBar)
-		//OldProgressPrintout(t);
-		ProgressPrintout(t);
-	else
-	{
-		int system_out = system("clear");
-		/****Printing CLASS  info + nuclear clover****/
-		if(fCloverCount>3)
-			fCloverCount=0;
-		PrintClover(fCloverCount);
-		fCloverCount++;
-
-		/****Printing  Progression bar r****/
-		static  int ProgressBarlength = 47;
-		cout << "╭";
-		for(int i = 0; i < ProgressBarlength; i++)
-			cout <<"─" ;
-
-		cout << "╮"<<endl;
-		cout<<"│";
-
-		stringstream Completed ; Completed << "\033[42m";
-		for(int i = 0; i < (int)(Time/Total*ProgressBarlength); i++)
-			Completed<< " ";
-
-		Completed << "\033[0m";
-
-		for(int i = ProgressBarlength; i > (int)(Time/Total*ProgressBarlength); i--)
-			Completed << " ";
-
-		cout<<Completed.str();
-		cout<<"│"<<endl;
-
-		cout << "╰";
-		for(int i = 0; i < ProgressBarlength; i++)
-			cout <<"─" ;	
-		cout << "╯"<<endl;
-
-
-		if (Time < 10) cout << " ";
-		if (Time < 100) cout << " ";
-		cout << (int)Time << " / " << (int)Total << " Years";
-		cout << endl<<endl;
-	}
-
-	INFO << " Proccessed " << (int)Time << " / " << (int)Total << " Years \r" << endl;
-
-}
-//________________________________________________________________________
 void Scenario::PrintCLASSPresentation()
 { 	
 	cout<<endl;	
@@ -786,102 +729,6 @@ void Scenario::PrintCLASSPresentation()
 	cout<<"        BEGINING FUEL CYCLE EVOLUTION           "<<endl;
 	cout<<"                                                "<<endl;
 	cout<<"Evolution progression   :                       "<<endl;	
-}
-//________________________________________________________________________
-void Scenario::PrintClover(int i)
-{
-                      
-    if(i == 0)   
-    {	cout<<"╭───────────────────────────────────────────────╮                       "<<endl;
-		cout<<"│   ██████╗██╗      █████╗ ███████╗███████╗     │         @@            "<<endl;
-		cout<<"│  ██╔════╝██║     ██╔══██╗██╔════╝██╔════╝     │      @@@@@            "<<endl;
-		cout<<"│  ██║     ██║     ███████║███████╗███████╗     │     @@@@@@            "<<endl;
-		cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │    @@@@@@@            "<<endl;
-		cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │    @@@@@@@            "<<endl;
-		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │     @@@@@@       @    "<<endl;
-		cout<<"│                                  Version dev  │       @@@@     @@@@   "<<endl;
-		cout<<"├───────────────────────────────────────────────┤         @@   @@@@@@   "<<endl;
-		cout<<"│ Core Lybrary for Advanced Scenario Simulation │           @ @@@@@@@   "<<endl;
-		cout<<"│                                               │          @@ @@@@@@@   "<<endl;
-		cout<<"│ A dynamical nuclear fuel cycle code developed │         @    @@@@@@   "<<endl;
-		cout<<"│           by the CNRS/IN2P3 & IRSN            │       @@@@    @@@@@   "<<endl;
-		cout<<"│      https://gitlab.in2p3.fr/sens/CLASS       │      @@@@@      @@@@  "<<endl;
-		cout<<"├───────────────────────────────────────────────┤    @@@@@@@            "<<endl;
-		cout<<"│ Authors :                                     │    @@@@@@@            "<<endl;
-		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │     @@@@@@            "<<endl;
-		cout<<"│    F. COURTIN  (@FaC)  N. THIOLLIERE (@NT)    │      @@@@@            "<<endl;
-		cout<<"╰───────────────────────────────────────────────╯        @@@            "<<endl;
-		cout<<"                                                                        "<<endl;
-	}	                                       
-	if(i == 1)   
-    {	cout<<"╭───────────────────────────────────────────────╮                       "<<endl;
-		cout<<"│   ██████╗██╗      █████╗ ███████╗███████╗     │      @ @@@@@@@@      "<<endl;
-		cout<<"│  ██╔════╝██║     ██╔══██╗██╔════╝██╔════╝     │       @@@@@@@@       "<<endl;
-		cout<<"│  ██║     ██║     ███████║███████╗███████╗     │       @@@@@@@        "<<endl;
-		cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │        @@@@@@        "<<endl;
-		cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │         @@@@@        "<<endl;
-		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │         @@@@         "<<endl;
-		cout<<"│                                  Version dev  │          @@          "<<endl;
-		cout<<"├───────────────────────────────────────────────┤          @           "<<endl;
-		cout<<"│ Core Lybrary for Advanced Scenario Simulation │           @          "<<endl;
-		cout<<"│                                               │  @@@@@@@ @@ @@@@@@@  "<<endl;
-		cout<<"│ A dynamical nuclear fuel cycle code developed │  @@@@@@@@  @@@@@@@@  "<<endl;
-		cout<<"│           by the CNRS/IN2P3 & IRSN            │  @@@@@@@@   @@@@@@@  "<<endl;
-		cout<<"│      https://gitlab.in2p3.fr/sens/CLASS       │  @@@@@@    @@@@@@   "<<endl;
-		cout<<"├───────────────────────────────────────────────┤   @@@@@      @@@@@   "<<endl;
-		cout<<"│ Authors :                                     │    @@@@      @@@@    "<<endl;
-		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │     @@        @@@    "<<endl;
-		cout<<"│    F. COURTIN  (@FaC)  N. THIOLLIERE (@NT)    │      @          @    "<<endl;
-		cout<<"╰───────────────────────────────────────────────╯                      "<<endl;
-		cout<<"                                                                        "<<endl;
-	}
-    if(i == 2)   
-    {	cout<<"╭───────────────────────────────────────────────╮                      "<<endl;
-		cout<<"│   ██████╗██╗      █████╗ ███████╗███████╗     │           @@@        "<<endl;
-		cout<<"│  ██╔════╝██║     ██╔══██╗██╔════╝██╔════╝     │           @@@@@      "<<endl;
-		cout<<"│  ██║     ██║     ███████║███████╗███████╗     │           @@@@@@     "<<endl;
-		cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │           @@@@@@@    "<<endl;
-		cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │           @@@@@@@@   "<<endl;
-		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │   @@      @@@@@@     "<<endl;
-		cout<<"│                                  Version dev  │   @@@     @@@@       "<<endl;
-		cout<<"├───────────────────────────────────────────────┤  @@@@@@    @@        "<<endl;
-		cout<<"│ Core Lybrary for Advanced Scenario Simulation │  @@@@@@@@ @          "<<endl;
-		cout<<"│                                               │  @@@@@@@ @@          "<<endl;
-		cout<<"│ A dynamical nuclear fuel cycle code developed │  @@@@@@    @         "<<endl;
-		cout<<"│           by the CNRS/IN2P3 & IRSN            │  @@@@@    @@@@       "<<endl;
-		cout<<"│      https://gitlab.in2p3.fr/sens/CLASS       │  @@       @@@@@@     "<<endl;
-		cout<<"├───────────────────────────────────────────────┤           @@@@@@@    "<<endl;
-		cout<<"│ Authors :                                     │           @@@@@@@    "<<endl;
-		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │           @@@@@@@    "<<endl;
-		cout<<"│    F. COURTIN  (@FaC)  N. THIOLLIERE (@NT)    │           @@@@@      "<<endl;
-		cout<<"╰───────────────────────────────────────────────╯           @@@@       "<<endl;
-		cout<<"                                                                        "<<endl;
-
-	}
-    if(i == 3)   
-    {	cout<<"╭───────────────────────────────────────────────╮                       "<<endl;
-		cout<<"│   ██████╗██╗      █████╗ ███████╗███████╗     │                      "<<endl;
-		cout<<"│  ██╔════╝██║     ██╔══██╗██╔════╝██╔════╝     │                      "<<endl;
-		cout<<"│  ██║     ██║     ███████║███████╗███████╗     │     @@        @@     "<<endl; 
-		cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │    @@@@       @@@    "<<endl; 
-		cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │   @@@@@      @@@@@   "<<endl; 
-		cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │   @@@@@@    @@@@@@   "<<endl; 
-		cout<<"│                                  Version dev  │   @@@@@@    @@@@@@@  "<<endl;
-		cout<<"├───────────────────────────────────────────────┤  @@@@@@@@  @@@@@@@@  "<<endl; 
-		cout<<"│ Core Lybrary for Advanced Scenario Simulation │  @@@@@@@@ @ @@@@@@@  "<<endl;
-		cout<<"│                                               │          @@          "<<endl; 
-		cout<<"│ A dynamical nuclear fuel cycle code developed │          @@          "<<endl; 
-		cout<<"│           by the CNRS/IN2P3 & IRSN            │         @@@@         "<<endl; 
-		cout<<"│      https://gitlab.in2p3.fr/sens/CLASS       │         @@@@@        "<<endl; 
-		cout<<"├───────────────────────────────────────────────┤        @@@@@@        "<<endl; 
-		cout<<"│ Authors :                                     │        @@@@@@@       "<<endl; 
-		cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │       @@@@@@@@       "<<endl;
-		cout<<"│    F. COURTIN  (@FaC)  N. THIOLLIERE (@NT)    │                      "<<endl;
-		cout<<"╰───────────────────────────────────────────────╯                      "<<endl;
-		cout<<"                                                                        "<<endl;
-
-	}
-
 }
 //________________________________________________________________________
 void Scenario::ApplyZAIThreshold()

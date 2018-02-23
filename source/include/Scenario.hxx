@@ -305,13 +305,7 @@ public :
     //@{
 
     void	PrintCLASSPresentation();	//!< CLASS informations when first running the code
-    void	PrintClover(int i);		//!< Print a nuclear clover for progression
-
     void	ProgressPrintout(cSecond t);		//!< Update the prompt output to the time t
-    void	BalProgressPrintout(cSecond t);		//!< Update the prompt output to the time t (without nuclear clover)
-    void	SetSoberTerminalOutput() {
-        fOldProgressBar = true;   //!< Dont display animated nuclear clover in terminal
-    }
 
     void	Print();				//!< Print some information about the Parc
     void	Write();				//!< Write information in a file
@@ -331,7 +325,6 @@ protected :
     bool			fNewTtree;		//!< True if we want to define a new TTree in the output File
     bool			fStockManagement;	///< True if real StockManagement false unstead (Default = true)
     bool			fLogTimeStep;
-    bool			fOldProgressBar; ///< if set to true : no nuclear clover are drawn in terminal
 
     cSecond			fPrintStep;		///< Time interval between two output update in [s]
     cSecond			fAbsoluteTime;		///< Absolute Clock in [s]
