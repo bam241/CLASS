@@ -1,7 +1,7 @@
 #include "XSModel.hxx"
 #include "XSM_CLOSEST.hxx"
 #include "CLASSLogger.hxx"
-#include "external/StringLine.hxx"
+#include "StringLine.hxx"
 
 
 #include <TGraph.h>

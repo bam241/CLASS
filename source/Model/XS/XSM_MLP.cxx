@@ -4,7 +4,7 @@
 #include "CLASSLogger.hxx"
 #include "CLASSMethod.hxx"
 #include "CLASSReader.hxx"
-#include "external/StringLine.hxx"
+#include "StringLine.hxx"
 
 #include "TMVA/Reader.h"
 #include "TMVA/Tools.h"
