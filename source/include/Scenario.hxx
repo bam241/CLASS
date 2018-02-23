@@ -308,7 +308,7 @@ public :
     void	PrintClover(int i);		//!< Print a nuclear clover for progression
 
     void	ProgressPrintout(cSecond t);		//!< Update the prompt output to the time t
-    void	OldProgressPrintout(cSecond t);		//!< Update the prompt output to the time t (without nuclear clover)
+    void	BalProgressPrintout(cSecond t);		//!< Update the prompt output to the time t (without nuclear clover)
     void	SetSoberTerminalOutput() {
         fOldProgressBar = true;   //!< Dont display animated nuclear clover in terminal
     }
