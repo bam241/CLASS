@@ -15,7 +15,7 @@
 #include <TGTableLayout.h>
 #include <TGResourcePool.h>
 #include <TLine.h>
-#include "external/StringLine.hxx"
+#include "StringLine.hxx"
 
 // For all class not defined in file.hxx see http://root.cern.ch/root/html/
 // For example : for TGraphErrors see http://root.cern.ch/root/html/TGraphErrors.html
