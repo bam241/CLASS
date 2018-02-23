@@ -97,9 +97,6 @@ int main(int argc, char** argv)
 //==========================================================================================
 // Compilation
 //==========================================================================================
-/*
- 
- \rm CLASS* ; g++ -o CLASS_Exec SimpleReactor.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
- 
- 
- */
+/* 
+\rm CLASS* ; g++ -o CLASS_Exec SimpleReactor.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
+*/
