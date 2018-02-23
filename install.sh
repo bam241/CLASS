@@ -6,30 +6,7 @@
 function usage ()
 {
     cat <<\MANUAL_EOF
-###############################################################
-############# configures and compiles CLASS V4.1 ##############
-###############################################################
-
-Usage: install.sh [VAR=VALUE] [OPTION]
-Defaults for the options are specified in brackets.
-
-Configuration:
-  -h, --help         display this help and exit
-Optional Features:
-  --disable-OMP      do not compile with OpenMP support for evolution 
-                     [default: enable for gcc version >= 4.1]
-  --InstallLib-path=path     Install location of CLASS's libraries [default= $PWD/lib]
-  --InstallGui-path=path     Install location of the GUI binary [default= $PWD/gui/bin]
-
-Some influential environment variables:
-  CXX         C++ compiler command [default=g++]
-  CXXFLAGS    C++ compiler flags, e.g. -I<include dir> if
-              you have headers in a nonstandard directory <include dir>
-  CPPFLAGS    C++ preprocessor flags, e.g. -D<special flag>
-
-
-Report bugs to <nicolas.thiolliere@subatech.in2p3.fr>.
-(special thanks to PTO)
+"NO MANUAL YET"
 MANUAL_EOF
 
 exit 418
