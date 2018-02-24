@@ -57,9 +57,10 @@ class XSModel : public CLASSObject
 	
 	XSModel(); //!<Default constructor
 	
-	
 	XSModel(CLASSLogger* log); //!<Logger constructor
 	
+	virtual ~XSModel();		//!< Destructor
+
 	//@}
 	
 	

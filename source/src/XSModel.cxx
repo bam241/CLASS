@@ -22,7 +22,6 @@ XSModel::XSModel():CLASSObject()
 	freaded = false;
 
 }
-
 //________________________________________________________________________
 
 XSModel::XSModel(CLASSLogger* log):CLASSObject(log)
@@ -31,7 +30,11 @@ XSModel::XSModel(CLASSLogger* log):CLASSObject(log)
 	XSModel::LoadKeyword();
 	freaded = false;
 }
+//________________________________________________________________________
+XSModel::XSModel()
+{
 
+}
 //________________________________________________________________________
 void XSModel::ReadNFO()
 {
