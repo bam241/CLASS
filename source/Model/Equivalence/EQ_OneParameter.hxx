@@ -1,6 +1,5 @@
-#ifndef _FUELLOADINGMODEL_
-#define _FUELLOADINGMODEL_
-
+#ifndef _EQONEPARAMETER_HXX_
+#define _EQONEPARAMETER_HXX_
 
 /*!
  \file
@@ -104,9 +103,6 @@ class EQ_OneParameter : public EquivalenceModel
      \name Get/Set Method
      */
     //@{
-
-    IsotopicVector GetStreamList(string keyword) {return fStreamList[keyword];} //!<return the list of ZAI of stream type keyword
-    map < string, IsotopicVector> GetAllStreamList() {return fStreamList;}      //!<return all the lists
 
     int GetStreamListNumber(){return fStreamList.size();};
     int GetMaxIterration()       const  { return fMaxIterration; }      //!< Max iterration in build fueld algorythm    
@@ -233,22 +229,16 @@ class EQ_OneParameter : public EquivalenceModel
     void ReadEqMaxFraction(const string &line); 
     void ReadEqMinFraction(const string &line);
     
-    bool isIVInDomain(IsotopicVector IV);
-    void StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks);
-    void ConvertMassToLambdaVector(string MaterialDenomination, vector<double>& lambda, double MaterialMassNeeded, vector <IsotopicVector>  Stocks);    
     IsotopicVector BuildFuelToTest(map < string, vector<double> >& lambda, map < string , vector <IsotopicVector> > const& StreamArray, double HMMass, map <string, bool> StreamListIsBuffer); //Build a fuel with the buffer according to fissile lambda
     void CheckTargetParameterConsistency(map < int , string >  StreamListPriority, map < string , double >  TargetParameterMin, map < string , double > TargetParameterMax);
 
     protected :
 
     bool fUseTMVAPredictor; //!< Bool that says if we need a TMVA predictor. If not, fuel fraction isimpoased by the FP.
-    
-    map < string, IsotopicVector> fStreamList;                  //!< contains all lists of zai needed to build a fuel (example : 2 -> fissileList+fertileList)
-                                            //!< each list is identified by a keyword (example : -> "Fissile" & "Fertile")
+                                                //!< each list is identified by a keyword (example : -> "Fissile" & "Fertile")
     map < string , double> fStreamListEqMMassFractionMax;           //!< Map that contains lists of stream according to the EqModel with mass maximum fraction
     map < string , double> fStreamListEqMMassFractionMin;           //!< Map that contains lists of stream according to the EqModel with mass minimum fraction
 
-    double  fSpecificPower;                             //!< The specific power in W/gHM (HM: heavy Metal)
     double  fMaximalBU;                                 //!< The Maximum burn-up of the model in GWd/t
     string fTargetParameter;                            //!< Type of target parameter optimized in build fuel (ex. BUmax)               
     int fMaxIterration;                             //!< Max iterrations in build fueld algorithm
@@ -262,8 +252,6 @@ class EQ_OneParameter : public EquivalenceModel
     map<ZAI,string> fMapOfTMVAVariableNames;                //!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 
     double  fTargetParameterStDev;                          //!< Precision on target parameter calculation 
-
-    void SetLambdaToErrorCode(vector<double>& lambda);
     
     //@}
 

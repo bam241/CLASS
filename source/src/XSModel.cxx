@@ -31,7 +31,7 @@ XSModel::XSModel(CLASSLogger* log):CLASSObject(log)
 	freaded = false;
 }
 //________________________________________________________________________
-XSModel::XSModel()
+XSModel::~XSModel()
 {
 
 }

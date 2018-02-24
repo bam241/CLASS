@@ -19,7 +19,7 @@
 
 //________________________________________________________________________
 //________________________________________________________________________
-EQ_OneParameter::EQ_OneParameter(string TMVAXMLFilePath, string TMVANFOFilePath):EquivalenceModel(new CLASSLogger("XSM_MLP.log"))
+EQ_OneParameter::EQ_OneParameter(string TMVAXMLFilePath, string TMVANFOFilePath):EquivalenceModel(new CLASSLogger("EQ_OneParameter.log"))
 {
     fUseTMVAPredictor = true;
 
@@ -110,7 +110,7 @@ EQ_OneParameter::EQ_OneParameter(CLASSLogger* log, string TMVAXMLFilePath, strin
     INFO << "\tThe TMVA NFO file is :" << fTMVANFOFilePath << endl;
     PrintInfo();}
 //________________________________________________________________________
-EQ_OneParameter::EQ_OneParameter(string TMVANFOFilePath):EquivalenceModel(new CLASSLogger("XSM_MLP.log"))
+EQ_OneParameter::EQ_OneParameter(string TMVANFOFilePath):EquivalenceModel(new CLASSLogger("EQ_OneParameter.log"))
 {
     fUseTMVAPredictor = false;
 
@@ -835,7 +835,7 @@ void EQ_OneParameter::ReadLine(string line)
         int pos = 0;
         string keyword = tlc(StringLine::NextWord(line, pos, ' '));
         
-        map<string, EQM_MthPtr>::iterator it = fKeyword.find(keyword);
+        map<string, EQOP_MthPtr>::iterator it = fKeyword.find(keyword);
         
         if(it != fKeyword.end())
             (this->*(it->second))( line );
@@ -853,21 +853,21 @@ void EQ_OneParameter::ReadLine(string line)
 void EQ_OneParameter::LoadKeyword() 
 {
     DBGL
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",                & EquivalenceModel::ReadZAIlimits)           );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",         & EquivalenceModel::ReadType)            );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel",                & EquivalenceModel::ReadType)            );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmin",     & EquivalenceModel::ReadEqMinFraction)       );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmax",     & EquivalenceModel::ReadEqMaxFraction)       );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_list",                & EquivalenceModel::ReadList)            );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower",           & EquivalenceModel::ReadSpecificPower)       );
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_zainame",          & EquivalenceModel::ReadZAIName)             );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_maxburnup",           & EquivalenceModel::ReadMaxBurnUp)       ); 
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_targetparameter",      & EquivalenceModel::ReadTargetParameter)         );
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_predictortype",        & EquivalenceModel::ReadPredictorType)       );
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_output",           & EquivalenceModel::ReadOutput)              );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_buffer",          & EquivalenceModel::ReadBuffer)          ); 
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_modelparameter",       & EquivalenceModel::ReadModelParameter)          ); 
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQM_MthPtr>( "k_targetparameterstdev",     & EquivalenceModel::ReadTargetParameterStDev)    ); 
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_zail",                & EquivalenceModel::ReadZAIlimits)           );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_reactor",         & EquivalenceModel::ReadType)            );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_fuel",                & EquivalenceModel::ReadType)            );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_massfractionmin",     & EquivalenceModel::ReadEqMinFraction)       );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_massfractionmax",     & EquivalenceModel::ReadEqMaxFraction)       );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_list",                & EquivalenceModel::ReadList)            );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_specpower",           & EquivalenceModel::ReadSpecificPower)       );
+    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_zainame",          & EquivalenceModel::ReadZAIName)             );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_maxburnup",           & EquivalenceModel::ReadMaxBurnUp)       ); 
+    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_targetparameter",      & EquivalenceModel::ReadTargetParameter)         );
+    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_predictortype",        & EquivalenceModel::ReadPredictorType)       );
+    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_output",           & EquivalenceModel::ReadOutput)              );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_buffer",          & EquivalenceModel::ReadBuffer)          ); 
+    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_modelparameter",       & EquivalenceModel::ReadModelParameter)          ); 
+    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_targetparameterstdev",     & EquivalenceModel::ReadTargetParameterStDev)    ); 
 
     DBGL
 }

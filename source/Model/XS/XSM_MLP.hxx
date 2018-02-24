@@ -1,7 +1,5 @@
-
 #ifndef _XSM_MLP_HXX
 #define _XSM_MLP_HXX
-
 
 /*!
  \file

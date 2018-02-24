@@ -20,12 +20,12 @@
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel():CLASSObject()
 {
-    freaded     = false;        
+    freaded = false;
 }
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel(CLASSLogger* log):CLASSObject(log)
 {
-    freaded     = false;        
+    freaded = false;
 }
 //________________________________________________________________________
 EquivalenceModel::~EquivalenceModel()
@@ -118,6 +118,32 @@ void EquivalenceModel::ConvertMassToLambdaVector(string MaterialDenomination, ve
     DBGL
 }
 //________________________________________________________________________
+map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListFPMassFractionMin, map < string , double> StreamListFPMassFractionMax, map < int , string > StreamListPriority, map < string , bool> StreamListIsBuffer)
+{
+    DBGL
+}
+//________________________________________________________________________
+void EquivalenceModel::CheckTargetParameterConsistency(map < int , string > StreamListPriority, map < string , double >  TargetParameterMin, map < string , double > TargetParameterMax)
+{
+
+}
+//________________________________________________________________________
+double EquivalenceModel::CalculateTargetParameter(IsotopicVector TheFuel, string TargetParameterName)
+{
+
+}
+//________________________________________________________________________
+double EquivalenceModel::CalculateBurnUpMax(IsotopicVector TheFuel, map<string, double> ModelParameter)
+{
+
+}
+//________________________________________________________________________
+double  EquivalenceModel::CalculateKeffAtBOC(IsotopicVector FreshFuel)
+{
+
+}
+
+//________________________________________________________________________
 bool EquivalenceModel::isIVInDomain(IsotopicVector IV)
 {
     DBGL
@@ -155,4 +181,134 @@ bool EquivalenceModel::isIVInDomain(IsotopicVector IV)
     }
     DBGL
     return IsInDomain;
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadNFO()
+{
+    DBGL
+    ifstream NFO(fTMVANFOFilePath.c_str());
+
+    if (!NFO)
+    {
+        ERROR << "Can't find/open file " << fTMVANFOFilePath << endl;
+        exit(0);
+    }
+
+    do
+    {
+        string line;
+        getline(NFO, line);
+
+        EquivalenceModel::ReadLine(line);
+
+    } while (!NFO.eof());
+
+    DBGL
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadLine(string line)
+{
+    DBGL
+
+    if (!freaded)
+    {
+        int pos = 0;
+        string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+
+        map<string, EQM_MthPtr>::iterator it = fKeyword.find(keyword);
+
+        if (it != fKeyword.end())
+            (this->*(it->second))( line );
+
+        freaded = true;
+        ReadLine(line);
+
+    }
+
+    freaded = false;
+
+    DBGL
+}
+//________________________________________________________________________
+void EquivalenceModel::LoadKeyword()
+{
+
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadType(const string &line)
+{
+
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadZAIlimits(const string &line)
+{
+
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadList(const string &line)
+{
+
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadEqMinFraction(const string &line)
+{
+
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadEqMaxFraction(const string &line)
+{
+
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadSpecificPower(const string &line)
+{
+
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadZAIName(const string &line)
+{
+
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadMaxBurnUp(const string &line)
+{
+
+}
+
+//________________________________________________________________________
+void EquivalenceModel::ReadTargetParameter(const string &line)
+{
+
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadPredictorType(const string &line)
+{
+
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadOutput(const string &line)
+{
+
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadBuffer(const string &line)
+{
+
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadModelParameter(const string &line)
+{
+
+}
+
+//________________________________________________________________________
+void EquivalenceModel::ReadTargetParameterStDev(const string &line)
+{
+
+}
+
+//________________________________________________________________________
+void EquivalenceModel::PrintInfo()
+{
+
 }
