@@ -112,6 +112,8 @@ public :
 
     	void SetSeparationManagement(bool bval = true)	{ fIsSeparationManagement = bval;}				//!< Set the separation managmeent for the fabrication plant
 
+	void SetImpuritiesTolerance(double val) {fImpuritiesTolerance = val;}
+	
 #ifndef __ROOTCLING__
 	void AddReactor(int reactorid, double creationtime)
 		{ fReactorNextStep.insert( pair<int,cSecond> (reactorid, (cSecond)creationtime-GetCycleTime() ) ); }		//!< Add a new reactor to be filled with the fresh fuel build by the FabricationPlant
@@ -143,6 +145,8 @@ public :
 	//@{
 	
 #ifndef __ROOTCLING__
+	double GetImpuritiesTolerance() { return fImpuritiesTolerance;}
+
 	map < string , vector <Storage*> > GetAllStorage() {return fStorage;}			//!< Return the map containing all the storage vectors (useful in CLASS Reactor to check list consistency)
 	
 	vector<Storage*> GetStorage(string keyword) { return fStorage[keyword]; }		//!< Return the Pointer to Storage associated to a StreamList 
@@ -179,7 +183,7 @@ public :
 	void TakeReactorFuel(int ReactorId) ;								//!< Remove the fuel of reactor ReactorId from stock
 	void UpdateInsideIV();										
 
-	IsotopicVector BuildFuelFromEqModel(map <string , vector<double> > LambdaArray); 	//!<Build the fresh fuel for the reactor according the results of the EquivalenceModel (@see  EquivalenceModel)
+	IsotopicVector BuildFuelFromEqModel(map <string , vector<double> > LambdaArray, double ReactorMass); 	//!<Build the fresh fuel for the reactor according the results of the EquivalenceModel (@see  EquivalenceModel)
 	void BuildArray(int ReactorId, cSecond ReactorLoadingTime);									//!< virtualy extract fissile nuclei from Storage according EquivalenceModel fStreamList and make it virtually decay FabricationTime
 
 	void BuildFuelForReactor(int ReactorId, cSecond t);			//!< Build a fuel for the reactor ReactorId
@@ -218,6 +222,9 @@ protected:
 
     bool	fSubstitutionFuel;										//!< True if a substitution fuel as been set
 
+	double		fImpuritiesTolerance;							//!< Tolerance for impurities that are not considered in the ANN
+
+
 #ifndef __ROOTCLING__
 	void	FabricationPlantEvolution(cSecond t);							//!< Deal the FabricationPlant evolution
 	void 	ResetArrays();										//!< Empty Arrays
@@ -247,6 +254,7 @@ protected:
 	bool		fIsReusable;									//!< Sets a storage used to storing unused material
 	bool		fFuelCanBeBuilt;								//!< Default fuel fabrication process has failed
 	DecayDataBank*	fDecayDataBase;							//!< Pointer to the DecayDataBank
+
 
 
 	//{
