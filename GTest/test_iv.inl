@@ -3,9 +3,9 @@
 #include <iomanip>
 #include <math.h>
 #include <string>
-#include "XS/XSM_MLP.hxx"			//Load the include for Neural network cross section predictor
-#include "Irradiation/IM_RK4.hxx"		//Load the include for Runge Kutta 4 resolution
-#include "Equivalence/EQM_MLP_Kinf.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
+#include "XSM_MLP.hxx"			//Load the include for Neural network cross section predictor
+#include "IM_RK4.hxx"		    //Load the include for Runge Kutta 4 resolution
+#include "EQ_OneParameter.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
 
 TEST ( TestIV, getSize ) {
 	const int n=10;
