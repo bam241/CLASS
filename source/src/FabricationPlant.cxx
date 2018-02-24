@@ -39,6 +39,7 @@ FabricationPlant::FabricationPlant():CLASSFacility(16)
     fIsReusable = false;
     IsotopicVector MaxEfficiency;
     SetSeparationEfficiency(MaxEfficiency,  -1e300);
+    fImpuritiesTolerance = 0.005;
 }
 
 //________________________________________________________________________
@@ -51,6 +52,7 @@ FabricationPlant::FabricationPlant(CLASSLogger* log, double fabricationtime):CLA
     fSubstitutionFuel = false;
     fReUsable = 0;
     fIsReusable = false;
+    fImpuritiesTolerance = 0.005;
     IsotopicVector MaxEfficiency;
     SetSeparationEfficiency(MaxEfficiency,  -1e300);
     INFO	<< " A FabricationPlant has been define :" << endl;
@@ -248,7 +250,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
     if(fFuelCanBeBuilt && LambdaSum > 0)
     {
         DBGV("Building process from initial stocks has succeeded : ")
-        IsotopicVector IV           = BuildFuelFromEqModel(LambdaArray);
+        IsotopicVector IV           = BuildFuelFromEqModel(LambdaArray,R_HM_Mass);
 
         EvolutionData EvolDB    = FuelType->GenerateEvolutionData(GetDecay(IV, fCycleTime), R_CycleTime, R_Power);
         {
@@ -305,7 +307,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t)
                 LambdaArray[(*it_s_vD).first].clear();
             }
             LambdaArray 			= FuelType->GetEquivalenceModel()->BuildFuel(R_BU, R_HM_Mass, fStreamArray, fStreamListFPMassFractionMin, fStreamListFPMassFractionMax, fStreamListFPPriority, fStreamListFPIsBuffer);
-            IsotopicVector IV 		= BuildFuelFromEqModel(LambdaArray);
+            IsotopicVector IV 		= BuildFuelFromEqModel(LambdaArray,R_HM_Mass);
             //Generating the EvolutionData
             EvolutionData EvolDB = FuelType->GenerateEvolutionData(GetDecay(IV, fCycleTime), R_CycleTime, R_Power);
             {
@@ -625,7 +627,7 @@ EvolutionData FabricationPlant::GetReactorEvolutionDB(int ReactorId)
 //________________________________________________________________________
 
 //________________________________________________________________________
-IsotopicVector FabricationPlant::BuildFuelFromEqModel(map <string, vector<double> > LambdaArray)
+IsotopicVector FabricationPlant::BuildFuelFromEqModel(map <string, vector<double> > LambdaArray, double ReactorMass)
 {
     DBGL
     IsotopicVector BuildedFuel;
@@ -662,6 +664,27 @@ IsotopicVector FabricationPlant::BuildFuelFromEqModel(map <string, vector<double
         GetParc()->AddWaste(Lost);
     }
     DumpStock(LambdaArray);
+    //With chemical separation the mass of the built fuel is not equal to the wanted mass
+    //--> renormalisation to the wanted mass
+    //If impurities not considered in the ANN represent more than fImpuritiesTolerance of the mass there is a crash
+    double WantedMass = ReactorMass; 
+    double RealMass = BuildedFuel.GetTotalMass();
+    if (WantedMass != 0)
+    {
+    	double RelativeDifference = (RealMass - WantedMass)/WantedMass;
+    	if( abs(RelativeDifference) < fImpuritiesTolerance)
+	{ 
+    		BuildedFuel = BuildedFuel * WantedMass/RealMass;  
+	}
+	else
+	{
+		ERROR<<" There are way too many impurities in the stocks : the model cannot be representative !!!"<<endl;
+	}
+    }
+    else 
+    {
+    	ERROR<<" No way this fuel can be built : it is supposed to be massfree"<<endl;
+    }
     DBGL
     return BuildedFuel;
 }
