@@ -276,11 +276,11 @@ map <string , vector<double> > EQ_OneParameter::BuildFuel(double BurnUp, double 
 // Fissile fraction calculation is needed.
     if (fUseTMVAPredictor)
     {
-        // Check if EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() have been defined
+        // Check if EQ_OneParameter->SetTMVAXMLFilePath() and/or EQ_OneParameter->SetTMVANFOFilePath() have been defined
         if (fTMVAXMLFilePath.empty() || fTMVANFOFilePath.empty())
         {
             ERROR << " TMVA XML and/or NFO File path are not defined..."<< endl;
-            ERROR << " You have to use EquivalenceModel->SetTMVAXMLFilePath() and/or EquivalenceModel->SetTMVANFOFilePath() methods."<<endl;
+            ERROR << " You have to use EQ_OneParameter->SetTMVAXMLFilePath() and/or EQ_OneParameter->SetTMVANFOFilePath() methods."<<endl;
             exit(1);
         }
     
@@ -489,7 +489,7 @@ map <string , vector<double> > EQ_OneParameter::BuildFuel(double BurnUp, double 
         {
             if(count > fMaxIterration)
             {
-                ERROR << "CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on the target parameter using :\nYourEquivalenceModel->SetTargetParameterStDev(Precision); " << endl;
+                ERROR << "CRITICAL ! Can't manage to predict fissile content\nHint : Try to decrease the precision on the target parameter using :\nYourEQ_OneParameter->SetTargetParameterStDev(Precision); " << endl;
                 ERROR << "Targeted "<<fTargetParameter<<" : "<<TargetParameterValue<<endl;
                 ERROR << "Last calculated "<<fTargetParameter<<" : "<<CalculatedTargetParameter<<endl;
                 ERROR << "Last Fresh fuel normalized composition : " <<endl;
@@ -521,11 +521,11 @@ map <string , vector<double> > EQ_OneParameter::BuildFuel(double BurnUp, double 
 // Simplified fuel building
     else
     {
-        // Check if EquivalenceModel->SetTMVANFOFilePath() have been defined
+        // Check if EQ_OneParameter->SetTMVANFOFilePath() have been defined
         if (fTMVANFOFilePath.empty())
         {
             ERROR << " TMVA NFO File path is not defined..."<< endl;
-            ERROR << " You have to use EquivalenceModel->SetTMVANFOFilePath() methods."<<endl;
+            ERROR << " You have to use EQ_OneParameter->SetTMVANFOFilePath() methods."<<endl;
             exit(1);
         }
 
@@ -819,7 +819,7 @@ void EQ_OneParameter::ReadNFO()
         string line;
         getline(NFO,line);
         
-        EquivalenceModel::ReadLine(line);
+        EQ_OneParameter::ReadLine(line);
         
     } while(!NFO.eof());
     
@@ -853,21 +853,21 @@ void EQ_OneParameter::ReadLine(string line)
 void EQ_OneParameter::LoadKeyword() 
 {
     DBGL
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_zail",                & EquivalenceModel::ReadZAIlimits)           );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_reactor",         & EquivalenceModel::ReadType)            );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_fuel",                & EquivalenceModel::ReadType)            );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_massfractionmin",     & EquivalenceModel::ReadEqMinFraction)       );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_massfractionmax",     & EquivalenceModel::ReadEqMaxFraction)       );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_list",                & EquivalenceModel::ReadList)            );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_specpower",           & EquivalenceModel::ReadSpecificPower)       );
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_zainame",          & EquivalenceModel::ReadZAIName)             );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_maxburnup",           & EquivalenceModel::ReadMaxBurnUp)       ); 
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_targetparameter",      & EquivalenceModel::ReadTargetParameter)         );
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_predictortype",        & EquivalenceModel::ReadPredictorType)       );
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_output",           & EquivalenceModel::ReadOutput)              );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_buffer",          & EquivalenceModel::ReadBuffer)          ); 
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_modelparameter",       & EquivalenceModel::ReadModelParameter)          ); 
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_targetparameterstdev",     & EquivalenceModel::ReadTargetParameterStDev)    ); 
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_zail",                & EQ_OneParameter::ReadZAIlimits)           );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_reactor",         & EQ_OneParameter::ReadType)            );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_fuel",                & EQ_OneParameter::ReadType)            );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_massfractionmin",     & EQ_OneParameter::ReadEqMinFraction)       );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_massfractionmax",     & EQ_OneParameter::ReadEqMaxFraction)       );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_list",                & EQ_OneParameter::ReadList)            );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_specpower",           & EQ_OneParameter::ReadSpecificPower)       );
+    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_zainame",          & EQ_OneParameter::ReadZAIName)             );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_maxburnup",           & EQ_OneParameter::ReadMaxBurnUp)       ); 
+    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_targetparameter",      & EQ_OneParameter::ReadTargetParameter)         );
+    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_predictortype",        & EQ_OneParameter::ReadPredictorType)       );
+    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_output",           & EQ_OneParameter::ReadOutput)              );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_buffer",          & EQ_OneParameter::ReadBuffer)          ); 
+    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_modelparameter",       & EQ_OneParameter::ReadModelParameter)          ); 
+    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_targetparameterstdev",     & EQ_OneParameter::ReadTargetParameterStDev)    ); 
 
     DBGL
 }

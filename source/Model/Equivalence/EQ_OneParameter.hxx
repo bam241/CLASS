@@ -235,51 +235,37 @@ class EQ_OneParameter : public EquivalenceModel
     protected :
 
     bool fUseTMVAPredictor; //!< Bool that says if we need a TMVA predictor. If not, fuel fraction isimpoased by the FP.
-                                                //!< each list is identified by a keyword (example : -> "Fissile" & "Fertile")
+    
     map < string , double> fStreamListEqMMassFractionMax;           //!< Map that contains lists of stream according to the EqModel with mass maximum fraction
     map < string , double> fStreamListEqMMassFractionMin;           //!< Map that contains lists of stream according to the EqModel with mass minimum fraction
 
-    double  fMaximalBU;                                 //!< The Maximum burn-up of the model in GWd/t
-    string fTargetParameter;                            //!< Type of target parameter optimized in build fuel (ex. BUmax)               
-    int fMaxIterration;                             //!< Max iterrations in build fueld algorithm
-
     string fPredictorType ;                                 //!< Type of predictor used in Equivalence Model (ex: MLP)
     string fOutput ;                                //!< Type of output calculated by the predictor
-    string fBuffer ;                                    //!< Name of material used as buffer in fuel 
+    string fBuffer ;                                    //!< Name of material used as buffer in fuel
 
-    map<string, double> fModelParameter ;                   ///< Map of equivalence model parameter 
- 
-    map<ZAI,string> fMapOfTMVAVariableNames;                //!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
+    map<string, double> fModelParameter ;                   ///< Map of equivalence model parameter
 
-    double  fTargetParameterStDev;                          //!< Precision on target parameter calculation 
-    
-    //@}
+    map<ZAI, string> fMapOfTMVAVariableNames;               //!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 
-        string fTMVAXMLFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
-        string fTMVANFOFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
+    double  fTargetParameterStDev;                          //!< Precision on target parameter calculation
 
+    double  fMaximalBU;                                 //!< The Maximum burn-up of the model in GWd/t
+    string fTargetParameter;                            //!< Type of target parameter optimized in build fuel (ex. BUmax)               
+    int fMaxIterration;                             //!< Max iterrations in build fueld algorithm    
 
+    string fTMVAXMLFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
+    string fTMVANFOFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
 
 
 #ifndef __ROOTCLING__
     map<string, EQOP_MthPtr> fKeyword;
 #endif
     
-    bool freaded;
     map< ZAI, pair<double,double> > fZAILimits;     //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
 
     string fInformationFile;                    //!<  file containing Reactor Type, Fuel type, HM mass, Power, time vector, and TMVA input variables names (looks the manual for format details)
     string fDBFType;                    //!<  Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
     string fDBRType;                    //!<  Reactor Type (e.g PWR, FBR-Na, ADS..)
-
-    /*!
-     \name Others 
-     */
-    //@{
-    map <string , double > fTotalMassInStocks;          //!< Total mass in each vector of stock
-    map <string , double > fLambdaMax;              //!< Total lambda of available stocks
-
-    //@}
 
     private :
 
