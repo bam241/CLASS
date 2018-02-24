@@ -6,5 +6,12 @@ int main(int argc,char * argv[]) {
 	return RUN_ALL_TESTS();
 }
 
-// COMPILATION
-// g++ -o CLASS_test main_test.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -lTMVA -lgtest
+/*
+Google test library compilation
+
+g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
+ar -rv libgtest.a gtest-all.o
+
+Main Test compilation
+g++ -isystem ${GTEST_DIR}/include -pthread main_test.cxx libgtest.a -o MyTest -I${GTEST_DIR}/include -I$CLASS_include -I$CLASS_external -I$CLASS_Equivalence -I$CLASS_Irradiation -I$CLASS_XS -L$CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs`
+*/
