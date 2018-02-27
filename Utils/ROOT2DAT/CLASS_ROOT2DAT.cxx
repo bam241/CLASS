@@ -276,5 +276,5 @@ DataFileName<<"C"<<endl;
 }
 
 /*
- g++ -o CLASS_R2D CLASS_ROOT2DAT.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
+g++ -o CLASS_R2D CLASS_ROOT2DAT.cxx -I$CLASS_PATH/source/include -I$CLASS_PATH/source/external -I$CLASS_PATH/source/Model/Equivalence -I$CLASS_PATH/source/Model/Irradiation -I$CLASS_PATH/source/Model/XS -L$CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs`
 */

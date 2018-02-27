@@ -36,7 +36,6 @@
 //________________________________________________________________________
 XSM_MLP::XSM_MLP(string TMVA_Weight_Directory,string InformationFile, bool IsTimeStep):XSModel(new CLASSLogger("XSM_MLP.log"))
 {
-	
 	fIsStepTime = IsTimeStep;
 	fTMVAWeightFolder = TMVA_Weight_Directory;
 	
@@ -52,11 +51,9 @@ XSM_MLP::XSM_MLP(string TMVA_Weight_Directory,string InformationFile, bool IsTim
 	ReadNFO();
 	
 }
-
 //________________________________________________________________________
 XSM_MLP::XSM_MLP(CLASSLogger* Log,string TMVA_Weight_Directory,string InformationFile, bool IsTimeStep):XSModel(Log)
 {
-	
 	fIsStepTime = IsTimeStep;
 	fTMVAWeightFolder = TMVA_Weight_Directory;
 
@@ -70,9 +67,7 @@ XSM_MLP::XSM_MLP(CLASSLogger* Log,string TMVA_Weight_Directory,string Informatio
 	
 	LoadKeyword();
 	ReadNFO();
-	
 }
-
 //________________________________________________________________________
 XSM_MLP::~XSM_MLP()
 {

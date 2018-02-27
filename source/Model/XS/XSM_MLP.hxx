@@ -1,7 +1,5 @@
-
 #ifndef _XSM_MLP_HXX
 #define _XSM_MLP_HXX
-
 
 /*!
  \file
@@ -26,7 +24,7 @@ using namespace std;
 
 
 class XSM_MLP;
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 typedef void (XSM_MLP::*XS_MLP_DMthPtr)( const string & ) ;
 #endif
 //-----------------------------------------------------------------------------//
@@ -142,7 +140,7 @@ class XSM_MLP : public XSModel
 	
 	map<ZAI,string> fMapOfTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
 	
-#ifndef __CINT__
+#ifndef __ROOTCLING__
 	map<string, XS_MLP_DMthPtr> fDKeyword;
 #endif
 };
