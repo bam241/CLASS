@@ -252,17 +252,19 @@ map <string , vector<double> > EQ_OneParameter::BuildFuel(double BurnUp, double 
     }
 
     // Test if there is at least one stock available in each list, otherwise fuel is not built //
-    bool BreakReturnLambda = false; 
+    bool BreakReturnLambda = true; 
     for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
     {
-        if(StreamArray[(*it_s_vIV).first].size() == 0)
+        if(StreamArray[(*it_s_vIV).first].size() != 0)
         {
-            WARNING << " No stock available for stream : "<< (*it_s_vIV).first <<".  Fuel not built." << endl;
-            SetLambdaToErrorCode(lambda[(*it_s_vIV).first]);
-            BreakReturnLambda = true;   
+            BreakReturnLambda &= false;   
         }
     }
-    if(BreakReturnLambda) { return lambda;} 
+    if(BreakReturnLambda) { 
+        WARNING << " No stock available for stream : "<< (*it_s_vIV).first <<".  Fuel not built." << endl;
+        SetLambdaToErrorCode(lambda[(*it_s_vIV).first]);
+        return lambda;
+    } 
 
     // Check if the targeted burn-up is lower than maximum burn-up of model //
     if(BurnUp > fMaximalBU)
