@@ -339,8 +339,8 @@ void Generate_tmva_factory_input(double ProportionOfTraining)
 
 	ofstream  InputNetwork("_tmp/include_Train/InputVariables.cxx");
 	for(map<ZAI,string>::iterator it = fMapName.begin() ; it != fMapName.end() ; it++ )
-		InputNetwork <<"factory->AddVariable( \"" << it->second  << "\" , \"" << it->second << "\", \"IsotopicFraction\", 'F' );"<< endl; 
-    InputNetwork <<"factory->AddVariable( \"Time\" , \"Time\"     , \"seconds\", 'F' );"<< endl<< endl;
+		InputNetwork <<"dataloader->AddVariable( \"" << it->second  << "\" , \"" << it->second << "\", \"IsotopicFraction\", 'F' );"<< endl; 
+    InputNetwork <<"dataloader->AddVariable( \"Time\" , \"Time\"     , \"seconds\", 'F' );"<< endl<< endl;
 
 	ProportionOfTraining /=100;
     InputNetwork <<"double PropTraining = "<< ProportionOfTraining <<";"<< endl;

@@ -18,6 +18,7 @@
 #if not defined(__CINT__) || defined(__MAKECINT__)
 #include "TMVA/Tools.h"
 #include "TMVA/Factory.h"
+#include "TMVA/DataLoader.h"
 #endif
 
 using namespace TMVA;
@@ -50,13 +51,14 @@ int main(int argc, char const *argv[])
    // front of the "Silent" argument in the option string
 
    TMVA::Factory *factory = new TMVA::Factory( "TMVARegression", outputFile, 
-                                               "!V:!Silent:Color:DrawProgressBar" );
+                                               "!V:!Silent:Color:DrawProgressBar:AnalysisType=Regression" );
 
+   TMVA::DataLoader *dataloader = new TMVA::DataLoader("dataset");
 
    #include "_tmp/include_Train/InputVariables.cxx"
 
    // Add the variable carrying the regression target
-   factory->AddTarget(TargetName);
+   dataloader->AddTarget(TargetName);
 
    // It is also possible to declare additional targets for multi-dimensional regression, ie:
    // -- factory->AddTarget( "fvalue2" );
@@ -83,7 +85,7 @@ int main(int argc, char const *argv[])
    Double_t regWeight  = 1.0;   
 
    // You can add an arbitrary number of regression trees
-   factory->AddRegressionTree( regTree, regWeight );
+   dataloader->AddRegressionTree( regTree, regWeight );
 
    // This would set individual event weights (the variables defined in the 
    // expression need to exist in the original TTree)
@@ -101,7 +103,7 @@ int main(int argc, char const *argv[])
 
 
    // tell the factory to use all remaining events in the trees after training for testing:
-   factory->PrepareTrainingAndTestTree( mycut, 
+   dataloader->PrepareTrainingAndTestTree( mycut, 
                                         "nTrain_Regression=0:nTest_Regression=0:SplitMode=Random:NormMode=NumEvents:!V" );
 
    // If no numbers of events are given, half of the events in the tree are used 
@@ -119,7 +121,7 @@ int main(int argc, char const *argv[])
    std::stringstream Name;
    Name<<"MLP_"<<TargetName; 
    // Neural network (MLP)                                                                                 
-   factory->BookMethod( TMVA::Types::kMLP, Name.str().c_str(), ParamNN );
+   factory->BookMethod( dataloader, TMVA::Types::kMLP, Name.str().c_str(), ParamNN );
    // --------------------------------------------------------------------------------------------------
 
    // ---- Now you can tell the factory to train, test, and evaluate the MVAs
