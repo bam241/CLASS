@@ -14,7 +14,6 @@
 #include "TMVA/Tools.h"
 #include "TMVA/MethodCuts.h"
 
-#include "CLASSReader.hxx"
 
 //________________________________________________________________________
 //________________________________________________________________________
@@ -40,7 +39,13 @@ EQ_OneParameter::EQ_OneParameter(string TMVAXMLFilePath, string TMVANFOFilePath)
 
     LoadKeyword();  // Load Key words defineds in NFO file
     ReadNFO();      //Getting information from file NFO
+<<<<<<< HEAD
    
+=======
+    
+    BookTMVAReader(); 
+
+>>>>>>> EQM done, on XS
     //Check if any information is missing in NFO file
     if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
     if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
@@ -87,6 +92,8 @@ EQ_OneParameter::EQ_OneParameter(CLASSLogger* log, string TMVAXMLFilePath, strin
 
     LoadKeyword();  // Load Key words defineds in NFO file
     ReadNFO();      //Getting information from file NFO
+    
+    BookTMVAReader(); 
 
     //Check if any information is missing in NFO file
     if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
@@ -125,7 +132,13 @@ EQ_OneParameter::EQ_OneParameter(string TMVANFOFilePath):EquivalenceModel(new CL
 
     LoadKeyword();  // Load Key words defineds in NFO file
     ReadNFO();      //Getting information from file NFO
+<<<<<<< HEAD
    
+=======
+    
+    BookTMVAReader(); 
+
+>>>>>>> EQM done, on XS
     //Check if any information is missing in NFO file
     if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
     if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
@@ -155,6 +168,8 @@ EQ_OneParameter::EQ_OneParameter(CLASSLogger* log, string TMVANFOFilePath):Equiv
 
     LoadKeyword();  // Load Key words defineds in NFO file
     ReadNFO();      //Getting information from file NFO
+    
+    BookTMVAReader(); 
 
     //Check if any information is missing in NFO file
     if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
@@ -173,8 +188,27 @@ EQ_OneParameter::EQ_OneParameter(CLASSLogger* log, string TMVANFOFilePath):Equiv
 //________________________________________________________________________
 EQ_OneParameter::~EQ_OneParameter()
 {
+<<<<<<< HEAD
                             
+=======
+  delete fReader;
 }
+
+
+void EQ_OneParameter::BookTMVAReader()
+{
+    fReader = new CLASSReader( fMapOfTMVAVariableNames );
+    
+    if (fTargetParameter == "BurnUpMax")
+    {
+        fReader->AddVariable( "Time" );
+    }
+    fReader->BookMVA( "MLP method" , fTMVAXMLFilePath );
+
+>>>>>>> EQM done, on XS
+}
+
+
 //________________________________________________________________________
 IsotopicVector EQ_OneParameter::BuildFuelToTest(map < string, vector<double> >& lambda, map < string , vector <IsotopicVector> > const& StreamArray, double HMMass, map <string, bool> StreamListIsBuffer)
 {
@@ -606,9 +640,10 @@ map <string , vector<double> > EQ_OneParameter::BuildFuel(double BurnUp, double 
 }
 
 //________________________________________________________________________
-TTree* EQ_OneParameter::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double ThisTime)
+vector<float> EQ_OneParameter::CreateTMVAInput(IsotopicVector TheFreshfuel, double ThisTime)
 {
     /******Create Input data tree to be interpreted by TMVA::Reader***/
+<<<<<<< HEAD
     TTree*   InputTree = new TTree(fOutput.c_str(), fOutput.c_str());
     
     vector<float>   InputTMVA;
@@ -617,9 +652,15 @@ TTree* EQ_OneParameter::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double 
     for(int i = 0 ; i< (int)fMapOfTMVAVariableNames.size() ; i++)
         InputTMVA.push_back(0);
     
+=======
+   vector<float> tmva_input;
+
+
+>>>>>>> EQM done, on XS
     float Time = 0;
     
     IsotopicVector IVInputTMVA;
+<<<<<<< HEAD
     map<ZAI ,string >::iterator it_ZAI_s;
     int j = 0;
     
@@ -627,11 +668,15 @@ TTree* EQ_OneParameter::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double 
 		InputTree->Branch( (fListOfNonZaiTMVAVariables[j].second).c_str(),
  &InputTMVA[j], (fListOfNonZaiTMVAVariables[j].second + "/F").c_str());
 	}
+=======
+    map<ZAI , string >::iterator it_ZAI_s;
+>>>>>>> EQM done, on XS
 
 
 
     for( it_ZAI_s = fMapOfTMVAVariableNames.begin()  ; it_ZAI_s != fMapOfTMVAVariableNames.end() ; it_ZAI_s++)
     {
+<<<<<<< HEAD
         InputTree->Branch( ((*it_ZAI_s).second).c_str(), &InputTMVA[j], ((*it_ZAI_s).second + "/F").c_str());
         IVInputTMVA+=  ((*it_ZAI_s).first)*1;
         j++;
@@ -640,8 +685,17 @@ TTree* EQ_OneParameter::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double 
     if(ThisTime != -1)
         InputTree->Branch("Time" ,&Time ,"Time/F");
     
+=======
+        IVInputTMVA +=  ((*it_ZAI_s).first) * 1;
+    }
+    
+    // build IV containing only the ZAI known by the Model
+>>>>>>> EQM done, on XS
     IsotopicVector IVAccordingToUserInfoFile    = TheFreshfuel.GetThisComposition(IVInputTMVA);
+    
+    // Normalize the vector
     double Ntot                     = IVAccordingToUserInfoFile.GetSumOfAll();
+<<<<<<< HEAD
     IVAccordingToUserInfoFile           = IVAccordingToUserInfoFile/Ntot;
     
     j = 0;
@@ -651,16 +705,30 @@ TTree* EQ_OneParameter::CreateTMVAInputTree(IsotopicVector TheFreshfuel, double 
 	}
 
     for( it_ZAI_s = fMapOfTMVAVariableNames.begin() ; it_ZAI_s != fMapOfTMVAVariableNames.end() ; it_ZAI_s++)
+=======
+    IVAccordingToUserInfoFile           = IVAccordingToUserInfoFile / Ntot;
+
+    // Add value in the input vector
+    for ( it_ZAI_s = fMapOfTMVAVariableNames.begin() ; it_ZAI_s != fMapOfTMVAVariableNames.end() ; it_ZAI_s++)
+>>>>>>> EQM done, on XS
     {
-        InputTMVA[j] = IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it_ZAI_s).first ) ;
-        j++;
+        tmva_input.push_back( IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it_ZAI_s).first ) ;
     }
+<<<<<<< HEAD
     
     Time = ThisTime;
     InputTree->Fill();
     
     return InputTree;
     
+=======
+
+    if (ThisTime != -1)
+      tmva_input.push_back(ThisTime);
+
+    return tmva_input;
+
+>>>>>>> EQM done, on XS
 }
 //________________________________________________________________________
 void EQ_OneParameter::CheckTargetParameterConsistency(map < int , string > StreamListPriority, map < string , double >  TargetParameterMin, map < string , double > TargetParameterMax)
@@ -730,21 +798,35 @@ double EQ_OneParameter::CalculateBurnUpMax(IsotopicVector TheFuel, map<string, d
     double OldFinalTimePlus     = BurnupToSecond(MaximumBU);
     double k_av             = 0; //average kinf
     double OldPredictedk_av     = 0;
+<<<<<<< HEAD
     
     CLASSReader * reader = new CLASSReader( fMapOfTMVAVariableNames );
     reader->AddVariable( "Time" );
     reader->BookMVA( "MLP method" , fTMVAXMLFilePath );
     
     for(int b = 0;b<NumberOfBatch;b++)
+=======
+
+
+    for (int b = 0; b < NumberOfBatch; b++)
+>>>>>>> EQM done, on XS
     {
         float TheTime = (b+1)*TheFinalTime/NumberOfBatch;
 
+<<<<<<< HEAD
         TTree* InputTree = CreateTMVAInputTree(TheFuel,TheTime);
         reader->SetInputData( InputTree );
         
         OldPredictedk_av += reader->EvaluateRegression( "MLP method" )[0];
         
         delete InputTree;
+=======
+        vector<float> tmva_input = CreateTMVAInput(TheFuel, TheTime);
+        fReader->SetInputData( tmva_input );
+
+        OldPredictedk_av += fReader->EvaluateRegression( "MLP method" )[0];
+
+>>>>>>> EQM done, on XS
     }
     OldPredictedk_av /= NumberOfBatch;
     
@@ -762,6 +844,7 @@ double EQ_OneParameter::CalculateBurnUpMax(IsotopicVector TheFuel, map<string, d
         if( (OldPredictedk_av-KThreshold)  > 0) //The burnup can be increased
         {
             OldFinalTimeMinus = TheFinalTime;
+<<<<<<< HEAD
             TheFinalTime = TheFinalTime + fabs(OldFinalTimePlus - TheFinalTime)/2.;
             
             if(SecondToBurnup(TheFinalTime) >= (MaximumBU-MaximumBU*GetTargetParameterStDev() ) )
@@ -774,11 +857,25 @@ double EQ_OneParameter::CalculateBurnUpMax(IsotopicVector TheFuel, map<string, d
             TheFinalTime = TheFinalTime - fabs(OldFinalTimeMinus-TheFinalTime)/2.;
             if( SecondToBurnup(TheFinalTime) < (MaximumBU-MinimumBU)/2.*GetTargetParameterStDev() )
                 { delete reader; return 0; }
+=======
+            TheFinalTime = TheFinalTime + fabs(OldFinalTimePlus - TheFinalTime) / 2.;
+
+            if (SecondToBurnup(TheFinalTime) >= (MaximumBU - MaximumBU * GetTargetParameterStDev() ) )
+            { return MaximumBU; }
+        }
+        else if ( (OldPredictedk_av - KThreshold)  < 0) //The burnup is too high
+        {
+            OldFinalTimePlus = TheFinalTime;
+            TheFinalTime = TheFinalTime - fabs(OldFinalTimeMinus - TheFinalTime) / 2.;
+            if ( SecondToBurnup(TheFinalTime) < (MaximumBU - MinimumBU) / 2.*GetTargetParameterStDev() )
+            { return 0; }
+>>>>>>> EQM done, on XS
         }
         
         k_av = 0;
         for(int b = 0;b<NumberOfBatch;b++)
         {
+<<<<<<< HEAD
             float TheTime = (b+1)*TheFinalTime/NumberOfBatch;
             TTree* InputTree = CreateTMVAInputTree(TheFuel,TheTime);
             reader->SetInputData( InputTree );
@@ -796,10 +893,25 @@ double EQ_OneParameter::CalculateBurnUpMax(IsotopicVector TheFuel, map<string, d
     
     delete reader;
     //cout<<endl;
+=======
+            float TheTime = (b + 1) * TheFinalTime / NumberOfBatch;
+            vector<float> tmva_input = CreateTMVAInput(TheFuel, TheTime);
+            fReader->SetInputData( tmva_input );
+
+            k_av += fReader->EvaluateRegression("MLP method")[0];
+
+        }
+        k_av /= NumberOfBatch;
+        OldPredictedk_av = k_av;
+        count++;
+    }   while ( fabs(OldPredictedk_av - KThreshold) > GetPCMPrecision() )  ;
+
+>>>>>>> EQM done, on XS
     return SecondToBurnup(TheFinalTime);
 }
 
 //________________________________________________________________________
+<<<<<<< HEAD
 double 	EQ_OneParameter::CalculateKeffAtBOC(IsotopicVector FreshFuel)
 { 
 	double keff(-1);
@@ -829,6 +941,18 @@ double 	EQ_OneParameter::CalculateKeffAtBOC(IsotopicVector FreshFuel)
 	delete InputTree;
 	return keff;
 } 
+=======
+double  EQ_OneParameter::CalculateKeffAtBOC(IsotopicVector FreshFuel)
+{
+
+    vector<float> tmva_input = CreateTMVAInput(FreshFuel, -1);
+    fReader->SetInputData( tmva_input );
+
+    double keff =  fReader->EvaluateRegression( "MLP method" )[0];
+
+    return keff;
+}
+>>>>>>> EQM done, on XS
 //________________________________________________________________________
 void EQ_OneParameter::ReadNFO()
 {

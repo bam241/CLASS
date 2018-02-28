@@ -9,6 +9,8 @@
 #include "TMVA/Tools.h"
 #include "TMVA/MethodCuts.h"
 
+using namespace std;
+
 class CLASSReader
 {
 	public :
@@ -20,7 +22,7 @@ class CLASSReader
 		~CLASSReader ();
 
 		void AddVariable  ( const std::string & );
-		void SetInputData ( TTree * t , Long64_t entry=0 );
+		void SetInputData ( vector<float> inputdata );
 
 		TMVA::IMethod * BookMVA ( const std::string & , const std::string & );
 		const std::vector<float> & EvaluateRegression ( const std::string & );

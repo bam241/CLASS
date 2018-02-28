@@ -356,8 +356,8 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 		
 			for(int TimeStep = 0;TimeStep<int(fMLP_Time.size());TimeStep++)
 			{
-				TTree* InputTree = CreateTMVAInputTree(IV,TimeStep);
-				reader->SetInputData( InputTree );
+				vector<float> tmva_input = CreateTMVAInput(IV,TimeStep);
+				reader->SetInputData( tmva_input );
 				double XSValue = reader->EvaluateRegression( "MLP method" )[0];
 				
 				pair< map<ZAI, TGraph*>::iterator, bool> IResult = ExtrapolatedXS[Reaction].insert( pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph()) );

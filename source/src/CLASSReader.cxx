@@ -1,5 +1,6 @@
 #include "CLASSReader.hxx"
 
+
 //____________________________________________________________________________
 CLASSReader::CLASSReader () :
 	freader( new TMVA::Reader("silent") )
@@ -32,16 +33,14 @@ void CLASSReader::AddVariable ( const std::string & name )
 }
 
 //____________________________________________________________________________
-void CLASSReader::SetInputData ( TTree * t , Long64_t entry )
+void CLASSReader::SetInputData ( vector<float> input )
 {
 	const std::vector<TString> names = freader->DataInfo().GetListOfVariables();
 	const std::size_t N = names.size();
 	
 	std::list<float>::iterator l_it = finputTMVA.begin();
 	for ( std::size_t i = 0 ; i!=N ; ++i, ++l_it )
-		{ t->SetBranchAddress( names[i] , &(*l_it) ); }
-	
-	t->GetEntry(entry);
+		{ *l_it = input[i]; }
 }
 
 

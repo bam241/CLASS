@@ -14,10 +14,10 @@
 
 #include "EquivalenceModel.hxx"
 #include "IsotopicVector.hxx"
+#include "CLASSReader.hxx"
 #include <math.h>
 #include "TTree.h"
 #include <map>
-#include "CLASSObject.hxx"
 
 
 using namespace std;
@@ -88,7 +88,9 @@ class EQ_OneParameter : public EquivalenceModel
 
 
     //@}
-    TTree* CreateTMVAInputTree(IsotopicVector TheFreshfuel, double ThisTime)    ; //!<Create input tmva tree to be read by ExecuteTMVA
+    void BookTMVAReader(); //Book TMVA method  
+    
+    vector<float> CreateTMVAInput(IsotopicVector TheFreshfuel, double ThisTime)    ; //!<Create input tmva tree to be read by ExecuteTMVA
     double CalculateTargetParameter(IsotopicVector TheFuel, string TargetParameterName); //!<Get a fuel parameter associated to the fuel ---> ex : BurnUpMax, keffBOC, keffEOC, ... 
     double CalculateBurnUpMax(IsotopicVector TheFuel, map<string, double> ModelParameter);//!<Calculate the BU max associated to a fuel composition based on MLP prediction (suitable for PWR)
     double CalculateKeffAtBOC(IsotopicVector TheFuel); //!<Calculate the keff at BOC associated to a fuel composition based on MLP prediction (suitable for SFR)
@@ -114,7 +116,7 @@ class EQ_OneParameter : public EquivalenceModel
     map<string, double> GetModelParameter()  { return fModelParameter; }   //!< Get Model Parameters precised in NFO file
 	  
     void SetNonZaiTMVAVariable(string snZP, double dnZP);    //!< Set NonZaiTMVAVariables
-	  vector< pair<double, string> > GetNonZaiTMVAVariables()  { return fListOfNonZaiTMVAVariables; }   //!< Get NonZaiTMVAVariables
+	vector< pair<double, string> > GetNonZaiTMVAVariables()  { return fListOfNonZaiTMVAVariables; }   //!< Get NonZaiTMVAVariables
 
     void SetMaxIterration(int val)  { fMaxIterration = val; }   //!< Max iteration in build fuel algorithm
     void SetTargetParameterStDev(double TPSD){fTargetParameterStDev = TPSD;} //!< Set the precision on Target Parameter
@@ -266,6 +268,7 @@ class EQ_OneParameter : public EquivalenceModel
     string fTMVANFOFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
 
 
+    CLASSReader* fReader;
     map<string, EQOP_MthPtr> fKeyword;
     
     map< ZAI, pair<double,double> > fZAILimits;     //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
