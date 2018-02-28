@@ -86,8 +86,15 @@ void EquivalenceModel::ConvertMassToLambdaVector(string MaterialDenomination, ve
 {
     DBGL
 
-    if (Stocks.size()==0) return;
-
+    if(Stocks.size == 0)
+    {
+        return;
+    }
+    if(Stocks.size != lambda.size())
+    {
+        ERROR << "Stocks vector size MUST be the same as lamba size!!" << endl;
+        exit(1);
+    }
     double Lambda_tot = 0;
 
     // Calculation of Lambda tot associated to the required mass MaterialMassNeeded
