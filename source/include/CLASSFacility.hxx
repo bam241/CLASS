@@ -2,13 +2,6 @@
 #ifndef _CLASSFACILITY_
 #define _CLASSFACILITY_
 
-
-/*!
- \file
- \brief Header file for CLASSFacility class.
-
- */
-
 #include <string>
 #include <fstream>
 
@@ -27,9 +20,7 @@ class Scenario;
  Define a CLASS Facility.
  The aim of these class is to gather all the commom properties of the facilities.
 
-
  @author BaM
- @version 2.0
  */
 //________________________________________________________________________
 

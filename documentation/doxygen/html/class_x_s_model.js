@@ -1,0 +1,25 @@
+var class_x_s_model =
+[
+    [ "XSModel", "class_x_s_model.html#ad63e629f4d83300d9161253838d4fa43", null ],
+    [ "XSModel", "class_x_s_model.html#a7e59bfffc10c03ab0c751670fb05a9f6", null ],
+    [ "~XSModel", "class_x_s_model.html#a77da915b4360ecac85eef21eff323a95", null ],
+    [ "GetCrossSections", "class_x_s_model.html#aac8ec0d2e5efa7b520cb5c5e04d83578", null ],
+    [ "GetZAIThreshold", "class_x_s_model.html#ab258f991c2f18f77fd9b9e949e095845", null ],
+    [ "isIVInDomain", "class_x_s_model.html#a8ac4d9ca2f88b839518f48e0c997116b", null ],
+    [ "LoadKeyword", "class_x_s_model.html#a1872fba7910ae3affa4c25e572c51043", null ],
+    [ "ReadLine", "class_x_s_model.html#a30fbf1037b374fdeeef4a856aacc8104", null ],
+    [ "ReadNFO", "class_x_s_model.html#a6459440badb89b1ed1c793d5b4094c82", null ],
+    [ "ReadRParam", "class_x_s_model.html#ab2a86c068861ff6e6690230c797a9084", null ],
+    [ "ReadType", "class_x_s_model.html#a3940164535f0b5d95d6825d5d9ee2c27", null ],
+    [ "ReadZAIlimits", "class_x_s_model.html#a96ebecdc0ee7983fb2e7fa103a828c92", null ],
+    [ "SetZAIThreshold", "class_x_s_model.html#af4dadba52b08644be22bcf761dfcb6c9", null ],
+    [ "fDBFType", "class_x_s_model.html#a66dcbe2f5bf5a10c027e085dd0d9f38e", null ],
+    [ "fDBHMMass", "class_x_s_model.html#a6fb38c306b8d25418ace49f977fd7c1f", null ],
+    [ "fDBPower", "class_x_s_model.html#a0aac4fe8ee1a8b7080336335683d865d", null ],
+    [ "fDBRType", "class_x_s_model.html#ab04338ce9f4a8e576fa513f0fb474ca5", null ],
+    [ "fInformationFile", "class_x_s_model.html#a07e445deccb696d13d637990f1964115", null ],
+    [ "fKeyword", "class_x_s_model.html#af53f23649d00f64e10122630d4b8b92d", null ],
+    [ "freaded", "class_x_s_model.html#a1c2fa34afcccdacbba045aa2b45ea76c", null ],
+    [ "fZAILimits", "class_x_s_model.html#abc6334fd06478f234d67f8a2076f71c2", null ],
+    [ "fZAIThreshold", "class_x_s_model.html#aa77bac482875dd045a1f02779270194b", null ]
+];
