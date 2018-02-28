@@ -86,11 +86,11 @@ void EquivalenceModel::ConvertMassToLambdaVector(string MaterialDenomination, ve
 {
     DBGL
 
-    if(Stocks.size == 0)
+    if (Stocks.size() == 0)
     {
         return;
     }
-    if(Stocks.size != lambda.size())
+    if (Stocks.size() != lambda.size())
     {
         ERROR << "Stocks vector size MUST be the same as lamba size!!" << endl;
         exit(1);
