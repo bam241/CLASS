@@ -8,25 +8,32 @@
 #include "IM_RK4.hxx"
 #include "EQ_OneParameter.hxx"
 
-TEST ( TestReactor1, getSize ) {
+TEST ( TestReactor, getBurnUp ) {
 
-    XSM_MLP*            XSMUOX      = new XSM_MLP(gCLASS->GetLog(), PATH_TO_DATA + "PWR/UOX/XSModel/30Wg_FullUOX");
-    EQ_OneParameter*    EQMPWRUOX   = new EQ_OneParameter(gCLASS->GetLog(), PATH_TO_DATA + "PWR/UOX/EQModel/XML/PWR_UOX.xml", PATH_TO_DATA + "PWR/UOX/EQModel/NFO/PWR_UOX.nfo");
-    EQMPWRUOX->SetModelParameter("kThreshold", 1.034);
-    EQMPWRUOX->SetModelParameter("NumberOfBatch", 3);
-    PhysicsModels*      PMUOX       = new PhysicsModels(XSMUOX, EQMPWRUOX, IMRK4);
+    double HMMass     = 1;
+    double Power      = 1;
+    double LoadFactor = 1;
+    double CycleTime  = 1;
 
-    double HMMass        = 1;
-    double Power         = 1;
-    double BurnUp        = 1;
-    double LoadFactor    = 1;
+    Reactor* R1 = new Reactor();
+    R1->SetCycleTime(1);
+    double ExpectedBurnUp = R1->GetBurnUp();
+    double RealBurnUp     = Power * CycleTime / 3600. / 24. / HMMass;
 
-    cSecond StartingTime =  0;
-    cSecond LifeTime     =  100;
+    ASSERT_NEAR(RealBurnUp, ExpectedBurnUp, RealBurnUp*1e-15);
+}
 
-    Reactor* PWR_UOX = new Reactor(gCLASS->GetLog(), PMUOX, FP_UOX, PoolUOx, StartingTime, LifeTime, Power, HMMass, BurnUp, LoadFactor);
+TEST ( TestReactor, getCycleTime ) {
 
-    PWR_UOX->SetName("PWR_UOx");
+    double HMMass     = 1;
+    double Power      = 1;
+    double LoadFactor = 1;
+    double BurnUp     = 1;
 
-    EXPECT_EQ(  ,  );
+    Reactor* R1 = new Reactor();
+    R1->SetBurnUp(BurnUp);
+    double ExpectedCycleTime = R1->GetCycleTime();
+    double RealCycleTime     = Power * BurnUp / 3600. / 24. / HMMass;
+
+    ASSERT_NEAR(RealCycleTime, ExpectedCycleTime, RealCycleTime*1e-15);
 }
