@@ -20,6 +20,7 @@
 #if not defined(__CINT__) || defined(__MAKECINT__)
 #include "TMVA/Tools.h"
 #include "TMVA/Factory.h"
+#include "TMVA/DataLoader.h"
 #endif
 
 using namespace TMVA;
@@ -53,7 +54,9 @@ int main(int argc, char const *argv[])
    // front of the "Silent" argument in the option string
 
    TMVA::Factory *factory = new TMVA::Factory( "TMVARegression", outputFile, 
-                                               "!V:!Silent:Color:DrawProgressBar" );
+                                               "!V:!Silent:Color:DrawProgressBar:AnalysisType=Regression" );
+					       
+   TMVA::DataLoader *dataloader = new TMVA::DataLoader("dataset");
 
    // If you wish to modify default settings 
    // (please check "src/Config.h" to see all available global options)
@@ -63,14 +66,14 @@ int main(int argc, char const *argv[])
    // Define the input variables that shall be used for the TMVA training
    // note that you may also use variable expressions, such as: "3*var1/var2*abs(var3)"
    // [all types of expressions that can also be parsed by TTree::Draw( "expression" )]
-   factory->AddVariable( "BU"           , "Burn Up"     , "GWj_tMLi"        , 'F' );
-   factory->AddVariable( "U5_enrichment","U5 enrichment", "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu8"          , "Pu 238"      , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu9"          , "Pu 239"      , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu10"         , "Pu 240"      , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu11"         , "Pu 241"      , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Pu12"         , "Pu 242"      , "FractionIsotopic", 'F' );
-   factory->AddVariable( "Am1"          , "Am 241"      , "FractionIsotopic", 'F' );
+   dataloader->AddVariable( "BU"           , "Burn Up"     , "GWj_tMLi"        , 'F' );
+   dataloader->AddVariable( "U5_enrichment","U5 enrichment", "FractionIsotopic", 'F' );
+   dataloader->AddVariable( "Pu8"          , "Pu 238"      , "FractionIsotopic", 'F' );
+   dataloader->AddVariable( "Pu9"          , "Pu 239"      , "FractionIsotopic", 'F' );
+   dataloader->AddVariable( "Pu10"         , "Pu 240"      , "FractionIsotopic", 'F' );
+   dataloader->AddVariable( "Pu11"         , "Pu 241"      , "FractionIsotopic", 'F' );
+   dataloader->AddVariable( "Pu12"         , "Pu 242"      , "FractionIsotopic", 'F' );
+   dataloader->AddVariable( "Am1"          , "Am 241"      , "FractionIsotopic", 'F' );
 
 
    // You can add so-called "Spectator variables", which are not used in the MVA training, 
@@ -80,7 +83,7 @@ int main(int argc, char const *argv[])
    //factory->AddSpectator( "spec2:=var1*3",  "Spectator 2", "units", 'F' );
 
    // Add the variable carrying the regression target
-   factory->AddTarget("teneur");
+   dataloader->AddTarget("teneur");
 
    // It is also possible to declare additional targets for multi-dimensional regression, ie:
    // -- factory->AddTarget( "fvalue2" );
@@ -107,7 +110,7 @@ int main(int argc, char const *argv[])
    Double_t regWeight  = 1.0;   
 
    // You can add an arbitrary number of regression trees
-   factory->AddRegressionTree( regTree, regWeight );
+   dataloader->AddRegressionTree( regTree, regWeight );
 
    // This would set individual event weights (the variables defined in the 
    // expression need to exist in the original TTree)
@@ -117,7 +120,7 @@ int main(int argc, char const *argv[])
    TCut mycut = ""; // for example: TCut mycut = "abs(var1)<0.5 && abs(var2-0.5)<1";
 
    // tell the factory to use all remaining events in the trees after training for testing:
-   factory->PrepareTrainingAndTestTree( mycut, 
+   dataloader->PrepareTrainingAndTestTree( mycut, 
                                         "nTrain_Regression=0:nTest_Regression=0:SplitMode=Random:NormMode=NumEvents:!V" );
 
    // If no numbers of events are given, half of the events in the tree are used 
@@ -128,7 +131,7 @@ int main(int argc, char const *argv[])
    std::stringstream Name;
    Name<<"MLP_Equivalence"<<0;
    // Neural network (MLP)                                                                                 
-   factory->BookMethod( TMVA::Types::kMLP, Name.str().c_str(), "!H:!V:VarTransform=Norm:NeuronType=tanh:NCycles=20000:HiddenLayers=N+10:TestRate=6:TrainingMethod=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests=15:!UseRegulator" );
+   factory->BookMethod( dataloader, TMVA::Types::kMLP, Name.str().c_str(), "!H:!V:VarTransform=Norm:NeuronType=tanh:NCycles=20000:HiddenLayers=N+10:TestRate=6:TrainingMethod=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests=15:!UseRegulator" );
 
 
    // --------------------------------------------------------------------------------------------------
