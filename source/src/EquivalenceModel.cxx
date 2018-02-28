@@ -85,6 +85,16 @@ void EquivalenceModel::StocksTotalMassCalculation(map < string , vector <Isotopi
 void EquivalenceModel::ConvertMassToLambdaVector(string MaterialDenomination, vector<double>& lambda, double MaterialMassNeeded, vector <IsotopicVector>  Stocks)
 {
     DBGL
+
+    if(Stocks.size == 0)
+    {
+        return;
+    }
+    if(Stocks.size != lambda.size())
+    {
+        ERROR << "Stocks vector size MUST be the same as lamba size!!" << endl;
+        exit(1);
+    }
     double Lambda_tot = 0;
 
     // Calculation of Lambda tot associated to the required mass MaterialMassNeeded
