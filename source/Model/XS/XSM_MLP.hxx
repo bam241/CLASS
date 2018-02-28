@@ -55,10 +55,9 @@ class XSM_MLP : public XSModel
 	/*!
 	 \param TMVA_Weight_Directory : The directory where all the TMVA weight are located
 	 \param InformationFile : Name of the information file located in TMVA_Weight_Directory (default : Data_Base_Info.nfo)
-	 \param IsTimeStep : if true , one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
 	 
 	 */
-	XSM_MLP(string TMVA_Weight_Directory,string InformationFile = "/Data_Base_Info.nfo",bool IsTimeStep = false);
+	XSM_MLP(string TMVA_Weight_Directory,string InformationFile = "/Data_Base_Info.nfo");
 	//}
 	
 	//{
@@ -67,10 +66,9 @@ class XSM_MLP : public XSModel
 	 \param log : The CLASSLogger
 	 \param TMVA_Weight_Directory : The directory where all the TMVA weight are located
 	 \param InformationFile : Name of the information file located in TMVA_Weight_Directory (default : Data_Base_Info.nfo)
-	 \param IsTimeStep : if true , one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
 	 
 	 */
-	XSM_MLP(CLASSLogger* Log,string TMVA_Weight_Directory,string InformationFile = "/Data_Base_Info.nfo",bool IsTimeStep = false);
+	XSM_MLP(CLASSLogger* Log,string TMVA_Weight_Directory,string InformationFile = "/Data_Base_Info.nfo");
 	//}
 	
 	~XSM_MLP();
@@ -86,13 +84,6 @@ class XSM_MLP : public XSModel
 	void LoadKeyword();
 	//}
 	
-	//{
-	/// ReadTimeSteps : read the time step of the model
-	/*!
-	 \param line : line suppossed to contain the time step information starts with "k_timestep" keyword
-	 */
-	void ReadTimeSteps(const string &line);
-	//}
 	
 	//{
 	/// ReadZAIName : read the zai name in the TMWA MLP model
@@ -118,16 +109,14 @@ class XSM_MLP : public XSModel
 	private :
 	
 	void GetMLPWeightFiles();				//!< Find all .xml file in TMVA_Weight_Directory
-	EvolutionData GetCrossSectionsStep(IsotopicVector IV);	//!< Return calculated cross section by the MLP regression when fIsTimeStep == true
 	EvolutionData GetCrossSectionsTime(IsotopicVector IV);	//!< Return calculated cross section by the MLP regression when fIsTimeStep == false
 	
 	void ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction) ;				//!<  Select the reaction according to the weight file name
-	void ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &Reaction, int &TimeStep);; 	//!<  Select the reaction according to the weight file name
 	
 	
 	
 	double ExecuteTMVA(string WeightFile, TTree* InputTree);			//!<Execute the MLP according to the input tree created
-	TTree* CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep = 0);	//!<Create input tmva tree to be read by ExecuteTMVA
+	vector<float> CreateTMVAInput(IsotopicVector isotopicvector, int t);	//!<Create input tmva tree to be read by ExecuteTMVA
 	
 	
 	vector<double> 	fMLP_Time;	//!<  Time vector of the data base
