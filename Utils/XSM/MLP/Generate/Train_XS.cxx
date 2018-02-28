@@ -20,10 +20,13 @@
 #include "TObjString.h"
 #include "TSystem.h"
 #include "TROOT.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 #if not defined(__CINT__) || defined(__MAKECINT__)
 #include "TMVA/Tools.h"
 #include "TMVA/Factory.h"
+#include "TMVA/DataLoader.h"
 #endif
 
 using namespace TMVA;
@@ -68,12 +71,13 @@ void Train_XS_Time(int INDICE)
 
 
    TMVA::Factory *factory = new TMVA::Factory( "TMVARegression",    OUTPUTFile, 
-                                               "!V:!Silent:Color:DrawProgressBar" );
-
+                                               "!V:!Silent:Color:DrawProgressBar:AnalysisType=Regression" );
+   
+   TMVA::DataLoader *dataloader = new TMVA::DataLoader("dataset");
 
    #include "_tmp/include_Train_XS/InputVariables.cxx"
    // Add the variable carrying the regression target
-   factory->AddTarget(   OUTPUT[INDICE].c_str() ); //The name of the MLP output
+   dataloader->AddTarget(   OUTPUT[INDICE].c_str() ); //The name of the MLP output
 
    // It is also possible to declare additional targets for multi-dimensional regression, ie:
    // -- factory->AddTarget( "fvalue2" );
@@ -101,7 +105,7 @@ void Train_XS_Time(int INDICE)
    Double_t regWeight  = 1.0;   
 
    // You can add an arbitrary number of regression trees
-   factory->AddRegressionTree( regTree, regWeight );
+   dataloader->AddRegressionTree( regTree, regWeight );
 
    // Apply additional cuts on the signal and background samples (can be different)
    TCut mycut = ""; // for example: TCut mycut = "abs(var1)<0.5 && abs(var2-0.5)<1";
@@ -114,7 +118,7 @@ void Train_XS_Time(int INDICE)
    Samples_Parameters <<  "nTrain_Regression=" << NTraining <<":"<< "nTest_Regression=" << NTesting <<":SplitMode=Random:NormMode=NumEvents:!V";
 
    // tell the factory to use all remaining events in the trees after training for testing:
-   factory->PrepareTrainingAndTestTree( mycut, Samples_Parameter.str() );
+   dataloader->PrepareTrainingAndTestTree( mycut, Samples_Parameters.str() );
 
    // If no numbers of events are given, half of the events in the tree are used 
    // for training, and the other half for testing:
@@ -130,7 +134,7 @@ void Train_XS_Time(int INDICE)
    std::stringstream Name;
    Name <<  OUTPUT[INDICE];
    // Neural network (MLP)                                                                                    
-      factory->BookMethod( TMVA::Types::kMLP, Name.str().c_str(), "!H:!V:VarTransform=Norm:NeuronType=tanh:NCycles=20000:HiddenLayers=N,N:TestRate=6:TrainingMethod=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests=15:!UseRegulator" );
+      factory->BookMethod( dataloader, TMVA::Types::kMLP, Name.str().c_str(), "!H:!V:VarTransform=Norm:NeuronType=tanh:NCycles=20000:HiddenLayers=N,N:TestRate=6:TrainingMethod=BFGS:Sampling=0.3:SamplingEpoch=0.8:ConvergenceImprove=1e-6:ConvergenceTests=15:!UseRegulator" );
 
    // --------------------------------------------------------------------------------------------------
 

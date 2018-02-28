@@ -455,8 +455,8 @@ void Generate_tmva_factory_input(double ProportionOfTraining)
 
 	ofstream  InputNetwork("_tmp/include_Train_XS/InputVariables.cxx");
 	for(map<ZAI,string>::iterator it = fMapName.begin() ; it != fMapName.end() ; it++ )
-		InputNetwork <<"factory->AddVariable( \"" << it->second  << "\" , \"" << it->second << "\", \"IsotopicFraction\", 'F' );"<<endl; 
-    InputNetwork <<"factory->AddVariable( \"Time\" , \"Time\"     , \"seconds\", 'F' );"<<endl<<endl;
+		InputNetwork <<"dataloader->AddVariable( \"" << it->second  << "\" , \"" << it->second << "\", \"IsotopicFraction\", 'F' );"<<endl; 
+    InputNetwork <<"dataloader->AddVariable( \"Time\" , \"Time\"     , \"seconds\", 'F' );"<<endl<<endl;
 
 	ProportionOfTraining /=100;
     InputNetwork <<"double PropTraining = "<< ProportionOfTraining << ";" << endl;
@@ -744,7 +744,7 @@ void DumpInputNeuron(string filename)
 	TTree*   fOutT = new TTree("Data", "Data");
 
 
-/**********************INITIALISATIONNN********************/
+/**********************INITIALISATION**********************/
 
 	////////////////////////////////////////////////////////
 	// INIT FRESH FUEL COMPOSITION and TIME
@@ -965,7 +965,7 @@ void ReadAndFill(string jobname)
 	
 	getline(DecayDB, line);
 	
-	/******Getting Time vecotr ....******/
+	/******Getting Time vector ....******/
 	if( StringLine::NextWord(line, start, ' ') != "time")
 	{
 		cout << "\033[31m!!Bad Trouble!! !!!EvolutiveProduct!!! Bad Database file : " <<  jobname << "\033[0m" << endl;
