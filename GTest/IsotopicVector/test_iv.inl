@@ -7,7 +7,7 @@
 #include "IM_RK4.hxx"		    //Load the include for Runge Kutta 4 resolution
 #include "EQ_OneParameter.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
 
-TEST ( TestIV, getSize ) {
+TEST ( IV, GetSize ) {
 	const int n=10;
 
 	// génération des données
