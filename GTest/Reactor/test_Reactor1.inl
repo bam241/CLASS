@@ -33,7 +33,7 @@ TEST ( TestReactor, getCycleTime ) {
     Reactor* R1 = new Reactor();
     R1->SetBurnUp(BurnUp);
     double ExpectedCycleTime = R1->GetCycleTime();
-    double RealCycleTime     = Power * BurnUp / 3600. / 24. / HMMass;
+    double RealCycleTime     = (cSecond) (BurnUp*1e9 / (Power) * HMMass  *3600*24);
 
     ASSERT_NEAR(RealCycleTime, ExpectedCycleTime, RealCycleTime*1e-15);
 }
