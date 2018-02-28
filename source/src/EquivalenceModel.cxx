@@ -151,16 +151,16 @@ bool EquivalenceModel::isIVInDomain(IsotopicVector IV)
         for (map< ZAI, pair<double, double> >::iterator Domain_it = fZAILimits.begin(); Domain_it != fZAILimits.end(); Domain_it++)
         {
             double ThatZAIProp = IVNorm.GetIsotopicQuantity()[Domain_it->first];
-            double ThatZAIMin   = Domain_it->second.first;
-            double ThatZAIMax   = Domain_it->second.second;
-            if ( (ThatZAIProp > ThatZAIMax) || (ThatZAIProp <   ThatZAIMin) )
+            double ThatZAIMin = Domain_it->second.first;
+            double ThatZAIMax = Domain_it->second.second;
+            if ( (ThatZAIProp > ThatZAIMax) || (ThatZAIProp < ThatZAIMin) )
             {
                 IsInDomain = false;
 
                 WARNING << "Fresh fuel out of model range" << endl;
                 WARNING << "\t AT LEAST this ZAI is accused to be outrange :" << endl;
                 WARNING << "\t\t" << Domain_it->first.Z() << " " << Domain_it->first.A() << " " << Domain_it->first.I() << endl;
-                WARNING << "\t\t min = " << ThatZAIMin   << " value = " << ThatZAIProp << " max = " << ThatZAIMax << endl;
+                WARNING << "\t\t min = " << ThatZAIMin << " value = " << ThatZAIProp << " max = " << ThatZAIMax << endl;
                 WARNING << "\t IV accused :" << endl << endl;
                 WARNING << IVNorm.sPrint() << endl;
                 break;
