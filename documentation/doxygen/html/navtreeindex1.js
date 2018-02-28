@@ -1,7 +1,5 @@
 var NAVTREEINDEX1 =
 {
-"class_decay_data_bank.html#a7538248021f1073f49f6c97d4d78286a":[1,0,6,15],
-"class_decay_data_bank.html#a86e2f1baebecc590038bd3fd10ab89a7":[1,0,6,9],
 "class_decay_data_bank.html#a92fed173741bf6ee68fbac7a01faa7df":[1,0,6,6],
 "class_decay_data_bank.html#a9f1c7bd3b9f05ec31530db1d3324fab6":[1,0,6,8],
 "class_decay_data_bank.html#ab1f177a0fc66d50a7cabe923716b78be":[1,0,6,13],
@@ -249,5 +247,7 @@ var NAVTREEINDEX1 =
 "class_evolution_data.html#a7fa6f6fed358f5660583ab4e632fd934":[1,0,20,17],
 "class_evolution_data.html#a833f6b77a79da2418c149b061c5ab678":[1,0,20,27],
 "class_evolution_data.html#a858dc69a92d970fe4d930f841f52ab6c":[1,0,20,47],
-"class_evolution_data.html#a86c4a62e8f13adfb3a6510e0a8d6c1af":[1,0,20,37]
+"class_evolution_data.html#a86c4a62e8f13adfb3a6510e0a8d6c1af":[1,0,20,37],
+"class_evolution_data.html#a887d3aeab6043590880a84a2273434dc":[1,0,20,21],
+"class_evolution_data.html#a8bc991e48247078c28768aafc496df5f":[1,0,20,32]
 };

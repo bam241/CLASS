@@ -1,12 +1,6 @@
 #ifndef _CLASSBACKEND_
 #define _CLASSBACKEND_
 
-/*!
- * \file CLASSBackEnd.hxx
- * \brief Template that describe facilities after Reactor
- * \author BaM
- */
-
 #include <string>
 #include <fstream>
 #include <map>
@@ -23,6 +17,8 @@
  Define a CLASS Facility.
  The aim of these class is to gather all the commom properties of the
  facilities which are involve in the BackEnd Fuel cycle.
+
+ @author BaM
 */
 //________________________________________________________________________
 

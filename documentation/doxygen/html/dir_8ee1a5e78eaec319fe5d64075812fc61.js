@@ -1,12 +1,8 @@
 var dir_8ee1a5e78eaec319fe5d64075812fc61 =
 [
-    [ "CLASSBackEnd.hxx", "_c_l_a_s_s_back_end_8hxx.html", [
-      [ "CLASSBackEnd", "class_c_l_a_s_s_back_end.html", "class_c_l_a_s_s_back_end" ]
-    ] ],
+    [ "CLASSBackEnd.hxx", "_c_l_a_s_s_back_end_8hxx_source.html", null ],
     [ "CLASSConstante.hxx", "_c_l_a_s_s_constante_8hxx_source.html", null ],
-    [ "CLASSFacility.hxx", "_c_l_a_s_s_facility_8hxx.html", [
-      [ "CLASSFacility", "class_c_l_a_s_s_facility.html", "class_c_l_a_s_s_facility" ]
-    ] ],
+    [ "CLASSFacility.hxx", "_c_l_a_s_s_facility_8hxx_source.html", null ],
     [ "CLASSHeaders.hxx", "_c_l_a_s_s_headers_8hxx_source.html", null ],
     [ "CLASSLogger.hxx", "_c_l_a_s_s_logger_8hxx.html", "_c_l_a_s_s_logger_8hxx" ],
     [ "CLASSMethod.hxx", "_c_l_a_s_s_method_8hxx_source.html", null ],
