@@ -144,9 +144,9 @@ public :
 	 */
 	//@{
 	
-#ifndef __ROOTCLING__
-	double GetImpuritiesTolerance() { return fImpuritiesTolerance;}
 
+	double GetImpuritiesTolerance() { return fImpuritiesTolerance;}
+#ifndef __ROOTCLING__
 	map < string , vector <Storage*> > GetAllStorage() {return fStorage;}			//!< Return the map containing all the storage vectors (useful in CLASS Reactor to check list consistency)
 	
 	vector<Storage*> GetStorage(string keyword) { return fStorage[keyword]; }		//!< Return the Pointer to Storage associated to a StreamList 
@@ -177,7 +177,6 @@ public :
 	IsotopicVector GetSeparationEfficiencyAt(cSecond time);
 
 
-#ifndef __ROOTCLING__
 	void Evolution(cSecond t);									//!< Perform the FabricationPlant evolution
 	void DumpStock(map <string , vector<double> > LambdaArray);				//!< Update the Stock status after building process
 	void TakeReactorFuel(int ReactorId) ;								//!< Remove the fuel of reactor ReactorId from stock
@@ -195,7 +194,6 @@ public :
 	void SortMix(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray);
 	void SortRandom(vector<IsotopicVector>	&IVArray, vector<cSecond> &TimeArray, vector< pair<int,int> > &AdressArray);
 
-#endif
 	//@}
 
 
