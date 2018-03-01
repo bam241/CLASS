@@ -18,12 +18,19 @@ function build ()
         mkdir bld
     fi
     cd bld
-    cmake ..
-    make -j ${J}
+
+    if [ "$1" == "WithNoTest"]
+        cmake ..
+        make -j ${J} ++++ CLASSpkg_root CLASSpkg CLASSGui
+    fi
+
+    if [ "$1" == "WithTest"]
+        cmake ..
+        make -j ${J}
+    fi
 }
 
 function clean ()
-
 {
     if [ -d "bld" ]; then
         cd bld
@@ -44,6 +51,7 @@ function clean ()
 J="1"
 BUILD=false
 CLEAN=false
+GTEST=false
 
 # loop on all arguments
 for arg in "$@"; do
@@ -56,6 +64,8 @@ for arg in "$@"; do
             CLEAN=true ;;
         --clean-build )
             CLEAN=true;BUILD=true ;;
+        --build-test )
+            GTEST=true ;;
         -j* )
             J="${arg//-j=/}" ;;
     esac
@@ -67,9 +77,12 @@ if [ "${CLEAN}" = true ]; then
 fi
 
 if [ "${BUILD}" = true ]; then
-    build
+    build(WithNoTest)
 fi
 
+if [ "${GTEST}" = true ]; then
+    build(WithTest)
+fi
 
 exit 0
 
