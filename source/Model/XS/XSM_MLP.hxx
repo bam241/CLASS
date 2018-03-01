@@ -84,6 +84,13 @@ class XSM_MLP : public XSModel
 	void LoadKeyword();
 	//}
 	
+	//{
+	/// ReadTimeSteps : read the time step of the model
+	/*!
+	 \param line : line suppossed to contain the time step information starts with "k_timestep" keyword
+	 */
+	void ReadTimeSteps(const string &line);
+	//}
 	
 	//{
 	/// ReadZAIName : read the zai name in the TMWA MLP model
@@ -103,13 +110,12 @@ class XSM_MLP : public XSModel
 	//@}
 	
 	
-	EvolutionData GetCrossSections(IsotopicVector IV,double t = 0);	//!< Return calculated cross section by the MLP regression
+	EvolutionData GetCrossSections(IsotopicVector IV, double t=0);	//!< Return calculated cross section by the MLP regression
 	
 	
 	private :
 	
 	void GetMLPWeightFiles();				//!< Find all .xml file in TMVA_Weight_Directory
-	EvolutionData GetCrossSectionsTime(IsotopicVector IV);	//!< Return calculated cross section by the MLP regression when fIsTimeStep == false
 	
 	void ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction) ;				//!<  Select the reaction according to the weight file name
 	
