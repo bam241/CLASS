@@ -1,3 +1,6 @@
+#ifndef _READER_HXX
+#define _READER_HXX
+
 #include <iostream>
 #include <vector>
 #include <list>
@@ -8,6 +11,8 @@
 #include "TMVA/Reader.h"
 #include "TMVA/Tools.h"
 #include "TMVA/MethodCuts.h"
+
+using namespace std;
 
 class CLASSReader
 {
@@ -20,7 +25,7 @@ class CLASSReader
 		~CLASSReader ();
 
 		void AddVariable  ( const std::string & );
-		void SetInputData ( TTree * t , Long64_t entry=0 );
+		void SetInputData ( vector<float> inputdata );
 
 		TMVA::IMethod * BookMVA ( const std::string & , const std::string & );
 		const std::vector<float> & EvaluateRegression ( const std::string & );
@@ -44,4 +49,4 @@ CLASSReader::CLASSReader ( const std::map<T,std::string> & a ) :
 	}
 }
 
-
+#endif
