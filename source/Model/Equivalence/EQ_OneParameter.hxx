@@ -32,8 +32,8 @@ typedef void (EQ_OneParameter::*EQOP_MthPtr)( const string & );
  Define an EQ_OneParameter.
  The aim of this class is to build a fuel based on the optimisation of one parameter
  This one may be 
- 	- keff at begining of cycle 
-	- The maximum achievable Burn Up
+     - keff at begining of cycle 
+    - The maximum achievable Burn Up
  For those two possibilities one may define some external parameters like th kthreshold of the number of batch for instance  
  
  In case one wants to build a fuel with a constant fraction of fissile, it has to be set in the fabrication plant
@@ -112,9 +112,9 @@ class EQ_OneParameter : public EquivalenceModel
 
     void SetModelParameter(string sMP, double dMP)  { fModelParameter[sMP] = dMP; }   //!< Set Model Parameters precised in NFO file can be keff or BU Max
     map<string, double> GetModelParameter()  { return fModelParameter; }   //!< Get Model Parameters precised in NFO file
-	  
+      
     void SetNonZaiTMVAVariable(string snZP, double dnZP);    //!< Set NonZaiTMVAVariables for the input of the TMVA
-	vector< pair<double, string> > GetNonZaiTMVAVariables()  { return fListOfNonZaiTMVAVariables; }   //!< Get NonZaiTMVAVariables
+    vector< pair<double, string> > GetNonZaiTMVAVariables()  { return fListOfNonZaiTMVAVariables; }   //!< Get NonZaiTMVAVariables
 
     void SetMaxIterration(int val)  { fMaxIterration = val; }   //!< Max iteration in build fuel algorithm
     void SetTargetParameterStDev(double TPSD){fTargetParameterStDev = TPSD;} //!< Set the precision on Target Parameter
@@ -139,67 +139,9 @@ class EQ_OneParameter : public EquivalenceModel
      \name Reading NFO related Method
      */
     //@{
-    void ReadNFO();
-    virtual void ReadLine(string line);
-
+    void ReadLine(string line);
     
-    virtual void LoadKeyword();
-    void ReadZAIlimits(const string &line);
-    void ReadType(const string &line);
-    
-    //{
-    /// ReadZAIName : read the zai name in the TMWA MLP model
-    /*!
-     \param line : line suppossed to contain the ZAI name  starts with "k_zainame" keyword
-     */
-    void ReadZAIName(const string &line);
-    //}
-    
-    //{
-    /// ReadMaxBurnUp : read a guessed (very overestimated) maximum burnup a fuel can reach (purpose : algorithm initialization)
-    /*!
-     \param line : line suppossed to contain the ZAI name  starts with "k_maxburnup" keyword
-     */
-    void ReadMaxBurnUp(const string &line);
-    //}
-    
-    //{
-    /// ReadSpecificPower : read the Specific Power of the DataBase
-    /*!
-     \param line : line suppossed to contain the Specific Power information starts with "k_specpower" keyword
-     */
-    void ReadSpecificPower(const string &line);
-    //}
-
-    //{
-    /// ReadTargetParameter : type of target parameter optimized in build fuel (ex. BUmax)
-    /*!
-     \param line : line suppossed to contain the Target Parameter information starts with "k_targetparameter" keyword
-     */
-    void ReadTargetParameter(const string &line);
-    //}
-    //{
-    /// ReadNonZaiTMVAVariables : read the NonZai variables for the predictor (ex : Nbatch, Specific power)
-    /*!
-     \param line : line suppossed to contain the NonZai variables for TMVA starts with "k_nonZAIforTMVA" keyword
-     */
-    void ReadNonZaiTMVAVariables(const string &line);
-    //}
-    //{
-    /// ReadOutput : read the output type of the predictor (ex : kinf)
-    /*!
-     \param line : line suppossed to contain the Specific Power information starts with "k_output" keyword
-     */
-    void ReadOutput(const string &line);
-    //}
-
-    //{
-    /// ReadBuffer : read the Buffer material name in the fuel
-    /*!
-     \param line : line suppossed to contain the Buffer information starts with "k_buffer" keyword
-     */
-    void ReadBuffer(const string &line);
-    //}
+    void LoadKeyword();
 
     //{
     /// ReadModelParameter : read the name of equivalence model parameter
@@ -210,11 +152,11 @@ class EQ_OneParameter : public EquivalenceModel
     //} 
 
     //{
-    /// ReadPredictorType: read the type of predictor used (ex : MLP)
+    /// ReadTargetParameter : type of target parameter optimized in build fuel (ex. BUmax)
     /*!
-     \param line : line suppossed to contain the Buffer information starts with "k_predictortype" keyword
+     \param line : line suppossed to contain the Target Parameter information starts with "k_targetparameter" keyword
      */
-    void ReadPredictorType(const string &line);
+    void ReadTargetParameter(const string &line);
     //}
 
     //{
@@ -225,17 +167,15 @@ class EQ_OneParameter : public EquivalenceModel
     void ReadTargetParameterStDev(const string &line);
     //}
 
+    //{
+    /// ReadNonZaiTMVAVariables : read the NonZai variables for the predictor (ex : Nbatch, Specific power)
+    /*!
+     \param line : line suppossed to contain the NonZai variables for TMVA starts with "k_nonZAIforTMVA" keyword
+     */
+    void ReadNonZaiTMVAVariables(const string &line);
+    //}
     void PrintInfo(); //Print the information red in the INFO stream    
     
-    //{
-    /// ReadFissil : read the zai name in the TMWA MLP model starts with "k_fissil" keyword
-    /*!
-     \param line : line suppossed to contain the fissil list
-     */
-    void ReadList(const string &line);
-
-    void ReadEqMaxFraction(const string &line); 
-    void ReadEqMinFraction(const string &line);
     
     IsotopicVector BuildFuelToTest(map < string, vector<double> >& lambda, map < string , vector <IsotopicVector> > const& StreamArray, double HMMass, map <string, bool> StreamListIsBuffer); //Build a fuel with the buffer according to fissile lambda
     void CheckTargetParameterConsistency(map < int , string >  StreamListPriority, map < string , double >  TargetParameterMin, map < string , double > TargetParameterMax);
@@ -243,22 +183,12 @@ class EQ_OneParameter : public EquivalenceModel
     protected :
 
     bool fUseTMVAPredictor; //!< Bool that says if we need a TMVA predictor. If not, fuel fraction isimpoased by the FP.
-    
-    map < string , double> fStreamListEqMMassFractionMax;           //!< Map that contains lists of stream according to the EqModel with mass maximum fraction
-    map < string , double> fStreamListEqMMassFractionMin;           //!< Map that contains lists of stream according to the EqModel with mass minimum fraction
-
-    string fPredictorType ;                                 //!< Type of predictor used in Equivalence Model (ex: MLP)
-    string fOutput ;                                //!< Type of output calculated by the predictor
-    string fBuffer ;                                    //!< Name of material used as buffer in fuel
 
     map<string, double> fModelParameter ;                   ///< Map of equivalence model parameter
- 	  vector< pair<double, string> > fListOfNonZaiTMVAVariables ; 					///!<  List of TMVA input variable names that are not ZAIs
-
-    map<ZAI, string> fMapOfTMVAVariableNames;               //!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
+    vector< pair<double, string> > fListOfNonZaiTMVAVariables ;                     ///!<  List of TMVA input variable names that are not ZAIs
 
     double  fTargetParameterStDev;                          //!< Precision on target parameter calculation
 
-    double  fMaximalBU;                                 //!< The Maximum burn-up of the model in GWd/t
     string fTargetParameter;                            //!< Type of target parameter optimized in build fuel (ex. BUmax)               
     int fMaxIterration;                             //!< Max iterrations in build fueld algorithm    
 
@@ -270,10 +200,6 @@ class EQ_OneParameter : public EquivalenceModel
     map<string, EQOP_MthPtr> fKeyword; //!< The model parameters
     
     map< ZAI, pair<double,double> > fZAILimits;     //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
-
-    string fInformationFile;                    //!<  file containing Reactor Type, Fuel type, HM mass, Power, time vector, and TMVA input variables names (looks the manual for format details)
-    string fDBFType;                    //!<  Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
-    string fDBRType;                    //!<  Reactor Type (e.g PWR, FBR-Na, ADS..)
 
     private :
 

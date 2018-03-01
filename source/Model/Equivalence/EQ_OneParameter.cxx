@@ -778,232 +778,29 @@ double  EQ_OneParameter::CalculateKeffAtBOC(IsotopicVector FreshFuel)
     return keff;
 }
 //________________________________________________________________________
-void EQ_OneParameter::ReadNFO()
-{
-    DBGL
-    ifstream NFO(fTMVANFOFilePath.c_str());
-    
-    if(!NFO)
-    {
-        ERROR << "Can't find/open file " << fTMVANFOFilePath << endl;
-        exit(0);
-    }
-    
-    do
-    {
-        string line;
-        getline(NFO,line);
-        
-        EQ_OneParameter::ReadLine(line);
-        
-    } while(!NFO.eof());
-    
-    DBGL
-}
-//________________________________________________________________________
 void EQ_OneParameter::ReadLine(string line)
 {
     DBGL
+    int pos = 0;
+    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
     
-    if (!freaded)
-    {
-        int pos = 0;
-        string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-        
-        map<string, EQOP_MthPtr>::iterator it = fKeyword.find(keyword);
-        
-        if(it != fKeyword.end())
-            (this->*(it->second))( line );
-        
-        freaded = true;
-        ReadLine(line);
-        
-    }
+    map<string, EQOP_MthPtr>::iterator it = fKeyword.find(keyword);
     
-    freaded = false;
-    
+    if(it != fKeyword.end())
+        (this->*(it->second))( line );
     DBGL
 }
 //________________________________________________________________________
 void EQ_OneParameter::LoadKeyword() 
 {
     DBGL
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_zail",                & EQ_OneParameter::ReadZAIlimits)           );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_reactor",         & EQ_OneParameter::ReadType)            );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_fuel",                & EQ_OneParameter::ReadType)            );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_massfractionmin",     & EQ_OneParameter::ReadEqMinFraction)       );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_massfractionmax",     & EQ_OneParameter::ReadEqMaxFraction)       );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_list",                & EQ_OneParameter::ReadList)            );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_specpower",           & EQ_OneParameter::ReadSpecificPower)       );
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_zainame",          & EQ_OneParameter::ReadZAIName)             );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_maxburnup",           & EQ_OneParameter::ReadMaxBurnUp)       ); 
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_targetparameter",      & EQ_OneParameter::ReadTargetParameter)         );
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_predictortype",        & EQ_OneParameter::ReadPredictorType)       );
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_output",           & EQ_OneParameter::ReadOutput)              );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_buffer",          & EQ_OneParameter::ReadBuffer)          ); 
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_modelparameter",       & EQ_OneParameter::ReadModelParameter)          ); 
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_targetparameterstdev",     & EQ_OneParameter::ReadTargetParameterStDev)    ); 
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_targetparameter", & EQ_OneParameter::ReadTargetParameter) );
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_modelparameter", & EQ_OneParameter::ReadModelParameter) ); 
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_targetparameterstdev", & EQ_OneParameter::ReadTargetParameterStDev) ); 
+    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_nonZAIforTMVA", & EQ_OneParameter::ReadNonZaiTMVAVariables) ); 
 
     DBGL
 }
-//________________________________________________________________________
-void EQ_OneParameter::ReadType(const string &line)
-{
-    DBGL
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_fuel" && keyword != "k_reactor" ) // Check the keyword
-    {
-        ERROR << " Bad keyword : " << keyword << " Not found !" << endl;
-        exit(1);
-    }
-    if( keyword ==  "k_fuel" )
-        fDBFType = StringLine::NextWord(line, pos, ' ');
-    else if( keyword ==  "k_reactor" )
-        fDBRType = StringLine::NextWord(line, pos, ' ');
-    
-    DBGL
-}
-//________________________________________________________________________
-void EQ_OneParameter::ReadZAIlimits(const string &line)
-{
-    DBGL
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_zail" )   // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_zail\" not found !" << endl;
-        exit(1);
-    }
-    
-    int Z   = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    int A   = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    int I   = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    
-    double downLimit    = atof(StringLine::NextWord(line, pos, ' ').c_str());
-    double upLimit  = atof(StringLine::NextWord(line, pos, ' ').c_str());
-    
-    if (upLimit < downLimit)
-    {
-        double tmp  = upLimit;
-        upLimit     = downLimit;
-        downLimit   = tmp;
-    }
-    fZAILimits.insert(pair<ZAI, pair<double, double> >(ZAI(Z,A,I), pair<double,double>(downLimit, upLimit)));
-    DBGL
-}
-//________________________________________________________________________
-void EQ_OneParameter::ReadList(const string &line)
-{
-    DBGL
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_list" )   // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_list\" not found !" << endl;
-        exit(1);
-    }
-    string ListName= StringLine::NextWord(line, pos, ' ');
-    int Z       = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    int A       = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    int I       = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    double Q    = atof(StringLine::NextWord(line, pos, ' ').c_str());
-    fStreamList[ListName].Add(Z, A, I, Q);
-    
-    DBGL
-}
-//________________________________________________________________________
-void EQ_OneParameter::ReadEqMinFraction(const string &line)
-{
-    DBGL
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_massfractionmin" )    // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_massfractionmin\" not found !" << endl;
-        exit(1);
-    }
-    string ListName= StringLine::NextWord(line, pos, ' ');
-    double Q     = atof(StringLine::NextWord(line, pos, ' ').c_str());
-    fStreamListEqMMassFractionMin[ListName] = Q;
-
-    DBGL
-}
-
-//________________________________________________________________________
-void EQ_OneParameter::ReadEqMaxFraction(const string &line)
-{
-    DBGL
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_massfractionmax" )    // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_massfractionmax\" not found !" << endl;
-        exit(1);
-    }
-    string ListName= StringLine::NextWord(line, pos, ' ');
-    double Q     = atof(StringLine::NextWord(line, pos, ' ').c_str());
-    fStreamListEqMMassFractionMax[ListName] = Q;
-
-    DBGL
-}
-
-//________________________________________________________________________
-void EQ_OneParameter::ReadSpecificPower(const string &line)
-{
-    DBGL
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_specpower")   // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_specpower\" Not found !" << endl;
-        exit(1);
-    }
-    
-    fSpecificPower = atof(StringLine::NextWord(line, pos, ' ').c_str());
-    
-    DBGL
-}
-//________________________________________________________________________
-void EQ_OneParameter::ReadZAIName(const string &line)
-{
-    DBGL
-    
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_zainame" )    // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_zainame\" not found !" << endl;
-        exit(1);
-    }
-    
-    int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    int I  = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    
-    string name = StringLine::NextWord(line, pos, ' ');
-    
-    fMapOfTMVAVariableNames.insert( pair<ZAI,string>( ZAI(Z, A, I), name ) );
-
-    DBGL    
-}
-//________________________________________________________________________
-void EQ_OneParameter::ReadMaxBurnUp(const string &line)
-{
-    DBGL
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_maxburnup" )  // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_maxburnup\" not found !" << endl;
-        exit(1);
-    }
-    
-    fMaximalBU = atof(StringLine::NextWord(line, pos, ' ').c_str());
-
-    DBGL
-}
-
 //________________________________________________________________________
 void EQ_OneParameter::ReadTargetParameter(const string &line)
 {
@@ -1021,57 +818,6 @@ void EQ_OneParameter::ReadTargetParameter(const string &line)
     DBGL
 }
 
-//________________________________________________________________________
-void EQ_OneParameter::ReadPredictorType(const string &line)
-{
-    DBGL
-    
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_predictortype" )  // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_predictortype\" not found !" << endl;
-        exit(1);
-    }
-        
-    fPredictorType = StringLine::NextWord(line, pos, ' ');
-    
-    DBGL    
-}
-//________________________________________________________________________
-void EQ_OneParameter::ReadOutput(const string &line)
-{
-    DBGL
-    
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_output" ) // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_output\" not found !" << endl;
-        exit(1);
-    }
-        
-    fOutput = StringLine::NextWord(line, pos, ' ');
-    
-    DBGL    
-}
-//________________________________________________________________________
-void EQ_OneParameter::ReadBuffer(const string &line)
-{
-    DBGL
-    
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_buffer" ) // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_buffer\" not found !" << endl;
-        exit(1);
-    }
-        
-    fBuffer = StringLine::NextWord(line, pos, ' ');
-    
-    DBGL    
-}
 //________________________________________________________________________
 void EQ_OneParameter::ReadModelParameter(const string &line)
 {
