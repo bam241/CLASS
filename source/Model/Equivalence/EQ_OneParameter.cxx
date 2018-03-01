@@ -273,17 +273,21 @@ map <string , vector<double> > EQ_OneParameter::BuildFuel(double BurnUp, double 
     }
 
     // Test if there is at least one stock available in each list, otherwise fuel is not built //
-    bool BreakReturnLambda = false; 
+    bool BreakReturnLambda = true; 
     for( it_s_vIV = StreamArray.begin();  it_s_vIV != StreamArray.end(); it_s_vIV++)
     {
-        if(StreamArray[(*it_s_vIV).first].size() == 0)
+        if(StreamArray[(*it_s_vIV).first].size() != 0)
         {
-            WARNING << " No stock available for stream : "<< (*it_s_vIV).first <<".  Fuel not built." << endl;
-            SetLambdaToErrorCode(lambda[(*it_s_vIV).first]);
-            BreakReturnLambda = true;   
+            BreakReturnLambda &= false;   
         }
     }
-    if(BreakReturnLambda) { return lambda;} 
+
+    if(BreakReturnLambda)
+    { 
+        WARNING << " No stock available for stream : "<< (*it_s_vIV).first <<".  Fuel not built." << endl;
+        SetLambdaToErrorCode(lambda[(*it_s_vIV).first]);
+        return lambda;
+    } 
 
     // Check if the targeted burn-up is lower than maximum burn-up of model //
     if(BurnUp > fMaximalBU)
@@ -1120,34 +1124,34 @@ void EQ_OneParameter::ReadModelParameter(const string &line)
 //________________________________________________________________________
 void EQ_OneParameter::ReadNonZaiTMVAVariables(const string &line)
 {
-	DBGL
-	
-	int pos = 0;
-	string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-	if( keyword != "k_nonZAIforTMVA" )	// Check the keyword
-	{
-		ERROR << " Bad keyword : \"k_nonZAIforTMVA\" not found !" << endl;
-		exit(1);
-	}
-		
-	keyword = StringLine::NextWord(line, pos, ' ');
-	fListOfNonZaiTMVAVariables.push_back(make_pair(-1.0,keyword));
-	
-	DBGL	
+    DBGL
+    
+    int pos = 0;
+    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+    if( keyword != "k_nonZAIforTMVA" )    // Check the keyword
+    {
+        ERROR << " Bad keyword : \"k_nonZAIforTMVA\" not found !" << endl;
+        exit(1);
+    }
+        
+    keyword = StringLine::NextWord(line, pos, ' ');
+    fListOfNonZaiTMVAVariables.push_back(make_pair(-1.0,keyword));
+    
+    DBGL    
 }
 //________________________________________________________________________
 void EQ_OneParameter::SetNonZaiTMVAVariable(string snZP, double dnZP)
 {
-	DBGL
-	for(unsigned int j=0;j<fListOfNonZaiTMVAVariables.size();j++){
-		if(fListOfNonZaiTMVAVariables[j].second==snZP){
-			fListOfNonZaiTMVAVariables[j].first=dnZP;
-			return;
-		}
-	}
-	fListOfNonZaiTMVAVariables.push_back(make_pair(dnZP,snZP));
-	
-	DBGL	
+    DBGL
+    for(unsigned int j=0;j<fListOfNonZaiTMVAVariables.size();j++){
+        if(fListOfNonZaiTMVAVariables[j].second==snZP){
+            fListOfNonZaiTMVAVariables[j].first=dnZP;
+            return;
+        }
+    }
+    fListOfNonZaiTMVAVariables.push_back(make_pair(dnZP,snZP));
+    
+    DBGL    
 }
 //________________________________________________________________________
 void EQ_OneParameter::ReadTargetParameterStDev(const string &line)
