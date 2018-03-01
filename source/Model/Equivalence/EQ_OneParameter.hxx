@@ -23,9 +23,7 @@
 using namespace std;
 
 class EQ_OneParameter;
-#ifndef __ROOTCLING__
 typedef void (EQ_OneParameter::*EQOP_MthPtr)( const string & );
-#endif
 
 //-----------------------------------------------------------------------------//
 
@@ -268,9 +266,7 @@ class EQ_OneParameter : public EquivalenceModel
     string fTMVANFOFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
 
 
-#ifndef __ROOTCLING__
     map<string, EQOP_MthPtr> fKeyword;
-#endif
     
     map< ZAI, pair<double,double> > fZAILimits;     //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
 
