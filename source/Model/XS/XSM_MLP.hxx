@@ -115,7 +115,7 @@ class XSM_MLP : public XSModel
 	EvolutionData GetCrossSections(IsotopicVector IV, double t=0);	//!< Return calculated cross section by the MLP regression
 	
 	
-	private :
+	protected :
 	
   vector<CLASSReader*> fReader;
 	

@@ -84,7 +84,7 @@ void XSM_MLP::LoadKeyword()
 {
     DBGL
     fDKeyword.insert( pair<string, XS_MLP_DMthPtr>( "k_timestep",    & XSM_MLP::ReadTimeSteps));
-  fDKeyword.insert( pair<string, XS_MLP_DMthPtr>( "k_zainame",    & XSM_MLP::ReadZAIName)     );
+    fDKeyword.insert( pair<string, XS_MLP_DMthPtr>( "k_zainame",    & XSM_MLP::ReadZAIName)     );
     DBGL
 }
 

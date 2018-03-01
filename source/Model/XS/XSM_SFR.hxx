@@ -58,7 +58,7 @@ class XSM_SFR : public XSM_MLP
 	 \param IsTimeStep : if true , one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
 	 
 	 */
-	XSM_SFR(string TMVA_Weight_Directory,map<string,double> FixedParameters,string InformationFile = "/Data_Base_Info.nfo",bool IsTimeStep = false);
+	XSM_SFR(string TMVA_Weight_Directory,map<string,double> FixedParameters,string InformationFile = "/Data_Base_Info.nfo");
 	//}
 	
 	//{
@@ -70,7 +70,7 @@ class XSM_SFR : public XSM_MLP
 	 \param IsTimeStep : if true , one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
 	 
 	 */
-	XSM_SFR(CLASSLogger* Log,string TMVA_Weight_Directory,map<string,double> FixedParameters,string InformationFile = "/Data_Base_Info.nfo",bool IsTimeStep = false);
+	XSM_SFR(CLASSLogger* Log,string TMVA_Weight_Directory,map<string,double> FixedParameters,string InformationFile = "/Data_Base_Info.nfo");
 	//}
 	
 	~XSM_SFR();
@@ -113,18 +113,12 @@ class XSM_SFR : public XSM_MLP
 	void FixTMVAVariable(string VariableName,double VariableValue);
 
 	void SetFixedVariablesValues(map<string,double> FixedParameters);
-	
-	EvolutionData GetCrossSections(IsotopicVector IV,double t = 0);	//!< Return calculated cross section by the MLP regression
+	void BookTMVAReader();
 	
 	private :
 	
 	void GetMLPWeightFiles();				//!< Find all .xml file in TMVA_Weight_Directory
-	EvolutionData GetCrossSectionsStep(IsotopicVector IV);	//!< Return calculated cross section by the MLP regression when fIsTimeStep == true
-	EvolutionData GetCrossSectionsTime(IsotopicVector IV);	//!< Return calculated cross section by the MLP regression when fIsTimeStep == false
-	void ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction) ;				//!<  Select the reaction according to the weight file name
-	void ReadWeightFileStep(string Filename, int &Z, int &A, int &I, int &Reaction, int &TimeStep);; 	//!<  Select the reaction according to the weight file name
-	double ExecuteTMVA(string WeightFile, TTree* InputTree);			//!<Execute the MLP according to the input tree created
-	TTree* CreateTMVAInputTree(IsotopicVector isotopicvector,int TimeStep = 0);	//!<Create input tmva tree to be read by ExecuteTMVA
+	vector<float> CreateTMVAInput(IsotopicVector isotopicvector,int TimeStep = 0);	//!<Create input tmva to be read by ExecuteTMVA
 	
 	vector<double> 	fMLP_Time;	//!<  Time vector of the data base
 	vector<string> 	fWeightFiles;	//!<  All the weight file contains in fTMVAWeightFolder
