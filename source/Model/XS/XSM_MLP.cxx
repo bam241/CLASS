@@ -48,6 +48,7 @@ XSM_MLP::XSM_MLP(string TMVA_Weight_Directory,string InformationFile):XSModel(ne
     
     LoadKeyword();
     ReadNFO();
+    BookTMVAReader(); 
     
 }
 //________________________________________________________________________
@@ -65,6 +66,7 @@ XSM_MLP::XSM_MLP(CLASSLogger* Log,string TMVA_Weight_Directory,string Informatio
     
     LoadKeyword();
     ReadNFO();
+    BookTMVAReader(); 
 }
 //________________________________________________________________________
 XSM_MLP::~XSM_MLP()
@@ -72,6 +74,7 @@ XSM_MLP::~XSM_MLP()
     DBGL
     fMapOfTMVAVariableNames.clear();
     fDKeyword.clear();
+    //delete fReader;
     DBGL
 }
 
@@ -219,6 +222,28 @@ void XSM_MLP::ReadWeightFile(string Filename, int &Z, int &A, int &I, int &React
     }
     
 }
+
+void XSM_MLP::BookTMVAReader() {
+
+    string dir = fTMVAWeightFolder;
+    if (dir[dir.size() - 1] != '/') {
+        dir += "/";
+    }
+
+    for (int i = 0; i < int(fWeightFiles.size()); i++) {
+        int Z = -2;
+        int A = -2;
+        int I = -2;
+        int Reaction = -2;
+        ReadWeightFile(fWeightFiles[i], Z, A, I, Reaction);
+        if (Z >= GetZAIThreshold()) {
+              fReader.push_back(new CLASSReader(fMapOfTMVAVariableNames));
+              fReader[i]->AddVariable("Time");
+            fReader[i]->BookMVA("MLP method", dir + fWeightFiles[i]);
+        }
+    }
+}
+
 //________________________________________________________________________
 vector<float> XSM_MLP::CreateTMVAInput(IsotopicVector isotopicvector,int TimeStep)
 {
@@ -253,73 +278,73 @@ vector<float> XSM_MLP::CreateTMVAInput(IsotopicVector isotopicvector,int TimeSte
     return tmva_input;
 }
 //________________________________________________________________________
-EvolutionData XSM_MLP::GetCrossSections(IsotopicVector IV, double t)
-{
+EvolutionData XSM_MLP::GetCrossSections(IsotopicVector IV, double t) {
     DBGL
-    
+
     string dir = fTMVAWeightFolder;
-    if(dir[dir.size()-1] != '/') { dir+= "/"; }
-    
+    if (dir[dir.size() - 1] != '/') {
+        dir += "/";
+    }
+
     EvolutionData EvolutionDataFromMLP = EvolutionData();
-    
-    map<ZAI,TGraph*> ExtrapolatedXS[3];
+
+    map<ZAI, TGraph*> ExtrapolatedXS[3];
     /*************DATA BASE INFO****************/
     EvolutionDataFromMLP.SetReactorType(fDBRType);
     EvolutionDataFromMLP.SetFuelType(fDBFType);
     EvolutionDataFromMLP.SetPower(fDBPower);
     EvolutionDataFromMLP.SetHeavyMetalMass(fDBHMMass);
     /************* The Cross sections***********/
-    for(int i = 0;i<int(fWeightFiles.size());i++)
-    {
-        int Z = -2;
-        int A = -2;
-        int I = -2;
-        int Reaction = -2;
-        ReadWeightFile( fWeightFiles[i], Z, A, I, Reaction);
-    if( Z >= GetZAIThreshold() )
-        {
-            CLASSReader * reader = new CLASSReader( fMapOfTMVAVariableNames );
-            reader->AddVariable( "Time" ); 
-            
-            reader->BookMVA( "MLP method" , dir + fWeightFiles[i] );
-            for(int TimeStep = 0;TimeStep<int(fMLP_Time.size());TimeStep++)
-            {
-                vector<float> tmva_input = CreateTMVAInput(IV,TimeStep);
-                reader->SetInputData( tmva_input );
-                double XSValue = reader->EvaluateRegression( "MLP method" )[0];
-                pair< map<ZAI, TGraph*>::iterator, bool> IResult = ExtrapolatedXS[Reaction].insert( pair<ZAI ,TGraph* >(ZAI(Z,A,I), new TGraph()) );
-                
-                if(IResult.second )
-                {
-                    (IResult.first)->second->SetPoint(0, (double)fMLP_Time[TimeStep], XSValue );
-                    
-                }
-                else
-                {
-                    (IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)fMLP_Time[TimeStep], XSValue );
-                }
-                
-            }
-            
-            delete reader;
-        }
+    int Z[int(fWeightFiles.size())];
+    int A[int(fWeightFiles.size())];
+    int I[int(fWeightFiles.size())];
+    int Reaction[int(fWeightFiles.size())];
+
+    for (int i = 0; i < int(fWeightFiles.size()); i++) {
+        Z[i] = -2;
+        A[i] = -2;
+        I[i] = -2;
+        Reaction[i] = -2;
+        ReadWeightFile(fWeightFiles[i], Z[i], A[i], I[i], Reaction[i]);
     }
     
+    vector<float> tmva_input = CreateTMVAInput(IV, 0);
+    for (int TimeStep = 0; TimeStep < int(fMLP_Time.size()); TimeStep++) {
+      tmva_input.back() = fMLP_Time[TimeStep];  
+      for (int i = 0; i < int(fWeightFiles.size()); i++) {
+            if (Z[i] >= GetZAIThreshold()) {
+                fReader[i]->SetInputData(tmva_input);
+                double XSValue = fReader[i]->EvaluateRegression("MLP method")[0];
+                // std::cout << "XSValue " << XSValue << std::endl;
+                pair<map<ZAI, TGraph*>::iterator, bool> IResult =
+                        ExtrapolatedXS[Reaction[i]].insert(
+                                pair<ZAI, TGraph*>(ZAI(Z[i], A[i], I[i]), new TGraph()));
+
+                if (IResult.second) {
+                    (IResult.first)
+                            ->second->SetPoint(0, (double)fMLP_Time[TimeStep], XSValue);
+
+                } else {
+                    (IResult.first)
+                            ->second->SetPoint((IResult.first)->second->GetN(),
+                                                                 (double)fMLP_Time[TimeStep], XSValue);
+                }
+            }
+        }
+    }
+
     /**********Sorting TGraph*********/
-    for(int x = 0;x<3;x++)
-    {    map<ZAI,TGraph*>::iterator it;
-        for(it = ExtrapolatedXS[x].begin(); it != ExtrapolatedXS[x].end(); it++)
+    for (int x = 0; x < 3; x++) {
+        map<ZAI, TGraph*>::iterator it;
+        for (it = ExtrapolatedXS[x].begin(); it != ExtrapolatedXS[x].end(); it++)
             it->second->Sort();
-        
     }
     /**********Filling Matrices*/
     EvolutionDataFromMLP.SetFissionXS(ExtrapolatedXS[0]);
     EvolutionDataFromMLP.SetCaptureXS(ExtrapolatedXS[1]);
     EvolutionDataFromMLP.Setn2nXS(ExtrapolatedXS[2]);
-    
-    
-    DBGL
-    return EvolutionDataFromMLP;
+
+    DBGL return EvolutionDataFromMLP;
 }
 
 //________________________________________________________________________

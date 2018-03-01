@@ -1,3 +1,6 @@
+#ifndef _READER_HXX
+#define _READER_HXX
+
 #include <iostream>
 #include <vector>
 #include <list>
@@ -46,4 +49,4 @@ CLASSReader::CLASSReader ( const std::map<T,std::string> & a ) :
 	}
 }
 
-
+#endif

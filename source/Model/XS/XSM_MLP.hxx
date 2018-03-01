@@ -11,6 +11,7 @@
  @version 1.0
  */
 #include "XSModel.hxx"
+#include "CLASSReader.hxx"
 #include "TTree.h"
 #include <string>
 #include <fstream>
@@ -110,12 +111,15 @@ class XSM_MLP : public XSModel
 	//@}
 	
 	
+  void BookTMVAReader(); //Book TMVA method  
 	EvolutionData GetCrossSections(IsotopicVector IV, double t=0);	//!< Return calculated cross section by the MLP regression
 	
 	
 	private :
 	
-	void GetMLPWeightFiles();				//!< Find all .xml file in TMVA_Weight_Directory
+  vector<CLASSReader*> fReader;
+	
+  void GetMLPWeightFiles();				//!< Find all .xml file in TMVA_Weight_Directory
 	
 	void ReadWeightFile(string Filename, int &Z, int &A, int &I, int &Reaction) ;				//!<  Select the reaction according to the weight file name
 	

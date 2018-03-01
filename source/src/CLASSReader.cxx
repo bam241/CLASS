@@ -1,6 +1,5 @@
 #include "CLASSReader.hxx"
 
-
 //____________________________________________________________________________
 CLASSReader::CLASSReader () :
 	freader( new TMVA::Reader("silent") )

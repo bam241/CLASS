@@ -480,36 +480,6 @@ map <string , vector<double> > EQ_OneParameter::BuildFuel(double BurnUp, double 
         
         FuelToTest.Clear();
     
-                /*
-                if (fDBFType == "MOX")
-                {
-                cout<<"------------------------------------------------------"<<endl;
-                cout<<"START ALGO -> BU, Mass   "<<BurnUp<<" "<<HMMass<<endl;
-                cout<<"------------------------------------------------------"<<endl;
-                double MassTest = MassMin[MaterialToSearch];
-                cout<<MaterialToSearch<<" "<<MassMax[MaterialToSearch]<<" "<<MassMin[MaterialToSearch]<<" "<<endl;
-                do
-                {
-                    ConvertMassToLambdaVector(MaterialToSearch, lambda[MaterialToSearch], MassTest, StreamArray[MaterialToSearch]);    
-                    FuelToTest          = BuildFuelToTest(lambda, StreamArray, HMMass, StreamListIsBuffer);
-                    FuelToTest          = FuelToTest/FuelToTest.GetSumOfAll();
-                    CalculatedTargetParameter   = CalculateTargetParameter(FuelToTest, fTargetParameter);
-                
-                    cout<<"Lambda vector : "<<MaterialToSearch<<" - "; for(int i=0; i < (int)lambda[MaterialToSearch].size(); i++) cout<<lambda[MaterialToSearch][i]<<" ";
-                    cout<<endl;
-                
-                
-                    MassTest += (MassMax[MaterialToSearch] - MassMin[MaterialToSearch])/100.;
-                
-                    cout<<MassTest<<" "<<CalculatedTargetParameter<<endl;
-                
-                } while (MassTest <= MassMax[MaterialToSearch]);
-                cout<<"------------------------------------------------------"<<endl;
-                cout<<"STOP ALGO EXIT(1)..."<<endl; exit(1);
-                cout<<"------------------------------------------------------"<<endl;
-                }
-                */
-    
         do
         {
             if(count > fMaxIterration)
