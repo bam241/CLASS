@@ -5,10 +5,31 @@
 # call if option -h, -help or --help, display usage and quit
 function usage ()
 {
-    cat <<\MANUAL_EOF
-"NO MANUAL YET"
-MANUAL_EOF
-
+echo "--------------------------------------------"
+echo "--- CLASS Installation options "
+echo "--------------------------------------------"
+echo ""
+echo "- ./install.sh [options]"
+echo ""
+echo "--- options = -h|-help|--help"
+echo "-> Print help! "
+echo ""
+echo "--- options = --build|-build|build"
+echo "-> Build following packages : CLASSpkg_root CLASSpkg CLASSGui "
+echo ""
+echo "--- options = --gtest|-gtest|gtest"
+echo "-> Run google tests"
+echo ""
+echo "--- options = --clean|-clean|clean )"
+echo "-> Clean the repo"
+echo ""
+echo "--- options = --clean-build"
+echo "-> Clean first and then build"
+echo ""
+echo "--- options = --build-gtest"
+echo "-> Build and run Google test"
+echo ""
+echo "--------------------------------------------"
 exit 418
 }
 
@@ -19,14 +40,21 @@ function build ()
     fi
     cd bld
 
-    if [ "$1" == "WithNoTest"]
+    if [ "$1" == "WithNoTest" ]; then
         cmake ..
-        make -j ${J} ++++ CLASSpkg_root CLASSpkg CLASSGui
+        make -j ${J} CLASSpkg_root CLASSpkg CLASSGui
     fi
 
-    if [ "$1" == "WithTest"]
+    if [ "$1" == "WithTest" ]; then
         cmake ..
         make -j ${J}
+        ../bin/RunTest
+    fi
+
+    if [ "$1" == "TestOnly" ]; then
+        cmake ..
+        make -j ${J} RunTest
+        ../bin/RunTest
     fi
 }
 
@@ -43,7 +71,6 @@ function clean ()
     rm -rf bin
 }
 
-
 ##############################################################################
 ### calls of all functions
 ##############################################################################
@@ -53,6 +80,9 @@ BUILD=false
 CLEAN=false
 GTEST=false
 
+# Help if no argument
+if [ -z "$*" ]; then usage; fi
+
 # loop on all arguments
 for arg in "$@"; do
     case $arg in
@@ -60,28 +90,33 @@ for arg in "$@"; do
             usage ;;
         --build|-build|build )
             BUILD=true ;;
+        --gtest|-gtest|gtest )
+            GTEST=true ;;
         --clean|-clean|clean )
             CLEAN=true ;;
         --clean-build )
             CLEAN=true;BUILD=true ;;
-        --build-test )
-            GTEST=true ;;
+        --build-gtest )
+            BUILD=true;GTEST=true ;;
         -j* )
             J="${arg//-j=/}" ;;
     esac
 done
 
-
 if [ "${CLEAN}" = true ]; then
     clean
 fi
 
-if [ "${BUILD}" = true ]; then
-    build(WithNoTest)
+if [ "${BUILD}" = true ] && [ "${GTEST}" = false ]; then
+    build "WithNoTest"
 fi
 
-if [ "${GTEST}" = true ]; then
-    build(WithTest)
+if [ "${BUILD}" = true ] && [ "${GTEST}" = true ]; then
+    build "WithTest"
+fi
+
+if [ "${BUILD}" = false ] && [ "${GTEST}" = true ]; then
+    build "TestOnly"
 fi
 
 exit 0
