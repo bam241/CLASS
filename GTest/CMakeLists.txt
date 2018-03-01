@@ -42,11 +42,14 @@ include_directories("${source_dir}/googletest/include"
 # Test Compilation
 file(GLOB SRCS *.cxx)
 
+INCLUDE_DIRECTORIES( ${CLASS_HEADERS_DIR_EQUIVALENCE} ${CLASS_HEADERS_DIR_IRRADIATION} ${CLASS_HEADERS_DIR_XS} ${CLASS_HEADERS_DIR_INCLUDE} ${CLASS_HEADERS_DIR_EXTERNAL})
+
 ADD_EXECUTABLE(RunTest ${SRCS})
 
 TARGET_LINK_LIBRARIES(RunTest
     libgtest
     libgmock
+    CLASSpkg
 )
 
 add_test(NAME CLASSTest
