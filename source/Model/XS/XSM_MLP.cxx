@@ -237,8 +237,8 @@ void XSM_MLP::BookTMVAReader() {
         int Reaction = -2;
         ReadWeightFile(fWeightFiles[i], Z, A, I, Reaction);
         if (Z >= GetZAIThreshold()) {
-              fReader.push_back(new CLASSReader(fMapOfTMVAVariableNames));
-              fReader[i]->AddVariable("Time");
+            fReader.push_back(new CLASSReader(fMapOfTMVAVariableNames));
+            fReader[i]->AddVariable("Time");
             fReader[i]->BookMVA("MLP method", dir + fWeightFiles[i]);
         }
     }
@@ -273,7 +273,7 @@ vector<float> XSM_MLP::CreateTMVAInput(IsotopicVector isotopicvector,int TimeSte
         tmva_input.push_back( IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it_ZAI_s).first ) );
     }
 
-    tmva_input.push_back(TimeStep);
+    tmva_input.push_back(fMLP_Time[TimeStep]);
 
     return tmva_input;
 }

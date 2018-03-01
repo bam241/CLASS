@@ -17,7 +17,7 @@
 
 #include "TTree.h"
 
-#include "XSModel.hxx"
+#include "XSM_MLP.hxx"
 
 typedef long long int cSecond;
 using namespace std;
@@ -41,7 +41,7 @@ typedef void (XSM_SFR::*XS_SFR_DMthPtr)( const string & ) ;
 //________________________________________________________________________
 
 
-class XSM_SFR : public XSModel
+class XSM_SFR : public XSM_MLP
 {
 	public :
 	
