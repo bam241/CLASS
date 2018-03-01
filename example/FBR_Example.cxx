@@ -21,9 +21,10 @@
 #include <iomanip>
 #include <math.h>
 #include <string>
-#include "XS/XSM_MLP.hxx"				//Load the include for Neural network cross section predictor
-#include "Irradiation/IM_RK4.hxx"			//Load the include for Runge Kutta 4 resolution
-#include "Equivalence/EQM_FBR_BakerRoss_MOX.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
+#include "XSM_MLP.hxx"				//Load the include for Neural network cross section predictor
+#include "IM_RK4.hxx"				//Load the include for Runge Kutta 4 resolution
+#include "EQ_OneParameter.hxx"			//Load the include for Equivalence Model
+
 using namespace std;
 
 int main(int argc, char** argv)
@@ -31,7 +32,7 @@ int main(int argc, char** argv)
 	//seconds in one year
 	cSecond year = 3600*24.*365.25; 
 	/******LOG MANAGEMENT**********************************/
-	//Definition of the Log file : CLASS messages output 
+	//Definition of the Log file : CLASS messages output ; 3 is the maximum level
 	int Std_output_level 	= 0;  // Only error are shown in terminal
 	int File_output_level 	= 2; // Error + Warning + Info are shown in the file CLASS_OUTPUT.log
 	CLASSLogger *Logger 	= new CLASSLogger("CLASS_OUTPUT.log",Std_output_level,File_output_level);
@@ -65,7 +66,10 @@ int main(int argc, char** argv)
 	IMRK4->SetSpectrumType("fast");									 //Set the spectrum to fast for reactions isomeric branching ratios (can be fast or thermal)
 	IMRK4->LoadFPYield("" , CLASS_PATH + "/data/FPyield_Fast_JEFF3.1.dat");//Add the handling of fission procuct and gets fission yields from this file (the first argument is for spontaneousfission yield : here is not handle)
 	
-	EQM_FBR_BakerRoss_MOX* EQM_FBRMOX = new EQM_FBR_BakerRoss_MOX(gCLASS->GetLog());//Defining the EquivalenceModel
+	EQ_OneParameter* EQM_FBRMOX = new EQ_OneParameter(gCLASS->GetLog(), 
+							  PATH_TO_DATA + "FBR_Na/MOX/EQModel/XML/ESFR_MOX_keffBOC.xml" , 
+							  PATH_TO_DATA + "FBR_Na/MOX/EQModel/NFO/ESFR_MOX_keffBOC.nfo");//Defining the EquivalenceModel
+	EQM_FBRMOX->SetModelParameter("keffBOC",1.03); 						//Tel the model type to build fuel ; here the fuel is build to reach the target of keff = 1.03 @ BOC
 
 	PhysicsModels* PHYMOD = new PhysicsModels(XS_FBRMOX, EQM_FBRMOX, IMRK4);		//The PhysicsModels containing the 3 object previously defined
 
@@ -95,8 +99,9 @@ int main(int argc, char** argv)
 	FabricationPlant *FP_MOX = new FabricationPlant(gCLASS->GetLog(), 3*year); //Declare a FabricationPlant. After the build of the fuel, it decays during 3years before to be loaded in Reactor
 	FP_MOX->SetFiFo(false); //The latest isotopicVector to enter in "Stock" will be used to build the fuel (Opposite of First In First Out)
 	FP_MOX->SetName("Fab_MOX");
-	FP_MOX->AddStorage("Fissile", Stock);
-	FP_MOX->AddInfiniteStorage("Fertile");	//Tell the FP to  take fertile material defined in the EquivalenceModel from an infinite stock
+	FP_MOX->AddStorage("Fissile", Stock, 0.12, 0.22, 1); //Tell the FP where to take the fissile with a minimum, a maximum concentration and a priority
+	//FP_MOX->AddStorage("Fissile",Stock,0.17,1); //Tell the FP to build a fissile with a constant proportion of fissile
+	FP_MOX->AddFuelBuffer("Fertile");	//Tell the FP to  take fertile material defined in the EquivalenceModel from an infinite stock
 	//FP_MOX->AddStorage("Fertile",Stock2);//Tell the FP to look in Stock2 for fertile material 
 	//If fertile stock is not defined (like here), CLASS get fertile from nature (OUTCOMING vector)
 	//FP_MOX->SetReUsableStorage(wastestock);//By default the fabricationplant get the list of nuclei defined in the EquivalenceModel (here EQM_MLP_MOX) from stock and send the others nuclei in WASTE. If user want these nuclei to go in another stock  he can use the SetReUsableStorage function
@@ -138,7 +143,7 @@ int main(int argc, char** argv)
 //==========================================================================================
 /*
  
- \rm CLASS* ; g++ -o CLASS_Exec FBR_Example.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
+ \rm CLASS* ; g++ -o CLASS_Exec FBR_Example.cxx $CLASS_CFLAG
  
  
  */

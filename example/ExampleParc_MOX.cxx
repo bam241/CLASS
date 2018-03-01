@@ -26,9 +26,10 @@
 #include <iomanip>
 #include <math.h>
 #include <string>
-#include "XS/XSM_MLP.hxx"			//Load the include for Neural network cross section predictor
-#include "Irradiation/IM_RK4.hxx"		//Load the include for Runge Kutta 4 resolution
-#include "Equivalence/EQM_MLP_Kinf.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
+
+#include "XSM_MLP.hxx"		//Load the include for Neural network cross section predictor
+#include "IM_RK4.hxx"		//Load the include for Runge Kutta 4 resolution
+#include "EQ_OneParameter.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
 using namespace std;
 
 int main(int argc, char** argv)
@@ -45,9 +46,9 @@ int main(int argc, char** argv)
 	// The scenario start at year 1977
 	Scenario *gCLASS=new Scenario(1977*year,Logger);
 	gCLASS->SetStockManagement(true);								//If false all the IsotopicVector in stocks are mixed together.
-	gCLASS->SetTimeStep(year/2.);	 								//the scenario calculation is updated every 3 months
+	gCLASS->SetTimeStep(year/4.);	 								//the scenario calculation is updated every 3 months
 	cSecond EndOfScenarioTime=2010*year;							//Scenario ends in year 2040
-	gCLASS->SetOutputFileName("ExampleParc_MLP_Kinf_Kpred.root");	//Set the name of the output file
+	gCLASS->SetOutputFileName("ExampleParc.root");	//Set the name of the output file
 
 	/******DATA BASES**********************************/
 	//Geting CLASS to path
@@ -75,18 +76,13 @@ int main(int argc, char** argv)
 	double K_Threshold 		= 1.02 ;	//Threshold on the average (over batches) kinfinite .
 
 	//Constructor where kinfini is predicted  with a mlp
-	EQM_MLP_Kinf* EQMMLPPWRMOX = new EQM_MLP_Kinf(gCLASS->GetLog(),PATH_TO_DATA + "PWR/MOX/EQModel/MLP_Kinf/MLP/PWR_MOX_30Wg.xml",NumberOfBatches,"",K_Threshold);
+	EQ_OneParameter* EQMPWRMOX = new EQ_OneParameter(gCLASS->GetLog(),PATH_TO_DATA + "PWR/MOX/EQModel/XML/PWR_MOX.xml",
+	PATH_TO_DATA + "PWR/MOX/EQModel/NFO/PWR_MOX.nfo");	//Build the equivalence model for Mox fuel
+	EQMPWRMOX->SetModelParameter("kThreshold",1.039);			//Set the reactivity threshold for maximum BU calculation
+	EQMPWRMOX->SetModelParameter("NumberOfBatch",3);			//Set the number of batches for maximum BU calculation
 
-	//Constructor where kinfini is predicted as a 2nd order polynome with weight predicted with mlps
-	/*EQM_MLP_Kinf* EQMMLPPWRMOX = new EQM_MLP_Kinf(gCLASS->GetLog(),
-	PATH_TO_DATA + "PWR/MOX/EQModel/MLP_Kinf/POL2/MLP_POL2_Alpha_0.xml",
-	PATH_TO_DATA + "PWR/MOX/EQModel/MLP_Kinf/POL2/MLP_POL2_Alpha_1.xml",
-	PATH_TO_DATA + "PWR/MOX/EQModel/MLP_Kinf/POL2/MLP_POL2_Alpha_2.xml",
-	PATH_TO_DATA + "PWR/MOX/EQModel/MLP_Kinf/POL2/PWR_MOX_30Wg.nfo",
-	NumberOfBatches,K_Threshold);//Defining the EquivalenceModel
-	*/
 
-	PhysicsModels* PHYMOD = new PhysicsModels(XSMOX, EQMMLPPWRMOX, IMRK4); 							 //The PhysicsModels containing the 3 object previously defined
+	PhysicsModels* PHYMOD = new PhysicsModels(XSMOX, EQMPWRMOX, IMRK4); 							 //The PhysicsModels containing the 3 object previously defined
 
 	//Fixed fuel : PWR UOX
 	EvolutionData *CYCLADE 	= new EvolutionData(gCLASS->GetLog(), PATH_TO_DATA + "PWR/UOX/FixedFuel/CYCLADES.dat");
@@ -118,11 +114,8 @@ int main(int argc, char** argv)
 	FabricationPlant *FP_MOX = new FabricationPlant(gCLASS->GetLog(), 3*year); //Declare a FabricationPlant. After the build of the fuel, it decays during 3years before to be loaded in Reactor
 	FP_MOX->SetFiFo(false); //The latest isotopicVector to enter in "Stock" will be used to build the fuel (Opposite of First In First Out)
 	FP_MOX->SetName("Fab_MOX");
-	FP_MOX->AddStorage("Fissile", StockUOX);
-	FP_MOX->AddInfiniteStorage("Fertile");	//Tell the FP to  take fertile material defined in the EquivalenceModel from an infinite stock
-	//FP_MOX->AddStorage("Fertile",Stock2);//Tell the FP to look in Stock2 for fertile material 
-	//If fertile stock is not defined (like here), CLASS get fertile from nature (OUTCOMING vector)
-	//FP_MOX->SetReUsableStorage(wastestock);//By default the fabricationplant get the list of nuclei defined in the EquivalenceModel (here EQM_MLP_MOX) from stock and send the others nuclei in WASTE. If user want these nuclei to go in another stock  he can use the SetReUsableStorage function
+	FP_MOX->AddStorage("Fissile", StockUOX,0.04,0.16,1);	//Tell the FP where to take the Fissile material with a minimum proportion of 0.04%, a maximum proportion of 0.16% and a priority of 1!
+	FP_MOX->AddFuelBuffer("Fertile");	//Tell the FP to  take fertile material defined in the EquivalenceModel from an infinite stock
 	gCLASS->AddFabricationPlant(FP_MOX);
 
 
@@ -375,7 +368,7 @@ int main(int argc, char** argv)
 //==========================================================================================
 /*
  
- \rm CLASS* ; g++ -o CLASS_Exec ExampleParc_MLP_MOX_Kinf.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result 
+ \rm CLASS* ; g++ -o CLASS_Exec ExampleParc_MOX.cxx $CLASS_CFLAG
  
  
  */

@@ -103,7 +103,7 @@ int main(int argc, char** argv)
 //==========================================================================================
 /*
  
- \rm CLASS* ; g++ -o CLASS_Exec SimpleReactor2.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
+ \rm CLASS* ; g++ -o CLASS_Exec SimpleReactor2.cxx $CLASS_CFLAG
  
  
  */

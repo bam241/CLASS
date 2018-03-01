@@ -10,6 +10,8 @@
 //
 // The spent fuel goes to a Storage
 //
+// The fuel cycle calculation is based on reactor receipes
+//
 //@author BaL
 /*************************************************/
 #include "CLASSHeaders.hxx"
@@ -26,7 +28,7 @@ int main(int argc, char** argv)
 	//seconds in one year
 	cSecond year = 3600*24.*365.25; 
 	/******LOG MANAGEMENT**********************************/
-	//Definition of the Log file : CLASS messages output 
+	//Definition of the Log file : CLASS messages output (3 is the maximum)
 	int Std_output_level 	= 0; //Only error are shown in terminal
 	int File_output_level 	= 2; // Error + Warning + Info are shown in the file CLASS_OUTPUT.log
 	CLASSLogger *Logger 	= new CLASSLogger("CLASS_OUTPUT.log",Std_output_level,File_output_level);
@@ -98,5 +100,5 @@ int main(int argc, char** argv)
 // Compilation
 //==========================================================================================
 /* 
-\rm CLASS* ; g++ -o CLASS_Exec SimpleReactor.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result
+\rm CLASS* ; g++ -o CLASS_Exec SimpleReactor.cxx $CLASS_CFLAG
 */
