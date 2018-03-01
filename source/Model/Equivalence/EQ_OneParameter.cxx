@@ -658,7 +658,7 @@ vector<float> EQ_OneParameter::CreateTMVAInput(IsotopicVector TheFreshfuel, doub
     // Add value in the input vector
     for ( it_ZAI_s = fMapOfTMVAVariableNames.begin() ; it_ZAI_s != fMapOfTMVAVariableNames.end() ; it_ZAI_s++)
     {
-        tmva_input.push_back( IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it_ZAI_s).first ) ;
+        tmva_input.push_back( IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it_ZAI_s).first ) );
     }
 
     if (ThisTime != -1)

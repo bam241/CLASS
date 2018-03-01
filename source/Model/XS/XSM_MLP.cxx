@@ -227,7 +227,7 @@ vector<float> XSM_MLP::CreateTMVAInput(IsotopicVector isotopicvector,int TimeSte
     // Add value in the input vector
     for ( it_ZAI_s = fMapOfTMVAVariableNames.begin() ; it_ZAI_s != fMapOfTMVAVariableNames.end() ; it_ZAI_s++)
     {
-        tmva_input.push_back( IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it_ZAI_s).first ) ;
+        tmva_input.push_back( IVAccordingToUserInfoFile.GetZAIIsotopicQuantity( (*it_ZAI_s).first ) );
     }
 
     tmva_input.push_back(TimeStep);
@@ -261,7 +261,7 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 		if( Z >= GetZAIThreshold() )
 		{
 			CLASSReader * reader = new CLASSReader( fMapOfTMVAVariableNames );
-			reader->AddVariable( "Time" ); }
+			reader->AddVariable( "Time" ); 
 			
 			reader->BookMVA( "MLP method" , dir + fWeightFiles[i] );
 		
@@ -283,7 +283,6 @@ EvolutionData XSM_MLP::GetCrossSectionsTime(IsotopicVector IV)
 					(IResult.first)->second->SetPoint( (IResult.first)->second->GetN(), (double)fMLP_Time[TimeStep], XSValue );
 				}
 				
-				delete tmva_input;
 			}
 			
 			delete reader;
