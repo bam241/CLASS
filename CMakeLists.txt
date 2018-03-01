@@ -80,3 +80,10 @@ ADD_SUBDIRECTORY(source)
 
 # Add gui
 ADD_SUBDIRECTORY(gui)
+
+################################
+# GTest
+################################
+
+enable_testing()
+add_subdirectory(GTest)
