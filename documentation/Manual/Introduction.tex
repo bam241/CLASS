@@ -13,14 +13,7 @@
 
     \vspace{2cm}
 
-CLASS stands for \textbf{C}ore \textbf{L}ibrary for \textbf{A}dvanced \textbf{S}cenario \textbf{S}imulation. CLASS is developed from a \textbf{CNRS\footnote{Centre National de la Recherche Scientifique}/IRSN\footnote{Institut de Radioprotection et de S\^{u}ret\'{e} Nucl\'{e}aire}} collaboration started in 2012. It is an \textbf{open source} package of C++ libraries. 
-CLASS is a \textbf{dynamical fuel cycle simulation tool}. It allows to \textbf{simulate} the evolution of an entire \textbf{nuclear reactor fleet} and its associated facilities, such as spent fuel pool, fuel fabrication plant, chemical separation plant, disposal and so on. 
-
-Switching from a technology of reactor, or enrichment , or reprocessing,... to an other can strongly impact several quantities such as the resource consumption, waste disposal surface, spent fuel transportation frequency, and so on. The goal of a nuclear fuel cycle code is to calculate nuclei inventories and mass flows evolution in an entire fuel cycle, from the mine to the final disposal in order to \textbf{evaluates the impacts of the changes in a civil nuclear policy of a country}. 
-
-The heart of such codes is located in the treatment of the fuel fabrication and its depletion in reactor. CLASS main asset is its ability to include any kind of reactor, either the system is innovative or standard. Indeed, the opportunity is given to each user to \textbf{build his own reactor model}. CLASS aims to be a useful tool for scenarios studies involving \textbf{Generation IV reactors} transitions as well as innovative fuel cycles, such as the Thorium cycle.
-
-
+The code CLASS (\textbf{C}ore \textbf{L}ibrary for \textbf{A}dvanced \textbf{S}cenario \textbf{S}imulation) is a dynamic fuel cycle simulation tool developed by CNRS/IN2P3 (Centre National de la Recherche Scientifique / Institut National de Physique Nucléaire et de Physique des Particules) in collaboration with IRSN (Institut de Radioprotection et de Sûreté Nucléaire). The aim of the tool CLASS is to model an evolving electro-nuclear fleet. The main output is the evolution of isotopes in all facilities of a nuclear fleet. The reactor physics is located in the treatment of the fuel fabrication and its depletion in reactor. The code CLASS aims to be a useful tool for scenarios studies. CLASS main asset is its ability to implement any kind of reactor, either the system is innovative or standard. Indeed, the opportunity is given to each user to \textbf{build his own reactor model}.
 
 \part{First Steps}
 \chapter{Package Content}
@@ -32,11 +25,14 @@ The CLASS package contains the followings :
 \subitem \textbf{Mass.dat }                     : file containing molar masses
 \subitem \textbf{SpontaneousFPyield.dat }       : file containing spontaneous fission yields
 \subitem \textbf{chart.JEF3T}                   : file containing decay constants and branching ratios
+\subitem \textbf{HeatTox.dat}                   : file containing conversion data for heat and radiotoxicity calculation
 
  \item \textbf{DATA\_BASES/}  : this folder contains decay data base and reactor data bases
  \subitem \textbf{DECAY/}     : decay data base
  \subitem \textbf{FBR-Na/}    : Models related to Fast reactor
  \subitem \textbf{PWR/}       : Models related to Pressurised Water Reactor
+ \subitem \textbf{REP\_HFC/}   : Models related to low moderated Pressurised Water Reactor 
+ \subitem \textbf{ADS/}       : Models related to Accelerator Driven System
  
  \item \textbf{documentation/} 
  \subitem \textbf{Manual/}    : folder containing this user guide an its .tex sources
@@ -45,17 +41,22 @@ The CLASS package contains the followings :
 \item \textbf{example/} : folder containing simple examples of CLASS input and an example of CLASS ouput reader
 
 \item \textbf{gui/} : folder containing sources of the graphical user interface for CLASS outputs
- \subitem \textbf{bin/}    : folder containing the CLASSGui binary (once comiled)
-
+ 
 \item \textbf{lib/} : folder containing the CLASS library (once compiled)
+\item \textbf{bin/} : folder containing the CLASSGui and the Google test binary (once compiled)
+
 \item \textbf{source/} : folder containing CLASS sources
 \subitem \textbf{include/}
 \subitem \textbf{Model/} : folder that contain the sources related to the physics models (EquivalenceModel , XSModel and IrradiationModel)
 \subitem \textbf{src/}
+\subitem \textbf{External/} : folder that contain the sources related to external classes used by the code CLASS
+
 \item \textbf{Utils/} : folder containing utility software related to reactor data base generation
-\subitem \textbf{EQM/} : Example of software to generate equivalence model
+\subitem \textbf{EQM/} : Example of software to generate equivalence model for building reactor fuel
 \subitem \textbf{MURE2CLASS/} : Software to convert MURE (a fuel depletion code)  output to \hyperref[sec:EvolutionData]{EvolutionData} format
 \subitem \textbf{XSM/} : Software to generate cross section predictor
+\subitem \textbf{ROOT2DAT/} : Software to convert CLASS output into readable ASCII data file
+\subitem \textbf{ROOT2ROOT/} : Software to convert multiple CLASS Output into one single ROOT file (used for sensitivity analysis)
  
  
 \end{itemize}
@@ -63,129 +64,17 @@ The CLASS package contains the followings :
 \chapter{Install procedure}
 
 \section{Requirement}
-\begin{center}
-\begin{minipage}{\textwidth}
+
 \begin{itemize}
 \item User skills : Good knowledge of C++. Abilities in using \href{https://root.cern.ch/}{Root}\footnote{https://root.cern.ch/}.
-Experience in depletion codes and neutron transport codes.
+Experience in depletion codes and neutron transport codes is required for building complex new reactor model.
 \item OS : CLASS is known to work under Linux (64  bits) and MacOSX (64 bits). It  has never been tested on any Windows distribution.
-\item C++ compiler :  we recommend to use a gnu compiler like gcc4.8 or above.
+\item C++ compiler :  we recommend to use a gnu compiler like gcc4.8 or above. For OSX, CLASS is working with native clang compiler.
 \item For DARWIN (OSX) users : 
-Make sure you have installed XCode and its command line tools (if not dowload and install from AppStore).\\ 
-Install \href{http://xquartz.macosforge.org/landing/}{XQuartz}\footnote{http://xquartz.macosforge.org/landing/}.\\
-We recommend NOT to use the clang compiler as there is no openmp library in it but the compilation should work with clang anyway\\
-TO INSTALL GNU COMPILER : You should install first \href{https://www.macports.org/install.php}{MacPorts}\footnote{https://www.macports.org/install.php} \\
-Then, types this following command in terminal :\\
-\begin{lstlisting}[style=terminal]
-sudo port install gcc5
-sudo port select --set gcc mp-gcc5
-\end{lstlisting}
+Make sure you have installed XCode and its command line tools (if not dowload and install from AppStore). If using clang compiler, there's no possibility to use openmp. 
 \item Root (CERN) :  
-CLASS uses Root to store output data. 
-The graphical user interface CLASSGui is based on Root.
-Some algorithms uses the TMVA module of Root. You need to build root from sources with the same C++ compiler as the one you use for CLASS (see first note below). If you prefer use pre-compiled Root libraries, make sure to choose one which is built with the same C++ compiler as the one you will use for compiling CLASS.
-For instance if you use a pre-compiled Root libraries compiled with the clang (DARWIN (OSX)) compiler, you have to compile CLASS with clang (and maybe with the same version). 
-
+ROOT~\cite{Brun_1997} is an analysis software developped by CERN. CLASS version 5 uses some ROOT version 6 features to run. CLASS uses Root to store output data. The graphical user interface CLASSGui is also based on Root. Some algorithms uses the TMVA module of Root. 
 \end{itemize}
-\end{minipage}
-\end{center}
-
-\begin{center}
-\line(1,0){250}
-\end{center}
-
-\begin{large}
-\begin{center}
-\textbf{IMPORTANT NOTES : } \\
-\vspace{0.5cm}
-\textbf{about building Root from sources} \\
-\end{center}
-\end{large} 
-\underline{For OSX users (tested with OSX Yosemite \& gcc5 from macport) :}\\
-With terminal, go to the unziped ROOT directory then :
-\begin{lstlisting}[style=terminal]
-./configure --with-cxx=/opt/local/bin/g++ --with-cc=/opt/local/bin/gcc --with-f77=/opt/local/bin/gfortran --with-ld=/opt/local/bin/g++ --enable-builtin-freetype --disable-cocoa --enable-minuit2 --disable-bonjour
-\end{lstlisting}
-If configuration succeed :
-\begin{lstlisting}[style=terminal]
-make -j
-\end{lstlisting}
-\vspace{0.5cm}
-\underline{For Linux users :}\\
-\begin{lstlisting}[style=terminal]
-./configure 
-make -j
-\end{lstlisting}
-seems to work easily
-\vspace{1cm}
-
-\begin{large}
-\begin{center}
-\textbf{about the Root version to use} \\
-\end{center}
-\end{large} 
-
-The version 6.00 and above doesn't use the CINT environment annymore. As a consequence, CLASS is not able to use these new Root versions. You have to use an older one.
-Root package of version 5.34/26 and older have a memory leak issue when using TMVA leading to a \textbf{freeze of your computer.}
-Compatible versions of Root are : 
-\begin{equation}
-\text{Root v5.34/30} \leq \text{Working Root version} \leq \text{Root v5.99/06}
-\end{equation}
-
-You can use an older Root version as v5.34/30 but you have to make this modification in the sources :
-Open with your favourite text editor the file  \$ROOTSYS/tmva/src/Reader.cxx (\$ROOTSYS is the path to your ROOT installation folder) and replace the following :\\
-
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}[style=customc]
-TMVA::Reader::~Reader( void )
-{
-   // destructor
-
-   delete fDataSetManager; // DSMTEST
-
-   delete fLogger;
-}
-\end{lstlisting}
-\end{minipage}
-\end{center}
-
-by :\\
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}[style=customc]
-TMVA::Reader::~Reader( void )
-{
-   // destructor
-   std::map<TString, IMethod* >::iterator itr;
-   for( itr = fMethodMap.begin(); itr != fMethodMap.end(); itr++) {
-      delete itr->second;
-   }
-   fMethodMap.clear();
-
-   delete fDataSetManager; // DSMTEST
-
-   delete fLogger;
-}
-\end{lstlisting}
-\end{minipage}
-\end{center}
-
-then type in your terminal : 
-
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}[style=terminal]
-cd $ROOTSYS
-sudo make -j
-\end{lstlisting}
-\end{minipage}
-\end{center}
-
-\begin{center}
-\line(1,0){250}
-\end{center}
-
 
 \section{Installation}
 Decompress the CLASS.tar.gz in your wanted location. 
