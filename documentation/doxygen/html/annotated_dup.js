@@ -40,6 +40,7 @@ var annotated_dup =
     [ "StringLine", "class_string_line.html", null ],
     [ "XSM_CLOSEST", "class_x_s_m___c_l_o_s_e_s_t.html", "class_x_s_m___c_l_o_s_e_s_t" ],
     [ "XSM_MLP", "class_x_s_m___m_l_p.html", "class_x_s_m___m_l_p" ],
+    [ "XSM_SFR", "class_x_s_m___s_f_r.html", "class_x_s_m___s_f_r" ],
     [ "XSModel", "class_x_s_model.html", "class_x_s_model" ],
     [ "ZAI", "class_z_a_i.html", "class_z_a_i" ],
     [ "ZAIHeat", "class_z_a_i_heat.html", "class_z_a_i_heat" ],

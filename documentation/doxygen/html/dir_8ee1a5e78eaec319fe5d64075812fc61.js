@@ -1,18 +1,24 @@
 var dir_8ee1a5e78eaec319fe5d64075812fc61 =
 [
-    [ "CLASSBackEnd.hxx", "_c_l_a_s_s_back_end_8hxx_source.html", null ],
-    [ "CLASSConstante.hxx", "_c_l_a_s_s_constante_8hxx_source.html", null ],
-    [ "CLASSFacility.hxx", "_c_l_a_s_s_facility_8hxx_source.html", null ],
-    [ "CLASSHeaders.hxx", "_c_l_a_s_s_headers_8hxx_source.html", null ],
+    [ "CLASSBackEnd.hxx", "_c_l_a_s_s_back_end_8hxx.html", [
+      [ "CLASSBackEnd", "class_c_l_a_s_s_back_end.html", "class_c_l_a_s_s_back_end" ]
+    ] ],
+    [ "CLASSConstante.hxx", "_c_l_a_s_s_constante_8hxx.html", "_c_l_a_s_s_constante_8hxx" ],
+    [ "CLASSFacility.hxx", "_c_l_a_s_s_facility_8hxx.html", [
+      [ "CLASSFacility", "class_c_l_a_s_s_facility.html", "class_c_l_a_s_s_facility" ]
+    ] ],
+    [ "CLASSHeaders.hxx", "_c_l_a_s_s_headers_8hxx.html", null ],
     [ "CLASSLogger.hxx", "_c_l_a_s_s_logger_8hxx.html", "_c_l_a_s_s_logger_8hxx" ],
-    [ "CLASSMethod.hxx", "_c_l_a_s_s_method_8hxx_source.html", null ],
+    [ "CLASSMethod.hxx", "_c_l_a_s_s_method_8hxx.html", "_c_l_a_s_s_method_8hxx" ],
     [ "CLASSNucleiFiliation.hxx", "_c_l_a_s_s_nuclei_filiation_8hxx.html", [
       [ "CLASSNucleiFiliation", "class_c_l_a_s_s_nuclei_filiation.html", "class_c_l_a_s_s_nuclei_filiation" ]
     ] ],
     [ "CLASSObject.hxx", "_c_l_a_s_s_object_8hxx.html", [
       [ "CLASSObject", "class_c_l_a_s_s_object.html", "class_c_l_a_s_s_object" ]
     ] ],
-    [ "CLASSReader.hxx", "_c_l_a_s_s_reader_8hxx_source.html", null ],
+    [ "CLASSReader.hxx", "_c_l_a_s_s_reader_8hxx.html", [
+      [ "CLASSReader", "class_c_l_a_s_s_reader.html", "class_c_l_a_s_s_reader" ]
+    ] ],
     [ "DecayDataBank.hxx", "_decay_data_bank_8hxx.html", "_decay_data_bank_8hxx" ],
     [ "DynamicalSystem.hxx", "_dynamical_system_8hxx.html", [
       [ "DynamicalSystem", "class_dynamical_system.html", "class_dynamical_system" ]
