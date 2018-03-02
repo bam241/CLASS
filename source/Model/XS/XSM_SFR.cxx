@@ -111,12 +111,12 @@ void XSM_SFR::LoadKeyword()
     DBGL
     XSM_MLP::LoadKeyword();
     fDKeyword.insert( pair<string, XS_SFR_DMthPtr>( "k_timestep",    & XSM_MLP::ReadTimeSteps));
-    fDKeyword.insert( pair<string, XS_SFR_DMthPtr>( "k_inputparameter",    & XSM_SFR::ReadInputParameter)     );
+    fDKeyword.insert( pair<string, XS_SFR_DMthPtr>( "k_inputparameter",    & XSM_SFR::ReadNonZaiTMVAVariables)     );
     fDKeyword.insert( pair<string, XS_MLP_DMthPtr>( "k_zainame",    & XSM_MLP::ReadZAIName)     );
     DBGL
 }
 //________________________________________________________________________
-void XSM_SFR::ReadInputParameter(const string &line)
+void XSM_SFR::ReadNonZaiTMVAVariables(const string &line)
 {
     DBGL
     int pos = 0;
