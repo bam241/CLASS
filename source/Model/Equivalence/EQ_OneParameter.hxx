@@ -23,7 +23,7 @@
 using namespace std;
 
 class EQ_OneParameter;
-typedef void (EQ_OneParameter::*EQOP_MthPtr)( const string & );
+typedef void (EQ_OneParameter::*EQ_OP_MthPtr)( const string & );
 
 //-----------------------------------------------------------------------------//
 
@@ -93,10 +93,6 @@ class EQ_OneParameter : public EquivalenceModel
     double CalculateBurnUpMax(IsotopicVector TheFuel, map<string, double> ModelParameter);//!<Calculate the BU max associated to a fuel composition based on MLP prediction (suitable for PWR)
     double CalculateKeffAtBOC(IsotopicVector TheFuel); //!<Calculate the keff at BOC associated to a fuel composition based on MLP prediction (suitable for SFR)
 
-    string GetTMVAXMLFilePath() {return fTMVAXMLFilePath;} // Return the path to TMVA XML File path
-    string GetTMVANFOFilePath() {return fTMVANFOFilePath;} // Return the path to TMVA NFO File path
-    void SetTMVAXMLFilePath(string TMVAXMLFilePath) {fTMVAXMLFilePath = TMVAXMLFilePath;} // Set the path to TMVA XML File path
-    void SetTMVANFOFilePath(string TMVANFOFilePath) {fTMVANFOFilePath = TMVANFOFilePath;} // Set the path to TMVA NFO File path
 
     /*!
      \name Get/Set Method
@@ -140,7 +136,6 @@ class EQ_OneParameter : public EquivalenceModel
      */
     //@{
     void ReadLine(string line);
-    
     void LoadKeyword();
 
     //{
@@ -176,6 +171,7 @@ class EQ_OneParameter : public EquivalenceModel
     //}
     void PrintInfo(); //Print the information red in the INFO stream    
     
+    void CheckParameterValidity();
     
     IsotopicVector BuildFuelToTest(map < string, vector<double> >& lambda, map < string , vector <IsotopicVector> > const& StreamArray, double HMMass, map <string, bool> StreamListIsBuffer); //Build a fuel with the buffer according to fissile lambda
     void CheckTargetParameterConsistency(map < int , string >  StreamListPriority, map < string , double >  TargetParameterMin, map < string , double > TargetParameterMax);
@@ -192,12 +188,10 @@ class EQ_OneParameter : public EquivalenceModel
     string fTargetParameter;                            //!< Type of target parameter optimized in build fuel (ex. BUmax)               
     int fMaxIterration;                             //!< Max iterrations in build fueld algorithm    
 
-    string fTMVAXMLFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
-    string fTMVANFOFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
 
 
     CLASSReader* fReader;
-    map<string, EQOP_MthPtr> fKeyword; //!< The model parameters
+    map<string, EQ_OP_MthPtr> fKeyword; //!< The model parameters
     
     map< ZAI, pair<double,double> > fZAILimits;     //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
 

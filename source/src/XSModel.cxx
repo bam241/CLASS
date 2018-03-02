@@ -19,7 +19,7 @@ using namespace std;
 XSModel::XSModel():CLASSObject()
 {
     XSModel::LoadKeyword();
-    freaded = false;
+    fread = false;
 
 }
 //________________________________________________________________________
@@ -28,7 +28,7 @@ XSModel::XSModel(CLASSLogger* log):CLASSObject(log)
 {
     
     XSModel::LoadKeyword();
-    freaded = false;
+    fread = false;
 }
 //________________________________________________________________________
 XSModel::~XSModel()
@@ -64,7 +64,7 @@ void XSModel::ReadLine(string line)
 {
     DBGL
     
-    if (!freaded)
+    if (!fread)
     {
         int pos = 0;
         string keyword = tlc(StringLine::NextWord(line, pos, ' '));
@@ -74,12 +74,12 @@ void XSModel::ReadLine(string line)
         if(it != fKeyword.end())
             (this->*(it->second))( line );
         
-        freaded = true;
+        fread = true;
         ReadLine(line);
         
     }
     
-    freaded = false;
+    fread = false;
     
     DBGL
 }

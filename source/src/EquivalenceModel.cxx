@@ -21,13 +21,13 @@
 EquivalenceModel::EquivalenceModel(): CLASSObject()
 {
     EquivalenceModel::LoadKeyword();
-    freaded = false;
+    fread = false;
 }
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel(CLASSLogger* log): CLASSObject(log)
 {
     EquivalenceModel::LoadKeyword();
-    freaded = false;
+    fread = false;
 }
 //________________________________________________________________________
 EquivalenceModel::~EquivalenceModel()
@@ -44,18 +44,18 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 void EquivalenceModel::LoadKeyword() 
 {
     DBGL
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail",                & EquivalenceModel::ReadZAIlimits)           );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor",         & EquivalenceModel::ReadType)            );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel",                & EquivalenceModel::ReadType)            );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmin",     & EquivalenceModel::ReadEqMinFraction)       );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmax",     & EquivalenceModel::ReadEqMaxFraction)       );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_list",                & EquivalenceModel::ReadList)            );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower",           & EquivalenceModel::ReadSpecificPower)       );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_zainame",          & EquivalenceModel::ReadZAIName)             );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_maxburnup",           & EquivalenceModel::ReadMaxBurnUp)       ); 
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_predictortype",        & EquivalenceModel::ReadPredictorType)       );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_output",           & EquivalenceModel::ReadOutput)              );
-    fKeyword.insert( pair<string, EQM_MthPtr>( "k_buffer",          & EquivalenceModel::ReadBuffer)          ); 
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail", & EquivalenceModel::ReadZAIlimits) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor", & EquivalenceModel::ReadType) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel", & EquivalenceModel::ReadType) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmin", & EquivalenceModel::ReadEqMinFraction) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmax", & EquivalenceModel::ReadEqMaxFraction) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_list", & EquivalenceModel::ReadList) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower", & EquivalenceModel::ReadSpecificPower) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_zainame", & EquivalenceModel::ReadZAIName) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_maxburnup", & EquivalenceModel::ReadMaxBurnUp) ); 
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_predictortype", & EquivalenceModel::ReadPredictorType) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_output", & EquivalenceModel::ReadOutput) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_buffer", & EquivalenceModel::ReadBuffer) ); 
     DBGL
 }
 
@@ -63,11 +63,12 @@ void EquivalenceModel::LoadKeyword()
 void EquivalenceModel::ReadNFO()
 {
     DBGL
-    ifstream NFO(fInformationFile.c_str());
+    std::cout << fTMVANFOFilePath << endl;
+      ifstream NFO(fTMVANFOFilePath.c_str());
     
     if(!NFO)
     {
-        ERROR << "Can't find/open file " << fInformationFile << endl;
+        ERROR << "Can't find/open file " << fTMVANFOFilePath << endl;
         exit(0);
     }
     
@@ -88,7 +89,7 @@ void EquivalenceModel::ReadLine(string line)
 {
     DBGL
     
-    if (!freaded)
+    if (!fread)
     {
         int pos = 0;
         string keyword = tlc(StringLine::NextWord(line, pos, ' '));
@@ -98,12 +99,12 @@ void EquivalenceModel::ReadLine(string line)
         if(it != fKeyword.end())
             (this->*(it->second))( line );
         
-        freaded = true;
+        fread = true;
         ReadLine(line);
         
     }
     
-    freaded = false;
+    fread = false;
     
     DBGL
 }

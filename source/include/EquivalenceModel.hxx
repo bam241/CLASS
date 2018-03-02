@@ -77,15 +77,13 @@ public :
     double BurnupToSecond(double BurnUp) {return BurnUp / fSpecificPower * (24 * 3.6e6);}
 
 
-
-    void LoadKeyword();
     void ReadNFO();
-      virtual void ReadLine(string line);
+    virtual void ReadLine(string line);
+    virtual void LoadKeyword();
+
     void ReadZAIlimits(const string &line);
     void ReadType(const string &line);
-    
     void ReadList(const string &line);
-
     void ReadEqMaxFraction(const string &line); 
     void ReadEqMinFraction(const string &line);
     //{
@@ -121,20 +119,6 @@ public :
     //}
 
     //{
-    /// ReadTargetParameter : type of target parameter optimized in build fuel (ex. BUmax)
-    /*!
-     \param line : line suppossed to contain the Target Parameter information starts with "k_targetparameter" keyword
-     */
-    void ReadTargetParameter(const string &line);
-    //}
-    //{
-    /// ReadNonZaiTMVAVariables : read the NonZai variables for the predictor (ex : Nbatch, Specific power)
-    /*!
-     \param line : line suppossed to contain the NonZai variables for TMVA starts with "k_nonZAIforTMVA" keyword
-     */
-    void ReadNonZaiTMVAVariables(const string &line);
-    //}
-    //{
     /// ReadOutput : read the output type of the predictor (ex : kinf)
     /*!
      \param line : line suppossed to contain the Specific Power information starts with "k_output" keyword
@@ -151,6 +135,10 @@ public :
     //}
 
 
+    string GetTMVAXMLFilePath() {return fTMVAXMLFilePath;} // Return the path to TMVA XML File path
+    string GetTMVANFOFilePath() {return fTMVANFOFilePath;} // Return the path to TMVA NFO File path
+    void SetTMVAXMLFilePath(string TMVAXMLFilePath) {fTMVAXMLFilePath = TMVAXMLFilePath;} // Set the path to TMVA XML File path
+    void SetTMVANFOFilePath(string TMVANFOFilePath) {fTMVANFOFilePath = TMVANFOFilePath;} // Set the path to TMVA NFO File path
 
 
     bool isIVInDomain(IsotopicVector IV); //<!< Check if the current IV is in the domain allowed for the fuel fabrication
@@ -169,7 +157,7 @@ protected :
     map<string, EQM_MthPtr> fKeyword;    //!< Parameters of the equivalence model 
 #endif
 
-    bool freaded;
+    bool fread;
 
     map< ZAI, pair<double, double> > fZAILimits;     //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
 
@@ -183,7 +171,8 @@ protected :
     //@}
 
 
-    string fInformationFile;                    //!<  file containing Reactor Type, Fuel type, HM mass, Power, time vector, and TMVA input variables names (looks the manual for format details)
+    string fTMVAXMLFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
+    string fTMVANFOFilePath;        //!<The weight needed by TMVA to construct and execute the multilayer perceptron
     string fDBFType;                    //!<  Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
     string fDBRType;                    //!<  Reactor Type (e.g PWR, FBR-Na, ADS..)
 

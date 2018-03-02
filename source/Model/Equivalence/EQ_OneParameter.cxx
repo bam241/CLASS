@@ -15,14 +15,15 @@
 #include "TMVA/MethodCuts.h"
 
 
+
 //________________________________________________________________________
 //________________________________________________________________________
 EQ_OneParameter::EQ_OneParameter(string TMVAXMLFilePath, string TMVANFOFilePath):EquivalenceModel(new CLASSLogger("EQ_OneParameter.log"))
 {
     fUseTMVAPredictor = true;
 
-    fMaxIterration  = 500;
-    fPCMprecision  = 10;
+    fMaxIterration = 500;
+    fPCMprecision = 10;
 
     fTMVAXMLFilePath = TMVAXMLFilePath;
     fTMVANFOFilePath = TMVANFOFilePath;
@@ -41,22 +42,7 @@ EQ_OneParameter::EQ_OneParameter(string TMVAXMLFilePath, string TMVANFOFilePath)
     ReadNFO();      //Getting information from file NFO
     
     BookTMVAReader(); 
-
-    //Check if any information is missing in NFO file
-    if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fSpecificPower) {ERROR<<"Missing information for k_specpower in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fMaximalBU) {ERROR<<"Missing information for k_maxburnup in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty()) { ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamList.empty()) { ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl; exit(1); }
-    if(fMapOfTMVAVariableNames.empty()) { ERROR<<"Missing information for k_zainame in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fTargetParameter.empty()) { ERROR<<"Missing information for k_targetparameter in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fTargetParameterStDev) { ERROR<<"Missing information for fTargetParameterStDev in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fModelParameter.empty()) { ERROR<<"Missing information for k_modelparameter in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fBuffer.empty()) { ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fPredictorType.empty()) { ERROR<<"Missing information for k_predictortype in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fOutput.empty()) { ERROR<<"Missing information for k_output in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    CheckParameterValidity();
 
     INFO << "__An equivalence model has been define__" << endl;
     INFO << "\tThe TMVA weights file is :" << fTMVAXMLFilePath << endl;
@@ -69,13 +55,14 @@ EQ_OneParameter::EQ_OneParameter(CLASSLogger* log, string TMVAXMLFilePath, strin
 {
     fUseTMVAPredictor = true;
 
-    fMaxIterration  = 500;
-    freaded                = false;     
-    fPCMprecision         = 10;
+    fMaxIterration = 500;
+    fread = false;     
+    fPCMprecision = 10;
 
     fTMVAXMLFilePath = TMVAXMLFilePath;
     fTMVANFOFilePath = TMVANFOFilePath;
-
+  
+    std::cout << fTMVANFOFilePath << endl;
     fDBRType = "";
     fDBFType = "";
     fSpecificPower = 0;
@@ -90,88 +77,8 @@ EQ_OneParameter::EQ_OneParameter(CLASSLogger* log, string TMVAXMLFilePath, strin
     ReadNFO();      //Getting information from file NFO
     
     BookTMVAReader(); 
+    CheckParameterValidity();
 
-    //Check if any information is missing in NFO file
-    if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fSpecificPower) {ERROR<<"Missing information for k_specpower in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fMaximalBU) {ERROR<<"Missing information for k_maxburnup in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty()) { ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamList.empty()) { ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl; exit(1); }
-    if(fMapOfTMVAVariableNames.empty()) { ERROR<<"Missing information for k_zainame in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fTargetParameter.empty()) { ERROR<<"Missing information for k_targetparameter in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fTargetParameterStDev) { ERROR<<"Missing information for fTargetParameterStDev in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fModelParameter.empty()) { ERROR<<"Missing information for k_modelparameter in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fBuffer.empty()) { ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fPredictorType.empty()) { ERROR<<"Missing information for k_predictortype in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fOutput.empty()) { ERROR<<"Missing information for k_output in : "<<fTMVANFOFilePath<<endl; exit(1);}
-
-    INFO << "__An equivalence model has been define__" << endl;
-    INFO << "\tThe TMVA weights file is :" << fTMVAXMLFilePath << endl;
-    INFO << "\tThe TMVA NFO file is :" << fTMVANFOFilePath << endl;
-    PrintInfo();}
-//________________________________________________________________________
-EQ_OneParameter::EQ_OneParameter(string TMVANFOFilePath):EquivalenceModel(new CLASSLogger("EQ_OneParameter.log"))
-{
-    fUseTMVAPredictor = false;
-
-    fTMVANFOFilePath = TMVANFOFilePath;
-
-    fDBRType = "";
-    fDBFType = "";
-    fSpecificPower = 0;
-    fMaximalBU = 0;
-    fTargetParameter = "";
-    fTargetParameterStDev = 0;
-    fBuffer = "";
-
-    LoadKeyword();  // Load Key words defineds in NFO file
-    ReadNFO();      //Getting information from file NFO
-    
-    BookTMVAReader(); 
-
-    //Check if any information is missing in NFO file
-    if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fSpecificPower) {ERROR<<"Missing information for k_specpower in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fMaximalBU) {ERROR<<"Missing information for k_maxburnup in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty()) { ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamList.empty()) { ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl; exit(1); }
-    if(fBuffer.empty()) { ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl; exit(1);}
-
-    INFO << "__An equivalence model without TMVA data has been define__" << endl;
-    INFO << "\tThe NFO file is :" << fTMVANFOFilePath << endl;
-    PrintInfo();
-}
-//________________________________________________________________________
-EQ_OneParameter::EQ_OneParameter(CLASSLogger* log, string TMVANFOFilePath):EquivalenceModel(log)
-{
-    fUseTMVAPredictor = false;
-
-    fTMVANFOFilePath = TMVANFOFilePath;
-
-    fDBRType = "";
-    fDBFType = "";
-    fSpecificPower = 0;
-    fMaximalBU = 0;
-    fBuffer = "";
-
-    LoadKeyword();  // Load Key words defineds in NFO file
-    ReadNFO();      //Getting information from file NFO
-    
-    BookTMVAReader(); 
-
-    //Check if any information is missing in NFO file
-    if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fSpecificPower) {ERROR<<"Missing information for k_specpower in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fMaximalBU) {ERROR<<"Missing information for k_maxburnup in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty()) { ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamList.empty()) { ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl; exit(1); }
-    if(fBuffer.empty()) { ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl; exit(1);}
 
     INFO << "__An equivalence model has been define__" << endl;
     INFO << "\tThe TMVA weights file is :" << fTMVAXMLFilePath << endl;
@@ -183,10 +90,86 @@ EQ_OneParameter::~EQ_OneParameter()
   delete fReader;
 }
 
+void EQ_OneParameter::CheckParameterValidity() {
+  // Check if any information is missing in NFO file
+  bool NFOValidity = true;
+  
+  if (fZAILimits.empty()) {
+    ERROR << "Missing information for k_zail in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fDBRType.empty()) {
+    ERROR << "Missing information for k_reactor in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fDBFType.empty()) {
+    ERROR << "Missing information for k_fuel in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (!fSpecificPower) {
+    ERROR << "Missing information for k_specpower in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (!fMaximalBU) {
+    ERROR << "Missing information for k_maxburnup in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fStreamListEqMMassFractionMin.empty() ||
+      fStreamListEqMMassFractionMax.empty()) {
+    ERROR << "Missing information for k_massfractionmin and/or k_massfractionmax in : "
+        << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fStreamList.empty()) {
+    ERROR << "Missing information for k_list in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fMapOfTMVAVariableNames.empty()) {
+    ERROR << "Missing information for k_zainame in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fTargetParameter.empty()) {
+    ERROR << "Missing information for k_targetparameter in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (!fTargetParameterStDev) {
+    ERROR << "Missing information for fTargetParameterStDev in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fModelParameter.empty()) {
+    ERROR << "Missing information for k_modelparameter in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fBuffer.empty()) {
+    ERROR << "Missing information for k_buffer in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fPredictorType.empty()) {
+    ERROR << "Missing information for k_predictortype in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fOutput.empty()) {
+    ERROR << "Missing information for k_output in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if(!NFOValidity){
+    exit(1);
+  }
 
+}
 void EQ_OneParameter::BookTMVAReader()
 {
-    fReader = new CLASSReader( fMapOfTMVAVariableNames );
+    fReader = new CLASSReader( );
+    
+    std::cout << fListOfNonZaiTMVAVariables.size() << std::endl;
+    for( int i = 0; i < fListOfNonZaiTMVAVariables.size(); i++){
+        fReader->AddVariable( fListOfNonZaiTMVAVariables[i].second );       
+    }
+    
+    map<ZAI, string>::iterator it;
+    for ( it = fMapOfTMVAVariableNames.begin(); it != fMapOfTMVAVariableNames.end(); it++){
+        fReader->AddVariable(it->second);
+    }
     
     if (fTargetParameter == "BurnUpMax")
     {
@@ -784,8 +767,8 @@ void EQ_OneParameter::ReadLine(string line)
     int pos = 0;
     string keyword = tlc(StringLine::NextWord(line, pos, ' '));
     
-    map<string, EQOP_MthPtr>::iterator it = fKeyword.find(keyword);
-    
+    map<string, EQ_OP_MthPtr>::iterator it = fKeyword.find(keyword);
+    std::cout << "Keyword " << keyword << std::endl;
     if(it != fKeyword.end())
         (this->*(it->second))( line );
     DBGL
@@ -794,11 +777,10 @@ void EQ_OneParameter::ReadLine(string line)
 void EQ_OneParameter::LoadKeyword() 
 {
     DBGL
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_targetparameter", & EQ_OneParameter::ReadTargetParameter) );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_modelparameter", & EQ_OneParameter::ReadModelParameter) ); 
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_targetparameterstdev", & EQ_OneParameter::ReadTargetParameterStDev) ); 
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_nonZAIforTMVA", & EQ_OneParameter::ReadNonZaiTMVAVariables) ); 
-
+    fKeyword.insert( pair<string, EQ_OP_MthPtr>( "k_targetparameter", & EQ_OneParameter::ReadTargetParameter) );
+    fKeyword.insert( pair<string, EQ_OP_MthPtr>( "k_modelparameter", & EQ_OneParameter::ReadModelParameter) ); 
+    fKeyword.insert( pair<string, EQ_OP_MthPtr>( "k_targetparameterstdev", & EQ_OneParameter::ReadTargetParameterStDev) ); 
+    fKeyword.insert( pair<string, EQ_OP_MthPtr>( "k_nonzaifortmva", & EQ_OneParameter::ReadNonZaiTMVAVariables) ); 
     DBGL
 }
 //________________________________________________________________________
@@ -844,15 +826,15 @@ void EQ_OneParameter::ReadNonZaiTMVAVariables(const string &line)
     
     int pos = 0;
     string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_nonZAIforTMVA" )    // Check the keyword
+    if( keyword != "k_nonzaifortmva" )    // Check the keyword
     {
-        ERROR << " Bad keyword : \"k_nonZAIforTMVA\" not found !" << endl;
+        ERROR << " Bad keyword : \"k_nonzaifortmva\" not found !" << endl;
         exit(1);
     }
         
     keyword = StringLine::NextWord(line, pos, ' ');
     fListOfNonZaiTMVAVariables.push_back(make_pair(-1.0,keyword));
-    
+    std::cout << "IN ReadNonZaiTMVAVariables " << endl; 
     DBGL    
 }
 //________________________________________________________________________
