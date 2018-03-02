@@ -18,8 +18,11 @@ using namespace std;
 
 XSModel::XSModel():CLASSObject()
 {
+    DBGL
     XSModel::LoadKeyword();
+    DBGL
     fread = false;
+    DBGL
 
 }
 //________________________________________________________________________
@@ -27,7 +30,9 @@ XSModel::XSModel():CLASSObject()
 XSModel::XSModel(CLASSLogger* log):CLASSObject(log)
 {
     
+    DBGL
     XSModel::LoadKeyword();
+    DBGL
     fread = false;
 }
 //________________________________________________________________________

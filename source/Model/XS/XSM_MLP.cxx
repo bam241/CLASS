@@ -36,37 +36,49 @@
 //________________________________________________________________________
 XSM_MLP::XSM_MLP(string TMVA_Weight_Directory,string InformationFile):XSModel(new CLASSLogger("XSM_MLP.log"))
 {
+    DBGL
     fTMVAWeightFolder = TMVA_Weight_Directory;
     
     fInformationFile = fTMVAWeightFolder+InformationFile;
     
+    DBGL
     GetMLPWeightFiles();
+    DBGL
     
     INFO << "__A cross section interpolator using" << endl;
     INFO << "Multi Layer Perceptron has been define__" << endl;
     INFO << " \t His TMVA folder is : \" " << fTMVAWeightFolder << "\"" << endl;
     
     LoadKeyword();
+    DBGL
     ReadNFO();
+    DBGL
     BookTMVAReader(); 
+    DBGL
     
 }
 //________________________________________________________________________
 XSM_MLP::XSM_MLP(CLASSLogger* Log,string TMVA_Weight_Directory,string InformationFile):XSModel(Log)
 {
+    DBGL
     fTMVAWeightFolder = TMVA_Weight_Directory;
 
     fInformationFile = fTMVAWeightFolder+InformationFile;
     
     GetMLPWeightFiles();
+    DBGL
     
     INFO << "__A cross section interpolator using" << endl;
     INFO << "Multi Layer Perceptron has been define__" << endl;
     INFO << " \t His TMVA folder is : \" " << fTMVAWeightFolder << "\"" << endl;
     
+    DBGL
     LoadKeyword();
+    DBGL
     ReadNFO();
+    DBGL
     BookTMVAReader(); 
+    DBGL
 }
 //________________________________________________________________________
 XSM_MLP::~XSM_MLP()
@@ -83,6 +95,7 @@ XSM_MLP::~XSM_MLP()
 void XSM_MLP::LoadKeyword()
 {
     DBGL
+    XSModel::LoadKeyword();
     fDKeyword.insert( pair<string, XS_MLP_DMthPtr>( "k_timestep",    & XSM_MLP::ReadTimeSteps));
     fDKeyword.insert( pair<string, XS_MLP_DMthPtr>( "k_zainame",    & XSM_MLP::ReadZAIName)     );
     DBGL
@@ -225,6 +238,7 @@ void XSM_MLP::ReadWeightFile(string Filename, int &Z, int &A, int &I, int &React
 
 void XSM_MLP::BookTMVAReader() {
 
+    DBGL
     string dir = fTMVAWeightFolder;
     if (dir[dir.size() - 1] != '/') {
         dir += "/";
@@ -242,6 +256,7 @@ void XSM_MLP::BookTMVAReader() {
             fReader[i]->BookMVA("MLP method", dir + fWeightFiles[i]);
         }
     }
+    DBGL
 }
 
 //________________________________________________________________________

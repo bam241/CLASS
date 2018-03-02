@@ -28,18 +28,58 @@
 //________________________________________________________________________
 XSM_SFR::XSM_SFR(string TMVA_Weight_Directory,
                  map<string, double> FixedParameters,
-                 string InformationFile)
-    : XSM_MLP(TMVA_Weight_Directory, InformationFile) {
+                 string InformationFile) {
+    
+    fLog = new CLASSLogger("XSM_SFR.log");
   
+    DBGL
+    fTMVAWeightFolder = TMVA_Weight_Directory;
+    
+    fInformationFile = fTMVAWeightFolder+InformationFile;
+    
+    DBGL
+    GetMLPWeightFiles();
+    DBGL
+    
+    INFO << "__A cross section interpolator using" << endl;
+    INFO << "Multi Layer Perceptron has been define__" << endl;
+    INFO << " \t His TMVA folder is : \" " << fTMVAWeightFolder << "\"" << endl;
+    
+    LoadKeyword();
+    DBGL
+    ReadNFO();
+    DBGL
+    BookTMVAReader(); 
     SetFixedVariablesValues(FixedParameters);
+    DBGL
 }
 //________________________________________________________________________
 XSM_SFR::XSM_SFR(CLASSLogger* Log,
                  string TMVA_Weight_Directory,
                  map<string,double> FixedParameters,
-                 string InformationFile):XSM_MLP(Log, TMVA_Weight_Directory, InformationFile)
-{
-    SetFixedVariablesValues(FixedParameters);    
+                 string InformationFile) {
+    DBGL
+    fLog = Log;
+      
+    fTMVAWeightFolder = TMVA_Weight_Directory;
+    
+    fInformationFile = fTMVAWeightFolder+InformationFile;
+    
+    DBGL
+    GetMLPWeightFiles();
+    DBGL
+    
+    INFO << "__A cross section interpolator using" << endl;
+    INFO << "Multi Layer Perceptron has been define__" << endl;
+    INFO << " \t His TMVA folder is : \" " << fTMVAWeightFolder << "\"" << endl;
+    
+    LoadKeyword();
+    DBGL
+    ReadNFO();
+    DBGL
+    BookTMVAReader(); 
+    SetFixedVariablesValues(FixedParameters);
+    DBGL
 }
 
 
@@ -69,6 +109,7 @@ void XSM_SFR::SetFixedVariablesValues(map<string, double> FixedParameters) {
 void XSM_SFR::LoadKeyword()
 {
     DBGL
+    XSM_MLP::LoadKeyword();
     fDKeyword.insert( pair<string, XS_SFR_DMthPtr>( "k_timestep",    & XSM_MLP::ReadTimeSteps));
     fDKeyword.insert( pair<string, XS_SFR_DMthPtr>( "k_inputparameter",    & XSM_SFR::ReadInputParameter)     );
     fDKeyword.insert( pair<string, XS_MLP_DMthPtr>( "k_zainame",    & XSM_MLP::ReadZAIName)     );
@@ -145,6 +186,7 @@ void XSM_SFR::GetMLPWeightFiles()
 //________________________________________________________________________
 
 void XSM_SFR::BookTMVAReader() {
+    DBGL
 
     string dir = fTMVAWeightFolder;
     if (dir[dir.size() - 1] != '/') {
@@ -158,17 +200,25 @@ void XSM_SFR::BookTMVAReader() {
         int Reaction = -2;
         ReadWeightFile(fWeightFiles[i], Z, A, I, Reaction);
         if (Z >= GetZAIThreshold()) {
+    DBGL
             fReader.push_back(new CLASSReader(fTMVAVariableNames));
+    DBGL
             
             map<ZAI,string>::iterator it; 
             for ( it = fMapOfTMVAVariableNames.begin(); it != fMapOfTMVAVariableNames.end(); it++){
+              std::cout<< it->second << std::endl;
               fReader[i]->AddVariable(it->second.c_str());
             }
+    DBGL
             // Time as to be the last one !!! 
             fReader[i]->AddVariable("Time");
+    DBGL
+            std::cout << dir + fWeightFiles[i] << std::endl;
             fReader[i]->BookMVA("MLP method", dir + fWeightFiles[i]);
+    DBGL
         }
     }
+    DBGL
 }
 
 vector<float> XSM_SFR::CreateTMVAInput(IsotopicVector IV, int TimeStep)
