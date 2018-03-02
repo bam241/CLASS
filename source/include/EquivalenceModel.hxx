@@ -71,14 +71,14 @@ public :
 
     map < string, IsotopicVector> GetAllStreamList() {return fStreamList;}		// return all the lists
 
-    virtual  map <string , vector<double> > BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListMassFractionMin, map < string , double> StreamListMassFractionMax, map < int , string> StreamListPriority, map < string , bool> StreamListIsBuffer);
+    virtual  map <string , vector<double> > BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListMassFractionMin, map < string , double> StreamListMassFractionMax, map < int , string> StreamListPriority, map < string , bool> StreamListIsBuffer); //!< Main function to build the fuel of mass HMMAss that will reach BurnUp in the reactor -> Function that have to be defined in source/Model/Equivalence
     
 	double SecondToBurnup(double Second) {return Second * fSpecificPower / (24 * 3.6e6);}
 	double BurnupToSecond(double BurnUp) {return BurnUp / fSpecificPower * (24 * 3.6e6);}
 
-	bool isIVInDomain(IsotopicVector IV);
-	void StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks);
-	void ConvertMassToLambdaVector(string MaterialDenomination, vector<double>& lambda, double MaterialMassNeeded, vector <IsotopicVector>  Stocks);
+	bool isIVInDomain(IsotopicVector IV); //<!< Check if the current IV is in the domain allowed for the fuel fabrication
+	void StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks); //!< Calculate the Total Mass in the dStock 
+	void ConvertMassToLambdaVector(string MaterialDenomination, vector<double>& lambda, double MaterialMassNeeded, vector <IsotopicVector>  Stocks); //!< Calculate the fraction of IV that should be take to build the fuel (Lambda = 1 <=> the whole IV is used for the fuel  
 
 protected :
 
@@ -89,7 +89,7 @@ protected :
 
 
 #ifndef __ROOTCLING__
-	map<string, EQM_MthPtr> fKeyword;
+	map<string, EQM_MthPtr> fKeyword;	//!< Parameters of the equivalence model 
 #endif
 
     bool freaded;
