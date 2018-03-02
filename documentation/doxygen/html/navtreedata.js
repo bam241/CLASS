@@ -25,6 +25,13 @@ var NAVTREE =
 [
   [ "CLASS", "index.html", [
     [ "Deprecated List", "deprecated.html", null ],
+    [ "Namespaces", "namespaces.html", [
+      [ "Namespace List", "namespaces.html", "namespaces_dup" ],
+      [ "Namespace Members", "namespacemembers.html", [
+        [ "All", "namespacemembers.html", null ],
+        [ "Functions", "namespacemembers_func.html", null ]
+      ] ]
+    ] ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
@@ -32,7 +39,8 @@ var NAVTREE =
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", "functions_func" ],
-        [ "Variables", "functions_vars.html", null ]
+        [ "Variables", "functions_vars.html", null ],
+        [ "Typedefs", "functions_type.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
@@ -40,7 +48,10 @@ var NAVTREE =
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
         [ "Functions", "globals_func.html", null ],
-        [ "Enumerations", "globals_enum.html", null ]
+        [ "Typedefs", "globals_type.html", null ],
+        [ "Enumerations", "globals_enum.html", null ],
+        [ "Enumerator", "globals_eval.html", null ],
+        [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
   ] ]
@@ -48,11 +59,12 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_c_l_a_s_s_back_end_8hxx_source.html",
-"class_decay_data_bank.html#a92fed173741bf6ee68fbac7a01faa7df",
-"class_evolution_data.html#a976ee3fcc7a6290d5f235d6661042b63",
-"class_pool.html#a7a8685498658aa4877fa8eae862b780a",
-"class_x_s_model.html#a30fbf1037b374fdeeef4a856aacc8104"
+"_c_l_a_s_s_back_end_8cxx.html",
+"_scenario_8hxx.html#a97bb8e26e4a9de8c246240c32b980e6c",
+"class_e_q___one_parameter.html#a5cc1e0a3deb9a7ffd1868d5c78158ad1",
+"class_fabrication_plant.html#a41a8a404f13412915b413f79de13e9a0",
+"class_reactor.html#a98c1e4e293bd558058cfbf3768b38479",
+"class_z_a_i.html#ab4fd55ad50eed113fd80f8a9098043cf"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

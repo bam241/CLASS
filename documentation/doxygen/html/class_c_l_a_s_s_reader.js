@@ -9,5 +9,5 @@ var class_c_l_a_s_s_reader =
     [ "EvaluateRegression", "class_c_l_a_s_s_reader.html#a2d89cb558d9274f78e532ce525de3965", null ],
     [ "GetListOfVariables", "class_c_l_a_s_s_reader.html#ab748610d3d64fc82e2a03a6ed595a5e0", null ],
     [ "GetNVariables", "class_c_l_a_s_s_reader.html#a85142d28f4422a4fb41b0e97554a2a37", null ],
-    [ "SetInputData", "class_c_l_a_s_s_reader.html#aa551678731c4a24bafb424aa429ccd5f", null ]
+    [ "SetInputData", "class_c_l_a_s_s_reader.html#a4cfa581cedbe201c6cadf1bcc4841a40", null ]
 ];
