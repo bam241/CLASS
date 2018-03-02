@@ -58,7 +58,6 @@ The CLASS package contains the followings :
 \subitem \textbf{ROOT2DAT/} : Software to convert CLASS output into readable ASCII data file
 \subitem \textbf{ROOT2ROOT/} : Software to convert multiple CLASS Output into one single ROOT file (used for sensitivity analysis)
  
- 
 \end{itemize}
 
 \chapter{Install procedure}
@@ -77,123 +76,42 @@ ROOT~\cite{Brun_1997} is an analysis software developped by CERN. CLASS version 
 \end{itemize}
 
 \section{Installation}
-Decompress the CLASS.tar.gz in your wanted location. 
 
- Then type in terminal:
+\subsection{Get the source from archive}
+
+Download the source of CLASS at the following adress : \href{https://gitlab.in2p3.fr/sens/CLASS/tree/master}{gitlab link}. The archive is available at the location showed on figure\ref{fig:CLASSArchive}.
+
+    \begin{figure}[H]
+    \centering
+    \centerline{\includegraphics[width=0.99\textwidth]{GitlabDownload.png}}
+    \caption{Archive for source of CLASS}
+    \label{fig:CLASSArchive}
+    \end{figure}
+
+\subsection{from git public repository}
+
+It is also possible to clone the git repository with the following commands : 
+
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[style=terminal]
-cd < CLASS root folder >
-./install.sh --help
+cd YourClassDirectory
+git clone git@gitlab.in2p3.fr:sens/CLASS.git
 \end{lstlisting}
 \end{minipage}
 \end{center}
 
-You should have in terminal the help of CLASS install script :
+\subsection{CLASS Compilation}
+
+Run the following command for a complete install with associated google tests : 
+
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[style=terminal]
-###############################################################
-############## configures and compiles CLASS V4.1 #############
-###############################################################
-
-Usage: install.sh [VAR=VALUE] [OPTION]
-Defaults for the options are specified in brackets.
-
-Configuration:
-  -h, --help         display this help and exit
-Optional Features:
-  --disable-OMP      do not compile with OpenMP support for evolution 
-                     [default: enable for gcc version >= 4.1]
-  --InstallLib-path=path     Location of made CLASS's libraries [default= $PWD/lib]
-
-Some influential environment variables:
-  CXX         C++ compiler command [default=g++]
-  CXXFLAGS    C++ compiler flags, e.g. -I<include dir> if
-              you have headers in a nonstandard directory <include dir>
-  CPPFLAGS    C++ preprocessor flags, e.g. -D<special flag>
-
-Report bugs to <leniau@subatech.in2p3.fr>.
-(special thanks to PTO)
+./install.sh --clean-build -gtest
 \end{lstlisting}
 \end{minipage}
 \end{center}
-We suggest to use the default install by typing :
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}[style=terminal]
-./install.sh
-\end{lstlisting}
-\end{minipage}
-\end{center}
-This script (used without argument) will compile and install CLASS libraries in < CLASS root folder >/lib.
-It will build CLASSGui binary in < CLASS root folder >/gui/bin/.It will set the correct pathway for the decay data base and add the CLASS environment variables in your \$HOME/.(shell)rc. With (shell) is your default shell. If everything goes well, you should see in terminal something like (see next page) and be able to compile your first CLASS input:
-\begin{center}
-\begin{minipage}{\textwidth}
-\begin{lstlisting}[style=terminal]
-Checking for ROOT cern lib... yes
-Checking for omp.h... yes
-   You can disable the use of this library with "--disable-OMP" option
-Building Librairies Folder @ /scratch/leniau/App/local/CLASS_Support/lib
-####################################################
-######### Compilation of CLASS libraries ###########
-####################################################
-[...]
-libCLASSpkg.so done
-[...]
-libCLASSpkg_root.so done
-####################################################
-########## Compilation Done  #######################
-####################################################
-MURE libraries installed in
-----> /scratch/leniau/App/local/CLASS_Support/lib
-####################################################
-######### Compilation of CLASSGUI binary ###########
-####################################################
-[...]
-CLASSGui is now available in /scratch/leniau/App/local/CLASS_Support/gui/bin 
-####################################################
-########## Compilation Done  #######################
-####################################################
-####################################################
-########## SET DECAY DATA BASES PATHES #############
-####################################################
--> Done
-/scratch/leniau/App/local/CLASS_Support
-####################################################
-########## ENVIRONEMENT VARIABLES ##################
-####################################################
--> Your default shell is : /bin/tcsh
--> Your .tcshrc will be edited if CLASS_PATH CLASS_include
-   and CLASS_lib aren't defined yet 
-
-CHECKING LOADED ENVIRONEMENT VARIABLES ............
-Not found in your loaded .tcshrc. 
-Setting variables ...
-
-PRESS ENTER IF DEFAULT IS CORRECT
-====>ENTER THE PATH TO THE CLASS root folder (defalut /scratch/leniau/App/local/CLASS_Support) 
-Path of the CLASS include folder is /scratch/leniau/App/local/CLASS_Support
-
-====>ENTER THE PATH TO THE CLASS INCLUDE (default: /scratch/leniau/App/local/CLASS_Support/source/include/): 
-Path of the CLASS include folder is /scratch/leniau/App/local/CLASS_Support/source/include/
-
-====>ENTER THE PATH WHERE CLASS LIB ARE INSTALLED (default: /scratch/leniau/App/local/CLASS_Support/lib): 
-Path of the CLASS lib folder is /scratch/leniau/App/local/CLASS_Support/lib
-
-Environnment variables added in /Users/leniau/.tcshrc
-LOADING /Users/leniau/.tcshrc ... done
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- Congratulations you are now able to compile your first     
-               CLASS .cxx input.                            
- Please read /scratch/leniau/App/local/CLASS_Support/documentation/Manual/USEGUIDE.pdf
- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-\end{lstlisting}
-\end{minipage}
-\end{center}
-
-Please report installation issues to the \href{https://forge.in2p3.fr/projects/classforge/issues/new}{forge}\footnote{https://forge.in2p3.fr/projects/classforge/issues/new}.
 
 \chapter{CLASS Execution}
 CLASS is a set of C++ libraries, there is no CLASS binary file. A CLASS executable has to be build by user using objects and methods defined in the CLASS package. \\
