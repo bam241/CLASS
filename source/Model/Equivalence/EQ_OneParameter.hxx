@@ -30,20 +30,14 @@ typedef void (EQ_OneParameter::*EQOP_MthPtr)( const string & );
 //! Determines how to build a fresh fuel 
 /*!
  Define an EQ_OneParameter.
- The aim of these class is to gather all the commum properties of all
- Equivalence Model.
+ The aim of this class is to build a fuel based on the optimisation of one parameter
+ This one may be 
+ 	- keff at begining of cycle 
+	- The maximum achievable Burn Up
+ For those two possibilities one may define some external parameters like th kthreshold of the number of batch for instance  
  
- \warning
- Never instantiate EQ_OneParameter in your CLASS input but it's derivated class
- @see EQM_FBR_BakerRoss_MOX.
- @see EQM_PWR_MLP_MOX
- @see EQM_FBR_MLP_Keff.hxx  
- @see EQM_PWR_MLP_MOX_Am
- @see EQM_FBR_MLP_Keff_BOUND
- @see EQM_PWR_POL_UO2
- @see EQM_MLP_Kinf.hxx      
- @see EQM_PWR_QUAD_MOX
- @see EQM_PWR_LIN_MOX
+ In case one wants to build a fuel with a constant fraction of fissile, it has to be set in the fabrication plant
+ 
 
  @author BLG
  @author BaM
@@ -61,7 +55,7 @@ class EQ_OneParameter : public EquivalenceModel
      \name Constructor/Desctructor
      */
     //@{
-    EQ_OneParameter(string TMVAXMLFilePath, string TMVANFOFilePath);           //!< Default constructor with path
+    EQ_OneParameter(string TMVAXMLFilePath, string TMVANFOFilePath);           //!< Default constructor with path of TMVA files
     EQ_OneParameter(CLASSLogger* log, string TMVAXMLFilePath, string TMVANFOFilePath); //!< Logger constructor with path
     
     EQ_OneParameter(string TMVANFOFilePath);           //!< Default constructor without Eq Model
@@ -81,7 +75,11 @@ class EQ_OneParameter : public EquivalenceModel
      Build the fuel following the equivalance model with the proper requierment in term of mass, burnup....
      \param double burnup reached by the fuel at the end of irradiation
      \param double HMMass, Heavy metal mass needed
-         \param map < string , vector <IsotopicVector> > StreamArray, the string is the stream code (fissile fertile ,...) the IsotopicVector the fraction of each IV to take in the (fissile, fertile,..) stock .
+     \param map < string , vector <IsotopicVector> > StreamArray, the string is the stream code (fissile fertile ,...) the IsotopicVector the fraction of each IV to take in the (fissile, fertile,..) stock .
+     \param map < string , double> StreamListMassFractionMin defines the lower limits allowed for each Stream (in terms of percentage)
+     \param map < string , double> StreamListMassFractionMax defines the upper limits allowed for each Stream  
+     \param map < int , string> StreamListPriority defines the priority of different streams (1 is the higher priority, then 2, then 3,... Two different streams can not have the same priority
+     \param map < string , bool> StreamListIsBuffer defines if each stream is the fuel buffer (only one stream can be the fuel buffer)
      */
     virtual  map <string , vector<double> > BuildFuel(double BurnUp, double HMMass, map < string , vector <IsotopicVector> > StreamArray,  map < string , double> StreamListMassFractionMin, map < string , double> StreamListMassFractionMax, map < int , string> StreamListPriority, map < string , bool> StreamListIsBuffer);
     //}
@@ -112,10 +110,10 @@ class EQ_OneParameter : public EquivalenceModel
     double GetStreamListEqMMassFractionMin(string keyword){return fStreamListEqMMassFractionMin[keyword] ;}
     double GetPCMPrecision(){return fPCMprecision/1e5;}//!< Get the precision on @f$\langle k \rangle@f$ prediction []. Neural network predictor constructors
 
-    void SetModelParameter(string sMP, double dMP)  { fModelParameter[sMP] = dMP; }   //!< Set Model Parameters precised in NFO file
+    void SetModelParameter(string sMP, double dMP)  { fModelParameter[sMP] = dMP; }   //!< Set Model Parameters precised in NFO file can be keff or BU Max
     map<string, double> GetModelParameter()  { return fModelParameter; }   //!< Get Model Parameters precised in NFO file
 	  
-    void SetNonZaiTMVAVariable(string snZP, double dnZP);    //!< Set NonZaiTMVAVariables
+    void SetNonZaiTMVAVariable(string snZP, double dnZP);    //!< Set NonZaiTMVAVariables for the input of the TMVA
 	vector< pair<double, string> > GetNonZaiTMVAVariables()  { return fListOfNonZaiTMVAVariables; }   //!< Get NonZaiTMVAVariables
 
     void SetMaxIterration(int val)  { fMaxIterration = val; }   //!< Max iteration in build fuel algorithm
@@ -269,7 +267,7 @@ class EQ_OneParameter : public EquivalenceModel
 
 
     CLASSReader* fReader;
-    map<string, EQOP_MthPtr> fKeyword;
+    map<string, EQOP_MthPtr> fKeyword; //!< The model parameters
     
     map< ZAI, pair<double,double> > fZAILimits;     //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
 
