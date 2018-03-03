@@ -33,6 +33,11 @@ echo "--------------------------------------------"
 exit 418
 }
 
+J="1"
+BUILD=false
+CLEAN=false
+GTEST=false
+
 function build ()
 {
     if [ ! -d "bld" ]; then
@@ -40,21 +45,14 @@ function build ()
     fi
     cd bld
 
-    if [ "$1" == "WithNoTest" ]; then
         cmake ..
+    if [ "$GTEST" == "false" ]; then
         make -j ${J} CLASSpkg_root CLASSpkg CLASSGui
-    fi
-
-    if [ "$1" == "WithTest" ]; then
-        cmake ..
+        exit 0
+    else
         make -j ${J}
         ../bin/RunTest
-    fi
-
-    if [ "$1" == "TestOnly" ]; then
-        cmake ..
-        make -j ${J} RunTest
-        ../bin/RunTest
+        exit 0
     fi
 }
 
@@ -69,16 +67,17 @@ function clean ()
     rm -rf source/src/*Dict.cxx
     rm -rf lib
     rm -rf bin
+    
+    if [ "$BUILD" = "false" ]; then
+        exit 0
+    fi
+
 }
 
 ##############################################################################
 ### calls of all functions
 ##############################################################################
 
-J="1"
-BUILD=false
-CLEAN=false
-GTEST=false
 
 # Help if no argument
 if [ -z "$*" ]; then usage; fi
@@ -91,7 +90,7 @@ for arg in "$@"; do
         --build|-build|build )
             BUILD=true ;;
         --gtest|-gtest|gtest )
-            GTEST=true ;;
+            BUILD=true;GTEST=true ;;
         --clean|-clean|clean )
             CLEAN=true ;;
         --clean-build )
@@ -103,22 +102,27 @@ for arg in "$@"; do
     esac
 done
 
+
+# Test is gtest is already there or if we have an internet connection
+if [ "${GTEST}" = true ]; then
+    echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1
+    if [ ! $? -eq 0 ] && [ ! -d "bld/GTest/gtest/src/gtest" ]; then
+        echo "An internet connection is required to compile the test"
+        exit 1
+    fi
+fi
+
+
 if [ "${CLEAN}" = true ]; then
     clean
 fi
 
-if [ "${BUILD}" = true ] && [ "${GTEST}" = false ]; then
-    build "WithNoTest"
+if [ "${BUILD}" = true ]; then
+    build
 fi
 
-if [ "${BUILD}" = true ] && [ "${GTEST}" = true ]; then
-    build "WithTest"
-fi
 
-if [ "${BUILD}" = false ] && [ "${GTEST}" = true ]; then
-    build "TestOnly"
-fi
-
+usage
 exit 0
 
 EOF
