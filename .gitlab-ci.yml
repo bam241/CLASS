@@ -1,52 +1,24 @@
-version: 2
+image: rootproject/root-ubuntu16:6.10
+            
+before_script:        
+    - rapt-get -qq update; apt-get -y install git openssh-client
+    - vcheckout
+    - ./install clean-build
 
-jobs:
-    # Build Cyclus
-    build:
-        docker:
-            - image: rootproject/root-ubuntu16
-        working_directory: ~/CLASS
-        steps:
-            # Ensure your image has git (required by git to clone via SSH) so that CircleCI can clone your repo
-            - run: apt-get -qq update; apt-get -y install git openssh-client
-            - checkout
-            - run:
-                name: Build Docker Image
-                command: |
-                    ./install clean-build
-            - run:
-                name: save SHA to a file
-                command: echo $CIRCLE_SHA1 > .circle-sha
-            - save_cache:
-                key: v1-repo-{{ checksum ".circle-sha" }}
-                paths:
-                  - /root
-
-
-    # Test Jobs
-    unit_test:
-        docker:
-            - image: rootproject/root-ubuntu16
-        working_directory: ~/CLASS
-        steps:
-            - run:
-                name: save SHA to a file
-                command: echo $CIRCLE_SHA1 > .circle-sha
-            - restore_cache:
-                keys:
-                  - v1-repo-{{ checksum ".circle-sha" }}
-            - run:
-                name: Unit Test
-                command: ./install gtest; exit $?
-
-
-workflows:
-    version: 2 #Needed ?? (already on the top of the file)
-    build_and_test:
-        jobs:
-
-            # On a PR // All Branch
-            - build
-            - unit_test:
-                requires:
-                    - build
+      #    # Test Jobs
+      #    unit_test:
+      #        docker:
+      #            - image: rootproject/root-ubuntu16
+      #        working_directory: ~/CLASS
+      #        steps:
+      #            - run:
+      #                name: save SHA to a file
+      #                command: echo $CIRCLE_SHA1 > .circle-sha
+      #            - restore_cache:
+      #                keys:
+      #                  - v1-repo-{{ checksum ".circle-sha" }}
+      #            - run:
+      #                name: Unit Test
+      #                command: ./install gtest; exit $?
+      #
+      #
