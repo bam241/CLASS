@@ -13,7 +13,7 @@
 
     \vspace{2cm}
 
-The code CLASS (\textbf{C}ore \textbf{L}ibrary for \textbf{A}dvanced \textbf{S}cenario \textbf{S}imulation) is a dynamic fuel cycle simulation tool developed by CNRS/IN2P3 (Centre National de la Recherche Scientifique / Institut National de Physique Nucléaire et de Physique des Particules) in collaboration with IRSN (Institut de Radioprotection et de Sûreté Nucléaire). The aim of the tool CLASS is to model an evolving electro-nuclear fleet. The main output is the evolution of isotopes in all facilities of a nuclear fleet. The reactor physics is located in the treatment of the fuel fabrication and its depletion in reactor. The code CLASS aims to be a useful tool for scenarios studies. CLASS main asset is its ability to implement any kind of reactor, either the system is innovative or standard. Indeed, the opportunity is given to each user to \textbf{build his own reactor model}.
+The code CLASS (\textbf{C}ore \textbf{L}ibrary for \textbf{A}dvanced \textbf{S}cenario \textbf{S}imulation) is a dynamic fuel cycle simulation tool developed by CNRS/IN2P3 (Centre National de la Recherche Scientifique / Institut National de Physique Nucléaire et de Physique des Particules) in collaboration with IRSN (Institut de Radioprotection et de Suret\'e Nucl\'eaire). The aim of the tool CLASS is to model an evolving electro-nuclear fleet. The main output is the evolution of isotopes in all facilities of a nuclear fleet. The reactor physics is located in the treatment of the fuel fabrication and its depletion in reactor. The code CLASS aims to be a useful tool for scenarios studies. CLASS main asset is its ability to implement any kind of reactor, either the system is innovative or standard. Indeed, the opportunity is given to each user to \textbf{build his own reactor model}.
 
 \part{First Steps}
 \chapter{Package Content}
@@ -102,18 +102,37 @@ git clone https://gitlab.in2p3.fr/sens/CLASS.git
 
 \subsection{CLASS Compilation}
 
-Run the following command for a complete install with associated google tests : 
+Run the following command for a complete install with associated google tests (remove option -gtest if you don't want the tests to run) : 
 
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[style=terminal]
-./install.sh --clean-build -gtest
+./install.sh -build -gtest
 \end{lstlisting}
 \end{minipage}
 \end{center}
 
-At this step, you'll need to define environnement variables in your shell environnment configuration file (.bashrc, .cshrc, .zshrc, etc...). Following variable 
+\subsection{Environment variables definition}
 
+At this step, you'll need to define environnement variables in your shell environnment configuration file (.bashrc, .cshrc, .zshrc, etc...). 
+
+\begin{itemize}
+\item CLASS\_PATH : "CLASSDirectoryNameOfYourChoice"
+
+\item CLASS\_lib : "\$CLASS\_PATH/lib"
+\item PATH : "\$\{PATH\}\:\$CLASS\_PATH/bin"
+
+\item CLASS\_include : "\$CLASS\_PATH/source/include"
+\item CLASS\_external : "\$CLASS\_PATH/source/external"
+\item CLASS\_Equivalence : "\$CLASS\_PATH/source/Model/Equivalence"
+\item CLASS\_Irradiation : "\$CLASS\_PATH/source/Model/Irradiation"
+\item CLASS\_XS : "\$CLASS\_PATH/source/Model/XS"
+
+\item CLASS\_CFLAG : "-I\$CLASS\_include -I\$CLASS\_external -I\$CLASS\_Equivalence -I\$CLASS\_Irradiation -I\$CLASS\_XS -L\$CLASS\_lib -lCLASSpkg `root-config --cflags` `root-config --libs`"
+
+\item LD\_LIBRARY\_PATH : "\$\{LD\_LIBRARY\_PATH\}\:\$\{CLASS\_lib\}"
+\item DYLD\_LIBRARY\_PATH : "\$\{DYLD\_LIBRARY\_PATH\}\:\$\{CLASS\_lib\}"
+\end{itemize}
 
 \chapter{CLASS Execution}
 CLASS is a set of C++ libraries, there is no CLASS binary file. A CLASS executable has to be build by user using objects and methods defined in the CLASS package.
