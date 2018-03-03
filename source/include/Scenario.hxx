@@ -366,6 +366,8 @@ protected :
     double		fParcPower;		///< Sum of the Power of all reactor in the parc
     double		fParcElectricPower;	///< Sum of the Power of all reactor in the parc
 
+    ClassDef(CLASSObject,0);
+
 };
 
 
