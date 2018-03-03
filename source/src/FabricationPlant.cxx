@@ -38,7 +38,7 @@ FabricationPlant::FabricationPlant():CLASSFacility(16)
     fReUsable = 0;
     fIsReusable = false;
     IsotopicVector MaxEfficiency;
-    SetSeparationEfficiency(MaxEfficiency,  -1e300);
+    SetSeparationEfficiency(MaxEfficiency,  0.0);
     fImpuritiesTolerance = 0.005;
 }
 
@@ -54,7 +54,7 @@ FabricationPlant::FabricationPlant(CLASSLogger* log, double fabricationtime):CLA
     fIsReusable = false;
     fImpuritiesTolerance = 0.005;
     IsotopicVector MaxEfficiency;
-    SetSeparationEfficiency(MaxEfficiency,  -1e300);
+    SetSeparationEfficiency(MaxEfficiency,  0.0);
     INFO	<< " A FabricationPlant has been define :" << endl;
     INFO	<< "\t Chronological Stock Priority has been set! "<< endl;
     INFO	<< "\t Fabrication time set to \t " << (double)(GetCycleTime()/cYear) << " year" << endl << endl;
