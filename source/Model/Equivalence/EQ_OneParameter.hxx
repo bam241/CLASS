@@ -192,8 +192,6 @@ class EQ_OneParameter : public EquivalenceModel
 
     CLASSReader* fReader;
     map<string, EQ_OP_MthPtr> fKeyword; //!< The model parameters
-    
-    map< ZAI, pair<double,double> > fZAILimits;     //!< Fresh fuel range : map<ZAI<min edge ,max edge >>
 
     private :
 

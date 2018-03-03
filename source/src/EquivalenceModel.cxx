@@ -63,8 +63,7 @@ void EquivalenceModel::LoadKeyword()
 void EquivalenceModel::ReadNFO()
 {
     DBGL
-    std::cout << fTMVANFOFilePath << endl;
-      ifstream NFO(fTMVANFOFilePath.c_str());
+    ifstream NFO(fTMVANFOFilePath.c_str());
     
     if(!NFO)
     {

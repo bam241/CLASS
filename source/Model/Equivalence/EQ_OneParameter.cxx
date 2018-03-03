@@ -62,7 +62,6 @@ EQ_OneParameter::EQ_OneParameter(CLASSLogger* log, string TMVAXMLFilePath, strin
     fTMVAXMLFilePath = TMVAXMLFilePath;
     fTMVANFOFilePath = TMVANFOFilePath;
   
-    std::cout << fTMVANFOFilePath << endl;
     fDBRType = "";
     fDBFType = "";
     fSpecificPower = 0;
@@ -161,7 +160,6 @@ void EQ_OneParameter::BookTMVAReader()
 {
     fReader = new CLASSReader( );
     
-    std::cout << fListOfNonZaiTMVAVariables.size() << std::endl;
     for( int i = 0; i < fListOfNonZaiTMVAVariables.size(); i++){
         fReader->AddVariable( fListOfNonZaiTMVAVariables[i].second );       
     }
@@ -768,7 +766,6 @@ void EQ_OneParameter::ReadLine(string line)
     string keyword = tlc(StringLine::NextWord(line, pos, ' '));
     
     map<string, EQ_OP_MthPtr>::iterator it = fKeyword.find(keyword);
-    std::cout << "Keyword " << keyword << std::endl;
     if(it != fKeyword.end())
         (this->*(it->second))( line );
     DBGL
@@ -777,6 +774,7 @@ void EQ_OneParameter::ReadLine(string line)
 void EQ_OneParameter::LoadKeyword() 
 {
     DBGL
+    EquivalenceModel::LoadKeyword();
     fKeyword.insert( pair<string, EQ_OP_MthPtr>( "k_targetparameter", & EQ_OneParameter::ReadTargetParameter) );
     fKeyword.insert( pair<string, EQ_OP_MthPtr>( "k_modelparameter", & EQ_OneParameter::ReadModelParameter) ); 
     fKeyword.insert( pair<string, EQ_OP_MthPtr>( "k_targetparameterstdev", & EQ_OneParameter::ReadTargetParameterStDev) ); 
@@ -834,7 +832,6 @@ void EQ_OneParameter::ReadNonZaiTMVAVariables(const string &line)
         
     keyword = StringLine::NextWord(line, pos, ' ');
     fListOfNonZaiTMVAVariables.push_back(make_pair(-1.0,keyword));
-    std::cout << "IN ReadNonZaiTMVAVariables " << endl; 
     DBGL    
 }
 //________________________________________________________________________
