@@ -135,22 +135,19 @@ At this step, you'll need to define environnement variables in your shell enviro
 \end{itemize}
 
 \chapter{CLASS Execution}
-CLASS is a set of C++ libraries, there is no CLASS binary file. A CLASS executable has to be build by user using objects and methods defined in the CLASS package.
-
-After CLASS compilation, you can run the set of example defined in the directory example. 
-
-
-The compilation line for generating your executable from a .cxx file is the following :
-(You can find CLASS input examples in \$CLASS\_PATH/example/)
+CLASS is a set of C++ libraries, there is no CLASS binary file. A CLASS executable has to be build by user using objects and methods defined in the CLASS package. After CLASS compilation, you should be able to run the set of example defined in the directory example. Let's take an example with the file SimpleReactor.cxx. The compilation command is the following (first line is for linux, second is for OSX) : 
 
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[style=terminal]
-g++ -o CLASS_exec YourScenario.cxx -I $CLASS_include -L $CLASS_lib -lCLASSpkg `root-config --cflags` `root-config --libs` -fopenmp -lgomp -Wunused-result -lTMVA
+g++ -o CLASS_Exec SimpleReactor.cxx $CLASS_CFLAG
+g++ -o CLASS_Exec SimpleReactor.cxx `echo $CLASS_CFLAG`
 \end{lstlisting}
 \end{minipage}
 \end{center}
-Then type 
+
+This build the executable based on the CLASS library. You can run the example with the command : 
+
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[style=terminal]
@@ -158,18 +155,6 @@ Then type
 \end{lstlisting}
 \end{minipage}
 \end{center}
-
-The following should show in your terminal :
-
-    \begin{figure}[H]
-    \centering
-    \centerline{\includegraphics[scale=0.9]{CLASS_Run.png}}
-    \caption{CLASS running in a shell}
-    \label{fig:CLASSRUN}
-    \end{figure}
-
-
-
 
 \chapter{News, forum, troubleshooting, doxygen ...}
 CLASS has a \href{https://forge.in2p3.fr/projects/classforge}{forge}\footnote{https://forge.in2p3.fr/projects/classforge} hosted by the IN2P3  where you can find :
