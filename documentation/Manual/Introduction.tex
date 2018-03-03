@@ -30,15 +30,15 @@ The CLASS package contains the followings :
  \item \textbf{DATA\_BASES/}  : this folder contains decay data base and reactor data bases
  \subitem \textbf{DECAY/}     : decay data base
  \subitem \textbf{FBR-Na/}    : Models related to Fast reactor
- \subitem \textbf{PWR/}       : Models related to Pressurised Water Reactor
- \subitem \textbf{REP\_HFC/}   : Models related to low moderated Pressurised Water Reactor 
+ \subitem \textbf{PWR/}       : Models related to Pressurized Water Reactor
+ \subitem \textbf{REP\_HFC/}   : Models related to low moderated Pressurized Water Reactor 
  \subitem \textbf{ADS/}       : Models related to Accelerator Driven System
  
  \item \textbf{documentation/} 
  \subitem \textbf{Manual/}    : folder containing this user guide an its .tex sources
- \subitem \textbf{Doxygen/}   : folder containing the builded doxygen and its generation configuration 
+ \subitem \textbf{Doxygen/}   : folder containing the doxygen and its generation configuration 
 
-\item \textbf{example/} : folder containing simple examples of CLASS input and an example of CLASS ouput reader
+\item \textbf{example/} : folder containing simple examples of CLASS input and an example of CLASS output reader
 
 \item \textbf{gui/} : folder containing sources of the graphical user interface for CLASS outputs
  
@@ -69,16 +69,16 @@ The CLASS package contains the followings :
 \item OS : CLASS is known to work under Linux (64  bits) and MacOSX (64 bits). It  has never been tested on any Windows distribution.
 \item C++ compiler :  we recommend to use a gnu compiler like gcc4.8 or above. For OSX, CLASS is working with native clang compiler.
 \item For DARWIN (OSX) users : 
-Make sure you have installed XCode and its command line tools (if not dowload and install from AppStore). If using clang compiler, there's no possibility to use openmp. 
+Make sure you have installed XCode and its command line tools (if not download and install from AppStore). If using clang compiler, there's no possibility to use openmp. 
 \item Root (CERN) :  
-ROOT~\cite{Brun_1997} is an analysis software developped by CERN. CLASS version 5 uses some ROOT version 6 features to run. CLASS uses Root to store output data. The graphical user interface CLASSGui is also based on Root. Some algorithms uses the TMVA module of Root. 
+ROOT~\cite{Brun_1997} is an analysis software developed by CERN. CLASS version 5 uses some ROOT version 6 features to run. CLASS uses Root to store output data. The graphical user interface CLASSGui is also based on Root. Some algorithms uses the TMVA module of Root. 
 \end{itemize}
 
 \section{Installation}
 
 \subsection{Get the source from archive}
 
-Download the source of CLASS at the following adress : \href{https://gitlab.in2p3.fr/sens/CLASS/tree/master}{gitlab link}. The archive is available at the location showed on figure\ref{fig:CLASSArchive}.
+Download the source of CLASS at the following address : \href{https://gitlab.in2p3.fr/sens/CLASS/tree/master}{gitlab link}. The archive is available at the location showed on figure\ref{fig:CLASSArchive}.
 
     \begin{figure}[H]
     \centering
@@ -102,7 +102,7 @@ git clone https://gitlab.in2p3.fr/sens/CLASS.git
 
 \subsection{CLASS Compilation}
 
-Run the following command for a complete install with associated google tests (remove option -gtest if you don't want the tests to run) : 
+Run the following command for a complete install with associated Google tests (remove option -gtest if you don't want the tests to run) : 
 
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -114,7 +114,7 @@ Run the following command for a complete install with associated google tests (r
 
 \subsection{Environment variables definition}
 
-At this step, you'll need to define environnement variables in your shell environnment configuration file (.bashrc, .cshrc, .zshrc, etc...). 
+At this step, you'll need to define environment variables in your shell environment configuration file (.bashrc, .cshrc, .zshrc, etc...). 
 
 \begin{itemize}
 \item CLASS\_PATH : "CLASSDirectoryNameOfYourChoice"
@@ -134,8 +134,20 @@ At this step, you'll need to define environnement variables in your shell enviro
 \item DYLD\_LIBRARY\_PATH : "\$\{DYLD\_LIBRARY\_PATH\}\:\$\{CLASS\_lib\}"
 \end{itemize}
 
+\subsection{Doxygen}
+
+For an access to CLASS structure, classes and method, a doxygen is available. You can open the doxygen by opening the following file with your web browser : 
+
+\begin{center}
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[style=terminal]
+documentation/doxygen/html/index.html
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
 \chapter{CLASS Execution}
-CLASS is a set of C++ libraries, there is no CLASS binary file. A CLASS executable has to be build by user using objects and methods defined in the CLASS package. After CLASS compilation, you should be able to run the set of example defined in the directory example. Let's take an example with the file SimpleReactor.cxx. The compilation command is the following (first line is for linux, second is for OSX) : 
+CLASS is a set of C++ libraries, there is no CLASS binary file. A CLASS executable has to be build by user using objects and methods defined in the CLASS package. After CLASS compilation, you should be able to run the set of example defined in the directory example. Let's take an example with the file SimpleReactor.cxx. The compilation command is the following (first line is for Linux, second is for OSX) : 
 
 \begin{center}
 \begin{minipage}{\textwidth}
@@ -156,17 +168,28 @@ This build the executable based on the CLASS library. You can run the example wi
 \end{minipage}
 \end{center}
 
-\chapter{News, forum, troubleshooting, doxygen ...}
+Following files have been generated : 
 
-CLASS has a public repository on the gitlab in2p3. You'll reach it with \href{https://gitlab.in2p3.fr/sens/CLASS}{CLASS gitlab}. If you're willing to participate to CLASS project, you can request an access on gitlab. You'll be able to interact with CLASS community.
+\begin{itemize}
+  \item CLASS\_OUTPUT.log : This file is the log file. Detailed information depends on the class CLASSLogger parameters defined in the input file. 
+  \item CLASS\_TimeStep : This file contains time steps in second associated to an event. This tells to CLASS an operation is needed. 
+  \item SimpleReactor.root : This is the main output of CLASS run. This is a ROOT file that contains all the data related to inventory evolution. 
+\end{itemize}
 
-For an access to CLASS structure, classes and method, a doxygen is available. You can open the doxygen by opening the following file with your web browser : 
+To plot output of CLASS run, you can use the CLASS Graphical User Interface CLASSGui. Just run following command with the example and plot the data you need : 
 
 \begin{center}
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[style=terminal]
-documentation/doxygen/html/index.html
+CLASSGui SimpleReactor.root
 \end{lstlisting}
 \end{minipage}
 \end{center}
+
+You can also use code ROOT2DAT.cxx located in Utils directory to convert data from ROOT format to readable ASCII data.
+
+\chapter{Participate to CLASS project}
+
+CLASS has a public repository on the gitlab in2p3. You'll reach it with \href{https://gitlab.in2p3.fr/sens/CLASS}{CLASS gitlab}. If you're willing to participate to CLASS project, you can request an access on gitlab. You'll be able to interact with CLASS community.
+
 
