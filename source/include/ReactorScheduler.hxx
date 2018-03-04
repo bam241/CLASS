@@ -184,7 +184,7 @@ class ReactorScheduler : public CLASSObject
 	private :
 
 	map< cSecond, ScheduleEntry* >	fReactorSchedulerMap;	///< Get the reactor scheduler map
-
+	ClassDef(CLASSObject,1);
 };
 
 #endif

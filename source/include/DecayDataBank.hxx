@@ -171,6 +171,8 @@ class DecayDataBank : public CLASSObject
 	map<ZAI, EvolutionData>	fDecayDataBank;		///< DataBank map
  	string			fDataBaseIndex;		///< Name of the index
 	
+	private :
+	ClassDef(CLASSObject,1);
 };
 
 
