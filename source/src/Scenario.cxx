@@ -706,29 +706,26 @@ void Scenario::ProgressPrintout(cSecond t)
 void Scenario::PrintCLASSPresentation()
 { 	
 	cout<<endl;	
-	cout<<"╭───────────────────────────────────────────────╮"<<endl;
-	cout<<"│   ██████╗██╗      █████╗ ███████╗███████╗     │"<<endl;
-	cout<<"│  ██╔════╝██║     ██╔══██╗██╔════╝██╔════╝     │"<<endl;
-	cout<<"│  ██║     ██║     ███████║███████╗███████╗     │"<<endl;
-	cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║     │"<<endl;
-	cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║     │"<<endl;
-	cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝     │"<<endl;
-	cout<<"│                                  Version dev  │"<<endl;
-	cout<<"├───────────────────────────────────────────────┤"<<endl;
-	cout<<"│ Core Lybrary for Advanced Scenario Simulation │"<<endl;
-	cout<<"│                                               │"<<endl;
-	cout<<"│ A dynamical nuclear fuel cycle code developed │"<<endl; 
-	cout<<"│           by the CNRS/IN2P3 & IRSN            │"<<endl;
-	cout<<"│      https://gitlab.in2p3.fr/sens/CLASS       │"<<endl;
-	cout<<"├───────────────────────────────────────────────┤"<<endl;
-	cout<<"│ Authors :                                     │"<<endl;
-	cout<<"│    B. MOUGINOT (@BaM)  B. LENIAU    (@BLG)    │"<<endl;
-	cout<<"│    F. COURTIN  (@FaC)  N. THIOLLIERE (@NT)    │"<<endl;
-	cout<<"╰───────────────────────────────────────────────╯"<<endl;
-	cout<<"                                                 "<<endl;
-	cout<<"        BEGINING FUEL CYCLE EVOLUTION           "<<endl;
-	cout<<"                                                "<<endl;
-	cout<<"Evolution progression   :                       "<<endl;	
+	cout<<"╭────────────────────────────────────────────────╮"<<endl;
+	cout<<"│   ██████╗██╗      █████╗ ███████╗███████╗       │"<<endl;
+	cout<<"│  ██╔════╝██║     ██╔══██╗██╔════╝██╔════╝       │"<<endl;
+	cout<<"│  ██║     ██║     ███████║███████╗███████╗       │"<<endl;
+	cout<<"│  ██║     ██║     ██╔══██║╚════██║╚════██║       │"<<endl;
+	cout<<"│  ╚██████╗███████╗██║  ██║███████║███████║       │"<<endl;
+	cout<<"│   ╚═════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝       │"<<endl;
+	cout<<"│                                  Version 5.1    │"<<endl;
+	cout<<"├───────────────────────────────────────────────  ┤"<<endl;
+	cout<<"│ Core Library for Advanced Scenarios Simulations │"<<endl;
+	cout<<"│                                                 │"<<endl;
+	cout<<"│      https://gitlab.in2p3.fr/sens/CLASS         │"<<endl;
+	cout<<"├─────────────────────────────────────────────────┤"<<endl;
+	cout<<"│ CLASS is governed by the CeCILL-B license       │"<<endl;
+	cout<<"│ See http://www.cecill.info                      │"<<endl;
+	cout<<"╰────────────────────────────────────────────────╯"<<endl;
+	cout<<"                                                   "<<endl;
+	cout<<"        STARTING FUEL CYCLE EVOLUTION              "<<endl;
+	cout<<"                                                   "<<endl;
+	cout<<"Evolution progression   :                          "<<endl;	
 }
 //________________________________________________________________________
 void Scenario::ApplyZAIThreshold()
