@@ -20,12 +20,14 @@
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel(): CLASSObject()
 {
-    freaded = false;
+    EquivalenceModel::LoadKeyword();
+    fread = false;
 }
 //________________________________________________________________________
 EquivalenceModel::EquivalenceModel(CLASSLogger* log): CLASSObject(log)
 {
-    freaded = false;
+    EquivalenceModel::LoadKeyword();
+    fread = false;
 }
 //________________________________________________________________________
 EquivalenceModel::~EquivalenceModel()
@@ -37,6 +39,232 @@ map <string , vector<double> > EquivalenceModel::BuildFuel(double BurnUp, double
 {
 
 }
+
+//________________________________________________________________________
+void EquivalenceModel::LoadKeyword() 
+{
+    DBGL
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_zail", & EquivalenceModel::ReadZAIlimits) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_reactor", & EquivalenceModel::ReadType) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_fuel", & EquivalenceModel::ReadType) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmin", & EquivalenceModel::ReadEqMinFraction) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_massfractionmax", & EquivalenceModel::ReadEqMaxFraction) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_list", & EquivalenceModel::ReadList) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_specpower", & EquivalenceModel::ReadSpecificPower) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_zainame", & EquivalenceModel::ReadZAIName) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_maxburnup", & EquivalenceModel::ReadMaxBurnUp) ); 
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_predictortype", & EquivalenceModel::ReadPredictorType) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_output", & EquivalenceModel::ReadOutput) );
+    fKeyword.insert( pair<string, EQM_MthPtr>( "k_buffer", & EquivalenceModel::ReadBuffer) ); 
+    DBGL
+}
+
+//________________________________________________________________________
+void EquivalenceModel::ReadNFO()
+{
+    DBGL
+    ifstream NFO(fTMVANFOFilePath.c_str());
+    
+    if(!NFO)
+    {
+        ERROR << "Can't find/open file " << fTMVANFOFilePath << endl;
+        exit(0);
+    }
+    
+    do
+    {
+        string line;
+        getline(NFO,line);
+
+        EquivalenceModel::ReadLine(line);
+        
+    } while(!NFO.eof());
+    
+    DBGL
+}
+
+//________________________________________________________________________
+void EquivalenceModel::ReadLine(string line)
+{
+    DBGL
+    
+    if (!fread)
+    {
+        int pos = 0;
+        string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+
+        map<string, EQM_MthPtr>::iterator it = fKeyword.find(keyword);
+        
+        if(it != fKeyword.end())
+            (this->*(it->second))( line );
+        
+        fread = true;
+        ReadLine(line);
+        
+    }
+    
+    fread = false;
+    
+    DBGL
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadType(const string &line)
+{
+    DBGL
+    int pos = 0;
+    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+    if( keyword != "k_fuel" && keyword != "k_reactor" ) // Check the keyword
+    {
+        ERROR << " Bad keyword : " << keyword << " Not found !" << endl;
+        exit(1);
+    }
+    if( keyword ==  "k_fuel" )
+        fDBFType = StringLine::NextWord(line, pos, ' ');
+    else if( keyword ==  "k_reactor" )
+        fDBRType = StringLine::NextWord(line, pos, ' ');
+    
+    DBGL
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadZAIlimits(const string &line)
+{
+    DBGL
+    int pos = 0;
+    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+    if( keyword != "k_zail" )   // Check the keyword
+    {
+        ERROR << " Bad keyword : \"k_zail\" not found !" << endl;
+        exit(1);
+    }
+    
+    int Z   = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+    int A   = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+    int I   = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+    
+    double downLimit    = atof(StringLine::NextWord(line, pos, ' ').c_str());
+    double upLimit  = atof(StringLine::NextWord(line, pos, ' ').c_str());
+    
+    if (upLimit < downLimit)
+    {
+        double tmp  = upLimit;
+        upLimit     = downLimit;
+        downLimit   = tmp;
+    }
+    fZAILimits.insert(pair<ZAI, pair<double, double> >(ZAI(Z,A,I), pair<double,double>(downLimit, upLimit)));
+    DBGL
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadList(const string &line)
+{
+    DBGL
+    int pos = 0;
+    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+    if( keyword != "k_list" )   // Check the keyword
+    {
+        ERROR << " Bad keyword : \"k_list\" not found !" << endl;
+        exit(1);
+    }
+    string ListName= StringLine::NextWord(line, pos, ' ');
+    int Z       = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+    int A       = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+    int I       = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+    double Q    = atof(StringLine::NextWord(line, pos, ' ').c_str());
+    fStreamList[ListName].Add(Z, A, I, Q);
+    
+    DBGL
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadEqMinFraction(const string &line)
+{
+    DBGL
+    int pos = 0;
+    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+    if( keyword != "k_massfractionmin" )    // Check the keyword
+    {
+        ERROR << " Bad keyword : \"k_massfractionmin\" not found !" << endl;
+        exit(1);
+    }
+    string ListName= StringLine::NextWord(line, pos, ' ');
+    double Q     = atof(StringLine::NextWord(line, pos, ' ').c_str());
+    fStreamListEqMMassFractionMin[ListName] = Q;
+
+    DBGL
+}
+
+//________________________________________________________________________
+void EquivalenceModel::ReadEqMaxFraction(const string &line)
+{
+    DBGL
+    int pos = 0;
+    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+    if( keyword != "k_massfractionmax" )    // Check the keyword
+    {
+        ERROR << " Bad keyword : \"k_massfractionmax\" not found !" << endl;
+        exit(1);
+    }
+    string ListName= StringLine::NextWord(line, pos, ' ');
+    double Q     = atof(StringLine::NextWord(line, pos, ' ').c_str());
+    fStreamListEqMMassFractionMax[ListName] = Q;
+
+    DBGL
+}
+
+//________________________________________________________________________
+void EquivalenceModel::ReadSpecificPower(const string &line)
+{
+    DBGL
+    int pos = 0;
+    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+    if( keyword != "k_specpower")   // Check the keyword
+    {
+        ERROR << " Bad keyword : \"k_specpower\" Not found !" << endl;
+        exit(1);
+    }
+    
+    fSpecificPower = atof(StringLine::NextWord(line, pos, ' ').c_str());
+    
+    DBGL
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadZAIName(const string &line)
+{
+    DBGL
+    
+    int pos = 0;
+    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+    if( keyword != "k_zainame" )    // Check the keyword
+    {
+        ERROR << " Bad keyword : \"k_zainame\" not found !" << endl;
+        exit(1);
+    }
+    
+    int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+    int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+    int I = atoi(StringLine::NextWord(line, pos, ' ').c_str());
+    
+    string name = StringLine::NextWord(line, pos, ' ');
+    
+    fMapOfTMVAVariableNames.insert( pair<ZAI,string>( ZAI(Z, A, I), name ) );
+
+    DBGL    
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadMaxBurnUp(const string &line)
+{
+    DBGL
+    int pos = 0;
+    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+    if( keyword != "k_maxburnup" )  // Check the keyword
+    {
+        ERROR << " Bad keyword : \"k_maxburnup\" not found !" << endl;
+        exit(1);
+    }
+    
+    fMaximalBU = atof(StringLine::NextWord(line, pos, ' ').c_str());
+
+    DBGL
+}
+
 //________________________________________________________________________
 void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
 {
@@ -55,6 +283,59 @@ void EquivalenceModel::SetLambdaToErrorCode(vector<double>& lambda)
     }
     DBGL
 }
+//________________________________________________________________________
+void EquivalenceModel::ReadPredictorType(const string &line)
+{
+    DBGL
+    
+    int pos = 0;
+    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+    if( keyword != "k_predictortype" )  // Check the keyword
+    {
+        ERROR << " Bad keyword : \"k_predictortype\" not found !" << endl;
+        exit(1);
+    }
+        
+    fPredictorType = StringLine::NextWord(line, pos, ' ');
+    
+    DBGL    
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadOutput(const string &line)
+{
+    DBGL
+    
+    int pos = 0;
+    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+    if( keyword != "k_output" ) // Check the keyword
+    {
+        ERROR << " Bad keyword : \"k_output\" not found !" << endl;
+        exit(1);
+    }
+        
+    fOutput = StringLine::NextWord(line, pos, ' ');
+    
+    DBGL    
+}
+//________________________________________________________________________
+void EquivalenceModel::ReadBuffer(const string &line)
+{
+    DBGL
+    
+    int pos = 0;
+    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
+    if( keyword != "k_buffer" ) // Check the keyword
+    {
+        ERROR << " Bad keyword : \"k_buffer\" not found !" << endl;
+        exit(1);
+    }
+        
+    fBuffer = StringLine::NextWord(line, pos, ' ');
+    
+    DBGL    
+}
+
+
 //________________________________________________________________________
 void EquivalenceModel::StocksTotalMassCalculation(map < string , vector <IsotopicVector> > const& Stocks)
 {

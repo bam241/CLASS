@@ -50,6 +50,7 @@ class XSM_MLP : public XSModel
 	 \name Constructor/Desctructor
 	 */
 	//@{
+	XSM_MLP() {};
 	
 	//{
 	/// Normal Constructor
@@ -82,7 +83,7 @@ class XSM_MLP : public XSModel
 	
 	//{
 	/// LoadKeyword() : make the correspondance between keyword and reading method
-	void LoadKeyword();
+	virtual void LoadKeyword();
 	//}
 	
 	//{
@@ -111,8 +112,9 @@ class XSM_MLP : public XSModel
 	//@}
 	
 	
-  void BookTMVAReader(); //Book TMVA method  
-	EvolutionData GetCrossSections(IsotopicVector IV, double t=0);	//!< Return calculated cross section by the MLP regression
+  virtual void BookTMVAReader(); //Book TMVA method  
+	
+  EvolutionData GetCrossSections(IsotopicVector IV, double t=0);	//!< Return calculated cross section by the MLP regression
 	
 	
 	protected :
@@ -126,7 +128,7 @@ class XSM_MLP : public XSModel
 	
 	
 	double ExecuteTMVA(string WeightFile, TTree* InputTree);			//!<Execute the MLP according to the input tree created
-	vector<float> CreateTMVAInput(IsotopicVector isotopicvector, int t);	//!<Create input tmva tree to be read by ExecuteTMVA
+	virtual vector<float> CreateTMVAInput(IsotopicVector isotopicvector, int t);	//!<Create input tmva tree to be read by ExecuteTMVA
 	
 	
 	vector<double> 	fMLP_Time;	//!<  Time vector of the data base

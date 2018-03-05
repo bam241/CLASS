@@ -93,20 +93,20 @@ class XSModel : public CLASSObject
 	
 	void ReadNFO();
 	virtual void ReadLine(string line);
+	virtual void LoadKeyword();
 	
 	
 	void ReadZAIlimits(const string &line);
 	void ReadType(const string &line);
 	void ReadRParam(const string &line);
 	
-	virtual void LoadKeyword();
 	
 	
 	void SetZAIThreshold(int Z_Threshold){fZAIThreshold = Z_Threshold;}//!< Set the Z threshold : ZAI with Z < fZAIThreshold are not manage by CLASS
 	int  GetZAIThreshold(){return fZAIThreshold;}//!< Get the Z threshold
 	
 	protected :
-	bool freaded;
+	bool fread;
 	string fInformationFile;	//!<  file containing Reactor Type, Fuel type, HM mass, Power, time vector, and TMVA input variables names (looks the manual for format details)
 	
 	double fDBPower;		//!<  Power of the data base (read from fMLPInformationFile )

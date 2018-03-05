@@ -15,14 +15,15 @@
 #include "TMVA/MethodCuts.h"
 
 
+
 //________________________________________________________________________
 //________________________________________________________________________
 EQ_OneParameter::EQ_OneParameter(string TMVAXMLFilePath, string TMVANFOFilePath):EquivalenceModel(new CLASSLogger("EQ_OneParameter.log"))
 {
     fUseTMVAPredictor = true;
 
-    fMaxIterration  = 500;
-    fPCMprecision  = 10;
+    fMaxIterration = 500;
+    fPCMprecision = 10;
 
     fTMVAXMLFilePath = TMVAXMLFilePath;
     fTMVANFOFilePath = TMVANFOFilePath;
@@ -41,22 +42,7 @@ EQ_OneParameter::EQ_OneParameter(string TMVAXMLFilePath, string TMVANFOFilePath)
     ReadNFO();      //Getting information from file NFO
     
     BookTMVAReader(); 
-
-    //Check if any information is missing in NFO file
-    if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fSpecificPower) {ERROR<<"Missing information for k_specpower in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fMaximalBU) {ERROR<<"Missing information for k_maxburnup in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty()) { ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamList.empty()) { ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl; exit(1); }
-    if(fMapOfTMVAVariableNames.empty()) { ERROR<<"Missing information for k_zainame in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fTargetParameter.empty()) { ERROR<<"Missing information for k_targetparameter in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fTargetParameterStDev) { ERROR<<"Missing information for fTargetParameterStDev in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fModelParameter.empty()) { ERROR<<"Missing information for k_modelparameter in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fBuffer.empty()) { ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fPredictorType.empty()) { ERROR<<"Missing information for k_predictortype in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fOutput.empty()) { ERROR<<"Missing information for k_output in : "<<fTMVANFOFilePath<<endl; exit(1);}
+    CheckParameterValidity();
 
     INFO << "__An equivalence model has been define__" << endl;
     INFO << "\tThe TMVA weights file is :" << fTMVAXMLFilePath << endl;
@@ -69,13 +55,13 @@ EQ_OneParameter::EQ_OneParameter(CLASSLogger* log, string TMVAXMLFilePath, strin
 {
     fUseTMVAPredictor = true;
 
-    fMaxIterration  = 500;
-    freaded                = false;     
-    fPCMprecision         = 10;
+    fMaxIterration = 500;
+    fread = false;     
+    fPCMprecision = 10;
 
     fTMVAXMLFilePath = TMVAXMLFilePath;
     fTMVANFOFilePath = TMVANFOFilePath;
-
+  
     fDBRType = "";
     fDBFType = "";
     fSpecificPower = 0;
@@ -90,88 +76,8 @@ EQ_OneParameter::EQ_OneParameter(CLASSLogger* log, string TMVAXMLFilePath, strin
     ReadNFO();      //Getting information from file NFO
     
     BookTMVAReader(); 
+    CheckParameterValidity();
 
-    //Check if any information is missing in NFO file
-    if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fSpecificPower) {ERROR<<"Missing information for k_specpower in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fMaximalBU) {ERROR<<"Missing information for k_maxburnup in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty()) { ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamList.empty()) { ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl; exit(1); }
-    if(fMapOfTMVAVariableNames.empty()) { ERROR<<"Missing information for k_zainame in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fTargetParameter.empty()) { ERROR<<"Missing information for k_targetparameter in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fTargetParameterStDev) { ERROR<<"Missing information for fTargetParameterStDev in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fModelParameter.empty()) { ERROR<<"Missing information for k_modelparameter in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fBuffer.empty()) { ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fPredictorType.empty()) { ERROR<<"Missing information for k_predictortype in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fOutput.empty()) { ERROR<<"Missing information for k_output in : "<<fTMVANFOFilePath<<endl; exit(1);}
-
-    INFO << "__An equivalence model has been define__" << endl;
-    INFO << "\tThe TMVA weights file is :" << fTMVAXMLFilePath << endl;
-    INFO << "\tThe TMVA NFO file is :" << fTMVANFOFilePath << endl;
-    PrintInfo();}
-//________________________________________________________________________
-EQ_OneParameter::EQ_OneParameter(string TMVANFOFilePath):EquivalenceModel(new CLASSLogger("EQ_OneParameter.log"))
-{
-    fUseTMVAPredictor = false;
-
-    fTMVANFOFilePath = TMVANFOFilePath;
-
-    fDBRType = "";
-    fDBFType = "";
-    fSpecificPower = 0;
-    fMaximalBU = 0;
-    fTargetParameter = "";
-    fTargetParameterStDev = 0;
-    fBuffer = "";
-
-    LoadKeyword();  // Load Key words defineds in NFO file
-    ReadNFO();      //Getting information from file NFO
-    
-    BookTMVAReader(); 
-
-    //Check if any information is missing in NFO file
-    if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fSpecificPower) {ERROR<<"Missing information for k_specpower in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fMaximalBU) {ERROR<<"Missing information for k_maxburnup in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty()) { ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamList.empty()) { ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl; exit(1); }
-    if(fBuffer.empty()) { ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl; exit(1);}
-
-    INFO << "__An equivalence model without TMVA data has been define__" << endl;
-    INFO << "\tThe NFO file is :" << fTMVANFOFilePath << endl;
-    PrintInfo();
-}
-//________________________________________________________________________
-EQ_OneParameter::EQ_OneParameter(CLASSLogger* log, string TMVANFOFilePath):EquivalenceModel(log)
-{
-    fUseTMVAPredictor = false;
-
-    fTMVANFOFilePath = TMVANFOFilePath;
-
-    fDBRType = "";
-    fDBFType = "";
-    fSpecificPower = 0;
-    fMaximalBU = 0;
-    fBuffer = "";
-
-    LoadKeyword();  // Load Key words defineds in NFO file
-    ReadNFO();      //Getting information from file NFO
-    
-    BookTMVAReader(); 
-
-    //Check if any information is missing in NFO file
-    if(fZAILimits.empty()) {ERROR<<"Missing information for k_zail in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBRType.empty()) {ERROR<<"Missing information for k_reactor in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fDBFType.empty()) {ERROR<<"Missing information for k_fuel in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fSpecificPower) {ERROR<<"Missing information for k_specpower in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(!fMaximalBU) {ERROR<<"Missing information for k_maxburnup in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamListEqMMassFractionMin.empty() || fStreamListEqMMassFractionMax.empty()) { ERROR<<"Missing information for k_massfractionmin and/or k_massfractionmax in : "<<fTMVANFOFilePath<<endl; exit(1);}
-    if(fStreamList.empty()) { ERROR<<"Missing information for k_list in : "<<fTMVANFOFilePath<<endl; exit(1); }
-    if(fBuffer.empty()) { ERROR<<"Missing information for k_buffer in : "<<fTMVANFOFilePath<<endl; exit(1);}
 
     INFO << "__An equivalence model has been define__" << endl;
     INFO << "\tThe TMVA weights file is :" << fTMVAXMLFilePath << endl;
@@ -183,17 +89,93 @@ EQ_OneParameter::~EQ_OneParameter()
   delete fReader;
 }
 
+void EQ_OneParameter::CheckParameterValidity() {
+  // Check if any information is missing in NFO file
+  bool NFOValidity = true;
+  
+  if (fZAILimits.empty()) {
+    ERROR << "Missing information for k_zail in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fDBRType.empty()) {
+    ERROR << "Missing information for k_reactor in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fDBFType.empty()) {
+    ERROR << "Missing information for k_fuel in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (!fSpecificPower) {
+    ERROR << "Missing information for k_specpower in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (!fMaximalBU) {
+    ERROR << "Missing information for k_maxburnup in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fStreamListEqMMassFractionMin.empty() ||
+      fStreamListEqMMassFractionMax.empty()) {
+    ERROR << "Missing information for k_massfractionmin and/or k_massfractionmax in : "
+        << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fStreamList.empty()) {
+    ERROR << "Missing information for k_list in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fMapOfTMVAVariableNames.empty()) {
+    ERROR << "Missing information for k_zainame in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fTargetParameter.empty()) {
+    ERROR << "Missing information for k_targetparameter in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (!fTargetParameterStDev) {
+    ERROR << "Missing information for fTargetParameterStDev in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fModelParameter.empty()) {
+    ERROR << "Missing information for k_modelparameter in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fBuffer.empty()) {
+    ERROR << "Missing information for k_buffer in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fPredictorType.empty()) {
+    ERROR << "Missing information for k_predictortype in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if (fOutput.empty()) {
+    ERROR << "Missing information for k_output in : " << fTMVANFOFilePath << endl;
+    NFOValidity = false;
+  }
+  if(!NFOValidity){
+    exit(1);
+  }
 
+}
 void EQ_OneParameter::BookTMVAReader()
 {
-    fReader = new CLASSReader( fMapOfTMVAVariableNames );
+    DBGL
+    fReader = new CLASSReader( );
     
-    if (fTargetParameter == "BurnUpMax")
+    for( int i = 0; i < fListOfNonZaiTMVAVariables.size(); i++){
+        fReader->AddVariable( fListOfNonZaiTMVAVariables[i].second );       
+    }
+    
+    map<ZAI, string>::iterator it;
+    for ( it = fMapOfTMVAVariableNames.begin(); it != fMapOfTMVAVariableNames.end(); it++){
+        fReader->AddVariable(it->second);
+    }
+    
+    if (fTargetParameter == "BurnUpMax" || fDBRType == "SFR")
     {
         fReader->AddVariable( "Time" );
     }
     fReader->BookMVA( "MLP method" , fTMVAXMLFilePath );
-
+    DBGL
 }
 
 
@@ -778,232 +760,28 @@ double  EQ_OneParameter::CalculateKeffAtBOC(IsotopicVector FreshFuel)
     return keff;
 }
 //________________________________________________________________________
-void EQ_OneParameter::ReadNFO()
-{
-    DBGL
-    ifstream NFO(fTMVANFOFilePath.c_str());
-    
-    if(!NFO)
-    {
-        ERROR << "Can't find/open file " << fTMVANFOFilePath << endl;
-        exit(0);
-    }
-    
-    do
-    {
-        string line;
-        getline(NFO,line);
-        
-        EQ_OneParameter::ReadLine(line);
-        
-    } while(!NFO.eof());
-    
-    DBGL
-}
-//________________________________________________________________________
 void EQ_OneParameter::ReadLine(string line)
 {
     DBGL
+    int pos = 0;
+    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
     
-    if (!freaded)
-    {
-        int pos = 0;
-        string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-        
-        map<string, EQOP_MthPtr>::iterator it = fKeyword.find(keyword);
-        
-        if(it != fKeyword.end())
-            (this->*(it->second))( line );
-        
-        freaded = true;
-        ReadLine(line);
-        
-    }
-    
-    freaded = false;
-    
+    map<string, EQ_OP_MthPtr>::iterator it = fKeyword.find(keyword);
+    if(it != fKeyword.end())
+        (this->*(it->second))( line );
     DBGL
 }
 //________________________________________________________________________
 void EQ_OneParameter::LoadKeyword() 
 {
     DBGL
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_zail",                & EQ_OneParameter::ReadZAIlimits)           );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_reactor",         & EQ_OneParameter::ReadType)            );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_fuel",                & EQ_OneParameter::ReadType)            );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_massfractionmin",     & EQ_OneParameter::ReadEqMinFraction)       );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_massfractionmax",     & EQ_OneParameter::ReadEqMaxFraction)       );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_list",                & EQ_OneParameter::ReadList)            );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_specpower",           & EQ_OneParameter::ReadSpecificPower)       );
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_zainame",          & EQ_OneParameter::ReadZAIName)             );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_maxburnup",           & EQ_OneParameter::ReadMaxBurnUp)       ); 
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_targetparameter",      & EQ_OneParameter::ReadTargetParameter)         );
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_predictortype",        & EQ_OneParameter::ReadPredictorType)       );
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_output",           & EQ_OneParameter::ReadOutput)              );
-    fKeyword.insert( pair<string, EQOP_MthPtr>( "k_buffer",          & EQ_OneParameter::ReadBuffer)          ); 
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_modelparameter",       & EQ_OneParameter::ReadModelParameter)          ); 
-    if (fUseTMVAPredictor) fKeyword.insert( pair<string, EQOP_MthPtr>( "k_targetparameterstdev",     & EQ_OneParameter::ReadTargetParameterStDev)    ); 
-
+    EquivalenceModel::LoadKeyword();
+    fKeyword.insert( pair<string, EQ_OP_MthPtr>( "k_targetparameter", & EQ_OneParameter::ReadTargetParameter) );
+    fKeyword.insert( pair<string, EQ_OP_MthPtr>( "k_modelparameter", & EQ_OneParameter::ReadModelParameter) ); 
+    fKeyword.insert( pair<string, EQ_OP_MthPtr>( "k_targetparameterstdev", & EQ_OneParameter::ReadTargetParameterStDev) ); 
+    fKeyword.insert( pair<string, EQ_OP_MthPtr>( "k_nonzaifortmva", & EQ_OneParameter::ReadNonZaiTMVAVariables) ); 
     DBGL
 }
-//________________________________________________________________________
-void EQ_OneParameter::ReadType(const string &line)
-{
-    DBGL
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_fuel" && keyword != "k_reactor" ) // Check the keyword
-    {
-        ERROR << " Bad keyword : " << keyword << " Not found !" << endl;
-        exit(1);
-    }
-    if( keyword ==  "k_fuel" )
-        fDBFType = StringLine::NextWord(line, pos, ' ');
-    else if( keyword ==  "k_reactor" )
-        fDBRType = StringLine::NextWord(line, pos, ' ');
-    
-    DBGL
-}
-//________________________________________________________________________
-void EQ_OneParameter::ReadZAIlimits(const string &line)
-{
-    DBGL
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_zail" )   // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_zail\" not found !" << endl;
-        exit(1);
-    }
-    
-    int Z   = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    int A   = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    int I   = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    
-    double downLimit    = atof(StringLine::NextWord(line, pos, ' ').c_str());
-    double upLimit  = atof(StringLine::NextWord(line, pos, ' ').c_str());
-    
-    if (upLimit < downLimit)
-    {
-        double tmp  = upLimit;
-        upLimit     = downLimit;
-        downLimit   = tmp;
-    }
-    fZAILimits.insert(pair<ZAI, pair<double, double> >(ZAI(Z,A,I), pair<double,double>(downLimit, upLimit)));
-    DBGL
-}
-//________________________________________________________________________
-void EQ_OneParameter::ReadList(const string &line)
-{
-    DBGL
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_list" )   // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_list\" not found !" << endl;
-        exit(1);
-    }
-    string ListName= StringLine::NextWord(line, pos, ' ');
-    int Z       = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    int A       = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    int I       = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    double Q    = atof(StringLine::NextWord(line, pos, ' ').c_str());
-    fStreamList[ListName].Add(Z, A, I, Q);
-    
-    DBGL
-}
-//________________________________________________________________________
-void EQ_OneParameter::ReadEqMinFraction(const string &line)
-{
-    DBGL
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_massfractionmin" )    // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_massfractionmin\" not found !" << endl;
-        exit(1);
-    }
-    string ListName= StringLine::NextWord(line, pos, ' ');
-    double Q     = atof(StringLine::NextWord(line, pos, ' ').c_str());
-    fStreamListEqMMassFractionMin[ListName] = Q;
-
-    DBGL
-}
-
-//________________________________________________________________________
-void EQ_OneParameter::ReadEqMaxFraction(const string &line)
-{
-    DBGL
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_massfractionmax" )    // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_massfractionmax\" not found !" << endl;
-        exit(1);
-    }
-    string ListName= StringLine::NextWord(line, pos, ' ');
-    double Q     = atof(StringLine::NextWord(line, pos, ' ').c_str());
-    fStreamListEqMMassFractionMax[ListName] = Q;
-
-    DBGL
-}
-
-//________________________________________________________________________
-void EQ_OneParameter::ReadSpecificPower(const string &line)
-{
-    DBGL
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_specpower")   // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_specpower\" Not found !" << endl;
-        exit(1);
-    }
-    
-    fSpecificPower = atof(StringLine::NextWord(line, pos, ' ').c_str());
-    
-    DBGL
-}
-//________________________________________________________________________
-void EQ_OneParameter::ReadZAIName(const string &line)
-{
-    DBGL
-    
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_zainame" )    // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_zainame\" not found !" << endl;
-        exit(1);
-    }
-    
-    int Z = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    int A = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    int I  = atoi(StringLine::NextWord(line, pos, ' ').c_str());
-    
-    string name = StringLine::NextWord(line, pos, ' ');
-    
-    fMapOfTMVAVariableNames.insert( pair<ZAI,string>( ZAI(Z, A, I), name ) );
-
-    DBGL    
-}
-//________________________________________________________________________
-void EQ_OneParameter::ReadMaxBurnUp(const string &line)
-{
-    DBGL
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_maxburnup" )  // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_maxburnup\" not found !" << endl;
-        exit(1);
-    }
-    
-    fMaximalBU = atof(StringLine::NextWord(line, pos, ' ').c_str());
-
-    DBGL
-}
-
 //________________________________________________________________________
 void EQ_OneParameter::ReadTargetParameter(const string &line)
 {
@@ -1021,57 +799,6 @@ void EQ_OneParameter::ReadTargetParameter(const string &line)
     DBGL
 }
 
-//________________________________________________________________________
-void EQ_OneParameter::ReadPredictorType(const string &line)
-{
-    DBGL
-    
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_predictortype" )  // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_predictortype\" not found !" << endl;
-        exit(1);
-    }
-        
-    fPredictorType = StringLine::NextWord(line, pos, ' ');
-    
-    DBGL    
-}
-//________________________________________________________________________
-void EQ_OneParameter::ReadOutput(const string &line)
-{
-    DBGL
-    
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_output" ) // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_output\" not found !" << endl;
-        exit(1);
-    }
-        
-    fOutput = StringLine::NextWord(line, pos, ' ');
-    
-    DBGL    
-}
-//________________________________________________________________________
-void EQ_OneParameter::ReadBuffer(const string &line)
-{
-    DBGL
-    
-    int pos = 0;
-    string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_buffer" ) // Check the keyword
-    {
-        ERROR << " Bad keyword : \"k_buffer\" not found !" << endl;
-        exit(1);
-    }
-        
-    fBuffer = StringLine::NextWord(line, pos, ' ');
-    
-    DBGL    
-}
 //________________________________________________________________________
 void EQ_OneParameter::ReadModelParameter(const string &line)
 {
@@ -1098,15 +825,14 @@ void EQ_OneParameter::ReadNonZaiTMVAVariables(const string &line)
     
     int pos = 0;
     string keyword = tlc(StringLine::NextWord(line, pos, ' '));
-    if( keyword != "k_nonZAIforTMVA" )    // Check the keyword
+    if( keyword != "k_nonzaifortmva" )    // Check the keyword
     {
-        ERROR << " Bad keyword : \"k_nonZAIforTMVA\" not found !" << endl;
+        ERROR << " Bad keyword : \"k_nonzaifortmva\" not found !" << endl;
         exit(1);
     }
         
     keyword = StringLine::NextWord(line, pos, ' ');
     fListOfNonZaiTMVAVariables.push_back(make_pair(-1.0,keyword));
-    
     DBGL    
 }
 //________________________________________________________________________
