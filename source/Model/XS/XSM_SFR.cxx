@@ -222,6 +222,7 @@ void XSM_SFR::BookTMVAReader() {
 
 vector<float> XSM_SFR::CreateTMVAInput(IsotopicVector IV, int TimeStep)
 {
+    DBGL
   vector<float> tmva_input_iv = XSM_MLP::CreateTMVAInput(IV, TimeStep);
     
   vector<float> tmva_input;  

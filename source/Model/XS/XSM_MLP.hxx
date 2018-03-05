@@ -128,7 +128,7 @@ class XSM_MLP : public XSModel
 	
 	
 	double ExecuteTMVA(string WeightFile, TTree* InputTree);			//!<Execute the MLP according to the input tree created
-	vector<float> CreateTMVAInput(IsotopicVector isotopicvector, int t);	//!<Create input tmva tree to be read by ExecuteTMVA
+	virtual vector<float> CreateTMVAInput(IsotopicVector isotopicvector, int t);	//!<Create input tmva tree to be read by ExecuteTMVA
 	
 	
 	vector<double> 	fMLP_Time;	//!<  Time vector of the data base
