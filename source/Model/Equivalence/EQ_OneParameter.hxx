@@ -115,12 +115,7 @@ class EQ_OneParameter : public EquivalenceModel {
                                                                 //! parameter
   //! associated to
   //! the fuel --->
-  //! ex :
-  //! BurnUpMax,
-  //! keffBOC,
-  //! keffEOC, ...
-  double CalculateBurnUpMax(IsotopicVector TheFuel,
-                            map<string, double> ModelParameter);  //!<Calculate
+  double CalculateBurnUpMax(IsotopicVector TheFuel);  //!<Calculate
                                                                   //! the BU max
   //! associated
   //! to a fuel

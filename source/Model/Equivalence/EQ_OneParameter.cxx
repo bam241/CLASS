@@ -767,7 +767,7 @@ double EQ_OneParameter::CalculateTargetParameter(IsotopicVector TheFuel,
                                                  string TargetParameterName) {
   double ParameterToCalculate = 0;
   if (TargetParameterName == "BurnUpMax")
-    ParameterToCalculate = CalculateBurnUpMax(TheFuel, fModelParameter);
+    ParameterToCalculate = CalculateBurnUpMax(TheFuel);
   else if (TargetParameterName == "keffBOC")
     ParameterToCalculate = CalculateKeffAtBOC(TheFuel);
   else {
@@ -782,8 +782,7 @@ double EQ_OneParameter::CalculateTargetParameter(IsotopicVector TheFuel,
   return ParameterToCalculate;
 }
 //________________________________________________________________________
-double EQ_OneParameter::CalculateBurnUpMax(IsotopicVector TheFuel,
-                                           map<string, double> ModelParameter) {
+double EQ_OneParameter::CalculateBurnUpMax(IsotopicVector TheFuel) {
   /**************************************************************************/
   // With a dichotomy, the maximal irradiation time (TheFinalTime) is calculated
   // When average Kinf is very close (according "Precision") to the threshold
