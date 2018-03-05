@@ -158,6 +158,7 @@ void EQ_OneParameter::CheckParameterValidity() {
 }
 void EQ_OneParameter::BookTMVAReader()
 {
+    DBGL
     fReader = new CLASSReader( );
     
     for( int i = 0; i < fListOfNonZaiTMVAVariables.size(); i++){
@@ -169,12 +170,12 @@ void EQ_OneParameter::BookTMVAReader()
         fReader->AddVariable(it->second);
     }
     
-    if (fTargetParameter == "BurnUpMax")
+    if (fTargetParameter == "BurnUpMax" || fDBRType == "SFR")
     {
         fReader->AddVariable( "Time" );
     }
     fReader->BookMVA( "MLP method" , fTMVAXMLFilePath );
-
+    DBGL
 }
 
 
