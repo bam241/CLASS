@@ -119,14 +119,11 @@ class XSM_SFR : public XSM_MLP
     
     void GetMLPWeightFiles();                //!< Find all .xml file in TMVA_Weight_Directory
     vector<float> CreateTMVAInput(IsotopicVector isotopicvector,int TimeStep = 0);    //!<Create input tmva to be read by ExecuteTMVA
-    
-    vector<double>     fMLP_Time;    //!<  Time vector of the data base
-    vector<string>     fWeightFiles;    //!<  All the weight file contains in fTMVAWeightFolder
+    vector<string> fTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
     string fTMVAWeightFolder;    //!<  folder containing all the weight file
     bool fIsStepTime;        //!<  true if one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
-    vector<string> fTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
     vector<double> fTMVAFixedVariableValues;//!< List of value for TMVA that have to be used for all 
-    
+
 #ifndef __CINT__
     map<string, XS_SFR_DMthPtr> fDKeyword;
 #endif

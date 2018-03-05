@@ -205,14 +205,12 @@ void XSM_SFR::BookTMVAReader() {
             
             map<ZAI,string>::iterator it; 
             for ( it = fMapOfTMVAVariableNames.begin(); it != fMapOfTMVAVariableNames.end(); it++){
-             // std::cout<< it->second << std::endl;
               fReader[i]->AddVariable(it->second.c_str());
             }
     DBGL
             // Time as to be the last one !!! 
             fReader[i]->AddVariable("Time");
     DBGL
-           // std::cout << dir + fWeightFiles[i] << std::endl;
             fReader[i]->BookMVA("MLP method", dir + fWeightFiles[i]);
     DBGL
         }
