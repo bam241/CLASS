@@ -100,7 +100,6 @@ void XSM_SFR::SetFixedVariablesValues(map<string, double> FixedParameters) {
   for (unsigned int i = 0; i < fTMVAVariableNames.size(); i++) {
     if (FixedParameters.find(fTMVAVariableNames[i]) != FixedParameters.end()) {
       fTMVAFixedVariableValues[i] = FixedParameters[fTMVAVariableNames[i]];
-      fTMVAFixedVariable[i] = true;
     }
   }
 }
@@ -206,14 +205,14 @@ void XSM_SFR::BookTMVAReader() {
             
             map<ZAI,string>::iterator it; 
             for ( it = fMapOfTMVAVariableNames.begin(); it != fMapOfTMVAVariableNames.end(); it++){
-              std::cout<< it->second << std::endl;
+             // std::cout<< it->second << std::endl;
               fReader[i]->AddVariable(it->second.c_str());
             }
     DBGL
             // Time as to be the last one !!! 
             fReader[i]->AddVariable("Time");
     DBGL
-            std::cout << dir + fWeightFiles[i] << std::endl;
+           // std::cout << dir + fWeightFiles[i] << std::endl;
             fReader[i]->BookMVA("MLP method", dir + fWeightFiles[i]);
     DBGL
         }

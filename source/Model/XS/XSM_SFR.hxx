@@ -125,7 +125,6 @@ class XSM_SFR : public XSM_MLP
     string fTMVAWeightFolder;    //!<  folder containing all the weight file
     bool fIsStepTime;        //!<  true if one TMVA weihgt per step time is requiered otherwise it assumes time is part of the MLP inputs
     vector<string> fTMVAVariableNames;//!<  List of TMVA input variable names (read from fMLPInformationFile ) , name depends on the training step
-    vector<bool> fTMVAFixedVariable;//!< List of value for TMVA that have to be used for all 
     vector<double> fTMVAFixedVariableValues;//!< List of value for TMVA that have to be used for all 
     
 #ifndef __CINT__
