@@ -1,25 +1,20 @@
 #ifndef _CLASSHEADERS_
 #define _CLASSHEADERS_
 
-
-
-
-//CLASS library
+// CLASS library
 #include "CLASSConstante.hxx"
-#include "Scenario.hxx"
+#include "CLASSLogger.hxx"
+#include "FabricationPlant.hxx"
+#include "IsotopicVector.hxx"
+#include "Pool.hxx"
 #include "Reactor.hxx"
 #include "ReactorScheduler.hxx"
-#include "Pool.hxx"
-#include "FabricationPlant.hxx"
+#include "Scenario.hxx"
 #include "SeparationPlant.hxx"
 #include "Storage.hxx"
-#include "IsotopicVector.hxx"
 #include "ZAI.hxx"
-#include "CLASSLogger.hxx"
 
 #include "EvolutionData.hxx"
 #include "PhysicsModels.hxx"
-
-
 
 #endif

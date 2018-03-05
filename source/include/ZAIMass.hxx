@@ -4,21 +4,20 @@
 /*!
  \file
  \brief Header file for ZAIMass classes.
- 
- 
- @author BaM 
+
+
+ @author BaM
  @author BLG
  @version 2.0
  */
 
 #include <map>
 
-#include "ZAI.hxx"
-#include "TObject.h"
 #include <iostream>
+#include "TObject.h"
+#include "ZAI.hxx"
 
 using namespace std;
-
 
 class IsotopicVector;
 
@@ -27,44 +26,39 @@ class IsotopicVector;
 
 /*!
  The aims of this class is to handle the molar mass of each ZAI
- 
+
  @author BaM
- @author BLG 
+ @author BLG
  @version 1.0
  */
 //________________________________________________________________________
 
+class ZAIMass {
+ public:
+  /*!
+   \name Constructor/Desctructor
+   */
+  //@{
 
-class ZAIMass
-{
-	
-	
-public:
-	/*!
-	 \name Constructor/Desctructor
-	 */
-	//@{
-	
-	ZAIMass();//!< Normal Constructor.
-	
-	~ZAIMass();//!< Normal Destructor.
-	//@}
+  ZAIMass();  //!< Normal Constructor.
 
-	/*!
-	 \name Fucntions returning molar mass [g/mol]
-	 */
-	//@{
-	double GetMass(ZAI zai ) const; //!< get with ZAI
-	double GetMass(const int Z, const int A )    const { return GetMass( ZAI(Z, A, 0) ); } //!< Get with Z, A
-	//@}
-	
-	double GetMass(const IsotopicVector & IV)    const; //return Mass of IV [t]
+  ~ZAIMass();  //!< Normal Destructor.
+  //@}
 
-private:
-	map<ZAI, double> fZAIMass; //! ZAI mass list
+  /*!
+   \name Fucntions returning molar mass [g/mol]
+   */
+  //@{
+  double GetMass(ZAI zai) const;  //!< get with ZAI
+  double GetMass(const int Z, const int A) const {
+    return GetMass(ZAI(Z, A, 0));
+  }  //!< Get with Z, A
+  //@}
 
+  double GetMass(const IsotopicVector& IV) const;  // return Mass of IV [t]
 
+ private:
+  map<ZAI, double> fZAIMass;  //! ZAI mass list
 };
-
 
 #endif
