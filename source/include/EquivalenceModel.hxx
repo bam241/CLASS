@@ -76,11 +76,11 @@ class EquivalenceModel : public CLASSObject {
       map<string, double> StreamListMassFractionMax,
       map<int, string> StreamListPriority,
       map<string, bool> StreamListIsBuffer);  //!< Main function to build the
-                                              //!fuel of mass HMMAss that will
-                                              //!reach BurnUp in the reactor ->
-                                              //!Function that have to be
-                                              //!defined in
-                                              //!source/Model/Equivalence
+                                              //! fuel of mass HMMAss that will
+  //! reach BurnUp in the reactor ->
+  //! Function that have to be
+  //! defined in
+  //! source/Model/Equivalence
 
   double SecondToBurnup(double Second) {
     return Second * fSpecificPower / (24 * 3.6e6);
@@ -166,8 +166,8 @@ class EquivalenceModel : public CLASSObject {
   }  // Set the path to TMVA NFO File path
 
   bool isIVInDomain(IsotopicVector IV);  //<!< Check if the current IV is in the
-                                         //domain allowed for the fuel
-                                         //fabrication
+                                         // domain allowed for the fuel
+  // fabrication
   void StocksTotalMassCalculation(
       map<string, vector<IsotopicVector> > const
           &Stocks);  //!< Calculate the Total Mass in the dStock
@@ -175,14 +175,20 @@ class EquivalenceModel : public CLASSObject {
       string MaterialDenomination, vector<double> &lambda,
       double MaterialMassNeeded,
       vector<IsotopicVector> Stocks);  //!< Calculate the fraction of IV that
-                                       //!should be take to build the fuel
-                                       //!(Lambda = 1 <=> the whole IV is used
-                                       //!for the fuel
+                                       //! should be take to build the fuel
+  //!(Lambda = 1 <=> the whole IV is used
+  //! for the fuel
+
+  virtual double CalculateTargetParameter(IsotopicVector TheFuel,
+                                          string TargetParameterName) {
+    return 0;
+  };  //!<Get a fuel
+      //! parameter
 
  protected:
   map<string, IsotopicVector> fStreamList;  //!< contains all lists of zai
-                                            //!needed to build a fuel (example :
-                                            //!2 -> fissileList+fertileList)
+  //! needed to build a fuel (example :
+  //! 2 -> fissileList+fertileList)
   //!< each list is identified by a keyword (example : -> "Fissile" & "Fertile")
   double fSpecificPower;  //!< The specific power in W/gHM (HM: heavy Metal)
   void SetLambdaToErrorCode(vector<double> &lambda);
@@ -207,31 +213,31 @@ class EquivalenceModel : public CLASSObject {
   //@}
 
   string fTMVAXMLFilePath;  //!<The weight needed by TMVA to construct and
-                            //!execute the multilayer perceptron
+                            //! execute the multilayer perceptron
   string fTMVANFOFilePath;  //!<The weight needed by TMVA to construct and
-                            //!execute the multilayer perceptron
+                            //! execute the multilayer perceptron
   string fDBFType;          //!<  Fuel Type    (e.g MOX, UOX, ThU, ThPu ...)
   string fDBRType;          //!<  Reactor Type (e.g PWR, FBR-Na, ADS..)
 
   map<ZAI, string> fMapOfTMVAVariableNames;  //!<  List of TMVA input variable
-                                             //!names (read from
-                                             //!fMLPInformationFile ) , name
-                                             //!depends on the training step
+                                             //! names (read from
+  //! fMLPInformationFile ) , name
+  //! depends on the training step
 
   double fMaximalBU;  //!< The Maximum burn-up of the model in GWd/t
   map<string, double> fStreamListEqMMassFractionMax;  //!< Map that contains
-                                                      //!lists of stream
-                                                      //!according to the
-                                                      //!EqModel with mass
-                                                      //!maximum fraction
+                                                      //! lists of stream
+  //! according to the
+  //! EqModel with mass
+  //! maximum fraction
   map<string, double> fStreamListEqMMassFractionMin;  //!< Map that contains
-                                                      //!lists of stream
-                                                      //!according to the
-                                                      //!EqModel with mass
-                                                      //!minimum fraction
+                                                      //! lists of stream
+  //! according to the
+  //! EqModel with mass
+  //! minimum fraction
 
   string fPredictorType;  //!< Type of predictor used in Equivalence Model (ex:
-                          //!MLP)
+                          //! MLP)
   string fOutput;         //!< Type of output calculated by the predictor
   string fBuffer;         //!< Name of material used as buffer in fuel
 };
