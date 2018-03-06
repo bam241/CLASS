@@ -9,11 +9,7 @@
 //
 //________________________________________________________________________
 
-PhysicsModels::PhysicsModels() : CLASSObject(), fXSM(0), fEQM(0), fIM(0)  {
-  fXSM = 0;
-  fEQM = 0;
-  fIM = 0;
-}
+PhysicsModels::PhysicsModels() : CLASSObject(), fXSM(0), fEQM(0), fIM(0)  { }
 //________________________________________________________________________
 PhysicsModels::PhysicsModels(XSModel* XS, EquivalenceModel* EM,
                              IrradiationModel* IM)
