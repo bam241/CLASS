@@ -2,23 +2,19 @@
 
 using namespace std;
 
-	//________________________________________________________________________
-	//
-	//		CLASSObject
-	//
-	//
-	//
-	//
-	//________________________________________________________________________
+//________________________________________________________________________
+//
+//		CLASSObject
+//
+//
+//
+//
+//________________________________________________________________________
 
 ClassImp(CLASSObject)
 
-CLASSObject::CLASSObject()
-{
-	fLog = 0;
+    CLASSObject::CLASSObject() {
+  fLog = 0;
 }
 
-CLASSObject::CLASSObject(CLASSLogger* log)
-{
-	fLog = log;
-}
+CLASSObject::CLASSObject(CLASSLogger* log) { fLog = log; }

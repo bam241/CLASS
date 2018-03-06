@@ -1,14 +1,14 @@
 #ifndef _ZAI_
-#define _ZAI_ 
+#define _ZAI_
 
 /*!
  \file
- \brief Header file for ZAI classes. 
+ \brief Header file for ZAI classes.
  */
 
+#include <iostream>
 #include <string>
 #include "TObject.h"
-#include <iostream>
 
 using namespace std;
 
@@ -28,69 +28,65 @@ using namespace std;
  */
 //________________________________________________________________________
 
+class ZAI : public TObject {
+ public:
+  //********* Constructor/Destructor Method *********//
 
+  /*!
+   \name Constructor/Desctructor
+   */
+  //@{
 
-class ZAI : public TObject
-{
-public:
+  ZAI();  ///< Default constructor
 
+  //{
+  ///< Normal Constructor.
+  /*!
+   Default: No parent
+   \param Z : number of protons
+   \param A : number of nucleons (A = 0 means natural isotopes)
+  */
+  ZAI(int Z, int A, int I = 0);
+  //}
 
-//********* Constructor/Destructor Method *********//
+  ~ZAI();  ///< Normal Destructor.
 
-	/*!
-	 \name Constructor/Desctructor
-	 */
-	//@{
+  //********* ZAI main attributes Method *********//
 
-	ZAI();	///< Default constructor
+  /*!
+  \name ZAI main attributes
+  */
+  //@{
+  int Z() const { return fZ; }       //!< returns the number of protons
+  int A() const { return fA; }       //!< returns the number of nucleons
+  int I() const { return fI; }       //!< returns the Isomeric State
+  int N() const { return fA - fZ; }  //!< returns the number of neutrons
 
-	//{
- 	///< Normal Constructor. 
- 	/*!
- 	 Default: No parent
- 	 \param Z : number of protons
- 	 \param A : number of nucleons (A = 0 means natural isotopes) 
- 	*/
-	ZAI(int Z, int A, int I = 0);
-	//}
+  //@}
 
+  ZAI operator=(ZAI IVa);  //!<
+  bool operator<(const ZAI& zai) const {
+    return (fZ != zai.Z())
+               ? (fZ < zai.Z())
+               : ((fA != zai.A()) ? (fA < zai.A()) : (fI < zai.I()));
+  }  //!< Compartor operator
 
-	~ZAI();	///< Normal Destructor.
+  bool operator!=(const ZAI& zai) const {
+    return (fZ != zai.Z()) || (fA != zai.A()) || (fI != zai.I());
+  }  //!< Compartor operator
+  bool operator==(const ZAI& zai) const {
+    return (fZ == zai.Z() && fA == zai.A() && fI == zai.I());
+  }  //!< Compartor operator
+  void Print() const {
+    cout << fZ << " " << fA << " " << fI << endl;
+  }  //!< Print in standard output : Z A I
 
+ protected:
+  short fZ;  ///< number of protons
+  short fA;  ///< number of nucleons (A = 0 means natural isotopes)
+  short fI;  ///< Isomeric state
 
-//********* ZAI main attributes Method *********//
-
-	/*!
-	\name ZAI main attributes 
-	*/
-	//@{
-	int  Z()	const	{ return fZ; } //!< returns the number of protons
-	int  A()	const	{ return fA; } //!< returns the number of nucleons
-	int  I()	const	{ return fI; } //!< returns the Isomeric State
-	int  N()	const	{ return fA-fZ; } //!< returns the number of neutrons
-		
-	//@}
-
-
-
-	ZAI operator = (ZAI IVa);		//!<
-	bool operator <(const ZAI& zai)		const	{ return (fZ != zai.Z())?
-							(fZ < zai.Z()) : ( (fA != zai.A())?
-								 (fA < zai.A()) : (fI < zai.I()) ); }//!< Compartor operator
-
-	bool operator != (const ZAI& zai)	const	{ return ( fZ != zai.Z() ) || ( fA != zai.A() ) || ( fI != zai.I() ); }//!< Compartor operator
-	bool operator == (const ZAI& zai)	const	{ return ( fZ ==  zai.Z()  && fA ==  zai.A() &&  fI ==  zai.I()); }//!< Compartor operator
-	void Print()				const	{ cout << fZ << " " << fA << " " << fI << endl;}//!< Print in standard output : Z A I
-
-
-protected :
- 	
-	short	fZ;		///< number of protons
-	short	fA;		///< number of nucleons (A = 0 means natural isotopes) 
-	short	fI;		///< Isomeric state
-
-	ClassDef(ZAI,1);
+  ClassDef(ZAI, 1);
 };
-
 
 #endif
