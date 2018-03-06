@@ -101,6 +101,10 @@ class PhysicsModels : public CLASSObject {
   IrradiationModel* GetIM() { return fIM; }  ///< return the Bateman solver
 
   PhysicsModels* GetPhysicsModels() { return this; }  ///< return this
+  
+  void SetXSM(XSModel* XSM) { fXSM = XSM; }
+  void SetEQM(EquivalenceModel* EQM) { fEQM = EQM;}
+  void SetIM(IrradiationModel* IM)  { fIM = IM; } 
 
  private:
   XSModel* fXSM;  ///< The XSModel (mean cross sections prediction)
