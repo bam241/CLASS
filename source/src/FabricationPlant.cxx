@@ -210,7 +210,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t) {
   map<string, vector<IsotopicVector> >::iterator it_s_vIV;
   map<string, vector<double> >::iterator it_s_vD;
   map<string, bool>::iterator it_s_B;
-  fStreamList = FuelType->GetEquivalenceModel()->GetAllStreamList();
+  fStreamList = FuelType->GetEQM()->GetAllStreamList();
   BuildArray(ReactorId, t + GetCycleTime());  // Checker chez les stocks si les
                                               // StreamList sont présentes
   // Grosse map qui contient tous les IV
@@ -218,7 +218,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t) {
   // Construit les stocks de matière infini (=taille du réacteur)
   // string="MA, .." LambdaArray = tableau sur les IV
   map<string, vector<double> > LambdaArray =
-      FuelType->GetEquivalenceModel()->BuildFuel(
+      FuelType->GetEQM()->BuildFuel(
           R_BU, R_HM_Mass, fStreamArray, fStreamListFPMassFractionMin,
           fStreamListFPMassFractionMax, fStreamListFPPriority,
           fStreamListFPIsBuffer);
@@ -308,7 +308,7 @@ void FabricationPlant::BuildFuelForReactor(int ReactorId, cSecond t) {
            it_s_vD++) {
         LambdaArray[(*it_s_vD).first].clear();
       }
-      LambdaArray = FuelType->GetEquivalenceModel()->BuildFuel(
+      LambdaArray = FuelType->GetEQM()->BuildFuel(
           R_BU, R_HM_Mass, fStreamArray, fStreamListFPMassFractionMin,
           fStreamListFPMassFractionMax, fStreamListFPPriority,
           fStreamListFPIsBuffer);

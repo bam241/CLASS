@@ -94,26 +94,20 @@ class PhysicsModels : public CLASSObject {
                                       double Power);
   //}
 
-  XSModel* GetXSModel() {
-    return fXSModel;
-  }  ///< return the mean cross section predictor
-  EquivalenceModel* GetEquivalenceModel() {
-    return fEquivalenceModel;
-  }  ///< return Fissile content predictor
-  IrradiationModel* GetIrradiationModel() {
-    return fIrradiationModel;
-  }  ///< return the Bateman solver
+  XSModel* GetXSM() { return fXSM; }  ///< return the mean cross section predictor
 
-  PhysicsModels* GetPhysicsModels() {
-    return this;
-  }  ///< return the PhysicsModels
+  EquivalenceModel* GetEQM() { return fEQM; }  ///< returnthe EQM
+
+  IrradiationModel* GetIM() { return fIM; }  ///< return the Bateman solver
+
+  PhysicsModels* GetPhysicsModels() { return this; }  ///< return this
 
  private:
-  XSModel* fXSModel;  ///< The XSModel (mean cross sections prediction)
+  XSModel* fXSM;  ///< The XSModel (mean cross sections prediction)
   EquivalenceModel*
-      fEquivalenceModel;  ///< The EquivalenceModel (fresh fissile content prediction)
+      fEQM;  ///< The EquivalenceModel (fresh fissile content prediction)
   IrradiationModel*
-      fIrradiationModel;  ///< The IrradiationModel (The Bateman's solver)
+      fIM;  ///< The IrradiationModel (The Bateman's solver)
 };
 
 #endif

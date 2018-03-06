@@ -10,40 +10,40 @@
 //________________________________________________________________________
 
 PhysicsModels::PhysicsModels() : CLASSObject() {
-  fXSModel = 0;
-  fEquivalenceModel = 0;
-  fIrradiationModel = 0;
+  fXSM = 0;
+  fEQM = 0;
+  fIM = 0;
 }
 //________________________________________________________________________
 PhysicsModels::PhysicsModels(XSModel* XS, EquivalenceModel* EM,
                              IrradiationModel* IM)
     : CLASSObject() {
-  fXSModel = XS;
-  fEquivalenceModel = EM;
-  fIrradiationModel = IM;
+  fXSM = XS;
+  fEQM = EM;
+  fIM = IM;
 
-  int Z_ZAIThreshold = fIrradiationModel->GetZAIThreshold();
-  fXSModel->SetZAIThreshold(Z_ZAIThreshold);
+  int Z_ZAIThreshold = fIM->GetZAIThreshold();
+  fXSM->SetZAIThreshold(Z_ZAIThreshold);
 }
 //________________________________________________________________________
 PhysicsModels::PhysicsModels(CLASSLogger* log, XSModel* XS,
                              EquivalenceModel* EM, IrradiationModel* IM)
     : CLASSObject(log) {
-  fXSModel = XS;
-  fEquivalenceModel = EM;
-  fIrradiationModel = IM;
+  fXSM = XS;
+  fEQM = EM;
+  fIM = IM;
 
-  int Z_ZAIThreshold = fIrradiationModel->GetZAIThreshold();
-  fXSModel->SetZAIThreshold(Z_ZAIThreshold);
+  int Z_ZAIThreshold = fIM->GetZAIThreshold();
+  fXSM->SetZAIThreshold(Z_ZAIThreshold);
 }
 
 //________________________________________________________________________
 EvolutionData PhysicsModels::GenerateEvolutionData(IsotopicVector IV,
                                                    double cycletime,
                                                    double Power) {
-  fXSModel->isIVInDomain(IV);
+  fXSM->isIVInDomain(IV);
 
-  return fIrradiationModel->GenerateEvolutionData(
-      IV, fXSModel->GetCrossSections(IV), Power, cycletime);
+  return fIM->GenerateEvolutionData(
+      IV, fXSM->GetCrossSections(IV), Power, cycletime);
 }
 //________________________________________________________________________
