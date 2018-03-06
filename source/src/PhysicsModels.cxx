@@ -9,7 +9,7 @@
 //
 //________________________________________________________________________
 
-PhysicsModels::PhysicsModels() : CLASSObject() {
+PhysicsModels::PhysicsModels() : CLASSObject(), fXSM(0), fEQM(0), fIM(0)  {
   fXSM = 0;
   fEQM = 0;
   fIM = 0;
@@ -17,10 +17,7 @@ PhysicsModels::PhysicsModels() : CLASSObject() {
 //________________________________________________________________________
 PhysicsModels::PhysicsModels(XSModel* XS, EquivalenceModel* EM,
                              IrradiationModel* IM)
-    : CLASSObject() {
-  fXSM = XS;
-  fEQM = EM;
-  fIM = IM;
+    : CLASSObject(), fXSM(XS), fEQM(EM), fIM(IM) {
 
   int Z_ZAIThreshold = fIM->GetZAIThreshold();
   fXSM->SetZAIThreshold(Z_ZAIThreshold);
@@ -28,11 +25,8 @@ PhysicsModels::PhysicsModels(XSModel* XS, EquivalenceModel* EM,
 //________________________________________________________________________
 PhysicsModels::PhysicsModels(CLASSLogger* log, XSModel* XS,
                              EquivalenceModel* EM, IrradiationModel* IM)
-    : CLASSObject(log) {
-  fXSM = XS;
-  fEQM = EM;
-  fIM = IM;
-
+    : CLASSObject(log), fXSM(XS), fEQM(EM), fIM(IM) {
+  
   int Z_ZAIThreshold = fIM->GetZAIThreshold();
   fXSM->SetZAIThreshold(Z_ZAIThreshold);
 }
