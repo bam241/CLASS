@@ -107,7 +107,7 @@ done
 if [ "${GTEST}" = true ]; then
     if ! ping -c 1 google.com >> /dev/null 2>&1; then
         echo "An internet connection is required to compile the test"
-        exit 1
+#        exit 1
     fi
 fi
 
