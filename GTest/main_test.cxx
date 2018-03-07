@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 //#include "IsotopicVector/test_iv.inl"
-#include "Reactor/test_Reactor1.inl"
-#include "Fleet/test_PWR_UOX_MOX.inl"
+//#include "Reactor/test_Reactor1.inl"
+//#include "Fleet/test_PWR_UOX_MOX.inl"
 
 int main(int argc,char * argv[]) {
 	::testing::InitGoogleTest(&argc,argv);
