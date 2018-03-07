@@ -11,7 +11,7 @@ TEST ( IV, GetSize ) {
 	const int n=10;
 
 	// génération des données
-	IsotopicVector iv();
+	IsotopicVector iv = IsotopicVector();
 	for ( unsigned int i = 0 ; i < n ; ++i )
 	{
 		ZAI z(i,i+1,i+2);
