@@ -8,7 +8,7 @@
 #include "EQ_OneParameter.hxx"	//Load the include for Neural Network Equivalence Model (PWRMOX)
 
 TEST ( IV, GetSize ) {
-	const int n=10;
+	int n=10;
 
 	// génération des données
 	IsotopicVector iv = IsotopicVector();
