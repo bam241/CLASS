@@ -652,7 +652,7 @@ void Reactor::CheckListConsistency(PhysicsModels* fueltypeDB,
                                    FabricationPlant* fabricationplant) {
   // Get Lists containers defined in EqM and FP
   map<string, IsotopicVector> StreamList =
-      fueltypeDB->GetEquivalenceModel()->GetAllStreamList();
+      fueltypeDB->GetEQM()->GetAllStreamList();
   map<string, vector<Storage*> > Stocks = fabricationplant->GetAllStorage();
 
   vector<string> StreamListEqM;
