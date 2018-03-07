@@ -108,7 +108,7 @@ if [ "${GTEST}" = true ]; then
     echo -e "GET http://google.com HTTP/1.0\n\n" | nc google.com 80 > /dev/null 2>&1
     if [ ! $? -eq 0 ] && [ ! -d "bld/GTest/gtest/src/gtest" ]; then
         echo "An internet connection is required to compile the test"
-        exit 1
+#        exit 1
     fi
 fi
 
