@@ -51,7 +51,8 @@ function build ()
         exit 0
     else
         make -j ${J}
-        ../bin/RunTest
+
+        #../bin/RunTest
         exit 0
     fi
 }
