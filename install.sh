@@ -99,6 +99,8 @@ for arg in "$@"; do
             BUILD=true;GTEST=true ;;
         -j* )
             J="${arg//-j=/}" ;;
+        * )
+            usage ;;
     esac
 done
 
